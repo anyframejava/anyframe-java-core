@@ -1,0 +1,689 @@
+<chapter id="hibernate_hibernate_hql">
+	<title>HQL(Hibernate Query Language)</title>
+	
+	<para>
+		Hibernate enables the search for specific object and independent query definition of DB type based on object property or relation information
+		at object-oriented aspect by providing special Query Language.
+		Composition and how to develop HQL are as the following.	
+	</para>
+
+	<section id="hibernate_hibernate_hql_component">
+		<title>Components</title>
+
+		<section id="hibernate_hibernate_hql_component_select">
+			<title>[Optional] SELECT statement</title>
+
+        	<para>
+        		Defines when specifying return value of search to get in detail. 
+        		<programlisting><![CDATA[SELECT [object or  property], …        ]]></programlisting>
+        	</para>
+
+        	<para>
+        		When searching for multiple data, the search return value can be defined in List, Map or user defined type.        	
+        		(Default = Object[]) 
+                <programlisting><![CDATA[SELECT new List(prop1, prop2, …)]]></programlisting></para>
+
+			<para>
+				Can define various aggregate functions(sum, avg, min, max, count, count(distinct), count(all),
+				arithmetic operator(+, -, …), concatenation) provided in Hibernate and also keywords(distinct, …)
+				which are available in general SQL.				
+        	</para>
+
+        	<para>
+        		Other than these, Hibernate provides functions for handling string, number, date and time. Details are as the following.        	
+        	</para>
+
+        	<itemizedlist>
+				<listitem>
+            		<para><emphasis role="bold">Function for string handling</emphasis></para>
+
+            		<informaltable>
+              			<tgroup cols="2">
+              				<colspec colnum="1" colname="col1" colwidth="1*"/>
+							<colspec colnum="2" colname="col2" colwidth="3*"/>
+                			<thead>
+                  				<row>
+                    				<entry align="center">Function name</entry>
+
+                    				<entry align="center">Description</entry>
+                  				</row>
+                 			</thead>
+                 			<tbody>
+                  				<row>
+                    				<entry>UPPER(str)</entry>
+
+                    				<entry>Converts to upper case.</entry>
+                  				</row>
+
+                  				<row>
+                    				<entry>LOWER(str)</entry>
+
+                    				<entry>Converts to lower case.</entry>
+                  				</row>
+
+                  				<row>
+                    				<entry>SUBSTRING(str, idx, length)</entry>
+
+                    				<entry>Gets string as much as the length at idx location designated of the string.</entry>
+                  				</row>
+
+                  				<row>
+                    				<entry>CONCAT(str1, str2)</entry>
+
+                    				<entry>Connects two strings.</entry>
+                  				</row>
+
+                  				<row>
+                    				<entry>LENGTH(str)</entry>
+
+                    				<entry>Get the total length of str string.</entry>
+                  				</row>
+
+                  				<row>
+                    				<entry>LENGTH(str, s, idx)</entry>
+
+                    				<entry>Get the location where where string 's' is located, which were already defined in the relevant str string.
+                    				Location of starting search is idx.
+                    			</entry>
+                  				</row>
+
+                  				<row>
+                    				<entry>TRIM([type] str)</entry>
+
+                    				<entry>
+                    					Gets rid of spaces in the front and back.
+                    					Deletes front and back space when type is BOTH, and when type is LEADING, deletes the front space.
+                    					When type is TRAILING, deletes back space.                    					
+                    				</entry>
+                  				</row>
+                			</tbody>
+              			</tgroup>
+            		</informaltable>
+				</listitem>
+
+				<listitem>
+            		<para><emphasis role="bold">Function for number handling</emphasis></para>
+
+            		<informaltable>
+              			<tgroup cols="2">
+              				<colspec colnum="1" colname="col1" colwidth="4*"/>
+							<colspec colnum="2" colname="col2" colwidth="6*"/>
+                			<thead>
+                  				<row>
+                    				<entry align="center">Function name</entry>
+
+                    				<entry align="center">Description</entry>
+                  				</row>
+                 			</thead>
+                 			<tbody>
+                  				<row>
+                    				<entry>ABS(num)</entry>
+
+                    				<entry>Gets absolute value of number.</entry>
+                  				</row>
+
+                  				<row>
+                    				<entry>SQRT(num)</entry>
+
+                    				<entry>Gets square root of number.</entry>
+                  				</row>
+
+                  				<row>
+                    				<entry>MOD(num1, num2)</entry>
+
+                    				<entry>Gets the remainder of num1 divided by num2.</entry>
+                  				</row>
+
+                  				<row>
+                    				<entry>BIT_LENGTH(str)</entry>
+
+                    				<entry>Gets the bit length of string.</entry>
+                  				</row>
+                			</tbody>
+              			</tgroup>
+            		</informaltable>
+				</listitem>
+
+          		<listitem>
+            		<para><emphasis role="bold">Function for date and time handling</emphasis></para>
+
+            		<informaltable>
+              			<tgroup cols="2">
+                			<thead>
+                 				 <row>
+                    				<entry align="center">Function name</entry>
+
+                    				<entry align="center">Description</entry>
+                  				</row>
+                 			</thead>
+                 			<tbody>
+                  				<row>
+                    				<entry>CURRENT_DATE()</entry>
+
+                    				<entry>Gets current date.</entry>
+                  				</row>
+
+                  				<row>
+                    				<entry>CURRENT_TIME()</entry>
+
+                    				<entry>Gets current time.</entry>
+                 				</row>
+
+                  				<row>
+                    				<entry>CURRENT_TIMESTAMP()</entry>
+
+                    				<entry>Gets current date and time.</entry>
+                  				</row>
+
+                  				<row>
+                    				<entry>HOUR(date), MINUTE(date), SECOND(date)</entry>
+
+                    				<entry>Gets hour, minute and second.</entry>
+                  				</row>
+
+                  				<row>
+                    				<entry>YEAR(date), MONTH(date), DAY(date)</entry>
+
+                    				<entry>Gets year, month and date.</entry>
+                  				</row>
+                			</tbody>
+              			</tgroup>
+            		</informaltable>
+          		</listitem>
+        	</itemizedlist>
+		</section>
+
+		<section id="hibernate_hibernate_hql_component_from">
+			<title>[Mandatory] FROM statement</title>
+
+        	<para>
+        		Defines an object to search. If SELECT statement is omitted, object defined in FROM statement becomes the target to return.        
+                <programlisting><![CDATA[FROM [object] ((as) alias), …        ]]></programlisting>
+			</para>
+		</section>
+
+		<section id="hibernate_hibernate_hql_component_where">
+        	<title>[Optional] WHERE statement</title>
+
+        	<para>
+        		Defines when specifying search result area in more detail.        
+                <programlisting><![CDATA[WHERE [condition], …        ]]></programlisting>
+            </para>
+
+        	<para>
+        		"id" can be used to extract the identifier value of specific object defined in Mapping XML file.
+        		(Form Hibernate 3.2.2 onwards, if field name other than identifier field of the class is id,
+        		the value of field named 'id' is returned.)
+        		        		<programlisting><![CDATA[WHERE user.id = 'test'        ]]></programlisting>
+        	</para>
+
+        	<para>
+        		In addition, "class" can be used to access the value of Discriminator as the following.
+        		On top of which, WHERE statement can be defined by using various expression provided in Hibernate.        	
+                <programlisting><![CDATA[WHERE user.class = 'MEMBER'        ]]></programlisting>
+            </para>
+
+            <para>
+            	Operation that can be used in HQL WHERE state is as the following.
+            	
+            </para>
+
+        	<itemizedlist>
+          		<listitem>
+            		<para>
+            			<emphasis role="bold">Math operator</emphasis> : +, -, *, /
+            		</para>
+          		</listitem>
+
+          		<listitem>
+            		<para>
+            			<emphasis role="bold">Comparison operator</emphasis> : <![CDATA[<>, <, >, <=, =>, !]]></para>
+          		</listitem>
+
+          		<listitem>
+            		<para>
+            			<emphasis role="bold">Logical operator</emphasis> : and, or, not
+            		</para>
+          		</listitem>
+
+          		<listitem>
+            		<para>
+            			<emphasis role="bold">Grouping </emphasis>: in, not in, between, is null, is not null, 
+            			is empty, is not empty, member of, not member of
+            		</para>
+          		</listitem>
+
+          		<listitem>
+            		<para>
+            			<emphasis role="bold">Case</emphasis> : case … when … then … else … end
+            		</para>
+          		</listitem>
+
+          		<listitem>
+            		<para>
+            			<emphasis role="bold">String concatenation</emphasis> : … || …, concat (…,…)
+            		</para>
+          		</listitem>
+
+          		<listitem>
+           	 		<para>
+           	 			<emphasis role="bold">Data handling</emphasis> : current_date(), current_time(), current_timestamp(),
+						second(...), minute(…), hour(…), day(…), month(…), year(…)
+					</para>
+          		</listitem>
+
+          		<listitem>
+            		<para>
+            			<emphasis role="bold">str()</emphasis> :Converts the given value to string.
+            		</para>
+          		</listitem>
+        	</itemizedlist>
+
+        	<para>
+        		Can define another HQL in Sub HQL format between SELECT and WHERE statements.         	
+        	</para>
+		</section>
+
+		<section id="hibernate_hibernate_hql_component_orderby">
+        	<title>[Optional] ORDER BY statement</title>
+
+        	<para>
+        		Defines the way of sorting the search result.        	
+                <programlisting><![CDATA[ORDER BY [condition] (ASC or DESC), …        ]]></programlisting>
+            </para>
+      	</section>
+
+      	<section id="hibernate_hibernate_hql_comonent_groupby">
+        	<title>[Optional] GROUP BY statement</title>
+
+        	<para>
+        		Defined when grouping search result by specific standard.
+        		 <programlisting><![CDATA[GROUP BY [condition], …        ]]>
+</programlisting>
+			</para>
+
+        	<para>
+        		※  It is impossible to define formula at  Order By, Group By statements, but possible to add Having statement like general SQL.        		
+        	</para>
+      	</section>
+	</section>
+
+	<section id="hibernate_hibernate_hql_instruction">
+		<title>How to use</title>
+
+      	<para>CRUD method and Join method, basic methods using HQL, are as the following. </para>
+
+      	<section id="hibernate_hibernate_hql_instruction_basic">
+        	<title>Case 1. Basic</title>
+
+        	<para>
+        		Through HQL, search task can be executed for one table.        		
+                <programlisting language="java"><![CDATA[StringBuilder hqlBuf = new StringBuilder();
+hqlBuf.append("FROM Country country ");
+hqlBuf.append("WHERE country.countryName like :condition ");
+hqlBuf.append("ORDER BY country.countryName");
+Query hqlQuery = session.createQuery(hqlBuf.toString());
+hqlQuery.setParameter("condition", "%%");
+List countryList = hqlQuery.list();]]></programlisting></para>
+
+        	<para>
+        		Through HQL statement defined as above, list of Country object that satisfies the search condition is returned.
+        		Search condition of WHERE statment can be defined by [Object name].[Attribute name](country.countryName), and
+        		by using  ':', defined property and value can be returned, thereby completing search condition.
+        		The value of search condition is defined through setParameter() method of org.hibernate.Query.        		
+        	</para>
+		</section>
+
+		<section id="hibernate_hibernate_hql_instruction_join">
+			<title>Case 2. Join</title>
+
+        	<para>
+        		When performing JOIN between tables by using HQL, it is possible to handle with Explicit Join, Implicit Join.
+        		Hibernate supports (inner) join, left (outer) join, right (outer) join, full join 
+        		and Explicit Join is a way of explicitly defining Join keyword at FROM statement.
+        		Implicit Join can be defined in any HQL statement by using "." without using Join keyword,
+        		and handled in Inner Join.        		
+        	</para>
+
+        	<para>
+        		The following is an example of search task performing Inner Join targeting two tables in relation.        		
+                <programlisting language="java"><![CDATA[StringBuilder hqlBuf = new StringBuilder();
+hqlBuf.append("SELECT movie ");
+hqlBuf.append(]]><emphasis role="bold"><![CDATA["FROM Movie movie join movie.categories category "]]></emphasis>);
+<![CDATA[hqlBuf.append("WHERE category.categoryName = ?"); 
+Query query = session.createQuery(hqlBuf.toString());
+query.setParameter(0, "Romantic");...]]></programlisting>
+			</para>
+
+        	<para>
+        		As shown in the code above, it is possible to execute Inner Join on MOVIE table and GATEGORY table in relation by using 'join'
+        		and also possible to define the search condition like when using basic HQL.
+        		In addition, Right Outer Join can be executed targeting two tables in relation.        
+                <programlisting language="java"><![CDATA[StringBuilder hqlBuf = new StringBuilder();
+hqlBuf.append("SELECT distinct category ");
+hqlBuf.append(]]><emphasis role="bold"><![CDATA["FROM Movie movie right join movie.categories category "]]></emphasis>);
+<![CDATA[hqlBuf.append("ORDER BY category.categoryName ASC ");
+...   ]]></programlisting></para>
+
+        	<para>
+        		Like Inner Join, 'right join' or 'left join' can be used, and right join was used in the example above.      
+        	</para>
+
+        	<para>
+        		If there is no relation defined between two tables, two tables can be Joined through ','
+        		and conditional statement like 'movie.country.countryCode = country.countryCode' is defined and used for Join in WHERE statement.        		 
+                <programlisting language="java"><![CDATA[StringBuilder hqlBuf = new StringBuilder();
+hqlBuf.append("SELECT distinct movie ");
+hqlBuf.append(]]><emphasis role="bold"><![CDATA["FROM Movie movie, Country country "]]></emphasis>);
+<![CDATA[hqlBuf.append(]]><emphasis role="bold"><![CDATA["WHERE movie.country.countryCode = country.countryCode "]]></emphasis>);
+<![CDATA[hqlBuf.append("AND country.countryId = :condition1 ");
+hqlBuf.append("AND movie.title like :condition2 ");
+
+Query query = session.createQuery(hqlBuf.toString());
+query.setParameter("condition1", "KR");
+query.setParameter("condition2", "%%");
+... ]]></programlisting></para>
+
+        	<para>
+        		For example of how to search basically using HQL including above-explained code,
+        		refer to HibernateBasicHQL.java.        		
+        	</para>
+		</section>
+	</section>
+
+	<section id="hibernate_hibernate_hql_transformer">
+		<title>Return in the object type you want.</title>
+
+		<para>
+			After performing search task through HQL, it is possible to get the search result in the format of object you want.
+			This can be used when you want to get them in composite class, not Persistence class mapped with one table 
+			when joining many tables.			
+      	</para>
+
+		<section id="hibernate_hibernate_hql_transformer_movie">
+        	<title>Case 1. Return in specific object format</title>
+
+        	<para>
+        		Gets the search result by using HQL(Inner Join) targeting two tables in relation
+        		in the format of specific object (Movie object in the example above).
+        	 
+                <programlisting language="java"><![CDATA[StringBuilder hqlBuf = new StringBuilder();
+hqlBuf.append(]]><emphasis role="bold"><![CDATA["SELECT new Movie(movie.movieId as movieId, "]]></emphasis>);
+<![CDATA[hqlBuf.append(]]><emphasis role="bold"><![CDATA["movie.title as title, movie.director as director, "]]></emphasis>);
+<![CDATA[hqlBuf.append(]]><emphasis role="bold"><![CDATA["category.categoryName as categoryName, "]]></emphasis>);
+<![CDATA[hqlBuf.append(]]><emphasis role="bold"><![CDATA["movie.country.countryName as countryName) "]]></emphasis>);
+<![CDATA[hqlBuf.append("FROM Movie movie join movie.categories category ");
+...]]></programlisting>
+			</para>
+
+        	<para>
+        		In the case above, return value in Movie type object is returned.
+        		Note that the relevant Constructor must exist in the defined class.
+        		The following is a part of Constructor definition of  Movie.java.        	
+                <programlisting language="java"><![CDATA[public Movie(String movieId, String title, String director,
+        String categoryName, String countryName) {
+    this.movieId = movieId;
+    this.title = title;
+    this.director = director;
+    this.categoryName = categoryName;
+    this.countryName = countryName;
+}]]></programlisting></para>
+
+			<para>
+				In addition, when getting the value relevant to each attribute from return value,
+				get Movie object from List and use getter method.				
+                <programlisting language="java"><![CDATA[List movieList = query.list();]]>
+<emphasis role="bold">Movie</emphasis> movie1 = <emphasis role="bold"><![CDATA[(Movie) movieList.get(0);]]></emphasis>
+<emphasis role="bold"><![CDATA[movie1.getTitle();]]></emphasis>
+<emphasis role="bold">Movie</emphasis> movie2 = <emphasis role="bold"><![CDATA[(Movie) movieList.get(1);]]></emphasis>
+<emphasis role="bold"><![CDATA[movie2.getTitle();]]></emphasis>
+<emphasis role="bold">...</emphasis>        </programlisting>
+			</para>
+		</section>
+
+		<section id="hibernate_hibernate_hql_transformer_map">
+        	<title>Case 2. Return in Map type</title>
+
+        	<para>
+        		Gets the search result using HQL(Inner Join) targeting two tables in relation in Map type.
+        		
+                <programlisting language="java"><![CDATA[StringBuilder hqlBuf = new StringBuilder();
+hqlBuf.append("]]><emphasis role="bold"><![CDATA[SELECT new Map]]></emphasis><![CDATA[(movie.movieId as movieId, ");
+hqlBuf.append("movie.title as title, movie.director as director, ");
+hqlBuf.append("category.categoryName as categoryName, ");
+hqlBuf.append("movie.country.countryName as countryName) ");
+hqlBuf.append("FROM Movie movie join movie.categories category ");
+... ]]></programlisting>
+			</para>
+
+        	<para>
+        		In the definition above, the search result is List type of Map.
+        		In this case, movieId, title, director, 
+        		categoryName and countryName defined as alias are the key values of Map.
+        		Therefore, you can search return value through Key value defined in Map as the following.
+        		
+                <programlisting language="java"><![CDATA[List movieList = query.list();]]>
+<emphasis role="bold">Map</emphasis> movie1 = <emphasis role="bold"><![CDATA[(Map) movieList.get(0);]]></emphasis>
+<emphasis role="bold"><![CDATA[movie1.get("title");]]></emphasis>
+<emphasis role="bold"><![CDATA[movie1.get("director");]]></emphasis>
+<emphasis role="bold">Map </emphasis>movie2 = <emphasis role="bold"><![CDATA[(Map) movieList.get(1);]]></emphasis>
+<emphasis role="bold"><![CDATA[movie2.get("title");]]></emphasis>
+<emphasis role="bold"><![CDATA[movie2.get("director");]]></emphasis>        </programlisting>
+			</para>
+		</section>
+
+		<section id="hibernate_hibernate_hql_transformer_list">
+			<title>Case 3. Return in List type</title>
+
+        	<para>
+        		It is possible to get the search result in List type using HQL(Inner Join) targeting two tables in relation.
+        		
+                <programlisting language="java"><![CDATA[hqlBuf.append("]]><emphasis role="bold"><![CDATA[SELECT new List]]></emphasis><![CDATA[(movie.movieId as movieId, ")]]>;
+<![CDATA[hqlBuf.append("movie.title as title, movie.director as director, ");
+hqlBuf.append("category.categoryName as categoryName, ");
+hqlBuf.append("movie.country.countryName as countryName) ");
+hqlBuf.append("FROM Movie movie join movie.categories category ");]]></programlisting>
+			</para>
+
+        	<para>
+        		In the definition above, search result is in List type of List.
+        		When getting return value from List, following the defined order.
+        		
+                <programlisting language="java"><![CDATA[List movieList = query.list();]]>
+<emphasis role="bold">List</emphasis><![CDATA[ movie1 = (List) ]]><emphasis role="bold"><![CDATA[movieList.get(0);]]></emphasis>
+<emphasis role="bold"><![CDATA[movie1.get(1);]]></emphasis> //title
+<emphasis role="bold"><![CDATA[movie1.get(2);]]></emphasis> //director
+<emphasis role="bold">List</emphasis> movie2 = <emphasis role="bold"><![CDATA[(List) movieList.get(1);]]></emphasis>
+<emphasis role="bold"><![CDATA[movie2.get(1);]]></emphasis> //title
+<emphasis role="bold"><![CDATA[movie2.get(2);]]></emphasis> //director  </programlisting>
+			</para>
+
+        	<para>
+        		For total test code which gets the return value in specific object by using HQL described above,
+        		refer to HibernateHQLWithDefinedResult.java.        		
+        	</para>
+      	</section>
+    </section>
+
+    <section id="hibernate_hibernate_hql_xml">
+		<title>Defining and Using HQL in XML</title>
+
+      	<para>
+      		It is possible to define and execute HQL in special Hibernate Mapping XML file by entering name of the defined HQL statement.
+      		By doing so, when HQL is updated, you can simply update HQL defined in XML statement without updating source code.
+      		Therefore, it is not necessary to recompile source code and it is possible to manage HQL statement separately.
+            <programlisting language="java"><![CDATA[Query hqlQuery = ]]><emphasis
+role="bold"><![CDATA[session.getNamedQuery("findCountryList");]]></emphasis>
+<![CDATA[hqlQuery.setParameter("condition", "%%");
+List countryList = hqlQuery.list();   ]]></programlisting>
+		</para>
+
+      	<para>
+      		As shown above, if query name is returned to getNamedQuery() method of org.hibernate.Session,
+      		Hibernate searches and executes HQL statement relevant to this name from xml.
+      		The following is a part of Country.hbm.xml where HQL is defined.      	
+            <programlisting language="xml"><![CDATA[<query name=]]><emphasis role="bold">"findCountryList"</emphasis><![CDATA[>
+    FROM Country country
+    WHERE country.countryName like :condition 
+    ORDER BY country.countryName
+</query>]]></programlisting>
+		</para>
+
+      	<para>
+      		How to define HQL is same to the way mentioned above,
+      		and for test code mentioned above, refer to HibernateNamedHQL.java.      		
+      	</para>
+	</section>
+
+    <section id="hibernation_hibernate_hql_pagination">
+		<title>Pagination</title>
+
+      	<para>
+      		The purpose of pagination is to reduce memory load of DB or application by limiting the search list to show in one page.
+      		Now, let's take a look at how to get paginated search result when running HQL.
+      		Targeting specific table (MOVIE table in the example), search task is run using HQL.
+      		In this case, pagination is possible by defining the Row Number(FirstResult) to start search with and the number of search list(MaxResult).      	
+            <programlisting language="java"><![CDATA[StringBuilder hqlBuf = new StringBuilder();
+hqlBuf.append("FROM Movie movie ");
+Query hqlQuery = session.createQuery(hqlBuf.toString());]]>
+// Number of the item to search first
+<emphasis role="bold"><![CDATA[hqlQuery.setFirstResult(1);]]></emphasis>
+// The total number of search item 
+<emphasis role="bold"><![CDATA[hqlQuery.setMaxResults(2);]]></emphasis>
+<![CDATA[List movieList = hqlQuery.list(); ]]></programlisting></para>
+
+		<para>
+			If defined as above, HQL creates SQL suitable for each DB according to hibernate.dialect property defined in 
+			Hibernate Configuration file(hibernate.cfg.xml). By doing so, the only data to search, 
+			namely only the number of data which belongs to the relevant page,
+			is read instead of returning the number of data which belongs to the relevant page as return value 
+			after reading all data during pagination.
+			The following is a query statement executed with pagination when hibernate.
+			dialect was defined as HSQL DB.			
+            <programlisting>select <emphasis role="bold">limit 1 2</emphasis><![CDATA[ movie0_.MOVIE_ID as MOVIE1_3_, movie0_.COUNTRY_CODE as COUNTRY2_3_, 
+movie0_.TITLE as TITLE3_, movie0_.DIRECTOR as DIRECTOR3_, 
+movie0_.RELEASE_DATE as RELEASE5_3_ from PUBLIC.MOVIE movie0_]]></programlisting>
+		</para>
+
+      	<para>
+      		As defined above, as the number of item to search first was defined as 1 and the total number of search items as 2,
+      		Hibernate executed and paginated SQL where 'limit 1 2' was added according to the HSQL DB feature.
+      		In addition, as shown in the code below, it is possible to get ScrollableResults which can move to back and forth within ResultSet
+      		and directly paginate. (However, it is possible only when the JDBC driver supports scrollable ResultSet.)
+      		
+            <programlisting language="java"><![CDATA[Query query = session.createQuery(“from Users as user”);]]>
+<emphasis role="bold"><![CDATA[ScrollableResults userList = query.scroll();]]></emphasis></programlisting>
+		</para>
+
+      	<para>
+      		The org.hibernate.Query class used above provides three data search methods.      		
+      	</para>
+
+      	<itemizedlist>
+        	<listitem>
+          		<para>
+          			<emphasis role="bold">list()</emphasis> : Loads all data from DB table at once.
+          		</para>
+        	</listitem>
+
+        	<listitem>
+          		<para>
+          			<emphasis role="bold">iterate()</emphasis> : After loading identifier value, it loads data when the data is actually needed.
+          			This is for using cache. The next() method of Iterator object which iterator() method transferred
+          			checks whether the object with the same identifier value exists in cache, and then returns the object if it exists,
+          			and returns Proxy object if not.          		 
+          		</para>
+        	</listitem>
+
+        	<listitem>
+          		<para><emphasis role="bold">scroll()</emphasis> : Loads data by using Cursor.</para>
+        	</listitem>
+		</itemizedlist>
+
+		<para>
+			For code about how to paginate by using HQL as above, refer to HibernateHQLPaging.java file.			
+		</para>
+	</section>
+
+    <section id="hibernation_hibernate_hql_cud">
+		<title>CUD using HQL</title>
+
+      	<para>
+      		When performing CUD(Create, Update, Delete) using Hibernate, Hibernate basically uses basic API provided in Hibernate.
+      		((See <link linkend="hibernate_hibernate_basiccrud">Hibernate Basic CRUD</link>).
+      		But, in rare cases, basic CUD must be performed by HQL (ex> update for specific column).
+      		Let's take a look at basic CUD using HQL for such cases.      		
+      	</para>
+
+		<section id="hibernate_hibernate_hql_cud_insert">
+        	<title>Insert</title>
+
+        	<para>
+        		The following is an example of Insert statement using HQL.        		
+                <programlisting language="java"><![CDATA[StringBuilder hql = new StringBuilder();
+hql.append("]]><emphasis role="bold">INSERT INTO</emphasis><![CDATA[ Country (countryCode,countryId,countryName) ");
+hql.append("]]><emphasis role="bold">SELECT</emphasis><![CDATA[ CONCAT(countryCode,'UPD'), CONCAT(countryId,'UPD'), countryName ");
+hql.append("FROM Country country ");
+hql.append("WHERE countryCode = :countryCode");
+Query query = session.createQuery(hql.toString());
+query.setParameter("countryCode", "COUNTRY-0001");
+
+query.executeUpdate();
+closeSession();]]></programlisting>
+			</para>
+
+        	<para>
+        		If defining as above, it is possible to insert new Country information by using HQL.
+        		However, INSERT statement in INSERT INTO ... VALUES format is not supported in Hibernate,
+        		and only INSERT INTO ... SELECT format INSERT statement is supported.        		
+        	</para>
+		</section>
+
+		<section id="hibernate_hibernate_hql_cud_update">
+        	<title>Update</title>
+
+        	<para>
+        		The following is an example of Update statement using HQL.        		
+                <programlisting language="java"><![CDATA[newSession();
+StringBuilder hql = new StringBuilder();
+hql.append("UPDATE Country country ");
+hql.append("SET country.countryName = :countryName ");
+hql.append("WHERE country.countryCode = :countryCode and country.countryId = :countryId ");
+
+Query query = session.createQuery(hql.toString());
+query.setParameter("countryName", "Republic of Korea");
+query.setParameter("countryCode", "COUNTRY-0001");
+query.setParameter("countryId", "KR");
+
+query.executeUpdate();
+closeSession(); ]]></programlisting>
+			</para>
+
+        	<para>
+        		The example above updated Country information by using HQL
+        		and sets parameter through setParameter() method of Query.        	
+        	</para>
+		</section>
+
+		<section id="hibernate_hibernate_hql_cud_delete">
+			<title>Delete</title>
+
+        	<para>
+        		The following is an example of Delete statement using HQL.        
+                <programlisting language="java"><![CDATA[newSession();
+StringBuilder hql = new StringBuilder();
+hql.append("DELETE Country country ");
+hql.append("WHERE country.countryCode = :countryCode ");
+
+Query query = session.createQuery(hql.toString());
+query.setParameter("countryCode", "COUNTRY-0001");
+
+query.executeUpdate();
+closeSession();  ]]></programlisting></para>
+
+        	<para>
+        		In addition, for CUD code using above-mentioned HQL, see HibernateCUDHQL.java.        	
+        	</para>
+      	</section>
+	</section>
+</chapter>

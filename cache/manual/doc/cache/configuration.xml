@@ -1,0 +1,161 @@
+	<chapter id="cache_configuration">
+		<title>Configuration</title>
+		<para>
+			CacheServiceImpl은 OSCache의 속성을 그대로 따라, Caching된 객체의 상태를 보호하기 위해 ThreadSafe한 Cache를 제공한다. 
+			CacheServiceImpl에서 OSCache가 제공하는 Cache를 사용하기 위해서는 다음과 같은 설정을 필요로 한다.
+		</para>
+		<informaltable>
+			<tgroup cols="4">
+				<colspec colnum="1" colname="col1" colwidth="2*" />
+				<colspec colnum="2" colname="col2" colwidth="6*" />
+				<colspec colnum="3" colname="col3" colwidth="1*" />
+				<colspec colnum="4" colname="col4" colwidth="1*" />
+				<thead>
+					<row>
+						<entry align="center">Property Name</entry>
+						<entry align="center">Description</entry>
+						<entry align="center">Required</entry>
+						<entry align="center">Default Value</entry>
+					</row>
+				</thead>
+				<tbody>
+					<row>
+						<entry>cache</entry>
+						<entry>사용할 Cache의 속성을 정의한 Cache의 id를 참조한다.</entry>
+						<entry align="center">Y</entry>
+						<entry align="center">N/A</entry>
+					</row>
+				</tbody>
+			</tgroup>
+		</informaltable>
+		<para>다음은 OSCache가 가지는 설정 정보에 대한 설명이다.</para>
+		<informaltable>
+			<tgroup cols="4">
+				<colspec colnum="1" colname="col1" colwidth="2*" />
+				<colspec colnum="2" colname="col2" colwidth="6*" />
+				<colspec colnum="3" colname="col3" colwidth="1*" />
+				<colspec colnum="4" colname="col4" colwidth="1*" />
+				<thead>
+					<row>
+						<entry align="center">Property Name</entry>
+						<entry align="center">Description</entry>
+						<entry align="center">Required</entry>
+						<entry align="center">Default Value</entry>
+					</row>
+				</thead>
+				<tbody>
+					<row>
+						<entry>cache.memory</entry>
+						<entry>메모리 Cache를 사용할 것인지 정의한다. false로 설정되면 메모리로 캐싱될 수 없다.</entry>
+						<entry align="center">N</entry>
+						<entry align="center">true</entry>
+					</row>
+					<row>
+						<entry>cache.capacity</entry>
+						<entry>
+							Cache에 저장할 수 있는 object의 최대 갯수를 지정한다. 음수로 설정되면 이 기능을 사용하지 않는다. 
+							캐싱 가능한 object의 갯수를 제한하지 않는다.
+						</entry>
+						<entry align="center">N</entry>
+						<entry align="center">-1</entry>
+					</row>
+					<row>
+						<entry>cache.algorithm</entry>
+						<entry>
+							caching algorithm의 classname을 지정한다. 이 클래스는 com.opensymphony.oscache.base.algorithm.AbstractConcurrentReadCache를
+							extend 해야한다. cache capacity가 양수로 설정되면 default algorithm으로 LRUCache가 사용되고, 음수로 설정되면 
+							com.opensymphony.oscache.base.algorithm.UnlimitedCache가 사용된다.
+						</entry>
+						<entry align="center">N</entry>
+						<entry align="center">N/A</entry>
+					</row>
+					<row>
+						<entry>cache.unlimited.disk</entry>
+						<entry>
+							Persistence cache의 size를 제한할 것인지 또는 in-memory cache와 동일한 사이즈로 제한할 것인지를 나타낸다. 이 값이 true 로 설정되면 
+							persistent cache는 제한없이 사용될 수 있다.
+						</entry>
+						<entry align="center">N</entry>
+						<entry align="center">false</entry>
+					</row>
+					<row>
+						<entry>cache.blocking</entry>
+						<entry>새로운 content를 캐싱하거나 이미 캐싱된 content를 검색할 때 block waiting 해야 하는지를 정의한다.</entry>
+						<entry align="center">N</entry>
+						<entry align="center">false</entry>
+					</row>
+					<row>
+						<entry>cache.persistence.class</entry>
+						<entry>
+							Persistence cache를 사용하고자 할 때 Persistence cache를 구현한 classname을 정의한다. 
+							이 클래스는 PersistenceListener를 extend 해야한다.
+						</entry>
+						<entry align="center">N</entry>
+						<entry align="center">N/A</entry>
+					</row>
+					<row>
+						<entry>cache.persistence.overflow.only</entry>
+						<entry>메모리 Cache가 overflow mode일때 Persistence Cache를 사용할지 지정한다.</entry>
+						<entry align="center">N</entry>
+						<entry align="center">false</entry>
+					</row>
+					<row>
+						<entry>cache.event.listeners</entry>
+						<entry>Cache에 적용한 event handler를 지정한다. event handler가 여러개 일 경우 각각의 classname을 콤마로 구분하여 정의한다.</entry>
+						<entry align="center">N</entry>
+						<entry align="center">N/A</entry>
+					</row>
+					<row>
+						<entry>cache.cluster.properties</entry>
+						<entry>
+							JavaGroupsBroadcastingListener를 사용할때 이 property를 정의한다. JavaGroups channel properties를 사용한다. JavaGroups의 실행을 제어할 수
+							있다.
+						</entry>
+						<entry align="center">N</entry>
+						<entry></entry>
+					</row>
+					<row>
+						<entry>cache.cluster.multicast.ip</entry>
+						<entry>
+							JavaGroupsBroadcastingListener를 사용할 때 이 property를 정의한다. broadcasting을 사용하기 위해 JavaGroups는 multicast IP를 사용해야 한다.
+						</entry>
+						<entry align="center">N</entry>
+						<entry align="center">231.12.21.132</entry>
+					</row>
+					<row>
+						<entry>cache.cluster.jms.node.name</entry>
+						<entry>JMS10BroadcastingListener 또는 JMSBroadcastingListener를 사용할 때 이 property를 정의한다. JMS connection factory를 사용한다.</entry>
+						<entry align="center">Y</entry>
+						<entry align="center">N/A</entry>
+					</row>
+					<row>
+						<entry>cache.cluster.jms.topic .name</entry>
+						<entry>JMS10BroadcastingListener 또는 JMSBroadcastingListener를 사용할때 이 property를 정의한다. 이것은 JMS topic name 이다.</entry>
+						<entry align="center">Y</entry>
+						<entry align="center">N/A</entry>
+					</row>
+					<row>
+						<entry>cache.cluster.jms.topic .factory</entry>
+						<entry>
+							JMS10BroadcastingListener 또는 JMSBroadcastingListener를 사용할때 이 property를 정의한다. 이 노드의 이름은 cluster에 존재하고, 
+							각각의 node마다 unique한 값을 갖는다.
+						</entry>
+						<entry align="center">Y</entry>
+						<entry align="center">N/A</entry>
+					</row>
+					<row>
+						<entry>cache.path</entry>
+						<entry>DiskPersistenceListener를 사용할 때 이 property를 정의한다. 데이터를 캐싱하기 위한 path를 지정한다.</entry>
+						<entry align="center">Y</entry>
+						<entry align="center">N/A</entry>
+					</row>
+					<row>
+						<entry>cache.persistence.disk.hash.algorithm</entry>
+						<entry>disk의 filname으로 간단한 cache key를 생성하기 위한 hash algorithm이다.</entry>
+						<entry align="center">N</entry>
+						<entry align="center">MD5</entry>
+					</row>
+				</tbody>
+			</tgroup>
+		</informaltable>
+	</chapter>

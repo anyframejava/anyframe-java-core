@@ -1,0 +1,15 @@
+<chapter id="simpleweb_map_controller">
+	<title>SimpleMapServiceController</title>
+	<para>SimpleMapServiceController is a Controller class which extends AbstractServiceController that supports data binding when using Transfer Object as map type object. 
+	It binds values transferred into HttpServletRequest parameter as argument type object (in this case, map object) of method information. 
+	When using map type object as transfer object, when you want to change data binding method or add specific work, or when you want to change the function of AbstractServiceController, extend SimpleMapServiceController class. 
+	The following is a part of simpleweb-map-servlet.xml Spring configuration file added by Simpleweb Plugin installation. 
+
+</para>
+		<programlisting language="xml"><![CDATA[<!-- simple direct service controller -->
+<bean name="/simplemap.do" class="]]><emphasis role="bold"><![CDATA[org.anyframe.simpleweb.controller.SimpleMapServiceController]]></emphasis><![CDATA[">
+	<property name="beanMethodsRepo" ref="beanMethodsRepo" />
+</bean>]]></programlisting>
+		<para>When defined as above, “/simplemap.do” request is processed by SimpleMapServiceController.
+		</para> 
+</chapter>

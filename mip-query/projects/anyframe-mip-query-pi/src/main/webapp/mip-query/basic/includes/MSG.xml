@@ -1,0 +1,116 @@
+<?xml version="1.0" encoding="utf-8"?>
+<Window>
+	<Form DomainID="Message" Height="120" Id="frmMSG" Left="8" OnLoadCompleted="frmMSG_OnLoadCompleted" PidAttrib="7" Title="Message" Top="8" Ver="1.0" Width="400" WorkArea="true">
+		<Datasets>
+			<Dataset DataSetType="Dataset" Id="dsButton">
+				<Contents>
+					<colinfo id="BTN_SHORTID" size="256" summ="default" type="STRING"/>
+					<colinfo id="BTN_ID" size="256" summ="default" type="STRING"/>
+					<record>
+						<BTN_ID>btnYes</BTN_ID>
+						<BTN_SHORTID>Y</BTN_SHORTID>
+					</record>
+					<record>
+						<BTN_ID>btnNo</BTN_ID>
+						<BTN_SHORTID>N</BTN_SHORTID>
+					</record>
+					<record>
+						<BTN_ID>btnOpen</BTN_ID>
+						<BTN_SHORTID>O</BTN_SHORTID>
+					</record>
+					<record>
+						<BTN_ID>btnSave</BTN_ID>
+						<BTN_SHORTID>S</BTN_SHORTID>
+					</record>
+					<record>
+						<BTN_ID>btnCancel</BTN_ID>
+						<BTN_SHORTID>C</BTN_SHORTID>
+					</record>
+				</Contents>
+			</Dataset>
+		</Datasets>
+		<Image Height="120" Id="imgBack" ImageID="back_msg0" OnClick="imgBack_OnClick" TabOrder="9" Width="400"></Image>
+		<TextArea BKColor="white" Border="None" Color="user3" Font="돋움체,10,Bold" Height="42" Id="txaMsg" Left="112" Readonly="TRUE" Style="stlTxa" TabOrder="2" Top="30" VScroll="TRUE" Width="270"></TextArea>
+		<Static Color="#252525" Font="돋움체,11,Bold" Height="20" Id="stMsgTitle" Left="44" Style="stlLbl" TabOrder="10" Top="10" Visible="FALSE" Width="200"></Static>
+		<Image Align="Left" Font="돋움체,9,Bold" Height="52" Id="imgType" ImageID="icon_info" Left="29" LeftMargin="20" OnClick="Div0_Image0_OnClick" Style="stlImg" TabOrder="1" TabStop="FALSE" Top="18" Transparent="TRUE" Width="65"></Image>
+		<Button ButtonStyle="TRUE" Cursor="HAND" DomainID="button.confirm" Height="19" Id="btnConfirm" ImageID="btn_b3" Left="8" OnClick="fnBtn_OnClick" OnKeyDown="fnBtn_OnKeyDown" Style="stlBtn" TabOrder="3" Text="확인" Top="88" Transparent="TRUE" Visible="FALSE" Width="65"></Button>
+		<Button ButtonStyle="TRUE" Cursor="HAND" DomainID="button.cancel" Height="19" Id="btnCancel" ImageID="btn_b3" Left="88" OnClick="fnBtn_OnClick" Style="stlBtn" TabOrder="6" Text="취소" Top="88" Transparent="TRUE" UserData="C" Visible="FALSE" Width="79"></Button>
+		<Button ButtonStyle="TRUE" Cursor="HAND" DomainID="button.yes" Height="19" Id="btnYes" ImageID="btn_b3" Left="136" OnClick="fnBtn_OnClick" Style="stlBtn" TabOrder="4" Text="예" Top="88" Transparent="TRUE" UserData="Y" Visible="FALSE" Width="79"></Button>
+		<Button ButtonStyle="TRUE" Cursor="HAND" DomainID="button.no" Height="19" Id="btnNo" ImageID="btn_b3" Left="184" OnClick="fnBtn_OnClick" Style="stlBtn" TabOrder="5" Text="아니오" Top="88" Transparent="TRUE" UserData="N" Visible="FALSE" Width="79"></Button>
+		<Button ButtonStyle="TRUE" Cursor="HAND" DomainID="button.open" Height="19" Id="btnOpen" ImageID="btn_b3" Left="248" OnClick="fnBtn_OnClick" Style="stlBtn" TabOrder="7" Text="열기" Top="88" Transparent="TRUE" UserData="O" Visible="FALSE" Width="79"></Button>
+		<Button ButtonStyle="TRUE" Cursor="HAND" DomainID="button.save" Height="19" Id="btnSave" ImageID="btn_b3" Left="304" OnClick="fnBtn_OnClick" Style="stlBtn" TabOrder="8" Text="저장" Top="88" Transparent="TRUE" UserData="S" Visible="FALSE" Width="79"></Button>
+	</Form>
+	<Script><![CDATA[// form OnLoadCompleted event
+// 화면 로딩시 경우에 따라 버튼 및 이미지 변경
+function frmMSG_OnLoadCompleted(obj) {
+
+	var nMiddle = frmMSG.width / 2;
+	
+	txaMsg.text = paramMsg;
+	
+	if(paramConfirmYn == "N") {
+		//icon 변경
+		//paramType : INFO (default), WARN, ERR
+		if(paramType == "WARN") {
+			stMsgTitle.text = "Warning";
+			imgType.imageId = "icon_warning";
+			
+		} else if(paramType == "ERR") {
+			stMsgTitle.text = "Error";
+			imgType.imageId = "icon_error";
+			
+		} else if(paramType == "INFO") {
+			stMsgTitle.text = "Information";
+			imgType.imageId = "icon_info";
+		}
+		
+		frmMSG.icon = imgType.imageId;
+	
+		btnConfirm.left = nMiddle - (btnConfirm.width / 2);
+		btnConfirm.visible = true;
+		btnConfirm.setFocus();
+		
+	} else {
+		//confirm 처리
+		//paramType : 'YN'-YesNo, 'YNC'-YesNoCancel, 'OSC'-OpenSaveCancel
+		stMsgTitle.text = "Information";
+		imgType.imageId = "icon_confirm";
+		
+		var nBtnLength = length(paramType);
+		var nGap = 1;
+		var nBtnWidth = 79;
+		var nLeftBase = nMiddle - (nBtnLength / 2) * nBtnWidth - (nBtnLength / 2) * nGap;
+		var objBtn;
+		
+		for(var i = 0 ; i < nBtnLength ; i++) {
+		
+			objBtn = object(dsButton.lookUp("BTN_SHORTID", mid(paramType, i, 1), "BTN_ID"));
+			
+			objBtn.left = nLeftBase + (i * nBtnWidth) + (i * nGap);
+			objBtn.visible = true;
+			
+			if(i == 0) {
+				objBtn.setFocus();
+			}			
+		}
+	}
+}
+
+// 버튼 공통 호출 함수 
+function fnBtn_OnClick(obj) {
+	close(obj.userData);
+}
+
+// 엔터키 입력
+function fnBtn_OnKeyDown(obj, nChar, bShift, bCtrl, bAlt, nLLParam, nHLParam) {
+	if(bShift == 0 && bAlt == 0 && nChar == 13) {
+		fnBtn_OnClick(obj);
+	}
+}
+
+function imgBack_OnClick(obj,nX,nY)
+{
+	
+}
+]]></Script>
+</Window>

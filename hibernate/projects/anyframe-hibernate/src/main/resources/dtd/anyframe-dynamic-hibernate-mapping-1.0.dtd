@@ -1,0 +1,63 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+
+<!--
+	Dynamic Hibernate Mapping XML DTD for Anyframe Java Framework
+	v 4.0.0
+	
+	Created by Soyon Lim on 2010-01-11.
+	Copyright (c) 2010 Samsung SDS Co., Ltd. All rights reserved.
+	This document is governed by Anyframe engineers, Samsung SDS.
+-->
+
+<!--
+	TYPICAL INVOCATION: 
+	# <?xml version="1.0" encoding="UTF-8"?>
+	# <!DOCTYPE dynamic-hibernate PUBLIC
+	#    "-//ANYFRAME//DTD DYNAMIC-HIBERNATE//EN"
+	#    "http://www.anyframejava.org/dtd/anyframe-dynamic-hibernate-mapping-4.0.dtd">
+	
+	PURPOSE:
+		This Dynamic Hibernate XML DTD is for Anyframe Java 4 persistence services
+		such as DynamicHibernateService.
+	
+	DEPENDENCIES:
+		None.
+-->
+
+<!--
+	ENTITIES which are used in this DTD
+	
+	CHANGE HISTORY:
+-->
+<!--
+	ELEMENT TYPE: Root
+	ELEMENT NAME: "dynamic-hibernate"
+	
+	CHANGE HISTORY:
+-->
+<!ELEMENT dynamic-hibernate (query|sql-query)*>
+
+	<!-- "dynamic-hibernate > query" element -->
+	<!ELEMENT query (#PCDATA)>
+		<!ATTLIST query name ID #REQUIRED>
+	
+	<!-- "dynamic-hibernate > sql-query" element -->
+	<!ELEMENT sql-query (#PCDATA|return|return-join|return-scalar)*>
+		
+		<!ATTLIST sql-query name ID #REQUIRED>
+		
+		<!-- "dynamic-hibernate > sql-query - return" element -->
+		<!ELEMENT return EMPTY>
+			<!ATTLIST return alias CDATA #IMPLIED>
+			<!ATTLIST return entity-name CDATA #IMPLIED>
+			<!ATTLIST return class CDATA #IMPLIED>
+		
+		<!-- "dynamic-hibernate > sql-query - return-join" element -->
+		<!ELEMENT return-join EMPTY> 
+			<!ATTLIST return-join alias CDATA #REQUIRED>
+			<!ATTLIST return-join property CDATA #REQUIRED>
+			
+		<!-- "dynamic-hibernate > sql-query - return-scalar" element -->
+		<!ELEMENT return-scalar EMPTY> 
+			<!ATTLIST return-scalar column CDATA #REQUIRED>
+			<!ATTLIST return-scalar type CDATA #IMPLIED>		

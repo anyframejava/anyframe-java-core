@@ -1,0 +1,399 @@
+<chapter id="mip_query_mipuisample_validation">
+	<title>Validation</title>
+	<para>
+		Let us look at how to use MiPlatform to process validation on user input information when developing view. 
+	</para>
+	
+	<section id="mip_query_mipuisample_validation_uicomponent">
+		<title>Using UI Component</title>
+		<para>
+			Basic validation can be processed by using the properties of UI component when developing view with MiPlatform PID. 
+			Refer to the MiPlatform PID Help manual for more information.
+		</para>
+		
+		<section id="mip_query_mipuisample_validation_uicomponent_size">
+			<title>Size Validation</title>
+			<para>
+				Selects the size of input information.
+			</para>
+			
+			<section id ="mip_query_mipuisample_validation_uicomponent_size_grid">
+				<title>Grid</title>
+				<para>
+					Uses Body Cell Property
+				</para>
+				<informaltable>
+					<tgroup cols="2">
+						<colspec colnum="1" colname="col1" colwidth="3*" />
+						<colspec colnum="2" colname="col2" colwidth="7*" />
+						<thead>
+							<row>
+								<entry align="center">Property</entry>
+								<entry align="center">Description</entry>
+							</row>
+						</thead>
+						
+						<tbody>
+							<row>
+								<entry align="left">Limit</entry>
+								<entry align="left">Limits maximum input length</entry>
+							</row>
+							<row>
+								<entry align="left">CheckLength</entry>
+								<entry align="left">
+									<para>Char: Length limit is based on characters. One unit per character.</para>
+									Byte: Length limit is based on bytes. Asian characters and some symbols are calculated as two units per character.
+								</entry>
+							</row>
+						</tbody>
+					</tgroup>
+				</informaltable>
+			</section>
+			
+			<section id="mip_query_mipuisample_validation_uicomponent_size_edit">
+				<title>EditBox</title>
+				<informaltable>
+					<tgroup cols="2">
+						<colspec column="1" colname="col1" colwidth="3*"/>
+						<colspec column="2" colname="col2" colwidth="7*"/>
+						<thead>
+							<row>
+								<entry align="center">Property</entry>
+								<entry align="center">Description</entry>
+							</row>
+						</thead>
+						<tbody>
+							<row>
+								<entry align="left">MaxLength</entry>
+								<entry align="left">Limits the maximum input length.</entry>
+							</row>
+							<row>
+								<entry align="left">CheckLength</entry>
+								<entry align="left">
+									<para>Char: Length limit is based on characters. One unit per character.</para>
+									Byte: Length limit is based on bytes. Asian characters and some symbols are calculated as two units per character.
+								</entry>
+							</row>
+						</tbody>
+					</tgroup>
+				</informaltable>
+			</section>
+		</section>	
+		
+		<section id="mip_query_mipuisample_validation_uicomponent_type">
+			<title>Type Validation</title>
+			<para>
+				Selects type and format of input information.
+			</para>
+			
+			<section id="mip_query_mipuisample_validation_uicomponent_type_grid">
+				<title>Grid</title>
+				<informaltable>
+					<tgroup cols="2">
+						<colspec column="1" colname="col1" colwidth="3*"/>
+						<colspec column="2" colname="col2" colwidth="7*"/>
+						<thead>
+							<row>
+								<entry align="center">Property</entry>
+								<entry align="center">Description</entry>
+							</row>
+						</thead>
+						<tbody>
+							<row>
+								<entry align="left">Edit</entry>
+								<entry align="left">
+									<itemizedlist>
+										<listitem>
+											<para>Selects input mode type of relevant cell</para>
+										</listitem>
+										<listitem>
+											<para>upper: Inputs only upper case letters</para>
+										</listitem>
+										<listitem>
+											<para>lower: Inputs only lower case letters</para>
+										</listitem>
+										<listitem>
+											<para>integer: Inputs only integrals</para>
+										</listitem>
+										<listitem>
+											<para>mask: Inputs only values that fit the mask defined in mask property</para>
+										</listitem>
+									</itemizedlist>		
+								</entry>
+							</row>
+							<row>
+								<entry align="left">Mask</entry>
+								<entry align="left">Mask forms to be applied</entry>
+							</row>
+						</tbody>
+					</tgroup>		
+				</informaltable>
+			</section>
+			
+			<section id="mip_query_mipuisample_validation_uicomponent_type_mask">
+				<title>MaskEdit</title>
+				<para>
+					Develops input form of zip code, resident registration number, etc. using MaskEdit component.
+				</para>
+			</section>
+		</section>
+	</section>
+	
+	<section id ="mip_query_mipuisample_validation_script">
+		<title>Using Script</title>
+		<para>
+			This sample provides script function that enables the user to process input information validation on view all at once.
+		</para>
+		
+		<section id ="mip_query_mipuisample_validation_script_check">
+			<title>Check Validity</title>
+			<para>
+				gfnValidate() processes the validation of all components that are under components defined as input parameters. 
+				Checking is based on the check list inputted into <emphasis role="bold">UserData</emphasis> of each UI component. 
+				Grid uses the check list inputted into the <emphasis role="bold">MapValue</emphasis> property of each column from Grid's BindDataset, rather than UserData properties.
+			</para>
+			
+			<section id ="mip_query_mipuisample_validation_script_check_syntax">
+				<title>Syntax</title>
+				<para>
+					<emphasis role="bold">gfnValidate(objTarget)</emphasis>
+				</para>
+				<para>
+					e.g.) if(gfnValidate(this)) {…}
+				</para>
+			</section>
+			
+			<section id ="mip_query_mipuisample_validation_script_check_parameters">
+				<title>Parameters</title>
+				<informaltable>
+					<tgroup cols="2">
+						<colspec column="1" colname="col1" colwidth="3*"/>
+						<colspec column="2" colname="col2" colwidth="7*"/>
+						<thead>
+							<row>
+								<entry align="center">Property</entry>
+								<entry align="center">Description</entry>
+							</row>
+						</thead>
+						<tbody>
+							<row>
+								<entry align="left">objTarget</entry>
+								<entry align="left">Base component for executing validation (e.g., Form, Div).</entry>
+							</row>
+						</tbody>
+					</tgroup>
+				</informaltable>
+			</section>
+		</section>
+			
+		
+		<section id ="mip_query_mipuisample_validation_script_checklist">
+			<title>Check List for Validation</title>
+			<para>
+				Each item of the check list for validation processing is separated with comma (,).
+				Among title, titleObj, and titleId to be used when showing error message, one should be stated at the front.
+			</para>
+			
+			<section id ="mip_query_mipuisample_validation_script_checklist_general">
+				<title>General Components</title>
+				<para>
+					For general UI components other that Grid, 
+					a check list which consists of the following items should be defined in UserData properties.
+				</para>
+				<informaltable>
+					<tgroup cols="2">
+						<colspec column="1" colname="col1" colwidth="3*"/>
+						<colspec column="2" colname="col2" colwidth="7*"/>
+						<thead>
+							<row>
+								<entry align="center">Check Item</entry>
+								<entry align="center">Description</entry>
+							</row>
+						</thead>
+						<tbody>
+							<row>
+								<entry align="left">title=Item Name</entry>
+								<entry align="left">Item name used when error message is shown</entry>
+							</row>
+							<row>
+								<entry align="left">titleObj=Specific ObjID</entry>
+								<entry align="left">Object ID that shows the item name when error message is shown</entry>
+							</row>
+							<row>
+								<entry align="left">titleId=DomainID</entry>
+								<entry align="left">Domain ID that shows the item name when error message is shown</entry>
+							</row>
+							<row>
+								<entry align="left">required</entry>
+								<entry align="left">For required items, error message is shown when value does not exist.</entry>
+							</row>
+							<row>
+								<entry align="left">minLength=value</entry>
+								<entry align="left">
+									<para>
+									Error message is shown when the the item value is shorter than the minimum length. 
+									The base unit is not byte, so define as length of input characters.
+									</para>
+									<para>
+									MaxLength property value definition can be done instead of maximum length check. 
+									If MaxLength is set, input cannot exceed the set length.
+									</para>
+								</entry>
+							</row>
+							<row>
+								<entry align="left">fromNum=value</entry>
+								<entry align="left">Error message is shown when item value is smaller than minimum value.</entry>
+							</row>
+							<row>
+								<entry align="left">toNum=value</entry>
+								<entry align="left">Error message is shown when item value is bigger than maximum value.</entry>
+							</row>
+							<row>
+								<entry align="left">format=mail</entry>
+								<entry align="left">Error message is shown when item value does not fit email address form.</entry>
+							</row>
+							<row>
+								<entry align="left">format=url</entry>
+								<entry align="left">Error message is shown when item value does not fit URL form.</entry>
+							</row>
+							<row>
+								<entry align="left">format=phone</entry>
+								<entry align="left">Error message is shown when item value does not fit telephone number form.</entry>
+							</row>
+							<row>
+								<entry align="left">format=resno</entry>
+								<entry align="left">Error message is shown when item value does not fit resident registration number form.</entry>
+							</row>
+							<row>
+								<entry align="left">format=date</entry>
+								<entry align="left">Error message is shown when item value does not fit the date form (YYYYMMDD).</entry>
+							</row>
+							<row>
+								<entry align="left">format=time</entry>
+								<entry align="left">Error message is shown when item value does not fit time form.</entry>
+							</row>
+							<row>
+								<entry align="left">fromDate=Specific ObjID</entry>
+								<entry align="left">Error message when the item date selected as start date is later than finish date.</entry>
+							</row>
+						</tbody>
+					</tgroup>
+				</informaltable>
+				<para>
+					Example of stating check list in UserData properties on MiPlatform PID.
+				</para>
+				<mediaobject>
+          			<imageobject>
+           				<imagedata align="center"
+                       		fileref="../image/mip-query/mipuisample/editbox.png" />
+          			</imageobject>
+        		</mediaobject>
+				
+			</section>
+				
+			<section id ="mip_query_mipuisample_validation_script_checklist_grid">
+				<title>Grid Component</title>
+				<para>
+					Other than general UI components, 
+					to process validation of Grid component input information,
+					check list should be stated in MapValue properties of each column in BindDataset.
+				</para>
+			
+				<section id ="mip_query_mipuisample_validation_script_checklist_grid_notice">
+					<title>Notice</title>
+					<itemizedlist>
+						<listitem>
+							<para>
+								Set the <emphasis role="bold">
+								UseClientLayout property to true</emphasis>. 
+								UseClientLayout is included in BindDataset of Grid subject to validation.
+							</para>
+						</listitem>
+						<listitem>
+							<para>
+								Never use clear() for BindDataset of Grid subject to validation. 
+								When necessary, use <emphasis role="bold">clearData()</emphasis>.
+							</para>
+						</listitem>
+					</itemizedlist>
+					<informaltable>
+						<tgroup cols="2">
+							<colspec column="1" colname="col1" colwidth="3*"/>
+							<colspec column="2" colname="col2" colwidth="7*"/>
+							<thead>
+								<row>
+									<entry align="center">Check Item</entry>
+									<entry align="center">Description</entry>
+								</row>
+							</thead>
+							<tbody>
+								<row>
+									<entry align="left">required</entry>
+									<entry align="left">Check required items of column</entry>
+								</row>
+								<row>
+									<entry align="left">minLength=value</entry>
+									<entry align="left">
+										<para>
+										Check the minimum length of column. 
+										The base unit is not byte so define as length of input characters.
+										</para>
+										<para>
+										Set limit property value which is Body Cell Property of Grid, instead of checking maximum length. 
+										If limit value is set, input cannot exceed limit.
+										</para>
+									</entry>
+								</row>
+								<row>
+									<entry align="left">fromNum=value</entry>
+									<entry align="left">Check the minimum value of column</entry>
+								</row>
+								<row>
+									<entry align="left">toNum=value</entry>
+									<entry align="left">Check the maximum value of column</entry>
+								</row>
+								<row>
+									<entry align="left">format=mail</entry>
+									<entry align="left">Check email form of column</entry>
+								</row>
+								<row>
+									<entry align="left">format=url</entry>
+									<entry align="left">Check URL form of column</entry>
+								</row>
+								<row>
+									<entry align="left">format=phone</entry>
+									<entry align="left">Check phone number form of column</entry>
+								</row>
+								<row>
+									<entry align="left">format=resno</entry>
+									<entry align="left">Check resident registration number of column</entry>
+								</row>
+								<row>
+									<entry align="left">format=date</entry>
+									<entry align="left">Check date (YYYYMMDD) form of column</entry>
+								</row>
+								<row>
+									<entry align="left">format=time</entry>
+									<entry align="left">Check time form of column</entry>
+								</row>
+								<row>
+									<entry align="left">fromDate=specific COLID</entry>
+									<entry align="left">Check the period of column</entry>
+								</row>
+							</tbody>
+						</tgroup>
+					</informaltable>
+					<para>
+						This is an example of defining check list in the column MapValue property on the BindDataset of Grid.
+					</para>
+					<mediaobject>
+          				<imageobject>
+           					<imagedata align="center"
+                       			fileref="../image/mip-query/mipuisample/check_grid.png" />
+          				</imageobject>
+        			</mediaobject>
+				</section>
+			</section>
+		</section>
+	</section>
+</chapter>

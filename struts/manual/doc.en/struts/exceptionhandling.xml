@@ -1,0 +1,219 @@
+<chapter id="struts_exceptionhandling">
+  	<title>Exception Handling</title>
+
+	<para>
+		[<![CDATA[ExceptionHandler that is executed when exception is returned from execute() method of Action class can be set. 
+  		In struts-config.xml, ExceptionHandler for individual action can be set (action level), 
+  		or ExceptionHandler for exception that occurs in all actions of application can be set using <global-exceptions> (global level). 
+  		When ExceptionHandler is defined in both, the one declared in action level has priority.]]>
+  	</para>
+
+	<section id="struts_exceptionhandling_global">
+    	<title>Global Level Exception Handling</title>
+
+    	<section id="struts_exceptionhandling_global_feature">
+      		<title>Characteristics of Global Level Exception Handling</title>
+
+			<itemizedlist>
+        		<listitem>
+          			<para>A way to define error or exception handling declaratively</para>
+        		</listitem>
+		        <listitem>
+        			<para>Defines global level exception handling that can be used in all actions</para>
+        		</listitem>
+		        <listitem>
+        			<para><![CDATA[Can have several subordinate <exception>]]></para>
+        		</listitem>
+      		</itemizedlist>
+
+			<para><![CDATA[The following are attributes of <exceptions>.]]></para>
+
+			<informaltable>
+		        <tgroup cols="2">
+		        <colspec colnum="1" colname="col1" colwidth="2*"/>
+				<colspec colnum="2" colname="col2" colwidth="8*"/>
+		          <thead>
+		            <row>
+		              <entry align="left">Name</entry>
+		              <entry align="left">Description</entry>
+		            </row>
+		          </thead>
+		          <tbody>
+		            <row>
+		              <entry>bundle</entry>
+		              <entry>
+			              Servlet context attribute name value of message resources bundle used by Exception Handler class. 
+			              Default value: org.apache.struts.Globals.MESSAGES_KEY value
+			          </entry>
+		            </row>
+		            <row>
+		              <entry>className</entry>
+		              <entry>
+		              	Object that contains configuration information of exceptions. 
+		              	Should be org.apache.struts.config.ExceptionConfig or a class that has inherited it. 
+		              	Default value: org.apache.struts.config.ExceptionConfig
+		              </entry>
+		            </row>
+		            <row>
+		              <entry>handler</entry>
+		              <entry>
+		              	When this exception occurs, the class that handles the exception. 
+		              	In other words, handler class is class that forwards appropriate error message ('key' attribute) along with 
+		              	appropriate page ('path' attribute) when an exception occurs. 
+		              	It should be org.apache.struts.action.ExceptionHandler or a class that inherits it. 
+		              	Default value: org.apache.struts.action.ExceptionHandler
+		              </entry>
+		            </row>
+		            <row>
+		              <entry>key</entry>
+		              <entry>
+		              	Key value of error message to be found from message resource bundle when this exception occurs. [required]
+		              </entry>
+		            </row>
+		            <row>
+		              <entry>path</entry>
+		              <entry>
+		              	Shows module-relative path of resource (*.do, *.jsp, etc.) to forward when this exception occurs. 
+		              </entry>
+		            </row>
+		            <row>
+		              <entry>scope</entry>
+		              <entry>
+		              	Shows the scope of context to access to ActionError object. Request or session. 
+		              	Default value: request
+		              </entry>
+		            </row>
+		            <row>
+		              <entry>type</entry>
+		              <entry>Shows the exception type to execute Exception Handling. [required]</entry>
+		            </row>
+		          </tbody>
+		        </tgroup>
+		    </informaltable>
+		</section>
+
+    	<section id="struts_exceptionhandling_global_sample">
+      		<title>Samples</title>
+
+      		<para>
+      			The following is an example of setting global-exceptions in struts-config.xml file.
+      			<programlisting language="xml"><![CDATA[<global-exceptions>
+    <exception key="global.exception.message" 
+        path="/basic/globalException.jsp" 
+        type="java.lang.Exception" 
+        handler="org.apache.struts.action.ExceptionHandler" />
+</global-exceptions>]]></programlisting>
+			</para>
+
+      		<para>
+      			When exception occurs in Action class execute() method, 
+	      		use exception message key value (global.exception.message) from ExceptionHandler 
+	      		to set Exception Message on Resource Bundle, and then forward as /basic/globalException.jsp.
+	      	</para>
+    	</section>
+	</section>
+
+	<section id="struts_exceptionhandling_action">
+    	<title>Action Level Exception Handling</title>
+
+    	<section id="struts_exceptionhandling_action_feature">
+      		<title>Characteristic of Action Level Exception Handling</title>
+
+      		<itemizedlist>
+        		<listitem>
+          			<para>Functions of individual action Exception Handling</para>
+        		</listitem>
+		        <listitem>
+        			<para>Apply Global Level Exception when Action Level Exception is not defined</para>
+        		</listitem>
+		        <listitem>
+         			 <para><![CDATA[Define as <exception> under <action>]]></para>
+        		</listitem>
+      		</itemizedlist>
+
+      		<para><![CDATA[The following are the attributes of <exception>.]]></para>
+
+		    <informaltable>
+		        <tgroup cols="2">
+		          <colspec colnum="1" colname="col1" colwidth="2*"/>
+				  <colspec colnum="2" colname="col2" colwidth="8*"/>
+		          <thead>
+		            <row>
+		              <entry align="center">Name</entry>
+		              <entry align="center">Description</entry>
+		            </row>
+		          </thead>
+		          <tbody>
+		            <row>
+		              <entry>bundle</entry>
+		              <entry>
+		              	Name value of servlet context attribute of message resources bundle used by Handler class of exception. 
+		              	Default value: org.apache.struts.Globals.MESSAGES_KEY value
+		              </entry>
+		            </row>
+		            <row>
+		              <entry>className</entry>
+		              <entry>
+		              	Exceptions are objects that will contain configuration information. 
+		              	Should be org.apache.struts.config.ExceptionConfig or class that inherits it. 
+		              	Default value: org.apache.struts.config.ExceptionConfig
+		              </entry>
+		            </row>
+		            <row>
+		              <entry>handler</entry>
+		              <entry>
+		              Class that handles the exception when exception occurs, 
+		              	In other words, handler class is a class that forwards appropriate error message 
+		              	('key' attribute) along with appropriate page ('path' attribute) when an exception occurs. 
+		              	It should be org.apache.struts.action.ExceptionHandler or a class that inherits it. 
+		              	Default value: org.apache.struts.action.ExceptionHandler
+		              </entry>
+		            </row>
+		            <row>
+		              <entry>key</entry>
+		              <entry>
+		              	Key value of error message found in message resource bundle when exception occurs. [required]
+		              </entry>
+		            </row>
+		            <row>
+		              <entry>scope</entry>
+		              <entry>
+		              	Shows the scope of context to access ActionError. 
+		              	Request or session. Default value: request
+		              </entry>
+		            </row>
+		            <row>
+		              <entry>type</entry>
+		              <entry>Shows exception type to execute Exception Handling. [required]</entry>
+		            </row>
+		          </tbody>
+		        </tgroup>
+		    </informaltable>
+		</section>
+
+		<section id="struts_exceptionhandling_action_samples">
+			<title>Samples</title>
+
+			<para>
+				<![CDATA[The following is an example of the setting for <exception> under <action> in struts-config-login.xml file.]]>
+				<programlisting language="xml"><![CDATA[<action
+    path="/login"
+    type="org.anyframe.sample.struts.action.LoginAction"
+    name="userForm"
+    scope="request"
+    input="/basic/login.jsp">
+    <exception key="error.password.mismatch" path="/basic/login.jsp" 
+        type="javax.security.auth.login.FailedLoginException" />
+    <forward name="success" path="/basic/main.jsp" />
+</action>]]></programlisting>
+			</para>
+
+      		<para>
+      			Unlike Global Level Exception setting, is in charge of exception that occurs in execute() method of LoginAction, 
+      			not exceptions that occur in all actions. 
+      			When FailedLoginException occurs, is forwarded as /basic/login.jsp, 
+      			and if other exception occurs, is forwarded as error page set in Global Level Exception.
+      		</para>
+    	</section>
+	</section>
+</chapter>

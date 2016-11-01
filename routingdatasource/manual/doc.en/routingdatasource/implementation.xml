@@ -1,0 +1,173 @@
+<chapter id="routingdatasource_implementation">
+		<title>기본 구현</title>
+
+		<section id="routingdatasource_implementation_customroutingdatasource">
+        	<title>CustomRoutingDataSource</title>
+
+        	<para>
+        		다중 DB 접근을 위해서 가장 먼저 구현해야 할 것은 CustomDataSource이다. Spring에서 제공하는 AbstractRoutingDataSource를 상속받는 
+        		사용자 정의 DataSource를 정의 해야한다.
+        	</para>
+        	
+        	<para>
+        		아래의 JAVA 코드는 AbstractRoutingDataSource를 상속받은 CustomRoutingDataSource이다.
+        			<programlisting language="java"><![CDATA[import org.springframework.jdbc.datasource.lookup.AbstractRoutingDataSource;
+
+public class CustomRoutingDataSource extends AbstractRoutingDataSource {
+	protected Object determineCurrentLookupKey() {
+		return TheaterInfoContextHolder.getTheater();
+	}
+}]]></programlisting>
+        	</para>
+        	
+        	<para>
+        		Custom DataSource 클래스는 AbstractRoutingDataSource를 상속 받고 determineCurrentLookupKey 메소드를 구현 해야 한다. 
+        		이 때, return 하는 키 값은 저장된 lookup key값에 매칭 되어야 한다.
+        	</para>
+        	
+        	<para>
+        		다음으로 CustomDataSource를 bean으로 등록 해야 한다. bean 등록시 앞서 determineCurrentLookupKey 메소드에서 리턴 받는 값에 따라 
+        		각각 다른 url의 DB에 접근할 수 있도록 Map에 key값을 등록 해야 한다. 아래의 예시 코드는 context-routingdatasource.xml 에 정의된 
+        		coutomDataSource bean 정의 내용이다.
+        	</para>
+        	
+        	<para>
+				<programlisting language="xml"><![CDATA[<bean id="customDataSource" class="org.anyframe.plugin.routingdatasource.common.CustomRoutingDataSource">
+  	<property name="targetDataSources">
+  		<map key-type="java.lang.String">
+  			<entry key="ABCCinema" value-ref="ABCCinema" />
+  			<entry key="GoodMovieCinema" value-ref="GoodMovieCinema" />
+  			<entry key="MovieHouseCinema" value-ref="MovieHouseCinema" />
+  		</map>
+  	</property>
+  	<property name="defaultTargetDataSource" ref="ABCCinema" />
+</bean>]]></programlisting>
+        	</para>
+        	
+        	<para>
+        		그리고 key값에 해당하는 DataSource를 bean으로 정의한다. 각각의 DataSource에 공통적인 내용이 중복될 경우 parentDataSource를 등록한 후 
+        		parentDataSource를 상속받는 bean을 등록 하는 방법도 있다.
+        	</para>
+        	
+        	<para>
+				<programlisting language="xml"><![CDATA[<bean id="parentDataSource" class="org.apache.commons.dbcp.BasicDataSource" abstract="true">
+  	<property name="driverClassName" value="#{contextProperties.driver}" />
+  	<property name="username" value="#{contextProperties.username}" />
+  	<property name="password" value="#{contextProperties.password}"/>
+</bean>
+  	
+<bean id="ABCCinema" parent="parentDataSource">
+	<property name="url" value="#{contextProperties.url}" />
+</bean>
+  	
+<bean id="GoodMovieCinema" parent="parentDataSource">
+  	<property name="url" value="jdbc:hsqldb:hsql://localhost:9002/sampledb2nd" />
+</bean>
+  	
+<bean id="MovieHouseCinema" parent="parentDataSource">
+  	<property name="url" value="jdbc:hsqldb:hsql://localhost:9003/sampledb3rd" />
+</bean>]]></programlisting>      	
+        	</para>
+        	
+        	<para>
+        		등록한 customDataSource를 사용하는 QueryService를 새롭게 정의한다.
+        			<programlisting language="xml"><![CDATA[
+        				<query:auto-config id="queryServiceRoutingDataSource" dbType="hsqldb" dataSource-ref="customDataSource"/>]]></programlisting>
+        	</para>
+        	
+        	<para>
+        		다음으로 TheadLocal을 이용하여 DB를 결정하는 key 값을 정의하는 ContextHolder 클래스를 작성 해야한다.
+        		이 클래스는 Thread 내에서 보관하고 있는 DB정보 key 값을 꺼내고, 새로운 key값을 지정하고, Thread를 clear 하는
+        		세 가지 기능을 제공해야 한다. 
+        	</para>
+        	
+        	<para>
+        		아래의 Java 코드는 상영관에 따라 DB에 접근하기 위해 상영관 정보를ThreadLocal 에 저장하는 ThreaterInfoContextHolder Class이다.
+        		 <programlisting language="java"><![CDATA[import org.anyframe.util.ThreadLocalUtil;
+
+public class TheaterInfoContextHolder {
+
+	public static String getTheater() {
+		return (String) ThreadLocalUtil.get("theater");
+	}
+	
+	public static void setTheater(String theater) {
+		ThreadLocalUtil.add("theater", theater);
+	}
+	
+	public static void clearTheaterInfo() {
+		ThreadLocalUtil.clearSharedInfo();
+		ThreadLocalUtil.add("theater", null);
+	}
+}]]></programlisting>
+        	</para>
+        	
+        	<para>
+        		아래의 Java 코드는 ContextHolder를 이용하여 서로 다른 DB에 접근하도록 구현된 Testcase이다. 
+        		최초 DB 정보를 입력하지 않고 List 조회 했을 경우 defaultTargetDataSource 로 정의한 내용이 출력되고, 
+        		theater 정보를 정의한 후 조회 했을 경우, 해당 상영관 DB에서 데이터를 조회하여 콘솔에 출력하는 예제이다.
+        	</para>
+        	
+        	<para>
+        		<programlisting language="java"><![CDATA[@Test
+public void testRoutindDataSource() throws Exception{
+	Movie movie = new Movie();
+	Page resultPage = movieFinder.getPagingList(movie, 1);
+	assertNotNull("page is not null", resultPage);
+		
+	System.out.println(resultPage.getList());
+		
+	TheaterInfoContextHolder.setTheater("GoodMovieCinema");
+	Page resultGoodMovieCinemaPage = movieFinder.getPagingList(movie, 1);
+	assertNotNull("page is not null", resultGoodMovieCinemaPage);
+		
+	System.out.println(resultGoodMovieCinemaPage.getList());
+
+		
+	TheaterInfoContextHolder.setTheater("MovieHouseCinema");
+	Page resultMovieHouseCinemaPage = movieFinder.getPagingList(movie, 1);
+	assertNotNull("page is not null", resultMovieHouseCinemaPage);
+		
+	System.out.println(resultGoodMovieCinemaPage.getList());
+		
+	TheaterInfoContextHolder.setTheater("ABCCinema");
+	Page resultABCCinemaPage = movieFinder.getPagingList(movie, 1);
+	assertNotNull("page is not null", resultABCCinemaPage);
+		
+	System.out.println(resultGoodMovieCinemaPage.getList());
+		
+	TheaterInfoContextHolder.clearTheaterInfo();
+}]]></programlisting>
+        	</para>
+        	
+        	<para>
+        		routingdatasource plugin에서는 theater 정보를 화면에서 parameter로 넘겨주도록 정의되어있다. 따라서 개발자는 Controller에서 
+        		request.getParameter("theater") 를 이용하여 key 값을 받아와서 ContextHolder에서 setTheater 메소드를 이용하여 값을 정의하면 된다.
+        		각각의 Controller의 모든 메소드에서 request.getParameter("theater") 구문을 중복적으로 사용하는 것을 Interceptor 등록을 통해 
+        		쉽게 처리할 수 있다. 아래의 예제는 Interceptor에서 TheaterInfoContextHolder.setTheater 메소드를 이용하여 key값을 정의하도록
+        		작성 되어졌다.
+        	</para>
+        	
+        	<para>
+        		<programlisting language="java"><![CDATA[public class ThreadCleanupInterceptor extends HandlerInterceptorAdapter{
+
+	@Override
+	public boolean preHandle(HttpServletRequest request, HttpServletResponse response, Object handler) throws Exception{
+		String theater = request.getParameter("theater");
+		TheaterInfoContextHolder.setTheater(theater);
+		
+		return super.preHandle(request, response, handler);
+	}
+	
+	@Override
+	public void afterCompletion(HttpServletRequest request, HttpServletResponse response, Object handler, Exception ex) throws Exception{
+		TheaterInfoContextHolder.clearTheaterInfo();
+	}
+}
+]]></programlisting>
+        	여기서 주의할 점은 요청이 끝난 후 반드시 ThreadLocal clear 작업을 수행 해야 한다는 점이다. Interceptor에서는 afterCompletion 메소드에서 
+        	cleanTheaterInfo() 메소드를 호출하여 ThreadLocal clear 작업을 지시 하고 있다.
+        	</para>
+        	
+		</section>
+</chapter>

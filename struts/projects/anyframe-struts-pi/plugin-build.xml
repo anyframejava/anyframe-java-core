@@ -1,0 +1,59 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<plugin name="struts" description="Struts Plugin consists of sample code that guides the integration of Apache Struts and Spring, and reference libraries to use these open sources.">
+  <groupId>org.anyframe.plugin</groupId>
+  <artifactId>anyframe-struts-pi</artifactId>
+  <version>1.0.2</version>
+  <dependent-plugins>
+    <dependent-plugin name="query" version="2.0.0&gt;*"/>
+    <dependent-plugin name="fileupload" version="2.0.0&gt;*"/>
+  </dependent-plugins>
+  <resources>
+    <resource dir="src/main/java" filtered="true" packaged="true">
+      <include name="**/*.java"/>
+    </resource>
+    <resource dir="src/main/resources" filtered="true" packaged="false">
+      <include name="**/*.xml"/>
+    </resource>
+    <resource dir="src/test/java" filtered="true" packaged="true">
+      <include name="**/*.java"/>
+    </resource>
+    <resource dir="src/test/resources" filtered="true" packaged="false">
+      <include name="**/*.xml"/>
+    </resource>
+    <resource dir="src/main/webapp/WEB-INF" filtered="false" packaged="false">
+      <include name="**/struts-*.xml"/>
+    </resource>    
+    <resource dir="src/main/webapp/WEB-INF/jsp" filtered="false" packaged="false">
+      <include name="**/*.jsp"/>
+    </resource>
+  </resources>
+  <build>
+    <filesets>
+      <fileset dir="src/main/java" filtered="true" packaged="true">
+        <include name="**/org/anyframe/plugin/struts/**/*.java"/>
+      </fileset>
+      <fileset dir="src/main/resources" filtered="true" packaged="false">
+      	<include name="**/struts/*.xml"/>
+      	<include name="**/*struts*.xml"/>
+      </fileset>
+      <fileset dir="src/test/java" filtered="true" packaged="true">
+        <include name="**/org/anyframe/plugin/struts/**/*.java"/>
+      </fileset>
+      <fileset dir="src/test/resources" filtered="true" packaged="false">
+        <include name="**/*struts*.xml"/>
+      </fileset>
+      <fileset dir="src/main/webapp" filtered="false" packaged="false">
+        <include name="**/struts/**/*.*"/>
+        <include name="**/struts-tiles-defs.xml"/>
+        <include name="**/web.xml"/>
+        <include name="**/anyframe.jsp"/>
+      </fileset>
+      <fileset dir="db/resources" filtered="false" packaged="false">
+        <include name="**/*.*"/>
+      </fileset>
+    </filesets>
+  </build>
+  <samples>true</samples>
+  <essential>false</essential>
+  <checked>false</checked>
+</plugin>

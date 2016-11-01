@@ -1,0 +1,204 @@
+<?xml version="1.0" encoding="utf-8"?>
+<Window>
+	<Form BKColor="white" DomainID="title.schedule_info" Height="240" Id="frm12CALWKLY_P" Left="8" OnLoadCompleted="frm12CALWKLY_P_OnLoadCompleted" PidAttrib="7" Style="stlFrm" Top="8" Ver="1.0" Width="500" WorkArea="true">
+		<Datasets>
+			<Dataset DataSetType="Dataset" Id="dsSchedule">
+				<Contents>
+					<colinfo id="SCHD_ID" size="16" type="STRING"/>
+					<colinfo id="SCHD_STARTDATE" size="16" type="DATE"/>
+					<colinfo id="SCHD_ENDDATE" size="16" type="DATE"/>
+					<colinfo id="SCHD_TITLE" size="256" type="STRING"/>
+					<colinfo id="SCHD_CONTENTS" size="256" type="STRING"/>
+					<colinfo id="SCHD_PLACE" size="256" type="STRING"/>
+					<colinfo id="USER_ID" size="16" type="STRING"/>
+				</Contents>
+			</Dataset>
+			<Dataset DataSetType="Dataset" Id="dsService">
+				<Contents>
+					<colinfo id="SVC_ID" size="100" summ="default" type="STRING"/>
+					<colinfo id="QUERY_LIST" size="256" summ="default" type="STRING"/>
+					<colinfo id="SERVICE" size="100" summ="default" type="STRING"/>
+					<colinfo id="IN_DATASET_LIST" size="256" summ="default" type="STRING"/>
+					<colinfo id="OUT_DATASET_LIST" size="256" summ="default" type="STRING"/>
+					<colinfo id="CONTROLLER" size="512" summ="default" type="STRING"/>
+					<colinfo id="CALLBACK" size="100" summ="default" type="STRING"/>
+					<colinfo id="SYNC_YN" size="1" summ="default" type="STRING"/>
+					<record>
+						<CALLBACK></CALLBACK>
+						<CONTROLLER></CONTROLLER>
+						<IN_DATASET_LIST>querySet1=dsSchedule:U</IN_DATASET_LIST>
+						<OUT_DATASET_LIST></OUT_DATASET_LIST>
+						<QUERY_LIST>querySet1=createSchedule</QUERY_LIST>
+						<SERVICE></SERVICE>
+						<SVC_ID>create</SVC_ID>
+						<SYNC_YN></SYNC_YN>
+					</record>
+					<record>
+						<CALLBACK></CALLBACK>
+						<CONTROLLER></CONTROLLER>
+						<IN_DATASET_LIST>querySet1=dsSchedule:U</IN_DATASET_LIST>
+						<OUT_DATASET_LIST></OUT_DATASET_LIST>
+						<QUERY_LIST>querySet1=updateSchedule</QUERY_LIST>
+						<SERVICE></SERVICE>
+						<SVC_ID>update</SVC_ID>
+						<SYNC_YN></SYNC_YN>
+					</record>
+					<record>
+						<CALLBACK></CALLBACK>
+						<CONTROLLER></CONTROLLER>
+						<IN_DATASET_LIST>querySet1=dsSchedule:U</IN_DATASET_LIST>
+						<OUT_DATASET_LIST></OUT_DATASET_LIST>
+						<QUERY_LIST>querySet1=removeSchedule</QUERY_LIST>
+						<SERVICE></SERVICE>
+						<SVC_ID>remove</SVC_ID>
+						<SYNC_YN></SYNC_YN>
+					</record>
+				</Contents>
+			</Dataset>
+		</Datasets>
+		<Div BKColor="user26" Border="Flat" Height="196" Id="divManage" Left="-1" Style="stlDivManage" TabOrder="1" Text="Div0" Top="-1" UserData="RESIZE=TWH" Width="501">
+			<Contents>
+				<Calendar BindDataset="dsSchedule" Border="Flat" CanChange="divManage_calFrom_CanChange" Column="SCHD_STARTDATE" Font="돋움,9" Height="19" Id="calFrom" Left="90" SaturdayTextColor="blue" Style="stlEdt" SundayTextColor="red" TabOrder="13" Top="37" Width="80"></Calendar>
+				<Calendar BindDataset="dsSchedule" Border="Flat" CanChange="divManage_calTo_CanChange" Column="SCHD_ENDDATE" Font="돋움,9" Height="19" Id="calTo" Left="213" SaturdayTextColor="blue" Style="stlEdt" SundayTextColor="red" TabOrder="14" Top="37" Width="80"></Calendar>
+				<Image Align="Left" DomainID="biz.month_schedule.title" Font="돋움체,9,Bold" Height="20" Id="imgTitle" ImageID="blet_02" Left="10" LeftMargin="20" OnClick="Div0_Image0_OnClick" Style="stlImgManage" TabOrder="6" TabStop="FALSE" Text="제목" Top="11" Width="80"></Image>
+				<Image Align="Left" DomainID="biz.month_schedule.datetime" Font="돋움체,9,Bold" Height="20" Id="imgDate" ImageID="blet_01" Left="10" LeftMargin="20" OnClick="Div0_Image0_OnClick" Style="stlImgManage" TabOrder="7" TabStop="FALSE" Text="일시" Top="36" Width="80"></Image>
+				<Edit BindDataset="dsSchedule" BKColor="white" Border="Flat" CheckLength="Byte" Column="SCHD_PLACE" Height="20" Id="edtPlace" ImeMode="none" Left="90" LeftMargin="2" MaxLength="50" Style="stlEdt" TabOrder="4" Top="62" UserData="titleObj=imgItem3" Width="390"></Edit>
+				<Image Align="Left" DomainID="biz.month_schedule.place" Font="돋움체,9,Bold" Height="20" Id="imgPlace" ImageID="blet_01" Left="10" LeftMargin="20" OnClick="Div0_Image0_OnClick" Style="stlImgManage" TabOrder="8" TabStop="FALSE" Text="장소" Top="62" Width="80"></Image>
+				<TextArea BindDataset="dsSchedule" BKColor="white" Border="Flat" CheckLength="Byte" Column="SCHD_CONTENTS" Height="89" Id="txaContents" Left="90" MaxLength="100" Style="stlTxa" TabOrder="5" Top="88" UserData="titleObj=imgContents,&#32;minLength=1" VScroll="TRUE" Width="390"></TextArea>
+				<Edit BindDataset="dsSchedule" BKColor="white" Border="Flat" CheckLength="Byte" Column="SCHD_TITLE" Height="20" Id="edtTitle" Left="90" LeftMargin="2" MaxLength="50" Style="stlEdt" TabOrder="1" Top="11" UserData="titleId=biz.month_schedule.title,&#32;required" Width="390"></Edit>
+				<Image Align="Left" DomainID="biz.month_schedule.contents" Font="돋움체,9,Bold" Height="20" Id="imgContents" ImageID="blet_01" Left="10" LeftMargin="20" OnClick="Div0_Image0_OnClick" Style="stlImgManage" TabOrder="9" TabStop="FALSE" Text="내용" Top="88" Width="80"></Image>
+				<Image Height="18" Id="imgCalTo" ImageID="btn_calendar1" Left="296" OnClick="divManage_imgCalTo_OnClick" Static="FALSE" Style="stlImg" TabOrder="11" TabStop="FALSE" Top="38" Width="18"></Image>
+				<Image Height="18" Id="imgCalFrom" ImageID="btn_calendar1" Left="173" OnClick="divManage_imgCalFrom_OnClick" Static="FALSE" Style="stlImgComment" TabOrder="10" TabStop="FALSE" Top="38" Width="18"></Image>
+				<MaskEdit BindDataset="dsSchedule" BKColor="white" Border="Flat" CanChange="divManage_mdtTo_CanChange" Column="SCHD_ENDDATE" Height="19" Id="mdtTo" Left="213" LeftMargin="2" Mask="####-##-##" Style="stlMdt" TabOrder="3" Top="37" Type="STRING" UserData="titleId=biz.schedule.to_date,&#32;fromDate=mdtFrom" Width="80"></MaskEdit>
+				<MaskEdit BindDataset="dsSchedule" BKColor="white" Border="Flat" CanChange="divManage_mdtFrom_CanChange" Column="SCHD_STARTDATE" Height="19" Id="mdtFrom" Left="90" LeftMargin="2" Mask="####-##-##" Style="stlMdt" TabOrder="2" Top="37" Type="STRING" UserData="titleId=biz.schedule.from_date" Width="80"></MaskEdit>
+				<Static Height="11" Id="stTilde" Left="198" Style="stlLblGrp" TabOrder="12" Text="~" Top="41" Width="10"></Static>
+			</Contents>
+		</Div>
+		<Button ButtonStyle="TRUE" Cursor="HAND" DomainID="button.remove" Height="19" Id="btnDelete" ImageID="btn_delete" Left="314" LeftMargin="13" OnClick="btnDelete_OnClick" Style="stlBtn" TabOrder="2" Text="삭제" Top="208" Width="56"></Button>
+		<Button ButtonStyle="TRUE" Cursor="HAND" DomainID="button.save" Height="19" Id="btnSave" ImageID="btn_save" Left="373" LeftMargin="13" OnClick="btnSave_OnClick" Style="stlBtn" TabOrder="3" Text="저장" Top="208" Width="56"></Button>
+		<Button ButtonStyle="TRUE" Cursor="HAND" DomainID="button.cancel" Height="19" Id="btnClose" ImageID="btn_cancel" Left="432" LeftMargin="13" OnClick="btnClose_OnClick" Style="stlBtn" TabOrder="4" Text="취소" Top="208" Width="56"></Button>
+	</Form>
+	<Script><![CDATA[#include "javascript::common.js";
+
+// 화면 로딩시 Create/Update에 따라 dsSchedule dataset setup
+function frm12CALWKLY_P_OnLoadCompleted(obj) {
+	var strMode = paramMode;
+	
+	dsSchedule.clearData();
+	dsSchedule.addRow();
+	
+	if(strMode == "C") {
+		var strSelectDate = paramDate;
+		var dtSelect = datetime(substr(strSelectDate, 0, 4), substr(strSelectDate, 4, 2), substr(strSelectDate, 6));
+		btnDelete.visible = false;
+		
+		dsSchedule.setColumn(dsSchedule.row, "SCHD_ENDDATE", dtSelect);
+		dsSchedule.setColumn(dsSchedule.row, "SCHD_STARTDATE", dtSelect);
+		
+		if(!gfnIsNull(gfnGetUserId())){
+			dsSchedule.setColumn(dsSchedule.currow, "USER_ID", gfnGetUserId());
+		}
+	} else {
+		dsSchedule.copyRow(dsSchedule.row, parent.dsSchd, parent.dsSchd.row);
+		dsSchedule.applyChange();
+	}
+	
+	divManage.edtTitle.setFocus();
+}
+
+// 일정 시작일 달력이미지 클릭 시 
+function divManage_imgCalFrom_OnClick(obj, nX, nY) {
+	divManage.calFrom.dropDown();
+}
+
+// 일정 종료일 달력이미지 클릭 시 
+function divManage_imgCalTo_OnClick(obj, nX, nY) {
+	divManage.calTo.dropDown();
+}
+
+// 날짜 정보 변경시 Validation 체크
+function divManage_mdtFrom_CanChange(obj, strOldText, strText) {
+	return fnCheckDate(obj, strText, divManage.calTo.value);
+}
+// 날짜 정보 변경시 Validation 체크
+function divManage_mdtTo_CanChange(obj, strOldText, strText) {
+	return fnCheckDate(obj, divManage.calFrom.value, strText);
+}
+// 날짜 정보 변경시 Validation 체크
+function divManage_calFrom_CanChange(obj, strOldText, strText) {
+	return fnCheckDate(obj, strText, divManage.calTo.value);
+}
+// 날짜 정보 변경시 Validation 체크
+function divManage_calTo_CanChange(obj, strOldText, strText) {
+	return fnCheckDate(obj, divManage.calFrom.value, strText);
+}
+
+// 저장 버튼 클릭시 
+function btnSave_OnClick(obj) {
+	if(gfnValidate(divManage)) {
+		// SCHD_ID가 존재하면 UPDATE, 존재하지 않으면 INSERT
+		var strScheduleId = dsSchedule.getColumn(dsSchedule.row, "SCHD_ID");
+		
+		if(gfnIsNull(strScheduleId)){
+			gfnService("create");
+		} else {	
+			gfnService("update");
+		}
+	}
+}
+
+// 삭제 버튼 클릭 시 
+function btnDelete_OnClick(obj) {
+	dsSchedule.deleteRow(dsSchedule.row);	
+	gfnService("remove");
+}
+
+// 닫기 버튼 클릭 시 
+function btnClose_OnClick(obj) {
+	close("N");
+}
+
+// callback 메소드 정의
+function fnCallback(strServiceId, strErrorCode, strErrorMsg) {
+	if ( strErrorCode == -1 ) {
+		gfnMsg(strErrorMsg, "ERR");
+		
+	} else {
+		if(strServiceId == "create") {
+			gfnMsg("MSG_SAVE_SUCCESS");			
+			
+		} else if(strServiceId == "update") {
+			gfnMsg("MSG_UPDATE_SUCCESS");			
+			
+		} else if(strServiceId == "remove") {			
+			gfnMsg("MSG_REMOVE_SUCCESS");
+		}
+		close("Y");
+	}
+}
+
+// 스케줄 날짜 validation 체크 
+function fnCheckDate(obj, strFromDate, strToDate) {
+	// 올바른 날짜인지 확인
+	if(!gfnCheckDate8(replace(strFromDate, "-", ""))){
+		gfnMsg("MSG_INVALID_DATE", "WARN");
+		obj.setFocus();
+		return false;
+	}
+	
+	if(!gfnCheckDate8(replace(strToDate, "-", ""))){
+		gfnMsg("MSG_INVALID_DATE", "WARN");
+		obj.setFocus();
+		return false;
+	}
+	
+	// 시작일이 종료일 보다 클경우
+	if(gfnCalcDay(strFromDate, strToDate) < 0){
+		gfnMsg("MSG_INVALID_PERIOD", "WARN", global.domain.biz.schedule.from_date, global.domain.biz.schedule.to_date);
+		obj.setFocus();
+		return false;
+	}
+	
+	return true;
+}]]></Script>
+</Window>

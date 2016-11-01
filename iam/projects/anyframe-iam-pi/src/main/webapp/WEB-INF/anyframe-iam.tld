@@ -1,0 +1,57 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+
+<taglib xmlns="http://java.sun.com/xml/ns/j2ee" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://java.sun.com/xml/ns/j2ee http://java.sun.com/xml/ns/j2ee/web-jsptaglibrary_2_0.xsd"
+	version="2.0">
+
+	<description>
+		Anyframe IAM View Resource Access Tag Library
+	</description>
+	<display-name>IAM ViewResourceAccessTag</display-name>
+	<tlib-version>1.1</tlib-version>
+	<short-name>iam</short-name>
+	<uri>http://www.anyframejava.org/iam/tags</uri>
+
+	<tag>
+		<description>
+			Allows inclusion of a tag body if the current
+			Authentication has one of the specified permissions to the presented
+			viewName.
+		</description>
+		<name>access</name>
+		<tag-class>org.anyframe.iam.core.taglibs.ViewResourceTag</tag-class>
+		<body-content>JSP</body-content>
+		<attribute>
+			<description>
+				The view resource for which permissions are being
+				evaluated.
+			</description>
+			<name>viewName</name>
+			<required>true</required>
+			<rtexprvalue>true</rtexprvalue>
+		</attribute>
+		<attribute>
+			<description>
+				A comma separated list of integers, each representing a
+				required bit mask permission from a subclass of
+				org.springframework.security.acl.basic.AbstractBasicAclEntry.
+            </description>
+			<name>hasPermission</name>
+			<required>true</required>
+			<rtexprvalue>true</rtexprvalue>
+		</attribute>
+	</tag>
+
+	<function>
+		<description>
+      		get the permission object from permission name
+	    </description>
+		<name>getPermissionMask</name>
+		<function-class>org.anyframe.iam.core.acl.ExtBasePermission</function-class>
+		<function-signature>int getPermissionMask(java.lang.String)</function-signature>
+		<example>
+      	&lt;iam:access viewName="testResource" hasPermission="${iam:getPermissionMask('READ,WRITE')}"&gt;
+    	</example>
+  </function>
+
+</taglib>

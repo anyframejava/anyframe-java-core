@@ -1,0 +1,46 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-3.0.xsd">
+	
+	<bean name="messageSource" class="org.anyframe.spring.message.DatabaseMessageSource">
+		<property name="dataSource" ref="dataSource"/>
+		<property name="messageTable">
+			<props>
+				<prop key="table">TEST_MESSAGE_SOURCE</prop>
+			</props>
+		</property>
+		<property name="cacheConfiguration" value="classpath:/spring/message/ehcache.xml"/>
+	</bean>		
+	
+	<bean name="lazyLoadingMessageSource" class="org.anyframe.spring.message.DatabaseMessageSource" lazy-init="true">
+		<property name="dataSource" ref="dataSource"/>
+		<property name="messageTable">
+			<props>
+				<prop key="table">TEST_MESSAGE_SOURCE</prop>
+			</props>
+		</property>
+		<property name="lazyLoad" value="false"/>
+		<property name="cacheConfiguration" value="classpath:/spring/message/ehcache.xml"/>
+	</bean>	
+	
+	<bean name="messageSourceWithDefaultLocale" class="org.anyframe.spring.message.DatabaseMessageSource">
+		<property name="dataSource" ref="dataSource"/>
+		<property name="messageTable">
+			<props>
+				<prop key="table">TEST_MESSAGE_SOURCE</prop>
+			</props>
+		</property>
+		<property name="lazyLoad" value="false"/>
+		<property name="defaultLanguage" value="ko"/>
+		<property name="defaultCountry" value="KR"/>
+	</bean>			
+	
+    <bean id="dataSource" class="org.apache.commons.dbcp.BasicDataSource" destroy-method="close">
+        <property name="driverClassName" value="oracle.jdbc.driver.OracleDriver"/>
+        <property name="url" value="jdbc:oracle:thin:@server.ip:1521:xe"/>
+        <property name="username" value="athena"/>
+        <property name="password" value="athena"/>
+    </bean> 
+    	
+</beans>	

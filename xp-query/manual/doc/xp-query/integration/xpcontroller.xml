@@ -1,0 +1,146 @@
+<chapter id="xp_query_integration_mipcontroller">
+	<title>XPController</title>
+	
+	<para>
+		XPlatform을 사용하여 개발 시, Client UI Component에서 조회/저장 이벤트가 발생하면 호출하는
+    	Controller 클래스는 Business Service를 실행하여 결과값을 XML로 변환하여 전송한다. Anyframe은 개발자
+    	편의를 위하여 AbstractXPController를 제공하며 개발자는 복잡한 변환로직을 신경쓰지 않고 개발이 가능하다.
+    	<programlisting language="xml"><![CDATA[public abstract class AbstractXPController extends AbstractController {
+    	<!-- 중략 -->
+    	public ModelAndView handleRequestInternal(HttpServletRequest request,
+			HttpServletResponse response) throws Exception {
+		logger.debug(this.getClass().getName() + " process() Started!");
+		VariableList inVl = null;
+		DataSetList inDl = null;
+		VariableList outVl = null;
+		DataSetList outDl = null;
+
+		HttpPlatformRequest httpPlatformRequest = new HttpPlatformRequest(request, contentType, charset);
+		HttpPlatformResponse httpPlatformResponse = new HttpPlatformResponse(response, contentType, charset);
+
+		try {
+			//InputStream 또는 Reader로부터 데이터를 수신받는다. 
+			httpPlatformRequest.receiveData();
+			
+			PlatformData inPlatformData = httpPlatformRequest.getData();
+			// Client로 부터 전달 받은 데이터 
+			inVl = inPlatformData.getVariableList();
+			inDl = inPlatformData.getDataSetList();
+			
+			// Client로 전달 할 데이터
+			outVl = new VariableList();
+			outDl = new DataSetList();
+
+			if( logger.isDebugEnabled() ){
+				logger.debug(
+						this.getClass().getName() + "." + "operate()" + " started");
+			}
+			
+			operate(httpPlatformRequest, inVl, inDl, outVl, outDl);
+			
+			if( logger.isDebugEnabled() ){
+				logger.debug(
+						this.getClass().getName() + "." + "operate()" + " ended");
+			}
+			setResultMessage(outVl, 0, "save successed");
+
+		} catch (Exception e) {
+			String msg = e.getMessage();
+
+			if (msg == null)
+				msg = "Fail to process client request.";
+
+			logger.error(msg);
+			setResultMessage(outVl, -1, msg);
+		} finally {
+			PlatformData outPlatformData = new PlatformData();
+			outPlatformData.setDataSetList(outDl);
+			outPlatformData.setVariableList(outVl);
+			httpPlatformResponse.setData(outPlatformData);
+			httpPlatformResponse.sendData();
+		}
+		logger.debug(this.getClass().getName() + " process() end!");
+		return null;
+	}
+	
+	public abstract void operate(HttpPlatformRequest httpPlatformRequest,
+			VariableList inVl, DataSetList inDl, VariableList outVl,
+			DataSetList outDl) throws Exception;
+}]]>
+</programlisting>
+	</para>
+
+    <para>
+    	AbstractXPController는 AbstractController의 handleRequestInternal 메소드를 구현드 하고
+    	있고 operate 메소드를 호출한다. 개발자가 AbstractXPController를 상속하여 User Defined
+    	Controller를 개발 할 경우 실제 코딩은 operate 메소드 내부에 구현하면 된다.
+    </para>
+
+    <itemizedlist>
+		<listitem>
+			<para>operate 메소드 내 이용변수 설명</para>
+
+        	<para>
+        		<informaltable>
+	          		<tgroup cols="3">
+	          			<colspec colnum="1" colname="col1" colwidth="3*"/>
+						<colspec colnum="2" colname="col2" colwidth="2*"/>
+						<colspec colnum="3" colname="col3" colwidth="5*"/>
+						<thead>
+							<row>
+								<entry align="center">변수 타입</entry>
+								<entry align="center">변수명</entry>
+								<entry align="center">설명</entry>
+							</row>
+						</thead>
+	            		<tbody>
+	              			<row>
+	                			<entry>VariableList</entry>
+	
+	                			<entry>inVl</entry>
+	
+	                			<entry>Client에서 GET방식으로 전송한 parameter를 포함</entry>
+	              			</row>
+	
+	              			<row>
+	                			<entry>VariableList</entry>
+	
+	                			<entry>outVl</entry>
+	
+	                			<entry>Client로 전송하는 VariableList</entry>
+	              			</row>
+	
+	              			<row>
+	               		 		<entry>DatasetList</entry>
+	
+	                			<entry>inDl</entry>
+	
+	                			<entry>Client에서 POST방식으로 전송한 Dataset XML를 포함</entry>
+	              			</row>
+	
+	              			<row>
+	                			<entry>DatasetList</entry>
+	
+	                			<entry>outDl</entry>
+	
+	                			<entry>Client로 전송하는 DatasetList</entry>
+	              			</row>
+	            		</tbody>
+	          		</tgroup>
+	        	</informaltable>
+        	</para>
+		</listitem>
+
+		<listitem>
+			<para>Page navigation</para>
+
+        	<para>
+        		XPlatform이용 시 화면이동은 발생하지 않으며 조회/저장 이벤트에 해당하는 결과인 Dataset XML만
+        		전송한다. 개발자가 User Defined Controller에서 operate 메소드 구현 시 화면 이동을 위한 View
+        		Name값은 null로 설정한다. 그리고 개발자가 AbstractXPController를 상속하여 Controller를
+        		개발할 때는 operate 메소드 내부에 Business Service를 실행하여 결과값을 반환하도록 구현한다.
+        	</para>
+		</listitem>
+	</itemizedlist>
+</chapter>
+    

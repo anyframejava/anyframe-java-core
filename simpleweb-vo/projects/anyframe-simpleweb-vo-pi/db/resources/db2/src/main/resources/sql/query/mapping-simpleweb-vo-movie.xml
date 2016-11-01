@@ -1,0 +1,7 @@
+				<!--simpleweb-vo-findVoMovieList-START-->
+				SELECT movie.movie_id, movie.title, movie.director, genre.name, movie.actors, movie.release_date, movie.ticket_price, movie.now_playing
+				FROM VO_MOVIE movie, VO_GENRE genre
+				WHERE movie.genre_id = genre.genre_id 
+				AND movie.title like '%' CONCAT :vo.searchKeyword CONCAT '%'
+				AND movie.now_playing = :vo.nowPlayingCondition
+				<!--simpleweb-vo-findVoMovieList-END-->

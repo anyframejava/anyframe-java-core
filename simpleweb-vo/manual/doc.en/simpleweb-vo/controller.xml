@@ -1,0 +1,21 @@
+<chapter id="simpleweb_simpleweb_controller">
+	<title>SimpleServiceController</title>
+		<para>
+		SimpleServiceController is a Controller class which is extends AbstractServiceController 
+		that supports data binding when using Transfer Object as VO type object. 
+		It binds values that are transfered to HttpServletRequest parameter into argument type object of method information 
+		(in this case, VO object), 
+		and does additional work with argument type and return type of business service method to be called. 
+		(e.g., if business service method argument type is org.anyframe.datatype.SearchVO type, 
+		obtain the pageIndex value from request.) 
+		When changing data binding method or adding specific work, 
+		or when changing AbstractServiceController function, 
+		SimpleServiceController can be extended. 
+		The following is a part of simpleweb-vo-servlet.xml Spring configuration file that is added by Simpleweb Plugin installation. 
+		</para>
+		<programlisting language="xml"><![CDATA[<!-- simple direct service controller -->
+<bean name="/simple.do" class="]]><emphasis role="bold"><![CDATA[org.anyframe.simpleweb.controller.SimpleServiceController]]></emphasis><![CDATA[">
+	<property name="beanMethodsRepo" ref="beanMethodsRepo" />
+</bean>]]></programlisting>
+		<para>If defined as above, "/simple.do"" request is handled in SimpleServiceController.</para> 
+</chapter>

@@ -1,0 +1,219 @@
+<chapter id="springrest_restsupport_oxm">
+	<title>OXM (Object/XML Mapping)</title>
+	
+	<para>
+		OXM is a function that abstracts XML Marshalling technology such as JAXB, Castor, and JiBX 
+		for the conversion between Object and XML in Spring. 
+		The module that was included in Spring Web Service has been separated and included in the Core area of Spring 3. 
+		It is not included in the scope of REST Feature, but this chapter will provide an explanation connected with 
+		MarshallingView or MarshallingHttpMessageConverter.
+	</para>
+	<para>
+		Spring OXM has the following characteristics.
+		<itemizedlist>
+			<listitem>
+				<para>Simple setting</para>
+				<para>
+					The marshallers can be configured as any other bean in your application context. 
+					Also, it provides 'oxm' namespace, which makes it easier to define Marshaller that uses JAXB2, XmlBeans, JiBX, etc.
+				</para>
+			</listitem>
+			
+			<listitem>
+				<para>Consistent interface</para>
+				<para>
+					Spring's O/X mapping operates through two global interfaces which are Marshaller/Unmarshaller, 
+   					These abstractions allow you to switch O/X mapping frameworks with relative ease, with little or no changes required on the classes that do the marshalling. 
+   					Also, it can be used by mixing (mix and match) OX Mapping Framework.
+				</para>
+			</listitem>
+			
+			<listitem>
+				<para>Consistent exception hierarchy</para>
+				<para>
+					Provides Root Exception called XmlMappingException for handling Exception that occurs during Mapping(Serialization).
+				</para>
+			</listitem>
+		</itemizedlist>
+		In Spring OXM, Marshaller and Unmarshaller interface is separated, 
+		but the actual implementations provided in Spring implement both interfaces. 
+		Therefore, if only one implementation class is registered, it can be used as Marshaller or Unmarshaller.
+	</para>
+	
+	<section id="springrest_restsupport_oxm_programmatic">
+		<title>Programmatic Using</title>
+		<para>
+			Marshaller for XML conversion can be defined as Bean as the below. 
+			Castor is used in the example, but JAXB, XMLBeans, JiBX, XStream, etc. can also use Marshaller. 
+			As mentioned before, CastorMarshaller implements both Marshaller and Unmarshaller interfaces, 
+			so it can be referred to for two purposes. 
+		</para>
+		<programlisting language="xml"><![CDATA[<beans>
+    <bean id="sample" class="SampleClass">]]><emphasis role="bold"><![CDATA[
+        <property name="marshaller" ref="castorMarshaller" />
+        <property name="unmarshaller" ref="castorMarshaller" />]]></emphasis><![CDATA[
+    </bean>
+    
+    ]]><emphasis role="bold"><![CDATA[<bean id="castorMarshaller" class="org.springframework.oxm.castor.CastorMarshaller"/>]]></emphasis>
+<![CDATA[</beans>]]></programlisting>
+
+		<para>The following is an example of using Marshaller in class.
+			<programlisting language="java"><![CDATA[public class SampleClass {
+    @Inject
+    private Marshaller marshaller;
+    @Inject
+    private Unmarshaller unmarshaller;
+    
+    // ...
+    public void save() throws IOException {
+        FileOutputStream os = null;
+        try {
+            os = new FileOutputStream(FILE_NAME);
+            ]]><emphasis role="bold">this.marshaller.marshal(movies, new StreamResult(os));</emphasis><![CDATA[
+        } finally {
+            if (os != null) {
+                os.close();
+            }
+        }
+    }
+    // ...
+}]]></programlisting>
+		</para>
+	</section>
+	
+	<section id="springrest_restsupport_oxm_declarative">
+		<title>Declarative Using</title>
+		<para>
+		If you use 'oxm' namespace provided in Spring, you can simply set Marshaller. 
+		To do this, add the below schema definition on the upper part of XML.
+		</para>
+		<programlisting language="xml"><![CDATA[<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+    xmlns:oxm="http://www.springframework.org/schema/oxm"
+    xsi:schemaLocation="http://www.springframework.org/schema/beans
+    http://www.springframework.org/schema/beans/spring-beans-3.1.xsd
+    http://www.springframework.org/schema/oxm
+    http://www.springframework.org/schema/oxm/spring-oxm-3.1.xsd">]]></programlisting>
+   		<para>
+   			The tags currently provided are as below.
+   			<itemizedlist>
+   				<listitem>
+   					<para><link linkend="springrest_restsupport_oxm_jaxb">jaxb2-marshaller</link></para>
+   				</listitem>
+   				
+   				<listitem>
+   					<para><link linkend="springrest_restsupport_oxm_xmlbeans">xmlbeans-marshaller</link></para>
+   				</listitem>
+   				
+   				<listitem>
+   					<para><link linkend="springrest_restsupport_oxm_jibx">jibx-marshaller</link></para>
+   				</listitem>
+   			</itemizedlist>
+   		</para>
+   		<para>Setting details will be stated in the descriptions of each Marshaller.</para>
+	</section>
+	
+	<section id="springrest_restsupport_oxm_jaxb">
+		<title>JAXB</title>
+		<para>
+			JAXB is an Object/XML mapping framework that supports W3C XML schema. 
+			Spring provides Jaxb2Marshaller that uses JAXB 2.0 API.
+		</para>
+		
+		<para>
+			Setting for using Jaxb2Marshaller is as follows.
+			<programlisting language="xml"><![CDATA[<beans>
+    <bean id="jaxb2Marshaller" class="org.springframework.oxm.jaxb.Jaxb2Marshaller">
+        <property name="classesToBeBound">
+            <list>
+                <value>myapp.springrest.domain.Movie</value>                
+            </list>
+        </property>
+    </bean>
+</beans>]]></programlisting>
+			When schema Validation is needed, you can add 'schema' property to define schema file.
+		</para>
+		
+		<para>
+			You can use 'oxm' namespace for the simple setting below.
+			<programlisting language="xml"><emphasis role="bold"><![CDATA[<oxm:jaxb2-marshaller id="marshaller" contextPath="myapp.springrest.domain"/>]]></emphasis></programlisting>
+			The following is a part of src/test/resources/context-restclient.xml file of springrest plugin. 
+			<![CDATA[<oxm:class-to-be-bound>]]> is used to define the class list to be converted.
+			<programlisting language="xml"><emphasis role="bold"><![CDATA[<oxm:jaxb2-marshaller id="marshaller">
+    <oxm:class-to-be-bound name="myapp.springrest.domain.Movie"/>
+</oxm:jaxb2-marshaller>
+]]></emphasis></programlisting>
+		</para>
+	</section>
+		
+	<section id="springrest_restsupport_oxm_castor">
+		<title>Castor</title>
+		<para>
+			Castor is an open source XML binding framework. 
+			If you follow the default rules used in Castor for conversion between Java object and XML, 
+			you can simply define CastorMarshaller provided in Spring as Bean without additional setting.
+		</para>
+		
+		<para>
+			Setting for using CastorMarshaller is as follows.
+			<programlisting language="xml"><![CDATA[<beans>
+    <bean id="castorMarshaller" class="org.springframework.oxm.castor.CastorMarshaller" />
+</beans>]]></programlisting>
+			To change the default conversion format of Castor, create a Castor mapping file and define mappingLocation property as the below example. 
+			Refer to <ulink url="http://castor.org/xml-mapping.html">Castor XML Mapping</ulink> for instructions on how to create Castor mapping file.
+			<programlisting language="xml"><![CDATA[<beans>
+    <bean id="castorMarshaller" class="org.springframework.oxm.castor.CastorMarshaller">
+        <property name="mappingLocation" value="classpath:mapping.xml" />
+    </bean>
+</beans>]]></programlisting>
+		</para>
+	</section>
+	
+	<section id="springrest_restsupport_oxm_xmlbeans">
+		<title>XMLBeans</title>
+		<para>
+			XMLBeans is an XML binding framework that supports Full XML schema. 
+			For more information, refer to the <ulink url="http://xmlbeans.apache.org/">XMLBeans website</ulink>. 
+			The Marshaller/Unmarshaller implementation provided in Spring is XmlBeansMarshaller.
+		</para>
+		
+		<para>
+			Setting for using XmlBeansMarshaller is as follows.
+			<programlisting language="xml"><![CDATA[<beans>
+    <bean id="xmlBeansMarshaller" class="org.springframework.oxm.xmlbeans.XmlBeansMarshaller" />
+</beans>]]></programlisting>
+			However, note that XmlBeansMarshaller can only convert XmlObject type object, not all java.lang.Object.
+		</para>
+		
+		<para>
+			You can use 'oxm' namespace for the simple setting below.
+			<programlisting language="xml"><emphasis role="bold"><![CDATA[<oxm:xmlbeans-marshaller id="marshaller"/>]]></emphasis></programlisting>
+		</para>
+	</section>
+	
+	<section id="springrest_restsupport_oxm_jibx">
+		<title>JiBX</title>
+		<para>
+			JiBX is a tool that is used to bind XML data to Java object. 
+			For more information, refer to the <ulink url="http://jibx.sourceforge.net/">JiBX website</ulink>. 
+			The Marshaller/Unmarshaller implementation provided in Spring is JibxMarshaller.
+		</para>
+		
+		<para>
+			Setting for using JibxMarshaller is as follows.
+			<programlisting language="xml"><![CDATA[<beans>
+    <bean id="jibxFlightsMarshaller" class="org.springframework.oxm.jibx.JibxMarshaller">
+        <property name="targetClass">anyframe.sample.domain.Movie</property>
+    </bean>
+</beans>]]></programlisting>
+			The above example defines only one JibxMarshaller, 
+			but when many classes are converted, several JibxMarshallers that have different targetClass property should be defined.
+		</para>
+		
+		<para>
+			You can use 'oxm' namespace for the simple setting below.
+			<programlisting language="xml"><emphasis role="bold"><![CDATA[<oxm:jibx-marshaller id="marshaller" target-class="anyframe.sample.domain.Movie"/>]]></emphasis></programlisting>
+		</para>
+	</section>
+</chapter>

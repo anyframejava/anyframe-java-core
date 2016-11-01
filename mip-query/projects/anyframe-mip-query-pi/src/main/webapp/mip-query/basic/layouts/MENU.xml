@@ -1,0 +1,141 @@
+<?xml version="1.0" encoding="utf-8"?>
+<Window>
+	<Form BKColor="whitesmoke" Height="491" Id="frmMENU" Left="8" OnLoadCompleted="frmMENU_OnLoadCompleted" PidAttrib="7" Top="8" Ver="1.0" Width="169" WorkArea="true">
+		<Datasets>
+			<Dataset DataSetType="Dataset" Id="dsTrvMenu">
+				<Contents>
+					<colinfo id="DEPTH" size="2" summ="default" type="INT"/>
+					<colinfo id="NAME" size="256" summ="default" type="STRING"/>
+					<colinfo id="FORM_ID" size="256" summ="default" type="STRING"/>
+					<colinfo id="TYPE" size="256" summ="default" type="STRING"/>
+					<record>
+						<DEPTH>0</DEPTH>
+						<FORM_ID>01GRD</FORM_ID>
+						<NAME>SAMPLE001</NAME>
+						<TYPE></TYPE>
+					</record>
+					<record>
+						<DEPTH>0</DEPTH>
+						<FORM_ID>02GRDFRM</FORM_ID>
+						<NAME>SAMPLE002</NAME>
+						<TYPE></TYPE>
+					</record>
+					<record>
+						<DEPTH>0</DEPTH>
+						<FORM_ID>03GRDPOP</FORM_ID>
+						<NAME>SAMPLE003</NAME>
+						<TYPE></TYPE>
+					</record>
+					<record>
+						<DEPTH>0</DEPTH>
+						<FORM_ID>04GRDTAB</FORM_ID>
+						<NAME>SAMPLE004</NAME>
+						<TYPE></TYPE>
+					</record>
+					<record>
+						<DEPTH>0</DEPTH>
+						<FORM_ID>05GRDTAB</FORM_ID>
+						<NAME>SAMPLE005</NAME>
+						<TYPE></TYPE>
+					</record>
+					<record>
+						<DEPTH>0</DEPTH>
+						<FORM_ID>06GRDGRD</FORM_ID>
+						<NAME>SAMPLE006</NAME>
+						<TYPE></TYPE>
+					</record>
+					<record>
+						<DEPTH>0</DEPTH>
+						<FORM_ID>07GRDGRD</FORM_ID>
+						<NAME>SAMPLE007</NAME>
+						<TYPE></TYPE>
+					</record>
+					<record>
+						<DEPTH>0</DEPTH>
+						<FORM_ID>08TRVGRD</FORM_ID>
+						<NAME>SAMPLE008</NAME>
+						<TYPE></TYPE>
+					</record>
+					<record>
+						<DEPTH>0</DEPTH>
+						<FORM_ID>09TRVFRM</FORM_ID>
+						<NAME>SAMPLE009</NAME>
+						<TYPE></TYPE>
+					</record>
+					<record>
+						<DEPTH>0</DEPTH>
+						<FORM_ID>10CTGGRD</FORM_ID>
+						<NAME>SAMPLE010</NAME>
+						<TYPE></TYPE>
+					</record>
+					<record>
+						<DEPTH>0</DEPTH>
+						<FORM_ID>11CALMTLY</FORM_ID>
+						<NAME>SAMPLE011</NAME>
+						<TYPE></TYPE>
+					</record>
+					<record>
+						<DEPTH>0</DEPTH>
+						<FORM_ID>12CALWKLY</FORM_ID>
+						<NAME>SAMPLE012</NAME>
+						<TYPE></TYPE>
+					</record>
+					<record>
+						<DEPTH>0</DEPTH>
+						<FORM_ID>13FILEATT</FORM_ID>
+						<NAME>SAMPLE013</NAME>
+						<TYPE></TYPE>
+					</record>
+				</Contents>
+			</Dataset>
+		</Datasets>
+		<TreeView BindDataset="dsTrvMenu" BKColor="whitesmoke" Border="None" ExpandImageIndex="0" Height="491" Id="trvMenu" ImageID="blet_menu2" ImageIndex="0" InnerImageCount="1" LevelColumn="DEPTH" OnClick="trvMenu_OnClick" TabOrder="1" TEXTColumn="NAME" Top="3" Width="160"></TreeView>
+		<Button Height="25" Id="btnHor" Left="9" OnClick="btnHor_OnClick" TabOrder="2" Text="수평" Top="455" Visible="FALSE" Width="46"></Button>
+		<Button Height="25" Id="btnVer" Left="57" OnClick="btnVer_OnClick" TabOrder="3" Text="수직" Top="455" Visible="FALSE" Width="46"></Button>
+		<Button Height="25" Id="btnCas" Left="105" OnClick="btnCas_OnClick" TabOrder="4" Text="계단식" Top="455" Visible="FALSE" Width="46"></Button>
+	</Form>
+	<Script><![CDATA[// MDI 로딩시 Main 프레임에 첫번째 메뉴 화면 로딩
+function frmMENU_OnLoadCompleted(obj) {
+	trvMenu_OnClick(obj, 1, 0);
+}
+
+// 트리 메뉴 클릭 시
+function trvMenu_OnClick(obj, nOldRow, nNewRow) {
+	
+	var strType     = dsTrvMenu.getColumn(nNewRow,"TYPE");	
+	var strFormID   = dsTrvMenu.getColumn(nNewRow,"FORM_ID");
+	var strFormName = dsTrvMenu.getColumn(nNewRow,"NAME");
+	var strFormUrl  = "samples::" + strFormID + ".xml";
+	
+	if ( length(strFormID) == 0 ) {
+		return;
+	}
+	
+	// 해당 메뉴의 창이 열려있는 지 확인
+	var objForm = allWindows[strFormID];
+	
+	if (length(objForm) > 0) {
+		objForm[0].reload();
+		objForm[0].setFocus();
+		
+		return;
+	}
+	
+	newWindow(strFormID, strFormUrl, "", 834, 594, "OpenStyle=MAX titlebar=true Status=false");
+}
+
+// 열린 창을 바둑판 식 배열
+function btnVer_OnClick(obj) {
+	arrangeWindow("VTile");
+}
+
+// 열린 창을 바둑판 식 배열
+function btnHor_OnClick(obj) {
+	arrangeWindow("HTile");
+}
+
+// 열린 창을 계단식 배열
+function btnCas_OnClick(obj) {
+	arrangeWindow("Cascade");
+}]]></Script>
+</Window>

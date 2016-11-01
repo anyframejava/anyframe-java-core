@@ -1,0 +1,197 @@
+<?xml version="1.0" encoding="utf-8"?>
+<Window>
+	<Form BKColor="white" BorderColor="#58595b" DomainID="title.category_list" Height="640" Id="frm01GRD" Left="8" OnLoadCompleted="frm01GRD_OnLoadCompleted" OnTimer="frm01GRD_OnTimer" PidAttrib="7" Top="8" Ver="1.0" Width="834" WorkArea="true">
+		<Datasets>
+			<Dataset DataSetType="Dataset" Id="dsService">
+				<Contents>
+					<colinfo id="SVC_ID" size="100" summ="default" type="STRING"/>
+					<colinfo id="QUERY_LIST" size="256" summ="default" type="STRING"/>
+					<colinfo id="SERVICE" size="100" summ="default" type="STRING"/>
+					<colinfo id="IN_DATASET_LIST" size="256" summ="default" type="STRING"/>
+					<colinfo id="OUT_DATASET_LIST" size="256" summ="default" type="STRING"/>
+					<colinfo id="CONTROLLER" size="512" summ="default" type="STRING"/>
+					<colinfo id="CALLBACK" size="100" summ="default" type="STRING"/>
+					<colinfo id="SYNC_YN" size="1" summ="default" type="STRING"/>
+					<record>
+						<CALLBACK></CALLBACK>
+						<CONTROLLER></CONTROLLER>
+						<IN_DATASET_LIST>querySet1=dsSearch</IN_DATASET_LIST>
+						<OUT_DATASET_LIST>dsGrdCategory=querySet1</OUT_DATASET_LIST>
+						<QUERY_LIST>querySet1=findCategoryList</QUERY_LIST>
+						<SERVICE></SERVICE>
+						<SVC_ID>getPagingListCategory</SVC_ID>
+						<SYNC_YN></SYNC_YN>
+					</record>
+					<record>
+						<CALLBACK></CALLBACK>
+						<CONTROLLER></CONTROLLER>
+						<IN_DATASET_LIST>querySet1=dsGrdCategory:U</IN_DATASET_LIST>
+						<OUT_DATASET_LIST></OUT_DATASET_LIST>
+						<QUERY_LIST>querySet1=createCategory,updateCategory,removeCategory</QUERY_LIST>
+						<SERVICE></SERVICE>
+						<SVC_ID>saveAllCategory</SVC_ID>
+						<SYNC_YN></SYNC_YN>
+					</record>
+				</Contents>
+			</Dataset>
+			<Dataset DataSetType="Dataset" Id="dsSearch">
+				<Contents>
+					<column id="pageIndex" type="INTEGER">1</column>
+					<column id="pageSize" type="INTEGER">2</column>
+					<column id="pageUnit" type="INTEGER">2</column>
+					<colinfo id="SEARCH_CONDITION" size="100" type="STRING"/>
+					<colinfo id="SEARCH_KEYWORD" size="100" type="STRING"/>
+					<record>
+						<SEARCH_CONDITION></SEARCH_CONDITION>
+						<SEARCH_KEYWORD></SEARCH_KEYWORD>
+					</record>
+				</Contents>
+			</Dataset>
+			<Dataset DataSetType="Dataset" Id="dsGrdCategory" UseClientLayout="1">
+				<Contents>
+					<column id="pageCount" type="INTEGER">0</column>
+					<column id="pageIndex" type="INTEGER">0</column>
+					<column id="pageSize" type="INTEGER">0</column>
+					<column id="totalCount" type="INTEGER">0</column>
+					<colinfo id="CATEGORY_ID" size="256" summ="default" type="STRING"/>
+					<colinfo id="CATEGORY_DESC" MapValue="minLength=1" size="256" summ="default" type="STRING"/>
+					<colinfo id="CATEGORY_NAME" MapValue="required" size="256" summ="default" type="STRING"/>
+					<colinfo id="REG_DATE" size="256" summ="default" type="STRING"/>
+				</Contents>
+			</Dataset>
+			<Dataset DataSetType="Dataset" Id="dsCboSearchCd">
+				<Contents>
+					<colinfo id="CODE" size="256" summ="default" type="STRING"/>
+					<colinfo id="DATA" size="256" summ="default" type="STRING"/>
+					<record>
+						<CODE>0</CODE>
+						<DATA></DATA>
+					</record>
+					<record>
+						<CODE>1</CODE>
+						<DATA></DATA>
+					</record>
+				</Contents>
+			</Dataset>
+		</Datasets>
+		<Grid AutoEnter="TRUE" AutoFit="TRUE" AutoFitEndLine="Hide" BindDataset="dsGrdCategory" BkColor2="user10" BoldHead="true" Border="Flat" BorderColor="#d6d6d6" Bottom="422" ColSizing="TRUE" Editable="TRUE" Enable="true" EndLineColor="default" Face3dColor="user6" HeadBorder="Flat" HeadHeight="23" Height="310" Hilight3dColor="user2" Id="grdCategory" InputPanel="FALSE" Left="14" LineColor="default" MinWidth="100" MultiSelect="TRUE" Right="828" Style="stlGrd" TabOrder="1" TabStop="FALSE" Top="112" UseDBuff="true" UsePopupMenu="true" UseSelColor="true" Visible="true" VLineColor="default" WheelScrollRow="1" Width="814">
+			<contents>
+				<format id="Default">
+					<columns>
+						<col width="161"/>
+						<col width="522"/>
+						<col width="96"/>
+					</columns>
+					<head>
+						<cell col="0" color="user11" display="text" domainid="biz.category.name"/>
+						<cell col="1" color="user11" display="text" domainid="biz.category.desc"/>
+						<cell col="2" color="user11" display="text" domainid="biz.category.reg_date"/>
+					</head>
+					<body>
+						<cell col="0" colid="CATEGORY_NAME" display="text" edit="normal"/>
+						<cell col="1" colid="CATEGORY_DESC" display="text" edit="normal"/>
+						<cell align="center" col="2" colid="REG_DATE" display="date"/>
+					</body>
+				</format>
+			</contents>
+		</Grid>
+		<Div Height="25" Id="divPage" Left="137" TabOrder="5" Text="Div0" Top="430" Url="includes::LISTPAGE.xml" Width="560">
+			<Contents></Contents>
+		</Div>
+		<Image Align="Left" DomainID="title.category_list" Height="16" Id="imgTitle" ImageID="b_title_icon1" Left="14" LeftMargin="10" OnClick="imgTitle_OnClick" Style="stlTitle" TabOrder="6" Text="카테고리&#32;목록" Top="24" VAlign="Top" Width="400"></Image>
+		<Div BKColor="user39" Border="Flat" BorderColor="user12" DisableBKColor="#f0f0f0" Height="43" Id="divSearch" Left="14" Style="stlDivSearch" TabOrder="7" Text="Div0" Top="53" UserData="RESIZE=TWH" Width="814">
+			<Contents>
+				<Image Align="Left" DomainID="button.search_condition" Font="돋움체,9,Bold" Height="19" Id="imgSearch" ImageID="blet_search" Left="20" LeftMargin="18" OnClick="Div0_Image0_OnClick" Style="stlImg" TabOrder="3" TabStop="FALSE" Text="검색조건" Top="12" Width="80"></Image>
+				<Combo BindDataset="dsSearch" BKColor="white" Border="Flat" CodeColumn="CODE" Column="SEARCH_CONDITION" DataColumn="DATA" Height="20" Id="cboSearchCd" ImeMode="keep,native" INDEX="0" InnerDataset="dsCboSearchCd" Left="100" ResetIndex="FIRST" Style="stlCbo" TabOrder="2" Top="10" Width="120"></Combo>
+				<Edit BindDataset="dsSearch" BKColor="white" Border="Flat" Column="SEARCH_KEYWORD" Height="20" Id="edtSearchKw" ImeMode="keep,native" Left="223" LeftMargin="2" OnKeyDown="divSearch_edtSearchKw_OnKeyDown" Style="stlEdt" TabOrder="1" Top="11" Width="100"></Edit>
+				<Button ButtonStyle="TRUE" Cursor="HAND" Height="21" Id="btnSearch" ImageID="icon_search" Left="327" OnClick="divSearch_btnSearch_OnClick" Style="stlBtn" TabOrder="4" Top="12" UserData="TYPE=S" Width="23"></Button>
+			</Contents>
+		</Div>
+		<Div Height="13" Id="divGrdStatus" Left="624" Style="stlLblGrp" TabOrder="8" TabStop="FALSE" Text="Div0" Top="99" Url="includes::GRDSTATUS.xml" UserData="GRD_STATUS=grdCategory" Width="200">
+			<Contents></Contents>
+		</Div>
+		<Button ButtonStyle="TRUE" Cursor="HAND" DomainID="button.add" Height="19" Id="btnAddRow" ImageID="btn_add" Left="654" LeftMargin="13" OnClick="btnAddRow_OnClick" Style="stlBtn" TabOrder="2" Text="&#32;&#32;&#32;&#32;&#32;&#32;추가" Top="30" Width="56"></Button>
+		<Button ButtonStyle="TRUE" Cursor="HAND" DomainID="button.save" Height="19" Id="btnSaveAll" ImageID="btn_save" Left="772" LeftMargin="13" OnClick="btnSaveAll_OnClick" Style="stlBtn" TabOrder="4" Text="&#32;&#32;&#32;저장" Top="30" Width="56"></Button>
+		<Button ButtonStyle="TRUE" Cursor="HAND" DomainID="button.remove" Height="19" Id="btnDelRow" ImageID="btn_delete" Left="713" LeftMargin="13" OnClick="btnDelRow_OnClick" Style="stlBtn" TabOrder="3" Text="&#32;&#32;&#32;삭제" Top="30" Width="56"></Button>
+	</Form>
+	<Script><![CDATA[#include "javascript::common.js";
+
+//검색 조건 
+var searchKeyword = "";
+
+//화면 로딩시 Category List 출력
+function frm01GRD_OnLoadCompleted(obj) {
+	gfnService("getPagingListCategory");
+	
+	dsCboSearchCd.setColumn(0, "DATA", global.domain.biz.category.name);
+	dsCboSearchCd.setColumn(1, "DATA", global.domain.biz.category.desc);
+	
+	divSearch.cboSearchCd.index = 0;
+	
+	//공통OnloadEvent call 예 - 아래와 같이 화면 로딩시에 공통적인 기능이 실행되어야 할 경우 정의해서 호출
+	gfnForm_OnLoadCompleted(obj);
+	
+	
+}
+
+// 페이징 처리용 script (◀, ▶, 번호 클릭)
+function fnGetPagingList(obj) {
+	//검색 버튼 눌렀을 때의 검색 조건 유지, 없을 시 ""
+	dsSearch.setColumn(0, "SEARCH_KEYWORD", searchKeyword);
+	gfnService("getPagingListCategory");
+}
+
+//검색 버튼 클릭시 Category List 출력
+function divSearch_btnSearch_OnClick(obj) {
+	//검색 조건 셋팅
+	searchKeyword = divSearch.edtSearchKw.text;
+	
+	//현재 페이지와 highlight되어야할 페이지를 1로 셋팅 
+	divPage.nCurrentPage = 1;
+	dsSearch.setConstColumn("pageIndex", 1);
+	
+	gfnService("getPagingListCategory");
+}
+
+// 검색어 입력후 엔터키
+function divSearch_edtSearchKw_OnKeyDown(obj, nChar, bShift, bCtrl, bAlt, LLParam, HLParam) {
+	if(gfnIsEnterKeyDown(obj, nChar, bShift, bCtrl, bAlt, LLParam, HLParam)){
+		divSearch_btnSearch_OnClick(obj);
+	}
+}
+
+//추가 버튼 클릭시 Row 추가
+function btnAddRow_OnClick(obj) {
+	dsGrdCategory.addRow();
+}
+
+//삭제 버튼 클릭시 체크된 row 삭제
+function btnDelRow_OnClick(obj) {
+	gfnRemoveSelectedRows(grdCategory);
+}
+
+//저장
+function btnSaveAll_OnClick(obj) {
+	if(gfnValidate(this)){
+		gfnService("saveAllCategory");
+	}
+}
+
+//페이징 처리를 위한 callback 메소드 정의
+function fnCallback(strServiceId, strErrorCode, strErrorMsg) {
+	if ( strErrorCode == -1 ) {
+		gfnMsg(strErrorMsg, "ERR");
+		
+	} else {
+		if(strServiceId == "getPagingListCategory") {
+			divPage.objListDataset = dsGrdCategory;
+			divPage.objPageDataset = dsSearch;
+			divPage.fnMakePage();
+						
+		} else if(strServiceId == "saveAllCategory") {
+			gfnMsg("MSG_SAVE_SUCCESS");
+			divSearch_btnSearch_OnClick();
+		}
+	}
+}]]></Script>
+</Window>

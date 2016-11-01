@@ -1,0 +1,67 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<queryservice xmlns="http://www.anyframejava.org/schema/query/mapping" 
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" 
+	xsi:schemaLocation="http://www.anyframejava.org/schema/query/mapping http://www.anyframejava.org/schema/query/mapping/anyframe-query-mapping-1.0.xsd ">
+
+	<queries>
+		
+		<query id="findJqueryGenreByPk">
+			<statement>
+				SELECT genre_id, name
+				FROM JQUERY_GENRE
+				WHERE genre_id = :vo.genreId
+			</statement>
+			<result class="org.anyframe.plugin.simpleweb.jquery.domain.Genre"/>
+		</query>
+		
+		<query id="findDropDownJqueryGenreList" isDynamic="false">
+			<statement>
+				SELECT genre_id, name
+				FROM JQUERY_GENRE
+				ORDER BY name
+			</statement>
+			<result class="org.anyframe.plugin.simpleweb.jquery.domain.Genre" />
+		</query>
+		
+		<query id="findGenreName">
+			<statement>
+			    <!--simpleweb-jquery-findGenreName-START-->
+				SELECT name
+				FROM JQUERY_GENRE
+				WHERE name like :prefix || '%'
+				<!--simpleweb-jquery-findGenreName-END-->
+			</statement>
+			<param type="VARCHAR" name="prefix"/>
+		</query>
+				
+		<query id="findJqueryGenreList" isDynamic="true">
+			<statement>
+			    <!--simpleweb-jquery-findJqueryGenreList-START-->
+				SELECT DISTINCT genre.genre_id, genre.name, CASE WHEN  movie.movie_id is not null THEN 'closed' ELSE movie.movie_id END state
+				FROM JQUERY_GENRE genre
+				LEFT JOIN JQUERY_MOVIE movie
+				ON	genre.genre_id = movie.genre_id
+				WHERE name like :vo.searchKeyword || '%'
+				ORDER BY name
+				<!--simpleweb-jquery-findJqueryGenreList-END-->
+			</statement>
+			<result class="org.anyframe.plugin.simpleweb.jquery.domain.Genre" />
+		</query>
+		
+		<query id="findGenreListForTree" isDynamic="true">
+			<statement>
+			    <!--simpleweb-jquery-findGenreListForTree-START-->
+				SELECT genre.genre_id, genre.name, CASE WHEN  movie.movie_id is not null THEN 'closed' ELSE movie.movie_id END state
+				FROM JQUERY_GENRE genre
+				LEFT JOIN JQUERY_MOVIE movie
+				ON	genre.genre_id = movie.genre_id
+				WHERE name like :vo.searchKeyword || '%'
+				ORDER BY name
+				<!--simpleweb-jquery-findGenreListForTree-END-->
+			</statement>
+			<result class="org.anyframe.plugin.simpleweb.jquery.domain.Genre" />
+		</query>
+		
+	</queries>
+</queryservice>
+

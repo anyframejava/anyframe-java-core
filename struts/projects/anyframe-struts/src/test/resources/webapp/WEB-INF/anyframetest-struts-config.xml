@@ -1,0 +1,173 @@
+<?xml version="1.0" encoding="ISO-8859-1"?>
+<!DOCTYPE struts-config PUBLIC
+          "-//Apache Software Foundation//DTD Struts Configuration 1.2//EN"
+          "http://jakarta.apache.org/struts/dtds/struts-config_1_2.dtd">
+
+<struts-config>
+    
+	<!-- ========== Data Source Configuration =============================== -->
+    <data-sources />
+    
+    <!-- ========== Form Bean Definitions ================================== -->
+    <form-beans>
+    	<form-bean name="testForm" type="org.anyframe.struts.action.DefaultTestListForm" />        
+    </form-beans>    
+    
+    <!-- ========== Global Exception Definitions ============================== -->
+    <global-exceptions>
+        <exception	key="common.msg.authentication" 
+        			path="logon" 
+        			type="org.anyframe.struts.util.AuthenticationException" 
+        			handler="org.anyframe.struts.action.DefaultExceptionHandler" />
+        <exception	key="common.msg.authorization" 
+        			path="message" 
+        			type="org.anyframe.struts.util.AuthorizationException" 
+        			handler="org.anyframe.struts.action.DefaultExceptionHandler" />
+        <exception	key="common.msg.fail" 
+        			path="message" 
+        			type="java.lang.Exception" 
+        			handler="org.anyframe.struts.action.DefaultExceptionHandler" />
+        <exception	key="common.msg.biz" 
+        			path="message" 
+        			type="anyframe.common.exception.BaseExcetpion" 
+        			handler="org.anyframe.struts.action.DefaultExceptionHandler" />
+        <exception	key="common.msg.invalidtoken.error" 
+        			path="message" 
+        			type="org.anyframe.struts.util.InvalideTokenException" 
+        			handler="org.anyframe.struts.action.DefaultExceptionHandler" />
+    </global-exceptions>
+    
+    <!-- ========== Global Forward Definitions =============================== -->
+    <global-forwards />
+    
+    <!-- ========== Action Mapping Definitions =============================== -->
+    <action-mappings>
+        <action path="/testDefaultRequestProcessor"
+                scope="request"
+                roles="ADMIN"
+                type="org.anyframe.struts.action.DefaultRequestProcessorTestAction"
+                validate="false">
+        	    <forward name="success" path="test" />
+        </action>
+        <action path="/testDefaultRequestProcessorNormalUserRole"
+                scope="request"
+                roles="NORMAL"
+                type="org.anyframe.struts.action.DefaultRequestProcessorTestAction"
+                validate="false">
+                <forward name="success" path="test" />
+        </action>
+        <action path="/testDefaultRequestProcessorNoRoles"
+                scope="request"
+                type="org.anyframe.struts.action.DefaultRequestProcessorTestAction"
+                validate="false">
+                <forward name="success" path="test" />
+        </action>
+        <action path="/testDefaultPropertyMessageResources"
+                scope="request"
+                type="org.anyframe.struts.util.DefaultPropertyMessageResourcesTestAction"
+                validate="false">
+                <forward name="success" path="test" />
+        </action>
+        <action path="/testDefaultException"
+                scope="request"
+                type="org.anyframe.struts.util.DefaultExceptionTestAction"
+                validate="false">
+        </action>
+        
+        <action path="/testDefaultBaseException"
+                scope="request"
+                type="org.anyframe.struts.util.DefaultBaseExceptionHandlerTestAction"
+                validate="false">
+	        <exception	key="common.msg.authentication" 
+	        			path="logon" 
+	        			type="org.anyframe.struts.util.AuthenticationException" 
+	        			handler="org.anyframe.struts.util.DefaultBaseExceptionExtHandler" />
+	        <exception	key="common.msg.authorization" 
+	        			path="message" 
+	        			type="org.anyframe.struts.util.AuthorizationException" 
+	        			handler="org.anyframe.struts.util.DefaultBaseExceptionExtHandler" />
+	        <exception	key="common.msg.fail" 
+	        			path="message" 
+	        			type="java.lang.Exception" 
+	        			handler="org.anyframe.struts.util.DefaultBaseExceptionExtHandler" />
+	        <exception	key="common.msg.biz" 
+	        			path="message" 
+	        			type="anyframe.common.exception.BaseExcetpion" 
+	        			handler="org.anyframe.struts.util.DefaultBaseExceptionExtHandler" />
+	        <exception	key="common.msg.invalidtoken" 
+	        			path="message" 
+	        			type="org.anyframe.struts.util.InvalideTokenException" 
+	        			handler="org.anyframe.struts.util.DefaultBaseExceptionExtHandler" />
+        </action>
+        
+        <action path="/testDefaultActionSupportNormal"
+                scope="request"
+                type="org.anyframe.struts.action.DefaultActionSupportTestAction"
+                validate="false">
+                <forward name="success" path="test" />
+        </action>
+        
+        <action path="/testDefaultActionSupportCheckedException"
+                scope="request"
+                type="org.anyframe.struts.action.DefaultActionSupportExceptionTestAction"
+                validate="false">
+                <forward name="success" path="test" />
+        </action>
+        
+        <action path="/testDefaultActionSupportUnCheckedException"
+                scope="request"
+                type="org.anyframe.struts.action.DefaultActionSupportExceptionTestAction"
+                validate="false">
+                <forward name="success" path="test" />
+        </action>
+        
+        <action path="/testDefaultDispatchActionSupport"
+                scope="request"
+                type="org.anyframe.struts.action.DefaultDispatchActionSupportTestAction"
+                parameter="method"
+                validate="false">
+	        <exception	key="common.msg.dispatch"
+	        			path="message" 
+	        			type="java.lang.Exception"  
+	        			handler="org.anyframe.struts.util.DefaultBaseExceptionExtHandler" />
+                <forward name="success" path="test" />
+        </action>
+        
+        <action path="/testDefaultDispatchActionSupportNoParameter"
+                scope="request"
+                type="org.anyframe.struts.action.DefaultDispatchActionSupportTestAction"
+                validate="false">
+	        <exception	key="common.msg.dispatch"
+	        			path="message" 
+	        			type="java.lang.Exception"  
+	        			handler="org.anyframe.struts.util.DefaultBaseExceptionExtHandler" />
+                <forward name="success" path="test" />
+        </action>
+        
+        <action name="testForm"
+                path="/testDefaultFormArrayList"
+                type="org.anyframe.struts.action.DefaultFormArrayListAction"
+                validate="false">
+                <forward name="success" path="test" />
+        </action> 
+                                                                                         
+    </action-mappings>
+    
+    <!-- ========== Controller Configuration ================================ -->
+    <controller
+        contentType="text/html;charset=euc-kr"
+        locale="true"
+        processorClass="org.anyframe.struts.tiles.DefaultRequestProcessor" />
+    
+    <!-- ========== Message Resources Definitions ============================ -->    
+    <message-resources factory="org.anyframe.struts.util.DefaultPropertyMessageResourcesFactory" parameter="ApplicationResources" />
+    
+    <!-- ========== Plug Ins Configuration ================================= -->
+    <plug-in className="org.apache.struts.tiles.TilesPlugin">
+        <set-property property="definitions-config" value="/WEB-INF/anyframetest-tiles.xml" />
+        <set-property property="moduleAware" value="true" />
+    </plug-in>
+    
+  	<!-- ========== PlugIn ===================  -->
+</struts-config>
+

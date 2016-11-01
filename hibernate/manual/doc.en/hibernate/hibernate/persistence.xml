@@ -1,0 +1,962 @@
+<chapter id="hibernate_hibernate_persistence">
+	<title>Persistence Mapping</title>
+	<para>
+		It is needed to do Object Relational Mapping which is a mapping Persistence objects with specific table by using Hibernate.
+		This page does not cover what is needed to map one object with one table, instead will have a look at
+		how to map objects in Association and Inheritance relation with one table.
+		(*Note. For information on what is needed to map one object with one table, refer to <link linkend="hibernate_hibernate_mappingfile">Mapping XML File
+		</link> under Hibernate.)	
+	</para>
+
+    <section id="hibernate_hibernate_persistence_association">
+		<title>Persistence Mapping - Association</title>
+
+      	<para>
+      		In this page, let's take a look at mapping method by Association type between two classes.
+      		In particular, on One to Many Mapping which will be used most frequently in object modeling, we will analyze central to various Collection mapping methods
+      		and sample code	for inverse and cascade, main properties of Collection.      		
+      	</para>
+
+		<section id="hibernate_hibernate_persistence_association_onetoone">
+			<title>One to One Mapping</title>
+
+        	<para>
+        		There are many ways of mapping the relationship of two classes in "A:B = 1:1" relationship.
+        		One of them is mapping reference relationship of two classes based on same Primary Key.        		
+        	</para>
+
+        	<mediaobject>
+          		<imageobject>
+            		<imagedata align="center"
+						fileref="../image/hibernate/onetoone.png" />
+          		</imageobject>
+        	</mediaobject>
+
+        	<para>
+        		The figure on the left is a class diagram," Foo : Bar = 1:1" and expresses one-way reference relation.
+        		Like ERD in the right-top figure, it can be mapped with TBL_FOO and TBL_BAR respectively,
+        		and does not require special column addition but uses the same Primary Key.
+        		How to define such mapping relationship in Hibernate Mapping XML file is as shown in the bottom of the right figure.
+        		In this figure, each class and property of Foo and Bar is defined by using class tag.
+        		And for reference relation between the two classes, the party which refers uses one-to-one and specifies class and table in reference relation.        		
+        	</para>
+		</section>
+
+		<section id="hibernate_hibernate_persistence_association_onetomany">
+        	<title>One to Many Mapping</title>
+
+        	<para>
+        		When mapping two classes in "A:B = 1:m" relation, B is basically in Collection type.
+        		In One to Many Mapping, we will have a look at how to define Hibernate Mapping XML file based on sample
+        		and <emphasis role="bold">various Collection types supported in Hibernate</emphasis>and <emphasis role="bold">
+        		inverse and cascade</emphasis>, which are important properties of Collection.     
+        	</para>
+
+        	<mediaobject>
+          		<imageobject>
+            		<imagedata align="center"
+						fileref="../image/hibernate/onetomany.png" />
+				</imageobject>
+			</mediaobject>
+
+			<para>
+				The figure on the left is a class diagram," Foo : Bar = 1:1" and expresses one-way reference relation.
+				Like ERD on the top of the right figure, it can be mapped with TBL_FOO and TBL_BAR respectively,
+				and TBL_BAR table requires Foreign Key for TBL_FOO table.
+				How to define such mapping relationship in Hibernate Mapping XML file is as shown in the bottom of the right figure.
+				In this figure, each class and property of Foo and Bar is defined by using class tag.
+				In addition, by using set tag, Foo expresses Collection on Bar class. 
+				In addition, in set tag, one-to-many tag is used and relation of two objects are specified
+				and Foreign Key column is specified through key tag.
+				For information on how to define Hibernate Mapping on "1:m" one-way relation, refer to Country.hbm.xml and Movie.hbm.xml which 
+				express "Country : Movie = 1:m" one-way relation.
+				If mapping information is added to B in Hibernate Mapping XML, two-way reference becomes also possible.				
+                <programlisting language="xml"><![CDATA[<class name="Bar" table="TBL_BAR">
+    …
+    <many-to-one name="TBL_FOO" class="Foo" column="FOO_ID"/>
+</class>]]></programlisting>
+			</para>
+
+        	<para>
+        		For information how to define Hibernate Mapping XML in 1:m two-way relation, 
+        		refer to Country.hbm.xml and Movie.hbm.xml which express two-way relation of "Country : Movie = 1:m".        		
+        	</para>
+
+			<section id="hibernate_hibernate_persistence_association_onetomany_collection">
+				<title>Collection Mapping</title>
+
+          		<para>
+          			As mentioned above, when mapping two classes in 1:m relation, B is basically in Collection type.
+          			There are various Collection types supported in Hibernate in addition to "set".          			
+				</para>
+
+          		<itemizedlist>
+            		<listitem>
+              			<para>
+              				<emphasis role="bold">set</emphasis> : java.util.Set type. Defines by using <![CDATA[<set>]]>.
+              				It is not possible to know the order of saving object, and double saving of the same object is not allowed (Using HashSet).
+              				The following is an example of Hibernate Mapping XML and source code which define Collection object by using set tag.              	
+                            <programlisting language="xml">1. Hibernate Mapping XML
+						
+<![CDATA[<class name="org.anyframe.sample.model.unidirection.relation.collection.CountryWithSet" 
+        table="COUNTRY_SET" lazy="true" schema="PUBLIC">
+    ...]]>
+    <emphasis role="bold"><![CDATA[<]]><![CDATA[set name="movies"]]></emphasis> <![CDATA[inverse="true" cascade="save-update">
+        <key>
+            <column name="COUNTRY_CODE" length="12" />
+        </key>
+        <one-to-many class="org.anyframe.sample.model.bidirection.Movie" />
+    </set>
+</class>]]></programlisting>
+<programlisting language="java">2. CountryWithSet.java
+
+<![CDATA[public class CountryWithSet implements java.io.Serializable {
+
+    private String countryCode;
+    private String countryId;
+    private String countryName;]]>
+    <emphasis role="bold"><![CDATA[private Set movies = new HashSet(0);]]></emphasis>
+
+    ...
+}</programlisting>
+					</para>
+	            	</listitem>
+	
+					<listitem>
+						<para>
+							<emphasis role="bold">list</emphasis> : java.util.List type. This defines by using <![CDATA[<list>]]>.
+							In the case of List type, it is possible to know the order of saving object, and special definition of index column
+							is needed if you want to keep the saving order to table.
+							For special column to save the object saving order, use <![CDATA[<list-index>under <list>>]]>(Using ArrayList).
+							The following is an example of Hibernate Mapping XML and source code which define Collection object by using list tag.							
+                            <programlisting language="xml">1. Hibernate Mapping XML
+						
+<![CDATA[<class name="org.anyframe.sample.model.unidirection.relation.collection.CountryWithList" 
+        table="COUNTRY_LIST" lazy="true" schema="PUBLIC">
+    ...]]>
+    <emphasis role="bold"><![CDATA[<]]><![CDATA[list name="movies"]]></emphasis><![CDATA[ cascade="save-update">
+        <key>
+            <column name="COUNTRY_CODE" length="12" />
+        </key>]]>
+        <emphasis role="bold"><![CDATA[<]]><![CDATA[list-index column="MOVIE_IDX"]]></emphasis>/>
+        <![CDATA[<one-to-many class="org.anyframe.sample.model.unidirection.Movie" />
+    </list>
+</class>]]></programlisting>			
+<programlisting language="java">2. CountryWithList.java
+
+<![CDATA[public class CountryWithList implements java.io.Serializable {
+
+    private String countryCode;
+    private String countryId;
+    private String countryName;]]>
+    <emphasis role="bold"><![CDATA[private List movies = new ArrayList(0);]]></emphasis>
+
+	
+    ...
+}</programlisting>
+						</para>
+	            	</listitem>
+	
+					<listitem>
+	              		<para>
+	              			<emphasis role="bold">bag </emphasis>: 'java.util.Collection' type uses and defines <![CDATA[<bag>]]> or <![CDATA[<idbag>]]>.
+	              			It is not possible to know the order of saving object, but double saving of the same object is allowed.
+	              			Internally uses List but does not use index value (Using ArrayList).
+	              			In addition, Bag is similar to Set, but is superior to Set in terms of performance in that it can add new object to the relevant Collection
+	              			even without loading all Collections.
+	              		    The following is an example of Hibernate Mapping XML and source code which define Collection object by using <![CDATA[<bag>]]>.
+	              			 
+                            <programlisting language="xml">1. Hibernate Mapping XML
+
+<![CDATA[<class name="org.anyframe.sample.model.unidirection.relation.collection.CountryWithBag" 
+        table="COUNTRY_BAG" lazy="true" schema="PUBLIC">
+    ...]]>
+    <emphasis role="bold"><![CDATA[<bag name="movies"]]></emphasis> <![CDATA[inverse="true" cascade="save-update">
+        <key>
+            <column name="COUNTRY_CODE" length="12" />
+        </key>
+        <one-to-many class="org.anyframe.sample.model.unidirection.Movie" />
+    </bag>
+</class>]]></programlisting>
+<programlisting language="java">2. CountryWithBag.java
+<![CDATA[public class CountryWithBag implements java.io.Serializable {
+
+    private String countryCode;
+    private String countryId;
+    private String countryName;]]>
+    <emphasis role="bold"><![CDATA[private Collection movies = new ArrayList(0);]]></emphasis>
+	
+    ...
+}</programlisting>
+						</para>
+	
+						<para>
+	              			The following is an example of Hibernate Mapping XML and source code which define Collection object by using <![CDATA[<idbag>]]>
+	              			Unlike bag, idbag guarantees order. And unlike other Collection mapping methods in One to Many relation, it should define in value type
+	              			by using composite-element tag.	              		
+                            <programlisting language="xml">1. Hibernate Mapping XML
+						
+<![CDATA[<class name="org.anyframe.sample.model.unidirection.relation.collection.CountryWithIdBag" 
+        table="COUNTRY_IDBAG" lazy="true" schema="PUBLIC">
+    ...]]>
+    <emphasis role="bold"><![CDATA[<idbag name="movies"]]></emphasis> <![CDATA[table="MOVIE"> 
+        <collection-id column="id" type="java.lang.String"> 
+            <generator class="uuid"/> 
+        </collection-id> 
+        <key column="COUNTRY_CODE" />]]>
+        <emphasis role="bold"><![CDATA[<composite-element class="org.anyframe.sample.model.unidirection.Movie"]]></emphasis>> 
+            <![CDATA[<property name="title" type="string">
+                <column name="TITLE" length="100" not-null="true" />
+            </property>
+            <property name="director" type="string">
+                <column name="DIRECTOR" length="10" not-null="true" />
+            </property>
+            <property name="releaseDate" type="date">
+                <column name="RELEASE_DATE" length="0" />
+            </property>
+        </composite-element>
+    </idbag> 
+</class>]]></programlisting>			
+<programlisting language="java">2. CountryWithIdBag.java
+
+<![CDATA[public class CountryWithIdBag implements java.io.Serializable {
+
+    private String countryCode;
+    private String countryId;
+    private String countryName;]]>
+    <emphasis role="bold"><![CDATA[private Collection movies = new ArrayList(0);]]></emphasis>
+	
+	...
+}</programlisting>
+						</para>
+					</listitem>
+	
+	            	<listitem>
+						<para>
+	              			<emphasis role="bold">map</emphasis> : java.util.map type. This defines (key, value) pair by using  <![CDATA[<map>]]> (Using HashMap).
+	              			The following is an example of Hibernate Mapping XML and source code which define Collection object by using <![CDATA[<map>]]>.	              			
+                            <programlisting language="xml">1. Hibernate Mapping XML
+						
+<![CDATA[<class name="org.anyframe.sample.model.unidirection.relation.collection.CountryWithMap" 
+        table="COUNTRY_MAP" lazy="true" schema="PUBLIC">
+    ...]]>
+    <emphasis role="bold"><![CDATA[<]]><![CDATA[map name="movies"]]></emphasis> <![CDATA[cascade="save-update">
+        <key>
+            <column name="COUNTRY_CODE" length="12" />
+        </key>
+        <]]><emphasis role="bold"><![CDATA[map-key column="MOVIE_MAP_KEY" type="string"]]></emphasis><![CDATA[/>
+        <one-to-many class="org.anyframe.sample.model.unidirection.Movie" />
+    </map>
+</class>]]></programlisting>				
+<programlisting language="java">2. CountryWithMap.java
+
+<![CDATA[public class CountryWithMap implements java.io.Serializable {
+
+    private String countryCode;
+    private String countryId;
+    private String countryName;]]>
+    <emphasis role="bold"><![CDATA[private Map movies = new HashMap(0);]]></emphasis>
+	
+    ...
+}</programlisting>
+						</para>
+					</listitem>
+	
+	            	<listitem>
+	              		<para>
+	              			<emphasis role="bold">StoredSet, StoredMap</emphasis> : Uses <![CDATA[<set>, <map>]]> as it is, but defines sorting method
+	              			by using attribute 'sort'(using TreeSet, TreeMap).	             
+	              		</para>
+	            	</listitem>
+	          	</itemizedlist>
+
+	          	<para>
+	          		You can see how to use above-mentioned Collection by type and how they differ through HibernateCollectionMapping.java code.	          		
+	          	</para>
+			</section>
+
+			<section id="hibernate_hibernate_persistence_aassociation_onetomany_ic">
+				<title>Inverse, Cascade property</title>
+	
+	          	<para>
+	          		'inverse' and 'cascade' are one of properties that have important mean in definition, and have the following meaning.	          		
+	          	</para>
+	
+	          	<itemizedlist>
+	            	<listitem>
+						<para>
+		              		inverse : Property that defines the option on determine the responsibility of the relation between objects.
+		              		In other words, it is for defining role of owner for one part and of sub role for the other.		              		
+		              	</para>
+		            </listitem>
+		
+		            <listitem>
+						<para>
+							cascade : Property to define the option on whether or not to transfer the CUD on parent object to child object.							
+						</para>
+		            </listitem>
+				</itemizedlist>
+	
+	          	<para>
+	          		Now let's have a look at how string executed by inverse and cascade property change by property definition and learn the properties of
+	          		inverse and cascade in detail.	          		
+	          	</para>
+	
+	          	<itemizedlist>
+	            	<listitem>
+	              		<para>
+	              			<emphasis role="bold">One-way 1:m relation</emphasis>
+	              		</para>
+	
+						<orderedlist>
+							<listitem>
+		                  		<para>
+		                  			inverse="false", cascade="false" 
+                                    <programlisting language="java"><![CDATA[public void addCountryMovieWithoutInverseCascade() throws Exception {
+    // 1. make init data
+    newSession("anyframe/core/hibernate/inverse/unidirection/"
+            + "hibernate-without-inversecascade.cfg.xml");
+    Country country = makeCountry();
+    Movie movie = makeMovie();]]>
+
+    // 2. try to make a relation between country and movie
+    <emphasis role="bold"><![CDATA[/* #1 */ country.getMovies().add(movie);]]></emphasis>
+
+    // 3. try to insert a country, movie
+    <emphasis role="bold"><![CDATA[/* #2 */ session.save(country);]]></emphasis>
+    <emphasis role="bold"><![CDATA[/* #3 */ session.save(movie);]]></emphasis>
+
+    <![CDATA[closeSession();
+
+    ...
+}]]></programlisting>
+								</para>
+	
+								<para>
+									As a result of executing addCountryMovieWithoutInverseCascade() method, INSERT string for registering new Country information 
+									and Movie information is executed by code #2 and #3. And, as the inverse property value on Movie Collection was set "false" 
+									at Country, Update string for setting relation between Country and Movie is executed once more by code #1.
+									In other words, three strings are performed as the following.									
+                                    <programlisting><emphasis role="bold"><![CDATA[insert into PUBLIC.COUNTRY]]></emphasis>
+    <![CDATA[(COUNTRY_ID, COUNTRY_NAME, COUNTRY_CODE) 
+        values ('KR', 'Korea', 'COUNTRY-0001')]]>
+ 	
+<emphasis role="bold"><![CDATA[insert into PUBLIC.MOVIE]]></emphasis>
+    <![CDATA[(TITLE, DIRECTOR, RELEASE_DATE, MOVIE_ID) 
+        values ('My Sassy Girl', 'Jaeyong Gwak', 2001-07-27, 'MV-00001')]]>
+ 	
+<emphasis role="bold"><![CDATA[update PUBLIC.MOVIE]]></emphasis>
+    <![CDATA[set COUNTRY_CODE='COUNTRY-0001' where MOVIE_ID='MV-00001']]></programlisting>
+		    					</para>
+							</listitem>
+		
+		                	<listitem>
+		                  		<para>
+	                  				inverse="true", cascade="false" 
+                                    <programlisting language="java"><![CDATA[public void addCountryMovieWithoutCascade() throws Exception {
+    // 1. make init data
+    newSession("anyframe/core/hibernate/inverse/unidirection/"
+            + "hibernate-without-cascade.cfg.xml");
+    Country country = makeCountry();
+    Movie movie = makeMovie();
+	
+    // 2. try to make a relation between country and movie
+    country.getMovies().add(movie);	// no effect code!!
+
+    // 3. try to insert a country, movie]]>
+    <emphasis role="bold"><![CDATA[/* #1 */ session.save(country);]]></emphasis>
+    <emphasis role="bold"><![CDATA[/* #3 */ // movie.setCountryCode(country.getCountryCode());]]></emphasis>
+    <emphasis role="bold"><![CDATA[/* #2 */ session.save(movie);]]></emphasis>
+
+    <![CDATA[closeSession();
+
+    ...
+}]]></programlisting>
+								</para>
+		
+		                  		<para>
+		                  			As a result of executing addCountryMovieWithoutCascade() method, INSERT string for registering new Country information 
+									and Movie information is executed by code #1 and #2.
+									In addition, in case of 'inverse="true"', Movie should see the relation information with the related Country information,
+									but which is not also possible due to one-way relation of 'Country -> Movie'.
+									Hence, there may be information omission between Country and Movie.
+									In this case, define special property for COUNTRY_CODE column within Movie Mapping File as in code #3.
+									And by directly setting countryCode when registering Movie, you can maintain the relation between two objects.
+									The following is a string performed after executing addCountryMovieWithoutCascade() method. 		                  			
+                                    <programlisting><emphasis role="bold"><![CDATA[insert into PUBLIC.COUNTRY]]></emphasis>
+    <![CDATA[(COUNTRY_ID, COUNTRY_NAME, COUNTRY_CODE) 
+        values ('KR', 'Korea', 'COUNTRY-0001')]]>
+ 	
+<emphasis role="bold"><![CDATA[insert into PUBLIC.MOVIE]]></emphasis>
+    <![CDATA[(TITLE, DIRECTOR, RELEASE_DATE, MOVIE_ID) 
+        values ('My Sassy Girl', 'Jaeyong Gwak', 2001-07-27, 'MV-00001')]]></programlisting>
+		    					</para>
+		                	</listitem>
+		
+		                	<listitem>
+		                  		<para>
+	                  				inverse="false", cascade="true" 
+                                    <programlisting language="java"><![CDATA[public void addCountryMovieWithoutInverse() throws Exception {
+    // 1. make init data
+    newSession("anyframe/core/hibernate/inverse/unidirection/"
+            + "hibernate-without-inverse.cfg.xml");
+    Country country = makeCountry();
+    Movie movie = makeMovie();
+
+    // 2. try to make a relation between country and movie]]>
+    <emphasis role="bold"><![CDATA[/* #2 */ country.getMovies().add(movie);]]></emphasis>
+
+
+    // 3. try to insert a country
+    <emphasis role="bold"><![CDATA[/* #1 */ session.save(country);]]></emphasis>
+
+    <![CDATA[closeSession();
+
+    ...
+	}]]></programlisting>
+								</para>
+		
+		                  		<para>
+		                  			As a result of executing addCountryMovieWithoutInverse() method, INSERT string for registering new Country information 
+									and Movie information is executed by code #1 and cascade property value.
+									And, as inverse property value was set "false" for Movie Collection in Country, UPDATE string is executed once more
+									for setting relation of Country and Movie by code #2.
+									In other words, three strings are performed as the following.		                  			
+                                    <programlisting><emphasis role="bold"><![CDATA[insert into PUBLIC.COUNTRY]]></emphasis>
+    <![CDATA[(COUNTRY_ID, COUNTRY_NAME, COUNTRY_CODE) 
+        values ('KR', 'Korea', 'COUNTRY-0001')]]>
+ 	
+<emphasis role="bold"><![CDATA[insert into PUBLIC.MOVIE]]></emphasis>
+    <![CDATA[(TITLE, DIRECTOR, RELEASE_DATE, MOVIE_ID) 
+        values ('My Sassy Girl', 'Jaeyong Gwak', 2001-07-27, 'MV-00001')]]>
+ 	
+<emphasis role="bold"><![CDATA[update PUBLIC.MOVIE]]></emphasis>
+    <![CDATA[set COUNTRY_CODE='COUNTRY-0001' where MOVIE_ID='MV-00001']]></programlisting>
+		    					</para>
+		                	</listitem>
+		
+		                	<listitem>
+		                  		<para>
+	                  			    inverse="true", cascade="true" 
+                                    <programlisting language="java"><![CDATA[public void addCountryMovie() throws Exception {
+    // 1. make init data
+    newSession("anyframe/core/hibernate/inverse/unidirection/hibernate.cfg.xml");
+    Country country = makeCountry();
+    Movie movie = makeMovie();
+
+    // 2. try to make a relation between country and movie
+    country.getMovies().add(movie); // no effect code!!]]>
+
+    // 4. try to insert a country
+    <emphasis role="bold"><![CDATA[/* #2 */ // movie.setCountryCode(country.getCountryCode());]]></emphasis>
+    <emphasis role="bold"><![CDATA[/* #1 */session.save(country);]]></emphasis>
+
+    <![CDATA[closeSession();
+
+    ...
+}]]></programlisting>
+								</para>
+		
+		                  		<para>
+		                  				As a result of executing addCountryMovie() method, INSERT string for registering new Country information 
+									and Movie information is executed by code #1 and cascade property value.
+		                  				In addition, in case of 'inverse="true"', Movie should see the relation information with the related Country information,
+									but which is not also possible due to one-way relation of 'Country -> Movie'.
+									Hence, there may be information omission between Country and Movie.
+									In this case, define special property for  COUNTRY_CODE column within Movie Mapping File as in code #2.
+									And by directly setting countryCode when registering Movie, you can maintain the relation between two objects.
+									The following is a string performed after executing  addCountryMovie() method.   		                  			
+                                    <programlisting><emphasis role="bold"><![CDATA[insert into PUBLIC.COUNTRY]]></emphasis>
+    <![CDATA[(COUNTRY_ID, COUNTRY_NAME, COUNTRY_CODE) 
+        values ('KR', 'Korea', 'COUNTRY-0001')]]> 	
+<emphasis role="bold"><![CDATA[insert into PUBLIC.MOVIE]]></emphasis>
+    <![CDATA[(TITLE, DIRECTOR, RELEASE_DATE, MOVIE_ID) 
+        values ('My Sassy Girl', 'Jaeyong Gwak', 2001-07-27, 'MV-00001')]]></programlisting>
+		    					</para>
+		                	</listitem>
+						</orderedlist>
+	
+	              		<para>
+	              			For the whole test code including the code mentioned in the table, refer to HibernateUnidirectionInverseCascade.java.	              			
+	              		</para>
+	            
+	            	</listitem>
+	
+	            	<listitem>
+	              		<para>
+	              			<emphasis role="bold">Two-way 1:m relation</emphasis>
+	              		</para>
+	
+						<orderedlist>
+			                <listitem>
+	                  			<para>
+	                  				inverse="false", cascade="false" 
+                                    <programlisting language="java"><![CDATA[public void addCountryMovieWithoutInverseCascade() throws Exception {
+    // 1. make init data
+    newSession("anyframe/core/hibernate/inverse/bidirection/
+            hibernate-without-inversecascade.cfg.xml");
+    Country country = makeCountry();
+    Movie movie = makeMovie();
+
+    // 2. try to make a relation between country and movie]]>
+    <emphasis role="bold"><![CDATA[/* #3 */ country.getMovies().add(movie);]]></emphasis>
+
+    // 3. try to insert a country, movie
+    <emphasis role="bold"><![CDATA[/* #1 */ session.save(country);]]></emphasis>
+    <emphasis role="bold"><![CDATA[/* #2 */ session.save(movie);]]></emphasis>
+
+    <![CDATA[closeSession();
+}]]></programlisting>
+								</para>
+	
+	                  			<para>
+	                  				As a result of executing addCountryMovieWithoutInverseCascade() method, INSERT string for registering new Country information 
+									and Movie information is executed by code #1 and #2.
+									In addition, in case of 'inverse="false"', UPDATE string is additionally executed for setting COUNTRY_CODE information
+									of MOVIE table from null to  'COUNTRY-0001' by code #3.
+									In other words, three strings are executed as the following.					
+                                    <programlisting><emphasis role="bold"><![CDATA[insert into PUBLIC.COUNTRY]]></emphasis>
+    <![CDATA[(COUNTRY_ID, COUNTRY_NAME, COUNTRY_CODE) 
+        values ('KR', 'Korea', 'COUNTRY-0001')]]>
+	
+<emphasis role="bold"><![CDATA[insert into PUBLIC.MOVIE]]></emphasis>
+    <![CDATA[(COUNTRY_CODE, TITLE, DIRECTOR, RELEASE_DATE, MOVIE_ID) 
+        values (]]><emphasis role="bold">null</emphasis><![CDATA[, 'My Sassy Girl', 'Jaeyong Gwak', 2001-07-27, 'MV-00001')]]>
+
+<emphasis role="bold"><![CDATA[update PUBLIC.MOVIE]]></emphasis>
+    <![CDATA[set COUNTRY_CODE='COUNTRY-0001' where MOVIE_ID='MV-00001']]></programlisting>
+	    						</para>
+	                		</listitem>
+	
+	                		<listitem>
+	                  			<para>
+	                  				inverse="true", cascade="false" 
+                                    <programlisting language="java"><![CDATA[public void addCountryMovieWithoutCascade() throws Exception {
+    // 1. make init data
+    newSession(
+        "anyframe/core/hibernate/inverse/bidirection/hibernate-without-cascade.
+        cfg.xml");
+    Country country = makeCountry();
+    Movie movie = makeMovie();]]>
+
+    // 2. try to make a relation between movie and country
+    <emphasis role="bold"><![CDATA[/* #4 */ // country.getMovies().add(movie);]]></emphasis>
+    <emphasis role="bold"><![CDATA[/* #3 */ movie.setCountry(country);]]></emphasis>
+
+    // 3. try to insert a country, movie
+    <emphasis role="bold"><![CDATA[/* #1 */ session.save(country);]]></emphasis>
+    <emphasis role="bold"><![CDATA[/* #2 */ session.save(movie);]]></emphasis>
+
+    <![CDATA[closeSession();
+}]]></programlisting>
+								</para>
+	
+	                  			<para>
+	                  				As a result of executing addCountryMovieWithoutCascade() method, INSERT string for registering new Country information 
+									and Movie information is executed by code #1 and #2.
+									And given the case of 'inverse="true"' and two-way relation of Country <![CDATA[<->]]> Movie,
+									CountryCode information expressing the relation of Country and Movie is set at Movie INSERT through code #3.
+									In addition, because of cascade="false", code #4 is not necessary.	                  				
+	                  			</para>
+
+	                  			<para>
+	                  				<emphasis role="bold">In the code above, unlike one-way relation, as Country and Movie relation information
+	                  				was already set at Movie INSERT, Relation information is not omitted.
+	                  				In addition, unlike in the case of inverse="false", as special UPDATE query for special relation information setting is not needed,
+	                  				it is superior in terms of performance.
+	                  				</emphasis>
+	                  			</para>
+
+	                  			<para>
+	                  				The following is a string performed as a result of executing addCountryMovieWithoutCascade() method.	                  				
+                                    <programlisting><emphasis role="bold"><![CDATA[insert into PUBLIC.COUNTRY]]></emphasis>
+    <![CDATA[(COUNTRY_ID, COUNTRY_NAME, COUNTRY_CODE) 
+    values ('KR', 'Korea', 'COUNTRY-0001']]>
+	
+<emphasis role="bold"><![CDATA[insert into PUBLIC.MOVIE]]></emphasis>
+    <![CDATA[(COUNTRY_CODE, TITLE, DIRECTOR, RELEASE_DATE, MOVIE_ID) 
+    (]]><emphasis role="bold"><![CDATA['COUNTRY-0001']]></emphasis>, 'My Sassy Girl', 'Jaeyong Gwak', 2001-07-27, 'MV-00001')</programlisting>
+            				</para>
+                		</listitem>
+
+                		<listitem>
+                  			<para>
+                  				inverse="false", cascade="true" 
+                                <programlisting language="java"><![CDATA[public void addCountryMovieWithoutInverse() throws Exception {
+    // 1. make init data
+    newSession(
+        "anyframe/core/hibernate/inverse/bidirection/hibernate-without-inverse.cfg.xml");
+    Country country = makeCountry();
+    Movie movie = makeMovie();
+
+    // 2. try to make a relation between country and movie]]>
+    <emphasis role="bold"><![CDATA[/* #2 */ country.getMovies().add(movie);]]></emphasis>
+    <emphasis role="bold"><![CDATA[/* #3 */ // movie.setCountry(country); // no effect code!!]]></emphasis> 
+
+    // 3. try to insert a country
+    <emphasis role="bold"><![CDATA[/* #1 */ session.save(country);]]></emphasis>
+
+    <![CDATA[closeSession();
+}]]></programlisting>
+								</para>
+	
+	                  			<para>
+	                  				As a result of executing addCountryMovieWithoutInverse() method, INSERT string for registering new Country information 
+									and Movie information is executed by code #1 and cascade property.
+	                  			And, as inverse property value was set "false" for Movie Collection in Country, UPDATE string is executed once more
+									for setting relation of Country and Movie by code #2.
+									In addition, as code #2 affects the relation setting, code #3 is not necessary.
+									In other words, three strings are executed as the following.   
+                                    <programlisting><emphasis role="bold"><![CDATA[insert into PUBLIC.COUNTRY]]></emphasis>
+    <![CDATA[(COUNTRY_ID, COUNTRY_NAME, COUNTRY_CODE) 
+        values ('KR', 'Korea', 'COUNTRY-0001')]]>
+	
+<emphasis role="bold"><![CDATA[insert into PUBLIC.MOVIE]]></emphasis>
+    <![CDATA[(COUNTRY_CODE, TITLE, DIRECTOR, RELEASE_DATE, MOVIE_ID) 
+        values (]]><emphasis role="bold">null</emphasis>
+        , 'My Sassy Girl', 'Jaeyong Gwak', 2001-07-27, 'MV-00001')
+<emphasis role="bold"><![CDATA[update PUBLIC.MOVIE]]></emphasis>
+        <![CDATA[set COUNTRY_CODE='COUNTRY-0001' where MOVIE_ID='MV-00001']]></programlisting>
+	    						</para>
+	                		</listitem>
+	
+	                		<listitem>
+	                  			<para>
+	                  				inverse="true", cascade="true" 
+                                <programlisting language="java"><![CDATA[public void addCountryMovie() throws Exception {
+    // 1. make init data
+    newSession("anyframe/core/hibernate/inverse/bidirection/
+            hibernate.cfg.xml");
+    Country country = makeCountry();
+    Movie movie = makeMovie();]]>
+
+    // 2. try to make a relation between country and movie
+    <emphasis role="bold"><![CDATA[/* #2 */ country.getMovies().add(movie);]]></emphasis>
+
+    // 3. try to make a relation between movie and country
+    <emphasis role="bold">/* #3 */ movie.setCountry(country);</emphasis>
+
+    // 4. try to insert a country
+    <emphasis role="bold"><![CDATA[/* #1 */ session.save(country);]]></emphasis>
+
+    <![CDATA[closeSession();
+}]]></programlisting>
+								</para>
+	
+	                  			<para>
+	                  				As a result of executing addCountryMovie() method, INSERT string for registering new Country information 
+									and Movie information is executed by code #1 and cascade property.
+	                  				And given the case of 'inverse="true"' and two-way relation of Country <![CDATA[<->]]> Movie,
+									CountryCode information expressing the relation of Country and Movie is set at Movie INSERT through code #3.	                  				
+	                  			</para>
+	
+	                  			<para>
+	                  				<emphasis role="bold">In the code above, unlike one-way relation, as Country and Movie relation information
+	                  				was already set at Movie INSERT, Relation information is not omitted.
+	                  				In addition, unlike in the case of inverse="false", as special UPDATE query for special relation information setting is not needed,
+	                  				it is superior in terms of performance.
+	                  				</emphasis>                  				
+	                  				
+	                  			</para>
+
+	                  			<para>
+	                  				The following is a string executed after the execution of addCountryMovie() method.	                  			
+                                    <programlisting><emphasis role="bold"><![CDATA[insert into PUBLIC.COUNTRY]]></emphasis>
+    <![CDATA[(COUNTRY_ID, COUNTRY_NAME, COUNTRY_CODE) 
+        values ('KR', 'Korea', 'COUNTRY-0001')]]>	
+<emphasis role="bold"><![CDATA[insert into PUBLIC.MOVIE]]></emphasis>
+    <![CDATA[(COUNTRY_CODE, TITLE, DIRECTOR, RELEASE_DATE, MOVIE_ID) 
+        values ('COUNTRY-0001', 'My Sassy Girl', 'Jaeyong Gwak', 2001-07-27, 'MV-00001')]]></programlisting>
+	    						</para>
+	                		</listitem>
+						</orderedlist>
+	
+	              		<para>
+	              			For the whole test code including the code mentioned in the table, refer to HibernateBidirectionInverseCascade.java.              			
+	              		</para>
+	              			
+	            	</listitem>
+				</itemizedlist>
+			</section>
+		</section>
+
+		<section id="hibernate_hibernate_persistency_association_manytomany">
+			<title>Many to Many Mapping</title>
+
+	        <para>
+	        In case that the relation of two classes is m:n, is it mapped by defining  Association table which has each Foreign Key.	        	
+	        </para>
+
+	        <mediaobject>
+				<imageobject>
+					<imagedata align="center"
+						fileref="../image/hibernate/manytomany.png" />
+	          	</imageobject>
+			</mediaobject>
+	
+	        <para>
+	        	The figure on the left is a class diagram, "User : Role = m:n" and expresses one-way reference relation.
+	        	Like ERD on the top of the right figure, it can be mapped with TBL_USER and TBL_ROLE respectively,
+	        	and requires TBL_USER_ROLE, Association table which has Primary Key of each table as Foreign Key.
+	        	How to define such mapping relationship in Hibernate Mapping XML file is as shown in the bottom of the right figure.
+	        	In this figure, each class and property of User and Role is defined by using class tag.
+	        	User defines Role class of Collection format by using set tag.
+	        	And related table defines TBL_USER_ROLE which is an Association table.	         	
+	        	In addition, in set tag, many-to-many tag is used and relation of two objects are specified
+				and Foreign Key column is specified through key tag.
+				For information on how to define Hibernate Mapping XML on "m:n" two-way relation, 
+				refer to Category.hbm.xml and Movie.hbm.xml which 
+				expresses " Category : Movie = m:n " two-way relation.
+				Use <![CDATA[<many-to-many>]]> at both <![CDATA[<class>]]> for setting two-way m-n relation setting,
+				but it is recommended that one part in charge of relation define "inverse=true" so that mapping can be handled by one part.
+				For how to define Hibernate Mapping XML on two-way m:n relation,
+				refer to  Category.hbm.xml and Movie.hbm.xml which express the two-way relation of "Category : Movie
+	         	= m:n".
+	     </para>
+	     
+        		
+        		
+        		
+				
+		</section>
+    </section>
+
+    <section id="hibernate_hibernate_persistency_inheritance">
+		<title>Persistence Mapping - Inheritance</title>
+
+      	<para>
+      		In this page, let's take a close look at how to map various classes that take part in inheritance.      		
+      	</para>
+
+      	<section id="hibernate_hibernate_persistency_inheritance_hierarchy">
+        	<title>Table per Class Hierarchy</title>
+
+        	<para>
+        		Refers to mapping method which maps all Parent/Child classes taking part in inheritance relation in one table
+        		and additionally mapping special Discriminator column to classify the type of Child class.        		
+        	</para>
+
+        	<mediaobject>
+          		<imageobject>
+            		<imagedata align="center"
+						fileref="../image/hibernate/inheritance.png" />
+				</imageobject>
+			</mediaobject>
+
+        	<para>
+        		The top-left figure is a class diagram, where there exist Guest, Member, Staff classes which inherited User class.
+        		And the bottom-left figure is ERD, which maps  User, Guest, Member, Staff class in one table named TBL_USER.
+        		How to define such mapping relationship in Hibernate Mapping XML file is as shown in the bottom of the right figure.
+        		In this figure, it is needed define User class information by using class tag, and to classify child class type by using discriminator 
+        		tag under, discrimintor column which is specially needed must be additionally defined.
+        		In addition, by using subclass tag under, sub-class which inherits User class and the property are to defined.
+        		In this case, value of Discrimintor for each subclass must be defined.
+        		The following is the merits and demerits of Table per Class Hierarchy mapping.        		
+        	</para>
+
+        	<para>
+        		<emphasis role="bold">[Merits]</emphasis>
+        	</para>
+
+        	<itemizedlist>
+          		<listitem>
+            		<para>
+            			Easy to develop as no special Join handling is needed.            			
+            		</para>
+          		</listitem>
+
+          		<listitem>
+            		<para>
+            			Overhead for inheritance control minimized.            			
+            		</para>
+          		</listitem>
+        	</itemizedlist>
+
+        	<para>
+        		<emphasis role="bold">[Demerits]</emphasis>
+        	</para>
+
+			<itemizedlist>
+          		<listitem>
+            		<para>
+            			Cannot define NOT NULL constraints based on specific table.            			
+            		</para>
+          		</listitem>
+
+          		<listitem>
+            		<para>
+            			When creating sub-class which has additional variable, it is inevitable to change the table structure.            		  			
+            		</para>
+          		</listitem>
+
+          		<listitem>
+            		<para>
+            			Increased number of columns of management target and those with NULL value.
+            		
+            		</para>
+          		</listitem>
+
+          		<listitem>
+            		<para>
+            			Need to define special column to classify subclass type regardless of the feature of the domain.            			
+            		</para>
+          		</listitem>
+			</itemizedlist>
+
+        	<para>
+        		If you don't want to make special Discriminator column, you can use 'formula' property as the following.
+        		This refers to defining Discriminator value through calculation of specific column value.
+        		In the example below, if the value of DEPT_ID is NOT NULL, the consequent object will be staff as 
+        		Discriminator value is 'STAFF'.        		
+               <programlisting language="xml"><![CDATA[<discriminator formula="CASE WHEN DEPT_ID IS NOT NULL THEN 'STAFF' 
+        …"
+        type="string"/>]]></programlisting>
+        	</para>
+		</section>
+
+		<section id="hibernate_hibernate_persistency_inheritance_subclass">
+			<title>Table per Subclass</title>
+
+        	<para>
+        		Maps all Parent/Child classes in inheritance relation with each table, 
+        		but all sub-tables share Primary Key same to parent class.        		
+        	</para>
+
+        	<mediaobject>
+          		<imageobject>
+            		<imagedata align="center"
+						fileref="../image/hibernate/inheritance1.png" />
+          		</imageobject>
+        	</mediaobject>
+
+        	<para>
+        		The top-left figure is a class diagram, where there exist Guest, Member, Staff classes which inherited User class.
+        		And the bottom-left figure is ERD, which maps all classes with TBL_USER, TBL_GUEST, TBL_MEMBER, TBL_STAFF table.
+        		How to define such mapping relationship in Hibernate Mapping XML file is as shown in the bottom of the right figure.
+        		In this figure, it is needed define User class information by using  joined-subclass, and to classify child class type by using discriminator 
+        		tag under, discriminator column which is specially needed must be additionally defined.
+        		The following is the merits and demerits of Table per Class Hierarchy mapping.        		
+        	</para>
+
+        	<para>
+        		<emphasis role="bold">[Merits]</emphasis>
+        	</para>
+
+        	<itemizedlist>
+          		<listitem>
+            		<para>
+            			The closest object oriented mapping.  The most natural mapping method when sub-class has many properties.            		
+            		</para>
+          		</listitem>
+
+          		<listitem>
+            		<para>Can define NOT NULL Constraints based on specific table.</para>
+          		</listitem>
+
+          		<listitem>
+            		<para>
+            			When using Hibernate, special Discriminator column for classifying sub-class type is not needed.            			
+            		</para>
+          		</listitem>
+			</itemizedlist>
+
+        	<para>
+        		<emphasis role="bold">[Demerits]</emphasis>
+        	</para>
+
+			<itemizedlist>
+				<listitem>
+					<para>
+						As each table needs to join at table search, performance issue can arise as hierarchy becomes more complicated.						
+					</para>
+				</listitem>
+
+          		<listitem>
+            		<para>
+            			If data is added directly from outside instead of via Hibernate, the data may not be coherent.            			
+            		</para>
+          		</listitem>
+        	</itemizedlist>
+
+        	<para>
+        		※ Note that in case of requesting search through parent class without specifying special child class to search (namely, when performing query
+        		by using parent class),Outer JOIN is performed by all tables in inheritance to find the type of the relevant class as Hibernate
+        		has no information on the actual to-search class, which leads to weaker performance.        		
+        	</para>
+
+        	<para>
+        		(* If special child class is specified, Inner JOIN is executed.)        
+        	</para>
+		</section>
+
+		<section id="hibernate_hibernate_persistency_inheritance_concrete">
+			<title>Table per Concrete Class</title>
+
+        	<para>
+        		Refers to a way of mapping all Concrete classes in inheritance with each table. All mapped tables need to be 
+        		repeatedly defined with property of parent table. If parent class is an abstract class, no special table definition is needed, 
+        		but abstract must be defined as true.        		
+        	</para>
+
+        	<mediaobject>
+          		<imageobject>
+            		<imagedata align="center"
+						fileref="../image/hibernate/inheritance2.png" />
+          		</imageobject>
+        	</mediaobject>
+
+        	<para>
+        		The top-left figure is a class diagram, where there exist Guest, Member, Staff classes which inhersted User class.
+        		And the bottom-left figure is ERD, which maps tables named  TBL_GUEST, TBL_MEMBER, TBL_STAFF.
+        		How to define such mapping relationship in Hibernate Mapping XML file is as shown in the bottom of the right figure.
+        		In this figure, User class information is defined by using class tag, and  abstract property of User class is defined as true.
+        		In addition, by using union-subclass tag under, each sub-class and property are defined.
+        		The following is the merits and demerits of Table per Concrete Class mapping.    
+        	</para>
+
+        	<para>
+        		<emphasis role="bold">[Merits]</emphasis>
+        	</para>
+
+        	<itemizedlist>
+          		<listitem>
+            		<para>
+            			Can define  NOT NULL Constraints based on specific table.            			
+            		</para>
+          		</listitem>
+
+          		<listitem>
+            		<para>
+            			Useful if used when Polymorphic Query is not necessary.
+            			(* Polymorphic Query : Search for all classes which extend or implement specific class/interface to search.)            			
+            		</para>
+          		</listitem>
+			</itemizedlist>
+
+        	<para>
+        		<emphasis role="bold">[Demerits]</emphasis>
+        	</para>
+
+			<itemizedlist>
+				<listitem>
+            		<para>
+            			Note that UNION must be used at data search, but UNION is not supported in all DB.            			
+            		</para>
+          		</listitem>
+
+          		<listitem>
+            		<para>
+            			Common information of upper class is repeated in each table.            			
+            		</para>
+          		</listitem>
+
+          		<listitem>
+            		<para>
+            			If data is added directly from outside instead of via Hibernate, the data may not be coherent.            		
+            		</para>
+          		</listitem>
+        	</itemizedlist>
+		</section>
+	</section>
+</chapter>
+	

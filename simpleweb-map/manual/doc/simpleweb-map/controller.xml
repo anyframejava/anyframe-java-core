@@ -1,0 +1,15 @@
+<chapter id="simpleweb_map_controller">
+	<title>SimpleMapServiceController</title>
+	<para>SimpleMapServiceController는 Map 타입의 객체를 Transfer Object를 사용할 때의 데이터 바인딩을 지원해줄 AbstractServiceController를 
+	확장한 Controller 클래스이다.
+	HttpServletRequest의 Parameter로 넘어온 값을 메소드 정보의 argument 타입의 객체(여기선 Map객체가 됨)로 바인딩 해주며 
+	Map 타입의 객체를 Transfer Object로 사용하는 경우 데이터 바인딩 방법을 바꾸거나 특정 작업을 추가 할 때, 
+	또는 AbstractServiceController의 기능을 변경하고 싶을 때는 SimpleMapServiceController를 확장하여 구현하면 된다. 
+	다음은 Simpleweb-Map Plugin 설치로 추가된 Spring 속성 정의 파일 simpleweb-map-servlet.xml 파일의 일부이다.</para>
+		<programlisting language="xml"><![CDATA[<!-- simple direct service controller -->
+<bean name="/simplemap.do" class="]]><emphasis role="bold"><![CDATA[org.anyframe.simpleweb.controller.SimpleMapServiceController]]></emphasis><![CDATA[">
+	<property name="beanMethodsRepo" ref="beanMethodsRepo" />
+</bean>]]></programlisting>
+		<para>위와 같이 정의하면 "/simplemap.do" 요청을 SimpleMapServiceController가 처리하게 된다.
+		</para> 
+</chapter>

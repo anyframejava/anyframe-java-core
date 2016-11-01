@@ -1,0 +1,108 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<queryservice xmlns="http://www.anyframejava.org/schema/query/mapping" 
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" 
+	xsi:schemaLocation="http://www.anyframejava.org/schema/query/mapping http://www.anyframejava.org/schema/query/mapping/anyframe-query-mapping-1.0.xsd ">
+
+	<queries>
+		<query id="findMovieByCategoryList" isDynamic="true">
+			<statement>
+				SELECT movie.movie_id, movie.title, movie.director, genre.name, movie.actors, movie.release_date, movie.now_playing
+				FROM JQUERY_MOVIE movie, JQUERY_GENRE genre
+				WHERE movie.genre_id = genre.genre_id
+				AND movie.genre_id = :vo.searchKeyword
+			</statement>
+			<result class="org.anyframe.plugin.simpleweb.jquery.domain.Movie">
+				<result-mapping column="{name}" attribute="{genre.name}" />
+			</result>
+		</query>
+		
+		<query id="createJqueryMovie">
+			<statement>
+				INSERT INTO JQUERY_MOVIE (movie_id, title, director, genre_id, actors, runtime, release_date, ticket_price, now_playing, simple_upload_file_path)
+				VALUES (:vo.movieId, :vo.title, :vo.director, :vo.genre.genreId, :vo.actors, :vo.runtime, :vo.releaseDate, :vo.ticketPrice, :vo.nowPlaying, :vo.filePaths)
+			</statement>
+		</query>
+
+		<query id="updateJqueryMovie">
+			<statement>
+				UPDATE JQUERY_MOVIE 
+				SET title = :vo.title,
+				    director = :vo.director,
+				    genre_id = :vo.genre.genreId,
+				    actors = :vo.actors, 
+				    runtime = :vo.runtime,
+				    release_date = :vo.releaseDate,
+				    ticket_price = :vo.ticketPrice,
+				    now_playing = :vo.nowPlaying,
+				    simple_upload_file_path = :vo.filePaths
+				WHERE movie_id = :vo.movieId
+			</statement>
+		</query>
+
+		<query id="removeJqueryMovie">
+			<statement>
+				DELETE FROM JQUERY_MOVIE 
+				WHERE movie_id = :vo.movieId
+			</statement>
+		</query>
+
+		<query id="findJqueryMovieByPk">
+			<statement>
+				SELECT movie_id, title, director, genre_id, actors, runtime, release_date, ticket_price, now_playing, simple_upload_file_path
+				FROM JQUERY_MOVIE
+				WHERE movie_id = :vo.movieId
+			</statement>
+			<result class="org.anyframe.plugin.simpleweb.jquery.domain.Movie">
+				<result-mapping column="{genre_id}" attribute="{genre.genreId}" />
+				<result-mapping column="SIMPLE_UPLOAD_FILE_PATH" attribute="filePaths"/>
+			</result>
+		</query>
+		
+		<query id="findMovieTitle">
+			<statement>
+			    <!--simpleweb-jquery-findMovieTitle-START-->
+				SELECT title
+				FROM JQUERY_MOVIE
+				WHERE title like :prefix || '%'
+				<!--simpleweb-jquery-findMovieTitle-END-->
+			</statement>
+			<param type="VARCHAR" name="prefix"/>
+		</query>
+		
+		<query id="findJqueryMovieList" isDynamic="true">
+			<statement>
+				<!--simpleweb-jquery-findJqueryMovieList-START-->
+				SELECT movie.movie_id, movie.title, movie.director, genre.name, movie.actors, movie.release_date, movie.ticket_price, movie.now_playing
+				FROM JQUERY_MOVIE movie, JQUERY_GENRE genre
+				WHERE movie.genre_id = genre.genre_id 
+				AND title like '%' || :vo.searchKeyword || '%'
+				AND movie.now_playing = :vo.nowPlayingCondition
+				<!--Velocity-Support-findJqueryMovieList-START-->
+					#if($vo.sidx &amp;&amp; !$vo.sidx.equals(""))ORDER BY
+					#if($vo.sidx == "genre.name")
+						genre.name
+					#elseif($vo.sidx == "title")
+						movie.title
+					#elseif($vo.sidx == "director")
+						movie.director
+					#elseif($vo.sidx == "actors")
+						movie.actors
+					#elseif($vo.sidx == "releaseDate")
+						movie.release_date
+					#end
+					#if($vo.sord == "desc" || $vo.sord == "")
+						DESC
+					#else
+						ASC
+					#end
+				#end
+				<!--Velocity-Support-findJqueryMovieList-END-->
+				<!--simpleweb-jquery-findJqueryMovieList-END-->
+			</statement>
+			<result class="org.anyframe.plugin.simpleweb.jquery.domain.Movie">
+				<result-mapping column="{name}" attribute="{genre.name}" />
+			</result>
+		</query>		
+	</queries>
+</queryservice>
+

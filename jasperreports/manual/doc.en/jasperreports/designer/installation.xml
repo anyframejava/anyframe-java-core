@@ -1,0 +1,206 @@
+<chapter id="jasperreports_designer_installation">
+	<title>Installation</title>
+	<para>
+		Next is the installation process of JasperReports. Instructions are separated into three stages:  <link linkend="jasperreports_designer_installation_download">Download</link>,
+    	<link linkend="jasperreports_designer_installation_environment">Installation Environment</link>, and  
+    	<link linkend="jasperreports_designer_installation_report">Report Designer</link> Installation. 
+    	Here, JasperReports is integrated with Spring MVC, so instructions will be under the assumption that Spring of Anyframe and Spring MVC are already installed. 
+    	Therefore, JasperReports should be installed after Anyframe is installed.
+	</para>
+
+	<section id="jasperreports_designer_installation_download">
+		<title>Download</title>
+
+      	<para>
+      		The following are the basic files that need to be downloaded to use JasperReports.
+      	</para>
+
+      	<informaltable>
+        	<tgroup cols="2">
+				<colspec colnum="1" colname="col1" colwidth="4*"/>
+				<colspec colnum="2" colname="col2" colwidth="6*"/>
+          		<thead>
+            		<row>
+              			<entry align="center">File name</entry>
+
+              			<entry align="center">Description</entry>
+
+            		</row>
+          		</thead>
+
+          		<tbody>
+            		<row>
+             	 		<entry><ulink url="http://www.jasperassistant.com/download.html">JasperAssistant_3.1.1_Eclipse3.x.zip</ulink></entry>
+
+ 	             		<entry>[Required] JasperReports Report Designer Eclipse Plugin Installation File (Download Evaluation Version)</entry>
+
+  	          		</row>
+
+            		<row>
+              			<entry><ulink url="http://get.adobe.com/kr/reader/">install_reader[Version]_en_[XXX].zip</ulink></entry>
+
+              			<entry>[Required] Adobe Reader installation file for PDF file display</entry>
+
+            		</row>
+          		</tbody>
+        	</tgroup>
+		</informaltable>
+    </section>
+
+    <section id="jasperreports_designer_installation_environment">
+		<title>Installation Environment</title>
+
+      	<para>
+      		Sample Application using JasperReports was tested in the environment described below. 
+      		This manual will not explain how the below SW were installed. 
+      		The following three should all be installed into the development environment before moving on to the next stage.  
+      		Descriptions in this manual are based on the JDK 1.5 version.
+      	</para>
+
+		<itemizedlist>
+			<listitem>
+          		<para>
+          			JDK 1.5
+          		</para>
+        	</listitem>
+
+        	<listitem>
+          		<para>
+          			Web Container - Tomcat 6.0
+          		</para>
+        	</listitem>
+
+        	<listitem>
+          		<para>
+          			DataBase - HsqlDB 1.8.0.10
+          		</para>
+        	</listitem>
+
+        	<listitem>
+          		<para>
+          			Eclipse 3.5.0
+          		</para>
+        	</listitem>
+      	</itemizedlist>
+
+      	<para>
+      		This document provides installation guidelines based on <ulink url="http://tomcat.apache.org/">Tomcat6.0</ulink> and
+      		<ulink url="http://www.eclipse.org/">eclipse 3.5.0 (including WTP)</ulink>
+      	</para>
+
+		<para>
+			[Eclipse Home] hereafter refers to the route of eclipse based tool set provided by Anyframe. 
+			Install Tomcat6.0 and register it as Eclipse Server Runtime. 
+			If you have downloaded all the files marked [Required] on the above download table, execute AdbeRdr920_ko_KR.exe and install.
+		</para>
+    </section>
+
+    <section id="jasperreports_designer_installation_report">
+		<title>Report Designer Installation</title>
+
+		<para>
+			Various tools are provided to make developing XML file reports of JasperReports easier. 
+			Various tools including free tools (iReport)and tools charged for (JasperAssistant) are available for use, 
+			but here, the assumption will be that <emphasis role="bold">JasperAssistant</emphasis> is used.
+      	</para>
+
+     	<para>
+     		[Reference]
+     	</para>
+
+      	<para>
+      		* <emphasis role="bold">iReport :</emphasis>
+      		<ulink url="http://jasperforge.org/projects/ireport">http://jasperforge.org/projects/ireport</ulink>
+      		(free)
+      	</para>
+
+      	<para>
+      		* <emphasis role="bold">JasperAssistant</emphasis> :
+      		<ulink url="http://www.jasperassistant.com/">http://www.jasperassistant.com</ulink>
+      		(Evaluation version of the 21th can be used if not purchased)
+      	</para>
+
+      	<para>
+      		Currently, the JasperAssistant Eclipse plugin 3.1.1 version is being used.
+      		Version updates of JasperAssistant are frequent, so if you are willing to download and install the latest version refer to the following websites.
+      	</para>
+
+      	<para>
+      		* Homepage : <ulink url="http://www.jasperassistant.com/">http://www.jasperassistant.com</ulink>
+      	</para>
+
+      	<para>
+      		* Download : <ulink url="http://www.jasperassistant.com/download.html">http://www.jasperassistant.com/download.html</ulink>
+      	</para>
+
+      	<para>
+      		There are two ways to install JasperAssistant. One is to use the Eclipse Update Site, 
+      		and the other is to download the deployed Eclipse Plugin file and copy it onto Eclipse.
+      		Here, the installation instructions will be based on downloading the deployed file and copying it onto Eclipse.
+      	</para>
+
+      	<para>
+      		Extract JasperAssistant_3.1.1_Eclipse3.x.zip into [Eclipse Home] folder and install. 
+      		If Eclipse is already running, close and re-run.
+      	</para>
+
+		<section id="jasperreports_designer_installation_report_configuration">
+        	<title>Configuration</title>
+
+        	<para>
+        		To use Eclipse Plugin JasperAssistant after installation, the following Configuration works should be done. 
+        		To open the Configuration window, select <emphasis role="bold"><![CDATA[Window ->Preferences ->JasperAssistant]]></emphasis>.
+			</para>
+
+        	<itemizedlist>
+          		<listitem>
+            		<para>
+            			License Information - If you have purchased JasperAssistant, enter the License Key in this page.
+            		</para>
+          		</listitem>
+
+          		<listitem>
+            		<para>
+            			Console - [Use Default] Change JasperAssistant console window setting
+            		</para>
+          		</listitem>
+
+          		<listitem>
+            		<para>
+            			Designer - [Use Default] Change Design Editor setting
+            		</para>
+          		</listitem>
+
+          		<listitem>
+            		<para>
+            			Data Sources - Set to <emphasis role="bold">Required Setting</emphasis> before using Report Designer. 
+            			Enter information to access data sources for report. 
+            			In this case, four types of data sources (Empty Data Source, Database Data
+            			Source, XML Data Source, Custom Data Source) are provided, but this manual will only touch upon Database Data Source setting. 
+            			To access HSQLDB, enter information in Driver, URL, hsqldb jar file location, etc. as below.
+           			</para>
+
+          		    <mediaobject>
+              			<imageobject>
+               				 <imagedata align="center"
+                           		fileref="../image/jasperreports/designer/jasperassistant2.jpg" />
+              			</imageobject>
+            		</mediaobject>
+          		</listitem>
+
+          		<listitem>
+            		<para>
+            			<![CDATA[Export - [Use Default] Change Export Setting (Used when executing File > Report Export..) is not necessary when using Report Designer, 
+            			but when the Export function is used the location of PDF, Excel, HTML, etc. execution files should be clearly stated. 
+            			Write C:\Program Files\Adobe\Reader 9.0\Reader\AcroRd32.exe, C:\Program Files\Internet Explorer\iexplore.exe in each Preview item.]]>
+            		</para>
+          		</listitem>
+        	</itemizedlist>
+
+        	<para>
+        		JasperAssistant has been installed. 
+        		Refer to <link linkend="jasperreports_designer_report">Report Designer</link> in this manual for ways to make report files with JasperAssistant.
+       	 	</para>
+      </section>
+    </section>
+</chapter>

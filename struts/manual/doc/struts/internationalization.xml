@@ -1,0 +1,165 @@
+<chapter id="struts_internationalization">
+	<title>Internationalization</title>
+
+	<para>
+		국제화(Internationalization, I18N)란 미리 다양한 언어와 지역을 지원하도록 소프트웨어를 설계하고 쉽게
+ 		 리엔지니어링을 할 수 있게 지원하는 일련의 과정이다.
+ 	</para>
+
+	<section id="struts_internationalization_feature">
+    <title>Internationalization의 특징</title>
+
+    	<section id="struts_internationalization_feature_necessity">
+      	<title>Internationalization의 필요성</title>
+
+      		<itemizedlist>
+	        	<listitem>
+	          		<para>코드 수정 없이 지원하는 언어를 추가</para>
+	        	</listitem>
+	        	<listitem>
+	          		<para>텍스트 요소들, 메시지들, 이미지 소스들과 소스코드의 분리</para>
+	        	</listitem>
+	        	<listitem>
+	          		<para>날짜,시간,숫자, 통화 등과 같은 문화에 종속적인 데이터들을 언어와 위치에 따라 달리 포맷팅</para>
+	        	</listitem>
+		       	<listitem>
+	          		<para>비 표준 문자 집합들을 지원</para>
+	        	</listitem>
+	        	<listitem>
+	          		<para>어플리케이션을 새로운 언어와 지역에 쉽고 빠르게 적용</para>
+	        	</listitem>
+      		</itemizedlist>
+
+      		<para>
+      			어플리케이션이 국제화를 지원한다고 해서 모든 언어와 지역에서 곧바로 쓸 수 있는 것을 의미한다는 것은 아니다.
+      			국제화를 지원한다는 것은 언어나 지역에 영향을 받는 부분과 영향을 받지 않는 코드를 분리하여 쉽게 지역화될 수 있게
+      			만들었다는 것을 의미한다.
+      		</para>
+    	</section>
+
+    	<section id="struts_internationalization_feature_locale">
+      	<title>지역 (Locale)</title>
+
+	      	<itemizedlist>
+	        	<listitem>
+	          		<para>관습과 문화, 언어를 공유하는 영역을 의미함</para>
+	        	</listitem>
+		        <listitem>
+	    		    <para>지역화(L10N, Localization)는 제대로 국제화된 어플리케이션을 특정 지역에 맞게 만드는 일련의 과정</para>
+	        	</listitem>
+	      	</itemizedlist>
+	
+	      	<para>
+		      	국제화 지원 시 위의 특징들 중 일부만 골라서 구현하는 것은 별 의미가 없다. 모두 지원하든지 지원하지 않든지 둘중의
+      			하나이다. cf.) Anyframe 에서는 모든 국제화 문제를 고려할 수는 없고 Core Class 인
+      			java.util.Locale, java.util.ResourceBundle 위주로 논의되었다. Anyframe 에서
+      			제공하는 리소스들은 텍스트와 이미지에 초점이 맞추어져 있다. MessageResource Bundle은
+      			PropertyResourceBundle Class 의 규약에 따라 만들어야 한다. 확장자 .properties 의 텍스트 파일로,
+      			메시지들은 key=value와 같은 형식으로 작성해야 함은 이미 말한 바 있다. 또한 클래스처럼 찾아오기 때문에 클래스패스 상에
+      			작성해야 한다. MessageResource Bundle 이 여러 개 있을 경우 Struts는 번들 중 하나에서 메시지를 찾을 때
+      			기본 이름과 지역을 사용하여 이름이 가장 가깝게 일치하는 번들을 찾는다. 찾는데 실패하면 기본 번들을 사용한다.
+      			다음은 메시지 정의의 예이다.
+      			<programlisting language="java"># error message
+common.msg.authorization.error=You can not access this page.
+..
+# text resource
+common.ui.title=eMarketPlace
+..</programlisting>
+			</para>
+
+		    <para>
+		    	다음은 ActionMessage 생성 시 메시지 키를 설정하는 예이다.
+		    	<programlisting
+      			language="xml">erros.add(ActionErrors.GLOBAL_ERROR, new ActionMessage("common.msg.authorization.error"));</programlisting>
+      		</para>
+
+      		<para>
+      			다음은 Bean 태그 라이브러리의 MessageTag 를 사용하여 해당 메시지 키에 대한 실제 텍스트 value를 표시하는 예이다.
+      			<programlisting language="xml"><![CDATA[<head>
+    <title><bean:message key="common.ui.title"/></title>
+</head>]]></programlisting>
+			</para>
+		</section>
+	</section>
+
+	<section id="struts_internationalization_sample">
+    <title>Internationalization Sample</title>
+
+    	<para>다음은 사용자의 Locale정보에 의해 JSP페이지에 Message가 다른 언어로 보여지는 예이다.</para>
+
+    	<section id="struts_internationalization_sample_sample">
+      	<title>Sample</title>
+
+      		<itemizedlist>
+        		<listitem>
+          			<para>JSP</para>
+
+			        <para>
+			        	JSP화면에서 해당 언어를 클릭하면 MessageResource Bundle에 등록되어 있는
+          				msg.internationalization키에 대한 값이 "Internationalization"과 "국제화"로 바뀌는
+          				것을 보여주는 internationalization.jsp 이다.
+          				<programlisting language="xml"><![CDATA[<%@ page contentType="text/html; charset=utf-8" %>
+<%@ taglib uri="http://struts.apache.org/tags-bean" prefix="bean"%>
+<%@ taglib uri="http://struts.apache.org/tags-html" prefix="html"%>
+<html>
+<head>
+<title>Internationalization Sample</title>
+</head>
+<body>
+    <strong>Change Language | 언어 변경 </strong><br/>
+    <html:link action="/internationalizationSample?language=en">English | 영어</html:link><br/>
+    <html:link action="/internationalizationSample?language=ko">Korean | 한국어</html:link><br/>
+    <bean:message key="msg.internationalization"/>
+</body>
+</html>]]></programlisting>
+					</para>
+        		</listitem>
+
+       			<listitem>
+          			<para>Action</para>
+
+          			<para>
+          				아래는 위의 JSP화면에서 해당 언어를 클릭했을 때 Action에서 Session에 사용자 Locale정보를
+          				설정하는 예를 보여주는 InternationalizationAction.java 의 일부이다.
+          				<programlisting
+          				language="xml"><![CDATA[public ActionForward execute(ActionMapping mapping, ActionForm form,
+        HttpServletRequest request, HttpServletResponse response) 
+        throws Exception {
+    
+    HttpSession session = request.getSession();
+    Locale locale = getLocale(request);
+    
+    String language = null;
+    String country = null;
+    
+    try {
+           language = (String)
+             PropertyUtils.getSimpleProperty(form, "language");
+           country = (String)
+             PropertyUtils.getSimpleProperty(form, "country");
+       } catch (Exception e) {
+          e.printStackTrace();
+       }
+
+       if ((language != null && language.length() > 0) &&
+           (country != null && country.length() > 0)) {
+          locale = new java.util.Locale(language, country);
+       } else if (language != null && language.length() > 0) {
+          locale = new java.util.Locale(language, "");
+   }
+       session.setAttribute(Globals.LOCALE_KEY, locale);
+
+       return mapping.findForward("success");
+}]]></programlisting>
+					</para>
+		
+          			<para>
+          				위 InternationalizationAction.java는 Struts에서 제공하고 있는
+          				struts-examples-1.3.10의 LocaleAction을 수정한 것으로 화면에서 parameter값으로 보내온
+          				language 값을 Globals.LOCALE_KEY 이름으로 Session에 저장한다.
+          			</para>
+        		</listitem>
+      		</itemizedlist>
+		</section>
+	</section>
+</chapter>

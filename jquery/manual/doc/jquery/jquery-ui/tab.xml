@@ -1,0 +1,84 @@
+	<section id="jquery_tab_sec001">
+		<title>Tab widget</title>
+		<para>Tab 위젯은 동일한 목적을 가지고 있으나 성격이 상이한 UI를 분할하여 화면 복잡도를 낮추고 효율적인 User Inteface 구현을 도와주는 자바스크립트 기반의 UI 컴포넌트이다.</para>
+		<programlisting><![CDATA[var _currentTabId = '';
+var $tabs = null;
+
+// 탭을 추가
+function addTab(title, id) {
+	if($('#tabs-' + id).length > 0) {
+		$tabs.tabs("select", '#tabs-' + id);
+	}else{
+		$tabs.tabs("add", "#tabs-" + id, title );
+	}
+}
+
+$(document).ready(function(){
+
+	$tabs = $('#tabs').tabs({
+		tabTemplate: '<li><a href="<%="#"%>{href}"><%="#"%>{label}</a><span class="ui-icon ui-icon-close">Remove Tab</span></li>',
+		add: function( event, ui ) { // 탭이 추가되었을 때의 이벤트 핸들링
+			var tab_content = '';
+			tab_content = _currentNodeType + ':' + _currentNodeId;
+			$(ui.panel).append(tab_content);
+			$(ui.tab).attr('nodeId', _currentNodeId);
+			$(ui.tab).click();
+			if(_currentNodeType == 'CO') {
+				$.get('<c:url value="/jqueryBoard.do?method=getGridType1"/>', {'gridId' : 'grid_' + _currentNodeId}, function(data) {
+					$(ui.panel).html(data);
+					_createGridType1(_currentNodeId);
+				});
+			}else if(_currentNodeType == 'CA'){
+				$.get('<c:url value="/jqueryBoard.do?method=getGridType2"/>', {'gridId' : 'grid_' + _currentNodeId}, function(data) {
+					$(ui.panel).html(data);
+					_createGridType2(_currentNodeId);
+				});
+			}
+		},
+		select : function(event, ui) {
+			logger.log('tab selected!!:' + $(ui.tab).attr('nodeId'));
+			_currentTabId = $(ui.tab).attr('nodeId');
+		}
+	});
+
+	// 탭의 'x' 버튼 클릭 시 해당 탭을 제거한다.
+	$( "#tabs span.ui-icon-close" ).live( "click", function() {
+		var index = $( "li", $tabs ).index( $( this ).parent() );
+		$tabs.tabs( "remove", index );
+	});
+});]]></programlisting>
+		<para>다음은 jstree의 구현 코드중 일부이며, 트리의 노드가 선택되었을 때 tab을 추가하도록 하는 부분을 주목하기 바란다.</para>
+		<programlisting><![CDATA[...생략
+	.bind("select_node.jstree", function (e, data) { // event handling for node select
+		logger.log('select_node:' + data.rslt.obj.attr("id"));
+		if(data.rslt.obj.attr('id') == 'ROOT') { // Root is selected
+			logger.log('root Selected');
+			_currentNodeType = 'ROOT';
+			_currentNodeId = 'ROOT';
+			$tabs.tabs('select', '#tabs-0'); // ROOT 선택시에는 탭을 추가하지 않고 포커스만 전환한다.
+		}else if(data.rslt.obj.attr('rel') == 'CA') { // Category is selected
+			logger.log('category Selected');
+			_currentNodeType = data.rslt.obj.attr('rel');
+			_currentNodeId = data.rslt.obj.attr('id');
+			// commuity list load
+			$.get("<c:url value='/jqueryCategory.do?method=get'/>", {'categoryId' : data.rslt.obj.attr('id')}, function(r) {
+				addTab(r.category.categoryName, data.rslt.obj.attr('id')); // 커뮤니티 리스트를 위한 탭을 추가한다.
+			});
+		}else if(data.rslt.obj.attr('rel') == 'CO'){ // Community is selected
+			logger.log('community Selected');
+			_currentNodeType = data.rslt.obj.attr('rel');
+			_currentNodeId = data.rslt.obj.attr('id');
+			// community's board list load
+			$.get("<c:url value='/jqueryCommunity.do?method=get'/>", {'communityId' : data.rslt.obj.attr('id')}, function(r) {
+				addTab(r.community.communityName, data.rslt.obj.attr('id')); // 게시물 리스트를 위한 탭을 추가한다.
+			});
+		}
+		$('#community').val(data.rslt.obj.attr('id'));
+생략...]]></programlisting>
+		<para>다음은 Tab widget이 적용된 화면이다. 왼쪽 트리 선택 시 해당화면이 우측에 탭을 활용하여 추가되고 또한 삭제가 가능하다. 또한 트리에서 커뮤니티나 카테고리가 삭제되는 경우 우측화면의 tab section도 같이 삭제되도록 구현되어 있다.</para>
+		<mediaobject>
+			<imageobject>
+				<imagedata fileref="../image/jquery/tab.jpg"	align="center" />
+			</imageobject>
+		</mediaobject>
+	</section>

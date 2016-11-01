@@ -1,0 +1,161 @@
+<chapter id="simpleweb_vo_develop_step1">
+	<title>Step 1. JSP Call</title>
+		<para>
+			When Simpleweb Plugin (simpleweb-vo) is installed, 
+			SimpleWeb-VO Sample menu is added to the left layout. 
+			If you click this menu, the Movie Finder List of Simpleweb is shown. 
+			In this case, Anyframe link tag is used. 
+			The following is a part of left.jsp file that is additionally defined by Simpleweb Plugin (simpleweb-vo) installation. 
+		</para>
+		<programlisting language="java"><![CDATA[<anyframe:link id="voMovie" service="simplewebVoMovieFinder.getPagingList(search)" layout="voLayout"
+	tiles="body:/WEB-INF/jsp/simpleweb-vo/moviefinder/movie/list.jsp">
+	<anyframe:model name="search" type="${package}.simpleweb.vo.moviefinder.service.MovieSearchVO" />
+	<anyframe:setProperty name="title">SimpeWeb-VO Sample</anyframe:setProperty>
+</anyframe:link>]]></programlisting>
+	<para>
+		As seen on the above tag, 
+		a link (a href.. ) that has an id of "voMovie" which has SimpleWeb-VO Sample as text is created. 
+		The business service to be called becomes a class which the bean id is "simplewebVoMovieFinder" defined as service. 
+		The method is getPagingList(search) method. 
+		The method argument sets object by binding request parameter after finding argument type of method through MethodInfo. 
+		However, if the argument type is primitive type, find the related key value of request for setting. 
+		In other words, if there is one argument of getPagingList(search) method found through MethodInfo 
+		and if it is org.anyframe.datatype.SearchVO type, SearchVO type object is created and parameters in request are set in the created object. 
+		However, if there is one argument of getPagingLIst(search) method and it is primitive type, "search" parameter is found in request and set.
+		When there is more than one parameter, 
+		the object related to modelAttribute should be defined as the first argument, 
+		and the other arguments should only be primitive type. 
+		The tiles definition of the page to be shown after processing request is "voLayout" 
+		and the value of factor which put-attribute name is "body" is set as "/WEB-INF/jsp/simpleweb-vo/moviefinder/movie/list.jsp". 
+		The following is a part of tilesviews.xml which is a tiles definition file that is additionally defined due to Simpleweb Plugin (simpleweb-vo) installation. 
+		
+		<programlisting language="xml"><![CDATA[<!-- simpleweb-vo-tiles-definition-START -->
+    <definition name="voLayout" template="/WEB-INF/jsp/simpleweb-vo/layout/standard.jsp">
+        <put-attribute name="top" value="/sample/layouts/top.jsp" />
+        <put-attribute name="left" value="/sample/layouts/left.jsp" />
+        <put-attribute name="body" expression="${requestScope.body}" />
+    </definition>
+<!-- simpleweb-vo-tiles-definition-END -->]]></programlisting>
+	</para>
+	<note>
+		<title>Tiles Definition expression</title>
+		<para>
+			When using tiles, 
+			you can use attribute to define value or expression (Tiles version 2.1.X onwards) 
+			for pages needed to be added within the layout. 
+			When using value, pages to put in as static are each defined within xml file, 
+			and when using expression, you can use Spring EL to obtain the values in Scope for setting. 
+			In other words, when defined as ${requestScope.body}, find the body value in request attribute for setting.
+		</para>
+	</note>
+	<para>
+		For list.jsp which is a page to show after request, form tag of Spring is used. 
+		To show this page, the modelAttribute value needs to be set. 
+		Therefore, use model tag to create a "${package}.simpleweb.vo.moviefinder.service.MovieSearchVO" type object 
+		in the modelAttribute called "search".
+	</para>
+		<note><title>Partial Rendering</title>
+			<para>
+				Anyframe provides Partial Rendering based on Spring JS. 
+				First, set the fragment property and render property in link tag or submit tag requested by Partial Rendering. 
+				Below is an example. 
+						
+			</para>
+		<programlisting language="java"><![CDATA[<anyframe:link id="voMovie" service="simplewebVoMovieFinder.getPagingList(search)" layout="voLayout"
+	tiles="body:/WEB-INF/jsp/simpleweb-vo/moviefinder/movie/list.jsp" ]]><emphasis role="bold"><![CDATA[render="partial"]]></emphasis><![CDATA[>
+	... >]]></programlisting>
+	 	<para>
+			When set as above, page is refreshed only for factors which the put-attribute of Tiles Definition is "body". 
+			In this case, note that the part that is refreshed becomes the div section of JSP page. 
+			In other words, the div id of the area of page that will be refreshed 
+			and the div id of the area of page that has been refreshed should be the same. 
+			For more information let's take a look at the standard.jsp code below. 
+			 	
+		</para> 
+		<programlisting language="java"><![CDATA[<td width="100%" height="100%" align="left" valign="top" style="padding:0 20px 0 20px">   
+	]]><emphasis role="bold"><![CDATA[<div id="body">]]></emphasis><![CDATA[
+		<tiles:insertAttribute name="body"/>
+	]]><emphasis role="bold"><![CDATA[</div>]]></emphasis><![CDATA[	
+</td>]]></programlisting>
+		<para>
+			standard.jsp that includes the codes above is a layout page of Tiles, 
+			and as you can see in the code, it includes a part which the div id is "body". 
+			For this part to be Partial Rendering, the div id of relevant section should be matched to "body". 
+			The following code is a part of list.jsp page which the body section will be Partial Rendering. 
+			
+		</para>
+		<programlisting language="java"><![CDATA[<!-- list.jsp start -->
+<%@ include file="/sample/common/taglibs.jsp"%>
+]]><emphasis role="bold"><![CDATA[<div id="body">]]></emphasis><![CDATA[
+...
+]]><emphasis role="bold"><![CDATA[</div>]]></emphasis><![CDATA[
+<!-- list.jsp end -->]]></programlisting>
+		</note>
+	</chapter>
+	<chapter id="simpleweb_vo_develop_step2">
+		<title>Step 2. JSP Developmtnet</title>
+		<para>
+			Let's use the link tag and submit tag to approach JSP page and develop JSP as described above. 
+			When page has form factor, use form tag of Spring to implement. 
+			In this case, the modelAttribute name becomes model tag name when set with model tag, 
+			and when you wish to use returned VO value after executing a certain business service, 
+			define as Camelcased name of VO class. 
+			
+		</para>
+		<programlisting language="java"><![CDATA[<form:form modelAttribute="search" method="post" id="searchForm" ... ]]></programlisting>
+		<para>Next, set hiddenDiv needed for using link tag or submit tag of Anyframe inside form.</para>
+		<programlisting language="java"><![CDATA[<div id="hiddenDiv"></div>]]></programlisting>
+		<para>
+			For form field, form tag of Spring is used, and when necessary, the Anyframe validate tag is used to apply JavaScript Validation. 
+			Also, when moving to another page or when Submit occurs, 
+			use Anyframe link tag and submit tag to implement. 
+			
+		</para>
+		<para>
+			When list is included in page, developing Anyframe Tag Library directly in loop is not guided for link occurring in list
+			due to the possibility of a decrease in speed. 
+			Anyframe pagenavigator tag supports the setting of partial property and fragment or popup property. 
+					
+		</para>
+		<programlisting language="java"><![CDATA[<c:forEach var="result" items="${resultList}" varStatus="status">
+
+	<tr class="board" onMouseOver="this.style.backgroundColor = '#e4eaff';return true;;" onMouseOut="this.style.backgroundColor = ''; return true;;">
+		<td class="underline">${result.genre.name}</td>
+		<td class="underline">
+		<a ]]><emphasis role="bold"><![CDATA[class="linkClass"]]></emphasis><![CDATA[ id="getMovieId${status.count}" href="simple.do?service=simplewebVoMovieService.get(movieId)... ">
+			${result.title}
+		</a>
+		</td>
+		<td align="left">${result.director}</td>
+		<td align="left">${result.actors}</td>
+		<td align="center">${result.releaseDate}</td>
+	</tr>
+</c:forEach>
+
+<anyframe:pagenavigator linkUrl="javascript:document.searchForm.submit();" pages="${resultPage}" formName="searchForm"
+	]]><emphasis role="bold"><![CDATA[render="partial" linkFragment="body" linkClass="linkClass" linkPopup="true"]]></emphasis><![CDATA[/>]]></programlisting>
+	<para>
+		As seen in the code above, 
+		define linkClass attribute of "a" tag that are subject to link 
+		and define the same value in linkClass attribute of pagenavigator. 
+		Also, apply render, linkFragment, and linkPopup property as when using link tag and submit tag. 
+		If list page does not show page navigation bar using PageNavigator Tag of Anyframe, 
+		add the below script phrase on the bottom of the list page. 
+		
+	</para>
+    <programlisting language="java"><![CDATA[<script type="text/javascript"> 
+	dojo.query(".linkClass").forEach(function(element) { 
+	Spring.addDecoration(new Spring.AjaxEventDecoration({ 
+	elementId: element.id, 
+	event: "onclick", 
+	popup: true, 
+	params: {fragments: body} })); 
+	}); 
+</script>]]></programlisting>
+	<para>
+		When selecting one category from the list page to move to the detail page, 
+		open the page through popup view, 
+		and develop the above if you wish to apply the Partial Rendering function. 
+		
+	</para>
+</chapter>

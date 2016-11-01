@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-2.5.xsd">
+	<bean name="propertiesService"
+		class="org.anyframe.util.properties.impl.PropertiesServiceImpl"
+		destroy-method="destroy">
+		<property name="dynamicReload" value="1000" />
+		<property name="encoding" value="UTF-8" />
+		<property name="fileNames">
+			<value>
+			    file:./src/**/refresh-resource.properties,
+				file:./src/**/dynamic-reload-resource.properties,
+				classpath:/resource.properties,
+				classpath:/korean-resource.properties
+			</value>
+		</property>
+	</bean>
+</beans>	

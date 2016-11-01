@@ -1,0 +1,16 @@
+<configuration>
+	
+	<statusListener class="ch.qos.logback.core.status.OnConsoleStatusListener" />
+	
+	<appender name="SYSLOG" class="ch.qos.logback.classic.net.SyslogAppender">
+		<syslogHost>afe02</syslogHost>
+		<port>514</port>
+		<facility>CRON</facility>
+		<suffixPattern>[%thread] %logger %msg</suffixPattern>
+	</appender>
+	
+	<root level="DEBUG">
+		<appender-ref ref="SYSLOG" />
+	</root>
+
+</configuration>

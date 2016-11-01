@@ -1,0 +1,681 @@
+<chapter id="jasperreports_designer_report">
+	<title>Design Report</title>
+	<para>
+		Here, we will see how the examples were developed. 
+		In the examples, search results of product list by category can be reported in various forms such as HTML, PDF, Excel, and CSV using JasperReports. 
+		The reporting of search results of product register status by category using JasperAssistant is developed in jrxml, and shown in various UI forms through the JasperReports engine. 
+		First, we will take a look at how a jrxml file is developed using JasperAssistant. 
+		For general information on how to use JasperAssistant, other than methods stated in this example, refer to the  <ulink
+    	url="http://www.jasperassistant.com/docs/guide/index.html">Online Manual</ulink> on the JasperAssistant website or the compressed PDF manual.
+	</para>
+
+	<para>
+		Also, to watch a flash demo on how to use JasperAssistant, refer to  <ulink
+    	url="http://www.jasperassistant.com/demo.html">Demo</ulink>. The demo gives easy visual and verbal explanations on how to develop a simple report. 
+    	This can help those who are using JasperAssistant for the first time.
+    </para>
+
+    <section id="jasperreports_designer_report_result">
+    	<title>Target Result</title>
+
+      	<para>
+      		Next is the result of developing the design (jrxml) of product register status by category with the Preview function of JasperAssistant according to this manual. 
+      		Let's make a design (jrxml) file that shows the product register status by category on tables and pie charts. 
+      		<mediaobject>
+          		<imageobject>
+            		<imagedata align="center"
+               	        	fileref="../image/jasperreports/designer/jasperassistant6.jpg" />
+          		</imageobject>
+        	</mediaobject>
+        </para>
+    </section>
+
+    <section id="jasperreports_designer_report_file">
+    	<title>Developing Design File (JRXML)</title>
+
+      	<para>
+      		To produce the above result, jrxml should be developed in a way that product list by category stored in database can be searched and reported through various UI.
+      	</para>
+
+      	<para>
+      		This example was tested in the environment below. Before going on to the next stage, all of the items below should be installed in the development environment.
+      	</para>
+
+      	<itemizedlist>
+        	<listitem>
+          		<para>
+          			Eclipse 3.5.0
+          		</para>
+        	</listitem>
+
+        	<listitem>
+          		<para>
+          			JasperAssistant 3.1.1
+          		</para>
+        	</listitem>
+
+        	<listitem>
+          		<para>
+          			DataBase - HsqlDB 1.8.0.10
+          		</para>
+        	</listitem>
+		</itemizedlist>
+
+		<section id="jasperreports_designer_report_file_perspective">
+        	<title>Step 1 : Open JasperAssistant Perspective</title>
+
+        	<para>
+        		JasperAssistant provides Eclipse Perspective for report development. 
+        		Perspective provides the Eclipse Workbench layout and all necessary views which are ideal for developing reports. 
+        		To open JasperAssistant Perspective, go to <emphasis role="bold">Window
+        		<![CDATA[->Open Perspective ->Other... ->JasperAssistant]]></emphasis>.
+        	</para>
+
+        	<mediaobject>
+          		<imageobject>
+            		<imagedata align="center"
+                     		  fileref="../image/jasperreports/designer/jasperassistant7.jpg" />
+          		</imageobject>
+        	</mediaobject>
+		</section>
+
+      	<section id="jasperreports_designer_report_file_create">
+        	<title>Step 2 : Create a new Report</title>
+
+        	<para>
+        		Now, let's develop a new report. First, create a new report file (jrxml) in the src/webapp/WEB-INF/reports folder. 
+        		The pages below show the development process of a report file for product register status information by category. 
+        		If you wish to make a new report file, refer to the information below.
+        	</para>
+
+        	<itemizedlist>
+          		<listitem>
+            		<para>
+            			<emphasis role="bold">Select a wizard</emphasis> - Select Report
+            			wizard. On JasperAssistant Perspective page, a Navigator view will appear on the left. 
+            			If you choose File > New while your mouse is on the src/main/webapp/WEB-INF/jsp/jasper/report folder, you will see a submenu named Report. 
+            			If you use this menu, you will move to the stage below. 
+            			<![CDATA[If you choose File > New > Other..., the screen will appear as below. In this case, select JasperAssistant > Report wizard.]]>
+            		</para>
+          		</listitem>
+        	</itemizedlist>
+
+        	<mediaobject>
+          		<imageobject>
+            		<imagedata align="center"
+                       		fileref="../image/jasperreports/designer/jasperassistant12.jpg" />
+          		</imageobject>
+        	</mediaobject>
+
+        	<itemizedlist>
+          		<listitem>
+            		<para>
+            			<emphasis role="bold">New Report Wizard : Create a new
+            			report </emphasis>- Create a new report. The filename extension should be jrxml. 
+            			Name the product register status information by category report file testReport.jrxml, 
+            			and check if the report file is stored under the anyframe-jasperreports-pi/src/main/webapp/WEB-INF/jsp/jasper/report folder.
+            		</para>
+
+            		<mediaobject>
+              			<imageobject>
+                			<imagedata align="center"
+                           			fileref="../image/jasperreports/designer/jasperassistant8.jpg" />
+              			</imageobject>
+            		</mediaobject>
+          		</listitem>
+
+          		<listitem>
+            		<para>
+            			<emphasis role="bold">New Report Wizard : Select a data
+            			source</emphasis>- Select data source in which data that will be used for report is stored. 
+            			Data sources defined in Preferences will be shown on a list. 
+            			Provided samples use HSQL DB, so select HSQL DB on the list. 
+            			If you want to add data sources, add through Window
+            			<![CDATA[->Preferences ->JasperAssistant ->Data Source menu.]]>
+            		</para>
+
+            		<mediaobject>
+              			<imageobject>
+                			<imagedata align="center"
+                           		fileref="../image/jasperreports/designer/jasperassistant9.jpg" />
+              			</imageobject>
+           			</mediaobject>
+          		</listitem>
+
+          		<listitem>
+            		<para>
+            			<emphasis role="bold">New Report Wizard : Specify the SQL
+            			query </emphasis>- Develop SQL query that obtains data used for report. 
+            			Enter as the following into SQL query because the report to be developed is on the search results of the product register list by category.
+            			<programlisting language="java">select category.CATEGORY_NO, category.CATEGORY_NAME, product.PROD_NO, product.PROD_NAME,
+       product.SELLER_ID 
+from PRODUCT product, CATEGORY category
+where product.CATEGORY_NO = category.CATEGORY_NO
+order by category.CATEGORY_NO</programlisting>
+					</para>
+            		<mediaobject>
+              			<imageobject>
+                			<imagedata align="center"
+                           			fileref="../image/jasperreports/designer/jasperassistant10.jpg" />
+              			</imageobject>
+            		</mediaobject>
+          		</listitem>
+
+          		<listitem>
+            		<para>
+            			<emphasis role="bold">New Report Wizard : Select the
+            			Fields</emphasis> - Select the fields used for report. 
+            			Select all columns (CATEGORY_NAME, CATEGORY_NO, PROD_NAME, PROD_NO, SELLER_ID) of the table obtained from DB.
+            		</para>
+
+            		<mediaobject>
+              			<imageobject>
+                			<imagedata align="center"
+                           		fileref="../image/jasperreports/designer/jasperassistant11.jpg" />
+              			</imageobject>
+            		</mediaobject>
+          		</listitem>
+        	</itemizedlist>
+
+        	<para>
+        		A new report file (jrxml) has been created. Continue with the design process by following the stage below.
+        	</para>
+		</section>
+
+      	<section id="jasperreports_designer_report_file_palette">
+        	<title>Step 3 : Design a report using Palette</title>
+
+        	<para>
+        		If the report file created in Step 2 is opened using JasperAssistant Editor, Design/Preview Tab and Palette appear on the right.
+        	</para>
+
+        	<mediaobject>
+          		<imageobject>
+            		<imagedata align="center"
+                       		fileref="../image/jasperreports/designer/jasperassistant13.jpg" />
+          		</imageobject>
+        	</mediaobject>
+
+        	<para>
+        		Design report file using Elements and Text Fields on Palette. 
+        		First, let's look into the structure of Report XML file. 
+        		A report file consists of sections. 
+        		The page of a report file is divided into sections which have a specific name according to height. 
+        		Sections are also called bands. These two names are both used together in JasperReports, 
+        		but because JasperAssistant Editor uses band, band will be used hereafter in this manual. 
+        		Band refers to sections that are divided horizontally and have their own name. 
+        		The figure below shows the structure of band. 
+        	    Bands other than Title, Last Page Footer, and Summary Band are separated (into Header and Footer) with Detail Band at the center, and each band has it own purpose (function).
+        	</para>
+
+        	<mediaobject>
+          		<imageobject>
+            		<imagedata align="center"
+                       		fileref="../image/jasperreports/designer/jasperassistant14.jpg" />
+          		</imageobject>
+        	</mediaobject>
+			<para>
+			</para>
+        	<informaltable>
+          		<tgroup cols="2">
+               		<colspec colnum="1" colname="col1" colwidth="2*"/>
+               		<colspec colnum="2" colname="col2" colwidth="8*"/>
+            		<thead>
+             			<row>
+               				<entry align="center">Band Name</entry>
+
+                			<entry align="center">Description</entry>
+              			</row>
+            		</thead>
+
+            		<tbody>
+             			<row>
+                			<entry>Background band</entry>
+
+                			<entry>Can choose the background of report</entry>
+              			</row>
+
+              			<row>
+                			<entry>Title band</entry>
+
+                			<entry>The band that appears first. 
+                			Among all pages in the report, it is shown only once. It is usually used for writing the title for the report.
+                			</entry>
+              			</row>
+
+              			<row>
+                			<entry>Page header band</entry>
+
+                			<entry>Once defined, it is shown in the same location and size on the header of all pages of the report.</entry>
+              			</row>
+
+              			<row>
+                			<entry>Page footer band</entry>
+
+                			<entry>Once defined, it is rendered in the same location and size on the bottom of all pages of the report.</entry>
+              			</row>
+
+              			<row>
+                			<entry>Column header band</entry>
+
+                			<entry>Used as the top band of column items of each detail band. This band is also rendered on every page.</entry>
+              			</row>
+
+              			<row>
+                			<entry>Column footer band</entry>
+
+                			<entry>Used as the bottom band of column items of each detail band. This band is also rendered on every page.</entry>
+              			</row>
+
+              			<row>
+                			<entry>Group header band</entry>
+
+                			<entry>A band made by user. More that 0 can be made. It is located above the detail band.</entry>
+              			</row>
+
+              			<row>
+                			<entry>Group footer band</entry>
+
+                			<entry>A band made by user. More that 0 can be made. It is located below the detail band.</entry>
+              			</row>
+
+              			<row>
+                			<entry>Detail band</entry>
+
+                			<entry>
+                				The most important band. 
+                				A detail band mainly enables data collected by query to be listed and rendered. 
+                				It is fair to say that all bands are designed based on the detail band. 
+                				Data collected by query can be used in bands other than detail band, 
+                				but only detail band can show all rows when number of rows are more than one while other bands can show only the column values of the first row.
+                			</entry>
+              			</row>
+
+              			<row>
+                			<entry>Last page footer</entry>
+
+                			<entry>
+                				The band used when special outcomes are to be shown on the last page of the report other than common page footers. 
+                				Like the title band, it can be rendered only once in the entire report.
+                			</entry>
+              			</row>
+
+              			<row>
+                			<entry>Summary band</entry>
+
+                			<entry>
+                				Also called the report footer band. 
+                				It can be rendered only once in the entire report on the last page. It is mainly used for showing the total sum, etc.
+                			</entry>
+              			</row>
+            		</tbody>
+          		</tgroup>
+        	</informaltable>
+
+        	<para>
+        		The report file for the product register status information example has been developed using Title, Page Header, Column Header, and Detail. 
+        		If testReport.jrxml is created, only detail band is left by default. 
+        		Therefore, band should be added using the Add Band menu.
+        	</para>
+
+        	<itemizedlist>
+          		<listitem>
+            		<para>
+              			<emphasis role="bold">Title band development</emphasis>
+            		</para>
+
+            		<para>
+            			<![CDATA[When testReport.jrxml file is opened, select the route item (usually titled Unnamed) on the left Outline view, 
+            			click the right button on the mouse and select Add Band > Add Title band. 
+            			Another option is selecting an empty space with no dots through Editor, 
+            			and click the right button on the mouse to select the Add Band menu. 
+            			Title band will appear on the right Editor page, and among the Elements of Palette, drag and drop Static Text and put it on Title band. 
+            			Among Properties items of Static Text Element, enter product register status by category into Value of Property. 
+            			Also, for the report to look good, set the Value of Property as below.]]>
+            		</para>
+
+            		<informaltable>
+              			<tgroup cols="3">
+                			<thead>
+                  				<row>
+                    				<entry align="center">Property</entry>
+
+                    				<entry align="center">Value</entry>
+
+                    				<entry align="center">Description</entry>
+                  				</row>
+                			</thead>
+
+                			<tbody>
+                  				<row>
+                    				<entry><![CDATA[Static Text > Text]]></entry>
+
+                    				<entry>Product register status by category</entry>
+
+                    				<entry>Title name</entry>
+                  				</row>
+
+                  				<row>
+                    				<entry><![CDATA[Text Font > Font Size]]></entry>
+
+                    				<entry>12</entry>
+
+                    				<entry>Title font size setting</entry>
+                  				</row>
+
+					            <row>
+					                <entry><![CDATA[Text Font > PDF Embedded]]></entry>
+					
+					                <entry>true</entry>
+					
+					                <entry>Setting for Korean language support in case reported in PDF form</entry>
+					            </row>
+					
+					            <row>
+					                <entry><![CDATA[Text Font > PDF Encoding]]></entry>
+					
+					                <entry>UniKS-UCS2-H</entry>
+					
+					                <entry>
+					                    Setting for Korean language support in case reported in PDF form. 
+					                    Select UniKS-UCS2-H(horizontal) or UniKS-UCS2-V(vertical) according to how letters are arranged.
+					                </entry>
+                  				</row>
+
+					            <row>
+					                <entry><![CDATA[Text Font > PDF Font Name]]></entry>
+					
+					                <entry>HYGoThic-Medium</entry>
+					
+					                <entry>Setting for Korean language support in case reported in PDF form. Another font type can be selected.</entry>
+                  				</row>
+                			</tbody>
+              			</tgroup>
+            		</informaltable>
+
+            		<para>
+            			Use Editor to enlarge Static Text Box and align letters to the center. 
+            		</para>
+
+            		<mediaobject>
+              			<imageobject>
+                			<imagedata align="center"
+                           			fileref="../image/jasperreports/designer/jasperassistant15.jpg" />
+              			</imageobject>
+            		</mediaobject>
+          		</listitem>
+
+			    <listitem>
+			       	<para>
+			          <emphasis role="bold">Column Header band development</emphasis>
+			        </para>
+			
+			        <para>
+			            <![CDATA[When testReport.jrxml is open, select route item (usually titled Unnamed) on the left Outline view, 
+			            click the right button of the mouse and select the Add Band > Column Header
+			            band menu. Then, drag and drop the Static Text item among the Elements of Palette [detail status], 
+			            and develop header information including Category Name, Product No, Product Name, and Seller Id. 
+			            Below this, the product register status by category will be reported according to relative field. 
+			            Use the Editor toolbar to make the text bold, and add border line (use Toggle Border). 
+			            After developed, you can see the page header completed as the following. 
+			            (To show in PDF form, refer to Title band development and add properties.)]]>			            
+			        </para>
+
+            		<mediaobject>
+              			<imageobject>
+                			<imagedata align="center"
+                          		fileref="../image/jasperreports/designer/jasperassistant16.jpg" />
+              			</imageobject>
+            		</mediaobject>
+          		</listitem>
+
+          		<listitem>
+            		<para>
+              			<emphasis role="bold">Detail band development</emphasis>
+            		</para>
+
+            		<para>
+            			Is created by default, so additional band is unnecessary. 
+            			When testReport.jrxml is open, select Fields item below the route item (usually titled Unnamed) on the left Outline view. 
+            			You will see fields that were selected in Step 3. 
+            			If you drag and drop these fields and bring them to the Detail band section, they will be shown as $F{field name} form. 
+            			Data is obtained from data source and reported in this location. 
+            			Works including adding border lines can be carried out using Editor toolbar. 
+            			(To show in PDF form, refer to Title band development and add properties.)
+            		</para>
+
+            		<mediaobject>
+              			<imageobject>
+                			<imagedata align="center"
+                           			fileref="../image/jasperreports/designer/jasperassistant17.jpg" />
+              			</imageobject>
+            		</mediaobject>
+
+            		<para>
+            			Descriptions of Property for setting Padding value of the Text Field enter box and how pages appear in the process.
+            			<informaltable>
+				            <tgroup cols="3">
+				                <colspec colnum="1" colname="col1" colwidth="2*"/>
+				                <colspec colnum="2" colname="col2" colwidth="3*"/>
+				                <colspec colnum="3" colname="col3" colwidth="5*"/>
+
+                  				<thead>
+									<row>
+										<entry align="center">Property</entry>
+					
+					                    <entry align="center">Value</entry>
+					
+					                    <entry align="center">Description</entry>
+					                </row>
+                  				</thead>
+
+                  				<tbody>
+					                <row>
+										<entry><![CDATA[Text > Box]]></entry>
+					
+										<entry>(2,2,2,2) : Cannot be directly entered</entry>
+					
+										<entry><![CDATA[A pop-up window that can be set up as the following appears if you click the [...] button on the right of Text > Box on the Properties tab.]]></entry>
+					                </row>
+                  				</tbody>
+                			</tgroup>
+              			</informaltable>
+              		</para>
+
+            		<para>
+            			Modify Padding items on the Box Settings pop-up window. Shared padding settings was selected and padding value was set to 2 px.
+            		</para>
+
+            		<mediaobject>
+              			<imageobject>
+                			<imagedata align="center"
+                           			fileref="../image/jasperreports/designer/jasperassistant20.jpg" />
+              			</imageobject>
+            		</mediaobject>
+          		</listitem>
+
+          		<listitem>
+            		<para>
+              			<emphasis role="bold">Page Header band development</emphasis>
+            		</para>
+
+            		<para>
+            			<![CDATA[When testReport.jrxml is open, select route item (usually titled Unnamed) on the left Outline view, 
+			            click the right button of the mouse and select the Add Band > Page Header
+			            band menu. Add pie chart to this Page Header band section. On the right, select Chart from the Elements of Palette, and agian, click band section. 
+			            Then, a pop-up window asking what type of chart you will select appears. Select Pie. 
+			            If you do not click the mouse button to select the chart and drag and drop the chart as above, Area-type chart will be applied by default. 
+			            Therefore, you should click Chart Element to select chart type.]]>
+            		</para>
+
+            		<mediaobject>
+              			<imageobject>
+                			<imagedata align="center"
+                           			fileref="../image/jasperreports/designer/jasperassistant18.jpg" />
+              			</imageobject>
+            		</mediaobject>
+
+            		<para>
+            			<![CDATA[If you select Summary >
+            			Chart_(number) > Pie Dataset under the route item (usually titled Unnamed) on the left Outline view,
+            			Dataset can be set up with Properties view.]]>
+            		</para>
+
+            		<informaltable>
+              			<tgroup cols="3">
+                			<thead>
+                  				<row>
+									<entry align="center">Property</entry>
+					
+					                <entry align="center">Value</entry>
+					
+					                <entry align="center">Description</entry>
+					            </row>
+                			</thead>
+
+                			<tbody>
+                  				<row>
+                    				<entry><![CDATA[Pie Dataset > Key Expression]]></entry>
+
+                    				<entry>$F{CATEGORY_NAME}</entry>
+
+                    				<entry>Enter field information that is the key for pie chart development</entry>
+                  				</row>
+
+                  				<row>
+                    				<entry><![CDATA[Pie Dataset > Value Expression]]></entry>
+
+                    				<entry>$V{CategoryGroup_COUNT}</entry>
+
+                    				<entry>Only data field information that can be changed into number data can be entered.</entry>
+                  				</row>
+
+                  				<row>
+                    				<entry><![CDATA[Pie Dataset > Label Expression]]></entry>
+
+         							<entry />
+
+                    				<entry>Displayed as Key = Value if left empty</entry>
+                  				</row>
+                			</tbody>
+              			</tgroup>
+            		</informaltable>
+            
+            
+            		<para>
+            			Select Group under route item (usually titled Unnamed) on the left Outline view, 
+			            click the right button of the mouse and select Add Group to add groups as the following.
+            		</para>
+
+            		<informaltable>
+              			<tgroup cols="3">
+                			<thead>
+                  				<row>
+                    				<entry align="center">Property</entry>
+
+                    				<entry align="center">Value</entry>
+
+                    				<entry align="center">Description</entry>
+                  				</row>
+                			</thead>
+
+                			<tbody>
+                  				<row>
+                    				<entry><![CDATA[Group > Expression]]></entry>
+
+                    				<entry>Expression	$F{CATEGORY_NO}</entry>
+
+                    				<entry>Enter group conditions</entry>
+                  				</row>
+
+                  				<row>
+                    				<entry><![CDATA[Group > Name]]></entry>
+
+                    				<entry>CategoryGroup</entry>
+
+                    				<entry><![CDATA[Enter group condition name (Same as Pie Dataset > Value Expression)]]></entry>
+                  				</row>
+                			</tbody>
+              			</tgroup>
+            		</informaltable>
+            
+
+            		<para>
+            			<![CDATA[Select Summary >
+            			Chart_(number) under the route item (usually titled Unnamed) on the left Outline view,
+            			and change the mode with Properties view.]]>
+            		</para>
+
+            		<informaltable>
+              			<tgroup cols="3">
+                			<thead>
+                  				<row>
+                    				<entry align="center">Property</entry>
+
+                    				<entry align="center">Value</entry>
+
+                    				<entry align="center">Description</entry>
+                  				</row>
+                			</thead>
+
+                			<tbody>
+                  				<row>
+                    				<entry><![CDATA[Common > Mode]]></entry>
+
+                    				<entry>Opaque</entry>
+
+                    				<entry>
+                    					When reporting pie chart in HTML form, unnecessary background colors may appear if mode is selected as transparent. 
+                    					Do make the colors disappear, choose Opaque. This does not apply to other reporting forms such as PDF and Excel.
+                    				</entry>
+                  				</row>
+                			</tbody>
+              			</tgroup>
+            		</informaltable>
+
+            		<mediaobject>
+              			<imageobject>
+                			<imagedata align="center"
+                           			fileref="../image/jasperreports/designer/jasperassistant21.jpg" />
+              			</imageobject>
+            		</mediaobject>
+
+            		<para>
+            			After completing the pie chart, the following appears through the Design Tab of Editor. 
+            			The data of the pie chart cannot be viewed if you do not move to Preview Tab, and data cannot be seen when an error occurs. 
+            			So after Design Tab work is over, move on to the Preview stage.
+            		</para>
+
+            		<mediaobject>
+              			<imageobject>
+                			<imagedata align="center"
+                           			fileref="../image/jasperreports/designer/jasperassistant19.jpg" />
+              			</imageobject>
+            		</mediaobject>
+          		</listitem>
+        	</itemizedlist>
+		</section>
+
+      	<section id="jasperreports_designer_report_file_preview">
+        	<title>Step 4 : Preview Report</title>
+
+        	<para>
+        		If design report development is completed, use the Preview function provided by JasperAssistant to check if it has been developed properly. 
+        		If there are errors in the report file, they can be seen by executing Preview. 
+        		Check if the Preview results match the target outcomes in this manual.
+        	</para>
+
+        	<mediaobject>
+          		<imageobject>
+            		<imagedata align="center"
+                       		fileref="../image/jasperreports/designer/jasperassistant5.jpg" />
+          		</imageobject>
+        	</mediaobject>
+
+        	<para>
+        		jrxml development using JasperAssistant has been completed. 
+        		Now we will take a look at how to call reporting files from sample web application.
+        	</para>
+      	</section>
+    </section>
+</chapter>
