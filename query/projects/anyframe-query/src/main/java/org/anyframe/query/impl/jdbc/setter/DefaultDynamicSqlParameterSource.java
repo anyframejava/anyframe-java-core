@@ -17,7 +17,6 @@ package org.anyframe.query.impl.jdbc.setter;
 
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
-import java.util.HashMap;
 import java.util.Iterator;
 import java.util.Map;
 import java.util.StringTokenizer;
@@ -31,8 +30,7 @@ import org.springframework.jdbc.core.namedparam.MapSqlParameterSource;
  * @author SoYon Lim
  * @author JongHoon Kim
  */
-public class DefaultDynamicSqlParameterSource extends MapSqlParameterSource
-		implements DynamicSqlParameterSource {
+public class DefaultDynamicSqlParameterSource extends MapSqlParameterSource implements DynamicSqlParameterSource {
 	public DefaultDynamicSqlParameterSource() {
 	}
 
@@ -91,9 +89,7 @@ public class DefaultDynamicSqlParameterSource extends MapSqlParameterSource
 
 //	2009.08.21 : prefix -> get~(), is~()
 	@SuppressWarnings("unchecked")
-	public static Object getProperty(Object obj, String propertyName)
-			throws NoSuchMethodException, IllegalAccessException,
-			InvocationTargetException {
+	public static Object getProperty(Object obj, String propertyName) throws NoSuchMethodException, IllegalAccessException, InvocationTargetException {
 		if (obj instanceof Map) {
 			return ((Map) obj).get(propertyName);
 		}
@@ -117,8 +113,7 @@ public class DefaultDynamicSqlParameterSource extends MapSqlParameterSource
 	}
 
 //	2009.08.21 : prefix -> get~(), is~()
-	protected static String buildPropertyGetterName(String prefix,
-			String propertyName) {
+	protected static String buildPropertyGetterName(String prefix, String propertyName) {
 		if (propertyName.endsWith("()"))
 			return propertyName.substring(0, propertyName.length() - 2);
 		return buildPropertyMethodName(prefix, propertyName);
@@ -128,15 +123,13 @@ public class DefaultDynamicSqlParameterSource extends MapSqlParameterSource
 		return buildPropertyMethodName("set", propertyName);
 	}
 
-	protected static String buildPropertyMethodName(String prefix,
-			String propertyName) {
+	protected static String buildPropertyMethodName(String prefix, String propertyName) {
 		StringBuilder strBuffer = new StringBuilder(prefix);
 		strBuffer.append(NameConverter.capitalise(propertyName));
 		return strBuffer.toString();
 	}
 
-	public static String[] convertDelimitedStringToStringArray(String str,
-			String delimiter) {
+	public static String[] convertDelimitedStringToStringArray(String str, String delimiter) {
 		StringTokenizer strTokenizer = new StringTokenizer(str, delimiter);
 		int length = strTokenizer.countTokens();
 
@@ -150,7 +143,8 @@ public class DefaultDynamicSqlParameterSource extends MapSqlParameterSource
 		return strArray;
 	}
 
-	private final Map<String, Integer> sqlTypes = new HashMap<String, Integer>();
+// {jira:AF-376|anyframe jira2}
+//	private final Map<String, Integer> sqlTypes = new HashMap<String, Integer>();
 
 	/**
 	 * Register a SQL type for the given parameter.
@@ -161,7 +155,9 @@ public class DefaultDynamicSqlParameterSource extends MapSqlParameterSource
 	 *            the SQL type of the parameter
 	 */
 	public void addSqlType(String paramName, int sqlType) {
-		this.sqlTypes.put(paramName, new Integer(sqlType));
+// {jira:AF-376|anyframe jira2}
+//		this.sqlTypes.put(paramName, new Integer(sqlType));
+		registerSqlType(paramName, new Integer(sqlType));
 	}
 
 	/**
@@ -173,7 +169,14 @@ public class DefaultDynamicSqlParameterSource extends MapSqlParameterSource
 	 *         not registered
 	 */
 	public int getSqlType(String paramName) {
-		Integer sqlType = this.sqlTypes.get(paramName);
+// {jira:AF-376|anyframe jira2}
+//		Integer sqlType = this.sqlTypes.get(paramName);
+//		if (sqlType != null) {
+//			return sqlType.intValue();
+//		} else {
+//			return SqlTypeValue.TYPE_UNKNOWN;
+//		}
+		Integer sqlType = super.getSqlType(paramName);
 		if (sqlType != null) {
 			return sqlType.intValue();
 		} else {
