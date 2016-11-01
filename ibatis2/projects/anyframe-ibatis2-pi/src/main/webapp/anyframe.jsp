@@ -13,7 +13,7 @@
 <!-- Top -->
   <tr>
     <td height="100%" align="left" valign="middle">
-		<font size="5">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Anyframe Java 5.0.0</font>
+		<font size="5">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Anyframe Java 5.0.0.RC1</font>
     </td>
   </tr>
 </table>
@@ -30,7 +30,7 @@
 		<tr class="board">
 				<td class="underline">
 				    <!--iBatis2-menu-START-->
-					<a href="${ctx}/ibatis2MovieFinder.do?method=list"><font size="2">- iBatis2 0.0.1</font></a><br/>
+					<a href="${ctx}/ibatis2MovieFinder.do?method=list"><font size="2">- iBatis2 0.0.1.RC1</font></a><br/>
 					<!--iBatis2-menu-END-->
 					<!--Add new menu here-->
 				</td>

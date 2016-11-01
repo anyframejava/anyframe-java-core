@@ -43,7 +43,7 @@ import org.anyframe.plugin.common.MovieFinderException;
 @Service
 public class ExceptionTransfer {
 
-	@Pointcut("execution(* org.anyframe.plugin..*Impl.*(..))")
+	@Pointcut("execution(* org.anyframe.plugin..*Impl.*(..)) || execution(* org.anyframe.mip.query..*MiPServiceImpl.*(..))")
 	public void serviceMethod() {
 	}
 

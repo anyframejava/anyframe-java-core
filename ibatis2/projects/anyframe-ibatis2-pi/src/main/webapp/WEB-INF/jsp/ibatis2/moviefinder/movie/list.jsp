@@ -74,7 +74,7 @@
 					<td align="left">${movie.director}</td>
 					<td align="left">${movie.actors}</td>
 					<td align="center">${movie.ticketPrice}</td>
-					<td align="center"><fmt:formatDate pattern="yyyy-MM-dd" value="${movie.releaseDate}" /></td>
+					<td align="center">${movie.releaseDate}</td>
 				</tr>
 			</c:forEach>
 		</tbody>

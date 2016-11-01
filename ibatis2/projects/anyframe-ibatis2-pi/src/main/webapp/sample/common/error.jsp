@@ -2,6 +2,7 @@
 <%@ page isErrorPage="true"%>
 <%@ page contentType="text/html; charset=utf-8"%>
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core"%>
+<%@ page import="org.anyframe.exception.BaseException"%>
 <html>
 <head>
 <title>Error</title>
@@ -59,6 +60,22 @@
 													</c:otherwise>
 												</c:choose>
 												</font>
+												<p />
+												<% if (request.getAttribute("exception") instanceof BaseException) {
+												%> <c:if test="${exception.messages.solution != null && exception.message != 'Occured Error'}">
+												<br />
+												<b>* SOLUTION : </b> 
+												${exception.messages.solution}
+												</c:if> 
+												<c:if test="${exception.messages.solution != null && exception.message != 'Occured Error'}">
+												<br />
+												<br />
+												<b>* REASON : </b>
+												${exception.messages.reason}
+												</c:if>
+												<p />
+												<% } %>
+								
 											</td>
 											<td width="20">&nbsp;</td>
 										</tr>

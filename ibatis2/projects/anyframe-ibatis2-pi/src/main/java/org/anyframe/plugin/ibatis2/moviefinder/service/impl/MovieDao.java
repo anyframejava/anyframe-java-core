@@ -64,8 +64,7 @@ public class MovieDao {
 	public Page getPagingList(Movie movie, int pageIndex) throws Exception {
 		Movie searchArgs = new Movie();
 		searchArgs.setTitle("%" + movie.getTitle() + "%");
-		searchArgs.setNowPlaying(movie.getNowPlaying());
-		
+
 		List<Movie> list = sqlMap.queryForList("getMovieList", searchArgs,
 				pageSize * (pageIndex - 1), pageSize);
 		int rowCount = (Integer) sqlMap
