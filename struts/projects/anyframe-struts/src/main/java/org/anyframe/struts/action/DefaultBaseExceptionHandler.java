@@ -48,7 +48,7 @@ import org.apache.struts.util.ModuleException;
  */
 public class DefaultBaseExceptionHandler extends ExceptionHandler {
 	Log logger = null;
-	protected String defaultBundle = "anyframe.web.struts.common.CommonResource";
+	protected String defaultBundle = "org.anyframe.struts.CommonResource";
 
 	public DefaultBaseExceptionHandler() {
 		logger = DefaultActionUtil.getLogger(DefaultBaseExceptionHandler.class

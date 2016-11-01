@@ -71,7 +71,7 @@ public class DefaultBaseExceptionHandlerTestAction extends AbstractActionSupport
         // InvalidTokenException Test
         else if (request.getAttribute("DefaultException").equals(
                 "InvalidTokenException")) {
-        	throw new InvalidTokenException("error.common.msg.invalidtoken");
+        	throw new InvalidTokenException("common.msg.invalidtoken");
         }
         // CheckedException Test
         else if (request.getAttribute("DefaultException").equals(
@@ -79,7 +79,7 @@ public class DefaultBaseExceptionHandlerTestAction extends AbstractActionSupport
         	ApplicationContext context = getWebApplicationContext();
     		MessageSource messageSource = (MessageSource)context.getBean("messageSource");
 
-            throw new BaseException(messageSource, "error.common.msg.biz");
+            throw new BaseException(messageSource, "common.msg.biz");
         }
         // UnCheckedException Test
         else if (request.getAttribute("DefaultException").equals(

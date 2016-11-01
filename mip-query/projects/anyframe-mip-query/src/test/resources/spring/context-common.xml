@@ -4,12 +4,12 @@
 	xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-2.5.xsd">
 	<!--  Common -->	
 
-	<bean id="dataSource" class="org.apache.commons.dbcp.BasicDataSource" destroy-method="close">
-        <property name="driverClassName" value="net.sf.log4jdbc.DriverSpy"/>
-        <property name="url" value="jdbc:log4jdbc:oracle:thin:@server.ip:1521:xe"/>
+    <bean id="dataSource" class="org.apache.commons.dbcp.BasicDataSource" destroy-method="close">
+        <property name="driverClassName" value="oracle.jdbc.driver.OracleDriver"/>
+        <property name="url" value="jdbc:oracle:thin:@server.ip:1521:xe"/>
         <property name="username" value="athena"/>
         <property name="password" value="athena"/>
-    </bean>     	
+    </bean> 	
 
 	<bean id="messageSource"
 		class="org.springframework.context.support.ResourceBundleMessageSource">

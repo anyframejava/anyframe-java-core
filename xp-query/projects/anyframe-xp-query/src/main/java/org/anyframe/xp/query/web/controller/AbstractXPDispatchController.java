@@ -90,15 +90,14 @@ public class AbstractXPDispatchController extends AbstractXPController {
 			String name = getMethodName(inVl, "method");
 
 			if ("operate".equals(name) || "process".equals(name)) {
-				getLogger()
-						.error(
+				logger.error(
 								"Can not use a method name such as 'operate' or 'process'.");
 				throw new ServletException(
 						"Can not use a method name such as 'operate' or 'process'.");
 			}
 			dispatchMethod(httpPlatformRequest, name, inVl, inDl, outVl, outDl);
 		} catch (Exception e) {
-			getLogger().error("Can not excute dispatch method.");
+			logger.error("Can not excute dispatch method.");
 			if (e instanceof BaseException)
 				throw (BaseException) e;
 			throw new Exception(e.getMessage());
@@ -125,7 +124,7 @@ public class AbstractXPDispatchController extends AbstractXPController {
 			DataSetList outDl) throws Exception {
 
 		if (name == null) {
-			getLogger().error("Can not find a dispatch method name");
+			logger.error("Can not find a dispatch method name");
 			throw new ServletException("Can not find a dispatch method name");
 		}
 
@@ -134,7 +133,7 @@ public class AbstractXPDispatchController extends AbstractXPController {
 		try {
 			method = getMethod(name);
 		} catch (NoSuchMethodException e) {
-			getLogger().error("Can not find a dispatch method name", e);
+			logger.error("Can not find a dispatch method name", e);
 			throw e;
 		}
 		try {
@@ -142,7 +141,7 @@ public class AbstractXPDispatchController extends AbstractXPController {
 			method.invoke(this, args);
 
 		} catch (IllegalAccessException e) {
-			getLogger().error(e);
+			logger.error(e);
 			throw e;
 
 		} catch (InvocationTargetException e) {
@@ -150,7 +149,7 @@ public class AbstractXPDispatchController extends AbstractXPController {
 			if (t instanceof Exception) {
 				throw ((Exception) t);
 			} else {
-				getLogger().error(t);
+				logger.error(t);
 				throw new ServletException(t);
 			}
 		}
@@ -175,7 +174,7 @@ public class AbstractXPDispatchController extends AbstractXPController {
 				}
 				return method;
 			} catch (Exception e) {
-				getLogger().error("Can not excute dispatch method");
+				logger.error("Can not excute dispatch method");
 				throw new ServletException("Can not excute dispatch method");
 			}
 		}

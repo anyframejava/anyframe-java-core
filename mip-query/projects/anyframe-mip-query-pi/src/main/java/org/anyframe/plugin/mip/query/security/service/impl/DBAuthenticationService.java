@@ -22,6 +22,8 @@ import java.sql.ResultSet;
 import javax.annotation.Resource;
 import javax.sql.DataSource;
 
+import javax.inject.Inject;
+
 import org.anyframe.plugin.mip.query.security.service.AuthenticationService;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -38,7 +40,7 @@ import com.tobesoft.platform.data.Dataset;
 @Service("securityService")
 public class DBAuthenticationService implements AuthenticationService {
 
-	@Resource
+	@Inject
     protected DataSource dataSource = null;
 
     private String sqlQuery = "SELECT USER_ID, PASSWORD, USER_NAME, EN_NAME, COMP_PHONE, PHONE, CELL_PHONE, COMPANY, JOB_POSITION, ASSIGNMENT, OFFICER_YN, FAX, ZIP_CODE, ADDRESS, COMP_ZIP_CODE, COMP_ADDRESS, EMAIL, DEPT_ID FROM MIP_USER WHERE USER_ID = ? AND PASSWORD =?";

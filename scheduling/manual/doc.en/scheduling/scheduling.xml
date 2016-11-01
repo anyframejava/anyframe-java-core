@@ -1,0 +1,432 @@
+<chapter id="scheduling_schedulling">
+	<title>Spring Scheduling</title>
+	<para>
+		In this chapter, we will look into TaskExecutor and TaskScheduler, and how to used them based on XML and Annotation.
+	</para>
+	<section id="scheduling_schedulling_executor">
+		<title>TaskExecutor</title>
+		<para>
+			TaskExecutor is an interface that is defined by extending java.util.concurrent.Executor. 
+			It defines execute(Runnable task) method to execute assigned task. 
+			Various TaskExecutor implementations are provided in Spring, 
+			and for information on each implementation, refer to 
+			<ulink url="http://static.springsource.org/spring/docs/3.0.x/spring-framework-reference/html/scheduling.html#scheduling-task-executor">TaskExecutor types</ulink> 
+			in Spring Documentation.
+		</para>
+		<para>
+			To develop TaskExecutor that executes a specific task using TaskExecutor provided by Spring, 
+			define the Spring TaskExecutor property based on XML, 
+			and inject Spring TaskExecutor that is defined in TaskExecutor to be implemented. 
+			Task can be executed within TaskExecutor by calling the execute() method of injected Spring TaskExecutor, 
+			and Task Execution should implement its own rules. 
+			On the other hand, the task implemented in thread format will be managed in Thread Pool 
+			according to the specific characteristics of Spring TaskExecutor implementation.
+		</para>
+		<programlisting language="java">public class PrintTaskExecutor {
+    private TaskExecutor executor;
+
+    public PrintTaskExecutor(TaskExecutor taskExecutor) {
+        this.executor = taskExecutor;
+    }
+
+    <emphasis role="bold">public void print() {
+        for (int i = 0; i <![CDATA[<]]> 3; i++) {
+            executor.execute(new Task(i));
+        }
+    }</emphasis>
+
+    <emphasis role="bold">private class Task implements Runnable</emphasis> {
+        private int no;
+
+        public Task(int no) {
+            this.no = no;
+        }
+   
+        <emphasis role="bold">public void run() {
+            System.out.println("execute a Task" + no + " at " + new Date()
+                + " with TaskExecutor");
+        }</emphasis>
+    }
+}</programlisting>
+		<para>
+			The code above is a part of PrintTaskExecutor that uses Spring TaskExecutor to execute task defined as Inner class within print() method. 
+			If PrintTaskExecutor print() method is called, 
+			you can see the run() method implemented in the internal task of Thread format being executed three times.
+			
+		</para>
+		<para>
+			The following is a part of the property definition of PrintTaskExecutor mentioned above.
+		</para>
+		<programlisting language="xml"><![CDATA[<task:executor id="executor" pool-size="4" queue-capacity="4" rejection-policy="ABORT"/>
+	
+<bean id="task" class="anyframe.sample.scheduling.task.executor.PrintTaskExecutor">
+    <constructor-arg ref="executor"/>
+</bean>]]></programlisting>
+		<para>
+			The PrintTaskExecutor sample code mentioned above can be downloaded from <link linkend="scheduling_schedulling_resources">Download - anyframe-sample-scheduling</link>.
+		</para>		
+	</section>
+	<section id="scheduling_schedulling_scheduler">
+		<title>TaskScheduler</title>
+		<para>
+			The following is a part of org.springframework.scheduling.TaskScheduler class that has been newly provided by Spring 3.
+		</para>
+		<programlisting language="java">public interface TaskScheduler {
+    ScheduledFuture schedule(Runnable task, Trigger trigger);
+
+    ScheduledFuture schedule(Runnable task, Date startTime);
+
+    ScheduledFuture scheduleAtFixedRate(Runnable task, Date startTime, long period);
+
+    ScheduledFuture scheduleAtFixedRate(Runnable task, long period);
+
+    ScheduledFuture scheduleWithFixedDelay(Runnable task, Date startTime, long delay);
+
+    ScheduledFuture scheduleWithFixedDelay(Runnable task, long delay);
+}</programlisting>
+		<para>
+			TaskScheduler provides a method to execute task once after a specific time 
+			or regularly based on fixedRate or fixedDelay information.
+		</para>
+	</section>
+	<section id="scheduling_schedulling_xml">
+		<title>XML based Scheduling</title>
+		<para>
+			Spring 3 provides a Namespace called task for the configuration of TaskExecutor(<![CDATA[<task:executor/>]]>)or 
+			TaskScheduler(<![CDATA[<task:scheduler/>]]>). 
+			By using this, configuration for Task Scheduling(<![CDATA[<task:scheduled-task/>]]>) can be easily done. 
+			To use task Namespace, spring-task.xsd should be declared when defining <![CDATA[<beans>]]> in XML file.
+		</para>
+		<programlisting language="xml"><![CDATA[<beans xmlns="http://www.springframework.org/schema/beans"
+    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+    ]]><emphasis role="bold">xmlns:task="http://www.springframework.org/schema/task"</emphasis><![CDATA[
+    xsi:schemaLocation="http://www.springframework.org/schema/beans 
+        http://www.springframework.org/schema/beans/spring-beans-3.0.xsd
+        ]]><emphasis role="bold">http://www.springframework.org/schema/task 
+        http://www.springframework.org/schema/task/spring-task.xsd"</emphasis><![CDATA[>		
+    ...
+</beans>]]></programlisting>
+		<para>
+			The following is a part of property definition using <![CDATA[<task:scheduler/>]]>. 
+			When property definition is done as the following, ThreadPoolTaskScheduler instance will be created based on defined Pool Size. 
+			The defined id is used as the prefix for Task Thread that will be managed in Pool.
+		</para>
+		<programlisting language="xml"><![CDATA[<task:scheduler id="scheduler" pool-size="10"/>]]></programlisting>
+		<para>
+			The following is a part of property definition using <![CDATA[<task:executor/>]]>. 
+			When property definition is done as the following, ThreadPoolTaskExecutor instance will be created. 
+			The defined id is used as the prefix for Task Thread that will be managed in Pool.			
+		</para>
+		<programlisting language="xml"><![CDATA[<task:executor id="executor" pool-size="4" queue-capacity="4" rejection-policy="ABORT"/>]]></programlisting>
+		<para>
+			<![CDATA[<task:executor/>]]> supports various property definitions compared to <![CDATA[<task:scheduler/>]]>. 
+			Let's look into the properties that can be defined. 
+		</para>
+    	<informaltable>
+    		<tgroup cols="2">
+    			<colspec colname="col1" colnum="1" colwidth="1*" />
+		        <colspec colname="col2" colnum="2" colwidth="7*" />
+	
+		        <thead>
+		        	<row>
+		            	<entry align="center">Attribute</entry>
+		            	<entry align="center">Description</entry>
+		          	</row>
+		        </thead>
+	
+	 	        <tbody>
+					<row>
+						<entry>pool-size</entry>
+						<entry>
+							Sets the size of Thread Pool. 
+							When defined as a single value, the Pool Size is fixed as the defined size. 
+							When defined in min-max format, the range of Pool Size is defined. 							
+						</entry>
+		          	</row>
+		          	<row>
+		          		<entry>queue-capacity</entry>
+		          		<entry>
+		          			<para>
+			        			When the number of Treads currently executed is smaller than minimum Pool Size, 
+			        			TaskExecutor should use Free Thread for task to be executed. 
+			        			When the number of executed tasks increases to the minimum Pool Size, 
+			        			the task to be executed is added in Queue. 
+			        			In this case, the number of tasks that can be added is the same as queue-capacity. 
+			        			If all defined Queue Capacity is used, TaskExecutor creates a New Thread and adds it to Pool. 
+			        			When the number of currently executed Threads exceeds the maximum Pool Size, 
+			        			TaskExecutor rejects task execution. 
+			        			Therefore, pool-size is information that should be considered along with queue-capacity. 
+			        			For information on the correlation bwtween pool-size and queue-capacity, 
+			        			go to <ulink url="http://java.sun.com/javase/6/docs/api/java/util/concurrent/ThreadPoolExecutor.html">ThreadPoolExecutor API</ulink>.
+		          			</para>
+		          			<para>
+		          				The limit value is not decided if queue-capacity is not defined, 
+		          				but in this case, 
+		          				note that OutOfMemoryErrors can occur due to the queuing of too many execution target tasks. 
+		          				Also, maximum value of Queue Capacity does not exist, so Queue does not become full. 
+		          				Therefore, a maximum Pool Size becomes meaningless. 
+		          			</para>
+		          		</entry>
+		          	</row>
+		          	<row>
+		          		<entry>keep-alive</entry>
+		          		<entry>
+		          			Timeout occurs when the amount of time defined as keep-alive value has passed 
+		          			for Inactive Thread created by exceeding the minimum Pool Size. 
+		          		    If the range for TaskExecutor pool-size is defined, and queue-capacity is not defined, 
+		          		    timeout is applied on Inactive Thread included in Pool even if Pool size does not exceed the minimum value. 
+		          		    (Can be defined in seconds.)
+		          		</entry>
+		          	</row>
+		          	<row>
+		          		<entry>rejection-policy</entry>
+		          		<entry>
+		          			Basically, when task execution is rejected, TaskExecutor throws TaskRejectedException. 
+		          			However, if the rejection-policy value is defined as the following, 
+		          			other results can be shown according to the defined policy. 
+		          		
+		          			<itemizedlist>
+     							<listitem>
+     								<para>
+     									ABORT: Applies AbortPolicy. 
+     									This basic policy is applied when rejection-policy is not defined, and it throws exception. 
+     								</para>
+     							</listitem>		
+     							<listitem>
+     								<para>
+     									CALLER_RUNS : Applies CallerRunsPolicy. 
+     									When overload occurs for application, 
+     									it enables task to be executed directly by Thread instead of TaskExecutor. 
+     								</para>
+     							</listitem>      							          			
+     							<listitem>
+     								<para>
+     									DISCARD : Applies DiscardPolicy. 
+     									Policy that can be applied when there are no preconditions that all tasks have to be executed. 
+     									When application is overloaded, the execution of the current task is skipped. 
+     									
+     								</para>
+     							</listitem>
+     							<listitem>
+     								<para>
+     									DISCARD_OLDEST : Applies DiscardOldestPolicy. 
+     									Policy that can be applied when there are no preconditions that all tasks have to be executed. 
+     									When application is overloaded, the execution of task in Head of Queue is skipped. 
+     								</para>
+     							</listitem>     							
+     						</itemizedlist>
+		          		</entry>
+		          	</row>		          	
+		        </tbody>
+		    </tgroup>
+		</informaltable>
+		<para>
+			The following is a part of the property definition that uses <![CDATA[<task:scheduled-task/>]]> 
+			which is the strongest characteristic of task Namespace. 
+			<![CDATA[<task:scheduled-task/>]]> has a basic property called 'scheduler.' 
+			This is to define the TaskScheduler bean for scheduling internally defined task. 
+			<![CDATA[<task:scheduled-task/>]]> can include many  <![CDATA[<task:scheduled/>]]>, 
+			and 'ref' and 'method' of <![CDATA[<task:scheduled/>]]> 
+			are properties to define the execution subject bean and execution subject method included in bean.
+		</para>	
+		<programlisting language="xml"><![CDATA[<task:scheduled-tasks ]]><emphasis role="bold">scheduler="scheduler"</emphasis><![CDATA[>
+    <task:scheduled ref="task" method="printWithFixedDelay" ]]><emphasis role="bold">fixed-delay="5000"</emphasis><![CDATA[/>
+    <task:scheduled ref="task" method="printWithFixedRate" ]]><emphasis role="bold">fixed-rate="10000"</emphasis><![CDATA[/>
+    <task:scheduled ref="task" method="printWithCron" ]]><emphasis role="bold">cron="*/8 * * * * MON-FRI"</emphasis><![CDATA[/>
+</task:scheduled-tasks>
+
+<task:scheduler ]]><emphasis role="bold">id="scheduler"</emphasis><![CDATA[ pool-size="10"/>]]></programlisting>	
+		<para>
+			<![CDATA[<task:scheduled/>]]> has properties for needed for scheduling other than 'ref' and 'method.' They are as follows. 	
+		</para>
+    	<informaltable id="scheduling_schedulling_xml_taskconf">
+    		<tgroup cols="2">
+    			<colspec colname="col1" colnum="1" colwidth="1*" />
+		        <colspec colname="col2" colnum="2" colwidth="7*" />
+	
+		        <thead>
+		        	<row>
+		            	<entry align="center">Attribute</entry>
+		            	<entry align="center">Description</entry>
+		          	</row>
+		        </thead>
+	
+	 	        <tbody>
+					<row>
+						<entry>cron</entry>
+						<entry>
+							<para>
+							Use Cron Expression to define task execution period</para> 
+							<para>
+								Cron Expression consists of 6 fields. Each field indicates second, minute, hour, day, month, and weekday. 
+								Fields are separated with space. 
+								Also, month and weekday can be defined as the first three alphabets of the English word. 
+							</para>
+							<itemizedlist>
+								<listitem><para>0 0 * * * * : Start time of each day and hour</para></listitem>
+								<listitem><para>*/10 * * * * * : 10 second interval</para></listitem>
+								<listitem><para>0 0 8-10 * * * : 8, 9, 10 o'clock of each day</para></listitem>
+								<listitem><para>0 0/30 8-10 * * * : 8:00, 8:30, 9:00, 9:30, 10:00 of each day</para></listitem>
+								<listitem><para>0 0 9-17 * * MON-FRI : Weekdays 9 to 17 o'clock</para></listitem>
+								<listitem><para>0 0 0 25 12 ? : Midnight of each Christmas</para></listitem>
+							</itemizedlist>
+							<para>* Refer to org.springframework.scheduling.support.CronSequenceGenerator API</para> 						
+						</entry>
+		          	</row>		 	        
+					<row>
+						<entry>fixed-delay</entry>
+						<entry>
+						Execute task after consuming the same amount of time defined as fixed-delay since the end time of the previously executed task. 
+						(Defined in Milliseconds.)</entry>
+		          	</row>
+					<row>
+						<entry>fixed-rate</entry>
+						<entry>
+						Execute task after consuming the same amount of time defined as fixed-rate since the start time of the previously executed task. 
+					    (Defined in Milliseconds.)
+						</entry>
+		          	</row>			          		          	
+		        </tbody>
+		    </tgroup>
+		</informaltable>	
+		<para>
+			The PrintTaskExecutor sample code mentioned above can be downloaded from 
+			<link linkend="scheduling_schedulling_resources">Download - anyframe-sample-scheduling</link> 
+			in this section.
+		</para>			
+	</section>
+	<section id="scheduling_schedulling_annotation">
+		<title>Annotation based Scheduling <![CDATA[&]]> Asynchronous Execution</title>
+		<para>
+			Spring 3 provides Annotation for Task Scheduling(@Scheduled) and Aynchronous Task Execution(@Async). 
+			The following property definition should be added to recognize these Annotations. 
+		</para>
+		<programlisting language="java"><emphasis role="bold"><![CDATA[<task:annotation-driven scheduler="scheduler" executor="executor"/>]]></emphasis></programlisting>
+		<para>
+			Next, let's look into @Scheduled and @Async Annotation.
+		</para>
+		<section id="scheduling_schedulling_annotation_scheduler">
+			<title>Scheduling</title>
+			<para>
+				@Scheduled can be used in each method unit, 
+				and provide properties such as 'fixedDelay', 'fixedRate', and 'cron' to define the execution period. 
+				The meaning for each property are the same as  
+				<link linkend="scheduling_schedulling_xml_taskconf">XML based Scheduling mentioned <![CDATA[<task:scheduled/>]]> properties</link>.
+				TaskScheduler is in charge of @Scheduled method execution.
+			</para>
+			<programlisting language="java"><emphasis role="bold">@Scheduled(fixedDelay=5000)</emphasis>
+public void printWithFixedDelay() {
+    System.out.println("execute printWithFixedDelay() of Annotated PrintTask at " 
+        + new Date());
+}
+
+<emphasis role="bold">@Scheduled(fixedRate=10000)</emphasis>
+public void printWithFixedRate() {
+    System.out.println("execute printWithFixedRate() of Annotated PrintTask at " 
+        + new Date());
+}	
+
+<emphasis role="bold">@Scheduled(cron="*/8 * * * * MON-FRI")</emphasis>
+public void printWithCron() {
+    System.out.println("execute printWithCron() of Annotated PrintTask at " 
+        + new Date());
+}</programlisting>
+			<para>
+				Note that method set with @Scheduled Annotation does not have input parameter, and should not have return value. 
+				Also, if you have to refer to other bean to execute method logic, process with Dependency Injection. 
+					
+			</para>
+		</section>
+		<section id="scheduling_schedulling_annotation_asyncexe">
+			<title>Asynchronous Execution</title>
+			<para>
+				@Async can be used in methods, and for asynchronous execution of a specific method. 
+				The execution of @Async is processed by TaskExecutor.
+			</para>
+			<programlisting language="java"><emphasis role="bold">@Async</emphasis>
+public void printWithAsync() throws Exception {
+    System.out.println("execute printWithAsync() of AsyncPrintTask at "	
+        + new Date());
+    Thread.sleep(5000);
+}
+
+<emphasis role="bold">@Async</emphasis>
+public void printWithArg(int i) throws Exception {
+    System.out.println("execute printWithArg(" + i + ") of AsyncPrintTask at " 
+        + new Date());
+    Thread.sleep(5000);
+}
+
+<emphasis role="bold">@Async</emphasis>
+public Future<![CDATA[<String>]]> returnVal(int i) throws Exception {
+    System.out.println("execute returnVal() of AsyncPrintTask");
+    Date current = new Date();
+    Thread.sleep(5000);
+    return new AsyncResult<![CDATA[<String>]]>(Integer.toString(i));
+}</programlisting>
+			<para>
+				Like the code above, @Async method can have an input parameter or return value unlike @Scheduled method. 
+				This is because @Scheduled is managed by Spring Container, and @Async is directly called by Caller. 
+				However, return value can only be in Future type format, 
+				and Caller can find the results of methods that shut down execution asynchronously, 
+				through Future object's get() method. 
+			</para>
+		</section>
+		<para>
+			The PrintTaskExecutor sample code mentioned above can be downloaded from 
+			<link linkend="scheduling_schedulling_resources">Download - anyframe-sample-scheduling</link> 
+			within this section.
+		</para>			
+	</section>
+  	<section id="scheduling_schedulling_resources">
+  		<title>Resources</title>
+		<para>
+			<itemizedlist>
+				<listitem>
+					<para>Download</para>
+					<para>
+						Download the Eclipse project file that includes sample code from the following, and extract the compressed file.
+					</para>
+					<itemizedlist>
+						<listitem>
+							<para>Maven base execution</para>
+							<para>
+								Move to the extracted compressed file on the Command window, 
+								execute mvn compile exec:java -Dexec.mainClass=..., and check the results. 
+								Refer to JavaDoc of Main class included in each Eclipse project. 
+							</para>
+						</listitem>
+						<listitem>
+							<para>Eclipse base execution</para>
+							<para>
+								After Importing extracted project from Eclipse, 
+								select Main.java under the src/main/java folder, click the right button of the mouse, and click src/main/java from contact menu. 
+								Check execution results. 
+							</para>
+						</listitem>									
+					</itemizedlist>						
+					<table>
+						<title>Download List</title>
+						<tgroup cols="2">
+							<colspec colnum="1" colname="col1" colwidth="4*"/>
+							<colspec colnum="2" colname="col2" colwidth="6*"/>
+							<thead>
+								<row>
+									<entry align="center">Name</entry>
+									<entry align="center">Download</entry>
+								</row>
+							</thead>
+							<tbody>										
+								<row>
+									<entry align="center">anyframe-sample-scheduling.zip</entry>
+									<entry align="center"><ulink url="http://dev.anyframejava.org/docs/anyframe/plugin/optional/scheduling/1.0.1/reference/sample/anyframe-sample-scheduling.zip">Download</ulink>
+									</entry>
+								</row>															
+							</tbody>
+						</tgroup>
+					</table> 
+				</listitem>
+			</itemizedlist>
+		</para>
+	</section>		
+</chapter>

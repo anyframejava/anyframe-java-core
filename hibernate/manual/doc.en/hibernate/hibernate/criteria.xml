@@ -1,0 +1,202 @@
+<chapter id="hibernate_hibernate_criteria">
+	<title>Criteria Queries</title>
+    <para>
+    	Hibernate enables the use of org.hibernate.Criteria API to
+			minimize errors caused by unfamiliar with HQL or typos made in HQL
+			development. Search for specific object possible through calling
+			Criteria API and defining basic search condition in WHERE clause is also possible
+			by org.hibernate.criterion.Restrictions API call.
+    </para>
+
+	<section id="hibernate_hibernate_criteria_instruction">
+		<title>How to use</title>
+
+		<para>By using Hibernate Criteria, information on specific object can be searched.
+				</para>
+
+		<section id="hibernate_hibernate_criteria_instruction_basic">
+			<title>Case 1. Basic</title>
+
+			<para>
+				The following is an example of searching by using Criteria targeting one Table.		
+<programlisting language="java"><![CDATA[Criteria criteria = ]]><emphasis role="bold"><![CDATA[session.createCriteria(Country.class);]]></emphasis>
+<![CDATA[criteria.]]><emphasis role="bold"><![CDATA[add(Restrictions.]]></emphasis><![CDATA[like("countryName", "", MatchMode.ANYWHERE));]]>
+<![CDATA[criteria.]]><emphasis role="bold"><![CDATA[addOrder(Order.asc("countryName"));]]></emphasis>
+<![CDATA[List countryList = criteria.list();]]></programlisting>
+			</para>
+
+			<para>
+				By creating Criteria with the mapping class with the relevant table
+					and calling Restriction API, WHERE clause can be defined.
+					If defined like this, condition phrase like WHERE Country.countryName like '%%' is created.
+					In addition, ORDER BY clause can be defined through calling addOrder().
+					As such, when using Criteria API, as search condition is defined through calling method,
+					errors caused by typos can be minimized.
+					org.hibernate.criterion.Restrictions which defines search condition
+					provides various APIs including eq, gt, ge, isNull.
+					For more details, refer to
+					<ulink url="https://www.hibernate.org/hib_docs/v3/api/org/hibernate/criterion/Restrictions.html">here.</ulink>
+				        	</para>
+		</section>
+
+		<section id="hibernate_hibernate_criteria_instruction_join">
+			<title>Case 2. Join</title>
+
+			<para>
+				Targeting two related tables, search can be performed by using
+					Hibernate Criteria(Inner Join).
+                <programlisting language="java"><![CDATA[Criteria movieCriteria = session.createCriteria(Movie.class);]]>
+<![CDATA[Criteria categoryCriteria = ]]><emphasis role="bold"><![CDATA[movieCriteria.createCriteria("categories");]]></emphasis>
+<![CDATA[categoryCriteria.add(Restrictions.eq("categoryName", "Romantic"));]]>
+<![CDATA[List movieList = movieCriteria.list();]]></programlisting>
+			</para>
+
+        	<para>
+        		In the code above, to join Movie class and Category class in
+					relation, Criteria for Category object is created in the Criteria
+					for Movie object. Here, by using Restrictions API, the return value
+					categoryName = 'Romantic' will be searched.					
+        	</para>
+
+			<para>
+				In addition, Hibernate Criteria(Left Outer Join)-based search can
+					be performed targeting two related tables.				
+                <programlisting language="java"><![CDATA[Criteria categoryCriteria = session.createCriteria(Category.class);]]>
+<![CDATA[Criteria movieCriteria = categoryCriteria.createCriteria("movies",]]>
+        <emphasis role="bold"><![CDATA[CriteriaSpecification.LEFT_JOIN);]]></emphasis>
+<![CDATA[categoryCriteria.addOrder(Order.asc("categoryName"));
+categoryCriteria.setResultTransformer(Criteria.DISTINCT_ROOT_ENTITY);
+
+List categoryList = categoryCriteria.list();]]></programlisting>
+			</para>
+
+        	<para>
+        		When creating Criteria of related tables, LEFT_JOIN,
+					RIGHT_JOIN, etc. can be defined through CriteriaSpecification. Also, by using
+					Criteria.DISTINCT_ROOT_ENTITY, object repetitively included in list can be removed.
+					For Codes explained above, see HibernateBasicCriteria.java.        		
+        	</para>
+		</section>
+	</section>
+
+	<section id="hibernate_hibernate_criteria_transformer">
+		<title>Return in the user-defined object format</title>
+
+		<para>
+			By using setResultTransformer method of Criteria, search result
+				using Criteria can be returned in the user defined format.
+				</para>
+
+		<section id="hibernate_hibernate_criteria_movie">
+			<title>Case 1. Return in a specific object format</title>
+
+        	<para>
+        		Targeting two related tables, search result using Criteria
+					can be returned in Movie object, a specific object format.
+        	
+                <programlisting language="java"><![CDATA[Criteria movieCriteria = session.createCriteria(Movie.class);
+ProjectionList projectionList = Projections.projectionList();
+projectionList.add(Projections.id().as("movieId"));
+projectionList.add(Projections.property("title").as("title"));
+projectionList.add(Projections.property("director").as("director"));
+movieCriteria.setProjection(projectionList);]]>
+<emphasis role="bold"><![CDATA[movieCriteria.setResultTransformer(new AliasToBeanResultTransformer(Movie.class));]]></emphasis>
+
+<![CDATA[Criteria categoryCriteria = movieCriteria.createCriteria("categories", "category");
+Criteria countryCriteria = movieCriteria.createCriteria("country", "country");
+categoryCriteria.add(Restrictions.eq("categoryName", "Romantic"));
+countryCriteria.add(Restrictions.like("countryName", "", MatchMode.ANYWHERE));
+
+List movieList = movieCriteria.list();]]></programlisting>
+			</para>
+
+			<para>
+				By adding search target attributes to compose SELECT clause to
+					ProjectionList and using as() method, alias of each attribute
+					can be defined. By using AliasToBeanResultTransformer class, define
+					the format of search result as Movie class. Therefore, the execution
+					result of the criteria defined above will be List format of movie
+					object.				
+				<programlisting language="java"><![CDATA[Movie movie1 = (Movie) movieList.get(0);
+movie1.getTitle();
+movie1.getDirector();]]></programlisting>
+    		</para>
+		</section>
+
+      	<section id="hibernate_hibernate_criteria_map">
+        	<title>Case 2. Return in Map format</title>
+
+        	<para>
+        		Search result using criteria targeting two related tables can
+					be returned in java.util.Map format.        		
+                <programlisting language="java"><![CDATA[Criteria movieCriteria = session.createCriteria(Movie.class);]]>
+<![CDATA[ProjectionList projectionList = Projections.projectionList();
+projectionList.add(Projections.id().as("movieId"));
+projectionList.add(Projections.property("title").as("title"));
+projectionList.add(Projections.property("director").as("director"));
+movieCriteria.setProjection(projectionList);]]>
+<emphasis role="bold"><![CDATA[movieCriteria.setResultTransformer(Criteria.ALIAS_TO_ENTITY_MAP);]]></emphasis>
+
+<![CDATA[Criteria categoryCriteria = movieCriteria.createCriteria("categories","category");
+Criteria countryCriteria = movieCriteria.createCriteria("country","country");
+categoryCriteria.add(Restrictions.eq("categoryName", "Romantic"));
+countryCriteria.add(Restrictions.like("countryName", "",MatchMode.ANYWHERE));
+
+List movieList = movieCriteria.list();]]></programlisting>
+			</para>
+
+        	<para>
+        		By setting resultTransformer of criteria created above as
+					ALIAS_TO_ENTITY_MAP, return value can be in java.util.Map format.
+					In this case, the search result is java.util.List format of
+					java.util.Map and key of the Map will be movieId, title, director,
+					etc. defined as alias.
+					Therefore the return value can be identified through the key value of the map as the following.
+        	
+                <programlisting language="java"><![CDATA[Map movie1 = (Map) movieList.get(0);
+movie1.get("title");
+movie1.get("director");]]></programlisting>
+			</para>
+
+        	<para>
+        		For above-mentioned code, see HibernateCriteriaWithDefinedResult.java.					
+        	</para>
+      	</section>
+    </section>
+
+    <section id="hibernate_hibernate_criteria_pagination">
+		<title>Pagination</title>
+
+      	<para>
+      		Let's have a look at how to get paginated result when searching
+				object using criteria. Like pagination using HQL, by defining the
+				number of the row to begin (FirstResult)and the number of search
+				list(MaxResult), pagination can be performed.
+				The following is an example.			
+            <programlisting language="java"><![CDATA[Criteria criteria = session.createCriteria(Movie.class);]]>
+<emphasis role="bold"><![CDATA[criteria.setFirstResult(1);]]></emphasis>
+<emphasis role="bold"><![CDATA[criteria.setMaxResults(2);]]></emphasis>
+<![CDATA[List movieList = criteria.list();]]></programlisting>
+		</para>
+
+      	<para>
+      		If defined as above, SQL appropriate for each DB is created
+				according to the attribute(hibernate.dialect) defined in Hibernate
+				Configuration file(hibernate.cfg.xml).
+				In other words, instead of data number being returned as a return value after reading all the
+				data the relevant page belongs to,
+				only the number of data to search (the number of the page the data belongs to) is returned.
+				The following is the paginated query when hibernate.dialect was defined as HSQL DB.
+            <programlisting>select <emphasis role="bold">limit 1 2</emphasis> <![CDATA[this_.MOVIE_ID as MOVIE1_3_0_, this_.COUNTRY_CODE as COUNTRY2_3_0_,
+    this_.TITLE as TITLE3_0_, this_.DIRECTOR as DIRECTOR3_0_, 
+    this_.RELEASE_DATE as RELEASE5_3_0_ from PUBLIC.MOVIE this_ ]]></programlisting></para>
+
+      	<para>
+      		As defined in the code above, as the number of item to search
+				first is defined as number 1 and the total number of search items as number
+				2, Hibernate executed 'limit 1 2'-added SQL according to the
+				feature of HSQL DB and performed pagination.
+				For the code above, see HibernateCriteriaPaging.java.			
+      	</para>
+	</section>
+</chapter>

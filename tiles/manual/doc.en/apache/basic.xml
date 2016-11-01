@@ -1,0 +1,45 @@
+<chapter id="tiles_apachetiles_basic">
+	<title>View development</title>
+	<para>
+		To develop Tiles-based page, first create template. Anyframe Application created by Anyframe Plugin has the following view layout. 
+	</para>
+	<mediaobject>
+		<imageobject>
+			<imagedata align="center" fileref="../image/tiles/springmvc_view_tiles_layout.jpg" />
+		</imageobject>
+	</mediaobject>
+	<para>
+		As seen on the above figure, view layout consists of top, left, and body. To define this view layout, create the template file that has defined the related Layout. To insert attribute, <![CDATA[<tiles:insertAttribute>]]> tag should be used, and taglib should be defined to use this tag. The following is a part of standard.jsp file that defines the related layout. 
+	</para>
+	<programlisting language="java"><emphasis><![CDATA[<%@ taglib prefix="tiles" uri="http://tiles.apache.org/tags-tiles" %>]]></emphasis><![CDATA[
+<body>
+<table width="100%" height="100%" border="0" cellpadding="0" cellspacing="0">
+  <tr>
+  <!---- Left Menu ------>
+    <td width="177" height="100%" align="left" valign="top"  bgcolor="#eeeeee">
+    	<div id="left">
+    		]]><emphasis role="bold"><![CDATA[<tiles:insertAttribute name="left"/>]]></emphasis><![CDATA[
+    	</div>
+    </td>
+	<!---- Body ------>
+    <td width="100%" height="100%" align="left" valign="top" style="padding:0 20px 0 20px">   
+		<div id="body">
+        	]]><emphasis role="bold"><![CDATA[<tiles:insertAttribute name="body"/>]]></emphasis><![CDATA[
+        </div>	
+    </td>
+  </tr>
+</table>
+</body>]]></programlisting>
+	<para>Define template JSP file as the above, and set xml file which the related Definition is defined. The above code is a part of Definition file that has defined the above template.</para>
+	<programlisting language="xml"><![CDATA[<?xml version="1.0" encoding="utf-8"?>
+<!DOCTYPE tiles-definitions PUBLIC
+"-//Apache Software Foundation//DTD Tiles Configuration 2.1//EN"
+"http://tiles.apache.org/dtds/tiles-config_2_1.dtd">
+]]><emphasis role="bold"><![CDATA[<tiles-definitions>
+     <definition name="tilesLayout" template="/sample/tiles/standard.jsp">
+        <put-attribute name="left" value="/sample/tiles/left.jsp" />
+        <put-attribute name="body" value="/sample/tiles/welcome.jsp" />
+    </definition>
+</tiles-definitions]]></emphasis></programlisting>
+	<para>As you can see on the above Tiles Definition file, template is "/sample/layouts/standard.jsp", and elements to fill the attributes of "top", "left", and "body" are defined.</para>
+</chapter>

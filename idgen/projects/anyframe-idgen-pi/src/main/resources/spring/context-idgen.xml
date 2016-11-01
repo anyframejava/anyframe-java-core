@@ -12,23 +12,45 @@
 		<property name="dataSource" ref="dataSource" />
 		<property name="blockSize" value="1"/>
 		<property name="table" value="IDS"/>
-		<property name="key" value="IDGEN_MOVIE"/>
 	</bean>
-
-	<bean name="TableIdGenWithStrategyService" class="org.anyframe.idgen.impl.TableIdGenServiceImpl"
+	
+	<bean name="TableIdGenSimpleServiceWithKey" class="org.anyframe.idgen.impl.TableIdGenServiceImpl"
 		destroy-method="destroy">
 		<property name="dataSource" ref="dataSource" />
-		<property name="strategy" ref="tableIdMixPrefix" />
 		<property name="blockSize" value="1"/>
 		<property name="table" value="IDS"/>
 		<property name="key" value="IDGEN_MOVIE"/>
 	</bean>
 
-	<bean name="tableIdMixPrefix" class="org.anyframe.idgen.impl.strategy.MixPrefixStrategy">
+	<bean name="TableIdGenWithMixPrefix" class="org.anyframe.idgen.impl.TableIdGenServiceImpl"
+		destroy-method="destroy">
+		<property name="dataSource" ref="dataSource" />
+		<property name="strategy" ref="MixPrefix" />
+		<property name="blockSize" value="1"/>
+		<property name="table" value="IDS"/>
+	</bean>
+	
+	<bean name="TableIdGenWithTimestamp" class="org.anyframe.idgen.impl.TableIdGenServiceImpl"
+		destroy-method="destroy">
+		<property name="dataSource" ref="dataSource" />
+		<property name="blockSize" value="1"/>
+		<property name="table" value="IDS"/>
+		<property name="strategy" ref="Timestamp"/>
+	</bean>	
+
+	<bean name="MixPrefix" class="org.anyframe.idgen.impl.strategy.MixPrefixStrategy">
 		<property name="prefix" value="MV-" />
 		<property name="cipers" value="5" />
 		<property name="fillChar" value="*" />
 	</bean>
+	
+	<bean name="Timestamp" class="org.anyframe.idgen.impl.strategy.TimestampStrategy">
+		<property name="pattern" value="yyyy-MM-dd" />
+		<property name="separator" value="-"/>
+		<property name="cipers" value="5" />
+		<property name="fillChar" value="0" />
+	</bean>	
+	
 <!--idgen-SequenceIdGenService-START-->
 	<bean name="SequenceIdGenService" class="org.anyframe.idgen.impl.SequenceIdGenServiceImpl"
 		destroy-method="destroy">

@@ -39,7 +39,7 @@ public class DefaultExceptionTestCase extends MockStrutsSpringTestCaseBase {
         setRequestPathInfo("/testDefaultException");
         actionPerform();
 
-        verifyActionMessages(new String[] { "error.common.msg.authentication" });
+        verifyActionMessages(new String[] { "common.msg.authentication" });
     }
 
     public void testAuthorizationException() {
@@ -51,7 +51,7 @@ public class DefaultExceptionTestCase extends MockStrutsSpringTestCaseBase {
         setRequestPathInfo("/testDefaultException");
         actionPerform();
 
-        verifyActionMessages(new String[] { "error.common.msg.authorization" });
+        verifyActionMessages(new String[] { "common.msg.authorization" });
     }
 
 }

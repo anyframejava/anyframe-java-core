@@ -66,43 +66,41 @@ public abstract class AbstractDataSourceBlockIdGenService extends
 	/**
 	 * Allocates a block, of the given size, of ids from the database.
 	 * 
+	 * @param tableName
+	 *            key of id management table
 	 * @param blockSize
 	 *            number of Ids which are to be allocated.
 	 * @return The first id in the allocated block.
 	 * @throws BaseException
 	 *             if there it was not possible to allocate a block of ids.
 	 */
-	protected abstract BigDecimal allocateBigDecimalIdBlock(int blockSize)
-			throws BaseException;
+	protected abstract BigDecimal allocateBigDecimalIdBlock(String tableName,
+			int blockSize) throws BaseException;
 
 	/**
 	 * Allocates a block, of the given size, of ids from the database.
 	 * 
+	 * @param tableName
+	 *            key of id management table
 	 * @param blockSize
 	 *            number of Ids which are to be allocated.
 	 * @return The first id in the allocated block.
 	 * @throws BaseException
 	 *             if there it was not possible to allocate a block of ids.
 	 */
-	protected abstract long allocateLongIdBlock(int blockSize)
+	protected abstract long allocateLongIdBlock(String tableName, int blockSize)
 			throws BaseException;
 
 	/*---------------------------------------------------------------
 	 * AbstractIdGenerator Methods
 	 *-------------------------------------------------------------*/
-	/**
-	 * Gets the next id as a Big Decimal. This method will only be called when
-	 * synchronized and when the data type is configured to be BigDecimal.
-	 * 
-	 * @return the next id as a BigDecimal.
-	 * @throws BaseException
-	 *             if an Id could not be allocated for any reason.
-	 */
-	protected BigDecimal getNextBigDecimalIdInner() throws BaseException {
+	protected BigDecimal getNextBigDecimalIdInner(String tableName)
+			throws BaseException {
 		if (mAllocated >= mBlockSize) {
 			// Need to allocate a new batch of ids
 			try {
-				mFirstBigDecimal = allocateBigDecimalIdBlock(mBlockSize);
+				mFirstBigDecimal = allocateBigDecimalIdBlock(tableName,
+						mBlockSize);
 
 				// Reset the allocated count
 				mAllocated = 0;
@@ -126,18 +124,37 @@ public abstract class AbstractDataSourceBlockIdGenService extends
 	}
 
 	/**
+	 * Gets the next id as a Big Decimal. This method will only be called when
+	 * synchronized and when the data type is configured to be BigDecimal.
+	 * 
+	 * @return the next id as a BigDecimal.
+	 * @throws BaseException
+	 *             if an Id could not be allocated for any reason.
+	 */
+	protected BigDecimal getNextBigDecimalIdInner() throws BaseException {
+		return getNextBigDecimalIdInner("");
+	}
+
+	protected long getNextLongIdInner() throws BaseException {
+		return getNextLongIdInner("");
+	}
+
+	/**
 	 * Gets the next id as a long. This method will only be called when
 	 * synchronized and when the data type is configured to be long.
+	 * 
+	 * @param tableName
+	 *            key of id management table
 	 * 
 	 * @return the next id as a long.
 	 * @throws BaseException
 	 *             if an Id could not be allocated for any reason.
 	 */
-	protected long getNextLongIdInner() throws BaseException {
+	protected long getNextLongIdInner(String tableName) throws BaseException {
 		if (mAllocated >= mBlockSize) {
 			// Need to allocate a new batch of ids
 			try {
-				mFirstLong = allocateLongIdBlock(mBlockSize);
+				mFirstLong = allocateLongIdBlock(tableName, mBlockSize);
 
 				// Reset the allocated count
 				mAllocated = 0;
@@ -156,10 +173,11 @@ public abstract class AbstractDataSourceBlockIdGenService extends
 		long id = mFirstLong + mAllocated;
 		if (id < 0) {
 			// The value wrapped
-			getLogger().error(
-					messageSource.getMessage("error.idgen.greater.maxid",
-							new String[] { "Long" }, Locale.getDefault()));
-			throw new BaseException(messageSource, "error.idgen.greater.maxid");
+			getLogger()
+					.error(
+							"[IDGeneration Service] Unable to provide an id.   No more Ids are available, the maximum Long value has been reached.");
+			throw new BaseException(
+					"[IDGeneration Service] Unable to provide an id.   No more Ids are available, the maximum Long value has been reached.");
 		}
 		mAllocated++;
 

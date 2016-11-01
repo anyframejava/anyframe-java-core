@@ -36,25 +36,51 @@ import com.tobesoft.xplatform.data.VariableList;
  * XPQueryService Configuration Example:
  * 
  * <pre>
- * &lt;bean name=&quot;riaQueryService&quot; class=&quot;anyframe.core.query.ria.impl.RiaQueryServiceImpl&quot;&gt;
- *      &lt;property name=&quot;jdbcTemplate&quot; ref=&quot;pagingNamedParamJdbcTemplate&quot;/&gt;
- *      &lt;property name=&quot;lobHandler&quot; ref=&quot;lobHandler&quot;/&gt;
- *      &lt;property name=&quot;sqlRepository&quot; ref=&quot;sqlLoader&quot;/&gt;
+ * &lt;bean id="xpQueryService" class="org.anyframe.xp.query.impl.XPQueryServiceImpl"&gt;
+ *     &lt;property name="namedParamJdbcTemplate" ref="pagingNamedParamJdbcTemplate"/&gt;
+ *     &lt;property name="lobHandler" ref="lobHandler"/&gt;
+ *     &lt;property name="sqlRepository" ref="sqlLoader"/&gt;
+ *     &lt;lookup-method name="getRowCallbackHandler" bean="rowCallbackHandler"/&gt;
+ *     &lt;lookup-method name="getCallableStatementCallbackHandler" bean="callableStatementCallbackHandler"/&gt;
+ *     &lt;lookup-method name="getPrintWriterRowCallbackHandler" bean="printWriterRowCallbackHandler"/&gt;
+ * &lt;/bean&gt;	
+ * 	
+ * &lt;bean id="callableStatementCallbackHandler" class="org.anyframe.xp.query.impl.jdbc.mapper.XPCallableStatementCallbackHandler" scope="prototype"/&gt;
+ * 	
+ * &lt;bean id="rowCallbackHandler" class="org.anyframe.xp.query.impl.jdbc.mapper.XPDataSetCallbackHandler" scope="prototype"/&gt;
+ * 	
+ * &lt;bean id="printWriterRowCallbackHandler" class="org.anyframe.xp.query.impl.jdbc.mapper.XPPrintWriterCallbackHandler" scope="prototype"/&gt;
+ * 	 
+ * &lt;!-- The original JdbcTemplate definition --&gt;
+ * &lt;bean id="pagingNamedParamJdbcTemplate" class="org.anyframe.query.impl.jdbc.PagingNamedParamJdbcTemplate"&gt;
+ *     &lt;constructor-arg ref="pagingJdbcTemplate"/&gt;
+ * &lt;/bean&gt; 
+ *     
+ * &lt;bean id="pagingJdbcTemplate" class="org.anyframe.query.impl.jdbc.PagingJdbcTemplate"&gt;
+ *     &lt;property name="dataSource" ref="dataSource"/&gt;
+ * 	   &lt;property name="exceptionTranslator" ref="exceptionTranslator"/&gt;
+ *     &lt;property name="paginationSQLGetter" ref="pagingSQLGenerator"/&gt;
  * &lt;/bean&gt;
- * &lt;bean id=&quot;xpQueryService&quot; class=&quot;anyframe.core.query.ria.xp.impl.XPQueryServiceImpl&quot;&gt;
- *      &lt;property name=&quot;riaQueryService&quot; ref=&quot;riaQueryService&quot;/&gt;
- *      &lt;property name=&quot;sqlRepository&quot; ref=&quot;sqlLoader&quot;/&gt;
- * &lt;/bean&gt;
- * 
- * &lt;bean id=&quot;pagingNamedParamJdbcTemplate&quot; 
- *          class=&quot;anyframe.core.query.impl.jdbc.PagingNamedParamJdbcTemplate&quot;&gt;
- *      &lt;constructor-arg index=&quot;0&quot; ref=&quot;pagingJdbcTemplate&quot;/&gt;
- *      &lt;constructor-arg index=&quot;1&quot; ref=&quot;dataSource&quot;/&gt;
+ *     
+ * &lt;bean id="pagingSQLGenerator" class="org.anyframe.query.impl.jdbc.generator.OraclePagingSQLGenerator"/&gt;
+ *     
+ *     
+ * &lt;!--  SqlLoader --&gt;
+ * &lt;bean name="sqlLoader" class="org.anyframe.query.impl.config.loader.SQLLoader"&gt;
+ *     &lt;property name="mappingFiles"&gt;
+ *         &lt;value&gt;classpath:/mappings/testcase-*.xml&lt;/value&gt;
+ *     &lt;/property&gt;	
+ *     &lt;property name="nullchecks"&gt;
+ *         &lt;map&gt;
+ *             &lt;entry key="VARCHAR" value=""/&gt;
+ *         &lt;/map&gt;
+ *     &lt;/property&gt;	    
+ *     &lt;property name="skipError" value="true" /&gt;				
  * &lt;/bean&gt;
  * </pre>
  * 
  * <p>
- * The MiQueryService's configuration has <code>riaQueryService</code>,
+ * The XPQueryService's configuration has <code>riaQueryService</code>,
  * <code>sqlRepository</code>.
  * </p>
  * 

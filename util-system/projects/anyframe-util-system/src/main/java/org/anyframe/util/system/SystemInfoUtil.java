@@ -22,6 +22,8 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 import javax.servlet.http.HttpServletRequest;
 
@@ -54,6 +56,16 @@ import org.springframework.util.StringUtils;
  *
  */
 public abstract class SystemInfoUtil extends SystemUtilBase {
+	
+	// just famous smart devices
+	private static final String[] mobileOs = new String[] { "Android", "iPhone OS",
+			"iPhone", "iPod", "iPad" };
+	// ref.
+	// http://user-agents.my-addr.com/user_agent_request/user_agent_examples-and-user_agent_types.php
+	private static final String[] deskOs = new String[] { "Windows", "Win9", "Linux",
+			"Macintosh", "Mac", "FreeBSD", "IRIX", "SunOS", "BeOS" };
+
+	private static final Pattern firstParenPattern = Pattern.compile("^.*?\\((.+?)\\).*$");
 
 	/**
 	 * Total, Used, Free
@@ -402,7 +414,7 @@ public abstract class SystemInfoUtil extends SystemUtilBase {
 		return processIO(new IOCallback<String>() {
 			public String doInProcessIO() throws IOException {
 				String userAgent = request.getHeader("user-agent");
-				return userAgent.toUpperCase().split(";")[2].split("\\)")[0];
+				return findOsIfPossible(userAgent);
 			}
 		});
 	}
@@ -420,5 +432,51 @@ public abstract class SystemInfoUtil extends SystemUtilBase {
 				return userAgent.substring(0, userAgent.indexOf(" "));
 			}
 		});
+	}
+	
+	protected static String findOsIfPossible(String str) {
+		Matcher matcher = firstParenPattern.matcher(str);
+		if (matcher.find()) {
+			return StringUtils
+					.trimWhitespace(tryWithDelimiter(matcher.group(1)));
+		}
+		return str;
+	}
+
+	private static String tryWithDelimiter(String firstParen) {
+		int divCount = StringUtils.countOccurrencesOf(
+				firstParen, ";");
+		if (divCount > 0) {
+			String candidate = findCandidate(firstParen.split(";"));
+			if (!"".equals(candidate)) {
+				return candidate;
+			}
+			return firstParen;
+		}
+		return firstParen;
+	}
+
+	private static String findCandidate(String[] split) {
+		for (String candidate : split) {
+			if (candidateCheck(candidate)) {
+				return candidate;
+			}
+		}
+		return "";
+	}
+
+	private static boolean candidateCheck(String candidate) {
+		for (String os : mobileOs) {
+			if (candidate.contains(os)) {
+				return true;
+			}
+		}
+
+		for (String os : deskOs) {
+			if (candidate.contains(os)) {
+				return true;
+			}
+		}
+		return false;
 	}
 }

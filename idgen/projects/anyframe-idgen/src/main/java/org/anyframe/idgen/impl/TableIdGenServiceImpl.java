@@ -20,7 +20,6 @@ import java.sql.Connection;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
-import java.util.Locale;
 
 import org.anyframe.exception.BaseException;
 import org.springframework.jdbc.datasource.DataSourceUtils;
@@ -35,18 +34,23 @@ import org.springframework.jdbc.support.JdbcUtils;
  * The Configuration to use a TableIdGenerator looks like the following:
  * 
  * <pre>
- *  &lt;property name=&quot;dataSource&quot;&gt;
- *  &lt;ref bean=&quot;util_datasource&quot;/&gt;
- *  &lt;/property&gt; 
- *  &lt;config:configuration  block-size=&quot;1&quot; table=&quot;idstest&quot; key-table=&quot;does-not-exist&quot;&gt;				
- *  &lt;/config:configuration&gt;
+ *  &lt;property name=&quot;dataSource&quot; ref=&quot;util_datasource&quot;/&gt; 
+ *  &lt;property name=&quot;blockSize&quot; value=&quot;1&quot;/&gt;	
+ *  &lt;property name=&quot;table&quot; value=&quot;idstest&quot;/&gt;
+ *  &lt;property name=&quot;strategy&quot; ref=&quot;mixPrefix&quot;/&gt;
  * </pre>
  * 
+ * Property 'key', value of 'table_name' column in id management table can be
+ * <ul>
+ * <li>entered as input parameter when calling getNextStringId().</li>
+ * <li>defined as property of IdGenerator bean.</li>
+ * </ul>
+ * 
  * Where user-db is the name of a DataSource configured in a datasources
- * element, block-size is the number if ids that are allocated with each query
- * to the databse (defaults to "10"), table is the name of the table which
- * contains the ids (defaults to "ids"), and key-table is the table_name of the
- * row from which the block of ids are allocated (defaults to "id").
+ * element, blockSize is the number if ids that are allocated with each query to
+ * the database (defaults to "10"), table is the name of the table which
+ * contains the ids (defaults to "ids"), and key is the table_name of the row
+ * from which the block of ids are allocated (defaults to "id").
  * <p>
  * <p>
  * Depending on your database, the ids table should look something like the
@@ -74,8 +78,7 @@ import org.springframework.jdbc.support.JdbcUtils;
  * @author modified by SoYon Lim
  * @author modified by JongHoon Kim
  */
-public class TableIdGenServiceImpl extends
-		AbstractDataSourceBlockIdGenService {
+public class TableIdGenServiceImpl extends AbstractDataSourceBlockIdGenService {
 
 	/**
 	 * The name of the table containing the ids.
@@ -102,6 +105,8 @@ public class TableIdGenServiceImpl extends
 	/**
 	 * Allocates a block of ids of the given size and returns the first id.
 	 * 
+	 * @param tableName
+	 *            key of id management table
 	 * @param blockSize
 	 *            number of ids to allocate.
 	 * @param useBigDecimals
@@ -112,15 +117,16 @@ public class TableIdGenServiceImpl extends
 	 * @throws BaseException
 	 *             if a block of ids can not be allocated.
 	 */
-	private Object allocateIdBlock(int blockSize, boolean useBigDecimals)
-			throws BaseException {
+	private Object allocateIdBlock(String tableName, int blockSize,
+			boolean useBigDecimals) throws BaseException {
+
+		tableName = ((tableName.equals("")) ? mTableName : tableName);
 
 		if (getLogger().isDebugEnabled()) {
 			getLogger().debug(
-					messageSource
-							.getMessage("debug.idgen.allocate.idblock",
-									new Object[] { new Integer(blockSize),
-											mTableName }, Locale.getDefault()));
+					"[IDGeneration Service] Allocating a new block of "
+							+ new Integer(blockSize) + " ids for " + tableName
+							+ ".");
 		}
 
 		try {
@@ -145,45 +151,62 @@ public class TableIdGenServiceImpl extends
 					// is a fairly rare thing.
 					int tries = 0;
 					while (tries < 50) {
+						Object oldNextId = null;
 						// Find out what the next
 						// available id is.
 						String query = "SELECT next_id FROM " + mTable
-								+ " WHERE table_name = '" + mTableName + "'";
+								+ " WHERE table_name = '" + tableName + "'";
 						rs = stmt.executeQuery(query);
-						if (!rs.next()) {
-							// The row does not exist.
-							if (getLogger().isErrorEnabled())
-								getLogger()
-										.error(
-												messageSource
-														.getMessage(
-																"error.idgen.tableid.notallocate.id",
-																new String[] {
-																		mTableName,
-																		mTable },
-																Locale
-																		.getDefault()));
-							// 2009.10.08 - without handling connection directly
-							// if (!autoCommit) { conn.rollback(); }
 
-							throw new BaseException(messageSource,
-									"error.idgen.tableid.notallocate.id",
-									new String[] { mTableName, mTable });
+						if (!rs.next()) {
+							try {
+								query = "INSERT INTO " + mTable
+										+ "(table_name, next_id) VALUES ('"
+										+ tableName + "', '1')";
+								int inserted = stmt.executeUpdate(query);
+
+								if (inserted < 1) {
+									if (getLogger().isDebugEnabled())
+										getLogger().debug(
+												"[IDGeneration Service] no rows in '"
+														+ mTable
+														+ "' being inserted.");
+
+									tries++;
+									continue;
+								}
+							} catch (SQLException e) {
+								if (getLogger().isWarnEnabled())
+									getLogger()
+											.warn(
+													"[IDGeneration Service] Encountered an exception attempting to insert the '"
+															+ mTable
+															+ "'.  May be a transaction conflict. Try again.",
+													e);
+
+								tries++;
+								continue;
+							}
+
+							oldNextId = (useBigDecimals) ? new BigDecimal(1)
+									: new Long(1);
+						} else {
+							oldNextId = (useBigDecimals) ? rs.getBigDecimal(1)
+									: rs.getLong(1);
 						}
 
-						// Get the next_id using the
-						// appropriate data type.
 						Object nextId;
 						Object newNextId;
+						// Get the next_id using the
+						// appropriate data type.
 						if (useBigDecimals) {
-							BigDecimal oldNextId = rs.getBigDecimal(1);
-							newNextId = oldNextId.add(new BigDecimal(
-									new Integer(blockSize).doubleValue()));
+							newNextId = ((BigDecimal) oldNextId)
+									.add(new BigDecimal(new Integer(blockSize)
+											.doubleValue()));
 							nextId = oldNextId;
 						} else {
-							long oldNextId = rs.getLong(1);
-							newNextId = new Long(oldNextId + blockSize);
-							nextId = new Long(oldNextId);
+							newNextId = new Long((Long) oldNextId + blockSize);
+							nextId = (Long) oldNextId;
 						}
 
 						// Update the value of next_id
@@ -206,7 +229,7 @@ public class TableIdGenServiceImpl extends
 							// correctly.
 							query = "UPDATE " + mTable + " SET next_id = "
 									+ newNextId + " " + " WHERE table_name = '"
-									+ mTableName + "' " + "   AND next_id = "
+									+ tableName + "' " + "   AND next_id = "
 									+ nextId + "";
 							int updated = stmt.executeUpdate(query);
 							if (updated >= 1) {
@@ -220,18 +243,13 @@ public class TableIdGenServiceImpl extends
 								return nextId;
 							} else {
 								// May have been a
-								// transaction confict.
+								// transaction conflict.
 								// Try
 								// again.
 								if (getLogger().isDebugEnabled())
 									getLogger()
 											.debug(
-													messageSource
-															.getMessage(
-																	"debug.idgen.updated.norows",
-																	new String[] {},
-																	Locale
-																			.getDefault()));
+													"[IDGeneration Service] Update resulted in no rows being changed.");
 							}
 						} catch (SQLException e) {
 							// Assume that this was
@@ -241,11 +259,12 @@ public class TableIdGenServiceImpl extends
 							// message to keep the
 							// output small.
 							if (getLogger().isWarnEnabled())
-								getLogger().warn(
-										messageSource.getMessage(
-												"warn.idgen.update.idblock",
-												new String[] {}, Locale
-														.getDefault()));
+								getLogger()
+										.warn(
+												"[IDGeneration Service] Encountered an exception attempting to update the '"
+														+ mTable
+														+ "'.  May be a transaction conflict. Try again. ",
+												e);
 						}
 
 						// If we got here, then we
@@ -260,9 +279,9 @@ public class TableIdGenServiceImpl extends
 					// If we got here then we ran out
 					// of tries.
 					if (getLogger().isErrorEnabled())
-						getLogger().error(
-								messageSource.getMessage("error.idgen.null.id",
-										new String[] {}, Locale.getDefault()));
+						getLogger()
+								.error(
+										"[IDGeneration Service] Although too many retries, unable to allocate a block of Ids.");
 					return null;
 				} finally {
 					if (rs != null)
@@ -282,11 +301,13 @@ public class TableIdGenServiceImpl extends
 			if (e instanceof BaseException)
 				throw (BaseException) e;
 			if (getLogger().isErrorEnabled())
-				getLogger().error(
-						messageSource.getMessage("error.idgen.get.connection",
-								new String[] {}, Locale.getDefault()), e);
-			throw new BaseException(messageSource,
-					"error.idgen.get.connection", e);
+				getLogger()
+						.error(
+								"[IDGeneration Service] Although too many retries, unable to allocate a block of Ids.",
+								e);
+			throw new BaseException(
+					"[IDGeneration Service] Although too many retries, unable to allocate a block of Ids.",
+					e);
 		}
 	}
 
@@ -296,28 +317,33 @@ public class TableIdGenServiceImpl extends
 	/**
 	 * Allocates a block, of the given size, of ids from the database.
 	 * 
+	 * @param tableName
+	 *            key of id management table
 	 * @param blockSize
 	 *            number of Ids which are to be allocated.
 	 * @return The first id in the allocated block.
 	 * @throws BaseException
 	 *             if there it was not possible to allocate a block of ids.
 	 */
-	protected BigDecimal allocateBigDecimalIdBlock(int blockSize)
-			throws BaseException {
-		return (BigDecimal) allocateIdBlock(blockSize, true);
+	protected BigDecimal allocateBigDecimalIdBlock(String tableName,
+			int blockSize) throws BaseException {
+		return (BigDecimal) allocateIdBlock(tableName, blockSize, true);
 	}
 
 	/**
 	 * Allocates a block, of the given size, of ids from the database.
 	 * 
+	 * @param tableName
+	 *            key of id management table
 	 * @param blockSize
 	 *            number of Ids which are to be allocated.
 	 * @return The first id in the allocated block.
 	 * @throws BaseException
 	 *             if there it was not possible to allocate a block of ids.
 	 */
-	protected long allocateLongIdBlock(int blockSize) throws BaseException {
-		Long id = (Long) allocateIdBlock(blockSize, false);
+	protected long allocateLongIdBlock(String tableName, int blockSize)
+			throws BaseException {
+		Long id = (Long) allocateIdBlock(tableName, blockSize, false);
 
 		return id.longValue();
 	}

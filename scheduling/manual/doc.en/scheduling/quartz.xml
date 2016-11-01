@@ -1,0 +1,931 @@
+<chapter id="scheduling_quartz">
+	<title>Quartz Integration</title>
+
+	<para>
+		Anyframe recommends <emphasis role="bold">Quartz Scheduler</emphasis> rather than JDK Timer Scheduler. 
+		Quartz Scheduler is more flexible and has better performance than JDK Timer Scheduler.
+		For more information, refer to 
+		<ulink url="http://static.springsource.org/spring/docs/3.0.x/spring-framework-reference/html/scheduling.html">
+		Scheduling of Spring Manual</ulink>
+	</para>
+	
+	<section id="scheduling_quartz_overview">
+		<title>Quartz Scheduler</title>
+		<para>
+			Quartz executes scheduling using Job, Trigger, and JobDetail. 
+			For more information on Quartz, 
+			go to <ulink url="http://www.opensymphony.com/quartz/">http://www.opensymphony.com/quartz</ulink>.
+		</para>
+		<itemizedlist>
+			<listitem>
+				<para>
+					<emphasis role="bold">Job</emphasis> is a task to be done including
+					automatic text sending task or automated task in application.
+					Job is developed by execution unit without any information about when the job is executed.
+					Job can be developed by inheriting QuartzJobBean provided in Spring Framework 
+					or in POJO which does not have direct dependency on any API.
+					In addition, to use <emphasis role="bold">Stateful Job</emphasis> class,
+					you can develop job by implementing StatefulJob interface provided in Quartz.
+					All job class except those which implemented StatefulJob interface
+					are basically work as <emphasis role="bold">Stateless Job</emphasis> class.
+				    Only in Stateful Job, a specific data value can be shared and changed 
+					for repetitive job execution.
+				</para>
+			</listitem>
+			<listitem>
+				<para>
+					<emphasis role="bold">Trigger</emphasis> are conditions to execute jobs including execution time, 
+				    repeat number, repeat interval, etc. Many Triggers can be selected for the same job, 
+				    but a trigger be aimed at only one job.
+				</para>
+			</listitem>
+			<listitem>
+				<para>
+					<emphasis role="bold">JobDetail</emphasis> objects contain all information needed to execute a job. 
+					In other words, it is a object that has detailed information on Job Instance, 
+					and Quartz-based scheduling is executed by Trigger using JobDetail to execute job.
+				</para>
+			</listitem>
+			<listitem>
+				<para>
+					<emphasis role="bold">Scheduler</emphasis> is produced by SchedulerFactory. 
+					It maintains a registry of JobDetails and Triggers, and performs the core role of scheduling service 
+					that executes job associated with each Trigger.
+				</para>
+			</listitem>
+		</itemizedlist>
+		<para>
+			The following example shows how to execute specific method at a certain time interval
+		    using JobDetailBean, MethodInvokingJobDetailFactoryBean,
+			SimpleTriggerBean, CronTriggerBean, TriggerListener,
+			SchedulerFactoryBean, etc.
+		</para>
+		<itemizedlist>
+			<listitem>
+				<para>
+					<emphasis role="bold">JobDetailBean</emphasis>
+					: Spring Framework provides a class called JobDetailBean that
+					 contains information required to execute job.
+				</para>
+			</listitem>
+			<listitem>
+				<para>
+					<emphasis role="bold">MethodInvokingJobDetailFactoryBean</emphasis>
+					: Develops job class in POJO format so that it is independent to Job API, 
+					and enables the calling of related class method according to scheduler. 
+					In case job and trigger information is managed through DB, 
+					in other words if JDBC Job Store method is used, 
+					it cannot be used because MethodInvokingJobDetailFactoryBean does not run.										
+				</para>
+			</listitem>
+			<listitem>
+				<para>
+					<emphasis role="bold">SimpleTriggerBean, CronTriggerBean</emphasis>
+					: Spring framework offers two TriggerBeans to use Quartz more easily.
+					SimpleTriggerBean and CronTriggerBean both work as a trigger, 
+					but the difference is that
+					CronTriggerBean uses Cron-Expressions to specify job-firing schedule.
+					It can set more detailed scheduling execution time conditions than SimpleTrigger,
+					but setting is not complicated.
+				</para>
+			</listitem>
+			<listitem>
+				<para>
+					<emphasis role="bold">TriggerListener</emphasis>: 
+					Sets TriggerListener in scheduler 
+					when performing a specific job at the moment of 
+					fire-<![CDATA[>]]>execute-<![CDATA[>]]>complete or misfire. 
+				</para>
+			</listitem>
+			<listitem>
+				<para>
+					<emphasis role="bold">SchedulerFactoryBean</emphasis>: 
+					Registers used triggers. 
+					Registers triggers under the <![CDATA[<list>]]> of trigger property. 
+					Various properties such as listener applied to trigger can be added. 
+										
+				</para>
+			</listitem>
+		</itemizedlist>
+		<para>
+			Let's take a look at main property definition items of the above-listed beans.
+			Here is an explanation on the main properties of <emphasis role="bold">JobDetailBean</emphasis>.
+			
+		</para>
+		<informaltable>
+			<tgroup cols="4">
+				<colspec colnum="1" colname="col1" colwidth="2*" />
+				<colspec colnum="2" colname="col2" colwidth="6*" />
+				<colspec colnum="3" colname="col3" colwidth="1*" />
+				<colspec colnum="4" colname="col4" colwidth="1*" />
+				<thead>
+					<row>
+						<entry align="center">Property Name</entry>
+						<entry align="center">Description</entry>
+						<entry align="center">Required</entry>
+						<entry align="center">Default Value</entry>
+					</row>
+				</thead>
+				<tbody>
+					<row>
+						<entry>jobClass</entry>
+						<entry>Set Job class name</entry>
+						<entry align="center">Y</entry>
+						<entry align="center">N/A</entry>
+					</row>
+					<row>
+						<entry>jobDataAsMap</entry>
+						<entry>
+							Data set as this property can be used in job class and defined in map type.
+						    jobDataAsMap defined in job-related trigger and jobDataAsMap defined in 
+						    JobDetail can be merged.
+						    Basically, this data is not changed once defined,
+						    but can be changed when Stateful Job object is executed.
+						</entry>
+						<entry align="center">N</entry>
+						<entry align="center">N/A</entry>
+					</row>
+				</tbody>
+			</tgroup>
+		</informaltable>
+		<para>
+			The following is an explanation on the main properties of 
+		<emphasis role="bold">MethodInvokingJobDetailFactoryBean</emphasis>.
+		</para>
+		<informaltable>
+			<tgroup cols="4">
+				<colspec colnum="1" colname="col1" colwidth="2*" />
+				<colspec colnum="2" colname="col2" colwidth="6*" />
+				<colspec colnum="3" colname="col3" colwidth="1.3*" />
+				<colspec colnum="4" colname="col4" colwidth="0.7*" />
+				<thead>
+					<row>
+						<entry align="center">Property Name</entry>
+						<entry align="center">Description</entry>
+						<entry align="center">Required</entry>
+						<entry align="center">Default Value</entry>
+					</row>
+				</thead>
+				<tbody>
+					<row>
+						<entry>name</entry>
+						<entry>Set job name.</entry>
+						<entry align="center">Bean name of FactoryBean</entry>
+						<entry align="center">N/A</entry>
+					</row>
+					<row>
+						<entry>targetObj</entry>
+						<entry>Define job class name developed in POJO.</entry>
+						<entry align="center">Y</entry>
+						<entry align="center">N/A</entry>
+					</row>
+					<row>
+						<entry>targetMethod</entry>
+						<entry>Register method name to be executed in object set in targetObj.</entry>
+						<entry align="center">Y</entry>
+						<entry align="center">N/A</entry>
+					</row>
+					<row>
+						<entry>concurrent</entry>
+						<entry>
+						To execute many jobs at once set to true, 
+						and to execute jobs sequentially set to false.
+						</entry>
+						<entry align="center">N</entry>
+						<entry align="center">true</entry>
+					</row>
+				</tbody>
+			</tgroup>
+		</informaltable>
+		<para>
+			THe following is an explanation on the main properties 
+		    of <emphasis role="bold">SimpleTriggerBean</emphasis>.
+		</para>
+		<informaltable>
+			<tgroup cols="4">
+				<colspec colnum="1" colname="col1" colwidth="2.3*" />
+				<colspec colnum="2" colname="col2" colwidth="5.5*" />
+				<colspec colnum="3" colname="col3" colwidth="0.7*" />
+				<colspec colnum="4" colname="col4" colwidth="1.5*" />
+				<thead>
+					<row>
+						<entry align="center">Property Name</entry>
+						<entry align="center">Description</entry>
+						<entry align="center">Required</entry>
+						<entry align="center">Default Value</entry>
+					</row>
+				</thead>
+				<tbody>
+					<row>
+						<entry>jobDetail</entry>
+						<entry>
+						When developing JobDetail class related to trigger, 
+						set Bean id using "ref" attribute 
+						in case developed in String bean.
+						</entry>						
+						<entry align="center">Y</entry>
+						<entry align="center">N/A</entry>
+					</row>
+					<row>
+						<entry>repeatInterval</entry>
+						<entry>
+							This is the value of trigger interval to perform after the first execution.
+							The interval at which trigger repeats is set in milliseconds.
+							The repeatInterval should be 0 or bigger.
+						</entry>
+						<entry align="center">N</entry>
+						<entry align="center">0</entry>
+					</row>
+					<row>
+						<entry>repeatCount</entry>
+						<entry>
+						This sets the count of trigger execution to be repetitively performed
+						after the first execution.</entry>
+						<entry align="center">Y</entry>
+						<entry align="center">0</entry>
+					</row>
+					<row>
+						<entry>triggerListenerNames</entry>
+						<entry>
+							Set TriggerListener for this specific trigger (non-global), 
+							and set TriggerListener when executing specific job at the 
+							fire-<![CDATA[>]]>execute-<![CDATA[>]]>complete or misfire point of trigger. 
+							In this case, register triggerListenerName. 
+							This triggerListenerName should be the name returned in the getName() method of 
+							the class implementing TriggerListener interface. 
+							</entry>
+						<entry align="center">N</entry>
+						<entry align="center">N/A</entry>
+					</row>
+					<row>
+						<entry>jobDataAsMap</entry>
+						<entry>
+							In terms of date set in this property value, 
+							related data can be used in job 
+							through JobDetail set in trigger. 
+							map data set as the property value of jobDataAsMap set in trigger 
+							and map data set as property value of jobDataAsMap set in JobDetail 
+							can be merged. 
+							This data can also be used within triggerListener set in trigger. 
+							These data are basically not changed after first set, 
+							but when stateful job object is executed 
+							to change data value, it can be changed. 
+														
+						</entry>
+						<entry align="center">N</entry>
+						<entry align="center">N/A</entry>
+					</row>
+					<row>
+						<entry>startTime</entry>
+						<entry>Set the time at which trigger scheduling should start.</entry>
+						<entry align="center">N</entry>
+						<entry align="center">N/A</entry>
+					</row>
+					<row>
+						<entry>startDelay</entry>
+						<entry>
+							Set the delay before starting the job for the first time.
+							The given number of milliseconds 
+							is added to the current time to calculate the start time.
+							This "startDelay" is applied only when no "startTime" was specified. 
+							However, when executing Spring Container, 
+							start time is always the container startup time, 
+							so in this case, the relative delay time should be set 
+							rather than the absolute delay time.
+						</entry>
+						<entry align="center">N</entry>
+						<entry align="center">0</entry>
+					</row>
+					<row>
+						<entry>endTime</entry>
+						<entry>
+						Set the time at which the Trigger should quit repeating.
+						</entry>
+						<entry align="center">N</entry>
+						<entry align="center">N/A</entry>
+					</row>
+					<row>
+						<entry>misfireInstructionName</entry>
+						<entry>
+							Sometimes, 
+							trigger is not executed when there is a problem in scheduler
+							or when there is no thread to use in Quarts thread pool. 
+							In this case, if you use DB in the Job Store method, 
+							misfire occurs on jobs that were not executed 
+							when next Scheduler is properly run. 
+							(Refer to Advanced Quartz <![CDATA[>>]]> Job Stores)
+							Basically, 'smart policy' instruction is used 
+							and misfire instruction name can be defined as the following.
+							For details, refer to 
+							<ulink url="http://www.opensymphony.com/quartz/wikidocs/TutorialLesson4.html">Quartz 
+							Tutorial <![CDATA[>>]]> Misfire Instructions</ulink>.
+							
+							<itemizedlist>
+								<listitem>
+									<para>MISFIRE_INSTRUCTION_FIRE_NOW</para>
+								</listitem>
+								<listitem>
+									<para>MISFIRE_INSTRUCTION_RESCHEDULE_NOW_WITH_EXISTING_REPEAT_COUNT</para>
+								</listitem>
+								<listitem>
+									<para>MISFIRE_INSTRUCTION_RESCHEDULE_NOW_WITH_REMAINING_REPEAT_COUNT</para>
+								</listitem>
+								<listitem>
+									<para>MISFIRE_INSTRUCTION_RESCHEDULE_NEXT_WITH_REMAINING_COUNT</para>
+								</listitem>
+								<listitem>
+									<para>MISFIRE_INSTRUCTION_RESCHEDULE_NEXT_WITH_EXISTING_COUNT</para>
+									<para>
+									When defining this property, 
+									also define dataSource property of SchedulerFactoryBean mentioned below. 
+								   </para>
+								</listitem>
+							</itemizedlist>
+						</entry>
+						<entry align="center">N</entry>
+						<entry align="center">MISFIRE_ INSTRUCTION_ SMART_ POLICY</entry>
+					</row>
+				</tbody>
+			</tgroup>
+		</informaltable>
+		<para>
+			The following is an explanation on the main properties of 
+			<emphasis role="bold">CronTriggerBean</emphasis>.
+		</para>
+		<informaltable>
+			<tgroup cols="4">
+				<colspec colnum="1" colname="col1" colwidth="2.3*" />
+				<colspec colnum="2" colname="col2" colwidth="5.7*" />
+				<colspec colnum="3" colname="col3" colwidth="1*" />
+				<colspec colnum="4" colname="col4" colwidth="1*" />
+				<thead>
+					<row>
+						<entry align="center">Property Name</entry>
+						<entry align="center">Description</entry>
+						<entry align="center">Required</entry>
+						<entry align="center">Default Value</entry>
+					</row>
+				</thead>
+				<tbody>
+					<row>
+						<entry>jobDetail</entry>
+						<entry>
+							When developing JobDetail class related to trigger, 
+						    set bean id using "ref" attribute 
+						    in case developed in Spring bean.
+						
+						</entry>
+						<entry align="center">Y</entry>
+						<entry align="center">N/A</entry>
+					</row>
+					<row>
+						<entry>cronExpression</entry>
+						<entry>
+						Cron-expression basically consists of the following seven fields.
+							<itemizedlist>
+								<listitem>
+									<para>Seconds (Allowed Values : 0-59, Allowed Special Characters : , - * /)</para>
+								</listitem>
+								<listitem>
+									<para>Minutes (Allowed Values : 0-59, Allowed Special Characters : , - * /)</para>
+								</listitem>
+								<listitem>
+									<para>Hours (Allowed Values : 0-23, Allowed Special Characters : , - * /)</para>
+								</listitem>
+								<listitem>
+									<para>Day-of-month (Allowed Values : 1-31, Allowed Special Characters : , - * ? / L W)</para>
+								</listitem>
+								<listitem>
+									<para>Month (Allowed Values : 1-12 or JAN-DEC, Allowed Special Characters : , - * /)</para>
+								</listitem>
+								<listitem>
+									<para>Day-of-week (Allowed Values : 1-7 or SUN-SAT, Allowed Special Characters : , - * ? / L #)</para>
+								</listitem>
+								<listitem>
+									<para>Year (optional field) (Allowed Values : empty, 1970-2199, Allowed Special Characters : , - * /)</para>
+								</listitem>
+							</itemizedlist>
+							<para>
+							For example, if cron expression is defined as "0 0 6 * * ?,"
+							it means execute at "6 a.m. every morning."
+							</para>
+						</entry>
+						<entry align="center">N</entry>
+						<entry align="center">0</entry>
+					</row>
+					<row>
+						<entry>startTime</entry>
+						<entry>Set the time at which trigger scheduling should start.</entry>
+						<entry align="center">N</entry>
+						<entry align="center">N/A</entry>
+					</row>
+					<row>
+						<entry>endTime</entry>
+						<entry>Set the time at which trigger should quit repeating.</entry>
+						<entry align="center">N</entry>
+						<entry align="center">N/A</entry>
+					</row>
+				</tbody>
+			</tgroup>
+		</informaltable>
+		<para>
+			The following is an explanation on the main properties of 
+			<emphasis role="bold">SchedulerFactoryBean</emphasis>.
+		</para>
+		<informaltable>
+			<tgroup cols="4">
+				<colspec colnum="1" colname="col1" colwidth="2.2*" />
+				<colspec colnum="2" colname="col2" colwidth="5.8*" />
+				<colspec colnum="3" colname="col3" colwidth="1*" />
+				<colspec colnum="4" colname="col4" colwidth="1*" />
+				<thead>
+					<row>
+						<entry align="center">Property Name</entry>
+						<entry align="center">Description</entry>
+						<entry align="center">Required</entry>
+						<entry align="center">Default Value</entry>
+					</row>
+				</thead>
+				<tbody>
+					<row>
+						<entry>triggers</entry>
+						<entry>
+						Register a list of triggers used in Scheduler. 
+						Triggers should be registered, so define using <![CDATA[<list>]]> tag.
+						</entry>
+						<entry align="center">Y</entry>
+						<entry align="center">N/A</entry>
+					</row>
+					<row>
+						<entry>triggerListeners</entry>
+						<entry>
+						Register TriggerListener applied for specific trigger. 
+						</entry>
+						<entry align="center">N</entry>
+						<entry align="center">N/A</entry>
+					</row>
+					<row>
+						<entry>globalTriggerListeners</entry>
+						<entry>
+						Register TriggerListener to be applied to all triggers registered in related scheduler. 
+						This is called GlobalTriggerListener.
+						</entry>
+						<entry align="center">N</entry>
+						<entry align="center">N/A</entry>
+					</row>
+					<row>
+						<entry>dataSource</entry>
+						<entry>
+							If this property value is set, 
+						    information related to job and trigger
+						    is automatically managed through DB.
+					    	In this case, a DB table should be prepared. 
+					    	To create table, download Quartz 
+					    	and execute the script that fits the DB to be used 
+					    	(ex. tables_oracle.sql for Oracle)
+					    	among table-creation SQL script in the docs/dbTables folder. 
+						</entry>
+						<entry align="center">N</entry>
+						<entry align="center">N/A</entry>
+					</row>
+				</tbody>
+			</tgroup>
+		</informaltable>
+		<section id="spring_scheduling_overview_advanced">
+			<title>Advanced Quartz</title>
+			<para>
+			    Many Quartz functions can be used through this manual, 
+			    but there are many other advanced functions.
+				This page will introduce ways to save all job and trigger data. 
+				For more details, refer to 
+				<ulink url="http://www.opensymphony.com/quartz/">http://www.opensymphony.com/quartz</ulink>.
+			</para>
+			<itemizedlist>
+				<listitem>
+					<para>
+						<emphasis role="bold">Job Stores</emphasis>
+					</para>
+					<para>
+						Quartz can save information regarding job and trigger in two different ways. 
+						It is basically saved in memory, but can be saved in DB. 
+					    <emphasis role="bold">It is basically saved in memory using default RAMJobStore class.</emphasis>
+						This job store method has the highest performance because all data is saved in memory. 
+						However, when problem occurs in application or system, there is a risk
+						that all the data saved in RAM can be lost.
+					</para>
+					<para>
+						To address the above problem, 
+						Quartz <emphasis role="bold">provides JDBCJobStore class to save scheduler-related data in DB</emphasis>.
+						As all data is saved in DB through JDBC, 
+						even when problem occurs in application or system,
+						there is a low risk of data loss.
+						But performance is weak and complexity grows.
+					    To use the method of saving data in DB, 
+					    set the dataSource property value among the above SchedulerFactoryBean properties. 
+					    To set dataSource property, refer to 
+					    <ulink url="http://dev.anyframejava.org/docs/anyframe/plugin/essential/core/1.0.1/reference/htmlsingle/core.html#core_spring_datasource"> 
+						This manual >> Core Plugin >> Spring >> DataSource</ulink>.
+					    
+					</para>
+					<para>
+						To manage information related to job and trigger through database, 
+						a DB table should be prepared. 
+					    To create table, download Quartz 
+					    and execute the script that fits the DB to be used 
+					    (ex. tables_oracle.sql for Oracle)
+					    among table-creation SQL script in the docs/dbTables folder. 
+						For more information, refer to 
+						<ulink url="http://www.opensymphony.com/quartz/wikidocs/ConfigDataSources.html">Quartz Configure DataSources</ulink>.
+						
+					</para>
+				</listitem>
+			</itemizedlist>
+		</section>
+		<section id="scheduling_quartz_overview_samples">
+			<title>Samples</title>
+			<para>
+				This is an example of Job Scheduling.
+			    Three different jobs (jobDetail01, jobDetail02, jobDetail03) are integrated with
+			    three different triggers(simpleTrigger01, simpleTrigger02, cronTrigger).
+			    The three triggers are registered to Scheduler.
+		        Job is repetitively performed at a specific time according to the execution condition.
+			    In this case, by registering TriggerListener(non-global) and
+				GlobalTriggerListener in scheduler, the order of trigger execution can be monitored.
+			
+			</para>
+			<itemizedlist>
+				<listitem>
+					<para>
+						<emphasis role="bold">JobDetailBean with Stateless Job</emphasis>
+					</para>
+					<para>
+						The following is a part of Spring configuration file (context-scheduling.xml)
+						which defines <emphasis role="bold">jobDetail01</emphasis> which 
+						is a JobDetailBean that has job, developed by inheriting QuartzJobBean provided by Spring Framework, 
+						in Job class. 
+						Data value defined as jobDataAsMap property of JobDetailBean can be shared and used among jobs.
+						But, because it is stateless job, value cannot be modified in repetitively executed job.
+					</para>					
+					<programlisting language="xml"><![CDATA[<!-- JobDetailBean -->
+<bean id=<emphasis role="bold">"jobDetail01"</emphasis> 
+    class=]]><emphasis role="bold">"org.springframework.scheduling.quartz.JobDetailBean"</emphasis><![CDATA[>
+    <]]><emphasis role="bold">property name="jobClass" value="anyframe.sample.scheduling.SimpleQuartzJobBean" /</emphasis><![CDATA[>
+    <property name="jobDataAsMap">
+        <map>
+            <entry>
+                <key>
+                    <value>count</value>
+                </key>
+                <value>6</value>
+            </entry>
+        </map>
+    </property>
+</bean>]]></programlisting>
+					<para>
+						This is the implementation of SimpleQuartzJobBean class 
+						which is for test that is developed by inheriting QuartzJobBean 
+						provided by Spring Framework.
+					    If QuartzJobBean class of Spring is inherited, 
+					    executeInternal method whose argument is JobExecutionContext is developed 
+					    and the jobs that will be executed repetitively according to scheduling are described. 
+					    This example tries to modify count value defined as jobDataAsMap property of JobDetailBean,
+				    	but because it is stateless job, 
+					    they are not modified in jobs repetitively performed after the first job execution.
+					</para>
+					<programlisting language="java">
+public class SimpleQuartzJobBean <emphasis role="bold">extends QuartzJobBean</emphasis> {
+    public void setCount(int count) {
+        this.count=count;
+    }
+
+    protected void <emphasis role="bold">executeInternal(JobExecutionContext context)</emphasis>
+        throws JobExecutionException {
+        this.count= this.count + 1;
+        context.getJobDetail().getJobDataMap().put("count",this.count);
+        System.out.println("count="+this.count);
+
+...</programlisting>
+				</listitem>
+				<listitem>
+					<para>
+						<emphasis role="bold">JobDetailBean with StatefulJob</emphasis>
+					</para>
+					<para>
+						The following is a part of Spring configuration file (context-scheduling.xml)
+						which defines <emphasis role="bold">jobDetail02</emphasis> which is JobDetailBean 
+						that has a job, 
+						developed by implementing StatefulJob Interface class provided by Quartz, as job class.
+						Data value defined as jobDataAsMap of JobDetailBean can be shared and used among jobs,
+						and because it is stateful job, value can be modified in repetitively performed jobs. 
+						(In the example, value count is increased by 1.)
+					</para>
+					<programlisting language="xml"><![CDATA[<!-- JobDetailBean -->
+<bean id=<emphasis role="bold">"jobDetail02"</emphasis>
+    class=]]><emphasis role="bold">"org.springframework.scheduling.quartz.JobDetailBean"</emphasis><![CDATA[>
+    <]]><emphasis role="bold">property name="jobClass" value="anyframe.sample.scheduling.StatefulQuartzJobBean"/</emphasis><![CDATA[>
+    <property name="jobDataAsMap">
+        <map>
+            <entry>
+                <key>
+                    <value>count</value>
+                </key>
+                <value>6</value>
+            </entry>
+        </map>
+    </property>
+</bean>]]></programlisting>
+					<para>
+						Here is an implementation of StatefulQuartzJobBean class to implement and test 
+						StatefulJob interface class provided in Quartz. Implement execute() method, StatefulJob
+						interface class, to have argument of JobExecutionContext as the following,
+						and call executeInternal() method internally.
+						This example modifies count value defined as jobDataAsMap properties of JobDetailBean
+						and share the value among the same jobs performed.
+					</para>
+					<programlisting language="java">import org.quartz.StatefulJob;
+public class StatefulQuartzJobBean <emphasis role="bold">implements StatefulJob</emphasis> {
+    public void setCount(int count) {
+        this.count=count;
+    }
+
+    public void <emphasis role="bold">execute(JobExecutionContext context) </emphasis>
+        throws JobExecutionException {
+        try {
+            BeanWrapper bw = PropertyAccessorFactory.forBeanPropertyAccess(this);
+            MutablePropertyValues pvs = new MutablePropertyValues();
+            pvs.addPropertyValues(context.getScheduler().getContext());
+            pvs.addPropertyValues(context.getMergedJobDataMap());
+            bw.setPropertyValues(pvs, true);
+        } catch (SchedulerException ex) {
+            throw new JobExecutionException(ex);
+        }
+        <emphasis role="bold">executeInternal(context);</emphasis>
+    }
+
+    public void <emphasis role="bold">executeInternal(JobExecutionContext context)</emphasis>
+        throws JobExecutionException {
+        this.count = count + 1;
+        context.getJobDetail().getJobDataMap().putAsString("count", count);
+        System.out.println(this.getClass().getName() + "::" + this.count);
+        result = count;
+    }
+
+...</programlisting>
+				</listitem>
+				<listitem>
+					<para>
+						<emphasis role="bold">MethodInvokingJobDetailFactoryBean</emphasis>
+					</para>
+					<para>
+						The following is a part of the configuration file of 
+						<emphasis role="bold">productSummaryJob</emphasis> (context-scheduling.xml). 
+						a JobDetail that contains Job class.
+						Job class here reuses MethodInvokingJobDetailFactoryBean as is provided in Spring
+						and developed in POJO format.
+					</para>
+					<programlisting language="xml"><![CDATA[<!-- MethodInvokingBean -->
+<bean id=]]><emphasis role="bold">"job"</emphasis><![CDATA[
+    class="anyframe.sample.scheduling.job.ProductStatusSummaryJob" init-method="initialize">
+    <constructor-arg ref="queryService" />
+</bean>
+
+<bean id=]]><emphasis role="bold">"productSummaryJob"</emphasis><![CDATA[
+    class=]]><emphasis role="bold">"org.springframework.scheduling.quartz.MethodInvokingJobDetailFactoryBean"</emphasis><![CDATA[>
+    <property name="targetObject" ref="job" />
+    <property name="targetMethod" value="execute" />
+    <property name="concurrent" value="false" />
+</bean>]]></programlisting>
+					<para>
+						The following is an implementation of ProductStatusSummaryJob class developed in POJO 
+						independent to job-related API. 
+						execute() method of ProductStatusSummaryJob class will be executed by trigger. 
+						Repetitive jobs are described according to scheduling within execute().
+						
+					</para>
+					<programlisting language="java">public class <emphasis role="bold">ProductStatusSummaryJob</emphasis> {
+    public void <emphasis role="bold">execute()</emphasis> throws Exception {
+        removeAllMonthlyProductStatus();
+        insertMonthlyProdcutStatus();
+    }
+    ...
+}</programlisting>
+				</listitem>
+				<listitem>
+					<para>
+						<emphasis role="bold">SimpleTriggerBean for Stateless Job</emphasis>
+					</para>
+					<para>
+						Here is a part of Spring configuration file (context-scheduling.xml),
+						which defines <emphasis role="bold">jobDetail01</emphasis> among JobDetails
+						developed using SimpleTriggerBean provided in Spring Framework.
+					</para>
+					<para>
+						After initial job execution	the execution interval was set at 1 second, 
+						and repetition frequency set at three.
+						TriggerListener to be applied to the relevant trigger 
+						is defined as triggerListenerNames
+						property information.
+						To define triggerListener bean, refer to the following.
+					</para>
+					<programlisting language="xml"><![CDATA[<!-- SimpleTriggerBean -->
+<bean id=]]><emphasis role="bold">"simpleTrigger01"</emphasis><![CDATA[
+    class=]]><emphasis role="bold">"org.springframework.scheduling.quartz.SimpleTriggerBean"</emphasis><![CDATA[>
+    <property name="jobDetail" ref="]]><emphasis role="bold">jobDetail01"</emphasis><![CDATA[/>
+    <property name="repeatInterval" value="1000"/>
+    <property name="repeatCount" value="3"/>
+    <property name="triggerListenerNames" value="triggerListener"/>
+</bean>]]></programlisting>
+				</listitem>
+				<listitem>
+					<para>
+						<emphasis role="bold">SimpleTriggerBean for StatefulJob</emphasis>
+					</para>
+					<para>
+						The following is a part of Spring configuration file (context-scheduling.xml)
+						which defines <emphasis role="bold"> jobDetail02</emphasis> among JobDetails developed
+						using SimpleTriggerBean provided in Spring Framework.
+					</para>
+					<para>
+						One trigger defines one JobDetail, 
+						so add trigger with the same property information to
+					    with the SimpleTriggerBean above. 
+					</para>
+					<para>
+						After initial job execution	the execution interval was set at 1 second, 
+						and repetition frequency set at three. 
+						TriggerListener to be applied to the relevant trigger 
+						is defined as triggerListenerNames
+						property information.
+						To define triggerListener bean, refer to the following.
+					</para>
+					<programlisting language="xml"><![CDATA[<!-- SimpleTriggerBean -->
+<bean id="]]><emphasis role="bold">simpleTrigger02"</emphasis><![CDATA[
+    class=]]><emphasis role="bold">"org.springframework.scheduling.quartz.SimpleTriggerBean"</emphasis><![CDATA[>
+    <property name="jobDetail" ref=]]><emphasis role="bold">"jobDetail02"</emphasis><![CDATA[/>
+    <property name="repeatInterval" value="1000"/>
+    <property name="repeatCount" value="3"/>
+    <property name="triggerListenerNames" value="triggerListener"/>
+</bean>]]></programlisting>
+				</listitem>
+				<listitem>
+					<para>
+						<emphasis role="bold">CronTriggerBean</emphasis>
+					</para>
+					<para>
+						The following is a part of Spring configuration file (context-scheduling.xml),
+						which defines <emphasis role="bold">jobDetail03</emphasis> among JobDetails
+						developed using CronTriggerBean provided in Spring Framework.
+					</para>
+					<para>
+						The example below shows scheduling setting through cron expression unlike SimpleTriggerBean.
+						It was set to be executed every 30 seconds.
+					</para>
+					<programlisting language="xml"><![CDATA[<!-- CronTriggerBean -->
+<bean id=]]><emphasis role="bold">"cronTrigger"</emphasis><![CDATA[
+    class=]]><emphasis role="bold">"org.springframework.scheduling.quartz.CronTriggerBean"</emphasis><![CDATA[>
+    <property name="jobDetail" ref=]]><emphasis role="bold">"productSummaryJob"</emphasis><![CDATA[/>
+    <property name="cronExpression" value="30 * * * * ?" />
+</bean>]]></programlisting>
+				</listitem>
+				<listitem>
+					<para>
+						<emphasis role="bold">TriggerListener Beans</emphasis>
+					</para>
+					<para>
+						The following is a part of Spring configuration file (context-scheduling.xml),
+						which defines QuartzTriggerListener and GlobalTriggerListener 
+						that implements TriggerListener provided in Quartz. 
+						Two different settings are made: one is <emphasis role="bold">triggerListener</emphasis> 
+						applied to trigger only, 
+						and the other is <emphasis role="bold">globalTriggerListener</emphasis> applied to all triggers.
+						(When there is no setting, it is defined as Non-global.)
+						For your information, the same TriggerListener implementation class can be use
+						as both global and non-global.
+					</para>
+					<programlisting language="xml"><![CDATA[<!-- TriggerListener -->
+<bean id=]]><emphasis role="bold">"triggerListener" </emphasis><![CDATA[
+    class="anyframe.sample.scheduling.listener.QuartzTriggerListener"/>
+
+<bean id=]]><emphasis role="bold">"globalTriggerListener" </emphasis><![CDATA[
+    class="anyframe.sample.scheduling.listener.GlobalTriggerListener">
+    <property name="listenerType" value=]]><emphasis role="bold">"Global"</emphasis><![CDATA[/>
+</bean>]]></programlisting>
+					<para>
+						The following is an implementation of GlobalTriggerListener class implementing TriggerListener provided in Quartz.
+					    This is an example of logging at fire-<![CDATA[>]]>execute-<![CDATA[>]]>complete or misfire point of trigger.
+					</para>
+					<programlisting language="java">import org.quartz.TriggerListener;
+					
+public class GlobalTriggerListener <emphasis role="bold">implements TriggerListener</emphasis> {
+    Log logger = LogFactory.getLog(GlobalTriggerListener.class);
+    String listenerType = "Non global";
+
+    public void setListenerType(String listenerType) {
+        this.listenerType = listenerType;
+    }
+
+    public void <emphasis role="bold">triggerFired(Trigger trigger, JobExecutionContext ctx)</emphasis> {
+        logger.info("Scheduled " + trigger.getJobName() + " Fired!!");
+    }
+
+    public boolean <emphasis role="bold">vetoJobExecution(Trigger trigger, JobExecutionContext ctx)</emphasis> {
+        logger.info("Scheduled " + trigger.getJobName() + " Executed!!");
+        return false;
+    }
+
+    public void <emphasis role="bold">triggerComplete(Trigger trigger, JobExecutionContext ctx, int arg)</emphasis> {
+        logger.info("Scheduled " + trigger.getJobName() + " Completed!!");
+    }
+
+    public void <emphasis role="bold">triggerMisfired(Trigger trigger)</emphasis> {
+        logger.error("Scheduled " + trigger.getJobName() + " Misfired!!");
+    }
+
+    public String getName() {
+        return "GlobalTriggerListener";
+    }
+}</programlisting>
+				</listitem>
+				<listitem>
+					<para>
+						<emphasis role="bold">SchedulerFactoryBean</emphasis>
+					</para>
+					<para>
+						The following is a part of Spring configuration file(context-scheduling.xml)
+						registering the above three triggers (simpleTrigger01, simpleTrigger02, cronTrigger)
+						and two TriggerListeners (triggerListener, globalTriggerListener) using 
+						SchedulerFactoryBean provided in Spring Framework.
+					</para>
+					<programlisting language="xml"><![CDATA[<!-- SchedulerFactoryBean -->
+<bean id="schedulerFactoryBean" 
+    class=]]><emphasis role="bold">"org.springframework.scheduling.quartz.SchedulerFactoryBean"</emphasis><![CDATA[>
+    <property name="triggers">
+        <list>
+            <ref local=]]><emphasis role="bold">"simpleTrigger01"</emphasis><![CDATA[/>
+            <ref local=]]><emphasis role="bold">"simpleTrigger02"</emphasis><![CDATA[/>
+            <ref local=]]><emphasis role="bold">"cronTrigger"</emphasis><![CDATA[/>
+        </list>
+    </property>
+    <property name="triggerListeners" ref=]]><emphasis role="bold">"triggerListener"</emphasis><![CDATA[/>
+    <property name="globalTriggerListeners" ref=]]><emphasis role="bold">"globalTriggerListener"</emphasis><![CDATA[/>
+
+    <!-- In setting datasource, information regarding job and trigger is automatically managed through DB. -->
+    <!--<property name="dataSource" ref="dataSource"/> -->
+</bean>]]></programlisting>
+				</listitem>
+				<listitem>
+					<para>
+						<emphasis role="bold">TestCase</emphasis>
+					</para>
+					<para>
+						The following is a part of SchedulingServiceTest.java code executing schedule
+						based on the above-mentioned property definition.
+					</para>
+					<programlisting language="xml">
+/** 
+  * This is a test to check whether the execution result of job object executed through scheduling service is correct or not.
+  */
+/**
+  * Perform Stateless QuatzJob of JobDetailBean registered in SimpleTrigger and check return value.
+  */
+public void testSimpleTrigger01() throws Exception {
+    Thread.sleep(1000*5);
+
+    int result=SimpleQuartzJobBean.getResult();
+    System.out.println("main <![CDATA[>>]]> result of Stateless QuatzJobBean bean :"+ result);
+
+    if ( result!=7){
+        throw new Exception(" Scheduling Service failed : result is " + result);
+    }
+}
+
+/**
+  * Perform  Stateful QuatzJob of JobDetailBean registered in SimpleTrigger and check return value.
+  */
+public void testSimpleTrigger02() throws Exception {
+    Thread.sleep(1000*5);
+
+    int result=StatefulQuartzJobBean.getResult();
+    System.out.println("main <![CDATA[>>]]> result of Stateful QuatzJobBeanbean :"+ result);
+
+    if ( result!=10){
+        throw new Exception(" Scheduling Service failed : result is " + result);
+    }
+}
+
+/**
+  * Execute POJO Job registered in CronTrigger and check return value.
+  */
+public void testCronTrigger() throws Exception {
+    Thread.sleep(1000*50);
+    MonthlyProductStatusService service =
+        (MonthlyProductStatusService) context.getBean("monthlyProductStatusService");
+    Collection results = service.getList();
+    // After productSummaryJob is performed, check whether the monthly product status data was applied.
+    ...
+}</programlisting>
+				</listitem>
+			</itemizedlist>
+		</section>
+	</section>
+</chapter>

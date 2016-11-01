@@ -13,7 +13,7 @@
 <!-- Top -->
   <tr>
     <td height="100%" align="left" valign="middle">
-		<font size="5">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Anyframe Java 5.0.0.RC1</font>
+		<font size="5">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Anyframe Java 5.0.1</font>
     </td>
   </tr>
 </table>
@@ -32,7 +32,7 @@
 					<!--Add new menu here-->
 <!--simpleweb-jquery-menu-START-->
 <a href="${ctx}/simplewebjquery.do">
-    <font size="2">- simpleweb-jquery 1.0.0.RC1</font>
+    <font size="2">- Simpleweb-jQuery 1.0.1</font>
 </a>
 <br />
 <!--simpleweb-jquery-menu-END-->

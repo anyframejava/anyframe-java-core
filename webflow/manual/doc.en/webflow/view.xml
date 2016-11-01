@@ -1,0 +1,81 @@
+<chapter id="webflow_view">
+	<title>View</title>
+	<para>
+		When view property is defined in view-state mentioned above, 
+		the view that user defines can be rendered. view-state id is view name when view property is not defined.
+		<programlisting language="xml"><![CDATA[<view-state id="confirmAddProduct" ]]><emphasis role="bold"><![CDATA[view="/WEB-INF/jsp/webflow/sales/product/reviewProduct.jsp"]]></emphasis><![CDATA[>]]></programlisting>
+		view can be defined as below.
+		<itemizedlist>
+			<listitem>
+				<para>
+					Define as relative path from flow: 'view' can be defined as relative path from working directory of flow. 
+					<programlisting language="xml"><![CDATA[<view-state id="confirmAddProduct" ]]><emphasis role="bold">
+        <![CDATA[view="reviewProduct.jsp"]]></emphasis><![CDATA[>]]></programlisting>
+				</para>
+			</listitem>
+			<listitem>
+				<para>
+					Define as absolute path: As path from webapp directory, view can be defined as absolute path.
+					<programlisting language="xml"><![CDATA[<view-state id="confirmAddProduct" ]]><emphasis role="bold">
+        <![CDATA[view="/WEB-INF/jsp/webflow/sales/product/reviewProduct.jsp"]]></emphasis><![CDATA[>]]></programlisting>
+				</para>
+			</listitem>
+			<listitem>
+				<para>
+					Defined as logical name: Logical name can be defined like using viewResolver in Spring MVC, 
+					and can find view with viewResolver.
+					<programlisting language="xml"><![CDATA[<view-state id="confirmAddProduct" ]]><emphasis role="bold"><![CDATA[view="confirmAddProductView"]]></emphasis><![CDATA[>]]></programlisting>
+				</para>
+			</listitem>
+		</itemizedlist>
+	</para>
+	
+	<section id="webflow_view_binding">
+		<title>model binding</title>
+		<para>
+			To bind user input data as model object, model property can be defined in Spring Web Flow. 
+			<programlisting language="xml"><![CDATA[<var name=]]><emphasis role="bold"><![CDATA["product"]]></emphasis><![CDATA[ class=]]><emphasis role="bold"><![CDATA["domain.Product"]]></emphasis><![CDATA[ />
+<view-state id="getProduct" ]]><emphasis role="bold"><![CDATA[model="product"]]></emphasis><![CDATA[
+    view="/WEB-INF/jsp/webflow/sales/product/viewProduct.jsp">]]></programlisting>
+            If defined as above, 
+			when the parameter name of user input data and attribute name of model object is the same, 
+			automatic binding is performed. 
+			Only one model object can be defined and validation check can be performed on the model object defined in this way. 
+			When only model property is defined, all public attributes of related model object can be bound. 
+			When using <![CDATA[<binder>]]>, binding is done on only specific attributes. 
+			<programlisting language="xml"><![CDATA[<binder>
+    <binding property="userId" />
+    <binding property="userName" />
+</binder>]]></programlisting>
+		</para>
+	</section>
+	
+	<section id="webflow_view_backtracking">
+		<title>view backtracking</title>
+		<para>
+			User can use the browser back button to return to a view-state or transition that is already finished. 
+			In terms of history policy, control can be performed by defining history property in Spring Web Flow, 
+			and backtracking is basically allowed when there is no defining for history.
+		</para>
+		
+		<section id="webflow_view_backtracking_discard">
+			<title>discard</title>
+			<para>
+				Prevents backtracking on relevant view.
+				<programlisting language="xml"><![CDATA[<transition on="confirm" to="backtolist" ]]><emphasis role="bold"><![CDATA[history="discard"]]></emphasis><![CDATA[>
+    <evaluate expression="foundationProductService.add(product)" />
+</transition>]]></programlisting> 
+			</para>
+		</section>
+		
+		<section id="webflow_view_backtracking_invalidate">
+			<title>invalidate</title>
+			<para>
+				Prevents backtracking on all views previously rendered.
+				<programlisting language="xml"><![CDATA[<transition on="confirm" to="backtolist" ]]><emphasis role="bold"><![CDATA[history="invalidate"]]></emphasis><![CDATA[>
+    <evaluate expression="foundationProductService.add(product)" />
+</transition>]]></programlisting>
+			</para>
+		</section>
+	</section>
+</chapter>

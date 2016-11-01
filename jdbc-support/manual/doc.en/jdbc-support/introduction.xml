@@ -1,0 +1,48 @@
+<chapter id="jdbcsupport_injectionandlogging_introduction">
+		<title>Implementation background </title>
+
+
+		<section id="jdbcsupport_injectionandlogging_introduction_requirement">
+        	<title>User Requests </title>
+
+        	<itemizedlist>
+          		<listitem>
+            		<para>How to grant user requests to add functionality to fend off SQL Injection security risk.  </para>
+          		</listitem>
+          		<listitem>
+            		<para>How to grant user requests to add functionality to confirm and reprocess CompleteQuery( including bind parameters of prepareStatement)</para>
+          		</listitem>
+          	</itemizedlist>
+          		
+         	<para>
+         		There are open source functionalities regarding SQL Logging. However, SQL Formatting change made it too difficult to read and 
+         		additional process besides logging is impossible. 
+         	</para>
+
+			<para>
+				InjectionPattern / CompleteQuery as mention above are related. After reading InjectionPateern, when executing CompleteQuery 
+				handling replacement, confirming and reprocessing should be conducted. 
+			</para>
+			<para>
+				It would be more beneficial to grant the two requests not only at queryService but also at normal persistence process based on jdbc. 
+			</para>
+			<para>
+				In conclusion, it is desirable to wrap connection based on Data Source in the same manner as open source DataSource Spy 
+				such as log4jdbc and then  to change and reprocess. However, it was impossible to use log4jdbc. 
+				Cf.) log4jdbc, the implementation only for SQL Logging, holds statement module wrapping bind parameter data for Logging. 
+				And it only considers to output as log according to logger setup. Even if extended, SQL statement was confirmed impossible to change. 
+			</para>
+		</section>
+		
+		<section id="jdbcsupport_injectionandlogging_introduction_p6spy">
+        	<title>p6spy</title>
+
+        	<para>
+        		P6Spy is also similar JDBC proxy. It can log bind parameter of preparedStatement to process CompleteQuery and delegate JDBC call. 
+        		Therefore, with proper extension, query can be reprocessed and JDBC can be executed. 
+				Cf.)spy.properties setup of p6Spy is tricky and logging using relevant functionality will not be utilized. Therefore, P6Factory extension 
+				and AOP format are employed at anyframe-jdbc-support. 
+    			(ex. infrared-agent)
+        	</para>
+      	</section>
+</chapter>

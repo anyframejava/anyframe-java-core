@@ -31,7 +31,7 @@ import org.apache.struts.taglib.html.MessagesTag;
  * <code>Globals.MESSAGE_KEY</code>. This is an alternative to the default
  * <code>ErrorsTag</code>.
  *<br><br> 
- * We changed  org.apache.struts.taglib.html.MessagesTag  Class into anyframe.web.struts.common.util.DefaultMessagesTag  Class in Anyframe.
+ * We changed  org.apache.struts.taglib.html.MessagesTag  Class into org.anyframe.struts.tag.DefaultMessagesTag  Class in Anyframe.
 
  * @author modified by Byunghun Woo
  */

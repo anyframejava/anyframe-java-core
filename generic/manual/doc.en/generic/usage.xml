@@ -1,0 +1,406 @@
+	<chapter id="generic_implementation_use">
+	<title> How to Use Generic Service</title>
+		<para>Generic service can be used in two ways: using functions as defined, or implementing additional functions.</para>
+	    
+		<section id="generic_implementation_use_bean">
+			<title>Using Generic Service as Defined</title>
+			<para>If Generic service is defined in configuration metadata, it can be used without re-defining.
+			</para>
+			<itemizedlist>
+		
+				<listitem>
+					<para>DAO property definition</para>
+					<para>How to define according to DAO Framework is as below.</para>
+					<itemizedlist>
+		        		<listitem>
+		          			<para>The following is a part of Spring configuration file context-generic.xml based on Query Service DAO Framework 
+		          			      added due to Generic Plugin installation. 
+		          			      If it is based on Query Service, 
+		          			      it internally uses sessionFactory, so it should be defined as inner bean. 
+		          			</para>
+		          			<programlisting language="java"><![CDATA[<bean id="genericGenreDao" ]]><emphasis role="bold">class="anyframe.core.generic.dao.query.GenericDaoQuery</emphasis><![CDATA[">
+    <constructor-arg value="sample.generic.domain.GenericGenre" />
+    <property name="queryService" ref="queryService" />
+</bean>]]></programlisting>
+		        		</listitem>
+			
+		        		<listitem>
+		          			<para>If it is based on Hibernate, 
+		          			      it internally uses sessionFactory and dynamicHibernateService, so it should be defined as inner bean.
+		          			      </para>
+		          			<programlisting language="java"><![CDATA[<bean id="genericHibernateGenreDao" ]]><emphasis role="bold">class="anyframe.core.generic.dao.hibernate.GenericDaoHibernate</emphasis><![CDATA[">	
+    <constructor-arg value="sample.generic.domain.GenericGenre"/>   
+    <property name="sessionFactory" ref="sessionFactory"/>
+    <property name="dynamicHibernateService" ref="dynamicHibernateService" />
+</bean>]]></programlisting>
+		        		</listitem>
+		      		</itemizedlist>
+				</listitem>
+			
+				<listitem>
+					<para>Service property definition</para> 
+					<para>
+					The following is a part of Spring configuration file, context-generic.xml added due to Generic Plugin installation. 
+					The defined DAO Bean is injected as inner bean.
+					</para>
+					<programlisting language="java"><![CDATA[<bean id="genericGenreService" ]]><emphasis role="bold">class="anyframe.core.generic.service.impl.GenericServiceImpl"</emphasis><![CDATA[>
+    <property name="genericDao" ref="genericGenreDao" />
+</bean>]]></programlisting>
+				</listitem>
+			
+			</itemizedlist>
+		</section>
+		
+		<section id="generic_implementation_use_extended">
+			<title>Use Generic Service Extension</title>
+			<para>Used by redefining provided Generic service. 
+			Redefine and use parts that are necessary for DAO and Service.</para>
+
+			<section id="generic_implementation_use_extended_dao">
+				<title>DAO Class</title>
+		
+				<para>Provides data access logic related to creation, single item search, list search, delete, and data existence check 
+				based on domain object.</para>
+				
+				<informaltable>
+		        	<tgroup cols="3">
+		 				<colspec colnum="1" colname="col1" colwidth="1*"/>
+						<colspec colnum="2" colname="col2" colwidth="4*"/>
+						<colspec colnum="3" colname="col3" colwidth="5*"/>
+		          		<thead>
+							<row>
+								<entry align="center">Return value</entry>
+								<entry align="center">Method</entry>
+								<entry align="center">Role</entry>
+								<entry align="center">Support</entry>
+							</row>
+			          	</thead>
+			
+			          	<tbody>
+			            	<row>
+			              		<entry>T</entry>
+			              		<entry>get(PK id)</entry>
+			              		<entry>Single item search</entry>
+								<entry>Query/Hibernate</entry>
+			            	</row> 
+			            	<row>
+			              		<entry>boolean</entry>
+			              		<entry>exists(PK id)</entry>
+			              		<entry>Data existence check</entry>
+			              		<entry>Query/Hibernate</entry>
+			            	</row>
+			            	<row>
+			              		<entry>void</entry>
+			              		<entry>create(T object)</entry>
+			              		<entry>Creation</entry>
+			              		<entry>Query/Hibernate</entry>
+			            	</row>	
+			            	<row>
+			              		<entry>void</entry>
+			              		<entry>update(T object)</entry>
+			              		<entry>Update</entry>
+			              		<entry>Query/Hibernate</entry>
+			            	</row>	
+			            	<row>
+			              		<entry>void</entry>
+			              		<entry>remove(PK id)</entry>
+			              		<entry>Delete</entry>
+			              		<entry>Query/Hibernate</entry>
+			            	</row>	
+			            	<row>
+			              		<entry>Page</entry>
+			              		<entry>getPagingList(SearchVO searchVO)</entry>
+			              		<entry>Paginated list search</entry>
+			              		<entry>Query/Hibernate</entry>
+			            	</row>
+			            	<row>
+			              		<entry>Page</entry>
+			              		<entry>getPagingList(T object, int pageIndex)</entry>
+			              		<entry>Paginated list search</entry>
+			              		<entry>Query</entry>
+			            	</row>	
+			            	<row>
+			              		<entry>List</entry>
+			              		<entry>getList(SearchVO searchVO)</entry>
+			              		<entry>List search</entry>
+			              		<entry>Query/Hibernate</entry>
+			            	</row>	
+			            	<row>
+			              		<entry>List</entry>
+			              		<entry>getList(T object, int pageIndex)</entry>
+			              		<entry>List search</entry>
+			              		<entry>Query</entry>
+			            	</row>		
+						</tbody>
+					</tgroup>
+				</informaltable>  
+			
+				<itemizedlist>
+					<listitem>
+						<para><emphasis role="bold"><![CDATA[GenericDao]]></emphasis></para>
+						<para>Uses <![CDATA[GenericDao<T, PK extends Serializable>]]>Class as DAO interface. 
+						      In this case, 'T' is domain object type and means domain model class and 'PK' means Primary Key type of domain object. 
+						      The following is method related to single item search, data existence check, save, delete, and list search defined in GenericDao class. 
+						      
+						</para>
+					</listitem>
+					
+					<listitem>
+						<para><emphasis role="bold"><![CDATA[GenericDaoQuery]]></emphasis></para>
+						<para>One of the implementation classes that implement GenericDao interface class. 
+						      Used when deciding DAO Framework as QueryService. 
+						      DAO implementation class uses GenericDaoQuery class and QueryDaoUtils class to utilize Query Service.. 
+						      QueryDaoUtils is a Utility class that finds Primary Key information.
+						</para> 
+					</listitem>
+					
+					<listitem>
+						<para><emphasis role="bold"><![CDATA[GenericDaoHibernate]]></emphasis></para>
+						<para>One of the implementation classes that implement GenericDao interface class. 
+						      Used when DAO Framework id decided as Hibernate. 
+						      In case of list search when using Hibernate Framework, 
+						      search service which transfers VO-type object that includes individual parameters is not provided. 
+						</para> 
+					</listitem>
+				</itemizedlist>
+
+			   <para><emphasis role="bold"><![CDATA[<Samples>]]></emphasis></para>
+	
+				<para>
+					Create DAO class that inherited GenericDaoQuery to use Query Service as DAO Framework. 
+				    For configuration using Query Service, 
+				    refer to <ulink url="http://dev.anyframejava.org/docs/anyframe/plugin/optional/query/1.1.1/reference/htmlsingle/query.html#query_configuration">Set Query Service</ulink>, 
+					and for configuration using Hibernate Service, 
+					refer to <ulink url="http://dev.anyframejava.org/docs/anyframe/plugin/optional/hibernate/1.0.1/reference/htmlsingle/hibernate.html#hibernate_hibernate_configuration">Set Hibernate Service</ulink>.
+				    
+				</para>
+				<itemizedlist>
+					<listitem>
+						<para>
+							The following is a part of DAO implementation class using Query Service. 
+						    The functions of methods that are not overridden (single item search, data existence check, update, delete) 
+						    are used as implemented in GenericDaoQuery.
+						    create method is overridden, but uses the original GenericDaoQuery syntax. 
+						    getPagingList method is overridden and implemented. 
+						    countMovieListByGenre should be additionally developed to implement new data access logic that calculates 
+						    the number of movies by genre that are not provided in GenericDaoQuery.
+						    
+							<programlisting language="java"><![CDATA[@Repository("genericMovieDao")
+public class MovieDao ]]><emphasis role="bold"><![CDATA[extends GenericDaoQuery<GenericMovie,String>]]></emphasis><![CDATA[ {
+
+    @Inject
+    IQueryService queryService;
+
+    @PostConstruct
+    public void initialize() {
+    
+        //Set in persistentClass for Domain object
+        super.setPersistentClass(GenericMovie.class);
+        super.setQueryService(queryService);
+    }
+    
+    ]]><emphasis role="bold">public void create(GenericMovie genericMovie) throws Exception</emphasis><![CDATA[{
+        create("GenericMovie", genericMovie);
+    }
+
+    ]]><emphasis role="bold">public Page getPagingList(Movie movie, int pageIndex) throws Exception</emphasis><![CDATA[{
+        return this.findListWithPaging("Movie", movie, pageIndex, pageSize,
+            pageUnit);
+    }
+    
+    ]]><emphasis role="bold">public int countMovieListByGenre(String genreId) throws Exception</emphasis><![CDATA[{
+    ...	
+    }
+    
+}]]></programlisting>
+							</para>
+						</listitem>
+					
+						<listitem>
+							<para>A part of DAO implementation class that uses Hibernate Framework. 
+							   	  The functions of methods(single item search, data existence check, update, delete) that are not overridden, 
+							   	  are used in the format implemented in GenericDaoHibernate. 
+								  create method is overridden, 
+								  and countMovieListByGenre method is added to implement new data access logic which calculates the number of movies by genre 
+								  that are not provided in GenericDaoHibernate.
+								<programlisting language="java"><![CDATA[@Repository("genericHibernateMovieDao") 
+public class MovieDao ]]><emphasis role="bold"><![CDATA[extends GenericDaoHibernate<GenericMovie,String>]]></emphasis><![CDATA[{
+	
+    @Inject
+    SessionFactory sessionFactory;
+	
+    @Inject
+    IDynamicHibernateService dynamicHibernateService;
+	
+    @PostConstruct
+    public void initialize(){
+        super.setSessionFactory(sessionFactory);
+        super.setPersistentClass(GenericMovie.class); 
+        super.setDynamicHibernateService(dynamicHibernateService);
+    }	
+	
+    ]]><emphasis role="bold">public void create(GenericMovie genericMovie) throws Exception</emphasis><![CDATA[ {
+        super.getHibernateTemplate().save(genericMovie); 
+    }	
+    
+    ]]><emphasis role="bold">public int countMovieListByGenre(String genreId) throws Exception</emphasis><![CDATA[{
+    ...	
+    }
+}]]></programlisting>
+							</para>
+						</listitem>
+					</itemizedlist>
+				
+			</section>
+ 
+			
+			<section id="generic_implementation_service">
+				<title>Creation Service Class</title>
+				<para>
+					Service class creates service implementation class 		
+					when providing a function other than the basic CRUD method provided in Generic Service or extending and using basic CRUD method,
+					and does not create Service implementation class when using the basic CRUD method.
+				</para>
+				<para>Method provided</para>
+				<informaltable>
+		        	<tgroup cols="3">
+		 				<colspec colnum="1" colname="col1" colwidth="1*"/>
+						<colspec colnum="2" colname="col2" colwidth="4*"/>
+						<colspec colnum="3" colname="col3" colwidth="5*"/>
+		          		<thead>
+							<row>
+								<entry align="center">Return value</entry>
+								<entry align="center">Method</entry>
+								<entry align="center">Role</entry>
+							</row>
+			          	</thead>
+			
+			          	<tbody>
+			            	<row>
+			              		<entry>T</entry>
+			              		<entry>get(PK id)</entry>
+			              		<entry>Single item search</entry>
+			            	</row>
+			            	<row>
+			              		<entry>boolean</entry>
+			              		<entry>exists(PK id)</entry>
+			              		<entry>Data existence check</entry>
+			            	</row>
+			            	<row>
+			              		<entry>void</entry>
+			              		<entry>create(T object)</entry>
+			              		<entry>Creation</entry>
+			            	</row>	
+			            	<row>
+			              		<entry>void</entry>
+			              		<entry>update(T object)</entry>
+			              		<entry>Update</entry>
+			            	</row>	
+			            	<row>
+			              		<entry>void</entry>
+			              		<entry>remove(PK id)</entry>
+			              		<entry>Delete</entry>
+			            	</row>	
+			            	<row>
+			              		<entry>Page</entry>
+			              		<entry>getPagingList(SearchVO searchVO)</entry>
+			              		<entry>Paginated list search</entry>
+			            	</row>
+			            	<row>
+			              		<entry>Page</entry>
+			              		<entry>getPagingList(T object, int pageIndex)</entry>
+			              		<entry>Paginated list search</entry>
+			            	</row>	
+			            	<row>
+			              		<entry>List</entry>
+			              		<entry>getList(SearchVO searchVO)</entry>
+			              		<entry>List search</entry>
+			            	</row>	
+			            	<row>
+			              		<entry>List</entry>
+			              		<entry>getList(T object, int pageIndex)</entry>
+			              		<entry>List search</entry>
+			            	</row>		
+						</tbody>
+					</tgroup>
+				</informaltable> 
+				
+				<itemizedlist>
+					<listitem>
+						<para>Service interface uses <![CDATA[GenericService<T, PK extends Serializable>]]>. 
+						In GenericService, methods for creation, item search, list search, delete, and data existence check are declared. 
+						Here, 'T' is domain object type and means domain model class, and 'PK' means Primary Key type of domain object.</para>
+					</listitem>
+					
+					<listitem>
+						<para>Implements business logic for creation, item search, list search, delete, and data existence check 
+						based on the defined domain object.</para>
+					</listitem>
+					
+					<listitem>
+						<para>Service implementation class uses GenericServiceImpl, 
+						and inherits and overrides service interface.</para>
+					</listitem>
+				</itemizedlist>
+		
+	
+				<para><emphasis role="bold"><![CDATA[<Samples>]]></emphasis></para>
+	
+				<itemizedlist>
+					<listitem>
+						<para>
+							When overriding only creation and list search method among the methods declared in GenericService. 
+							Single item search, data existence check, save, delete, and list search are used as defined in GenericService.
+							countMovieListByGenre method has been added to implement new business logic that calculates the number of movies by genre that are not provided in GenericService.
+							
+							<programlisting language="java"><![CDATA[public interface MovieService ]]><emphasis role="bold"><![CDATA[extends GenericService<GenericMovie, String>]]></emphasis><![CDATA[ {
+	
+    public void create(GenericMovie movie) throws Exception;
+	  
+    public Page getPagingList(Movie movie, int pageIndex) throws Exception;
+	    
+    public int countMovieListByGenre(String genreId) throws Exception;
+	    
+	}]]></programlisting>
+						</para>
+					</listitem>
+					
+					<listitem>
+						<para>
+							When overriding only creation and list search method among the methods declared in GenericServiceImpl. 
+							Single item search, data existence check, save, delete, and list search are used as defined in GenericServiceImpl.
+							countMovieListByGenre method has been added to implement new business logic that calculates the number of movies by genre that are not provided in GenericServiceImpl.
+							<programlisting language="java"><![CDATA[@Service("genericMovieService")
+public class MovieServiceImpl ]]><emphasis role="bold"><![CDATA[extends GenericServiceImpl<GenericMovie , String>]]></emphasis><![CDATA[{
+    implements MovieService {
+    
+    @Inject
+    @Named("idGenerationServiceMovie")
+    IIdGenerationService idGenerationService;
+    
+    @Inject
+    @Named("genericMovieDao")
+    MovieDao genericMovieDao;
+
+    @PostConstruct
+    public void initialize() { 
+        super.setGenericDao(productDao);
+    }
+
+    ]]><emphasis role="bold">public void create(GenericMovie genericMovie) throws Exception</emphasis><![CDATA[ {
+        genericMovie.setMovieId(idGenerationService.getNextStringId());
+        genericMovieDao.create(genericMovie);
+    }
+
+    ]]><emphasis role="bold">public int countMovieListByGenre(String genreId) throws Exception</emphasis><![CDATA[ {
+        int count = genericMovieDao.countMovieListByGenre(genreId);
+        return count;
+    }
+
+}]]></programlisting>
+						</para>
+					</listitem>
+				</itemizedlist>
+			</section>
+		</section>
+</chapter>

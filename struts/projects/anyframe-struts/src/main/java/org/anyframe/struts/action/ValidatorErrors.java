@@ -51,7 +51,7 @@ public class ValidatorErrors extends ActionErrors {
 			fileIdList.add(it.next());
 		}
 		
-		StringBuffer sb = new StringBuffer();
+		StringBuilder sb = new StringBuilder();
 		for( int i = 0 ; i < fileIdList.size() ; i ++ ){
 			Iterator msgIt = this.get(fileIdList.get(i).toString());
 			sb.append("fieldId : " + fileIdList.get(i) +"\n");

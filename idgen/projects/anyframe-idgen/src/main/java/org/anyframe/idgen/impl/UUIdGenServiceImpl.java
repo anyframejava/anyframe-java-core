@@ -25,9 +25,6 @@ import org.anyframe.idgen.IdGenStrategy;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.springframework.beans.factory.InitializingBean;
-import org.springframework.context.ApplicationContext;
-import org.springframework.context.ApplicationContextAware;
-import org.springframework.context.MessageSource;
 
 /**
  * IDGenerationService that uses UUID generation scheme. Taken from Service
@@ -35,9 +32,7 @@ import org.springframework.context.MessageSource;
  * following:
  * 
  * <pre>
- *  &lt;config:configuration&gt;
- *  &lt;address&gt;00:00:F0:79:19:5B&lt;/address&gt;			
- *  &lt;/config:configuration&gt;
+ *  &lt;property name=&quot;address&quot; value=&quot;00:00:F0:79:19:5B&quot;/&gt;
  * </pre>
  * 
  * where "00:00:00:00:00:00" is the MAC address or hardware address of the
@@ -48,15 +43,7 @@ import org.springframework.context.MessageSource;
  * @author SoYon Lim
  * @author JongHoon Kim
  */
-public class UUIdGenServiceImpl implements IdGenService,
-		ApplicationContextAware, InitializingBean {
-	private MessageSource messageSource;
-
-	public void setApplicationContext(ApplicationContext applicationContext) {
-		this.messageSource = (MessageSource) applicationContext
-				.getBean("messageSource");
-
-	}
+public class UUIdGenServiceImpl implements IdGenService, InitializingBean {
 
 	private static Log logger = LogFactory.getLog(UUIdGenServiceImpl.class);
 
@@ -71,10 +58,10 @@ public class UUIdGenServiceImpl implements IdGenService,
 	private short mLoopCounter = 0;
 
 	/**
-	 * @see IdGenService.core.services.utility.IdGenService#getNextBigDecimalId()
-	 * @return String next BigDecimal id
+	 * @see org.anyframe.idgen.IdGenService#getNextBigDecimalId()
+	 * @return the next Id
 	 * @throws BaseException
-	 *             fail to get next BigDecimal
+	 *             if the next id is outside of the range of valid big-decimals
 	 */
 	public BigDecimal getNextBigDecimalId() throws BaseException {
 		String newId = getNextStringId();
@@ -92,86 +79,91 @@ public class UUIdGenServiceImpl implements IdGenService,
 	}
 
 	/**
-	 * @see IdGenService.core.services.utility.IdGenService#getNextByteId()
-	 * @return String next Byte id
+	 * @see org.anyframe.idgen.IdGenService#getNextByteId()
+	 * 
+	 * @return the next Id
 	 * @throws BaseException
-	 *             fail to get next Byte id
+	 *             if the next id is outside of the range of valid bytes
 	 */
 	public byte getNextByteId() throws BaseException {
-		throw new BaseException(messageSource, "error.idgen.not.supported",
-				new String[] { "Byte" });
+		throw new BaseException(
+				"[IDGeneration Service] Current service doesn't support to generate next Byte id.");
 	}
 
 	/**
-	 * @see IdGenService.core.services.utility.IdGenService#getNextIntegerId()
-	 * @return String next Integer id
+	 * @see org.anyframe.idgen.IdGenService#getNextIntegerId()
+	 * 
+	 * @return the next Id
 	 * @throws BaseException
-	 *             fail to get next Integer id
+	 *             if the next id is outside of the range of valid integers
 	 */
 	public int getNextIntegerId() throws BaseException {
-		throw new BaseException(messageSource, "error.idgen.not.supported",
-				new String[] { "Integer" });
+		throw new BaseException(
+				"[IDGeneration Service] Current service doesn't support to generate next Integer id.");
 	}
 
 	/**
-	 * @see IdGenService.core.services.utility.IdGenService#getNextLongId()
-	 * @return String next Long id
+	 * @see org.anyframe.idgen.IdGenService#getNextLongId()
+	 * 
+	 * @return the next Id
 	 * @throws BaseException
-	 *             fail to get next Long id
+	 *             if the next id is outside of the range of valid longs
 	 */
 	public long getNextLongId() throws BaseException {
-		throw new BaseException(messageSource, "error.idgen.not.supported",
-				new String[] { "Long" });
+		throw new BaseException(
+				"[IDGeneration Service] Current service doesn't support to generate next Long id.");
 	}
 
 	/**
-	 * @see IdGenService.core.services.utility.IdGenService#getNextShortId()
-	 * @return String next Short id
+	 * @see org.anyframe.idgen.IdGenService#getNextShortId()
+	 * 
+	 * @return the next Id
 	 * @throws BaseException
-	 *             fail to get next Short id
+	 *             if the next id is outside of the range of valid shorts
 	 */
 	public short getNextShortId() throws BaseException {
-		throw new BaseException(messageSource, "error.idgen.not.supported",
-				new String[] { "Short" });
+		throw new BaseException(
+				"[IDGeneration Service] Current service doesn't support to generate next Short id.");
 	}
 
 	/**
-	 * @see anyframe.core.services.utility.IdGene
-	 *      rationService#getNextStringId()
-	 * @return String next String id
+	 * @see org.anyframe.idgen.IdGenService#getNextStringId()
+	 * 
+	 * @return the next Id
 	 * @throws BaseException
-	 *             fail to get next String id
+	 *             if the next id is outside of the valid range
 	 */
 	public String getNextStringId() throws BaseException {
 		return getUUId();
 	}
 
 	/**
-	 * @see IdGenService.core.services.utility.IdGenService#getNextStringId(IdGenStrategy
+	 * @see org.anyframe.idgen.IdGenService#getNextStringId(IdGenStrategy
 	 *      strategy)
+	 * 
 	 * @param strategy
-	 *            IdGenStrategy
-	 * @return String next String id
+	 *            strategy for id generation
+	 * @return the next Id
 	 * @throws BaseException
-	 *             fail to get next String id
+	 *             if the next id is outside of the valid range
 	 */
 	public String getNextStringId(IdGenStrategy strategy) throws BaseException {
-		throw new BaseException(messageSource, "error.idgen.not.supported",
-				new String[] { "String" });
+		throw new BaseException(
+				"[IDGeneration Service] Current service doesn't support to generate next String id.");
 	}
 
 	/**
-	 * @see IdGenService.core.services.utility.IdGenService#getNextStringId(String
-	 *      strategyId)
+	 * @see org.anyframe.idgen.IdGenService#getNextStringId(String strategyId)
+	 * 
 	 * @param strategyId
-	 *            strategy id
-	 * @return String next String id
+	 *            strategy identifier for id generation
+	 * @return the next Id
 	 * @throws BaseException
-	 *             fail to get next String id
+	 *             if the next id is outside of the valid range
 	 */
 	public String getNextStringId(String strategyId) throws BaseException {
-		throw new BaseException(messageSource, "error.idgen.not.supported",
-				new String[] { "String" });
+		throw new BaseException(
+				"[IDGeneration Service] Current service doesn't support to generate next String id.");
 	}
 
 	public void setAddress(String address) {
@@ -179,12 +171,10 @@ public class UUIdGenServiceImpl implements IdGenService,
 	}
 
 	/**
-	 * Called by the Container to configure the component.
+	 * Called by the Container to initialize.
 	 * 
-	 * @param configuration
-	 *            configuration info used to setup the component.
 	 * @throws Exception
-	 *             if there are any problems with the configuration.
+	 *             if there is any problem initializing
 	 */
 	public void afterPropertiesSet() throws Exception {
 		byte[] addressBytes = new byte[6];

@@ -1,0 +1,215 @@
+<chapter id="webflow_configuration">
+	<title>Configuration</title>
+	<para>
+		To use Spring Web Flow, additional configuration for integrating with Spring MVC and basic configuration as the following are needed.
+	</para>
+	
+	<section id="webflow_configuration_setting">
+		<title>Basic Configuration</title>
+				
+		<section id="webflow_configuration_setting_flowregistry">
+			<title>FlowRegistry definition</title>
+			<para>
+				To execute Spring Web Flow, register the location of Flow Definition file in FlowRegistry,  
+				and specify Flow ID to each Flow Definition file. 
+				Also if necessary, can be defined base-path.
+				<programlisting language="xml"><![CDATA[<webflow:flow-registry id="flowRegistry" base-path="/WEB-INF/jsp/webflow">
+    <webflow:flow-location path="/sales/product/addProduct-flow.xml"
+            id="webflowAddProduct" />
+</webflow:flow-registry>]]></programlisting>
+					When defined as above, register /WEB-INF/jsp/webflow/sales/product/addProduct-flow.xml file in FlowRegistry 
+					including base-path. 
+			</para>
+			
+			<section id="webflow_configuration_setting_flowregistry_method">
+				<title>How to define FlowRegistry</title>
+				<para>
+					Define FlowRegistry as follows.
+					<itemizedlist>
+						<listitem>
+							<para>
+								Define Flow Definition file location using path: 
+								Can register directly Flow Definition file location in FlowRegistry.
+								<programlisting language="xml"><![CDATA[<webflow:flow-registry id="flowRegistry">
+    <]]><emphasis role="bold"><![CDATA[webflow:flow-location path="/WEB-INF/jsp/webflow/sales/product/addProduct-flow.xml"
+            id="webflowAddProduct" ]]></emphasis><![CDATA[/>
+</webflow:flow-registry>]]></programlisting>
+							</para>	
+						</listitem>
+						<listitem>
+							<para>
+								Define location using pattern: 
+								Use pattern to register several Flow Definition files at once. 
+								<programlisting language="xml"><![CDATA[<webflow:flow-registry id="flowRegistry"
+        base-path="/WEB-INF/jsp/webflow/sales">
+    <]]><emphasis role="bold"><![CDATA[webflow:flow-location-pattern value="/**/*-flow.xml"]]></emphasis><![CDATA[/>
+</webflow:flow-registry>]]></programlisting>
+								When defined as above, all files that end with -flow.xml in all folders under /WEB-INF/jsp/webflow/sales 
+								are registered in FlowRegistry.
+							</para>  
+						</listitem>
+					</itemizedlist>
+				</para>
+			</section>
+			
+			<section id="section id=webflow_configuration_setting_flowregistry_flowid">
+				<title>Create Flow ID</title>
+				<para>
+					When you define id using path when defining FlowRegistry, 
+					Flow ID is created with related id. 
+					But, when no id is defined or when FlowRegistry is defined using pattern, 
+					Flow ID is created as below depending on whether base-path is set. 
+					Flow ID becomes the request name to execute flow, 
+					so the developer should be aware of what Flow ID is created. 
+					<itemizedlist>
+						<listitem>
+							<para>
+								When defined as base-path: 
+								When defined as base-path, the string excluding the base-path and file name in the file path 
+								becomes the Flow ID.
+								<programlisting language="xml"><![CDATA[<webflow:flow-registry id="flowRegistry" ]]><emphasis role="bold"><![CDATA[base-path="/WEB-INF/jsp/webflow"]]></emphasis>/><![CDATA[>
+    <webflow:flow-location path="/sales/product/addProduct-flow.xml"
+            id="webflowAddProduct" />
+</webflow:flow-registry>]]></programlisting>
+								When defined as above, Flow ID becomes sales/product. 
+								This is the same when using pattern. 
+								However in this case, the folder name equals to the id, 
+								so only one Flow Definition file should exist in one folder. 
+							</para>
+						</listitem>
+						<listitem>
+							<para>
+								When base-path is not defined: 
+								When base-path is not defined, the Flow Definition file name without extension becomes Flow ID.
+								<programlisting language="java"><![CDATA[<webflow:flow-registry id="flowRegistry">
+    <webflow:flow-location-pattern value="/WEB-INF/jsp/webflow/sales/**/*-flow.xml"/>
+</webflow:flow-registry>]]></programlisting> 
+							If the files that match the pattern defined above are category-flow.xml and product-flow.xml, 
+							the id of each are category-flow and product-flow.
+							</para>
+						</listitem>
+					</itemizedlist>
+					<note>
+						<title>How to check the created Flow ID</title>
+						<para>
+							When developer does not defined Flow ID separately, 
+							the created Flow ID can be checked by defining org.springframework.webflow logger in log4j.xml file as DEBUG level. 
+							The following is a part of the log shown when defining as such. 
+							<programlisting language="java">[/WEB-INF/jsp/webflow/sales/category/category-flow.xml]' under id 'category'
+ [/WEB-INF/jsp/webflow/sales/category/category-flow.xml]' under id 'category-flow'</programlisting>
+ 						</para>
+ 					</note>
+				</para>
+			</section>
+		</section>
+		
+		<section id="webflow_configuration_setting_flowexecutor">
+				<title>FlowExecutor definition</title>
+				<para>To execute flow, deploy FlowExecutor.
+				<programlisting language="xml"><![CDATA[<]]><emphasis role="bold"><![CDATA[webflow:flow-executor id="flowExecutor"]]></emphasis><![CDATA[ />]]> </programlisting></para>
+		</section>
+	</section>
+		
+	<section id="webflow_configuration_mvc">
+		<title>Configuration for integrating with Spring MVC</title>
+		<para>
+			Spring Web Flow can be used in environments such as Spring MVC, JSP, Faces, and Portlet. 
+			In this section, we will look into how to integrate with Spring MVC. 
+			To do this, DispatcherServlet should be defined, and all requests to be implemented by Spring Web Flow 
+			should map to the DispatcherServlet as servlet. 
+		</para>
+		
+		<section id="webflow_configuration_mvc_adaptor">
+			<title>FlowHandlerAdaptor definition</title>
+			<para>
+				Define FlowHandlerAdaptor so that flow can be handled in Spring MVC. 
+				<programlisting language="xml"><![CDATA[<bean class="]]><emphasis role="bold"><![CDATA[org.springframework.webflow.mvc.servlet.FlowHandlerAdapter]]></emphasis><![CDATA[">
+    <property name=]]><emphasis role="bold"><![CDATA["flowExecutor"]]></emphasis><![CDATA[ ref="flowExecutor" />
+</bean>]]></programlisting>
+				Among properties, flowExcutor refers to the flowExcutor id defined above. 
+			</para>
+		</section>
+		
+		<section id="webflow_configuration_mvc_mapping">
+			<title>FlowHandlerMapping definition</title>
+			<para>
+		        Define FlowHandlingMapping to map flow for request. 
+				<programlisting language="xml"><![CDATA[<bean class=]]><emphasis role="bold"><![CDATA["org.springframework.webflow.mvc.servlet.FlowHandlerMapping"]]></emphasis><![CDATA[>
+    <property name="order" value="0" />
+    <property name=]]><emphasis role="bold"><![CDATA["flowRegistry"]]></emphasis><![CDATA[ ref="flowRegistry" />
+</bean>]]></programlisting>
+				FlowHandlerMapping defined above have interceptor, order, etc. properties such as 
+				BeanNameHandlerMapping and SimpleHandlerMapping of Spring MVC. 
+				Among properties, flowRegistry refers to flowRegistry id defined above, 
+				and is a repository that manage flow file that will handle request. 
+				<note>
+					<title>When interceptor is to be applied only to a specific URL?</title>
+					<para>
+						When intercepter is to be applied only to a specific URL, 
+						FlowController provided by Spring Web Flow can be used. 
+						<programlisting language="xml"><![CDATA[<bean class="org.springframework.
+            web.servlet.handler.SimpleUrlHandlerMapping">
+    <property name="order" value="0"/>
+    <property name="mappings">
+        <value>
+            /webflowProduct.do=flowController
+        </value>
+    </property>
+    <property name="interceptors" ref="loginInterceptor" />
+</bean>
+<bean id="flowController" 
+        class="]]><emphasis role="bold"><![CDATA[org.springframework.webflow.mvc.servlet.FlowController]]></emphasis><![CDATA[">
+    <!-- Required -->
+    <property name="flowExecutor" ref="flowExecutor"/>
+</bean>
+<bean class="]]><emphasis role="bold"><![CDATA[org.springframework.webflow.mvc.servlet.FlowHandlerMapping]]></emphasis><![CDATA[">
+    <!-- order must be defined lower than SimpleUrlHandlerMapping -->
+    <property name="order" value="1" />
+    <property name="flowRegistry" ref="flowRegistry" />
+</bean>
+<bean id="loginInterceptor" class="common.LoginInterceptor" />]]></programlisting>
+						FlowController can have flowExecutor property, and enables Flow to handle request. 
+						When defined as such, loginInterceptor is applied only for "/webflowProduct.do" request. 
+					</para>
+				</note>
+			</para>
+		</section>
+		
+		<section id="webflow_configuration_mvc_viewresolver">
+			<title>Spring MVC ViewResolver definition</title>
+			<para>
+				To use ViewResolver defined when using Spring MVC, 
+				register flow-builder-services and refer to defined viewResolver. 
+				Define by following the below steps.
+				<orderedlist>
+					<listitem>
+						<para>
+							Add flow-builder-services property in flowRegistry
+							<programlisting language="xml"><![CDATA[<webflow:flow-registry id="flowRegistry"
+        ]]><emphasis role="bold"><![CDATA[flow-builder-services="flowBuilderServices]]></emphasis><![CDATA[">
+    <webflow:flow-location path="/sample/product/addProduct-flow.xml"
+                                                  	    id="addProduct" />
+</webflow:flow-registry>]]></programlisting>
+						</para>
+					</listitem>
+					<listitem>
+						<para>
+							flowBuilderServices definition
+							<programlisting language="xml"><![CDATA[<webflow:flow-builder-services ]]><emphasis role="bold"><![CDATA[id="flowBuilderServices"]]></emphasis><![CDATA[
+view-factory-creator="mvcViewFactoryCreator" development="true" />]]></programlisting>
+						</para>
+					</listitem>
+					<listitem>
+						<para>
+							mvcViewFactoryCreater definition
+							<programlisting language="xml"><![CDATA[<bean id="mvcViewFactoryCreator"
+        class="]]><emphasis role="bold"><![CDATA[org.springframework.webflow.mvc.builder.MvcViewFactoryCreator"]]></emphasis><![CDATA[>
+    <property name="viewResolvers" ref="tilesViewResolver" />
+</bean>]]></programlisting>
+						</para>
+					</listitem>
+				</orderedlist>
+			</para>
+		</section>
+	</section>
+</chapter>

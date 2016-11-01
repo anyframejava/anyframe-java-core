@@ -23,7 +23,28 @@
 		    document.movieForm.action="<c:url value='/fileUploadMovie.do?method=remove'/>";
 		    document.movieForm.submit();
 		}	    
-	}	
+	}
+	
+	var gFiles = 0;
+	function addFile() {
+		var tr = document.createElement('tr');
+		tr.setAttribute('id', 'file-' + gFiles);
+		var td = document.createElement('td');
+		//var removeFileId = "file"+gFiles
+		td.innerHTML = '<input type="file" name="file"><span onclick="removeFile(\'file-' + gFiles + '\')" style="cursor:pointer;">Delete</span>'
+		tr.appendChild(td);
+		document.getElementById('files-root').appendChild(tr);
+		gFiles++;
+	}
+	function removeFile(aId) {
+		var obj = document.getElementById(aId);
+		if(obj == null){
+			alert("parent Node is null");
+		}
+		else
+			obj.parentNode.removeChild(obj);
+	}
+
 	</script>         
 </head>
 <!--************************** begin of contents *****************************-->
@@ -146,17 +167,24 @@
 		</tr>
 		<tr>
 			<td width="150" class="ct_td">
-			<spring:message code="movie.posterFile"/></td><td bgcolor="D6D6D6" width="1"></td>
+			<spring:message code="movie.referenceFiles"/></td><td bgcolor="D6D6D6" width="1"></td>
 			<td class="ct_write01">		
-				<c:if test="${not empty movie.posterFile}">
-					<img src="<c:url value='${movie.posterFile}'/>" alt="<spring:message code='movie.posterFile'/>" border="0" />
-					<form:hidden path="posterFile"/>
+				<c:if test="${not empty movie.fileRefId}">
+					<form:hidden path="fileRefId"/>
+					<c:forEach var="attachedFile" items = "${attachedFiles}">
+						<a href="<c:url value='/fileDownload.do?id=${attachedFile.id}&name=${attachedFile.name}&fileSize=${attachedFile.fileSize}'/>">${attachedFile.name}</a>  (${attachedFile.fileSize} Byte)<br/>
+					</c:forEach>
 				</c:if>
-				<c:if test="${empty movie.posterFile && empty movie.movieId}">
-					<input type="file" name="realPosterFile" class="ct_input_g" style="width:309px; height:19px" maxLength="100" >
+				<c:if test="${empty movie.fileRefId && not empty movie.movieId}">
+					<spring:message code="file.empty"/>
+				</c:if>
+				<c:if test="${empty movie.movieId}">
+					<table><tbody id="files-root">
+						<tr><td><input type="file" name="file"><span onclick="addFile()" style="cursor:pointer;">Add File</span></td></tr>
+					</table>
 				</c:if>							        
 			</td>
-		</tr>	
+		</tr>
 	</table>
 	<!--begin of button-->
 	<table width="100%" border="0" cellspacing="0" cellpadding="0" style="margin-top: 10px;">

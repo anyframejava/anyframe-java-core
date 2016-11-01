@@ -57,8 +57,8 @@ public class MovieDao extends SimpleJdbcDaoSupport {
 	public void create(Movie movie) throws Exception {
 		// set movie id
 		movie.setMovieId("MV-" + System.currentTimeMillis());
-		String sql = "INSERT INTO MOVIE (movie_id, title, director, genre_id, actors, runtime, release_date, ticket_price, now_playing, poster_file) "
-				+ "VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
+		String sql = "INSERT INTO FILEUPLOAD_MOVIE (movie_id, title, director, genre_id, actors, runtime, release_date, ticket_price, now_playing, poster_file, file_ref_id) "
+				+ "VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
 
 		this.getSimpleJdbcTemplate().update(
 				sql,
@@ -66,16 +66,17 @@ public class MovieDao extends SimpleJdbcDaoSupport {
 						movie.getDirector(), movie.getGenre().getGenreId(),
 						movie.getActors(), movie.getRuntime(),
 						movie.getReleaseDate(), movie.getTicketPrice(),
-						movie.getNowPlaying(), movie.getPosterFile() });
+						movie.getNowPlaying(), movie.getPosterFile(),
+						movie.getFileRefId()});
 	}
 
 	public void remove(String movieId) throws Exception {
-		String sql = "DELETE FROM MOVIE WHERE movie_id = ?";
+		String sql = "DELETE FROM FILEUPLOAD_MOVIE WHERE movie_id = ?";
 		this.getSimpleJdbcTemplate().update(sql, new Object[] { movieId });
 	}
 
 	public void update(Movie movie) throws Exception {
-		String sql = "UPDATE MOVIE SET title = ?, director = ?, genre_id = ?, actors = ?, runtime = ?, release_date = ?, ticket_price = ?, now_playing = ?, poster_file = ? WHERE movie_id = ?";
+		String sql = "UPDATE FILEUPLOAD_MOVIE SET title = ?, director = ?, genre_id = ?, actors = ?, runtime = ?, release_date = ?, ticket_price = ?, now_playing = ?, poster_file = ? WHERE movie_id = ?";
 		this.getSimpleJdbcTemplate().update(
 				sql,
 				new Object[] { movie.getTitle(), movie.getDirector(),
@@ -87,7 +88,7 @@ public class MovieDao extends SimpleJdbcDaoSupport {
 	}
 
 	public Movie get(String movieId) throws Exception {
-		String sql = "SELECT movie_id, title, director, genre_id, release_date, ticket_price, actors, runtime, now_playing, poster_file FROM MOVIE WHERE movie_id = ?";
+		String sql = "SELECT movie_id, title, director, genre_id, release_date, ticket_price, actors, runtime, now_playing, poster_file, file_ref_id FROM FILEUPLOAD_MOVIE WHERE movie_id = ?";
 		return this.getSimpleJdbcTemplate().queryForObject(sql,
 				new BeanPropertyRowMapper<Movie>(Movie.class) {
 					public Movie mapRow(ResultSet rs, int i)
@@ -96,7 +97,7 @@ public class MovieDao extends SimpleJdbcDaoSupport {
 								 rs.getString(3), new Genre(rs.getString(4), ""),
 								 rs.getDate(5), new Float(rs.getFloat(6)), 
 								 rs.getString(7), new Long(rs.getLong(8)),
-								 rs.getString(9), rs.getString(10));
+								 rs.getString(9), rs.getString(10), rs.getString(11));
 					}
 				}, new Object[] { movieId });
 	}
@@ -107,7 +108,7 @@ public class MovieDao extends SimpleJdbcDaoSupport {
 	 * pagination.
 	 */
 	public Page getPagingList(Movie movie, int pageIndex) throws Exception {
-		String fromSql = " FROM MOVIE movie, GENRE genre";
+		String fromSql = " FROM FILEUPLOAD_MOVIE movie, FILEUPLOAD_GENRE genre";
 		String CONCAT = "'%" + movie.getTitle() + "%'";
 		String whereSql = " WHERE movie.genre_id = genre.genre_id AND title like "
 				+ CONCAT + " AND movie.now_playing = ?";

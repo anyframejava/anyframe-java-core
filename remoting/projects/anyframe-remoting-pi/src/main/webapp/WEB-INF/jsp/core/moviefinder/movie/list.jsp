@@ -83,11 +83,7 @@
 		<tr>
 			<td class="page" height="50" align="center">
 				<anyframe:pagenavigator linkUrl="javascript:fncSearchMovie();"
-					pages="${resultPage}" 
-					firstImg="${ctx}/sample/images/pagenav/page_before1.gif" 
-					lastImg="${ctx}/sample/images/pagenav/page_after1.gif" 
-					prevImg="${ctx}/sample/images/pagenav/page_before.gif" 
-					nextImg="${ctx}/sample/images/pagenav/page_after.gif"/>
+					pages="${resultPage}"/>
 			</td>
 		</tr>
 	</table>	

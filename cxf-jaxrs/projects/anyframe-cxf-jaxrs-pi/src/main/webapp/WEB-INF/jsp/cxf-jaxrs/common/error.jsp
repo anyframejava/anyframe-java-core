@@ -64,19 +64,7 @@
 												</c:choose>
 												</font>
 												<p />
-												<% if (request.getAttribute("exception") instanceof BaseException) {
-												%> <c:if test="${exception.messages.solution != null && exception.message != 'Occured Error'}">
-												<br />
-												<b>* SOLUTION : </b> 
-												${exception.messages.solution}
-												</c:if> 
-												<c:if test="${exception.messages.solution != null && exception.message != 'Occured Error'}">
-												<br />
-												<br />
-												<b>* REASON : </b>
-												${exception.messages.reason}
-												</c:if>
-												<% } else if (request.getAttribute("exception") instanceof WebApplicationException) {
+												<% if (request.getAttribute("exception") instanceof WebApplicationException) {
 													WebApplicationException webappException = (WebApplicationException) request.getAttribute("exception");
 													Response res = webappException.getResponse();
 													if (res.getStatus() == Status.NOT_FOUND.getStatusCode()) {

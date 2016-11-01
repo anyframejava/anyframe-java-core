@@ -16,9 +16,9 @@
         <property name="password" value="#{contextProperties.password}"/>
     </bean>							
 	
-	<bean id="txManager" class="org.springframework.jdbc.datasource.DataSourceTransactionManager">
-	  <property name="dataSource" ref="dataSource"/>
-	</bean>
+	<bean id="txManager" class="org.springframework.orm.hibernate3.HibernateTransactionManager">
+	  <property name="sessionFactory" ref="sessionFactory"/>
+	</bean>	
 
 	<tx:annotation-driven transaction-manager="txManager" />
 	

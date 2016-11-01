@@ -17,7 +17,7 @@ package org.anyframe.idgen.impl;
 
 /**
  * We changed org.apache.axis.encoding.Base64 Class 
- * into anyframe.core.idgen.impl.Base64 Class in Anyframe.
+ * into org.anyframe.idgen.impl.Base64 Class in Anyframe.
  * <ul>
  * <li>remove all decode operations and some incode operations 
  * which IdGenService doesn't use.</li>

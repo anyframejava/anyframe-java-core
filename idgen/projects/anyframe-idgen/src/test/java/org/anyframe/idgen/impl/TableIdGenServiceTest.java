@@ -108,8 +108,7 @@ public class TableIdGenServiceTest extends
 		try {
 			idGenerator.getNextLongId();
 		} catch (BaseException e) {
-			assertEquals("error.idgen.get.connection", e.getMessages()
-					.getMessageKey());
+			assertEquals("[IDGeneration Service] Although too many retries, unable to allocate a block of Ids.", e.getMessage());
 		}
 	}
 

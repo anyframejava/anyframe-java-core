@@ -27,14 +27,23 @@ import org.anyframe.util.StringUtil;
  * and cipers is a 5 <br>
  * in result, new id is a 'TEST-00012'.
  * 
+ *  * The Configuration to use a MixPrefixStrategy looks like the following:
+ * 
+ * <pre>
+ *  &lt;property name=&quot;prefix&quot; value=&quot;TEST-&quot;/&gt;	
+ *  &lt;property name=&quot;cipers&quot; value=&quot;5&quot;/&gt;
+ *  &lt;property name=&quot;fillChar&quot; value=&quot;0&quot;/&gt;
+ * </pre>
+
+ * 
  * @author SoYon Lim 
  */
 public class MixPrefixStrategy implements IdGenStrategy {
 	private String prefix;
 
-	private int cipers = 5;
+	protected int cipers = 5;
 
-	private char fillChar = '0';
+	protected char fillChar = '0';
 
 	/**
 	 * convert original id to a new id which apply a specific assembling rule

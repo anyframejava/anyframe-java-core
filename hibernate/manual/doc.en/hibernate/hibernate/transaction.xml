@@ -1,0 +1,206 @@
+<chapter id="hibernate_hibernate_transaction">
+	<title>Transaction Management</title>
+	<para>
+		Transaction management of Hibernate is largely composed of three ways; JDBC, JTA, CMT.
+			This page will cover transaction management based on JDBC, JTA, the most
+			common management.		
+	</para>
+
+	<section id="hibernate_hibernate_transaction_jdbc">
+		<title>JDBC - HibernateTransactionManager</title>
+
+		<para>
+			HibernateTransactionManager manages Local Transaction and
+				Hibernate Session using datasource. Therefore, HibernateTransactionManager
+				must be used with LocalSessionFactory as it is dependent on LocalSessionFactory Bean.			
+		</para>
+
+		<itemizedlist>
+        	<listitem>
+          		<para>
+          			<emphasis role="bold">Configuration</emphasis>
+          		</para>
+
+          		<para>
+          			The following is a part of context-transaction.xml for 	Hibernate-based transaction management using
+						org.springframework.orm.hibernate3.HibernateTransactionManager of Spring Framework.    
+						[주의] Anyframe Hibernate Plugin을 설치한 뒤 설정 파일을 보면 Transaction Manager가 "org.springframework.jdbc.datasource.DataSourceTransactionManager" 클래스로 설정되어 있는데
+          			이를 아래와 같이 "org.springframework.orm.hibernate3.HibernateTransactionManager" 클래스로 변경하고 sessionFactory Bean에 대한 참조 설정도 추가해주도록 한다. DataSourceTransactionManager 사용 시 
+          			Transaction 관리가 되지 않는다.       			
+                    <programlisting language="xml"><![CDATA[<bean id="transactionManager"
+        class="]]><emphasis role="bold"><![CDATA[org.springframework.orm.hibernate3.HibernateTransactionManager]]></emphasis>">
+    <![CDATA[<property name="sessionFactory" ref="sessionFactory" />
+</bean>]]></programlisting> 
+					For how to configure TransactionManager of Spring, refer to this manual >> Core Plugin >> Spring >> <ulink url="http://dev.anyframejava.org/docs/anyframe/plugin/essential/core/1.0.1/reference/htmlsingle/core.html#core_spring_transaction">
+					Transaction Management</ulink>.					
+				</para>
+        	</listitem>
+
+        	<listitem>
+          		<para>
+          			<emphasis role="bold">Test Case</emphasis>
+          		</para>
+
+				<para>
+          			The following is a part of HibernateJDBCTransactionManager.java which tests transaction management using
+						org.springframework.orm.hibernate3.HibernateTransactionManager.
+          			
+                    <programlisting language="java"><![CDATA[public class HibernateJDBCTransactionManager {
+
+<!--... -->
+
+/**
+ * [Flow #-1] Using HibernateTransactionManager Rollback, after undoing input 
+ * process of initialized data, validate whether the data is rollbacked.
+ 
+ * 
+ * @throws Exception
+ *             throws exception which is from hibernate
+ */
+    public void rollback() throws Exception {
+        // 1. insert init data
+        Session session = sessionFactory.getCurrentSession();
+        SetUpInitData.initializeData(session);
+
+        // 2. rollback transaction
+        isRollback();
+        endTransaction();
+
+        // 3. begin a new transaction
+        startNewTransaction();
+
+        // 4. check if insertion is rollbacked
+        Movie movie = (Movie) sessionFactory.getCurrentSession().get(
+        Movie.class, "MV-00001");
+    }
+
+/**
+ * [Flow #-2] Using HibernateTransactionManager Commit, after applying 
+ * the input process of the initialized data into DB, validate whether 
+ * the data is committed.
+
+ * 
+ * @throws Exception
+ *             throws exception which is from hibernate
+ */
+    public void commit() throws Exception {
+        // 1. insert init data
+        Session session = sessionFactory.getCurrentSession();
+        SetUpInitData.initializeData(session);
+
+        // 2. commit transaction
+        setComplete();
+        endTransaction();
+
+        // 3. begin a new transaction
+        startNewTransaction();
+
+        // 4. check if insertion is successful
+        Movie movie = (Movie) sessionFactory.getCurrentSession().get(
+        Movie.class, "MV-00001");
+    }
+}]]></programlisting>
+				</para>
+			</listitem>
+		</itemizedlist>
+	</section>
+
+	<section id="hibernate_hibernate_transaction_jta">
+		<title>JTA - JTATransactionManager</title>
+
+      	<para>
+      		JTATransactionManager abstracts global transaction management
+				using JTA, thereby helps to implement user-defined services not dependent on JTA, JNDI, etc.
+      	
+      	</para>
+
+      	<itemizedlist>
+        	<listitem>
+          		<para>
+          			<emphasis role="bold">Configuration</emphasis>
+          		</para>
+
+          		<para>
+          			The following is a part of context-transaction.xml, configuration file of JTATransactionManager.          		
+                    <programlisting language="xml"><![CDATA[<bean id="transactionManager"
+        class="org.springframework.transaction.jta.WebLogicJtaTransactionManager"/>]]></programlisting>
+        		</para>
+
+          		<para>
+          			As shown above, JTA Transaction management in Hibernate
+						is no different from using Spring JDBC. For how to define configuration
+						in detail,
+						refer to <ulink url="http://dev.anyframejava.org/docs/anyframe/plugin/essential/core/1.0.1/reference/htmlsingle/core.html#core_spring_transaction"> JTA Transaction Service </ulink>.
+          			
+          		</para>
+			</listitem>
+
+        	<listitem>
+          		<para>
+          			<emphasis role="bold">Test Case</emphasis>
+          		</para>
+
+          		<para>
+          			The following is a part of HibernateJTATransactionManager.java
+						which tests	transaction management using WebLogicJtaTransactionManager.          			
+                    <programlisting language="java"><![CDATA[public class HibernateJTATransactionManager {
+
+...
+
+/**
+ * [Flow #-1] Using WebLogicJtaTransactionManager Rollback, after undoing the 
+ * input adding process of initialized data, validate whether the data is rollbacked. 
+
+ * 
+ * @throws Exception
+ *             throws exception which is from hibernate
+ */
+    public void rollback() throws Exception {
+        // 1. insert init data
+        Session session = sessionFactory.getCurrentSession();
+        SetUpInitData.initializeData(session);
+
+        // 2. rollback transaction
+        isRollback();
+        endTransaction();
+
+        // 3. begin a new transaction
+        startNewTransaction();
+
+        // 4. check if insertion is rollbacked
+        Movie movie = (Movie) sessionFactory.getCurrentSession().get(
+        Movie.class, "MV-00001");
+    }
+
+/**
+ * [Flow #-2]Using WebLogicJtaTransactionManager Commit, after applying 
+ * the input process of initialized data into DB, validate whether the 
+ * data is properly committed.
+ * 
+ * @throws Exception
+ *             throws exception which is from hibernate
+ */
+    public void commit() throws Exception {
+        // 1. insert init data
+        Session session = sessionFactory.getCurrentSession();
+        SetUpInitData.initializeData(session);
+
+        // 2. commit transaction
+        setComplete();
+        endTransaction();
+
+        // 3. begin a new transaction
+        startNewTransaction();
+
+        // 4. check if insertion is successful
+        Movie movie = (Movie) sessionFactory.getCurrentSession().get(
+        Movie.class, "MV-00001");
+    }
+}]]></programlisting>
+				</para>
+			</listitem>
+		</itemizedlist>
+	</section>
+</chapter>
+	
+

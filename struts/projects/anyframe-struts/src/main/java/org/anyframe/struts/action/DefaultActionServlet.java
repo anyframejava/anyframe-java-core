@@ -151,7 +151,7 @@ import org.apache.struts.util.MessageResourcesFactory;
  *
  * </ul>
  * 
- * We changed org.apache.struts.action.ActionServlet Class into anyframe.web.struts.common.action.DefaultActionServlet Class in Anyframe.
+ * We changed org.apache.struts.action.ActionServlet Class into org.anyframe.struts.action.DefaultActionServlet Class in Anyframe.
  * @author modified by Byunghun Woo
  * 
  */
@@ -208,7 +208,7 @@ public class DefaultActionServlet extends ActionServlet
      * @throws ServletException if we cannot configure ourselves correctly
      */
     public void init() throws ServletException {
-        this.internalName = "anyframe.web.struts.action.CommonResources";
+        this.internalName = "org.anyframe.struts.CommonResources";
 
         super.init();
 

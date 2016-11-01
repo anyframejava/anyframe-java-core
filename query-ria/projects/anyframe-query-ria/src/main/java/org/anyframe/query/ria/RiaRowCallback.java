@@ -33,4 +33,8 @@ public interface RiaRowCallback extends RowMetadataCallbackHandler {
 	void setDataSet(Object dataset);
 	
 	public void setQueryInfo( QueryInfo queryInfo);
+	
+	public boolean isNeedColumnInfo();
+
+	public void setNeedColumnInfo(boolean needColumnInfo);
 }

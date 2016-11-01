@@ -52,7 +52,7 @@ public class DefaultActionSupportTestCase extends MockStrutsSpringTestCaseBase {
         setRequestPathInfo("/testDefaultActionSupportCheckedException");
         actionPerform();
 		
-        verifyActionMessages(new String[] { "error.common.msg.biz" });
+        verifyActionMessages(new String[] { "common.msg.biz" });
     }
 
     public void testDefaultActionSupportUnCheckedException() {
@@ -62,7 +62,7 @@ public class DefaultActionSupportTestCase extends MockStrutsSpringTestCaseBase {
         setRequestPathInfo("/testDefaultActionSupportUnCheckedException");
         actionPerform();
 		
-        verifyActionMessages(new String[] { "error.common.msg.fail" });
+        verifyActionMessages(new String[] { "common.msg.fail" });
     }
 
 

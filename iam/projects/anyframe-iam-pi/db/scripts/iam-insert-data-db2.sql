@@ -161,7 +161,8 @@ CREATE TABLE VIEW_HIERARCHY	(
 );
   
 CREATE TABLE CANDIDATE_SECURED_RESOURCES (
-	CANDIDATE_RESOURCE_ID	NUMERIC(10)		NOT NULL,
+	CANDIDATE_RESOURCE_ID	VARCHAR (10)		NOT NULL,
+	SYSTEM_NAME 			VARCHAR (15),
 	BEANID					VARCHAR (128),
 	PACKAGES				VARCHAR (128)	NOT NULL,
 	CLASSES					VARCHAR (128),
@@ -182,40 +183,54 @@ CREATE TABLE DATA_UPLOAD (
 	CONSTRAINT PK_DATA_UPLOAD PRIMARY KEY(FILE_ID)
 );
 
+CREATE TABLE IDS ( 
+  TABLE_NAME  VARCHAR (16)  NOT NULL, 
+  NEXT_ID     NUMERIC (30)   NOT NULL, 
+  CONSTRAINT PK_IDS PRIMARY KEY ( TABLE_NAME ) 
+);
+
 -- password encoding MD5 - user_id + 123
-insert into groups values('GRP-0001','HeadQuarter','20090701','20091209');
-insert into groups values('GRP-0002','Manufacturing Cen.','20090701','20091209');
-insert into groups_hierarchy values('GRP-0001','GRP-0002','20090701',NULL);
-insert into users values('admin','Admin User','admin123','Y','20090630',NULL);
-insert into users values('user','General user','user123','Y','20090909',NULL);
-insert into users values('buyer','Buyer','buyer123','Y','20090909',NULL);
-insert into groups_users values('GRP-0001','admin','20091102',NULL);
-insert into groups_users values('GRP-0001','user','20100104',NULL);
-insert into groups_users values('GRP-0001','buyer','20091008',NULL);
-insert into roles values('IS_AUTHENTICATED_ANONYMOUSLY','IS_AUTHENTICATED_ANONYMOUSLY','ANONYMOUSLY Role','20091103',NULL);
-insert into roles values('ROLE_RESTRICTED','ROLE_RESTRICTED','Restricted Role','20091103',NULL);
-insert into roles values('ROLE_USER','ROLE_USER','USER Role','20091103',NULL);
-insert into roles values('ROLE_ADMIN','ROLE_ADMIN','ADMIN Role','20091103',NULL);
-insert into roles_hierarchy values('IS_AUTHENTICATED_ANONYMOUSLY','ROLE_RESTRICTED','20091103',NULL);
-insert into roles_hierarchy values('ROLE_RESTRICTED','ROLE_USER','20091103',NULL);
-insert into roles_hierarchy values('ROLE_USER','ROLE_ADMIN','20091103',NULL);
-insert into secured_resources values('PNC_000001','SAMPLE','List','execution(* anyframe.iam.core..*Service.*Bbnydory(..))','','pointcut',1,'20100107',NULL);
+insert into GROUPS values('GRP-0001','HeadQuarter','20090701','20091209');
+insert into GROUPS values('GRP-0002','Manufacturing Cen.','20090701','20091209');
+insert into GROUPS_HIERARCHY values('GRP-0001','GRP-0002','20090701',NULL);
+insert into USERS values('admin','Admin User','admin123','Y','20090630',NULL);
+insert into USERS values('user','General user','user123','Y','20090909',NULL);
+insert into USERS values('buyer','Buyer','buyer123','Y','20090909',NULL);
+insert into GROUPS_USERS values('GRP-0001','admin','20091102',NULL);
+insert into GROUPS_USERS values('GRP-0001','user','20100104',NULL);
+insert into GROUPS_USERS values('GRP-0001','buyer','20091008',NULL);
+insert into ROLES values('IS_AUTHENTICATED_ANONYMOUSLY','IS_AUTHENTICATED_ANONYMOUSLY','ANONYMOUSLY Role','20091103',NULL);
+insert into ROLES values('ROLE_RESTRICTED','ROLE_RESTRICTED','Restricted Role','20091103',NULL);
+insert into ROLES values('ROLE_USER','ROLE_USER','USER Role','20091103',NULL);
+insert into ROLES values('ROLE_ADMIN','ROLE_ADMIN','ADMIN Role','20091103',NULL);
+insert into ROLES_HIERARCHY values('IS_AUTHENTICATED_ANONYMOUSLY','ROLE_RESTRICTED','20091103',NULL);
+insert into ROLES_HIERARCHY values('ROLE_RESTRICTED','ROLE_USER','20091103',NULL);
+insert into ROLES_HIERARCHY values('ROLE_USER','ROLE_ADMIN','20091103',NULL);
+insert into SECURED_RESOURCES values('PNC_000001','SAMPLE','List','execution(* anyframe.iam.core..*Service.*Bbnydory(..))','','pointcut',1,'20100107',NULL);
 INSERT INTO SECURED_RESOURCES VALUES('WEB-000002','SAMPLE','User Update','\A/iamUpdateDirector\.do\Z','','url',1,'20100107',NULL);
 INSERT INTO SECURED_RESOURCES VALUES('WEB-000003','SAMPLE','Director List','\A/iamListDirector\.do\Z','','url',2,'20100107',NULL);
 INSERT INTO SECURED_RESOURCES_ROLES VALUES('PNC_000001','ROLE_USER','20100107',NULL);
 INSERT INTO SECURED_RESOURCES_ROLES VALUES('WEB-000002','ROLE_ADMIN','20100107',NULL);
 INSERT INTO SECURED_RESOURCES_ROLES VALUES('WEB-000003','ROLE_USER','20100107',NULL);
-insert into authorities values('ROLE_ADMIN','admin','U','20091103',NULL);
-insert into authorities values('ROLE_USER','user','U','20091103',NULL);
-insert into authorities values('ROLE_RESTRICTED','buyer','U','20100422',NULL);
-insert into view_resources values('downloadUser','SAMPLE','User Management','Download User','Download User Infomation','','button','Y');
-insert into view_resources values('viewManagement','SAMPLE','View Management','View Management','View Management','','menu','Y');
-insert into view_resources_mapping values('downloadUser','ROLE_ADMIN',512,'DOWNLOAD','ROLE');
-insert into view_hierarchy values('downloadUser','viewManagement','20100526',NULL);
+insert into AUTHORITIES values('ROLE_ADMIN','admin','U','20091103',NULL);
+insert into AUTHORITIES values('ROLE_USER','user','U','20091103',NULL);
+insert into AUTHORITIES values('ROLE_RESTRICTED','buyer','U','20100422',NULL);
+insert into VIEW_RESOURCES values('downloadUser','SAMPLE','User Management','Download User','Download User Infomation','','button','Y');
+insert into VIEW_RESOURCES values('viewManagement','SAMPLE','View Management','View Management','View Management','','menu','Y');
+insert into VIEW_RESOURCES_MAPPING values('downloadUser','ROLE_ADMIN',512,'DOWNLOAD','ROLE');
+insert into VIEW_HIERARCHY values('downloadUser','viewManagement','20100526',NULL);
 INSERT INTO DIRECTOR VALUES('DIRECTOR-01','Timothy Burton','Alice in Wonderland');
 INSERT INTO DIRECTOR VALUES('DIRECTOR-02','James Cameron','Avatar');
 INSERT INTO DIRECTOR VALUES('DIRECTOR-03','Paul Greengrass','Green Zone');
 INSERT INTO DIRECTOR VALUES('DIRECTOR-04','Allen Coulter','Remember Me');
 INSERT INTO DIRECTOR VALUES('DIRECTOR-05','Jim Field Smith','She is Out of My League');
-
+INSERT INTO IDS VALUES('DATA_UPLOAD',1);
+INSERT INTO IDS VALUES('GROUPS',1);
+INSERT INTO IDS VALUES('RESOURCE_METHOD',1);
+INSERT INTO IDS VALUES('RESOURCE_PNC',1);
+INSERT INTO IDS VALUES('RESOURCE_URL',1);
+INSERT INTO IDS VALUES('ROLES',1);
+INSERT INTO IDS VALUES('SNAPSHOT',1);
+INSERT INTO IDS VALUES('TIMES',1);
+INSERT INTO IDS VALUES('VIEW_RESOURCE',1);
 commit;

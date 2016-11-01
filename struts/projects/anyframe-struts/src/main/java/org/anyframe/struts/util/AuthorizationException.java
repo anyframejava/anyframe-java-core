@@ -33,10 +33,10 @@ public class AuthorizationException extends ModuleException {
 
 	/**
 	 * The case for creating the instance without the key value for the Exception Message
-	 * The message's key is <code>error.common.msg.authorization</code>.
+	 * The message's key is <code>common.msg.authorization</code>.
 	 */
 	public AuthorizationException() {
-        super("error.common.msg.authorization");
+        super("common.msg.authorization");
     }
 
 	/**

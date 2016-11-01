@@ -15,9 +15,14 @@
  */
 package org.anyframe.plugin.tiles.moviefinder.web;
 
+import java.util.Locale;
+
 import javax.inject.Inject;
 import javax.inject.Named;
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
 
+import org.anyframe.pagination.Page;
 import org.anyframe.plugin.tiles.domain.Movie;
 import org.anyframe.plugin.tiles.moviefinder.service.MovieFinder;
 import org.springframework.stereotype.Controller;
@@ -25,8 +30,7 @@ import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
-
-import org.anyframe.pagination.Page;
+import org.springframework.web.servlet.i18n.SessionLocaleResolver;
 
 /**
  * This MovieFinderController class is a Controller class to provide movie list
@@ -45,8 +49,7 @@ public class MovieFinderController {
 	@RequestMapping(params = "method=list")
 	public String list(
 			@RequestParam(value = "pageIndex", defaultValue = "1") int pageIndex,
-			Movie movie, BindingResult result, Model model) throws Exception {
-
+			Movie movie, BindingResult result, Model model, HttpServletRequest request, HttpServletResponse response) throws Exception {
 		Page resultPage = movieFinder.getPagingList(movie, pageIndex);
 
 		model.addAttribute("movie", movie);

@@ -1,0 +1,60 @@
+			<!--jquery-findJqueryBoardList-START-->
+				SELECT 
+					board.POST_ID,
+					board.TITLE,
+					board.CONTENTS,
+					board.REG_ID,
+					board.REG_DATE,
+					board.COMMUNITY_ID,
+					community.COMMUNITY_NAME
+				FROM JQUERY_BOARD board, JQUERY_COMMUNITY community
+				WHERE board.COMMUNITY_ID = community.COMMUNITY_ID
+				<!--Velocity-Support-dynamicFindJqueryBoardList-START-->
+				#if($vo.postId &amp;&amp; !$vo.postId.equals(""))
+					AND board.POST_ID = :vo.postId
+				#end
+				#if($vo.title &amp;&amp; !$vo.title.equals(""))
+					AND board.TITLE like '%' || :vo.title || '%'
+				#end
+				#if($vo.contents &amp;&amp; !$vo.contents.equals(""))
+					AND board.CONTENTS like '%' || :vo.contents || '%'
+				#end
+				#if($vo.regId &amp;&amp; !$vo.regId.equals(""))
+					AND board.REG_ID = :vo.regId
+				#end
+				#if($vo.regDate &amp;&amp; !$vo.regDate.equals(""))
+					AND board.REG_DATE like :vo.regDate || '%'
+				#end
+				#if($vo.communityId &amp;&amp; !$vo.communityId.equals(""))
+					AND board.COMMUNITY_ID = :vo.communityId
+				#end
+				#if($vo.communityName &amp;&amp; !$vo.communityName.equals(""))
+					AND community.COMMUNITY_NAME like :vo.communityName || '%'
+				#end
+				ORDER BY
+				#if($vo.sidx &amp;&amp; !$vo.sidx.equals(""))
+					#if($vo.sidx == "postId")
+						board.POST_ID
+					#elseif($vo.sidx == "title")
+						board.TITLE	
+					#elseif($vo.sidx == "contents")
+						board.CONTENTS
+					#elseif($vo.sidx == "regId")
+						board.REG_ID
+					#elseif($vo.sidx == "regDate")
+						board.REG_DATE
+					#elseif($vo.sidx == "communityId")
+						board.COMMUNITY_ID
+					#elseif($vo.sidx == "communityName")
+						community.COMMUNITY_NAME
+					#end
+					#if($vo.sord == "desc" || $vo.sord == "")
+						DESC
+					#else
+						ASC
+					#end
+				#else
+					board.POST_ID
+				#end
+				<!--Velocity-Support-dynamicFindJqueryBoardList-START-->
+			<!--jquery-updateJqueryBoard-END-->

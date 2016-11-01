@@ -287,7 +287,7 @@ function showResponse(data, responseText, statusText, xhr, $form)  {
 								<table width="430" border="0" cellspacing="0" cellpadding="0">
 									<form:hidden path="movieId" />
 									<tr>
-										<td width="150" class="ct_td"><anyframe:message code="movie.title" />&nbsp;*</td>
+										<td width="150" class="ct_td"><spring:message code="movie.title" />&nbsp;*</td>
 										<td bgcolor="D6D6D6" width="1"></td>
 										<td class="ct_write01">
 										<form:input path="title" cssClass="required ct_input_g" cssErrorClass="text medium error" cssStyle="width:150px;" size="40" maxlength="50" />
@@ -297,7 +297,7 @@ function showResponse(data, responseText, statusText, xhr, $form)  {
 										<td height="1" colspan="3" bgcolor="D6D6D6"></td>
 									</tr>
 									<tr>
-										<td width="150" class="ct_td"><anyframe:message code="movie.director" />&nbsp;*</td>
+										<td width="150" class="ct_td"><spring:message code="movie.director" />&nbsp;*</td>
 										<td bgcolor="D6D6D6" width="1"></td>
 										<td class="ct_write01"><form:input path="director" cssClass="required ct_input_g" cssErrorClass="text medium error" cssStyle="width:150px;" size="40" maxlength="50" />
 										</td>
@@ -306,7 +306,7 @@ function showResponse(data, responseText, statusText, xhr, $form)  {
 										<td height="1" colspan="3" bgcolor="D6D6D6"></td>
 									</tr>
 									<tr>
-										<td width="150" class="ct_td"><anyframe:message code="movie.genre" />&nbsp;*</td>
+										<td width="150" class="ct_td"><spring:message code="movie.genre" />&nbsp;*</td>
 										<td bgcolor="D6D6D6" width="1"></td>
 										<td class="ct_write01">
 											<form:select id="genreId" path="genre.genreId"  cssStyle="width:210px;">
@@ -318,7 +318,7 @@ function showResponse(data, responseText, statusText, xhr, $form)  {
 										<td height="1" colspan="3" bgcolor="D6D6D6"></td>
 									</tr>
 									<tr>
-										<td width="150" class="ct_td"><anyframe:message code="movie.actors" />&nbsp;*</td>
+										<td width="150" class="ct_td"><spring:message code="movie.actors" />&nbsp;*</td>
 										<td bgcolor="D6D6D6" width="1"></td>
 										<td class="ct_write01">
 										<form:input path="actors" cssClass="required ct_input_g"  cssErrorClass="text medium error" cssStyle="width:150px;" size="60" maxlength="50" /></td>
@@ -327,7 +327,7 @@ function showResponse(data, responseText, statusText, xhr, $form)  {
 										<td height="1" colspan="3" bgcolor="D6D6D6"></td>
 									</tr>
 									<tr>
-										<td width="150" class="ct_td"><anyframe:message code="movie.runtime" /></td>
+										<td width="150" class="ct_td"><spring:message code="movie.runtime" /></td>
 										<td bgcolor="D6D6D6" width="1"></td>
 										<td class="ct_write01"><form:input path="runtime" cssClass="number ct_input_g" cssErrorClass="text medium error" size="10" maxlength="3" /> min.
 										</td>
@@ -336,7 +336,7 @@ function showResponse(data, responseText, statusText, xhr, $form)  {
 										<td height="1" colspan="3" bgcolor="D6D6D6"></td>
 									</tr>
 									<tr>
-										<td width="150" class="ct_td"><anyframe:message code="movie.releaseDate" /></td>
+										<td width="150" class="ct_td"><spring:message code="movie.releaseDate" /></td>
 										<td bgcolor="D6D6D6" width="1"></td>
 										<td class="ct_write01"><form:input path="releaseDate" id="releaseDate" cssClass="dateISO ct_input_g"
 											cssErrorClass="text medium error" maxlength="10" />
@@ -346,7 +346,7 @@ function showResponse(data, responseText, statusText, xhr, $form)  {
 										<td height="1" colspan="3" bgcolor="D6D6D6"></td>
 									</tr>
 									<tr>
-										<td width="150" class="ct_td"><anyframe:message code="movie.ticketPrice" /></td>
+										<td width="150" class="ct_td"><spring:message code="movie.ticketPrice" /></td>
 										<td bgcolor="D6D6D6" width="1"></td>
 										<td class="ct_write01"><form:input path="ticketPrice" cssClass="number ct_input_g" cssErrorClass="text medium error" maxlength="4" />
 										</td>
@@ -355,7 +355,7 @@ function showResponse(data, responseText, statusText, xhr, $form)  {
 										<td height="1" colspan="3" bgcolor="D6D6D6"></td>
 									</tr>
 									<tr>
-										<td width="150" class="ct_td"><anyframe:message code="movie.nowPlaying" /></td>
+										<td width="150" class="ct_td"><spring:message code="movie.nowPlaying" /></td>
 										<td bgcolor="D6D6D6" width="1"></td>
 										<td class="ct_write01">Is this movie now playing ?<form:checkbox path="nowPlaying" value="Y"/>
 										</td>
@@ -365,12 +365,12 @@ function showResponse(data, responseText, statusText, xhr, $form)  {
 									</tr>		
 									<tr>
 										<td width="150" class="ct_td">
-										<anyframe:message code="movie.posterFile"/></td>
+										<spring:message code="movie.posterFile"/></td>
 										<td bgcolor="D6D6D6" width="1"></td>
 										<td class="ct_write01" style="vertical-align: center;">
 											<div id="imgSrc">
 												<img id="poster" src="<c:url value="${movie.filePaths}"/>"
-													alt="<anyframe:message code='movie.posterFile'/>" border="0" width="80" height="100" />
+													alt="<spring:message code='movie.posterFile'/>" border="0" width="80" height="100" />
 												<form:hidden path="filePaths"/>
 											</div>
 											<div id="imgTxt">

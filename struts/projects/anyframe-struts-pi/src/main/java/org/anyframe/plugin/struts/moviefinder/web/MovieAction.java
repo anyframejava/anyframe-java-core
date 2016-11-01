@@ -150,6 +150,10 @@ public class MovieAction extends DefaultDispatchActionSupport {
 		MovieForm movieForm = (MovieForm) form;
 		BeanUtils.copyProperties(movie, movieForm);
 
+		if (movie.getNowPlaying() == null) {
+			movie.setNowPlaying("Y");
+		}
+		
 		String pageParamValue = request.getParameter("pageIndex");
 		int pageIndex = StringUtil.isNotEmpty(pageParamValue) ? (Integer.parseInt(pageParamValue)) : 1;
 

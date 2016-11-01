@@ -45,7 +45,7 @@ import com.tobesoft.platform.data.Variant;
 public abstract class AbstractMiPController extends AbstractController {
 	private int dataFormat = PlatformRequest.XML;
 	
-	private Log logger=LogFactory.getLog(AbstractMiPController.class);
+	protected Log logger=LogFactory.getLog(AbstractMiPController.class);
 	
 	private String charset = "utf-8";
 
@@ -59,10 +59,6 @@ public abstract class AbstractMiPController extends AbstractController {
 		this.charset = charset;
 	}
 	
-	public Log getLogger() throws Exception {
-        return LogFactory.getLog(this.getClass().getName());
-    }
-		
 	/**
 	 * Set a result message
 	 * 

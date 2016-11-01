@@ -56,7 +56,7 @@ public class DefaultDispatchActionSupportTestCase extends MockStrutsSpringTestCa
         setRequestPathInfo("/testDefaultDispatchActionSupportNoParameter");
         
        	actionPerform();
-       	verifyMessageArr("error.common.msg.dispatch", 
+       	verifyMessageArr("common.msg.dispatch", 
        			messages.getMessage("dispatch.handler", "/testDefaultDispatchActionSupportNoParameter"), 2);
     }
     
@@ -66,7 +66,7 @@ public class DefaultDispatchActionSupportTestCase extends MockStrutsSpringTestCa
         setRequestPathInfo("/testDefaultDispatchActionSupport");
         
        	actionPerform();
-       	verifyMessageArr("error.common.msg.dispatch", 
+       	verifyMessageArr("common.msg.dispatch", 
        			messages.getMessage("dispatch.parameter", "/testDefaultDispatchActionSupport", "method"), 2);
     }
     
@@ -77,7 +77,7 @@ public class DefaultDispatchActionSupportTestCase extends MockStrutsSpringTestCa
         addRequestParameter("method", "perform");
         actionPerform();
         
-       	verifyMessageArr("error.common.msg.dispatch", 
+       	verifyMessageArr("common.msg.dispatch", 
        			messages.getMessage("dispatch.recursive", "/testDefaultDispatchActionSupport", "method"), 2);
     }
     
@@ -89,7 +89,7 @@ public class DefaultDispatchActionSupportTestCase extends MockStrutsSpringTestCa
         actionPerform();
         
         //verifyActionMessages(new String[] { "dispatch.method" });
-       	verifyMessageArr("error.common.msg.dispatch", "dispatch error occurred.");
+       	verifyMessageArr("common.msg.dispatch", "dispatch error occurred.");
     }
     
     public void testDefaultDispatchActionSupportClassCastException() {
@@ -100,7 +100,7 @@ public class DefaultDispatchActionSupportTestCase extends MockStrutsSpringTestCa
         this.getRequest().setAttribute("exception", "ClassCastException");
         actionPerform();
         
-       	verifyMessageArr("error.common.msg.dispatch", "dispatch error occurred.");
+       	verifyMessageArr("common.msg.dispatch", "dispatch error occurred.");
     }
     
     public void testDefaultDispatchActionSupportIllegalAccessException() {
@@ -111,7 +111,7 @@ public class DefaultDispatchActionSupportTestCase extends MockStrutsSpringTestCa
         this.getRequest().setAttribute("exception", "IllegalAccessException");
         actionPerform();
         
-       	verifyMessageArr("error.common.msg.dispatch", "dispatch error occurred.");
+       	verifyMessageArr("common.msg.dispatch", "dispatch error occurred.");
     }
     
     public void testDefaultDispatchActionSupportInvocationTargetException() {
@@ -122,7 +122,7 @@ public class DefaultDispatchActionSupportTestCase extends MockStrutsSpringTestCa
         this.getRequest().setAttribute("exception", "InvocationTargetException");
         actionPerform();
         
-       	verifyMessageArr("error.common.msg.dispatch", "dispatch error occurred.");
+       	verifyMessageArr("common.msg.dispatch", "dispatch error occurred.");
     }
     
     public void testDefaultDispatchActionSupportInvocationTargetExceptionThrowable() {
@@ -133,7 +133,7 @@ public class DefaultDispatchActionSupportTestCase extends MockStrutsSpringTestCa
         this.getRequest().setAttribute("exception", "InvocationTargetExceptionThrowable");
         actionPerform();
         
-       	verifyMessageArr("error.common.msg.dispatch", "dispatch error occurred.");
+       	verifyMessageArr("common.msg.dispatch", "dispatch error occurred.");
     }
 
 

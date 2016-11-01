@@ -26,27 +26,27 @@ import java.util.ArrayList;
 public class JSTreeNode implements Serializable {
 	private static final long serialVersionUID = 1L;
 
-	private Attributes attributes;
+	private Attributes attr;
 
-	private Data data;
+	private String data;
 
 	private String state;
 	
 	private ArrayList<JSTreeNode> children;
 	
-	public Attributes getAttributes() {
-		return attributes;
+	public Attributes getAttr() {
+		return attr;
 	}
 
-	public void setAttributes(Attributes attributes) {
-		this.attributes = attributes;
+	public void setAttr(Attributes attr) {
+		this.attr = attr;
 	}
 
-	public Data getData() {
+	public String getData() {
 		return data;
 	}
 
-	public void setData(Data data) {
+	public void setData(String data) {
 		this.data = data;
 	}
 

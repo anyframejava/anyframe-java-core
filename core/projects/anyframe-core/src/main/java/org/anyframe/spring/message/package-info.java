@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 /**
- * Provides property editor classes 
+ * Provides MessageResource classes 
  * 
  * @since 1.0.0
  */

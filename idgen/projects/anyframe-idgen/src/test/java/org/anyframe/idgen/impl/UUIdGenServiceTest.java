@@ -142,12 +142,5 @@ public class UUIdGenServiceTest extends
 		} catch (Exception e) {
 			assertTrue(e instanceof BaseException);
 		}
-
-		// 6. get next string id with a specific strategy
-		try {
-			id.getNextStringId(new MixPrefixStrategy());
-		} catch (Exception e) {
-			assertTrue(e instanceof BaseException);
-		}
 	}
 }

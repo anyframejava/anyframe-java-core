@@ -1,21 +1,20 @@
-<%@ page language="java" contentType="text/html; charset=UTF-8" pageEncoding="UTF-8"%>
-<%@ include file="/sample/common/taglibs.jsp"%>
-<%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
-<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
-<html xmlns="http://www.w3.org/1999/xhtml">
-<head>
-<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
-<title>Component Utility Test List</title>
-
-</head>
-<body>
-	<div id="systemContainer">
-		<h3>System Utility Test List</h3>
-		<h4><a href="${ctx}/utilSystem/systemMain.do">System Utility Test List</a></h4>
-		<h4><a href="${ctx}/utilSystem/networkMain.do">Network Utility Test</a></h4>
-		<h4><a href="${ctx}/utilSystem/systemUsageMain.do">SystemUsageInfo Test List</a></h4>
-		<h4><a href="${ctx}/utilSystem/systemUsageChartMain.do">SystemUsageChart Test List</a></h4>
-		<hr/>
+<%@ page language="java" errorPage="/sample/common/error.jsp" pageEncoding="UTF-8" contentType="text/html;charset=utf-8" %>
+<%@ include file="/sample/common/top.jsp"%>
+		<div class="location"><a href="<c:url value='/anyframe.jsp'/>">Home</a> &gt; <a href="<c:url value='/utilSystem/utilSystemList.do'/>">Util-system-demo 1.0.1</a></div>
+    </div>
+    <hr />
+    <div id="container">
+    	<div class="cont_top">
+        	<h2>System Utility Test List</h2>
+      	</div>
+        <div class="util_list">
+        	<ul>
+				<li><a href="${ctx}/utilSystem/systemMain.do">System Utility Test List</a></li>
+				<li><a href="${ctx}/utilSystem/networkMain.do">Network Utility Test</a></li>
+				<li><a href="${ctx}/utilSystem/systemUsageMain.do">SystemUsageInfo Test List</a></li>
+				<li><a href="${ctx}/utilSystem/systemUsageChartMain.do">SystemUsageChart Test List</a></li>
+</ul>
+        </div>
 	</div>
-</body>
-</html>
+    <hr />
+<%@ include file="/sample/common/bottom.jsp"%>

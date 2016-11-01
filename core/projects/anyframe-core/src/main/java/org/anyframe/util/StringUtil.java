@@ -70,7 +70,7 @@ public abstract class StringUtil {
 	}
 
 	private static String randomAlphabetic(int randomLength) {
-		StringBuffer buf = new StringBuffer();
+		StringBuilder buf = new StringBuilder();
 		for (int i = 0; i < randomLength; i++) {
 			buf.append(alphas[StringUtil.generator.nextInt(52)]);
 		}
@@ -101,7 +101,7 @@ public abstract class StringUtil {
 		int endInt = Integer.valueOf(endChar);
 
 		int gap = endInt - startInt;
-		StringBuffer buf = new StringBuffer();
+		StringBuilder buf = new StringBuilder();
 		for (int i = 0; i < count; i++) {
 			int chInt;
 			do {
@@ -120,7 +120,7 @@ public abstract class StringUtil {
 	 * @throws UnsupportedEncodingException
 	 */
 	 public static String getRandomStringByKorean(int count) throws UnsupportedEncodingException {
-		 StringBuffer buf = new StringBuffer();
+		 StringBuilder buf = new StringBuilder();
 		 for(int i = 0; i < count ; i++) {
 			 buf.append((char)(StringUtil.generator.nextInt(11172) + 0xAC00));
 		 }
@@ -513,7 +513,7 @@ public abstract class StringUtil {
 
 		int difference = size - originalStrLength;
 
-		StringBuffer strBuf = new StringBuffer();
+		StringBuilder strBuf = new StringBuilder();
 		if(!isLeft) {
 			strBuf.append(str);
 		}
@@ -651,7 +651,7 @@ public abstract class StringUtil {
 	 * @return Underscore representation of the camel case string.
 	 */
 	public static String convertToCamelCase(String targetString, char posChar) {
-		StringBuffer result = new StringBuffer();
+		StringBuilder result = new StringBuilder();
 		boolean nextUpper = false;
 		String allLower = targetString.toLowerCase();
 
@@ -703,7 +703,7 @@ public abstract class StringUtil {
 		if (str == null) {
 			return null;
 		}
-		return new StringBuffer(str).reverse().toString();
+		return new StringBuilder(str).reverse().toString();
 	}
 
 	/**
@@ -851,7 +851,7 @@ public abstract class StringUtil {
 	 * @return String converting result
 	 */
 	public static String swapFirstLetterCase(String str) {
-		StringBuffer sbuf = new StringBuffer(str);
+		StringBuilder sbuf = new StringBuilder(str);
 		sbuf.deleteCharAt(0);
 		if (Character.isLowerCase(str.substring(0, 1).toCharArray()[0])) {
 			sbuf.insert(0, str.substring(0, 1).toUpperCase());
@@ -945,7 +945,7 @@ public abstract class StringUtil {
 
 		int difference = ciphers - originalStrLength;
 
-		StringBuffer strBuf = new StringBuffer();
+		StringBuilder strBuf = new StringBuilder();
 		for (int i = 0; i < difference; i++)
 			strBuf.append(ch);
 

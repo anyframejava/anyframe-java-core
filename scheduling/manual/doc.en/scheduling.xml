@@ -1,0 +1,124 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+
+<!DOCTYPE book PUBLIC "-//OASIS//DTD DocBook XML V4.5//EN" "http://www.oasis-open.org/docbook/xml/4.5/docbookx.dtd"
+[
+<!ENTITY scheduling_scheduling SYSTEM "scheduling/scheduling.xml">
+<!ENTITY scheduling_quartz SYSTEM "scheduling/quartz.xml">
+]
+>
+
+<!--
+		Licensed to the Apache Software Foundation (ASF) under one or more
+		contributor license agreements. See the NOTICE file distributed with
+		this work for additional information regarding copyright ownership.
+		The ASF licenses this file to you under the Apache License, Version
+		2.0 (the "License"); you may not use this file except in compliance
+		with the License. You may obtain a copy of the License at
+
+		http://www.apache.org/licenses/LICENSE-2.0 Unless required by
+		applicable law or agreed to in writing, software distributed under the
+		License is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR
+		CONDITIONS OF ANY KIND, either express or implied. See the License for
+		the specific language governing permissions and limitations under the
+		License.
+-->
+    
+<book lang="en">
+	<title>Anyframe Scheduling Plugin</title>
+	
+	<bookinfo>
+		<copyright>
+			<year>2007-2011</year>
+			<holder>Samsung SDS</holder>
+		</copyright>
+		<releaseinfo>Version 1.0.1</releaseinfo>
+
+		<productname>Anyframe Scheduling Plugin</productname>
+
+		<authorgroup>
+			<corpauthor></corpauthor>
+		</authorgroup>
+
+		<mediaobject>
+			<imageobject>
+				<!-- logo 변경 -->
+				<imagedata fileref="../image/common/logo_pdf.jpg"/>
+			</imageobject>
+		</mediaobject>
+		<legalnotice>
+			<para>
+			The copyright of this document is the property of Samsung SDS. 
+			Permission is granted to use this document for free only for the purpose of open source community activity. 
+			The copyright holder should be clearly stated in case this document is copied or distributed, and changed contents should be specified. 
+			Permission is not granted for the commercial use of the modification of the original document. 
+			Should there be parts considered to have errors in this document, please register the issue for which we will take proper action.
+			</para>
+		</legalnotice>
+	</bookinfo>
+		
+	<part id="scheduling_introduction_part">
+		<title>Introduction</title>
+		<partintro id="scheduling_introduction_part_intro">
+			<para>
+				Scheduling Plugin is composed of sample codes to guide how to schedule certain tasks by connecting Spring and <ulink url="http://www.opensymphony.com/quartz/">Quartz</ulink>, which is an open source task scheduling framework,  
+				and reference libraries necessary to use these open sources.
+			</para>
+			<para role="introduction_title"><emphasis role="bold">Installation</emphasis></para>
+			<para>Install scheduling-plugin by entering the following command in the Command window.</para>
+			<programlisting language="java"><![CDATA[mvn anyframe:install -Dname=scheduling]]></programlisting>
+			<para>
+				The installation result can be checked by using the installed (mvn anyframe:installed) or the jetty:run (mvn clean jetty:run) commands. 
+			</para>
+			<para role="introduction_title"><emphasis role="bold">Dependent Plugins</emphasis></para>
+			<informaltable>
+				<tgroup cols="2">
+					<colspec colnum="1" colname="col1" colwidth="5*" />
+					<colspec colnum="2" colname="col2" colwidth="5*" />
+					<thead>
+						<row>
+							<entry align="center">Plugin Name</entry>
+							<entry align="center">Version Range</entry>
+						</row>
+					</thead>
+					<tbody>
+						<row>
+							<entry align="center"><ulink url="http://dev.anyframejava.org/docs/anyframe/plugin/optional/query/1.1.1/reference/htmlsingle/query.html">Query</ulink></entry>
+							<entry align="center" valign="middle">2.0.0 > *</entry>
+						</row>
+					</tbody>
+				</tgroup>
+			</informaltable>	
+		</partintro>
+	</part>	
+	
+	<part id="scheduling_schedulling_part">
+		<title>Spring Scheduling</title>
+		<partintro id="scheduling_schedulling_part_intro">
+			<para>
+				Spring provides Asynchronous Execution of a specific task and 
+				TaskExecutor and TaskScheduler(after Spring 3) for scheduling. 
+			</para>
+		</partintro>
+		&scheduling_scheduling;
+	</part>	
+	
+	<part id="scheduling_quartz_part">
+		<title>Quartz Scheduling</title>
+		<partintro id="scheduling_quartz_part_intro">
+			<para>
+				Spring Framework provides scheduling service by supporting scheduling that uses  
+				Timer Scheduler and Quartz Scheduler 
+				(<ulink url="http://www.opensymphony.com/quartz/">http://www.opensymphony.com/quartz/</ulink>) 
+				provided after JDK 1.3.
+			</para>
+			<para>
+				<emphasis role="bold">Quartz</emphasis> is an open source job scheduling framework. 
+				Quartz is entirely developed by Java and provides a very flexible and simple structure, 
+				so scheduling of both simple and complex jobs can be developed. 
+				Also, database support for EJC, JavaMail, etc., clustering, plugin, and built-in jobs are included. 
+			</para>
+		</partintro>
+		&scheduling_quartz;
+	</part>				
+
+</book>

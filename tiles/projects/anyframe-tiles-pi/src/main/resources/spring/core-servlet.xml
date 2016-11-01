@@ -15,20 +15,24 @@
 			expression="org.springframework.stereotype.Controller" />
 	</context:component-scan>
 
-	 <bean id="jstlViewResolver" class="org.springframework.web.servlet.view.UrlBasedViewResolver">
+	<bean
+		class="org.springframework.web.servlet.handler.BeanNameUrlHandlerMapping">
+	</bean>
+
+	<bean id="exceptionResolver"
+		class="org.anyframe.plugin.common.MovieFinderExceptionResolver">
+		<property name="defaultErrorView" value="forward:/sample/common/error.jsp" />
+	</bean>
+
+   <bean id="jstlViewResolver" class="org.springframework.web.servlet.view.UrlBasedViewResolver">
        <property name="viewClass" value="org.springframework.web.servlet.view.JstlView" />
        <property name="prefix" value="/WEB-INF/jsp/"/>
        <property name="suffix" value=".jsp"/>
     </bean>
 
-	<bean id="exceptionResolver"
-		class="org.springframework.web.servlet.handler.SimpleMappingExceptionResolver">
-		<property name="defaultErrorView" value="forward:/sample/common/error.jsp" />
-	</bean>
-
 	<bean id="localeResolver"
 		class="org.springframework.web.servlet.i18n.SessionLocaleResolver">
-		<property name="defaultLocale" value="ko_KR" />
+		<property name="defaultLocale" value="en_US" />
 	</bean>
 
 </beans>

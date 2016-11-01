@@ -46,7 +46,7 @@ import org.springframework.web.multipart.MultipartHttpServletRequest;
 import org.springframework.web.multipart.commons.CommonsMultipartResolver;
 
 /**
- * Class expanding the anyframe.web.struts.action.DefaultDispatchActionSupport.
+ * Class expanding the org.anyframe.struts.action.DefaultDispatchActionSupport.
  * <p>Provides additional functionalities other than DefaultDispatchActionSupport functionalities.</p>
  * <br>
  * <p>The AbstractDispatchAction doesn't define the form in struts-config.xml the Struts's Form object.
@@ -98,7 +98,7 @@ public abstract class AbstractDispatchAction extends DefaultDispatchActionSuppor
 	}
 
 	/**
-	 * Overrides the process method of anyframe.web.struts.action.DefaultDispatchActionSupport.
+	 * Overrides the process method of org.anyframe.struts.action.DefaultDispatchActionSupport.
 	 * <p>
 	 * If a specific request is requested, the process method is called with respect to the action
 	     * mapping defined in the struts-config.xml.  In the case the action class inheritting the
@@ -282,7 +282,7 @@ public abstract class AbstractDispatchAction extends DefaultDispatchActionSuppor
 	/**
 	 * Returns by creating the instance of the VO class used on the Server side.
 	 * Has to be implemented in the action class inheritted          
-	     * from anyframe.web.struts.action.AbstractDispatchAction.  Has to return by 
+	     * from org.anyframe.struts.action.AbstractDispatchAction.  Has to return by 
 	     * creating the VO's instance for mapping the user transmitted value.
 	 * @return
 	 * 		the VO for mapping the user transmitted value

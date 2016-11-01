@@ -1,0 +1,57 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
+
+	<modelVersion>4.0.0</modelVersion>
+	<groupId>org.anyframe</groupId>
+	<artifactId>anyframe-sample-parent</artifactId>
+	<packaging>pom</packaging>
+	<version>5.0.0</version>
+	<name>anyframe-sample-parent</name>
+
+	<repositories>
+		<repository>
+			<id>anyframe-repository</id>
+			<name>repository for Anyframe</name>
+			<layout>default</layout>
+			<url>http://dev.anyframejava.org/maven/repo</url>
+			<snapshots>
+				<enabled>true</enabled>
+			</snapshots>
+		</repository>
+	</repositories>
+
+	<distributionManagement>
+		<repository>
+			<id>anyframe-repository</id>
+			<name>anyframe-repository</name>
+			<url>dav:http://dev.anyframejava.org/maven/repo</url>
+		</repository>
+		<!-- use the following if you ARE using a snapshot version. -->
+		<snapshotRepository>
+			<id>anyframe-repository</id>
+			<name>anyframe-snapshot-repository</name>
+			<url>dav:http://dev.anyframejava.org/maven/repo</url>
+			<uniqueVersion>true</uniqueVersion>
+		</snapshotRepository>
+	</distributionManagement>
+	
+	<build>
+		<plugins>
+			<plugin>
+				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-compiler-plugin</artifactId>
+				<configuration>
+					<source>1.5</source>
+					<target>1.5</target>
+					<fork>true</fork>
+					<meminitial>512m</meminitial>
+					<maxmem>1024m</maxmem>
+					<encoding>UTF-8</encoding>
+				</configuration>
+			</plugin>
+		</plugins>
+	</build>
+
+</project>
+

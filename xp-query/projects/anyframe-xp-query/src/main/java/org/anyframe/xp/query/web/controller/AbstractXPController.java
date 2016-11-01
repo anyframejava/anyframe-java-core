@@ -54,7 +54,7 @@ public abstract class AbstractXPController extends AbstractController {
 	 */
 	private String contentType = PlatformType.CONTENT_TYPE_XML; //기본 XML
 	
-	private Log xpLogger;
+	protected Log logger=LogFactory.getLog(AbstractXPController.class);
 	
 	private String charset = PlatformType.DEFAULT_CHAR_SET; // Default CharSet = utf - 8
 
@@ -64,14 +64,6 @@ public abstract class AbstractXPController extends AbstractController {
 
 	public void setCharset(String charset) {
 		this.charset = charset;
-	}
-	
-	public Log getLogger() throws Exception {
-		return LogFactory.getLog(getClass().getName());
-	}
-	
-	public void setLogger() throws Exception {
-		this.xpLogger = LogFactory.getLog(getClass().getName());
 	}
 	
 	/**
@@ -102,8 +94,7 @@ public abstract class AbstractXPController extends AbstractController {
 	 */
 	public ModelAndView handleRequestInternal(HttpServletRequest request,
 			HttpServletResponse response) throws Exception {
-		setLogger();
-		xpLogger.debug(this.getClass().getName() + " process() Started!");
+		logger.debug(this.getClass().getName() + " process() Started!");
 		VariableList inVl = null;
 		DataSetList inDl = null;
 		VariableList outVl = null;
@@ -125,15 +116,15 @@ public abstract class AbstractXPController extends AbstractController {
 			outVl = new VariableList();
 			outDl = new DataSetList();
 
-			if( xpLogger.isDebugEnabled() ){
-				xpLogger.debug(
+			if( logger.isDebugEnabled() ){
+				logger.debug(
 						this.getClass().getName() + "." + "operate()" + " started");
 			}
 			
 			operate(httpPlatformRequest, inVl, inDl, outVl, outDl);
 			
-			if( xpLogger.isDebugEnabled() ){
-				xpLogger.debug(
+			if( logger.isDebugEnabled() ){
+				logger.debug(
 						this.getClass().getName() + "." + "operate()" + " ended");
 			}
 			setResultMessage(outVl, 0, "save successed");
@@ -144,7 +135,7 @@ public abstract class AbstractXPController extends AbstractController {
 			if (msg == null)
 				msg = "Fail to process client request.";
 
-			xpLogger.error(msg);
+			logger.error(msg);
 			setResultMessage(outVl, -1, msg);
 		} finally {
 			PlatformData outPlatformData = new PlatformData();
@@ -153,7 +144,7 @@ public abstract class AbstractXPController extends AbstractController {
 			httpPlatformResponse.setData(outPlatformData);
 			httpPlatformResponse.sendData();
 		}
-		xpLogger.debug(this.getClass().getName() + " process() end!");
+		logger.debug(this.getClass().getName() + " process() end!");
 		return null;
 	}
 

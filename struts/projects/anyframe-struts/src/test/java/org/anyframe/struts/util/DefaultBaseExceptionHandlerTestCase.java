@@ -39,7 +39,7 @@ public class DefaultBaseExceptionHandlerTestCase extends MockStrutsSpringTestCas
         setRequestPathInfo("/testDefaultBaseException");
         actionPerform();
 
-        verifyMessageArr("error.common.msg.authentication", "Authentication Fail - You are not logon or Session expired. Please try re-logon.");
+        verifyMessageArr("common.msg.authentication", "Authentication Fail - You are not logon or Session expired. Please try re-logon.");
     }
 
     public void testAuthorizationException() {
@@ -53,7 +53,7 @@ public class DefaultBaseExceptionHandlerTestCase extends MockStrutsSpringTestCas
 
         //verifyActionErrors(new String[] { "common.msg.authorization.error" });
         //verifyActionMessages(new String[] { "common.msg.authorization.error" });
-        verifyMessageArr("error.common.msg.authorization", "You can not access this page.");
+        verifyMessageArr("common.msg.authorization", "You can not access this page.");
     }
     
     public void testInvalideTokenException() {
@@ -67,7 +67,7 @@ public class DefaultBaseExceptionHandlerTestCase extends MockStrutsSpringTestCas
 
         //verifyActionErrors(new String[] { "common.msg.invalidtoken.error" });
         //verifyActionMessages(new String[] { "common.msg.invalidtoken.error" });
-        verifyMessageArr("error.common.msg.invalidtoken", "Your Request may be not adequate.");
+        verifyMessageArr("common.msg.invalidtoken", "Your Request may be not adequate.");
     }
     
     public void testCheckedException() {
@@ -81,7 +81,7 @@ public class DefaultBaseExceptionHandlerTestCase extends MockStrutsSpringTestCas
 
         //verifyActionErrors(new String[] { "common.msg.biz.error" });
         //verifyActionMessages(new String[] { "common.msg.biz.error" });
-        verifyMessageArr("error.common.msg.biz", "biz error occurred.");
+        verifyMessageArr("common.msg.biz", "biz error occurred.");
     }
     
     public void testUnCheckedException() {
@@ -95,7 +95,7 @@ public class DefaultBaseExceptionHandlerTestCase extends MockStrutsSpringTestCas
 
         //verifyActionErrors(new String[] { "common.msg.fail.error" });
         //verifyActionMessages(new String[] { "common.msg.fail.error" });
-        verifyMessageArr("error.common.msg.fail", "error occurred.");
+        verifyMessageArr("common.msg.fail", "error occurred.");
     }
 
 }

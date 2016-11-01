@@ -79,18 +79,11 @@ import org.anyframe.exception.BaseException;
  * @author modified by Sooyeon Park
  */
 
-public class MultiActionSimpleFormController extends SimpleFormController implements
-        MessageSourceAware {
+public class MultiActionSimpleFormController extends SimpleFormController{
 
 	/** Logger that is available to AnyframeFormController */
 	private final Log anyframeLogger = LogFactory.getLog(MultiActionSimpleFormController.class);
 	
-    private MessageSource messageSource;
-
-    public void setMessageSource(MessageSource messageSource) {
-        this.messageSource = messageSource;
-    }
-
     // logger setting
     public Log getLogger() throws Exception {
         return LogFactory.getLog(this.getClass().getName());
@@ -820,9 +813,7 @@ public class MultiActionSimpleFormController extends SimpleFormController implem
      */
     protected ModelAndView handleInvalidSubmit(HttpServletRequest request,
             HttpServletResponse response) throws Exception {
-        throw new BaseException(new String(messageSource.getMessage(
-            "common.msg.invalidtoken.error", new String[] {}, Locale
-                .getDefault())));
+        throw new BaseException("Invalid form submission");
     }
 
     /**

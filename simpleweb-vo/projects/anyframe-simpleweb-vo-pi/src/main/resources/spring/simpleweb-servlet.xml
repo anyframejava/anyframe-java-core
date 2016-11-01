@@ -8,11 +8,6 @@
     http://www.springframework.org/schema/mvc
     http://www.springframework.org/schema/mvc/spring-mvc-3.0.xsd">
 
-	<!-- simple file upload controller  -->
-	<bean name="/simpleFile/upload.do" class="org.anyframe.simpleweb.controller.FileUploadController">
-		<property name="idGenerationService" ref="UUIdGenService" />		
-	</bean>	
-	
 	<!--  view resolver  for Tiles --> 
 	<bean id="ajaxViewResolver" class="org.anyframe.simpleweb.js.ajax.AjaxUrlBasedContentTypeViewResolver">
 		<property name="viewClass" value="org.anyframe.simpleweb.js.ajax.tiles2.AjaxParamTilesView"/>
@@ -20,12 +15,6 @@
 		<property name="contentType" value="text/html;charset=utf-8"/>	
 	</bean>
 	
-	<!-- Spring-Json View -->
-	<bean name="jsonViewResolver" class="org.springframework.web.servlet.view.XmlViewResolver">
-		<property name="order" value="1"/>
-		<property name="location" value="/WEB-INF/simpleweb-views.xml"/>
-	</bean>
-		
 	<bean id="multipartResolver"
 		class="org.springframework.web.multipart.commons.CommonsMultipartResolver">
 		<property name="maxUploadSize">

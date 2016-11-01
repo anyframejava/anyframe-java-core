@@ -34,7 +34,7 @@ import org.apache.struts.util.MessageResources;
 /**
  * <p>Public Dispatch Action Class which provide token, exception, error logging, pre/post execution features</p>
  * 
- * We changed org.apache.struts.actions.DispatchAction Class into anyframe.web.struts.common.action.DefaultDispatchActionSupport Class in Anyframe.
+ * We changed org.apache.struts.actions.DispatchAction Class into org.anyframe.struts.action.DefaultDispatchActionSupport Class in Anyframe.
  * @author modified by Byunghun Woo
  * 
  */

@@ -226,6 +226,29 @@ public class SystemInfoUtilTest {
 	public void testGetClientIP() {
 
 	}
+	
+	@Test
+	public void testFindOsIfPossible() {
+		String str = "Mozilla/5.0 (Windows NT 5.1) AppleWebKit/535.1 (KHTML, like Gecko) Chrome/14.0.835.186 Safari/535.1";
+		String str2 = "Mozilla/5.0 (Windows NT 5.1; rv:6.0.2) Gecko/20100101 Firefox/6.0.2";
+		String str3 = "Mozilla/4.0 (compatible; MSIE 8.0; Windows NT 5.1; Trident/4.0; IPMS/6600A8C0-14E81983606; InfoPath.1; .NET CLR 2.0.50727; MS-RTC LM 8; .NET CLR 3.0.4506.2152; .NET CLR 3.5.30729)";
+		String str4 = "Mozilla/4.0 (compatible; MSIE 8.0; Windows NT 6.1; Trident/4.0; SLCC2; .NET CLR 2.0.50727; .NET CLR 3.5.30729; .NET CLR 3.0.30729; Media Center PC 6.0; MS-RTC LM 8)";
+		String str5 = "Mozilla/5.0 (Windows NT 6.1) AppleWebKit/535.1 (KHTML, like Gecko) Chrome/14.0.835.186 Safari/535.1";
+		String str6 = "Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/535.1 (KHTML, like Gecko) Chrome/14.0.835.186 Safari/535.1";
+		String str7 = "Mozilla/5.0 (X11; Linux x86_64; rv:6.0.2) Gecko/20100101 Firefox/6.0.2";
+		String str8 = "Mozilla/5.0 (X11; Linux i686) AppleWebKit/535.1 (KHTML, like Gecko) Chrome/13.0.782.107 Safari/535.1";
+		String str9 = "Mozilla/5.0 (X11; U; Linux i686; en-US; rv:1.9.2.10) Gecko/20101005 Fedora/3.6.10-1.fc14 Firefox/3.6.10";
+		
+		assertTrue(SystemInfoUtil.findOsIfPossible(str).contains("Windows"));
+		assertTrue(SystemInfoUtil.findOsIfPossible(str2).contains("Windows"));
+		assertTrue(SystemInfoUtil.findOsIfPossible(str3).contains("Windows"));
+		assertTrue(SystemInfoUtil.findOsIfPossible(str4).contains("Windows"));
+		assertTrue(SystemInfoUtil.findOsIfPossible(str5).contains("Windows"));
+		assertTrue(SystemInfoUtil.findOsIfPossible(str6).contains("Linux"));
+		assertTrue(SystemInfoUtil.findOsIfPossible(str7).contains("Linux"));
+		assertTrue(SystemInfoUtil.findOsIfPossible(str8).contains("Linux"));
+		assertTrue(SystemInfoUtil.findOsIfPossible(str9).contains("Linux"));
+	}
 
 	private static String print(List<String> info, int mod) {
 		StringBuffer buf = new StringBuffer();

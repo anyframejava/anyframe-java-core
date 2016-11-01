@@ -15,14 +15,10 @@
  */
 package org.anyframe.plugin.fileupload.moviefinder.web;
 
-import java.io.File;
-import java.io.FileOutputStream;
 import java.util.Collection;
 
 import javax.inject.Inject;
 import javax.inject.Named;
-import javax.servlet.http.HttpSession;
-import javax.validation.Valid;
 
 import org.anyframe.plugin.fileupload.domain.Genre;
 import org.anyframe.plugin.fileupload.domain.Movie;
@@ -30,7 +26,6 @@ import org.anyframe.plugin.fileupload.moviefinder.service.GenreService;
 import org.anyframe.plugin.fileupload.moviefinder.service.MovieService;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
-import org.springframework.util.FileCopyUtils;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -70,42 +65,10 @@ public class MovieController {
 	}
 
 	@RequestMapping(params = "method=create")
-	public String create(
-			@RequestParam(value = "realPosterFile", required = false) MultipartFile posterFile,
-			@Valid Movie movie, BindingResult results, SessionStatus status,
-			HttpSession session) throws Exception {
-
-		if (results.hasErrors()) {
-			return "fileupload/moviefinder/movie/form";
-		}
-
-		if (posterFile != null && !posterFile.getOriginalFilename().equals("")) {
-			String pictureName = posterFile.getOriginalFilename();
-
-			String destDir = session.getServletContext().getRealPath(
-					"/sample/images/posters/");
-
-			File dirPath = new File(destDir);
-			if (!dirPath.exists()) {
-				boolean created = dirPath.mkdirs();
-				if (!created) {
-					throw new Exception(
-							"Fail to create a directory for movie image. ["
-									+ destDir + "]");
-				}
-			}
-
-			File destination = File.createTempFile("file", pictureName
-					.substring(pictureName.indexOf(".")), dirPath);
-
-			FileCopyUtils.copy(posterFile.getInputStream(),
-					new FileOutputStream(destination));
-
-			movie.setPosterFile("sample/images/posters/"
-					+ destination.getName());
-		}
-
-		this.movieService.create(movie);
+	public String create(@RequestParam("file") MultipartFile[] files,
+			Movie movie, BindingResult results, SessionStatus status) throws Exception {
+		
+		this.movieService.create(movie, files);
 		status.setComplete();
 
 		return "redirect:/fileUploadMovieFinder.do?method=list";
@@ -118,17 +81,15 @@ public class MovieController {
 		if (movie == null) {
 			throw new Exception("Resource not found " + movieId);
 		}
+		model.addAttribute("attachedFiles", movie.getAttachedFiles());
 		model.addAttribute(movie);
 
 		return "fileupload/moviefinder/movie/form";
 	}
 
 	@RequestMapping(params = "method=update")
-	public String update(@Valid Movie movie, BindingResult results,
+	public String update(Movie movie, BindingResult results,
 			SessionStatus status) throws Exception {
-		if (results.hasErrors()) {
-			return "fileupload/moviefinder/movie/form";
-		}
 
 		this.movieService.update(movie);
 		status.setComplete();
@@ -137,9 +98,9 @@ public class MovieController {
 	}
 
 	@RequestMapping(params = "method=remove")
-	public String remove(@RequestParam("movieId") String movieId)
+	public String remove(Movie movie)
 			throws Exception {
-		this.movieService.remove(movieId);
+		this.movieService.remove(movie);
 		return "redirect:/fileUploadMovieFinder.do?method=list";
 	}
 }

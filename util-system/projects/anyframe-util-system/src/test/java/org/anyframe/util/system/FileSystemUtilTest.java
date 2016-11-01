@@ -333,7 +333,7 @@ public class FileSystemUtilTest {
 	@Test
 	public void testExistsDir() {
 		assertTrue(FileSystemUtil.existsDir("testcase/srcDir"));
-		assertTrue(FileSystemUtil.existsDir("testcase/srcDir/manual", DateUtil.addDays(DateUtil.getCurrentDay(), -30),
+		assertTrue(FileSystemUtil.existsDir("testcase/srcDir/manual", DateUtil.addDays(DateUtil.getCurrentDay(), -365 * 10),
 				DateUtil.getCurrentDay()));
 	}
 }

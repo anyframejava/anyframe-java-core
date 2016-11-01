@@ -3,11 +3,11 @@ package org.anyframe.hibernate.impl;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.StringWriter;
+import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
-import java.util.Locale;
 import java.util.Map;
 import java.util.Set;
 import java.util.SortedMap;
@@ -28,24 +28,23 @@ import org.apache.velocity.context.Context;
 import org.dom4j.Document;
 import org.dom4j.DocumentException;
 import org.dom4j.Element;
+import org.hibernate.HibernateException;
 import org.hibernate.Query;
 import org.hibernate.SQLQuery;
+import org.hibernate.Session;
 import org.hibernate.SessionFactory;
 import org.hibernate.type.BasicTypeRegistry;
 import org.hibernate.util.XMLHelper;
-import org.springframework.beans.BeansException;
 import org.springframework.beans.factory.InitializingBean;
 import org.springframework.beans.factory.xml.BeansDtdResolver;
-import org.springframework.context.ApplicationContext;
-import org.springframework.context.ApplicationContextAware;
-import org.springframework.context.MessageSource;
 import org.springframework.context.ResourceLoaderAware;
 import org.springframework.core.io.Resource;
 import org.springframework.core.io.ResourceLoader;
 import org.springframework.core.io.support.ResourcePatternResolver;
+import org.springframework.orm.hibernate3.HibernateCallback;
+import org.springframework.orm.hibernate3.HibernateTemplate;
 import org.xml.sax.SAXException;
 import org.xml.sax.XMLReader;
-
 
 /**
  * By integrating Hibernate and Velocity, this services helps in dynamically
@@ -59,7 +58,7 @@ import org.xml.sax.XMLReader;
  * 
  * <pre>
  * &lt;bean id=&quot;dynamicHibernateService&quot;
- * 	   class=&quot;anyframe.core.hibernate.impl.DynamicHibernateService&quot;&gt;
+ * 	   class=&quot;org.anyframe.hibernate.impl.DynamicHibernateService&quot;&gt;
  *     &lt;property name=&quot;sessionFactory&quot; ref=&quot;sessionFactory&quot; /&gt;
  *     &lt;property name=&quot;fileNames&quot;&gt;
  *         &lt;list&gt;
@@ -119,9 +118,7 @@ import org.xml.sax.XMLReader;
  * @author SoYon Lim
  */
 public class DynamicHibernateServiceImpl implements DynamicHibernateService,
-		InitializingBean, ResourceLoaderAware, ApplicationContextAware {
-
-	private MessageSource messageSource;
+		InitializingBean, ResourceLoaderAware {
 
 	private final static String DELIMETER = "=";
 
@@ -132,6 +129,8 @@ public class DynamicHibernateServiceImpl implements DynamicHibernateService,
 	private List fileNames;
 
 	private ResourceLoader resourceLoader = null;
+
+	private HibernateTemplate hibernateTemplate;
 
 	public void setFileNames(List fileNames) {
 		this.fileNames = fileNames;
@@ -147,12 +146,7 @@ public class DynamicHibernateServiceImpl implements DynamicHibernateService,
 
 	public void setSessionFactory(SessionFactory sessionFactory) {
 		this.sessionFactory = sessionFactory;
-	}
-
-	public void setApplicationContext(ApplicationContext applicationContext)
-			throws BeansException {
-		this.messageSource = (MessageSource) applicationContext
-				.getBean("messageSource");
+		this.hibernateTemplate = new HibernateTemplate(sessionFactory);
 	}
 
 	/**
@@ -194,15 +188,14 @@ public class DynamicHibernateServiceImpl implements DynamicHibernateService,
 	 * may use this easily and return the executed results in a list type.
 	 * 
 	 * @param queryName
-	 *            Executable dynamic HQL's identifier
+	 *            executable dynamic HQL's identifier
 	 * @param paramName
-	 *            The variable name for replacing with the inputted variable
+	 *            the variable name for replacing with the inputted variable
 	 * @param value
-	 *            Variable value for replacing in phrases handled with variable
-	 * @return Being specified HQL execution results, returns numerous data in a
-	 *         list type
+	 *            variable value for replacing in phrases handled with variable
+	 * @return being specified query execution results
 	 * @throws Exception
-	 *             In the case there is a problem in executing the specified HQL
+	 *             in the case there is a problem in executing the specified HQL
 	 */
 	public List findListByNamedParam(String queryName, String paramName,
 			Object value) throws Exception {
@@ -224,10 +217,9 @@ public class DynamicHibernateServiceImpl implements DynamicHibernateService,
 	 * @param values
 	 *            Variable values for replacing in phrases handled with
 	 *            variables
-	 * @return Being specified HQL execution results, returns numerous data in a
-	 *         list type
+	 * @return being specified query execution results
 	 * @throws Exception
-	 *             In the case there is a problem in executing the specified HQL
+	 *             in the case there is a problem in executing the specified HQL
 	 */
 	public List findListByNamedParam(String queryName, String[] paramNames,
 			Object[] values) throws Exception {
@@ -242,14 +234,13 @@ public class DynamicHibernateServiceImpl implements DynamicHibernateService,
 	 * results in a list type.
 	 * 
 	 * @param queryName
-	 *            Executable dynamic HQL's identifier
+	 *            executable dynamic HQL's identifier
 	 * @param values
-	 *            Defines as 'name=value' the variable values for replacing the
+	 *            defines as 'name=value' the variable values for replacing the
 	 *            variables defined in dynamic HQL
-	 * @return Being specified HQL execution results, returns numerous data in a
-	 *         list type
+	 * @return being specified query execution results
 	 * @throws Exception
-	 *             In the case there is a problem in executing the specified HQL
+	 *             in the case there is a problem in executing the specified HQL
 	 */
 	public List findList(String queryName, Object[] values) throws Exception {
 		return findList(queryName, values, 0, 0);
@@ -265,20 +256,19 @@ public class DynamicHibernateServiceImpl implements DynamicHibernateService,
 	 * handling is not executed if either of pageIndex or pageSize is 0.
 	 * 
 	 * @param queryName
-	 *            Executable dynamic HQL's identifier
+	 *            executable dynamic HQL's identifier
 	 * @param paramName
-	 *            The variable name for replacing with the inputted variable
+	 *            the variable name for replacing with the inputted variable
 	 * @param value
-	 *            Variable value for replacing in phrases handled with variable
+	 *            variable value for replacing in phrases handled with variable
 	 * @param pageIndex
-	 *            Page number (greater than equal to one)
+	 *            page number (greater than equal to one)
 	 * @param pageSize
-	 *            The number of data for showing in the selected page (greater
+	 *            the number of data for showing in the selected page (greater
 	 *            than equal to one)
-	 * @return Being specified HQL execution results, returns numerous data in a
-	 *         list type
+	 * @return being specified query execution results
 	 * @throws Exception
-	 *             In the case there is a problem in executing the specified HQL
+	 *             in the case there is a problem in executing the specified HQL
 	 */
 	public List findListByNamedParam(String queryName, String paramName,
 			Object value, int pageIndex, int pageSize) throws Exception {
@@ -295,31 +285,23 @@ public class DynamicHibernateServiceImpl implements DynamicHibernateService,
 	 * not executed if either of pageIndex or pageSize is 0.
 	 * 
 	 * @param queryName
-	 *            Executable dynamic HQL's identifier
+	 *            executable dynamic HQL's identifier
 	 * @param values
-	 *            Defines as 'name=value' the variable values for replacing the
+	 *            defines as 'name=value' the variable values for replacing the
 	 *            variables defined in dynamic HQL
 	 * @param pageIndex
-	 *            Page number (greater than equal to one)
+	 *            page number (greater than equal to one)
 	 * @param pageSize
-	 *            The number of data for showing in the selected page (greater
+	 *            the number of data for showing in the selected page (greater
 	 *            than equal to one)
-	 * @return Being specified HQL execution results, returns numerous data in a
-	 *         list type
+	 * @return being specified query execution results
 	 * @throws Exception
-	 *             In the case there is a problem in executing the specified HQL
+	 *             in the case there is a problem in executing the specified HQL
 	 */
 	public List findList(String queryName, Object[] values, int pageIndex,
 			int pageSize) throws Exception {
-		Context context = generateVelocityContext(values);
-
-		Query query = findInternal(queryName, context);
-		if (pageIndex > 0 && pageSize > 0) {
-			query.setFirstResult((pageIndex - 1) * pageSize);
-			query.setMaxResults(pageSize);
-		}
-
-		return query.list();
+		final Context context = generateVelocityContext(values);
+		return executeFind(context, queryName, pageIndex, pageSize);
 	}
 
 	/**
@@ -331,32 +313,25 @@ public class DynamicHibernateServiceImpl implements DynamicHibernateService,
 	 * not executed if either of pageIndex or pageSize is 0.
 	 * 
 	 * @param queryName
-	 *            Executable dynamic HQL's identifier
+	 *            executable dynamic HQL's identifier
 	 * @param paramNames
-	 *            The variable names for replacing with the inputted variables
+	 *            the variable names for replacing with the inputted variables
 	 * @param values
-	 *            Variable values for replacing in phrases handled with
+	 *            variable values for replacing in phrases handled with
 	 *            variables
 	 * @param pageIndex
-	 *            Page number (greater than equal to one)
+	 *            page number (greater than equal to one)
 	 * @param pageSize
-	 *            The number of data for showing in the selected page (greater
+	 *            the number of data for showing in the selected page (greater
 	 *            than equal to one)
-	 * @return Being specified HQL execution results, returns numerous data in a
-	 *         list type
+	 * @return being specified query execution results
 	 * @throws Exception
-	 *             In the case there is a problem in executing the specified HQL
+	 *             in the case there is a problem in executing the specified HQL
 	 */
 	public List findListByNamedParam(String queryName, String[] paramNames,
 			Object[] values, int pageIndex, int pageSize) throws Exception {
-		Context context = generateVelocityContext(paramNames, values);
-		Query query = findInternal(queryName, context);
-		if (pageIndex > 0 && pageSize > 0) {
-			query.setFirstResult((pageIndex - 1) * pageSize);
-			query.setMaxResults(pageSize);
-		}
-
-		return query.list();
+		final Context context = generateVelocityContext(paramNames, values);
+		return executeFind(context, queryName, pageIndex, pageSize);
 	}
 
 	/**
@@ -367,19 +342,17 @@ public class DynamicHibernateServiceImpl implements DynamicHibernateService,
 	 * result in object type.
 	 * 
 	 * @param queryName
-	 *            Executable dynamic HQL's identifier
+	 *            executable dynamic HQL's identifier
 	 * @param values
-	 *            Defines as 'name=value' the variable values for replacing the
+	 *            defines as 'name=value' the variable values for replacing the
 	 *            variables defined in dynamic HQL
-	 * @return Being specified HQL execution results, returns numerous data in a
-	 *         list type
+	 * @return being specified query execution results
 	 * @throws Exception
-	 *             In the case there is a problem in executing the specified HQL
+	 *             in the case there is a problem in executing the specified HQL
 	 */
 	public Object find(String queryName, Object[] values) throws Exception {
 		Context context = generateVelocityContext(values);
-		Query query = findInternal(queryName, context);
-		return query.uniqueResult();
+		return execute(context, queryName);
 	}
 
 	/**
@@ -390,21 +363,20 @@ public class DynamicHibernateServiceImpl implements DynamicHibernateService,
 	 * result in object type.
 	 * 
 	 * @param queryName
-	 *            Executable dynamic HQL's identifier
+	 *            executable dynamic HQL's identifier
 	 * @param paramNames
-	 *            The variable names for replacing with the inputted variables
+	 *            the variable names for replacing with the inputted variables
 	 * @param values
-	 *            Variable values for replacing in phrases handled with
+	 *            variable values for replacing in phrases handled with
 	 *            variables
-	 * @return Being specified HQL execution results, returns numerous data in a
-	 *         list type
+	 * @return being specified query execution results
 	 * @throws Exception
-	 *             In the case there is a problem in executing the specified HQL
+	 *             in the case there is a problem in executing the specified HQL
 	 */
 	public Object findByNamedParam(String queryName, String[] paramNames,
 			Object[] values) throws Exception {
 		Context context = generateVelocityContext(paramNames, values);
-		return findInternal(queryName, context).uniqueResult();
+		return execute(context, queryName);
 	}
 
 	/**
@@ -416,15 +388,15 @@ public class DynamicHibernateServiceImpl implements DynamicHibernateService,
 	 * type.
 	 * 
 	 * @param queryName
-	 *            Executable dynamic HQL's identifier
+	 *            executable dynamic HQL's identifier
 	 * @param paramName
-	 *            The variable name for replacing with the inputted variable
+	 *            the variable name for replacing with the inputted variable
 	 * @param value
-	 *            Variable value for replacing in phrases handled with variable
-	 * @return Being specified HQL execution results, returns numerous data in a
+	 *            variable value for replacing in phrases handled with variable
+	 * @return being specified HQL execution results, returns numerous data in a
 	 *         list type
 	 * @throws Exception
-	 *             In the case there is a problem in executing the specified HQL
+	 *             in the case there is a problem in executing the specified HQL
 	 */
 	public Object findByNamedParam(String queryName, String paramName,
 			Object value) throws Exception {
@@ -433,22 +405,81 @@ public class DynamicHibernateServiceImpl implements DynamicHibernateService,
 	}
 
 	/**
+	 * implements callback method using hibernateTemplate.execute().
+	 * 
+	 * @param context
+	 *            velocity context
+	 * @param queryName
+	 *            executable dynamic HQL's identifier
+	 * @return being specified query execution results
+	 */
+	private Object execute(final Context context, final String queryName) {
+		return this.hibernateTemplate.execute(new HibernateCallback() {
+			public Object doInHibernate(Session session)
+					throws HibernateException, SQLException {
+				try {
+					Query query = findInternal(session, queryName, context);
+					return query.uniqueResult();
+				} catch (Exception e) {
+					e.printStackTrace();
+					throw new HibernateException(e.getMessage());
+				}
+			}
+		});
+	}
+
+	/**
+	 * implements callback method using hibernateTemplate.executeFind().
+	 * 
+	 * @param context
+	 *            velocity context
+	 * @param queryName
+	 *            executable dynamic HQL's identifier
+	 * @param pageIndex
+	 *            page number (greater than equal to one)
+	 * @param pageSize
+	 *            the number of data for showing in the selected page (greater
+	 *            than equal to one)
+	 * @return being specified query execution results
+	 */
+	private List executeFind(final Context context, final String queryName,
+			final int pageIndex, final int pageSize) {
+		return this.hibernateTemplate.executeFind(new HibernateCallback() {
+			public Object doInHibernate(Session session)
+					throws HibernateException, SQLException {
+				try {
+					Query query = findInternal(session, queryName, context);
+					if (pageIndex > 0 && pageSize > 0) {
+						query.setFirstResult((pageIndex - 1) * pageSize);
+						query.setMaxResults(pageSize);
+					}
+
+					return query.list();
+				} catch (IOException e) {
+					throw new HibernateException(e.getMessage());
+				}
+			}
+		});
+	}
+
+	/**
 	 * The internal method for replacing by the inputted values the phrases
 	 * handled by variables and finding the appropriate HQL phrases by the
 	 * identifier of dynamic HQL defined in a separate XML.
 	 * 
+	 * @param session
+	 *            the hibernate session to create query
 	 * @param queryName
-	 *            Executable dynamic HQL's identifier
-	 * @param inputMap
-	 *            The variable value mapping defined as named parameter type
-	 *            such as ':name'
-	 * @return Query instance set with parameter
+	 *            executable dynamic HQL's identifier
+	 * @param context
+	 *            velocity context
+	 * @return query instance set with parameter
 	 * @throws Exception
-	 *             For the query instance, there is a problem while setting the
+	 *             for the query instance, there is a problem while setting the
 	 *             parameter
 	 */
-	private Query findInternal(String queryName, Context context)
-			throws Exception {
+	private Query findInternal(Session session, String queryName,
+			Context context) throws IOException {
 		if (context == null)
 			context = new VelocityContext();
 		QueryInfo info = (QueryInfo) queries.get(queryName);
@@ -462,10 +493,10 @@ public class DynamicHibernateServiceImpl implements DynamicHibernateService,
 
 		Query query = null;
 
-		if (info.getType().equals("hql"))
-			query = sessionFactory.getCurrentSession().createQuery(sql);
-		else {
-			query = sessionFactory.getCurrentSession().createSQLQuery(sql);
+		if (info.getType().equals("hql")) {
+			query = session.createQuery(sql);
+		} else {
+			query = session.createSQLQuery(sql);
 
 			addEntity((SQLQuery) query, info.getReturnList());
 			addJoin((SQLQuery) query, info.getReturnJoinMap());
@@ -526,12 +557,11 @@ public class DynamicHibernateServiceImpl implements DynamicHibernateService,
 				String column = (String) keyItr.next();
 				String typeName = (String) returnScalarMap.get(column);
 				if (typeName != null)
-					query.addScalar(column, typeRegistry.getRegisteredType(typeName));
+					query.addScalar(column, typeRegistry
+							.getRegisteredType(typeName));
 				else
 					query.addScalar(column);
-				
-				
-				
+
 			}
 		}
 	}
@@ -548,17 +578,17 @@ public class DynamicHibernateServiceImpl implements DynamicHibernateService,
 	 * defined XML file.
 	 * 
 	 * @param builder
-	 *            By reading the defined XML file, returns the Builder to the
+	 *            by reading the defined XML file, returns the Builder to the
 	 *            Configuration instance.
-	 * @param filename
-	 *            The path of XML file defining the HQL
+	 * @param inputStream
+	 *            inputStream of XML file defining the dynamic query
+	 * @throws DocumentationException
+	 *             in reading the appropriate XML File, there is a problem
 	 * @throws ConfigurationException
-	 *             In handling the elements defined in the appropriate XML,
-	 *             there is a problem.
-	 * @throws SAXException
-	 *             In parsing the appropriate XML file, there is a problem.
-	 * @throws IOException
-	 *             In reading the appropriate XML file, there is a problem.
+	 *             in handling the elements defined in the appropriate XML,
+	 *             there is a problem
+	 * @throws ClassNotFoundException
+	 *             if return class doesn't exist
 	 */
 	private void buildQueryMap(DefaultConfigurationBuilder builder,
 			InputStream inputStream) throws DocumentException,
@@ -644,7 +674,7 @@ public class DynamicHibernateServiceImpl implements DynamicHibernateService,
 		return queryMap;
 	}
 
-	private String getRunnableSQL(String sql, Context context) throws Exception {
+	private String getRunnableSQL(String sql, Context context) {
 		StringBuffer tempStatement = new StringBuffer(sql);
 		SortedMap replacementPositions = findTextReplacements(tempStatement);
 
@@ -656,9 +686,9 @@ public class DynamicHibernateServiceImpl implements DynamicHibernateService,
 			String key = (String) entry.getValue();
 			Object replaceValue = (String) context.get(key);
 			if (replaceValue == null) {
-				throw new BaseException(messageSource,
-						"error.hibernate.runnablesql.replace",
-						new Object[] { entry.getValue() });
+				throw new HibernateException(
+						"DynamicHibernate Service : Text replacement ["
+								+ entry.getValue() + "] has not been set.");
 			}
 			String value = replaceValue.toString();
 			tempStatement.insert(pos.intValue() + valueLengths, value);
@@ -684,12 +714,12 @@ public class DynamicHibernateServiceImpl implements DynamicHibernateService,
 	 * completing the HQL defined by the Velocity grammar.
 	 * 
 	 * @param paramNames
-	 *            The variable needed to complete the HQL defined with the
-	 *            Velocity grammar.
+	 *            the variable needed to complete the HQL defined with the
+	 *            Velocity grammar
 	 * @param values
-	 *            The variable value needed to complete the HQL defined with the
-	 *            Velocity grammar.
-	 * @return The Context instance mapping the variables and values needed to
+	 *            the variable value needed to complete the HQL defined with the
+	 *            Velocity grammar
+	 * @return the Context instance mapping the variables and values needed to
 	 *         complete the HQL defined with with the Velocity grammar.
 	 */
 	private Context generateVelocityContext(String[] paramNames, Object[] values) {
@@ -709,13 +739,13 @@ public class DynamicHibernateServiceImpl implements DynamicHibernateService,
 	 * Object[]{Object[]{name1,value2},Object[]{name2,value2},...}
 	 * 
 	 * @param values
-	 *            Defines as types such as 'name=value' the variable names
+	 *            defines as types such as 'name=value' the variable names
 	 *            needed to be replaced by the appropriate variables defined in
 	 *            the dynamic HQL phrase.
-	 * @return The Context instance mapped with the variable and values needed
+	 * @return The context instance mapped with the variable and values needed
 	 *         to complete the HQL defined using Velocity grammar.
 	 * @throws Exception
-	 *             The input parameter is as Object[]{Object[]{name1,value1},
+	 *             the input parameter is as Object[]{Object[]{name1,value1},
 	 *             Object[]{name2,value2},...} The internally defined Object[]'s
 	 *             length is not 2.
 	 */
@@ -735,11 +765,10 @@ public class DynamicHibernateServiceImpl implements DynamicHibernateService,
 				localArray = (Object[]) values[i];
 				if (localArray.length != 2) {
 					if (DynamicHibernateService.LOGGER.isErrorEnabled())
-						DynamicHibernateService.LOGGER.error(messageSource
-								.getMessage("error.hibernate.generatevaluemap",
-										new String[] {}, Locale.getDefault()));
-					throw new BaseException(messageSource,
-							"error.hibernate.generatevaluemap");
+						DynamicHibernateService.LOGGER
+								.error("DynamicHibernate Service : Fail to generate value map from Object[]{var1=value1,var2=value2,...} or Object[]{Object[]{var1,value1}, Object[]{var2,value2}, ...}");
+					throw new BaseException(
+							"DynamicHibernate Service : Fail to generate value map from Object[]{var1=value1,var2=value2,...} or Object[]{Object[]{var1,value1}, Object[]{var2,value2}, ...}");
 				}
 				context.put(localArray[0].toString(), localArray[1]);
 			} else if (values[i] == null) {
@@ -756,12 +785,12 @@ public class DynamicHibernateServiceImpl implements DynamicHibernateService,
 	 * Find the Configuration Builder for reading the XML file defining the
 	 * dynamic HQL.
 	 * 
-	 * @return The Configuration Builder for reading the XML file defining the
+	 * @return the Configuration Builder for reading the XML file defining the
 	 *         dynamic HQL
 	 * @throws ParserConfigurationException
-	 *             At SAXParser creation, there is a problem.
+	 *             at SAXParser creation, there is a problem.
 	 * @throws SAXException
-	 *             At XMLReader creation, there is a problem.
+	 *             at XMLReader creation, there is a problem.
 	 */
 	private DefaultConfigurationBuilder getBuilder()
 			throws ParserConfigurationException, SAXException {

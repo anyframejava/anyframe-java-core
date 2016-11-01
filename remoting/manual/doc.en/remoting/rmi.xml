@@ -1,0 +1,249 @@
+<chapter id="remoting_rmi">
+	<title>RMI(Remote Method Invocation)</title>
+    <para>
+    	RMI was first introduced to java on JDK 1.1, and provides a way to communicate between java programs.
+    	Before <ulink url="http://java.sun.com/j2se/1.5.0/docs/guide/rmi/index.html">RMI</ulink>, 
+    	CORBA or socket programming was used. 
+    	However, because it was inconvenient for the developer to develop or access RMI service due to its complexity, 
+    	the following should be done.
+    </para>
+
+    <itemizedlist>
+    	<listitem>
+        	<para>
+        		Develop interface class that inherited java.rmi.Remote.
+        	</para>
+      	</listitem>
+
+      	<listitem>
+        	<para>
+        		Develop implementation class that implements the above interface class and inherits UnicastRemoteObject.
+        	</para>
+      	</listitem>
+
+      	<listitem>
+        	<para>
+        		Use RMI compiler to compile client Stub class and server Skeleton class. (rmic –d classname)
+        	</para>
+      	</listitem>
+
+      	<listitem>
+        	<para>
+        		Execute RMI registry and bind service to registry.
+        	</para>
+      	</listitem>
+
+      	<listitem>
+        	<para>
+        		Use client code to call RMI service.
+        	</para>
+      	</listitem>
+    </itemizedlist>
+
+    <para>
+    	If you develop service in Spring Bean form and use RmiServiceExporter provided by Spring, 
+    	you will easily be able to expose service object interface with remote service like the RMI object. 
+    	In other words, the works performed in the RMI service development stage mentioned above can be performed by RmiServiceExporter. 
+    	The developer does not need to reflect development works related to RMI service in the business service, 
+    	so it is possible to focus on the business logic during development. 
+    	However, <emphasis role="bold">it is difficult to get through the firewall because RMI uses a specific port for communication, 
+    	and there are limitations that all services provided by client and server have to be written in java.</emphasis>
+    	The following is how to use RMI functions for server and client.
+    </para>
+
+    <section id="remoting_rmi_serverconfiguration">
+		<title>Server Configuration</title>
+
+      	<para>
+      		To implement server, use org.springframework.remoting.rmi.RmiServiceExporter class provided by Spring 
+      		to conveniently expose service developed by Spring Bean to RMI Service.
+      	</para>
+
+      	<informaltable>
+        	<tgroup cols="4">
+		        <colspec colnum="1" colname="col1" colwidth="2*"/>
+		        <colspec colnum="2" colname="col2" colwidth="5*"/>
+		        <colspec colnum="3" colname="col3" colwidth="1*"/>
+		        <colspec colnum="4" colname="col4" colwidth="2*"/>
+	          	<thead>
+	            	<row>
+	              		<entry align="center">Property Name</entry>
+	
+		              	<entry align="center">Description</entry>
+		
+		              	<entry align="center">Required</entry>
+		
+		              	<entry align="center">Default Value</entry>
+	            	</row>
+	          	</thead>
+	
+	          	<tbody>
+	            	<row>
+	              		<entry>serviceName</entry>
+	
+	              		<entry>The service name is used to bind service to RMI Registry.</entry>
+	
+	              		<entry align="center">Y</entry>
+	
+	              		<entry align="center">N/A</entry>
+	            	</row>
+	
+	            	<row>
+	              		<entry>service</entry>
+	
+	              		<entry>Set ID of the Spring Bean you wish to expose to RMI service.</entry>
+	
+	              		<entry align="center">Y</entry>
+	
+	              		<entry align="center">N/A</entry>
+	            	</row>
+	
+	            	<row>
+	              		<entry>serviceInterface</entry>
+	
+	              		<entry>Develop service interface class exposed as RMI service, along with package information.</entry>
+	
+	              		<entry align="center">Y</entry>
+	
+	              		<entry align="center">N/A</entry>
+	           		</row>
+	
+	            	<row>
+	              		<entry>registryPort</entry>
+	
+	              		<entry>
+	              			Used to override port for RMI registry. 
+	              			If not developed, 1099 port is used as default.
+	              		</entry>
+	
+	              		<entry align="center">N</entry>
+	
+	              		<entry align="center">1099</entry>
+            		</row>
+				</tbody>
+			</tgroup>
+		</informaltable>
+
+		<section id="remoting_rmi_serverconfiguration_sample">
+        	<title>Samples</title>
+
+        	<para>
+        		The following is an example for setting properties for RMI server implementation. 
+        		Service is the same as general Spring Bean development 
+        		and is exposed as RMI service referring to property setting information in RmiServiceExporter Bean.
+        	</para>
+
+        	<itemizedlist>
+          		<listitem>
+            		<para>
+            			<emphasis role="bold">Configuration</emphasis>
+            		</para>
+
+            		<para>
+            			The following is a part of context-remoting-rmi.xml which defines RmiServiceExporter properties that support RMI service.
+            			<programlisting language="xml"><![CDATA[<bean]]> <emphasis role="bold">id="org.anyframe.sample.remoting.moviefinder.service.MovieService"</emphasis>
+        <![CDATA[class="org.anyframe.sample.remoting.moviefinder.service.impl.MovieServiceImpl">
+    <property name="movieDao" ref="movieDao"/>
+</bean>
+
+<bean id="movieDao" class="org.anyframe.sample.remoting.moviefinder.service.impl.MovieDao" />
+    
+<!-- Add RMI ServiceExporter -->
+<bean]]> <emphasis role="bold">class="org.springframework.remoting.rmi.RmiServiceExporter"</emphasis><![CDATA[>
+
+    <property name="serviceName" value="MovieService" />
+    <property name="service" ref="org.anyframe.sample.remoting.moviefinder.service.MovieService" />
+    <property name="serviceInterface"
+            value="org.anyframe.sample.remoting.moviefinder.service.MovieService" />
+    <!-- defaults to 1099 -->
+    <property name="registryPort" value="1199" />
+</bean>]]></programlisting>
+					</para>
+				</listitem>
+			</itemizedlist>
+		</section>
+    </section>
+
+    <section id="emoting_remoting_rmi_clientconfiguration">
+		<title>Client Configuration</title>
+
+		<para>
+			Client can use org.springframework.remoting.rmi.RmiProxyFactoryBean provided by Spring 
+			to access RMI Service.
+      	</para>
+
+      	<informaltable>
+        	<tgroup cols="4">
+         		<colspec colnum="1" colname="col1" colwidth="2*"/>
+        		<colspec colnum="2" colname="col2" colwidth="5*"/>
+        		<colspec colnum="3" colname="col3" colwidth="1*"/>
+        		<colspec colnum="4" colname="col4" colwidth="2*"/>
+          		<thead>
+            		<row>
+              			<entry align="center">Property Name</entry>
+
+              			<entry align="center">Description</entry>
+
+              			<entry align="center">Required</entry>
+
+              			<entry align="center">Default Value</entry>
+            		</row>
+          		</thead>
+
+          		<tbody>
+            		<row>
+              			<entry>serviceUrl</entry>
+
+              			<entry>
+              				RMI service access URL information. "rmi://" + server ip + ":" + port number +
+              				"/" + service name (ex.rmi://localhost:1199/MovieService)
+              			</entry>
+
+              			<entry align="center">Y</entry>
+
+              			<entry align="center">N/A</entry>
+            		</row>
+
+            		<row>
+              			<entry>serviceInterface</entry>
+
+              			<entry>Develop service interface class exposed as RMI service, along with package information.</entry>
+
+              			<entry align="center">Y</entry>
+
+              			<entry align="center">N/A</entry>
+            		</row>
+          		</tbody>
+			</tgroup>
+		</informaltable>
+
+		<section id="emoting_remoting_rmi_clientconfiguration_sample">
+			<title>Samples</title>
+
+        	<para>
+        		The following is an example of RMI client property setting. 
+        		Client accesses RMI service by referring to property setting information in RmiProxyFactoryBean.
+        	</para>
+
+        	<itemizedlist>
+          		<listitem>
+	            	<para>
+	            		<emphasis role="bold">Configuration</emphasis>
+	            	</para>
+	
+	            	<para>
+	            		The following is a part of context-remoting-rmi-client.xml which defines RmiProxyFactoryBean for accessing RMI service.
+	            		<programlisting language="xml"><![CDATA[<!-- Add RMI Client -->
+<bean id="movieServiceClient"]]> <emphasis role="bold">class="org.springframework.remoting.rmi.RmiProxyFactoryBean"</emphasis><![CDATA[>
+  
+    <property name="serviceUrl" value="rmi://localhost:1099/MovieService" />
+    <property name="serviceInterface" value="org.anyframe.sample.remoting.moviefinder.service.MovieService"/>
+</bean>]]></programlisting>
+					</para>
+				</listitem>
+          
+			</itemizedlist>
+		</section>
+    </section>
+</chapter>
+

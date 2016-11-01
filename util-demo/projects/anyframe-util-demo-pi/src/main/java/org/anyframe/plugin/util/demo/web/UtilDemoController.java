@@ -32,39 +32,39 @@ import org.springframework.web.bind.annotation.RequestParam;
  * 
  * @author Hyunjung Jeong
  */
-@Controller("utilDemoController")
+@Controller("utilCDemoController")
 @RequestMapping("/utilDemo/*")
 public class UtilDemoController {
 
 	@RequestMapping("/utilDemo/utilDemoList.do")
 	public String utilDemoList() {
-		return "util/demo/utilDemoList";
+		return "util-demo/utilDemoList";
 	}
 
 	@RequestMapping("/utilDemo/dateMain.do")
 	public String dateMain() {
-		return "util/demo/dateUtilDemo";
+		return "util-demo/dateUtilDemo";
 	}
 
 	@RequestMapping("/utilDemo/getCurrentDay.do")
 	public String getCurrentDay(ModelMap map) throws Exception {
 		String currentDay = DateUtil.getCurrentDay();
 		map.addAttribute("result", currentDay);
-		return "utilJsonView";
+		return "jsonView";
 	}
 
 	@RequestMapping("/utilDemo/getCurrentTime.do")
 	public String getCurrentTime(@RequestParam String pattern, ModelMap map) throws Exception {
 		String currentTime = DateUtil.getCurrentTime(pattern);
 		map.addAttribute("result", currentTime);
-		return "utilJsonView";
+		return "jsonView";
 	}
 
 	@RequestMapping("/utilDemo/getDays.do")
 	public String getDays(@RequestParam String startDate, @RequestParam String endDate, ModelMap map) throws Exception {
 		int days = DateUtil.getDays(startDate, endDate, "yyyy-MM-dd");
 		map.addAttribute("result", days);
-		return "utilJsonView";
+		return "jsonView";
 	}
 
 	@RequestMapping("/utilDemo/greaterThan.do")
@@ -72,7 +72,7 @@ public class UtilDemoController {
 			throws Exception {
 		boolean greaterThan = DateUtil.greaterThan(DateUtil.string2Date(basicDate1), compareDate);
 		map.addAttribute("result", greaterThan);
-		return "utilJsonView";
+		return "jsonView";
 	}
 
 	@RequestMapping("/utilDemo/getEndDate.do")
@@ -80,7 +80,7 @@ public class UtilDemoController {
 			throws Exception {
 		String endDate = DateUtil.getEndDate(basicDate2, interval);
 		map.addAttribute("result", endDate);
-		return "utilJsonView";
+		return "jsonView";
 	}
 
 	@RequestMapping("/utilDemo/addYearMonthDay.do")
@@ -88,14 +88,14 @@ public class UtilDemoController {
 			@RequestParam int days, ModelMap map) throws Exception {
 		String addDate = DateUtil.addYearMonthDay(basicDate3, years, months, days);
 		map.addAttribute("result", addDate);
-		return "utilJsonView";
+		return "jsonView";
 	}
 
 	@RequestMapping("/utilDemo/isDate.do")
 	public String isDate(@RequestParam String basicDate4, @RequestParam String pattern1, ModelMap map) throws Exception {
 		Boolean isDate = DateUtil.isDate(basicDate4, pattern1);
 		map.addAttribute("result", isDate);
-		return "utilJsonView";
+		return "jsonView";
 	}
 
 	@RequestMapping("/utilDemo/getDates.do")
@@ -104,12 +104,12 @@ public class UtilDemoController {
 
 		String[] getDates = DateUtil.getDates(startDate1, endDate1);
 		map.addAttribute("result", getDates);
-		return "utilJsonView";
+		return "jsonView";
 	}
 
 	@RequestMapping("/utilDemo/digestMain.do")
 	public String digestMain() {
-		return "util/demo/digestUtilDemo";
+		return "util-demo/digestUtilDemo";
 	}
 
 	@RequestMapping("/utilDemo/encodeCharset.do")
@@ -117,7 +117,7 @@ public class UtilDemoController {
 			throws Exception {
 		String encodeString = DigestUtil.encodeCharset(str1, charset1);
 		map.addAttribute("result", encodeString);
-		return "utilJsonView";
+		return "jsonView";
 	}
 
 	@RequestMapping("/utilDemo/decodeCharset.do")
@@ -125,21 +125,21 @@ public class UtilDemoController {
 			throws Exception {
 		String decodeString = DigestUtil.decodeCharset(str2, charset2);
 		map.addAttribute("result", decodeString);
-		return "utilJsonView";
+		return "jsonView";
 	}
 
 	@RequestMapping("/utilDemo/encodeBase64.do")
 	public String encodeBase64(@RequestParam String str3, ModelMap map) throws Exception {
 		String encodeBase64 = DigestUtil.encodeBase64(str3);
 		map.addAttribute("result", encodeBase64);
-		return "utilJsonView";
+		return "jsonView";
 	}
 
 	@RequestMapping("/utilDemo/decodeBase64.do")
 	public String decodeBase64(@RequestParam String str4, ModelMap map) throws Exception {
 		String decodeBase64 = DigestUtil.decodeBase64(str4);
 		map.addAttribute("result", decodeBase64);
-		return "utilJsonView";
+		return "jsonView";
 	}
 
 	@RequestMapping("/utilDemo/encodePassword.do")
@@ -147,12 +147,12 @@ public class UtilDemoController {
 			throws Exception {
 		String encodePassword = DigestUtil.encodePassword(str5, algorithm1);
 		map.addAttribute("result", encodePassword);
-		return "utilJsonView";
+		return "jsonView";
 	}
 
 	@RequestMapping("/utilDemo/numberMain.do")
 	public String numberMain() {
-		return "util/demo/numberUtilDemo";
+		return "util-demo/numberUtilDemo";
 	}
 
 	@RequestMapping("/utilDemo/getRandomNumber.do")
@@ -179,7 +179,7 @@ public class UtilDemoController {
 		}
 
 		map.addAttribute("result", randomNumber);
-		return "utilJsonView";
+		return "jsonView";
 	}
 
 	@RequestMapping("/utilDemo/formatNumberByLocale.do")
@@ -188,7 +188,7 @@ public class UtilDemoController {
 
 		String formatNumberByLocale = NumberUtil.formatNumberByLocale(value, new Locale(locale, "", ""));
 		map.addAttribute("result", formatNumberByLocale);
-		return "utilJsonView";
+		return "jsonView";
 	}
 
 	@RequestMapping("/utilDemo/formatNumberByPoint.do")
@@ -196,7 +196,7 @@ public class UtilDemoController {
 
 		String formatNumberByLocale = NumberUtil.formatNumberByPoint(value1, point);
 		map.addAttribute("result", formatNumberByLocale);
-		return "utilJsonView";
+		return "jsonView";
 	}
 
 	@RequestMapping("/utilDemo/isNumber.do")
@@ -204,7 +204,7 @@ public class UtilDemoController {
 
 		boolean isNumber = NumberUtil.isNumber(value2);
 		map.addAttribute("result", isNumber);
-		return "utilJsonView";
+		return "jsonView";
 	}
 
 	@RequestMapping("/utilDemo/checkNumberType.do")
@@ -213,12 +213,12 @@ public class UtilDemoController {
 
 		boolean checkNumberType = NumberUtil.checkNumberType(value3, check);
 		map.addAttribute("result", checkNumberType);
-		return "utilJsonView";
+		return "jsonView";
 	}
 
 	@RequestMapping("/utilDemo/stringMain.do")
 	public String stringMain() {
-		return "util/demo/stringUtilDemo";
+		return "util-demo/stringUtilDemo";
 	}
 
 	@RequestMapping("/utilDemo/getRandomString.do")
@@ -226,7 +226,7 @@ public class UtilDemoController {
 
 		String randomString = StringUtil.getRandomString(length);
 		map.addAttribute("result", randomString);
-		return "utilJsonView";
+		return "jsonView";
 	}
 
 	@RequestMapping("/utilDemo/getContainsCount.do")
@@ -234,7 +234,7 @@ public class UtilDemoController {
 
 		int count = StringUtil.getContainsCount(str1, chars1.toCharArray());
 		map.addAttribute("result", count);
-		return "utilJsonView";
+		return "jsonView";
 	}
 
 	@RequestMapping("/utilDemo/getContainsCountIgnoreCase.do")
@@ -242,7 +242,7 @@ public class UtilDemoController {
 
 		int count = StringUtil.getContainsCountIgnoreCase(str2, str21);
 		map.addAttribute("result", count);
-		return "utilJsonView";
+		return "jsonView";
 	}
 
 	@RequestMapping("/utilDemo/getLength.do")
@@ -250,7 +250,7 @@ public class UtilDemoController {
 
 		int length = StringUtil.getLength(str3);
 		map.addAttribute("result", length);
-		return "utilJsonView";
+		return "jsonView";
 	}
 
 	@RequestMapping("/utilDemo/getByteLength.do")
@@ -258,7 +258,7 @@ public class UtilDemoController {
 
 		int byteLength = StringUtil.getByteLength(str4);
 		map.addAttribute("result", byteLength);
-		return "utilJsonView";
+		return "jsonView";
 	}
 
 	@RequestMapping("/utilDemo/getCutString.do")
@@ -266,7 +266,7 @@ public class UtilDemoController {
 
 		String cutString = StringUtil.getCutString(str5, cutLength);
 		map.addAttribute("result", cutString);
-		return "utilJsonView";
+		return "jsonView";
 	}
 
 	@RequestMapping("/utilDemo/leftPad.do")
@@ -275,7 +275,7 @@ public class UtilDemoController {
 
 		String leftPad = StringUtil.leftPad(str6, size, padChar);
 		map.addAttribute("result", leftPad);
-		return "utilJsonView";
+		return "jsonView";
 	}
 
 	@RequestMapping("/utilDemo/rightPad.do")
@@ -284,7 +284,7 @@ public class UtilDemoController {
 
 		String rightPad = StringUtil.rightPad(str7, size1, padStr);
 		map.addAttribute("result", rightPad);
-		return "utilJsonView";
+		return "jsonView";
 	}
 
 	@RequestMapping("/utilDemo/convertToCamelCase.do")
@@ -293,7 +293,7 @@ public class UtilDemoController {
 
 		String camelCase = StringUtil.convertToCamelCase(str8, posChar);
 		map.addAttribute("result", camelCase);
-		return "utilJsonView";
+		return "jsonView";
 	}
 
 	@RequestMapping("/utilDemo/convertToUnderScore.do")
@@ -301,7 +301,7 @@ public class UtilDemoController {
 
 		String underScore = StringUtil.convertToUnderScore(str9);
 		map.addAttribute("result", underScore);
-		return "utilJsonView";
+		return "jsonView";
 	}
 
 	@RequestMapping("/utilDemo/replaceHtmlEscape.do")
@@ -309,7 +309,7 @@ public class UtilDemoController {
 
 		String replace = StringUtil.replaceHtmlEscape(str10);
 		map.addAttribute("result", replace);
-		return "utilJsonView";
+		return "jsonView";
 	}
 
 	@RequestMapping("/utilDemo/removeEscapeChar.do")
@@ -317,7 +317,7 @@ public class UtilDemoController {
 
 		String remove = StringUtil.removeEscapeChar(str11);
 		map.addAttribute("result", remove);
-		return "utilJsonView";
+		return "jsonView";
 	}
 
 	@RequestMapping("/utilDemo/swapFirstLetterCase.do")
@@ -325,12 +325,12 @@ public class UtilDemoController {
 
 		String remove = StringUtil.swapFirstLetterCase(str12);
 		map.addAttribute("result", remove);
-		return "utilJsonView";
+		return "jsonView";
 	}
 
 	@RequestMapping("/utilDemo/validationMain.do")
 	public String validationMain() {
-		return "util/demo/validationUtilDemo";
+		return "util-demo/validationUtilDemo";
 	}
 
 	@RequestMapping("/utilDemo/isEmailAddress.do")
@@ -338,7 +338,7 @@ public class UtilDemoController {
 
 		boolean isVlidEmail = ValidationUtil.isEmailAddress(email);
 		map.addAttribute("result", isVlidEmail);
-		return "utilJsonView";
+		return "jsonView";
 	}
 
 	@RequestMapping("/utilDemo/isUserFormat.do")
@@ -346,7 +346,7 @@ public class UtilDemoController {
 
 		boolean isValidUserFormat = ValidationUtil.isUserFormat(str, format);
 		map.addAttribute("result", isValidUserFormat);
-		return "utilJsonView";
+		return "jsonView";
 	}
 
 	@RequestMapping("/utilDemo/isRegexPatternMatch.do")
@@ -355,7 +355,7 @@ public class UtilDemoController {
 
 		boolean isRegexPatternMatch = ValidationUtil.isRegexPatternMatch(str1, pattern);
 		map.addAttribute("result", isRegexPatternMatch);
-		return "utilJsonView";
+		return "jsonView";
 	}
 
 	@RequestMapping("/utilDemo/isPatternMatching.do")
@@ -364,7 +364,7 @@ public class UtilDemoController {
 
 		boolean isPatternMatching = ValidationUtil.isPatternMatching(str2, pattern1);
 		map.addAttribute("result", isPatternMatching);
-		return "utilJsonView";
+		return "jsonView";
 	}
 
 	@RequestMapping("/utilDemo/isPatternInclude.do")
@@ -373,7 +373,7 @@ public class UtilDemoController {
 
 		boolean isPatternInclude = ValidationUtil.isPatternInclude(str3, pattern2);
 		map.addAttribute("result", isPatternInclude);
-		return "utilJsonView";
+		return "jsonView";
 	}
 
 	@RequestMapping("/utilDemo/isRegexPatternInclude.do")
@@ -382,6 +382,6 @@ public class UtilDemoController {
 
 		boolean isRegexPatternInclude = ValidationUtil.isRegexPatternInclude(str4, pattern3);
 		map.addAttribute("result", isRegexPatternInclude);
-		return "utilJsonView";
+		return "jsonView";
 	}
 }

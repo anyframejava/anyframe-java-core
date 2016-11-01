@@ -1,0 +1,305 @@
+<chapter id="utildemo_stringutil">
+	<title>StringUtil의 활용</title>
+	<para>
+		문자열 관련 검색, 변환, 치환, 유효성 체크 등의 기능을 제공한다.
+	</para>
+	<para>다음은 StringUtil이 가지고 있는 메소드에 대한 설명이다.</para>
+	<informaltable>
+		<tgroup cols="3">
+			<colspec colnum="1" colname="col1" colwidth="2*" />
+			<colspec colnum="2" colname="col2" colwidth="4*" />
+			<colspec colnum="3" colname="col3" colwidth="4*" />
+			<thead>
+				<row>
+					<entry align="center">Method</entry>
+					<entry align="center">Description</entry>
+					<entry align="center">Example</entry>
+				</row>
+			</thead>
+			<tbody>
+				<row>
+					<entry><emphasis role="bold">getRandomString</emphasis>(int minSize, int maxSize)</entry>
+					<entry>최소, 최대 자리수 사이의 랜덤한 문자열을 반환한다.</entry>
+					<entry>StringUtil.getRandomString(10, 15)</entry>
+				</row>
+				<row>
+					<entry><emphasis role="bold">getRandomString</emphasis>(int count)</entry>
+					<entry>특정한 길이 만큼의 랜덤한 문자열을 반환한다.</entry>
+					<entry>StringUtil.getRandomString(8)</entry>
+				</row>
+				<row>
+					<entry><emphasis role="bold">getRandomString</emphasis>(int count, char startChar, char endChar)</entry>
+					<entry>특정한 알파벳 사이의 지정된 길이만큼의 랜덤한 문자열을 반환한다.</entry>
+					<entry>StringUtil.getRandomString(10, 'a', 'e')</entry>
+				</row>
+				<row>
+					<entry><emphasis role="bold">getRandomStringByKorean</emphasis>(int count)</entry>
+					<entry>특정한 길이만큼의 한글 문자열을 반환한다.</entry>
+					<entry>StringUtil.getRandomStringByKorean(20)</entry>
+				</row>
+				<row>
+					<entry><emphasis role="bold">getRandomStringByCharset</emphasis>(int count, String charset)</entry>
+					<entry>특정한 길이만큼의 주어진 캐릭터 셋 문자열을 반환한다.</entry>
+					<entry>StringUtil.getRandomStringByCharset(20, "UTF-8")</entry>
+				</row>
+				<row>
+					<entry><emphasis role="bold">indexOf</emphasis>(String str, String search)</entry>
+					<entry>기준 문자열에서 찾고자 하는 문자열이 포함되어 있는 경우 그 첫번째 문자열의 인덱스를 반환한다.</entry>
+					<entry>StringUtil.indexOf("Anyframe Java Test", "Java")=9</entry>
+				</row>
+				<row>
+					<entry><emphasis role="bold">getContainsCount</emphasis>(String str, String sub)</entry>
+					<entry>주어진 문자열에 대해서 해당하는 문자열이 포함되어 있는 숫자 반환</entry>
+					<entry>StringUtil.getContainsCount("Anyframe Java Test", "a")=3</entry>
+				</row>
+				<row>
+					<entry><emphasis role="bold">getContainsCount</emphasis>(String str, char[] chars)</entry>
+					<entry>주어진 문자열에 대해서 해당하는 캐릭터들이 포함되어 있는 숫자 반환</entry>
+					<entry>StringUtil.getContainsCount("Anyframe Java Test", new char[] { 'a' })=3</entry>
+				</row>
+				<row>
+					<entry><emphasis role="bold">getRandomStringByCharset</emphasis>(int count, String charset)</entry>
+					<entry>특정한 길이만큼의 주어진 캐릭터 셋 문자열을 반환한다.</entry>
+					<entry>StringUtil.getRandomStringByCharset(20, "UTF-8")</entry>
+				</row>
+				<row>
+					<entry><emphasis role="bold">compareTo</emphasis>(String sourceStr, String anotherStr)</entry>
+					<entry>두단어를 사전 편찬 순서대로 비교한다.</entry>
+					<entry>StringUtil.compareTo("Anyframe Java Test", "Anyframe Java Test")</entry>
+				</row>
+				<row>
+					<entry><emphasis role="bold">compareToIgnoreCase</emphasis>(String sourceStr, String anotherStr)</entry>
+					<entry>두단어를 대소 문자 무시하고 사전 편찬 순서대로 비교한다.</entry>
+					<entry>StringUtil.compareToIgnoreCase("anyframe java test", "Anyframe Java Test")=0</entry>
+				</row>
+				<row>
+					<entry><emphasis role="bold">indexOfIgnoreCase</emphasis>(String str, String search)</entry>
+					<entry>대소문자를 구분없이 기준 문자열에서 찾고자 하는 문자열이 포함되어 있는 경우 그 첫번째 문자열의 인덱스를 반환한다.</entry>
+					<entry>StringUtil.indexOfIgnoreCase("Anyframe Java Test", "java")=9</entry>
+				</row>
+				<row>
+					<entry><emphasis role="bold">getContainsCountIgnoreCase</emphasis>(String str, String sub)</entry>
+					<entry>대소문자 구분없이 주어진 문자열에 대해서 해당하는 문자열이 포함되어 있는 갯수를 반환</entry>
+					<entry>StringUtil.getContainsCountIgnoreCase("Anyframe Java Test", "test")</entry>
+				</row>
+				<row>
+					<entry><emphasis role="bold">getContainsCountIgnoreCase</emphasis>(String str, char[] chars)</entry>
+					<entry>대소문자 구분없이 주어진 문자열에 대해서 해당하는 캐릭터들이 포함되어 있는 숫자를 반환</entry>
+					<entry>StringUtil.getContainsCountIgnoreCase("Anyframe Java Test", new char[] { 'a', 'T' })=6</entry>
+				</row>
+				<row>
+					<entry><emphasis role="bold">getLength</emphasis>(String str)</entry>
+					<entry>해당하는 문자열에 대한 길이 반환</entry>
+					<entry>StringUtil.getLength("Anyframe Java Test")</entry>
+				</row>
+				<row>
+					<entry><emphasis role="bold">getByteLength</emphasis>(String str)</entry>
+					<entry>해당하는 문자열에 대해서 byte 단위에 대해서 길이 계산해서 총 길이 반환</entry>
+					<entry>StringUtil.getByteLength("Anyframe Java Test")</entry>
+				</row>
+				<row>
+					<entry><emphasis role="bold">getCutString</emphasis>(String str, int length)</entry>
+					<entry>입력받은 문자열에 대해서 문자열 길이 만큼 잘라서 새로운 문자열 반환</entry>
+					<entry>StringUtil.getCutString("Anyframe Java Test", 14)="Anyframe Java "</entry>
+				</row>
+				<row>
+					<entry><emphasis role="bold">removeWhitespace</emphasis>(String str)</entry>
+					<entry>문자열의 모둔 공백 문자열 제거</entry>
+					<entry>StringUtil.removeWhitespace("Anyframe Java Test")="AnyframeJavaTest"</entry>
+				</row>
+				<row>
+					<entry><emphasis role="bold">leftTrim</emphasis>(String str)</entry>
+					<entry>문자열의 왼쪽의 공백 문자열 제거</entry>
+					<entry>StringUtil.leftTrim("   Anyframe Java Test")="Anyframe Java Test"</entry>
+				</row>
+				<row>
+					<entry><emphasis role="bold">rightTrim</emphasis>(String str)</entry>
+					<entry>문자열의 오른쪽의 공백 문자열 제거</entry>
+					<entry>StringUtil.rightTrim("Anyframe Java Test   ")="Anyframe Java Test"</entry>
+				</row>
+				<row>
+					<entry><emphasis role="bold">leftPad</emphasis>(String str, int size)</entry>
+					<entry>해당하는 문자열에 대해서 입력된 길이만큼 부족한 길이를 왼쪽부터 공백으로 채워넣음</entry>
+					<entry>StringUtil.leftPad("Anyframe", 12)="    Anyframe"</entry>
+				</row>
+				<row>
+					<entry><emphasis role="bold">leftPad</emphasis>(String str, int size, char padChar)</entry>
+					<entry>해당하는 문자열에 대해서 입력된 길이만큼 부족한 길이를 왼쪽부터 지정된 character로 채워넣는다.</entry>
+					<entry>StringUtil.leftPad("Anyframe", 12, 'a')="aaaaAnyframe"</entry>
+				</row>
+				<row>
+					<entry><emphasis role="bold">leftPad</emphasis>(String str, int size, String padStr)</entry>
+					<entry>해당하는 문자열에 대해서 입력된 길이만큼 부족한 길이를 왼쪽부터 지정된 문자열로 채워넣는다.</entry>
+					<entry>StringUtil.leftPad("Anyframe", 12, "Java")="JavaAnyframe"</entry>
+				</row>
+				<row>
+					<entry><emphasis role="bold">rightPad</emphasis>(String str, int size)</entry>
+					<entry>해당하는 문자열에 대해서 입력된 길이만큼 부족한 길이를 오른쪽부터 공백으로 채워넣는다.</entry>
+					<entry>StringUtil.rightPad("Anyframe", 12)="Anyframe    "</entry>
+				</row>
+				<row>
+					<entry><emphasis role="bold">rightPad</emphasis>(String str, int size, char padChar)</entry>
+					<entry>해당하는 문자열에 대해서 입력된 길이만큼 부족한 길이를 오른쪽부터 지정된 문자로 채워넣는다.</entry>
+					<entry>StringUtil.rightPad("Anyframe", 12, 'a')="Anyframeaaaa"</entry>
+				</row>
+				<row>
+					<entry><emphasis role="bold">splitHead</emphasis>(String str, int size)</entry>
+					<entry>해당문자열의 사이즈 만큼 앞에서부터 자른다.</entry>
+					<entry>StringUtil.splitHead("Anyframe Java Test", 3)="Any"</entry>
+				</row>
+				<row>
+					<entry><emphasis role="bold">splitTail</emphasis>(String str, int size)</entry>
+					<entry>해당문자열의 사이즈 만큼 뒤에서부터 자른다.</entry>
+					<entry>StringUtil.splitTail("Anyframe Java Test", 3)="est"</entry>
+				</row>
+				<row>
+					<entry><emphasis role="bold">removeAll</emphasis>(String str, String charsToDelete)</entry>
+					<entry>입력된 문자열에 대해서 제거할 문자열을 모두 제거</entry>
+					<entry>StringUtil.removeAll("Anyframe Java Test", "Java")="Anyfrme  Test"</entry>
+				</row>
+				<row>
+					<entry><emphasis role="bold">convertToCamelCase</emphasis>(String underscore)</entry>
+					<entry>입력된 under socre 형태의 문자열을 camel case 형태로 변환</entry>
+					<entry>StringUtil.convertToCamelCase("anyframe_java_test")="anyframeJavaTest"</entry>
+				</row>
+				<row>
+					<entry><emphasis role="bold">convertToCamelCase</emphasis>(String targetString, char posChar)</entry>
+					<entry>주어진 char의 형태에 맞게  잘라진 문자열을 camel case 형태로 변환</entry>
+					<entry>StringUtil.convertToCamelCase("anyframe-java-test", '-')="anyframeJavaTest"</entry>
+				</row>
+				<row>
+					<entry><emphasis role="bold">convertToUnderScore</emphasis>(String camelCase)</entry>
+					<entry>camel case 형태의 문자열을 under score 형태의 문자열로 변환</entry>
+					<entry>StringUtil.convertToUnderScore("anyframeJavaTest")="anyframe_java_test"</entry>
+				</row>
+				<row>
+					<entry><emphasis role="bold">reverse</emphasis>(String str)</entry>
+					<entry>입력된 문자열의 순서를  반대로 바꿈</entry>
+					<entry>StringUtil.reverse("Anyframe Java Test")="tseT avaJ emarfynA"</entry>
+				</row>
+				<row>
+					<entry><emphasis role="bold">convertToUnderScore</emphasis>(String camelCase)</entry>
+					<entry>camel case 형태의 문자열을 under score 형태의 문자열로 변환</entry>
+					<entry>StringUtil.convertToUnderScore("anyframeJavaTest")="anyframe_java_test"</entry>
+				</row>
+				<row>
+					<entry><emphasis role="bold">null2str</emphasis>(String org, String converted)</entry>
+					<entry>null이나 공백문자열이 들어오면 주어진 문자열로 변환</entry>
+					<entry>StringUtil.null2str("    ", "empty")="empty"</entry>
+				</row>
+				<row>
+					<entry><emphasis role="bold">null2str</emphasis>(String org)</entry>
+					<entry>null이나 공백문자열이 들어오면 "" 로 변환</entry>
+					<entry>StringUtil.null2str(null)=""</entry>
+				</row>
+				<row>
+					<entry><emphasis role="bold">decode</emphasis>(String source, String target, String result, String base)</entry>
+					<entry>첫번째 문자열과 두번째 문자열을 비교해서 같으면 세번째 문자열을 다르면 네번재 문자열을 반환한다.</entry>
+					<entry>StringUtil.decode("Java", "Test", "Good", "Bad")="bad"</entry>
+				</row>
+				<row>
+					<entry><emphasis role="bold">replaceFirst</emphasis>(String source, String regex, String replacement)</entry>
+					<entry>입력된 문자열이 주어진 문자열과 일치하는 첫번째 문자열을 바꿔야할 문자열로 변경</entry>
+					<entry>StringUtil.replaceFirst("Anyframe Java Test Anyframe Java Test", "Anyframe", "Enterprise")="Enterprise Java Test Anyframe Java Test"</entry>
+				</row>
+				<row>
+					<entry><emphasis role="bold">replaceLast</emphasis>(String source, String regex, String replacement)</entry>
+					<entry>입력된 문자열이 주어진 문자열과 일치하는 마지막 문자열을 바꿔야할 문자열로 변경</entry>
+					<entry>StringUtil.replaceLast("Anyframe Java Test Anyframe Java Test", "Anyframe", "Enterprise")="Anyframe Java Test Enterprise Java Test"</entry>
+				</row>
+				<row>
+					<entry><emphasis role="bold">replaceAll</emphasis>(String source, String regex, String replacement)</entry>
+					<entry>입력된 문자열이 주어진 문자열과 일치하는 모든 문자열을 바꿔야할 문자열로 변경</entry>
+					<entry>StringUtil.replaceAll("Anyframe Java Test Anyframe Java Test", "Anyframe", "Enterprise")="Enterprise Java Test Enterprise Java Test"</entry>
+				</row>
+				<row>
+					<entry><emphasis role="bold">replaceHtmlEscape</emphasis>(String input)</entry>
+					<entry>HTML tag가 들어있는 문자열에 대해 unescape해준다.</entry>
+					<entry>StringUtil.replaceHtmlEscape("&lt;html&gt;Anyframe Java Test&lt;html&gt;")
+					="&lt;html&gt;Anyframe Java Test&lt;html&gt;"</entry>
+				</row>
+				<row>
+					<entry><emphasis role="bold">removeEscapeChar</emphasis>(String input)</entry>
+					<entry>unescaped된 문자열에 대해 HTML tag 형태로 바꿔준다.</entry>
+					<entry>StringUtil.removeEscapeChar("&lt;html&gt;Anyframe Java Test&lt;html&gt;")
+					="&lt;html&gt;Anyframe Java Test&lt;html&gt;"</entry>
+				</row>
+				<row>
+					<entry><emphasis role="bold">swapFirstLetterCase</emphasis>(String str)</entry>
+					<entry>첫번째 문자를 대문자로 변경</entry>
+					<entry>StringUtil.swapFirstLetterCase("java")="Java"</entry>
+				</row>
+				<row>
+					<entry><emphasis role="bold">trim</emphasis>(String origString, String trimString)</entry>
+					<entry>입력된 문자열에서 주어진 문자열과 일치하는 부분을 trim한다.</entry>
+					<entry>StringUtil.trim("Anyframe*Java", "*")="AnyframeJava"</entry>
+				</row>
+				<row>
+					<entry><emphasis role="bold">getLastString</emphasis>(String origStr, String strToken)</entry>
+					<entry>입력된 문자열을 주어진 token에 대해서 분리 후 마지막 문자열 반환</entry>
+					<entry>StringUtil.getLastString("Anyframe_Java_Test", "_")="Test"</entry>
+				</row>
+				<row>
+					<entry><emphasis role="bold">getStringArray</emphasis>(String str, String strToken)</entry>
+					<entry>입력된 문자열을 주어진 token에 대해서 분리 후 arraylist 형태로 반환</entry>
+					<entry>StringUtil.getStringArray("Anyframe/Java/Test", "/")</entry>
+				</row>
+				<row>
+					<entry><emphasis role="bold">isNotEmpty</emphasis>(String str)</entry>
+					<entry>주어진 문자열이 null 또는 공백이 아닐 경우 참 반환</entry>
+					<entry>StringUtil.isNotEmpty("abc")=true</entry>
+				</row>
+				<row>
+					<entry><emphasis role="bold">isEmpty</emphasis>(String str) </entry>
+					<entry>주어진 문자열이 null 또는 공백일  경우 참 반환</entry>
+					<entry>StringUtil.isEmpty("")=true</entry>
+				</row>
+				<row>
+					<entry><emphasis role="bold">isEmptyTrimmed</emphasis>(String str)</entry>
+					<entry>trim한 문자열이 null 또는 공백일 경우 참 반환</entry>
+					<entry>StringUtil.isEmptyTrimmed("   ")</entry>
+				</row>
+				<row>
+					<entry><emphasis role="bold">replace</emphasis>(String str, String replacedStr, String replaceStr)</entry>
+					<entry>입력된 문자열에 대해서 해당하는 character를 찾아 주어진 문자열로 변경</entry>
+					<entry>StringUtil.replace("Anyframe/Common", "/", "|")="Anyframe|Common"</entry>
+				</row>
+				<row>
+					<entry><emphasis role="bold">containsMaxSequence</emphasis>(String str, String maxSeqNumber)</entry>
+					<entry>입력된 문자열에 대해서 같은 character가 동일하게 반복하는지 체크</entry>
+					<entry>StringUtil.containsMaxSequence("abbbbc", "4")=true</entry>
+				</row>
+				<row>
+					<entry><emphasis role="bold">containsInvalidChars</emphasis>(String str, char[] invalidChars)</entry>
+					<entry>입력된 문자열이 주어진 character들을 포함하는지 체크</entry>
+					<entry>StringUtil.containsInvalidChars("abc*abc", "*")=true</entry>
+				</row>
+				<row>
+					<entry><emphasis role="bold">containsInvalidChars</emphasis>(String str, String invalidChars)</entry>
+					<entry>입력된 문자열이 주어진 character들을 포함하는지 체크</entry>
+					<entry>StringUtil.containsInvalidChars("abc/", new char[] { '*', '/' })=true</entry>
+				</row>
+				<row>
+					<entry><emphasis role="bold">isAlphaNumeric</emphasis>(String str)</entry>
+					<entry>입력된 문자열이 숫자와 유니코드문자로만 구성되어있는지 체크</entry>
+					<entry>StringUtil.isAlphaNumeric("abcfds")=true</entry>
+				</row>
+				<row>
+					<entry><emphasis role="bold">isAlpha</emphasis>(String str)</entry>
+					<entry>입력된 문자열이 유니코드 문자로만 구성되었는지 체크</entry>
+					<entry>StringUtil.isAlpha("abcfds")=true</entry>
+				</row>
+				<row>
+					<entry><emphasis role="bold">getTokens</emphasis>(String lst, String separator)</entry>
+					<entry>입력된 문자열을 주어진 separator에 대해서 분리 후 List&lt;String&gt;으로 반환</entry>
+					<entry>StringUtil.getTokens("Anyframe/Java/Test", "/")</entry>
+				</row>
+				<row>
+					<entry><emphasis role="bold">getTokens</emphasis>(String lst)</entry>
+					<entry>입력된 문자열을 ,(콤마)에 대해서 분리 후 List&lt;String&gt;으로 반환</entry>
+					<entry>StringUtil.getTokens("Anyframe,Java,Test")</entry>
+				</row>
+			</tbody>
+		</tgroup>  
+	</informaltable>
+</chapter>

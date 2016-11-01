@@ -35,7 +35,7 @@ public class MovieForm extends DefaultForm {
 	private Long runtime;
 	private String releaseDate;
 	private Float ticketPrice;
-	private String nowPlaying = "Y";
+	private String nowPlaying;
 	private String posterFile;
 	private FormFile realPosterFile;
 
@@ -128,7 +128,7 @@ public class MovieForm extends DefaultForm {
 	}
 
 	public String toString() {
-		StringBuffer sb = new StringBuffer(getClass().getSimpleName());
+		StringBuilder sb = new StringBuilder(getClass().getSimpleName());
 
 		sb.append(" [");
 		sb.append("MovieId").append("='").append(getMovieId()).append("', ");

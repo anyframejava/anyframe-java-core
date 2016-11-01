@@ -1,0 +1,178 @@
+<chapter id="hibernate_hibernate_criteria">
+	<title>Criteria Queries</title>
+    <para>
+    	Hibernate에서는 HQL에 익숙하지 못하거나 HQL 작성시 발생할 수 있는 오타로 인한 오류를 최소화 하기 위해 org.hibernate.
+    	Criteria API를 사용할 수 있도록 한다. Criteria API 호출을 통해 특정 객체에 대한 조회가 가능하고 org.hibernate.
+    	criterion.Restrictions API 호출을 통해 WHERE문에 해당하는 기본 조회 조건을 정의할 수 있다.
+    </para>
+
+	<section id="hibernate_hibernate_criteria_instruction">
+		<title>기본적인 사용 방법</title>
+
+		<para>Hibernate Criteria를 이용하여 특정 객체 정보에 대해 조회할 수 있다.</para>
+
+		<section id="hibernate_hibernate_criteria_instruction_basic">
+			<title>Case 1. Basic</title>
+
+			<para>
+				다음은 하나의 테이블을 대상으로 Criteria를 이용하여 조회를 수행하는 예이다. 
+<programlisting language="java"><![CDATA[Criteria criteria = ]]><emphasis role="bold"><![CDATA[session.createCriteria(Country.class);]]></emphasis>
+<![CDATA[criteria.]]><emphasis role="bold"><![CDATA[add(Restrictions.]]></emphasis><![CDATA[like("countryName", "", MatchMode.ANYWHERE));]]>
+<![CDATA[criteria.]]><emphasis role="bold"><![CDATA[addOrder(Order.asc("countryName"));]]></emphasis>
+<![CDATA[List countryList = criteria.list();]]></programlisting>
+			</para>
+
+			<para>
+				대상이 되는 테이블과 매핑되는 클래스로 Criteria를 생성하고 Restriction API를 호출해 WHERE조건에 해당하는 조건절을 
+				정의할 수 있다. 위와 같이 정의 한 경우 WHERE Country.countryNamelike '%%'와 같은 조건절이 생성된다. 또한 addOrder
+				()를 통해 order by절을 정의할 수 있다. 이와 같이 Criteria API를 이용할 경우 메소드를 통해 검색 조건을 정의하기 때문에 
+				오타로 인한 오류를 최소화할 수 있게 된다. 조회 조건을 정의하기 위한 org.hibernate.criterion.Restrictions 는 eq, gt,
+				ge, isNull 등을 비롯하여 다양한 API를 제공하고 있다. 보다 자세한 내용을 알기 위해서는 <ulink
+        		url="http://www.redhat.com/docs/en-US/JBoss_Hibernate/3.2.4.sp01.cp03/html-single/Reference_Guide/index.html#Criteria_Queries">여기</ulink>
+        		를 참고하도록 한다.
+        	</para>
+		</section>
+
+		<section id="hibernate_hibernate_criteria_instruction_join">
+			<title>Case 2. Join</title>
+
+			<para>
+				Relation 관계에 놓여 있는 두개의 테이블을 대상으로 Hibernate Criteria(Inner Join)를  이용한 조회 작업을 수행할 수
+				있다. 
+                <programlisting language="java"><![CDATA[Criteria movieCriteria = session.createCriteria(Movie.class);]]>
+<![CDATA[Criteria categoryCriteria = ]]><emphasis role="bold"><![CDATA[movieCriteria.createCriteria("categories");]]></emphasis>
+<![CDATA[categoryCriteria.add(Restrictions.eq("categoryName", "Romantic"));]]>
+<![CDATA[List movieList = movieCriteria.list();]]></programlisting>
+			</para>
+
+        	<para>
+        		위 코드에서는 Movie 클래스와 Relation 관계에 놓인 Category를 Join하기 위해 각 Movie 객체에 해당하는 Criteria에 
+        		Category 객체에 해당하는 Criteria를 생성하고 있다. 여기서는 Restrictions API를 사용하여 categoryName = 
+        		'Romantic'인 결과값을 찾게될 것이다.
+        	</para>
+
+			<para>
+				또한, Relation 관계에 놓여 있는 두개의 테이블을 대상으로 Hibernate Criteria(Left Outer Join)을 이용한 조회 작업을
+				수행할 수 있다. 
+                <programlisting language="java"><![CDATA[Criteria categoryCriteria = session.createCriteria(Category.class);]]>
+<![CDATA[Criteria movieCriteria = categoryCriteria.createCriteria("movies",]]>
+        <emphasis role="bold"><![CDATA[CriteriaSpecification.LEFT_JOIN);]]></emphasis>
+<![CDATA[categoryCriteria.addOrder(Order.asc("categoryName"));
+categoryCriteria.setResultTransformer(Criteria.DISTINCT_ROOT_ENTITY);
+
+List categoryList = categoryCriteria.list();]]></programlisting>
+			</para>
+
+        	<para>
+        		Relation 관계에 있는 테이블의 Criteria를 생성할 때 CriteriaSpecification을 통해 LEFT_JOIN, RIGHT_JOIN 등을 
+        		명시할수 있다. 또한 Criteria.DISTINCT_ROOT_ENTITY를 사용하면 List에 중복 포함된 루트 개체를 제거할 수 있다. 
+        		위에서 설명된 코드들은 HibernateBasicCriteria.java 에서 확인할 수 있다.
+        	</para>
+		</section>
+	</section>
+
+	<section id="hibernate_hibernate_criteria_transformer">
+		<title>원하는 객체 형태로 전달</title>
+
+		<para>
+			Criteria의 setResultTransformer 메소드를 사용하여 Criteria를 이용한 조회 결과를 별도 정의한 객체 형태로 전달받을 수 
+			있다.
+		</para>
+
+		<section id="hibernate_hibernate_criteria_movie">
+			<title>Case 1. 특정 객체 형태로 전달</title>
+
+        	<para>
+        		Relation 관계에 놓여 있는 두개의 테이블을 대상으로 Criteria를 이용한 조회 결과를 특정 객체인 Movie 객체 형태로 
+        		전달받을 수 있다. 
+                <programlisting language="java"><![CDATA[Criteria movieCriteria = session.createCriteria(Movie.class);
+ProjectionList projectionList = Projections.projectionList();
+projectionList.add(Projections.id().as("movieId"));
+projectionList.add(Projections.property("title").as("title"));
+projectionList.add(Projections.property("director").as("director"));
+movieCriteria.setProjection(projectionList);]]>
+<emphasis role="bold"><![CDATA[movieCriteria.setResultTransformer(new AliasToBeanResultTransformer(Movie.class));]]></emphasis>
+
+<![CDATA[Criteria categoryCriteria = movieCriteria.createCriteria("categories", "category");
+Criteria countryCriteria = movieCriteria.createCriteria("country", "country");
+categoryCriteria.add(Restrictions.eq("categoryName", "Romantic"));
+countryCriteria.add(Restrictions.like("countryName", "", MatchMode.ANYWHERE));
+
+List movieList = movieCriteria.list();]]></programlisting>
+			</para>
+
+			<para>
+				ProjectionList에 SELECT 절을 구성할 조회 대상 attribute들을 추가시키고 as() 메소드를 이용하여 각각의 attribute에 
+				대한 alias를 정의할 수 있다. AliasToBeanResultTransformer 클래스를 사용하여 조회 결과의 형태를 Movie 클래스로 
+				지정해준다. 따라서 위에서 정의한 Criteria 수행 결과는 Movie 객체의 List 형태가 될 것이다. 
+				<programlisting language="java"><![CDATA[Movie movie1 = (Movie) movieList.get(0);
+movie1.getTitle();
+movie1.getDirector();]]></programlisting>
+    		</para>
+		</section>
+
+      	<section id="hibernate_hibernate_criteria_map">
+        	<title>Case 2. Map 형태로 전달</title>
+
+        	<para>
+        		Relation 관계에 놓여 있는 두개의 테이블을 대상으로 Criteria를 이용한 조회 결과를 Map 형태로 전달받을 수 있다. 
+                <programlisting language="java"><![CDATA[Criteria movieCriteria = session.createCriteria(Movie.class);]]>
+<![CDATA[ProjectionList projectionList = Projections.projectionList();
+projectionList.add(Projections.id().as("movieId"));
+projectionList.add(Projections.property("title").as("title"));
+projectionList.add(Projections.property("director").as("director"));
+movieCriteria.setProjection(projectionList);]]>
+<emphasis role="bold"><![CDATA[movieCriteria.setResultTransformer(Criteria.ALIAS_TO_ENTITY_MAP);]]></emphasis>
+
+<![CDATA[Criteria categoryCriteria = movieCriteria.createCriteria("categories","category");
+Criteria countryCriteria = movieCriteria.createCriteria("country","country");
+categoryCriteria.add(Restrictions.eq("categoryName", "Romantic"));
+countryCriteria.add(Restrictions.like("countryName", "",MatchMode.ANYWHERE));
+
+List movieList = movieCriteria.list();]]></programlisting>
+			</para>
+
+        	<para>
+        		위에서 생성한 Criteria의 resultTransformer를 ALIAS_TO_ENTITY_MAP으로 지정하여 Map 형태의 결과값으로 
+        		전달 받을 수 있다. 이 때 조회 결과는 Map의 List 형태이며, alias로 정의한 movieId, title, director 등이 
+        		Map의 Key 값이 된다. 따라서 다음과 같이 Map의 Key 값을 통해 다음과 같이 결과값을 알아낼 수 있다. 
+                <programlisting language="java"><![CDATA[Map movie1 = (Map) movieList.get(0);
+movie1.get("title");
+movie1.get("director");]]></programlisting>
+			</para>
+
+        	<para>
+        		위에서 언급된 코드는 HibernateCriteriaWithDefinedResult.java 에서 확인할 수  있다.
+        	</para>
+      	</section>
+    </section>
+
+    <section id="hibernate_hibernate_criteria_pagination">
+		<title>Pagination</title>
+
+      	<para>
+      		Criteria를 이용하여 객체 조회시 페이징 처리된 결과를 얻기 위한 방법에 대해 알아본다. HQL을 사용한 Pagination과 마찬가지로
+      		시작해야 하는 Row의 Number(FirstResult)와 조회 목록의  개수(MaxResult)를 정의함으로써, 페이징 처리를 할 수 있다. 
+      		사용 예는 다음과 같다. 
+            <programlisting language="java"><![CDATA[Criteria criteria = session.createCriteria(Movie.class);]]>
+<emphasis role="bold"><![CDATA[criteria.setFirstResult(1);]]></emphasis>
+<emphasis role="bold"><![CDATA[criteria.setMaxResults(2);]]></emphasis>
+<![CDATA[List movieList = criteria.list();]]></programlisting>
+		</para>
+
+      	<para>
+      		위와 같이 정의할 경우 Hibernate Configuration 파일(hibernate.cfg.xml)에 정의된 hibernate.dialect 속성에 따라 
+      		각각의 DB에 맞는 SQL을 생성한다. 이는 Pagination을 할 때 모든 데이터를 읽은 후 해당 페이지에 속한 데이터 갯수를 결과값
+      		으로 전달하는 것이 아니라 조회해야할 데이터 즉, 해당 페이지에 속한 갯수만큼의 데이터만 읽어오게 된다. 다음은 
+      		hibernate.dialect를 HSQL DB로 정의하였을 때 페이징 처리가 되어 수행된 쿼리문이다. 
+            <programlisting>select <emphasis role="bold">limit 1 2</emphasis> <![CDATA[this_.MOVIE_ID as MOVIE1_3_0_, this_.COUNTRY_CODE as COUNTRY2_3_0_,
+    this_.TITLE as TITLE3_0_, this_.DIRECTOR as DIRECTOR3_0_, 
+    this_.RELEASE_DATE as RELEASE5_3_0_ from PUBLIC.MOVIE this_ ]]></programlisting></para>
+
+      	<para>
+      		위의 코드에서 정의한 것처럼 첫번째로 조회해야 할 항목의 번호를 1, 조회 항목의 전체 개수를 2로 정의하였으므로
+      		Hibernate에서는 HSQL DB의 특성에 맞게 'limit 1 2'가 추가된 SQL을 실행하여 페이징 처리를 수행하였다.
+      		위의 코드는 HibernateCriteriaPaging.java 에서 확인할 수 있다.
+      	</para>
+	</section>
+</chapter>

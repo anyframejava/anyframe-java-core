@@ -1,0 +1,84 @@
+<chapter id="jquery_upload">
+	<title>Upload</title>
+	<para>
+		jQuery와 AJAX를 활용한 Multi file 첨부기능을 구현하여 제공하고 있다.
+	</para> 
+	<section id="jquery_upload_sec001">
+		<title>uploadify 소개</title>
+			<para>
+				uploadify는 jquery와 flash Object를 통하여 간편하게 multi file 첨부를 구현할 수 있게 해주는 오픈소스 컴포넌트이다.
+  자세한 내용은 <ulink url="http://www.uploadify.com/">http://www.uploadify.com/</ulink> 사이트를 참조하기 바란다.
+  			</para>
+	</section>
+	
+	<section id="jquery_upload_sec002">
+		<title>jqueryUpload.js</title>
+		<para>
+			jquery plugin에서는 uploadify를 사용하여 파일첨부를 구현한 별도의 서브셋을 jqueryUpload.js 에 별도로 구현하였다. 
+  이를 통해서 파일 첨부 관련 코드가 비즈니스 로직에 추가되는 것을 최소화하도록 의도된 것이다. 
+		</para>
+		<para>파일 업로드 컴포넌트는 다음과 같이 인스턴스화 시킨다.</para>
+		<programlisting><![CDATA[$(document).ready(function() {
+	$('#uploadPane').attachment({
+		'contextRoot' : '${ctx}',
+		'callBack' : function() {
+			savePost(); // after file upload
+		}
+	});
+});]]></programlisting>
+		<para>위의 코드에서 'uploadPane', 즉, 첨부파일 UI가 표시될 영역은 게시물 등록 form 인 "dialog-form" 영역에 선언되어 있다.</para>
+		<programlisting><![CDATA[<!-- board form start -->
+<form:form id="dialog-form" name="dialog-form" title="Board Form">
+	<fieldset>
+		<input type="hidden" name="postId" id="boardPostId">
+		<input type="hidden" name="regId" id="boardRegId">
+		<input type="hidden" name="regDate" id="boardRegDate">
+		<table summary="jquery" width="100%">
+			... 중략 ...
+			<tr>
+				<td><label><spring:message code="board.attach" /></label></td>
+				<td>
+					<div id="uploadPane"></div>
+					<input type="hidden" name="refId" id="refId" value=""/>
+				</td>
+			</tr>
+		</table>
+	</fieldset>
+</form:form>
+<!-- board form end -->]]></programlisting>
+		<para>파일을 업로드한 후 실제 게시물을 등록시켜야 하므로 실제로 게시물을 저장하는 스크립트 함수인 savePost()를 callback으로 선언한다.</para>
+		<para>등록의 경우 첨부된 파일 첨부 대표 ID(Reference ID)는 AnyframeUpload.options.refId에 저장되어 있으므로 이를 파라메터로 전달하여 게시물 정보에 저장될 수 있도록 한다.</para>
+		<para>여기서는 Reference ID를 게시물 ID와 일치시키도록 하였으므로 BoardServiceImpl.create()에서 다음과 같이 처리하여야 한다.</para>
+		<programlisting><![CDATA[@Service("jqueryBoardService")
+@Transactional(rollbackFor = { Exception.class })
+public class BoardServiceImpl implements BoardService{
+
+	@Inject
+	@Named("jqueryUploadInfoService")
+	private UploadInfoService uploadService;
+
+	public int create(Board board, String fileRefId) throws Exception {
+		SimpleDateFormat formatter = new SimpleDateFormat("yyyyMMddHHmmssSSS", new Locale("ko", "KR"));
+		String postId = "POST-" + formatter.format(new Date());
+		board.setPostId(postId);
+		board.setRegDate((new SimpleDateFormat("yyyy/MM/dd")).format(new Date()));
+		int r = boardDao.create(board);
+		if(r > 0) uploadService.updateFileRefId(fileRefId, postId); // reference id를 post id와 일치시킨다.
+		return r;
+	}
+
+... 중략 ...
+}]]></programlisting>
+		<note>
+			<para>
+				※ jqueryUpload.js 내에 구현된 내용은 하나의 구현 사례이므로 구현 요건에 따라 자유롭게 재구성될 수 있다. 
+			</para>
+		</note>
+		<para>다음은 uploadify와 jqueryUpload.js를 활용하여 파일첨부 기능을 구현한 것이다.</para>
+		<mediaobject>
+			<imageobject>
+				<imagedata fileref="../image/jquery/upload001.jpg"	align="center" />
+			</imageobject>
+		</mediaobject>
+	</section>
+</chapter>

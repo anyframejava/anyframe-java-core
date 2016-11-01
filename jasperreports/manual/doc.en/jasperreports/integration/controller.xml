@@ -1,0 +1,104 @@
+<chapter id="jasperreports_integration_controller">
+	<title>Controller</title>
+	<para>
+		Reporting functions provided in Anyframe basically include all the JasperReports functions, 
+		but because integrated with Spring MVC, some JasperReports functions are not provided through Spring MVC. 
+		In this case the developer has to extend the view class or do additional work to the Controller class. 
+		In the cases below, Anyframe already provides the extended version to ease the additional work of developers.
+    </para>
+
+    <itemizedlist>
+    	<listitem>
+        	<para>
+        		HTML Reporting- Partially in need of additional work by developer
+        	</para>
+      	</listitem>
+    </itemizedlist>
+
+    <section id="jasperreports_integration_controller_html">
+		<title>HTML Reporting</title>
+
+		<para>
+			To display image file in HTML, the view class provided by Spring MVC needs to be extended 
+			and additional work needs to be done for the Controller class. 
+			Expansion of the view class provided by Spring MVC is done by Anyframe, so it is not a concern for the developer. 
+			However, additional work for the Controller class requires the developer to save request information of Controller that the developer is to develop in the Model object. 
+			This work should be developed following the codes below.
+      	</para>
+
+      	<itemizedlist>
+        	<listitem>
+          		<para>
+          			JasperReportsMultiFormatView expansion - After receiving session object through request as below within the rederReport method, save populatedReport value with attribute in object. 
+          			This is needed to display image file during HTML Reporting. (Only for reference. In fact, the developer does not have anything to do.)
+          			<programlisting language="java">protected void renderReport(JasperPrint populatedReport, Map model,
+        HttpServletResponse response) throws Exception {
+    // Check for request object and set image servlet
+    if (model.containsKey("requestObject")) {
+        HttpServletRequest request = (HttpServletRequest) model.get("requestObject");
+        request.getSession().setAttribute(ImageServlet.DEFAULT_jasperreports_PRINT_SESSION_ATTRIBUTE,
+                populatedReport);
+    }
+}</programlisting></para>
+        	</listitem>
+
+        	<listitem>
+          		<para>
+          			Additional work for <emphasis role="bold">Controller </emphasis> - To receive "requestObject" value from model object as above, 
+          			the request object should be stored in the Controller class model object. 
+          			Examples of ReportController class for reporting according to the product register status of each category is as follows.
+          			<programlisting language="java">@Controller
+public class ReportController extends MultiActionController {
+    @RequestMapping("/testReport.*")
+    public ModelAndView viewReport(HttpServletRequest request,
+                                   HttpServletResponse response) 
+    throws Exception {
+    ...
+      Map model = new HashMap();
+      <emphasis role="bold"><emphasis>model.put</emphasis></emphasis>("format", format);
+      <emphasis role="bold">model.put</emphasis>("<emphasis role="bold">requestObject</emphasis>", <emphasis
+                role="bold">request</emphasis>);
+        
+      return new ModelAndView("reportView", model);
+    }
+}</programlisting>
+				</para>
+			</listitem>
+
+        	<listitem>
+				<para>
+					Additional work for <emphasis role="bold">JSP </emphasis> - Examples for callingreEport on JSP are as follows. 
+					Reports are called in testReport.html or testReport.pdf form.					
+					<programlisting>
+<![CDATA[<table class="table" border="1">
+    <tr>
+        <td class="ct_list_b"><b>Report Style</b></td>
+        <td class="ct_list_b"><b>Report</b<>/td>
+    </tr>
+    <tr class="ct_list_pop">
+        <td align="center"HTML></td>
+        <td>
+            <a href="${ctx}/reports/]]><emphasis role="bold">testReport.html</emphasis>"
+                <![CDATA[<font color="blue">
+                    <u>Show Product Report</u>
+                </font>
+            </a>                
+        </td>
+    </tr>
+    <tr class="ct_list_pop">
+        <td align="center">PDF</td>
+        <td>
+            <a href="${ctx}/reports/]]><emphasis role="bold">testReport.pdf</emphasis>"<![CDATA[>
+                <font color="blue">
+                    <u>Show Product Report</u>
+                </font>
+            </a>
+        </td>
+    </tr>
+</table>]]>
+</programlisting>
+				</para>
+			</listitem>
+		</itemizedlist>
+	</section>
+</chapter>

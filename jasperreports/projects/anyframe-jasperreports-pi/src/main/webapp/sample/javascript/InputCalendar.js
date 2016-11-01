@@ -15,9 +15,10 @@ function popUpCalendar(obj, division) {
 
 	var top = document.body.clientTop + GetObjectTop(obj);
 	var left = document.body.clientLeft + GetObjectLeft(obj);
-	calendar = document.all.minical;
-	calendar.style.top = top + obj.offsetHeight;
-	calendar.style.left = left + 150;
+//	calendar = document.all.minical;
+	calendar = document.getElementById("minical");
+	calendar.style.top = top + obj.offsetHeight + "px";
+	calendar.style.left = left + 110 + "px";
 	calendar.style.display = '';
 	
 	if (now.length == 3) {		
@@ -48,10 +49,10 @@ function GetObjectLeft(obj)
 
 
 function showCalendar(sYear, sMonth, sDay, division) {
-	var Months_day = new Array(0,31,28,31,30,31,30,31,31,30,31,30,31)
+	var Months_day = new Array(0,31,28,31,30,31,30,31,31,30,31,30,31);
 	//var Weekday_name = new Array("일", "월", "화", "수", "목", "금", "토");
 	var intThisYear = new Number(), intThisMonth = new Number(), intThisDay = new Number();
-	document.all.cal.innerHTML = "";
+	document.getElementById("cal").innerHTML = "";
 	datToday = new Date();													// 현재 날자 설정
 	
 	intThisYear = parseInt(sYear);
@@ -82,8 +83,8 @@ function showCalendar(sYear, sMonth, sDay, division) {
 				intNextMonth = parseInt(intThisMonth) + 1;
 				break;
 	}
-	intPPyear = intThisYear-1
-	intNNyear = intThisYear+1
+	intPPyear = intThisYear-1;
+	intNNyear = intThisYear+1;
 
 	NowThisYear = datToday.getFullYear();										// 현재 년
 	NowThisMonth = datToday.getMonth()+1;										// 현재 월
@@ -104,7 +105,7 @@ function showCalendar(sYear, sMonth, sDay, division) {
 	secondPrintDay = 1;
 	thirdPrintDay = 1;
 
-	Stop_Flag = 0
+	Stop_Flag = 0;
 	
 	if ((intThisYear % 4)==0) {													// 4년마다 1번이면 (사로나누어 떨어지면)
 		if ((intThisYear % 100) == 0) {
@@ -117,21 +118,21 @@ function showCalendar(sYear, sMonth, sDay, division) {
 	}
 	intLastDay = Months_day[intThisMonth];										// 마지막 일자 구함
 
-	Cal_HTML = "<table id=Cal_Table border=0 bgcolor='#f4f4f4' cellpadding=1 cellspacing=1 width=100% onmouseover='doOver()' onmouseout='doOut()' style='font-size : 12;font-family:굴림;'>";
-	Cal_HTML += "<tr align=center bgcolor='#f4f4f4'>";
-	Cal_HTML += "<td colspan=7 align=center>";
-	Cal_HTML += "<a style='cursor:hand;' OnClick='showCalendar("+intPPyear+","+intThisMonth+","+intThisDay+",\""+division+"\");'>◀</a>";
-	Cal_HTML += "&nbsp;&nbsp;<a style='cursor:hand;' OnClick='showCalendar("+intPrevYear+","+intPrevMonth+","+intThisDay+",\""+division+"\");'>&lt;</a> ";
+	Cal_HTML = "<table id='Cal_Table' border='0' bgcolor='#f4f4f4' cellpadding='1' cellspacing='1' width='100%' onmouseover='doOver(event)' onmouseout='doOut(event)' style='font-size : 12;font-family:굴림;'>";
+	Cal_HTML += "<tr align='center' bgcolor='#f4f4f4'>";
+	Cal_HTML += "<td colspan='7' align='center'>";
+	Cal_HTML += "<a style='cursor:pointer !important; cursor:hand;' onclick='showCalendar("+intPPyear+","+intThisMonth+","+intThisDay+",\""+division+"\");'>◀</a>";
+	Cal_HTML += "&nbsp;&nbsp;<a style='cursor:pointer !important; cursor:hand;' onclick='showCalendar("+intPrevYear+","+intPrevMonth+","+intThisDay+",\""+division+"\");'>&lt;</a> ";
 	Cal_HTML += intThisYear +"년 "+ intThisMonth +"월";
-	Cal_HTML += " <a style='cursor:hand;' OnClick='showCalendar("+intNextYear+","+intNextMonth+","+intThisDay+",\""+division+"\");'>&gt;</a>";
-	Cal_HTML += "&nbsp;&nbsp;<a style='cursor:hand;' OnClick='showCalendar("+intNNyear+","+intThisMonth+","+intThisDay+",\""+division+"\");'>▶</a>";
+	Cal_HTML += " <a style='cursor:pointer !important; cursor:hand;' onclick='showCalendar("+intNextYear+","+intNextMonth+","+intThisDay+",\""+division+"\");'>&gt;</a>";
+	Cal_HTML += "&nbsp;&nbsp;<a style='cursor:pointer !important; cursor:hand;' onclick='showCalendar("+intNNyear+","+intThisMonth+","+intThisDay+",\""+division+"\");'>▶</a>";
 	Cal_HTML += "</td></tr>";
-	Cal_HTML += "<tr align=center bgcolor='#87B3D6' style='color:#2065DA;' >";
-	Cal_HTML += "<td style='padding-top:3px;'><font color=black>일</td><td style='padding-top:3px;'><font color=black>월</td><td style='padding-top:3px;'><font color=black>화</td><td style='padding-top:3px;'><font color=black>수</td><td style='padding-top:3px;'><font color=black>목</td><td style='padding-top:3px;'><font color=black>금</td><td style='padding-top:3px;'><font color=black>토</td></font>";
+	Cal_HTML += "<tr align='center' bgcolor='#87B3D6' style='color:#2065DA;' >";
+	Cal_HTML += "<td style='padding-top:3px;'><font color='black'>일</font></td><td style='padding-top:3px;'><font color='black'>월</font></td><td style='padding-top:3px;'><font color='black'>화</font></td><td style='padding-top:3px;'><font color='black'>수</font></td><td style='padding-top:3px;'><font color='black'>목</font></td><td style='padding-top:3px;'><font color='black'>금</font></td><td style='padding-top:3px;'><font color='black'>토</font></td>";
 	Cal_HTML += "</tr>";
 		
 	for (intLoopWeek=1; intLoopWeek < 7; intLoopWeek++) {						// 주단위 루프 시작, 최대 6주
-		Cal_HTML += "<tr align=right bgcolor='white'>"
+		Cal_HTML += "<tr align='right' bgcolor='white'>"
 		for (intLoopDay=1; intLoopDay <= 7; intLoopDay++) {						// 요일단위 루프 시작, 일요일 부터
 			if (intThirdWeekday > 0) {											// 첫주 시작일이 1보다 크면
 				Cal_HTML += "<td>";
@@ -140,20 +141,20 @@ function showCalendar(sYear, sMonth, sDay, division) {
 				if (thirdPrintDay > intLastDay) {								// 입력 날짝 월말보다 크다면
 					Cal_HTML += "<td>";
 				} else {														// 입력날짜가 현재월에 해당 되면
-					Cal_HTML += "<td onClick=parent.calendarClick(this); title="+intThisYear + "-" +  day2(intThisMonth).toString() + "-" + day2(thirdPrintDay).toString()+" style=\"cursor:Hand;border:1px solid white;";
+					Cal_HTML += "<td onclick='parent.calendarClick(this);' title='"+intThisYear + "-" +  day2(intThisMonth).toString() + "-" + day2(thirdPrintDay).toString()+"' style=\"cursor:pointer !important; cursor:hand;border:1px solid white;";
 					if (intThisYear == NowThisYear && intThisMonth==NowThisMonth && thirdPrintDay==intThisDay) {
 						Cal_HTML += "background-color:#C6F2ED;";
 					}
 					
 					switch(intLoopDay) {
 						case 1:													// 일요일이면 빨간 색으로
-							Cal_HTML += "color:red;"
+							Cal_HTML += "color:red;";
 							break;
 						//case 7:
 						//	Cal_HTML += "color:blue;"
 						//	break;
 						default:
-							Cal_HTML += "color:black;"
+							Cal_HTML += "color:black;";
 							break;
 					}
 					
@@ -172,29 +173,37 @@ function showCalendar(sYear, sMonth, sDay, division) {
 		if (Stop_Flag==1) break;
 	}
 	Cal_HTML += "</table>";
-	document.all.cal.innerHTML = Cal_HTML;
+	document.getElementById("cal").innerHTML = Cal_HTML;
 
 	// 달력 출력이 완료되면 iframe의 크기를 재조정한다.
-//	var Cal_Table = document.all.Cal_Table;
+//	var Cal_Table = document.getElementById("minical").Cal_Table;
 //	window.resizeTo(158, Cal_Table.offsetHeight);
 
 }
 
-	function doOver() {
-		var el = event.srcElement;
-		cal_Day = el.title;
+	function doOver(event) {
+		if (window.event) 
+			event = window.event; 
+         var srcElement = event.srcElement? event.srcElement : event.target; 
+
+		cal_Day = srcElement.title;
 		if (cal_Day.length > 7) {
-			el.style.borderTopColor = el.style.borderLeftColor = "buttonhighlight";
-			el.style.borderRightColor = el.style.borderBottomColor = "buttonshadow";
+			srcElement.style.borderTopColor = "buttonhighlight";
+			srcElement.style.borderLeftColor = "buttonhighlight";
+			srcElement.style.borderRightColor = "buttonshadow";
+			srcElement.style.borderBottomColor = "buttonshadow";
 		}
 	}
 
-	function doOut() {
-		var el = event.srcElement;
-		cal_Day = el.title;
-
+	function doOut(event) {
+		if (window.event) 
+			event = window.event; 
+		
+		var srcElement = event.srcElement? event.srcElement : event.target; 
+		cal_Day = srcElement.title;
+		
 		if (cal_Day.length > 7) {
-			el.style.borderColor = "white";
+			srcElement.style.borderColor = "white";
 		}
 	}
 
@@ -220,7 +229,7 @@ function showCalendar(sYear, sMonth, sDay, division) {
 	function calendarClick(e) {
 		cal_Day = e.title;
 		if (cal_Day.length > 6) {
-			targetObj.value = cal_Day
+			targetObj.value = cal_Day;
 		}	
 		calendar.style.display='none';
 	}

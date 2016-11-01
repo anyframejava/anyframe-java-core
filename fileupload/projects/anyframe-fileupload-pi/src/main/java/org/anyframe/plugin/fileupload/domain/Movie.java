@@ -17,6 +17,8 @@ package org.anyframe.plugin.fileupload.domain;
 
 import java.io.Serializable;
 import java.util.Date;
+import java.util.List;
+import java.util.ArrayList;
 
 import javax.validation.constraints.DecimalMax;
 import javax.validation.constraints.Digits;
@@ -66,13 +68,37 @@ public class Movie implements Serializable {
 	private String posterFile;
 
 	private String nowPlaying = "Y";
+	
+	private String fileRefId;
+	
+	//private List<String> fileList;
+	
+	//private Set<AttachedFile> attachedFiles = new HashSet<AttachedFile>(0);
+
+	private List<AttachedFile> attachedFiles = new ArrayList<AttachedFile>();
+
+	public List<AttachedFile> getAttachedFiles() {
+		return attachedFiles;
+	}
+
+	public void setAttachedFiles(List<AttachedFile> attachedFiles) {
+		this.attachedFiles = attachedFiles;
+	}
+
+	public String getFileRefId() {
+		return fileRefId;
+	}
+
+	public void setFileRefId(String fileRefId) {
+		this.fileRefId = fileRefId;
+	}
 
 	public Movie() {
 	}
 
 	public Movie(String movieId, String title, String director, Genre genre,
 			Date releaseDate, Float ticketPrice, String actors, Long runtime,
-			String nowPlaying, String posterFile) {
+			String nowPlaying, String posterFile, String fileRefId) {
 		this.movieId = movieId;
 		this.title = title;
 		this.director = director;
@@ -83,13 +109,14 @@ public class Movie implements Serializable {
 		this.runtime = runtime;
 		this.nowPlaying = nowPlaying;
 		this.posterFile = posterFile;
+		this.fileRefId = fileRefId;
 	}
 
 	public Movie(String movieId, String title, String director, Genre genre,
 			Date releaseDate, Float ticketPrice, String actors, Long runtime,
-			String nowPlaying) {
+			String nowPlaying, String fileRefId) {
 		this(movieId, title, director, genre, releaseDate, ticketPrice, actors,
-				runtime, nowPlaying, "");
+				runtime, nowPlaying,  "", fileRefId);
 	}
 
 	public String getMovieId() {

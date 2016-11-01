@@ -1,0 +1,145 @@
+<chapter id="core_springmvcextensions_taglibrary">
+	<title>Tag library</title>
+	    <para>
+	    	Anyframe 에서는 개발자들이 자바 코드를 사용하지 않고 보다 쉽게 JSP 페이지를 구현할 수 있도록 다음과 같은
+    		Anyframe Tag Library를 제공한다.
+    	</para>
+
+	<section id="core_springmvcextensions_taglibrary_pagenavigator">
+	<title>Page Navigator Tag</title>
+
+		<para>
+			Anyframe 에서는 Page 처리에 대한 구현이 편리하도록 page 관련 Tag Library인 Page
+      		Navigator Tag를 제공한다. 이 태그를 사용하면 리스트 화면을 출력할 때 Tag Library를 사용하여 간단히 Page
+      		Navigator를 출력해줄 수 있다. 이 태그를 사용하기 위해 JSP의 상단에 다음과 같이
+      		anyframe-pagenavigator.tld 파일을 taglib으로 지정해 준다.
+      		<programlisting
+      		language="xml"><![CDATA[<%@ taglib uri='/WEB-INF/anyframe-page.tld' prefix='anyframe' %>]]></programlisting>
+      	</para>
+
+		<para>
+      		prefix를 'anyframe'으로 정의할 경우 아래와 같이 태그를 사용할 수 있다. 
+      		<programlisting	language="xml"><![CDATA[<anyframe:pagenavigator linkUrl="javascript:fncGetUserList(2);"]]> 
+    <emphasis role="bold">pages</emphasis><![CDATA[="<%=resultPage%>" formName="listForm"/>]]></programlisting>
+		</para>
+		
+		<para>
+			단, Anyframe에서 제공하는 Page Navigator Tag를 통해 생성되는 Page Navigator의 스타일은 CSS(Cascading Style Sheet) 기반으로 정의된다는 것을 기억해야 한다.
+			이는 개발자가 Page Navigator의 스타일을 자유롭게 변경할 수 있도록 지원하기 위함이다. (Core 1.0.1 이후) 
+			따라서 Page Navigator Tag를 포함하고 있는 JSP 내에서 다음과 같은 서식을 가진 클래스들을 인식할 수 있도록 해야 한다. 
+		</para>
+
+		<programlisting	language="xml">.page           {font-size: 12px; color: #3D3D3D; text-decoration: none; font-family: "verdana";}
+.page A:link    {font-size: 12px; color: #3D3D3D; text-decoration: none; font-family: "verdana";}  
+.page A:visited {font-size: 12px; color: #3D3D3D; text-decoration: none; font-family: "verdana";}
+.page A:active  {font-size: 12px; color: #3D3D3D; text-decoration: none; font-family: "verdana";}
+.page A:hover   {font-size: 12px; color: #5980a4; text-decoration:underline; font-family: "verdana";}
+
+.page_first 	{width: 15; height: 13; border: 0; background: url(../images/pagenav/page_before1.gif) no-repeat; display:block;}
+.page_previous 	{width: 15; height: 13; border: 0; background: url(../images/pagenav/page_before.gif) no-repeat; display:block;}
+.page_next 		{width: 15px; height: 13px; border: 0; background: url(../images/pagenav/page_after.gif) no-repeat; display:block;}
+.page_last 		{width: 15; height: 13; border: 0; background: url(../images/pagenav/page_after1.gif) no-repeat; display:block;}
+
+.page_selected  {font-size: 12px; color: #000000; text-decoration: underline; font-weight:bold; font-family: "verdana"}
+
+.page_img_space {width: 3;}
+.page_num_space {width: 3;}</programlisting>
+
+		<para>
+			위에서 보여준 서식들은 각각 다음과 같은 용도로 활용된다.
+		</para>
+		
+		<itemizedlist>
+   			<listitem>
+   				<para>
+   					page : Page Navigator 영역 전체에 대한 서식과, Anchor Tag 영역에서 visited, hover 등과 같은 Event 발생시 Anchor Tag 영역의 서식에 대한 정의
+   				</para>
+   			</listitem>
+   			<listitem>
+   				<para>
+   					page_first/page_previous/page_next/page_last : Page Navigator 영역 중 Page 이동과 관련된 버튼에 대한 서식을 정의
+   					("첫번째 페이지로 이동/선택된 페이지의 이전 페이지로 이동/선택된 페이지의 다음 페이지로 이동/마지막 페이지로 이동" 버튼 순서로 정의) 
+   				</para>
+   			</listitem>
+   			<listitem>
+   				<para>
+   					page_selected : 선택된 페이지 번호에 대한 서식을 정의
+				</para>
+   			</listitem> 
+   			<listitem>
+   				<para>
+   					page_img_space : Page 이동과 관련된 버튼 간의 간격에 대한 서식을 정의
+				</para>
+   			</listitem>
+   			<listitem>
+   				<para>
+   					page_num_space : Page 번호 간의 간격에 대한 서식을 정의
+				</para>
+   			</listitem>    			    			  			   			
+   		</itemizedlist>	
+   		
+   		<para>
+   			Page Navigator Tag를 통해 표현되는 Page Navigator의 스타일(버튼 이미지, Page 번호 간격, Page 번호 서식 등)을 변경하고자 하는 경우에는 위에서 설명한 
+   			각 서식들의 내용을 변경하면 된다.
+   		</para>	
+
+    	<para>
+	      	anyframe을 prefix로 하는 태그로 tag name은 pagenavigator이다 . 이 때 pages라는
+	      	attribute는 반드시 org.anyframe.pagination.Page 타입의 객체를 설정해줘야 함에 유의하도록 한다.
+      	</para>
+	</section>
+
+    <section id="core_springmvcextensions_taglibrary_messagetag">
+	<title>Message Tag</title>
+		<para>
+			<![CDATA[Spring Tag Library에서 언급했듯이 다국어 지원에 따른 메시지를 출력해주기 위해 Spring MVC에서
+      		기본적인 <message> 태그를 제공한다. 
+      		하지만 다음과 같은 이유로 인해 Anyframe에서는 Spring Message Tag를 확장한 Anyframe Message Tag를 제공하고 있다.]]>
+      	</para>
+		<itemizedlist>
+   			<listitem>
+   				<para>
+   					Spring Message Tag는 한국어 출력에 대해서 유니코드로 인코딩된 한국어 메시지 파일만을 출력하도록 지원하고 있다. 이에 유니코드가 
+   					아닌 UTF-8이나 EUC-KR로 인코딩된 한글 메시지를 출력해주는 기능이 필요하다.
+   				</para>  				
+   			</listitem>
+   			<listitem>
+   				<para>
+   					Spring Message Tag는 내부적으로 'messageSource'라는 이름을 가진 하나의 bean을 참조하여 메시지를 찾는 작업을 수행하고 있기 때문에
+      				Spring Message Tag를 이용하여 여러 유형의 Message Resource를 사용한 국제화를 수행할 수 없게 된다. 
+      				(단, Anyframe에서 제공하는 <link linkend="core_aggregating_messagesource">org.anyframe.spring.message.AggregatingMessageSource</link>를 
+      				'messageSource'라는 이름을 가진 bean으로 정의하는 경우 AggregatingMessageSource를 통해 여러 유형의 Message Resource를 사용한 국제화가 가능하다.)
+   				</para>
+				<para>
+					이는 Anyframe Message Tag의 'messageSource' 속성 정의를 통해 처리된다. 'messageSource' 속성의 값으로는 참조해야 할 MessageSource bean의 이름을 정의할 수 있다.
+					(정의하지 않은 경우 기본적으로 'messageSource'라는 이름의 bean이 참조 대상이 된다.)
+					즉, Anyframe Message Tag가 명시된 부분의 메시지는 'messageSource' 속성값으로 정의된 MessageSource bean으로부터 추출될 것이다.
+				</para>   				 				
+   			</listitem>
+   		</itemizedlist>
+   		
+      	<para>
+      		이러한 Anyframe Message Tag를 사용하기 위해서는 taglib으로 anyframe-message.tld 파일을 다음과 같이 등록해 준다.
+      		<programlisting
+      		language="xml"><![CDATA[<%@ taglib uri='/WEB-INF/anyframe-message.tld' prefix='anyframe' %>]]></programlisting>
+		</para>
+
+		<para>
+			prefix를 'anyframe'으로 정의할 경우 아래와 같이 태그를 사용할 수 있다.
+			<programlisting
+			language="xml"><![CDATA[<anyframe:]]><emphasis role="bold">message code</emphasis><![CDATA[="error.get.userList"/>]]></programlisting>
+		</para>
+
+		<para>
+			<![CDATA[위와 같이 tag name은 message로 정의해야 하며 <message> tag가 갖는 속성은 Spring MVC의 <message> tag와 같으며 사용 방법도 동일하다. 
+			즉, 'code' 속성값인 'error.get.userList'를 Key로 하고, messageSource와 연관된 Message Resource로부터 해당 Key에 속한 문자열을 읽어오게 될 것이다.]]>
+      	</para>
+      	
+      	<para>
+      		또한 아래와 같이 'messageSource' 속성을 정의한 경우에는 메시지 Key 'error.get.userList'와 사용자의 Locale을 입력값으로 하고, 'dbMessageSource'라는 이름을 가진
+      		bean을 이용하여 적절한 메시지를 찾게 된다. 그리고 Anyframe Message Tag가 정의된 부분에 해당 메시지를 표현해 줄 것이다.
+      	</para>
+      	
+		<programlisting language="xml"><![CDATA[<anyframe:message ]]><emphasis role="bold">messageSource="dbMessageSource"</emphasis><![CDATA[ code="error.get.userList"/>]]></programlisting>
+    </section>
+</chapter>

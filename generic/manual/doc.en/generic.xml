@@ -1,0 +1,142 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+
+<!DOCTYPE book PUBLIC "-//OASIS//DTD DocBook XML V4.5//EN" "http://www.oasis-open.org/docbook/xml/4.5/docbookx.dtd"
+[
+<!ENTITY generic_implementation_domain SYSTEM "generic/domain.xml">
+<!ENTITY generic_implementation_usage SYSTEM "generic/usage.xml">
+<!ENTITY generic_implementation_test SYSTEM "generic/test.xml">
+<!ENTITY generic_implementation_resources SYSTEM "generic/resources.xml">
+]
+>
+
+<!--
+		Licensed to the Apache Software Foundation (ASF) under one or more
+		contributor license agreements. See the NOTICE file distributed with
+		this work for additional information regarding copyright ownership.
+		The ASF licenses this file to you under the Apache License, Version
+		2.0 (the "License"); you may not use this file except in compliance
+		with the License. You may obtain a copy of the License at
+
+		http://www.apache.org/licenses/LICENSE-2.0 Unless required by
+		applicable law or agreed to in writing, software distributed under the
+		License is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR
+		CONDITIONS OF ANY KIND, either express or implied. See the License for
+		the specific language governing permissions and limitations under the
+		License.
+-->
+    
+<book lang="en">
+	<title>Anyframe Generic Plugin</title>
+	
+	<bookinfo>
+		<copyright>
+			<year>2007-2011</year>
+			<holder>Samsung SDS</holder>
+		</copyright>
+		<releaseinfo>Version 1.0.1</releaseinfo>
+
+		<productname>Anyframe Generic Plugin</productname>
+		
+		<authorgroup>
+			<corpauthor></corpauthor>
+		</authorgroup>
+		
+		<mediaobject>
+			<imageobject>
+				<imagedata fileref="../image/common/logo_pdf.jpg"/>
+			</imageobject>
+		</mediaobject>
+		<legalnotice>
+			<para>
+				The copyright of this document is the property of Samsung SDS. Permission is granted to use this document for free only for the purpose of open source community activity.
+                The copyright holder should be clearly stated in case this document is copied or distributed, and changed contents should be specified.
+                Permission is not granted for the commercial use of the original document and its modification.      
+                Should there be parts considered to have errors in this document, please register the issue for which we will take proper action.
+			</para>
+		</legalnotice>
+	</bookinfo>
+ 
+	<part id="generic_introduction_part">
+		<title>Introduction</title>
+		<partintro id="generic_introduction_partintro">
+			<para>
+				Anyframe's generic service has been developed based on the <emphasis role="bold">Generics</emphasis> concept supported since Java5, 
+				and provides classes that implement all the basic CRUD functions such as Service interface/implementation class based on the domain class and DAO interface/implementation class(supports Hibernate/JPA, Query Service).			
+				When applications are developed, classes of Generic service can be used unchanged or inherited to develop additional functions.
+				generic plugin is composed of sample codes to guide how to use this generic service and reference libraries.
+			</para>		
+			<para role="introduction_title"><emphasis role="bold">Installation</emphasis></para>
+			<para>Install generic plugin by entering the following command in the Command window.</para>
+			<programlisting language="java"><![CDATA[mvn anyframe:install -Dname=generic]]></programlisting>
+			<para>
+				The installation result can be checked using the installed (mvn anyframe:installed) or the jetty:run (mvn clean jetty:run) commands. 
+			</para>
+			<para role="introduction_title"><emphasis role="bold">Dependent Plugins</emphasis></para>
+			<informaltable>
+				<tgroup cols="2">
+					<colspec colnum="1" colname="col1" colwidth="5*" />
+					<colspec colnum="2" colname="col2" colwidth="5*" />
+					<thead>
+						<row>
+							<entry align="center">Plugin Name</entry>
+							<entry align="center">Version Range</entry>
+						</row>
+					</thead>
+					<tbody>
+						<row>
+							<entry align="center"><ulink url="http://dev.anyframejava.org/docs/anyframe/plugin/optional/query/1.1.1/reference/htmlsingle/query.html">query</ulink></entry>
+							<entry align="center" valign="middle">2.0.0 > *</entry>
+						</row>
+					</tbody>
+				</tgroup>
+			</informaltable>		
+		</partintro>
+	</part>
+ 	 
+	<part id="generic_generic_part">
+		<title>Generic</title>
+		<partintro id="generic_generic_part_intro">
+			<para>
+				Generic Service has been revised to fit Anyframe referring to the concept and source codes (including templates) of <ulink url="http://appfuse.org/display/APF/Home">AppFuse Framework</ulink> 
+				(http://appfuse.org/display/APF/Home). 
+				Samples codes that used classes constituting Generic Service below can be written and used directly, 
+				or the codes generated automatically through Anyframe IDE Editor's CRUD generation function can be used.
+			</para>
+			<para>Development through Generic Service has the following properties.</para>
+			<itemizedlist>
+				<listitem>
+					<para>Centering on domain model objects basic CRUD codes can be easily created.</para>
+				</listitem>
+				<listitem>
+					<para>Developers can implement basic CRUD functions reusing Service classes and DAo classes provided by Generic Service, not creating Business Layer and Data Access Layer codes.
+						
+					</para>
+				</listitem>
+				<listitem>
+					<para>When additional functions are needed other than basic CRUD, additional functions can be implemented by inheriting the classes provided by Generic Service.
+						
+					</para>
+				</listitem>
+				<listitem>
+					<para>It supports Hibernate/JPA and Query Service using DAO Framework.</para>
+				</listitem>
+			</itemizedlist>
+			<para> The diagram below is relationship among Generic Service classes. </para>
+			<mediaobject>
+				<imageobject>
+					<imagedata align="center" fileref="../image/generic/generic-flow.jpg" />
+				</imageobject>
+			</mediaobject>
+			The Generic concept is one of the biggest characteristics of Java 5. It means declaring the type of objects to be included in Collection in advance.
+			
+					What used to be expressed as List list = new ArrayList(); can be expressed as List&lt;String&gt; list = new ArrayList(); by applying Generic,  
+		and when objects other than set types, compile errors occur. Thus, casting task is eliminated and readability can improve by clarifying what types to use.
+		Also, if Generic type is used, programmers can check errors when compiling so that unintended objects cannot be saved by clarifying wanted object types.
+		
+		</partintro>
+		&generic_implementation_domain;
+		&generic_implementation_usage;
+		&generic_implementation_test;
+		&generic_implementation_resources;
+	</part>
+</book>

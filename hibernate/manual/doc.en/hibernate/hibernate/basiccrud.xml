@@ -1,0 +1,416 @@
+<chapter id="hibernate_hibernate_basiccrud">
+	<title>Basic CRUD</title>
+
+    <para>
+    	Let's take a look at how to Create, Read, Update and Delete specific data using persistence objects 
+    	by calling basic API provided by Hibernate.
+    </para>
+
+    <section id="hibernate_hibernate_basiccrud_select">
+		<title>Single Item Read</title>
+
+      	<para>
+	      	Single item can be read from DB by calling get() or load() method.
+	      	When calling get() or load()method, it is needed to pass property value of Persistence class and Primary Key as input parameter.	      	
+      	</para>
+
+		<itemizedlist>
+			<listitem>
+				<para>
+					<emphasis role="bold">get()</emphasis>: Executes SELECT query when called.
+				</para>
+			</listitem>
+
+			<listitem>
+				<para>
+					<emphasis role="bold">load()</emphasis>: Executes query when object value is actually needed. 
+				</para>
+			</listitem>
+		</itemizedlist>
+
+		<para>
+			Let's assume that mapping information of Country, Persistence class, is defined as the following.			
+            <programlisting language="xml"><![CDATA[<class name="org.anyframe.sample.model.bidirection.Country"
+        table="COUNTRY" lazy="true" schema="PUBLIC">]]>
+    <![CDATA[<]]><emphasis role="bold"><![CDATA[id name="countryCode"]]></emphasis><![CDATA[type="string">
+        <column name="COUNTRY_CODE" length="12" />
+        <generator class="assigned" />
+    </id>
+    ...
+</class>]]></programlisting>
+		</para>
+
+		<para>
+			If you want to read Country information by using the value of  countryCode, identifier of Country,
+			you can call like in the case of countryInfo(...) method of HibernateBasicCRUD.			
+            <programlisting language="java"><![CDATA[private void countryInfo(String countryCode, Country country)
+        throws Exception {]]>
+    <emphasis role="bold"><![CDATA[Country result = (Country)
+    session.get(Country.class, countryCode);]]></emphasis>
+}</programlisting>
+		</para>
+
+		<para>
+			In the case of load() method, pass Proxy of the object relevant to the passed identifier instead of executing SELECT query.
+			When accessing value other than identifier saved in table through the object, save the return value at Proxy object by executing
+			SELECT query.
+			If you check the class name of object passed after load() method execution, you can see that Proxy method was passed.			
+            <programlisting language="java"><![CDATA[User user = session.load(User.class, "test");]]>
+    <emphasis role="bold">// expected to print : com.sds.emp…User$$EnhancerByCGLIB$$...</emphasis>
+<![CDATA[System.out.println(user.getClass().getName());]]></programlisting>
+		</para>
+    </section>
+
+	<section id="hibernate_hibernate_basiccrud_save">
+		<title>Saving Single Item</title>
+
+      	<para>
+      		Single item data can be added to DB by calling save() or persist().
+      		When calling save() or persist() method, the target Persistence object must be passed as an input parameter.      	
+      	</para>
+
+      	<itemizedlist>
+        	<listitem>
+          		<para>
+          			<emphasis role="bold">save()</emphasis> : Passes identifier of the object after adding single data. 
+          		</para>
+        	</listitem>
+
+		<listitem>
+			<para>
+				<emphasis role="bold">persist()</emphasis> :Adds single item data. No return value. 
+			</para>
+		</listitem>
+	</itemizedlist>
+
+	<para>
+		If you'd like to add new Country information, call as in the case of addCountry() method of HibernateBasicCRUD.
+
+        <programlisting language="java"><![CDATA[private Country addCountry() throws Exception {
+    // 1. insert a new country information
+    Country country = new Country();
+    String countryCode = "COUNTRY-0001";
+    country.setCountryCode(countryCode);
+    country.setCountryId("KR");
+    country.setCountryName("Korea");]]>
+    <emphasis role="bold"><![CDATA[session.save(country);]]></emphasis>
+
+    ...
+}</programlisting>
+	</para>
+
+		<section id="hibernate_hibernate_basiccrud_save_tip">
+			<title>Tip. save() for A in the case of A:B=1:m</title>
+
+        	<para>
+	        	Let's assume the case of defining cascade property of Collection B as true in object A and
+	        	 calling save() method for object A including Collection B.
+	        	For A, parent object,it will run as expected, but for Collection B, it will run as saveOrUpdate().	        
+	        </para>
+
+	        <para>
+	        	To check this, let's check mainly the result of each test method of HibernateSaveOrUpdateParentChild on Country:Movie = 1:m relation.	        	
+	        </para>
+
+	        <para>
+	        	<emphasis role="bold">1. When calling save() method on the Country information not added in DB </emphasis>
+	        </para>
+	
+	        <para>
+	        	INSERT query is executed on Country object which was newly created at Transaction Commit.	       
+                <programlisting language="java"><![CDATA[public void addCountryCallingSave() throws Exception {
+    // 1. try to insert a country information without movies
+    newSession();
+    Country country1 = makeNewCountry();
+    session.save(country1);
+
+    closeSession();
+
+    ...
+}]]>
+
+<emphasis role="bold">* Console - Executed SQL statement </emphasis>
+<emphasis role="bold">insert</emphasis>
+    <![CDATA[into PUBLIC.COUNTRY (COUNTRY_ID, COUNTRY_NAME, COUNTRY_CODE) 
+        values ('KR', 'Korea', 'COUNTRY-0001']]></programlisting>
+			</para>
+
+        	<para>
+        		<emphasis role="bold">2. When calling saveOrUpdate()method on the Country information not added in DB /
+        		</emphasis>
+       	 </para>
+
+       	 <para>
+        		As newly created Country object does not exist in DB, INSERT query is executed for the object at Transaction Commit.        		
+                <programlisting language="java"><![CDATA[public void addCountryCallingSaveOrUpdate() throws Exception {
+    // 1. try to insert a country information without movies
+    newSession();
+    Country country1 = makeNewCountry();]]>
+    <emphasis role="bold"><![CDATA[session.saveOrUpdate(country1);]]></emphasis>
+
+    <![CDATA[closeSession();
+
+    ...
+}]]>
+
+<emphasis role="bold">* Console - Executed SQL statement </emphasis>
+<emphasis role="bold">insert</emphasis>
+    <![CDATA[into PUBLIC.COUNTRY (COUNTRY_ID, COUNTRY_NAME, COUNTRY_CODE) 
+        values ('KR', 'Korea', 'COUNTRY-0001')]]></programlisting></para>
+
+			<para>
+				<emphasis role="bold">3. When calling update() method on Country including Movie information not added in DB 
+				</emphasis>
+			</para>
+
+			<para>
+	        	In this case, update() method was called after new Country information was added at first Transaction and 
+	        	new Movie Collection information was set to the newly added Country object at the second Transaction.
+	        	If there is any updated information on Country object at the second Transaction Commit, UPDATE query is executed,
+	        	and INSERT query is executed for new Movie Collection information.	        	
+                <programlisting language="java"><![CDATA[public void addMoviesCallingUpdate() throws Exception {
+    // 1. try to insert a country information without movies
+    newSession();
+    Country country1 = makeNewCountry();]]>
+    <emphasis role="bold"><![CDATA[session.save(country1);]]></emphasis>
+
+    <![CDATA[closeSession();
+
+    // 2. try to insert a country information with movies.
+    newSession();]]>
+    <emphasis role="bold"><![CDATA[Country country2 = makeNewMovieSet(country1.getCountryCode());]]></emphasis>
+    <emphasis role="bold"><![CDATA[session.update(country2);]]></emphasis>
+
+    <![CDATA[closeSession();
+
+    ...
+}]]>
+
+<emphasis role="bold">* Console - Executed SQL statement</emphasis>
+<emphasis role="bold">// First  Transaction</emphasis>
+<emphasis role="bold">insert</emphasis>
+    <![CDATA[into PUBLIC.COUNTRY (COUNTRY_ID, COUNTRY_NAME, COUNTRY_CODE) 
+        values ('KR', 'Korea', 'COUNTRY-0001') 
+    ...]]>
+<emphasis role="bold">// Second Transaction</emphasis>
+<emphasis role="bold">insert</emphasis>
+    <![CDATA[into PUBLIC.MOVIE (COUNTRY_CODE, TITLE, DIRECTOR, RELEASE_DATE, MOVIE_ID) 
+        values ('COUNTRY-0001', 'My Sassy Girl', 'Jaeyong Gwak', 2001-07-27, 'MV-00001')]]> 
+<emphasis role="bold">insert</emphasis>
+    <![CDATA[into PUBLIC.MOVIE (COUNTRY_CODE, TITLE, DIRECTOR, RELEASE_DATE, MOVIE_ID) 
+        values ('COUNTRY-0001', 'My Little Bride', 'Hojun Kim', 2004-04-02, 'MV-00002') 
+    ...]]></programlisting>
+    		</para>
+
+	        <para>
+	        	<emphasis role="bold">4. When calling save() method at Movie information after adding Country information not added in DB
+		        	</emphasis>
+	        </para>
+	
+	        <para>
+	        	In this case,  save() method was called after new Country information was added at first Transaction and 
+	        	new Movie Collection information was set to the newly added Country object at the second Transaction.
+	        	If there is any updated information on Country object at the second Transaction Commit, UPDATE query is executed,
+	        	and INSERT query is executed for new Movie Collection information. Runs same to the case 3.	        	
+                <programlisting language="java"><![CDATA[public void addMoviesCallingSave() throws Exception {
+    // 1. try to insert a country information without movies
+    newSession();
+    Country country1 = makeNewCountry();]]>
+    <emphasis role="bold"><![CDATA[session.save(country1);]]></emphasis>
+
+    <![CDATA[closeSession();]]>
+    
+    // 2. try to insert a country information with movies.
+   <![CDATA[ newSession();]]>
+    <emphasis role="bold"><![CDATA[Country country2 = makeNewMovieSet(country1.getCountryCode());]]></emphasis>
+    <emphasis role="bold"><![CDATA[session.save(country2);]]></emphasis>
+
+    <![CDATA[closeSession();
+
+    ...
+}]]>
+
+<emphasis role="bold">* Console - Executed SQL statement</emphasis>
+<emphasis role="bold">// First  Transaction</emphasis>
+<emphasis role="bold">insert</emphasis>
+    <![CDATA[into PUBLIC.COUNTRY (COUNTRY_ID, COUNTRY_NAME, COUNTRY_CODE) 
+         values ('KR', 'Korea', 'COUNTRY-0001') 
+...]]>
+<emphasis role="bold">// Second  Transaction</emphasis>
+<emphasis role="bold">insert</emphasis>
+    <![CDATA[into PUBLIC.MOVIE (COUNTRY_CODE, TITLE, DIRECTOR, RELEASE_DATE, MOVIE_ID) 
+        values ('COUNTRY-0001', 'My Sassy Girl', 'Jaeyong Gwak', 2001-07-27, 'MV-00001')]]>
+<emphasis role="bold">insert</emphasis>
+    <![CDATA[into PUBLIC.MOVIE (COUNTRY_CODE, TITLE, DIRECTOR, RELEASE_DATE, MOVIE_ID) 
+        values ('COUNTRY-0001', 'My Little Bride', 'Hojun Kim', 2004-04-02, 'MV-00002') 
+...]]></programlisting>
+			</para>
+		</section>
+    </section>
+
+    <section id="hibernate_hibernate_basiccrud_update">
+		<title>Single Item Update</title>
+
+      	<para>
+      		Single DB data can be updated by calling update() method. When calling update() method, 
+      		it is needed to pass target Persistence object as an input parameter.
+      		Note that object passed as an input parameter must be set with property value.
+      		Otherwise, the relevant property value will be saved "null".
+      		If you'd like to update the registered Country information, you can call like in the case of updateCountry() in HibernateBasicCRUD.
+      		
+            <programlisting language="java"><![CDATA[public void updateCountry() throws Exception {
+    // 1. insert a new country information
+    Country country = addCountry();
+
+    // 2. update a country information
+    country.setCountryName("Republic of Korea");]]>
+    <emphasis role="bold"><![CDATA[session.update(country);]]></emphasis>
+
+    ...
+}</programlisting></para>
+
+		<para>
+			If the format of a certain object is Persistent and there is an update in property value of the relevant object in the same session,
+			whether or not it was updated was checked and reflected to DB by Hibernate at the end of transaction even without 
+			directly calling update() method.
+		
+            <programlisting language="java"><![CDATA[public void updateCountry() throws Exception {
+    // start transaction
+
+    Country country = addCountry();
+
+    country.setCountryName("Republic of Korea");
+
+    // commit. successful update!!!
+}]]></programlisting></para>
+    </section>
+
+    <section id="hibernate_hibernate_basiccrud_saveorUpdate">
+		<title>Single Item Saving or Update</title>
+
+		<para>
+			If save() method was called for already-registered object or update() method was called for an object that does not exist in DB,
+			exception occurs as in the case of addCountryCallingUpdate().
+		
+            <programlisting language="java"><![CDATA[public void addCountryCallingUpdate() throws Exception {
+    // 1. start a new session and transaction
+    newSession();
+
+    // 2. try to insert a country information without movies
+    Country country1 = makeNewCountry();]]>
+    <emphasis role="bold"><![CDATA[session.update(country1);]]></emphasis>
+
+    // 3. close session
+    <![CDATA[try {
+        closeSession();
+        fail("expected throw HibernateException");]]>
+    } <emphasis role="bold"><![CDATA[catch (Exception e) {]]></emphasis>
+    ...
+    } 
+}</programlisting>
+		</para>
+
+		<para>			
+			saveOrUpdate() method which includes the features of two methods(save() and update())works like update() if the relevant object
+			exists, and execute save() if it does not exist.
+			In this case, it is needed to pass target Persistence object for saveOrUpdate() as an input parameter. 
+			saveOrUpdate() method can be called like addCountryCallingSaveOrUpdate() of HibernateSaveOrUpdateParentChild.
+			
+            <programlisting language="java"><![CDATA[public void addCountryCallingSaveOrUpdate() throws Exception {
+    // 1. try to insert a country information without movies
+    newSession();
+    Country country1 = makeNewCountry();]]>
+    <emphasis role="bold"><![CDATA[session.saveOrUpdate(country1);]]></emphasis>
+
+    <![CDATA[closeSession();
+
+    ...
+}]]></programlisting>
+		</para>
+	</section>
+
+    <section id="hibernate_hibernate_basiccrud_delete">
+		<title>Single Item Delete</title>
+
+		<para>
+			DB single item can be deleted by calling delete() method. When calling delete() method, Persistence object
+			which contains identifier value must be passed as an input parameter.
+			If you'd like to delete already-registered Country information, you can call like in the case of deleteCountry() of HibernateBasicCRUD.
+			
+            <programlisting language="java"><![CDATA[public void deleteCountry() throws Exception {
+    // 1. insert a new country information
+    Country country = addCountry();
+
+    // 2. delete a country information]]>
+    <emphasis role="bold"><![CDATA[session.delete(country);]]></emphasis>
+
+    ...
+}</programlisting></para>
+    </section>
+
+    <section id="hibernate_hibernate_basiccrud_multisave">
+		<title>Saving multiple items </title>
+
+      	<para>
+      		If multiple item saving or update occurs for the same Persistence class in one transaction, call save() and update()
+      		while performing loop. In this case, however, note for logic composition as memory overflow can occur
+      		as Persistence objects are cached at 1st and 2nd Level caches.      		
+      	</para>
+
+		<itemizedlist>
+        	<listitem>
+          		<para>
+          			2nd Level Cache Mode : When performing the relevant method,
+          			it defines Cache Mode as Ignore to avoid 2LC.
+          		</para>
+        	</listitem>
+
+        	<listitem>
+          		<para>
+          			Session Flush :  Calls session.flush() method and reflects it to DB after 
+          			save() is executed for an appropriate number of Persistence object considering memory size.
+          			It is recommended to match the number of objects to flush at one time to hibernate.jdbc.batch_size defined in 
+          			hibernate configuration file (hibernate.cfg.xml).
+          			For details on hibernate.jdbc.batch_size property, refer to <link linkend="hibernate_hibernate_configuration_other">here
+          			</link>.          			
+          		</para>
+        	</listitem>
+
+        	<listitem>
+				<para>
+					1st Level Cache Clear : Clears Persistent objects cached to 1LC
+					after save() was executed for an appropriate number of Persistnece objects considering memory size.   
+					
+				</para>
+			</listitem>
+		</itemizedlist>
+
+      	<para>
+      		The following is an example of HibernateMultiDataSave including multiSave()
+      		which saves multiple item data in one transaction.      		
+            <programlisting language="java"><![CDATA[public void multiSave() throws Exception {]]>
+    <emphasis role="bold"><![CDATA[session.setCacheMode(CacheMode.IGNORE);]]></emphasis>
+
+    // insert country
+    <emphasis role="bold"><![CDATA[for (int i = 0; i < 90; i++) {]]></emphasis>
+
+        <![CDATA[Country country = new Country();
+        String countryCode = "COUNTRY-000" + i;
+        country.setCountryCode(countryCode);
+        country.setCountryId("KR" + i);
+        country.setCountryName("Korea" + i);]]>
+
+        <emphasis role="bold"><![CDATA[session.save(country);]]></emphasis>
+
+
+        <![CDATA[if (i != 0 && i % 9 == 0) {]]>
+            <emphasis role="bold"><![CDATA[session.flush();]]></emphasis>
+            <emphasis role="bold"><![CDATA[session.clear();]]></emphasis>
+        }
+    }
+}</programlisting>
+		</para>
+	</section>
+</chapter>
+	
+

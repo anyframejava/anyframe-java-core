@@ -117,7 +117,8 @@ public class LinkTag extends SubmitTag  {
 	        String fullLocation = "\"" + ((HttpServletRequest)this.pageContext.getRequest()).getContextPath() + actionUrl;
 	        generatedCodes = appendCodes(generatedCodes,"\n<!-- [START] Generated script codes from Anyframe tag -->");
 	        if(isPartial){
-	        	generatedCodes = appendCodes(generatedCodes,"<script type=\"text/javascript\">");  
+	        	generatedCodes = appendCodes(generatedCodes,"<script type=\"text/javascript\">");
+	        	generatedCodes = appendCodes(generatedCodes,"<!--");  
 	        	generatedCodes = appendCodes(generatedCodes,"   function " + this.getId() + "() {");	 
 				ifstatement = "";
 				if(StringUtil.isNotEmpty(javascript)) {
@@ -137,10 +138,12 @@ public class LinkTag extends SubmitTag  {
 				generatedCodes = appendCodesBack(generatedCodes,"}, ");
 				generatedCodes = appendCodes(generatedCodes,"   	func: " + this.getId());
 				generatedCodes = appendCodes(generatedCodes,"   }));");
+				generatedCodes = appendCodes(generatedCodes,"//-->");
 			    generatedCodes = appendCodes(generatedCodes,"</script>");
 	        }else{   	
 	        	generatedCodes = appendCodes(generatedCodes,"<span id=\"" + this.getId() + "\"" + " style=\"cursor:pointer;" +"\">" + title + "</span>");
-	        	generatedCodes = appendCodes(generatedCodes,"<script type=\"text/javascript\">");  
+	        	generatedCodes = appendCodes(generatedCodes,"<script type=\"text/javascript\">");
+	        	generatedCodes = appendCodes(generatedCodes,"<!--");  
 	        	generatedCodes = appendCodes(generatedCodes,"   var e = document.getElementById('" + this.getId() + "');");
 				generatedCodes = appendCodes(generatedCodes,"   e.onclick = function () {");
 				ifstatement = "";
@@ -174,6 +177,7 @@ public class LinkTag extends SubmitTag  {
 	        
 	        if(isPartial){
 	        	generatedCodes = appendCodes(generatedCodes,"<a id=\"" + this.getId() + "\"" + " href=");
+	        	fullLocation = fullLocation.replace("&", "&amp;");
 	        	generatedCodes = appendCodes(generatedCodes,fullLocation + "\">" + title + "</a>");	
 	        }
 	        else{   
@@ -197,6 +201,7 @@ public class LinkTag extends SubmitTag  {
 				
 				if(StringUtil.isNotEmpty(ifstatement)) generatedCodes = appendCodes(generatedCodes,"   }");	
 			    generatedCodes = appendCodes(generatedCodes,"   };");
+			    generatedCodes = appendCodes(generatedCodes,"//-->");  
 			    generatedCodes = appendCodes(generatedCodes,"</script>");
 	        }
 	        generatedCodes = appendCodes(generatedCodes,"<!-- [END] Generated script codes from Anyframe tag -->");		

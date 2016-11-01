@@ -17,7 +17,7 @@ import org.apache.commons.logging.LogFactory;
  * 
  * <pre>
  * &lt;bean id=&quot;dynamicHibernateService&quot;
- * 	   class=&quot;anyframe.core.hibernate.impl.DynamicHibernateService&quot;&gt;
+ * 	   class=&quot;org.anyframe.hibernate.impl.DynamicHibernateService&quot;&gt;
  *     &lt;property name=&quot;sessionFactory&quot; ref=&quot;sessionFactory&quot; /&gt;
  *     &lt;property name=&quot;fileNames&quot;&gt;
  *         &lt;list&gt;
@@ -34,8 +34,8 @@ import org.apache.commons.logging.LogFactory;
  * <li><code>sessionFactory</code> : This is a property for handling the HQL
  * using the current session generated in Hibernate SessionFactory. We define
  * the SessionFactory Bean's Id.</li>
- * <li><code>fileNames</code> : This is a property for defining the location
- * of the XML file defining the dynamic HQL with the Velocity grammar. We can
+ * <li><code>fileNames</code> : This is a property for defining the location of
+ * the XML file defining the dynamic HQL with the Velocity grammar. We can
  * define each directory names containing the file names or each file name. When
  * the fileNames' values start with prefixes such as classpath:, we find the
  * defined files in the appropriate project's classpath.
@@ -43,8 +43,7 @@ import org.apache.commons.logging.LogFactory;
  * <p>
  * Dynamic HQL Definition XML Example: In the XML file defining the dynamic HQL,
  * the root element is defined as <dynamic-hibernate> and we can define numerous
- * <query> in the 
- * <dynamic-hibernate.>   The example is as follows:
+ * <query> in the <dynamic-hibernate.> The example is as follows:
  * 
  * <pre>
  * &lt;query name=&quot;getSaleList&quot;&gt;
@@ -73,7 +72,7 @@ import org.apache.commons.logging.LogFactory;
  * </pre>
  * 
  * @author SoYon Lim
- *
+ * 
  */
 public interface DynamicHibernateService {
 	Log LOGGER = LogFactory.getLog(DynamicHibernateService.class);
@@ -92,10 +91,9 @@ public interface DynamicHibernateService {
 	 * @param values
 	 *            Variable values for replacing in phrases handled with
 	 *            variables
-	 * @return Being specified HQL execution results, returns numerous data in a
-	 *         list type
+	 * @return being specified query execution results
 	 * @throws Exception
-	 *             In the case there is a problem in executing the specified HQL
+	 *             in the case there is a problem in executing the specified HQL
 	 */
 	List findListByNamedParam(String queryName, String[] paramNames,
 			Object[] values) throws Exception;
@@ -108,15 +106,14 @@ public interface DynamicHibernateService {
 	 * may use this easily and return the executed results in a list type.
 	 * 
 	 * @param queryName
-	 *            Executable dynamic HQL's identifier
+	 *            executable dynamic HQL's identifier
 	 * @param paramName
-	 *            The variable name for replacing with the inputted variable
+	 *            the variable name for replacing with the inputted variable
 	 * @param value
-	 *            Variable value for replacing in phrases handled with variable
-	 * @return Being specified HQL execution results, returns numerous data in a
-	 *         list type
+	 *            variable value for replacing in phrases handled with variable
+	 * @return being specified query execution results
 	 * @throws Exception
-	 *             In the case there is a problem in executing the specified HQL
+	 *             in the case there is a problem in executing the specified HQL
 	 */
 	List findListByNamedParam(String queryName, String paramName, Object value)
 			throws Exception;
@@ -129,14 +126,13 @@ public interface DynamicHibernateService {
 	 * results in a list type.
 	 * 
 	 * @param queryName
-	 *            Executable dynamic HQL's identifier
+	 *            executable dynamic HQL's identifier
 	 * @param values
-	 *            Defines as 'name=value' the variable values for replacing the
+	 *            defines as 'name=value' the variable values for replacing the
 	 *            variables defined in dynamic HQL
-	 * @return Being specified HQL execution results, returns numerous data in a
-	 *         list type
+	 * @return being specified query execution results
 	 * @throws Exception
-	 *             In the case there is a problem in executing the specified HQL
+	 *             in the case there is a problem in executing the specified HQL
 	 */
 	List findList(String queryName, Object[] values) throws Exception;
 
@@ -149,19 +145,18 @@ public interface DynamicHibernateService {
 	 * not executed if either of pageIndex or pageSize is 0.
 	 * 
 	 * @param queryName
-	 *            Executable dynamic HQL's identifier
+	 *            executable dynamic HQL's identifier
 	 * @param values
-	 *            Defines as 'name=value' the variable values for replacing the
+	 *            defines as 'name=value' the variable values for replacing the
 	 *            variables defined in dynamic HQL
 	 * @param pageIndex
-	 *            Page number (greater than equal to one)
+	 *            page number (greater than equal to one)
 	 * @param pageSize
-	 *            The number of data for showing in the selected page (greater
+	 *            the number of data for showing in the selected page (greater
 	 *            than equal to one)
-	 * @return Being specified HQL execution results, returns numerous data in a
-	 *         list type
+	 * @return being specified query execution results
 	 * @throws Exception
-	 *             In the case there is a problem in executing the specified HQL
+	 *             in the case there is a problem in executing the specified HQL
 	 */
 	List findList(String queryName, Object[] values, int pageIndex, int pageSize)
 			throws Exception;
@@ -175,21 +170,20 @@ public interface DynamicHibernateService {
 	 * not executed if either of pageIndex or pageSize is 0.
 	 * 
 	 * @param queryName
-	 *            Executable dynamic HQL's identifier
+	 *            executable dynamic HQL's identifier
 	 * @param paramNames
-	 *            The variable names for replacing with the inputted variables
+	 *            the variable names for replacing with the inputted variables
 	 * @param values
-	 *            Variable values for replacing in phrases handled with
+	 *            variable values for replacing in phrases handled with
 	 *            variables
 	 * @param pageIndex
-	 *            Page number (greater than equal to one)
+	 *            page number (greater than equal to one)
 	 * @param pageSize
-	 *            The number of data for showing in the selected page (greater
+	 *            the number of data for showing in the selected page (greater
 	 *            than equal to one)
-	 * @return Being specified HQL execution results, returns numerous data in a
-	 *         list type
+	 * @return being specified query execution results
 	 * @throws Exception
-	 *             In the case there is a problem in executing the specified HQL
+	 *             in the case there is a problem in executing the specified HQL
 	 */
 	List findListByNamedParam(String queryName, String[] paramNames,
 			Object[] values, int pageIndex, int pageSize) throws Exception;
@@ -204,20 +198,19 @@ public interface DynamicHibernateService {
 	 * handling is not executed if either of pageIndex or pageSize is 0.
 	 * 
 	 * @param queryName
-	 *            Executable dynamic HQL's identifier
+	 *            executable dynamic HQL's identifier
 	 * @param paramName
-	 *            The variable name for replacing with the inputted variable
+	 *            the variable name for replacing with the inputted variable
 	 * @param value
-	 *            Variable value for replacing in phrases handled with variable
+	 *            variable value for replacing in phrases handled with variable
 	 * @param pageIndex
-	 *            Page number (greater than equal to one)
+	 *            page number (greater than equal to one)
 	 * @param pageSize
-	 *            The number of data for showing in the selected page (greater
+	 *            the number of data for showing in the selected page (greater
 	 *            than equal to one)
-	 * @return Being specified HQL execution results, returns numerous data in a
-	 *         list type
+	 * @return being specified query execution results
 	 * @throws Exception
-	 *             In the case there is a problem in executing the specified HQL
+	 *             in the case there is a problem in executing the specified HQL
 	 */
 	List findListByNamedParam(String queryName, String paramName, Object value,
 			int pageIndex, int pageSize) throws Exception;
@@ -230,16 +223,15 @@ public interface DynamicHibernateService {
 	 * result in object type.
 	 * 
 	 * @param queryName
-	 *            Executable dynamic HQL's identifier
+	 *            executable dynamic HQL's identifier
 	 * @param paramNames
-	 *            The variable names for replacing with the inputted variables
+	 *            the variable names for replacing with the inputted variables
 	 * @param values
-	 *            Variable values for replacing in phrases handled with
+	 *            variable values for replacing in phrases handled with
 	 *            variables
-	 * @return Being specified HQL execution results, returns numerous data in a
-	 *         list type
+	 * @return being specified query execution results
 	 * @throws Exception
-	 *             In the case there is a problem in executing the specified HQL
+	 *             in the case there is a problem in executing the specified HQL
 	 */
 	Object findByNamedParam(String queryName, String[] paramNames,
 			Object[] values) throws Exception;
@@ -253,15 +245,15 @@ public interface DynamicHibernateService {
 	 * type.
 	 * 
 	 * @param queryName
-	 *            Executable dynamic HQL's identifier
+	 *            executable dynamic HQL's identifier
 	 * @param paramName
-	 *            The variable name for replacing with the inputted variable
+	 *            the variable name for replacing with the inputted variable
 	 * @param value
-	 *            Variable value for replacing in phrases handled with variable
-	 * @return Being specified HQL execution results, returns numerous data in a
+	 *            variable value for replacing in phrases handled with variable
+	 * @return being specified HQL execution results, returns numerous data in a
 	 *         list type
 	 * @throws Exception
-	 *             In the case there is a problem in executing the specified HQL
+	 *             in the case there is a problem in executing the specified HQL
 	 */
 	Object findByNamedParam(String queryName, String paramName, Object value)
 			throws Exception;
@@ -274,14 +266,13 @@ public interface DynamicHibernateService {
 	 * result in object type.
 	 * 
 	 * @param queryName
-	 *            Executable dynamic HQL's identifier
+	 *            executable dynamic HQL's identifier
 	 * @param values
-	 *            Defines as 'name=value' the variable values for replacing the
+	 *            defines as 'name=value' the variable values for replacing the
 	 *            variables defined in dynamic HQL
-	 * @return Being specified HQL execution results, returns numerous data in a
-	 *         list type
+	 * @return being specified query execution results
 	 * @throws Exception
-	 *             In the case there is a problem in executing the specified HQL
+	 *             in the case there is a problem in executing the specified HQL
 	 */
 	Object find(String queryName, Object[] values) throws Exception;
 

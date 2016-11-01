@@ -1,0 +1,109 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+
+<!DOCTYPE book PUBLIC "-//OASIS//DTD DocBook XML V4.5//EN" "http://www.oasis-open.org/docbook/xml/4.5/docbookx.dtd"
+[
+<!ENTITY chart_introduction SYSTEM "chart/introduction.xml">
+<!ENTITY chart_component SYSTEM "chart/component.xml">
+<!ENTITY chart_graphxml SYSTEM "chart/graphxml.xml">
+<!ENTITY chart_anyframesupport SYSTEM "chart/anyframesupport.xml">
+<!ENTITY chart_resources SYSTEM "chart/resources.xml">
+]
+>
+
+<!--
+		Licensed to the Apache Software Foundation (ASF) under one or more
+		contributor license agreements. See the NOTICE file distributed with
+		this work for additional information regarding copyright ownership.
+		The ASF licenses this file to you under the Apache License, Version
+		2.0 (the "License"); you may not use this file except in compliance
+		with the License. You may obtain a copy of the License at
+
+		http://www.apache.org/licenses/LICENSE-2.0 Unless required by
+		applicable law or agreed to in writing, software distributed under the
+		License is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR
+		CONDITIONS OF ANY KIND, either express or implied. See the License for
+		the specific language governing permissions and limitations under the
+		License.
+-->
+
+<book lang="en">
+	<title>Anyframe Chart Plugin</title>
+
+	<bookinfo>
+		<copyright>
+			<year>2007-2011</year>
+			<holder>Samsung SDS</holder>
+		</copyright>
+		<releaseinfo>Version 1.0.1</releaseinfo>
+
+		<productname>Anyframe Chart Plugin</productname>
+
+		<authorgroup>
+			<corpauthor></corpauthor>
+		</authorgroup>
+
+		<mediaobject>
+			<imageobject>
+				<imagedata fileref="../image/common/logo_pdf.jpg"/>
+			</imageobject>
+		</mediaobject>
+		<legalnotice>
+			<para>
+				The copyright of this document is the property of Samsung SDS. Permission is granted to use this document for free only for the purpose of open source community activity.
+                The copyright holder should be clearly stated in case this document is copied or distributed, and changed contents should be specified.
+                Permission is not granted for the commercial use of the original document and its modification.      
+                Should there be parts considered to have errors in this document, please register the issue for which we will take proper action.
+			</para>
+		</legalnotice>
+	</bookinfo>
+
+	<part id="chart_introduction_part">
+		<title>Introduction</title>
+		<partintro id="chart_introduction_partintro">
+			<para>
+			    Chart plugin is composed of Chart Service, which enables convenient generation of XML data for <ulink url="http://www.fusioncharts.com/free/">FusionChart Free (open source with the chart function)</ulink> 
+			    based on OXM(Object XML Mapping), and reference libraries necessary for executing Chart Service, Chart Flash files, and scripts
+			    (e.g. jquery.fusioncharts.js).
+			</para>
+			<para role="introduction_title"><emphasis role="bold">Installation</emphasis></para>
+			<para>Install the chart plugin by entering commands in the Command window as follows.</para>
+			<programlisting language="java"><![CDATA[mvn anyframe:install -Dname=chart]]></programlisting>
+			<para>
+				Installation results can be checked by the installed (mvn anyframe:installed) or the jetty:run (mvn clean jetty:run) commands.
+			</para>
+			<para role="introduction_title"><emphasis role="bold">Dependent Plugins</emphasis></para>
+			<informaltable>
+				<tgroup cols="2">
+					<colspec colnum="1" colname="col1" colwidth="5*" />
+					<colspec colnum="2" colname="col2" colwidth="5*" />
+					<thead>
+						<row>
+							<entry align="center">Plugin Name</entry>
+							<entry align="center">Version Range</entry>
+						</row>
+					</thead>
+					<tbody>
+						<row>
+							<entry align="center"><ulink url="http://dev.anyframejava.org/docs.en/anyframe/plugin/essential/core/1.0.1/reference/htmlsingle/core.html">core</ulink></entry>
+							<entry align="center" valign="middle">2.0.0 > *</entry>
+						</row>
+					</tbody>
+				</tgroup>
+			</informaltable>
+		</partintro>
+	</part>
+
+	<part id="chart_chart_part">
+		<title>Chart</title>
+		<partintro id="chart_chart_part_intro">
+			<para>
+				An installation environment and convenient functions are provided for various charts of FusionChart Free.
+			</para>
+		</partintro>
+		&chart_introduction;
+		&chart_component;
+		&chart_graphxml;
+		&chart_anyframesupport;
+		&chart_resources;
+	</part>
+</book>

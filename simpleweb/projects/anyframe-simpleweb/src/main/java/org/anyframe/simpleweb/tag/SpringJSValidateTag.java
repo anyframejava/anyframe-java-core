@@ -100,6 +100,7 @@ public class SpringJSValidateTag extends HtmlEscapingAwareTag {
 			
 			generatedCodes = appendCodes(generatedCodes, "\n<!-- [START] Generated script codes from Anyframe tag -->");
 	        generatedCodes = appendCodes(generatedCodes,"<script type=\"text/javascript\">");
+	        generatedCodes = appendCodes(generatedCodes,"<!--");  
 	        generatedCodes = appendCodes(generatedCodes,"Spring.addDecoration(new Spring.ElementDecoration({");
 	        generatedCodes = appendCodes(generatedCodes, "   elementId: \"" + id + "\","); 
 	        
@@ -194,6 +195,7 @@ public class SpringJSValidateTag extends HtmlEscapingAwareTag {
 			}
 			
 			generatedCodes = appendCodes(generatedCodes,"     }}));");
+			generatedCodes = appendCodes(generatedCodes,"//-->");  
 			generatedCodes = appendCodes(generatedCodes, "</script>");
 			generatedCodes = appendCodes(generatedCodes,"<!-- [END] Generated script codes from Anyframe tag -->");		
 	        out.write(generatedCodes);
@@ -387,12 +389,12 @@ public class SpringJSValidateTag extends HtmlEscapingAwareTag {
 	}
 
 	protected String appendCodes(String all, String part){
-    	StringBuffer result = new StringBuffer(all.length()+part.length()+1).append(all).append(part).append("\n");
+		StringBuilder result = new StringBuilder(all.length()+part.length()+1).append(all).append(part).append("\n");
     	return result.toString();
     }
 	
     protected String appendCodesBack(String all, String part){
-    	StringBuffer result = new StringBuffer(all.length()+part.length()).append(all).append(part);
+    	StringBuilder result = new StringBuilder(all.length()+part.length()).append(all).append(part);
     	return result.toString();
     }
     

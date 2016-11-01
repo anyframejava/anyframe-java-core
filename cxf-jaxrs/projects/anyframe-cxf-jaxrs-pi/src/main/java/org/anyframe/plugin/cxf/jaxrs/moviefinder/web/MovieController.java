@@ -41,6 +41,7 @@ public class MovieController {
 	@ModelAttribute("genreList")
 	public Collection<Genre> populateGenreList() throws Exception {
 		return genreService.getList();
+		//return new ArrayList<Genre>();
 	}
 
 	@RequestMapping(params = "method=createView")

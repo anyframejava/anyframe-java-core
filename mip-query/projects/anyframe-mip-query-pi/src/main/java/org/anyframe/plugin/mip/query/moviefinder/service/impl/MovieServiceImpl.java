@@ -20,8 +20,8 @@ import java.util.Map;
 
 import javax.inject.Inject;
 
-import org.anyframe.mip.query.dao.MiPDao;
 import org.anyframe.mip.query.impl.MiPQueryServiceImpl;
+import org.anyframe.mip.query.service.impl.MiPDao;
 import org.anyframe.mip.query.service.impl.MiPServiceImpl;
 import org.anyframe.plugin.mip.query.moviefinder.service.MovieService;
 import org.springframework.stereotype.Service;

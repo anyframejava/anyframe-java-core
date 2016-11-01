@@ -1,0 +1,121 @@
+<chapter id="chart_anyframesupport">
+	<title> FusionChart Free Supported by Anyframe</title>
+
+	<section id="chart_anyframesupport_architecture">
+		<title> Architecture</title>
+		<para>
+			The FusionChart architecture provided by Anyframe is as follows.
+
+			<mediaobject>
+		      <imageobject>
+		        <imagedata align="center"  fileref="../image/chart/chart_architecture.jpg" />
+		      </imageobject>
+		    </mediaobject>
+		</para>
+	</section>
+
+	<section id="chart_anyframesupport_graph">
+		<title> Types of Charts Provided by Anyframe</title>
+		<para>
+			For xml data to be easily generated, JAXB Model java class is provided for the most frequently used five types of graphs/charts currently provided by FusionChart Free utilizing the OXM technology.
+			Currently, FusionChart linkage provided by Anyframe is limited, but the chart types requested frequently by users (e.g. multi-series chart) will be further complemented.
+		</para>
+		<itemizedlist>
+      		<listitem>
+        		<para>Column 2D - column graph</para>
+      		</listitem>
+      		<listitem>
+        		<para>Column 2D + Line - column and line graph</para>
+      		</listitem>
+      		<listitem>
+        		<para>Line 2D - line graph</para>
+      		</listitem>
+      		<listitem>
+        		<para>Pie 2D - pie graph</para>
+      		</listitem>
+      		<listitem>
+        		<para>Stacked Bar 2D - stacked bar graph</para>
+      		</listitem>
+      	</itemizedlist>
+      	<para>
+      		Since Anyframe does not currently support all properties provided by FusionChart Free, the JAXB Model class provided can be referred to and be extended or redefined for use when necessary.
+      		For reference, Trang was executed for JAXB Model classes based on XML data samples found in FusionChart Free documentation, and XSD schema was generated, which was again used to generate java class type
+      		through maven-jaxb2-plugin, and some faulty properties were customized.
+      	</para>
+	</section>
+
+	<section id="chart_anyframesupport_impl">
+		<title> Implementation of Chart</title>
+		<itemizedlist>
+      		<listitem>
+      			<para role="introduction_title"><emphasis role="bold">Setup for data processing</emphasis></para>
+      			<para>
+      				Following is part of the chart-servlet.xml file.
+      			</para>
+      			<para>
+      					<programlisting language="xml"><![CDATA[<!-- marshallingView related addition  -->
+<bean id="utilMarshallingView" class="org.springframework.web.servlet.view.xml.MarshallingView">
+    <property name="marshaller" ref="utilMarshaller" />
+</bean>
+
+<oxm:jaxb2-marshaller id="utilMarshaller">
+    <oxm:class-to-be-bound name="org.anyframe.chart.fusionchartfree.support.model.pie2d.Pie2dGraph" />
+    <oxm:class-to-be-bound name="org.anyframe.chart.fusionchartfree.support.model.stackedbar2d.StackedBar2dGraph" />
+</oxm:jaxb2-marshaller>]]></programlisting>
+      			</para>
+      		</listitem>
+      		<listitem>
+      			<para role="introduction_title"><emphasis role="bold">Data processing</emphasis></para>
+      			<para>Controller is processing the data.</para>
+      			<para><programlisting language="java">@RequestMapping("/utilSystem/getMemoryUsageChart.do")
+public String getMemoryUsageChart(ModelMap map) throws Exception {
+    SigarAccessor.gatherMemoryInfo();
+    MemoryInfo memoryInfo = SigarAccessor.getSysInfo().getMemoryInfo();
+
+    Pie2dGraph pie2d = new Pie2dGraph();
+    pie2d.setCaption("Memory Usage");
+    pie2d.setDecimalPrecision(0);
+
+    ...
+
+    Pie2dSet set1 = new Pie2dSet();
+    set1.setValue((double) memoryInfo.getMemFree() / 1024.0);
+    set1.setName("Free");
+    set1.setColor("AFD8F8");
+    Pie2dSet set2 = new Pie2dSet();
+    set2.setValue((double) memoryInfo.getMemUsed() / 1024.0);
+    set2.setName("Used");
+    set2.setColor("F6BD0F");
+    set2.setIsSliced(1);
+
+    List sets = new ArrayList();
+    sets.add(set1);
+    sets.add(set2);
+
+    pie2d.setSet(sets);
+    
+    map.addAttribute(pie2d);
+
+    //Jaxb marshalling
+    return "utilMarshallingView";
+}</programlisting>
+      			</para>
+      		</listitem>
+
+      		<listitem>
+      			<para role="introduction_title"><emphasis role="bold">Screen</emphasis></para>
+      			<para>Following is the section for setup of chart data on the screen. jQuery type was used on the web page.</para>
+      			<para>
+      				<programlisting language="java"><![CDATA[$('#memoryUsageChart').insertFusionCharts({
+    swfPath: "<c:url value='/chart/javascript/fusionchart-free/charts/'/>",
+    type: "Pie2D",
+    data: "<c:url value='/utilSystem/getMemoryUsageChart.do'/>",
+    dataFormat: "URIData",
+    width: "450",
+    height: "270"
+});]]></programlisting>
+      			</para>
+      		</listitem>
+      	</itemizedlist>
+	</section>
+</chapter>

@@ -35,9 +35,9 @@ import org.anyframe.util.system.SystemUtilBase;
  * default implementation of ScriptExecutor which defines the function to be
  * executed by Shell Script. default implementation was written by Unix command
  * execution.
- * 
+ *
  * @author ByungHun Woo
- * 
+ *
  */
 public class DefaultScriptExecutor extends SystemUtilBase implements ScriptExecutor {
 
@@ -85,7 +85,11 @@ public class DefaultScriptExecutor extends SystemUtilBase implements ScriptExecu
 				}
 			}
 			if (os == null) {
-				os = OsType.Other;
+				if(osName.toLowerCase().contains("windows")) {
+					os = OsType.Windows;
+				} else {
+					os = OsType.Other;
+				}
 			}
 		}
 	}

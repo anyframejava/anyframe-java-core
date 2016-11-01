@@ -1,0 +1,60 @@
+<?xml version="1.0" encoding="ISO-8859-1"?>
+<!DOCTYPE log4j:configuration SYSTEM "log4j.dtd">
+<log4j:configuration 
+    xmlns:log4j="http://jakarta.apache.org/log4j/" 
+    debug="false">
+    
+    <appender name="console" class="org.apache.log4j.ConsoleAppender">
+        <layout class="org.apache.log4j.PatternLayout">
+            <param name="ConversionPattern" value="%d %p [%c] - &lt;%m&gt;%n" />
+        </layout>   
+    </appender>
+    
+    <appender name="rollingFile" class="org.apache.log4j.RollingFileAppender">
+    	<param name="File" value="./logs/rolling/sample.log"/>
+    	<param name="Append" value="true"/>    	  
+    	<param name="MaxFileSize" value="1KB"/>    
+    	<param name="MaxBackupIndex" value="2"/>    
+        <layout class="org.apache.log4j.PatternLayout">
+            <param name="ConversionPattern" value="%d %p [%c] - &lt;%m&gt;%n" />
+        </layout>   
+    </appender>  
+    
+    <appender name="dailyRollingFile" class="org.apache.log4j.DailyRollingFileAppender">
+    	<param name="File" value="./logs/daily/sample"/>
+    	<param name="Append" value="true"/> 
+    	<param name="DatePattern" value="'.'yyyy-MM-dd-HH-mm-ss"/>
+        <layout class="org.apache.log4j.PatternLayout">
+            <param name="ConversionPattern" value="%d %p [%c] - &lt;%m&gt;%n" />
+        </layout>   
+    </appender>    
+    
+    <appender name="db" class="org.apache.log4j.jdbc.JDBCAppender">
+    	<param name="Driver" value="org.hsqldb.jdbcDriver"/>
+		<param name="URL" value="jdbc:hsqldb:hsql://localhost/sampledb"/>
+		<param name="User" value="sa"/>
+		<param name="Password" value=""/>
+		<param name="Sql" value="insert into STMR_LOG (msg) values ('%d %p [%c] - &lt;%m&gt;%n')"/>
+    </appender>
+    
+    <logger name="org.anyframe.sample.logging.ConsoleLoggerTest">
+        <level value="DEBUG"/>
+        <appender-ref ref="console"/>
+    </logger>   	
+
+    <logger name="org.anyframe.sample.logging.RollingFileLoggerTest">
+        <level value="INFO"/>
+        <appender-ref ref="rollingFile"/>
+    </logger>   
+    
+    <logger name="org.anyframe.sample.logging.DailyRollingFileLoggerTest">
+        <level value="WARN"/>
+        <appender-ref ref="dailyRollingFile"/>
+    </logger>      
+    
+    <logger name="org.anyframe.sample.logging.DBLoggerTest">
+        <level value="ERROR"/>
+        <appender-ref ref="db"/>
+    </logger>     
+    
+</log4j:configuration>

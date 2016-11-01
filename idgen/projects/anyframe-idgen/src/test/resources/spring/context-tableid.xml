@@ -71,11 +71,37 @@
 		<property name="blockSize" value="1"/>
 		<property name="table" value="idstest"/>
 		<property name="key" value="test"/>				
+	</bean>
+	
+	<bean name="Ids-TestWithoutTableKey" class="org.anyframe.idgen.impl.TableIdGenServiceImpl" destroy-method="destroy">
+		<property name="dataSource" ref="util_datasource"/>
+		<property name="strategy" ref="timestamp"/>
+		<property name="blockSize" value="1"/>
+		<property name="table" value="idstest"/>		
 	</bean>	
+	
+	<bean name="Ids-TestWithPatternedTimestampStrategy" class="org.anyframe.idgen.impl.TableIdGenServiceImpl" destroy-method="destroy">
+		<property name="dataSource" ref="util_datasource"/>
+		<property name="strategy" ref="timestampWithPattern"/>
+		<property name="blockSize" value="1"/>
+		<property name="table" value="idstest"/>		
+	</bean>				
 	
 	<bean name="mixPrefix" class="org.anyframe.idgen.impl.strategy.MixPrefixStrategy">
 		<property name="prefix" value="TEST-"/>
 		<property name="cipers" value="5"/>
 		<property name="fillChar" value="*"/>
 	</bean>
+	
+	<bean name="timestamp" class="org.anyframe.idgen.impl.strategy.TimestampStrategy">
+		<property name="cipers" value="5"/>
+		<property name="fillChar" value="0"/>
+	</bean>	
+	
+	<bean name="timestampWithPattern" class="org.anyframe.idgen.impl.strategy.TimestampStrategy">
+		<property name="pattern" value="yyyy-MM-dd HH"/>
+		<property name="separator" value="-"/>
+		<property name="cipers" value="5"/>
+		<property name="fillChar" value="*"/>
+	</bean>		
 </beans>	

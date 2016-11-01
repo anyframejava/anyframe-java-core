@@ -13,7 +13,7 @@
 <!-- Top -->
   <tr>
     <td height="100%" align="left" valign="middle">
-		<font size="5">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Anyframe Java 5.0.0.RC1</font>
+		<font size="5">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Anyframe Java 5.0.1</font>
     </td>
   </tr>
 </table>
@@ -30,7 +30,7 @@
 		<tr class="board">
 				<td class="underline">
 					<!--remoting-menu-START-->
-					<a href="${ctx}/remotingMovieFinderExporter.do?method=list"><font size="2">- Remoting 1.0.0.RC1</font></a><br/>
+					<a href="${ctx}/remotingMovieFinderExporter.do?method=list"><font size="2">- Remoting 1.0.1</font></a><br/>
 					<!--remoting-menu-END-->
 					<!--Add new menu here-->
 				</td>

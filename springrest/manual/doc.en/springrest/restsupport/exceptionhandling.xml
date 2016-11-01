@@ -1,0 +1,154 @@
+<chapter id="springrest_restsupport_exceptionhandling">
+	<title>Exception Handling</title>
+	
+	<para>
+		Spring MVC provides <emphasis role="bold">HandlerExceptionResolver</emphasis> interface 
+		so that Exception is handled when a specific Exception occurs in Controller method. 
+		If you implement resolveException (Exception, Handler) method of HandlerExceptionResolver interface and register it in DispatcherServlet, 
+		when exception occurs the method implemented is called. 
+		It is similar to defining page that shows error using <![CDATA[<error-page>]]> in previous web.xml, but provides more flexible functions.
+	</para>
+	<para>
+		Spring MVC provides HandlerExceptionResolver implementation. 
+		Among them, one is <emphasis role="bold">SimpleMappingExceptionResolver</emphasis> that can be seen in Foundation Plugin sample.
+		Map exception class and view to show when related exception occurs in exceptionMappings property of SimpleMappingExceptionResolver. 
+		Foundation Plugin is set so that 'error' view will be returned for all exceptions.
+	</para>
+	<para>	
+		Let's look at other ways to handle Exception.		
+	</para>
+	
+	<section id="springrest_restsupport_exceptionhandling_exceptionhandler">
+		<title>@ExceptionHandler</title>
+		<para>
+			@ExceptionHandler can be used instead of implementing HandlerExceptionResolver interface. 
+		    If you add @ExceptionHandler to controller method,
+		    the method is invoked when an exception of a specific type is thrown during the execution of controller methods.
+			<programlisting language="java">@Controller
+@RequestMapping("/movies")
+public class MovieController {
+    // ...
+    
+    <emphasis role="bold">@ExceptionHandler(NotFoundException.class)</emphasis>
+    public void handleNotFoundException(NotFoundException ex) {
+        // ...
+    }
+}</programlisting>
+			When NotFoundException occurs in the above controller, handleNotFoundException() method will be invoked.
+		</para>
+		<para>
+			Can be used with @ResponseStatus to transfer the appropriate Response Status Code as the following.
+			<programlisting language="java">@Controller
+@RequestMapping("/movies")
+public class MovieController {
+    // ...
+    
+    <emphasis role="bold">@ExceptionHandler(NotFoundException.class)
+    @ResponseStatus(value=HttpStatus.NOT_FOUND)</emphasis>
+    public void handleNotFoundException(NotFoundException ex) {
+        // ...
+    }
+}</programlisting>
+		</para>
+	</section>
+	
+	<section id="springrest_restsupport_exceptionhandling_responsestatus">
+		<title>@ResponseStatus</title>
+		<para>
+			When using @ResponseStatus, you can define controller method or Exception class with the status code and reason that should be returned.
+			
+			<programlisting language="java"><emphasis role="bold">@ResponseStatus(value=HttpStatus.NOT_FOUND)</emphasis>
+public class NotFoundException extends BaseException {
+        // ...
+}</programlisting>			 
+		</para>
+		<para>
+			If defined as above, '404 Not Found' Status Code is transferred to client when NotFoundException occurs. 
+		</para>
+	</section>
+	
+	<section id="springrest_restsupport_exceptionhandling_defaulthandlerexceptionresolver">
+		<title>DefaultHandlerExceptionResolver</title>
+		
+		<para>
+			Default implementation of the HandlerExceptionResolver interface 
+			that resolves standard Spring exceptions and translates them to corresponding HTTP status codes.
+		</para>
+		
+		<para>
+			This exception resolver is enabled by default in the DispatcherServlet. 
+		</para>
+		
+		<para>
+			For instance, if TypeMismatchException occurs when type does not match during Request data handling, 
+			it is returned as '400 Bad Request' Status Code. 
+			DefaultHandlerExceptionResolver is registered as default, but when another HandlerExceptionResolver is registered, is should be defined explicitly.
+		</para>
+		
+		<informaltable>
+      		<tgroup cols="2">
+        		<colspec colnum="1" colname="col1" colwidth="2*"/>
+        		<colspec colnum="2" colname="col2" colwidth="8*"/>
+        		<thead>
+          			<row>
+	            		<entry align="center">Exception</entry>
+	            		<entry align="center">HTTP Status Code</entry>
+          			</row>
+        		</thead>
+
+        		<tbody>
+          			<row>
+            		<entry>ConversionNotSupportedException</entry>
+            		<entry>500 (Internal Server Error)</entry>
+          			</row>
+          			<row>
+            		<entry>HttpMediaTypeNotAcceptableException</entry>
+            		<entry>406 (Not Acceptable)</entry>
+          			</row>
+          			<row>
+            		<entry>HttpMediaTypeNotSupportedException</entry>
+            		<entry>415 (Unsupported Media Type)</entry>
+          			</row>
+          			<row>
+            		<entry>HttpMessageNotReadableException</entry>
+            		<entry>400 (Bad Request)</entry>
+          			</row>
+          			<row>
+            		<entry>HttpMessageNotWritableException</entry>
+            		<entry>500 (Internal Server Error)</entry>
+          			</row>
+          			<row>
+            		<entry>HttpRequestMethodNotSupportedException</entry>
+            		<entry>405 (Method Not Allowed)</entry>
+          			</row>
+          			<row>
+            		<entry>MissingServletRequestParameterException</entry>
+            		<entry>400 (Bad Request)</entry>
+          			</row>
+          			<row>
+            		<entry>NoSuchRequestHandlingMethodException</entry>
+            		<entry>404 (Not Found)</entry>
+          			</row>
+          			<row>
+            		<entry>TypeMismatchException</entry>
+            		<entry>400 (Bad Request)</entry>
+          			</row>
+        		</tbody>
+      		</tgroup>
+   		</informaltable>
+	</section>
+	
+	<note>
+		<title>Response Status Code and HandlerExceptionResolver</title>
+		<para>
+			In previous web applications, you were moved to a page that shows error information when error occurs. 
+			In this case, the problem is that the HTML contents of error page are returned with '200 OK' Response Status to REST client even when error occurs. 
+			However, when setting changes so that Error Status Code is returned to REST client, 
+			the previous web application cannot use page for error.
+		</para>
+		<para>
+			For more information, 
+			refer to <link linkend="springrest_restsupport_contentnegotiation_errorhandling">Response Status Code and Error Page</link>.
+		</para>
+	</note>
+</chapter>

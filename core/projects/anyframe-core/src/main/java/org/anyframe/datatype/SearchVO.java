@@ -42,7 +42,7 @@ public class SearchVO implements java.io.Serializable {
     }
 
     public String toString() {
-        StringBuffer arguments = new StringBuffer();
+        StringBuilder arguments = new StringBuilder();
         arguments.append(" searchCondition - " + searchCondition + "\n");
         arguments.append(" searchKeyword - " + searchKeyword + "\n");
         arguments.append(" pageIndex - " + pageIndex + "\n");

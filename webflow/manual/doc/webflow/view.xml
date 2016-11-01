@@ -1,0 +1,78 @@
+<chapter id="webflow_webflow_view">
+	<title>View</title>
+	<para>
+		위에서 살펴본 view-state에서 view 속성을 정의해 주면 사용자가 원하는 view를 출력해 줄 수 있다.
+		이 때, view 속성을 지정하지 않을 경우에 view-state의 id가 view 이름이 된다.
+		<programlisting language="xml"><![CDATA[<view-state id="confirmAddProduct" ]]><emphasis role="bold"><![CDATA[view="/WEB-INF/jsp/webflow/sales/product/reviewProduct.jsp"]]></emphasis><![CDATA[>]]></programlisting>
+		view는 아래와 같은 방법으로 정의할 수 있다.
+		<itemizedlist>
+			<listitem>
+				<para>
+					플로우로부터의 상대 경로로 지정 : 플로우의 working directory로 부터 상대적인 경로로 view를 지정할 수 있다.
+					<programlisting language="xml"><![CDATA[<view-state id="confirmAddProduct" ]]><emphasis role="bold">
+        <![CDATA[view="reviewProduct.jsp"]]></emphasis><![CDATA[>]]></programlisting>
+				</para>
+			</listitem>
+			<listitem>
+				<para>
+					절대 경로로 지정 : webapp의 루트 디렉토리부터의 경로로 view를 절대 경로로 지정할 수 있다.
+					<programlisting language="xml"><![CDATA[<view-state id="confirmAddProduct" ]]><emphasis role="bold">
+        <![CDATA[view="/WEB-INF/jsp/webflow/sales/product/reviewProduct.jsp"]]></emphasis><![CDATA[>]]></programlisting>
+				</para>
+			</listitem>
+			<listitem>
+				<para>
+					논리적인 이름으로 지정 : Spring MVC의 viewResolver를 사용하는 것과 같이 논리적 이름을 지정하여 viewResolver에 의해 view를 찾게 할 수 있다. 
+					<programlisting language="xml"><![CDATA[<view-state id="confirmAddProduct" ]]><emphasis role="bold"><![CDATA[view="confirmAddProductView"]]></emphasis><![CDATA[>]]></programlisting>
+				</para>
+			</listitem>
+		</itemizedlist>
+	</para>
+	
+	<section id="webflow_webflow_view_binding">
+		<title>model 바인딩</title>
+		<para>
+			사용자가 입력한 데이터를 model 객체로 바인딩하기 위해 Spring Web Flow에서는 model 속성을 정의하여 쓸 수 있다.
+			<programlisting language="xml"><![CDATA[<var name=]]><emphasis role="bold"><![CDATA["product"]]></emphasis><![CDATA[ class=]]><emphasis role="bold"><![CDATA["domain.Product"]]></emphasis><![CDATA[ />
+<view-state id="getProduct" ]]><emphasis role="bold"><![CDATA[model="product"]]></emphasis><![CDATA[
+    view="/WEB-INF/jsp/webflow/sales/product/viewProduct.jsp">]]></programlisting>
+			위와 같이 정의할 경우 사용자가 입력한 데이터의 parameter 이름과 model 객체의 attribute의 이름과 일치하면 자동으로 바인딩이 된다. 
+			model 객체는 하나만 정의할 수 있으며  이렇게 정의된 model 객체에 대해 validation 체크를 할 수 있다.
+			보통 model 속성만 정의할 경우 해당 model 객체에 대한 모든 public attribute들이 바인딩되게 된다. <![CDATA[<binder>]]>를 사용하면 특정 attribute에 대해서만 바인딩 시킬 수 있다.
+			<programlisting language="xml"><![CDATA[<binder>
+    <binding property="userId" />
+    <binding property="userName" />
+</binder>]]></programlisting>
+		</para>
+	</section>
+	
+	<section id="webflow_webflow_view_backtracking">
+		<title>view backtracking</title>
+		<para>
+			사용자는 어플리케이션을 이용할 때 브라우저의 뒤로가기 버튼을 이용하여
+			이미 끝난 view-state나 transition으로 되돌아 갈 수 있다.  
+			history 정책에 대해 Spring Web Flow에서는 history 속성 설정만으로 
+			제어할 수 있으며  history에 대한 설정이 없을 시에는 기본적으로 backtracking이 허용된다.
+		</para>
+		
+		<section id="webflow_webflow_view_backtracking_discard">
+			<title>discard</title>
+			<para>
+				해당 뷰에 대해  backtracking을 방지 한다.
+				<programlisting language="xml"><![CDATA[<transition on="confirm" to="backtolist" ]]><emphasis role="bold"><![CDATA[history="discard"]]></emphasis><![CDATA[>
+    <evaluate expression="coreProductService.add(product)" />
+</transition>]]></programlisting> 
+			</para>
+		</section>
+		
+		<section id="webflow_webflow_view_backtracking_invalidate">
+			<title>invalidate</title>
+			<para>
+				이전에 출력되었던 모든 뷰에 대한 backtracking을 방지 한다.
+				<programlisting language="xml"><![CDATA[<transition on="confirm" to="backtolist" ]]><emphasis role="bold"><![CDATA[history="invalidate"]]></emphasis><![CDATA[>
+    <evaluate expression="coreProductService.add(product)" />
+</transition>]]></programlisting>
+			</para>
+		</section>
+	</section>
+</chapter>

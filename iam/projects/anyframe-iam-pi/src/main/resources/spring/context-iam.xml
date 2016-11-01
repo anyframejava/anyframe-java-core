@@ -79,6 +79,10 @@
 		<!-- intercept-url pattern="\A/.*\.do.*\Z" access="ROLE_RESTRICTED" /-->
 		<intercept-url pattern="\A/.*\Z" access="IS_AUTHENTICATED_ANONYMOUSLY" />
 		
+		<!-- For HTTP Invoker IAM Admin -->
+		<intercept-url pattern="\A/assist/resourceGatherAssist\.do.*\Z" filters="none" />
+		<intercept-url pattern="\A/reload/resourceReload\.do.*\Z" filters="none" />		
+		
         <custom-filter after="FILTER_SECURITY_INTERCEPTOR" ref="filterSecurityInterceptor"/>
 		<custom-filter after="EXCEPTION_TRANSLATION_FILTER" ref="restrictedTimesFilterSecurityInterceptor"/>
 		

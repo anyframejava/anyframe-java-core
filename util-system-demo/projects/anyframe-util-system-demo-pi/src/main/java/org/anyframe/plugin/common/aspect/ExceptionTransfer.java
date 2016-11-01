@@ -37,13 +37,13 @@ import org.anyframe.plugin.common.MovieFinderException;
  * This ExceptionTransfer class is an Aspect class to provide exception handling
  * on this project.
  * 
- * @author Sooyeon Park
+ * @author Youngmin Jo
  */
 @Aspect
 @Service
 public class ExceptionTransfer {
 
-	@Pointcut("execution(* org.anyframe.plugin..*Impl.*(..)) || execution(* org.anyframe.mip.query..*MiPServiceImpl.*(..))")
+	@Pointcut("execution(* org.anyframe.plugin..*Impl.*(..))")
 	public void serviceMethod() {
 	}
 
@@ -77,15 +77,16 @@ public class ExceptionTransfer {
 		if (exception instanceof BaseException) {
 			BaseException baseEx = (BaseException) exception;
 			logger.error(baseEx.getMessage(), baseEx);
-			throw new MovieFinderException(messageSource, "error." + className
-					+ "." + opName, new String[] {}, exception);
 		}
 
-		logger.error(messageSource.getMessage("error." + className + "."
-				+ opName, new String[] {}, "no messages", Locale.getDefault()),
-				exception);
-
-		throw new MovieFinderException(messageSource, "error." + className
-				+ "." + opName, new String[] {}, exception);
+		try{
+			logger.error(messageSource.getMessage("error." + className	+ "." + opName, new String[] {}, Locale.getDefault()),
+					exception);
+		} catch(Exception e){
+			logger.error(messageSource.getMessage("error.common", new String[] {}, Locale.getDefault()),
+					exception);
+			throw new MovieFinderException("error.common");
+		}
+		throw new MovieFinderException("error." + className	+ "." + opName);
 	}
 }

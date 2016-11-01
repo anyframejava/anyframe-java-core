@@ -39,7 +39,7 @@ public class GenreDao extends SimpleJdbcDaoSupport {
 	}
 
 	public List<Genre> getList() throws Exception {
-		String sql = "SELECT GENRE_ID, NAME FROM GENRE ORDER BY NAME";
+		String sql = "SELECT GENRE_ID, NAME FROM FILEUPLOAD_GENRE ORDER BY NAME";
 		return getSimpleJdbcTemplate().query(sql,
 				new BeanPropertyRowMapper<Genre>(Genre.class));
 	}

@@ -32,6 +32,8 @@
 		<aop:pointcut id="mipServiceRequiredTx" expression="execution(* *..MiPService.*(..))"/>
 		<aop:pointcut id="dynamicHibernateRequiredTx" expression="execution(* *..*DynamicHibernateService.*(..))"/>
 		<aop:pointcut id="jobRequiredTx" expression="execution(* *..job..*Job.execute(..))"/>
+		<aop:pointcut id="flexRequiredTx" expression="execution(* *..FlexService.*(..))"/>
+		<aop:advisor advice-ref="txAdvice" order="2" pointcut-ref="flexRequiredTx" />
 		<aop:advisor advice-ref="txAdvice" order="2" pointcut-ref="mipServiceRequiredTx" />
 		<aop:advisor advice-ref="txAdvice" order="2" pointcut-ref="dynamicHibernateRequiredTx" />
 		<aop:advisor advice-ref="txAdvice" order="2" pointcut-ref="jobRequiredTx" />

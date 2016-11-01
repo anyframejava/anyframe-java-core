@@ -1,0 +1,418 @@
+<chapter id="webflow_flow">
+	<title>Flow</title>
+	<para>
+		The reusable scope from when flow starts to when it ends equals to the unit of flow definition file. 
+		Let's look into the elements needed to define this flow. 
+	</para>
+	
+	<section id="webflow_flow_factor">
+		<title>Required elements</title>
+		<para>
+			Basic view navigation can be composed with three elements that are view-state, transition, and end-state.
+		</para>
+		 
+		<section id="webflow_flow_factor_view">
+			<title>view-state</title>
+			<para>
+				view-state defines the step of flow, and renders the related view. 
+				<programlisting language="xml"><![CDATA[<view-state id="addProductView" model="product"
+        view="/WEB-INF/jsp/webflow/sales/product/viewProduct.jsp">
+</view-state>]]></programlisting>
+				Can be defined as above. The view-state id should be unique within flow. 
+				Model object can be defined as model attribute, 
+				and declaration of the related variables can be done by using <![CDATA[<var>]]>.
+				<programlisting language="xml"><![CDATA[<var name="product" class="domain.Product" />]]></programlisting>
+				Also, view can be used to define the view name to be rendered, 
+				and view-state id is view name when not defined. 
+				If view name has not been defined as the above code, the view name to be rendered is addProductView. 
+				When several view-state are defined in flow definition file, 
+				the view-state that is defined first is the view-state that is executed when flow starts.
+			</para>
+		</section>
+		
+		<section id="webflow_flow_factor_event">
+			<title>transition</title>
+			<para>
+				Defines the view-state to be progressed after event occurs on view. 
+				<programlisting language="xml"><![CDATA[<view-state id="confirmAddProduct"
+    view="/WEB-INF/jsp/webflow/sales/product/reviewProduct.jsp">
+    <transition on="revise" to="addProductView" />
+    <transition on="confirm" to="backtolist" history="invalidate">
+        <evaluate expression="foundationProductService.add(product)" />
+    </transition>
+    <transition on="cancel" to="backtolist" />
+</view-state>]]></programlisting>
+				Transitions can be triggered in each view-state according to event id as above.
+				In this case, define event id in 'on' and id of view state to be branched in 'to'. 
+				<note>
+					<title>How to define event id in view ?</title>
+					<para>
+					    To integrate with Spring MVC, event id should be applied for each event that occurs on a specific page in JSP page.
+					    Generally, in JSP page that includes form, "_eventId" key value is event id and is defined as below.
+						<programlisting lang="jsp"><![CDATA[<input type="submit" value="save"/>
+]]><emphasis role="bold"><![CDATA[<input type="hidden" name="_eventId" value="success" />]]></emphasis></programlisting>
+
+						Name property value of input tag of submit type can be defined as "_eventId" + "_" + "property value that belongs to on of transition".
+						<programlisting language="jsp"><![CDATA[<input type="submit" ]]><emphasis role="bold"><![CDATA[name="_eventId_success"]]></emphasis><![CDATA[ value="save" />]]></programlisting>
+						In case of event that has a simple HTML link, use <![CDATA[<a href ... >]]> tag as below to define event id.
+						<programlisting language="jsp"><![CDATA[<a href=]]><emphasis role="bold"><![CDATA["${flowExecutionUrl}&_eventId=success"]]></emphasis><![CDATA[>success</a>]]></programlisting>
+						Use flowExecutionUrl which is Expression Language used above to get the current flowExcutionUrl.						
+					</para>
+				</note>
+			</para>
+		</section>
+					
+		<section id="webflow_flow_factor_end">
+			<title>end-state</title>
+			<para>
+				Define end-state to terminate flow. 
+				<programlisting language="xml"><![CDATA[<end-state id="cancel" />]]></programlisting>
+			</para>
+			<note>
+				<title>Limitation the number of execution and snapshot</title>
+				<para>
+					When defining flow, it generally is terminated at end-state. 
+					In this case, data on the flow is deleted from memory. 
+					However, when the flow has not been terminated in the normal way as end-state due to user moving menu, etc., 
+					related data is not deleted, and memory overhead or OutOfMemory exception can occur. 
+					In Spring Web Flow, the number of executions and snapshots of each user can be limited. 
+					<programlisting language="xml"><![CDATA[<webflow:flow-execution-repository max-executions="5" max0execution-snapshots="30" />]]></programlisting>
+					When defined as above, the number of executions per user should be limited to 5, and the number of snapshots per execution to 30. 				
+				</para>
+			</note>
+		</section>
+	</section>
+	
+	<section id="webflow_flow_method">
+		<title>Call method</title>
+		<para>
+	     	In most flows, logic for navigating view is included, 
+			and Business Service or method of other class can be called during the following moments.
+			<itemizedlist>
+				<listitem>
+					<para>
+						When flow starts
+						<programlisting language="xml"><![CDATA[<on-start>
+    <evaluate expression="..." />
+</on-start>]]></programlisting>
+					</para>
+				</listitem>
+				<listitem>
+					<para>
+						When entered into state
+						<programlisting language="xml"><![CDATA[<view-state id="addProductView" model="product"
+        view="/WEB-INF/jsp/webflow/sales/product/viewProduct.jsp">
+    <on-entry>
+        <evaluate expression="..." />
+    </on-entry>
+    ....
+</view-state>]]></programlisting>
+					</para>
+				</listitem>
+				<listitem>
+					<para>
+						When view is rendered
+						<programlisting language="xml"><![CDATA[<view-state id="addProductView" model="product"
+        view="/WEB-INF/jsp/webflow/sales/product/viewProduct.jsp">
+    <on-render>
+        <evaluate expression="..." />
+    </on-render>
+    ....
+</view-state>]]></programlisting>
+					</para>
+				</listitem>
+				<listitem>
+					<para>
+						When transition is triggered
+						<programlisting language="xml"><![CDATA[<view-state id="addProductView" model="product"
+        view="/WEB-INF/jsp/webflow/sales/product/viewProduct.jsp">
+    <transition on="add" to="confirmAddProduct">
+        <evaluate expression="..." />
+    </transition>
+    ....
+</view-state>]]></programlisting>
+					</para>
+				</listitem>
+				<listitem>
+					<para>
+						When state terminates
+						<programlisting language="xml"><![CDATA[<view-state id="addProductView" model="product"
+        view="/WEB-INF/jsp/webflow/sales/product/viewProduct.jsp">
+    ....
+    <on-exit>
+        <evaluate expression="..." />
+    </on-exit>
+</view-state>]]></programlisting>
+					</para>
+				</listitem>
+				<listitem>
+					<para>
+						When flow terminates
+						<programlisting language="xml"><![CDATA[<on-end>
+    <evaluate expression="..." />
+</on-end>]]></programlisting>
+					</para>
+				</listitem>
+			</itemizedlist>
+			Generally, method of class registered as Spring Bean can be executed, 
+			and in this case, the referring bean can be found in Autowired way. 
+			Also, general class method can be defined as variable and called. 
+		</para>
+		
+		<section id="webflow_flow_method_action">
+			<title>evaluate</title>
+				<para>
+					To execute action, use <![CDATA[<evaluate>]]> at the point mentioned above.
+					<programlisting language="xml"><![CDATA[<evaluate expression="foundationProductService.save(product)" />]]></programlisting>
+					<programlisting language="xml"><![CDATA[<var name="list" class="java.util.ArrayList" />
+<evaluate expression="list.add(product)" />]]></programlisting>
+					When class that is not defined as Spring Bean as above is defined as variable and called, 
+					class that is defined as variable should implements java.io.Serializable to maintain the instance status among flow requests. 
+					Use result if value should be returned after executing method.
+					<programlisting language="xml"><![CDATA[<evaluate expression="foundationProductService.get(prodNo)" result="flowScope.product" />]]></programlisting>
+				</para>
+		</section>     
+	</section>
+			
+	<section id="webflow_flow_transition">
+		<title>Transition Decision</title>
+		<para>
+			Transition can be simply defined based on user input value, 
+			but can also be defined according to the execution return value of a certain action. 
+			When deciding transition in view-state, 
+			handling can be done by simply user input value, 
+			but also the transition can be deciding according to the result of executing a certain action. 
+			In this case, action-state and decision-state can be used. 
+		</para>
+		
+		<section id="webflow_flow_transition_action">
+			<title>action-state</title>
+			<para>
+			    When using action-state, the next transition can be defined based on the action execution return value.
+				When action-state is used, you can execute action and then define the transition to be proceeded next due to the return value. 
+				<programlisting language="xml"><![CDATA[<]]><emphasis role="bold"><![CDATA[action-state]]></emphasis><![CDATA[ id="checkUserLogin">
+    <evaluate expression="userService.isUserLogin(userId)"/>
+    <transition on="yes" to="getCategory"/>
+    <transition on="no" to="backtolist"/>
+</action-state>]]></programlisting>
+				When defined as above, 
+				if the return value is true, after userService isUserLogin() method is executed, event id is yes, and makes a transition to getCategory, 
+				and if the return value is false, id is no, and makes a transition to backtolist. 
+				After action is executed the event id mapped with return value is as below. 
+				<informaltable> 
+					<tgroup cols="2">
+						<thead>
+							<row>
+								<entry align="center">Method return type</entry>
+								<entry align="center">event id</entry>
+							</row>
+						</thead>
+						<tbody>
+							<row>
+								<entry>java.lang.String</entry>
+								<entry>the String value</entry>
+							</row>
+							<row>
+								<entry>java.lang.Boolean</entry>
+								<entry>yes(for true), no(for false)</entry>
+							</row>
+							<row>
+								<entry>java.lang.Enum</entry>
+								<entry>the Enum name</entry>
+							</row>
+							<row>
+								<entry>any other type</entry>
+								<entry>success</entry>
+							</row>
+						</tbody>
+					</tgroup>
+				</informaltable>
+			</para>
+		</section>
+		
+		<section id="webflow_flow_transition_decision">
+			<title>decision-state</title>
+			<para>
+				Decision-state plays the same role as action-state, but can use if-else statement. 
+				If the code defined above is defined as decision-state, the code is as below. 
+				<programlisting language="xml"><![CDATA[<]]><emphasis role="bold"><![CDATA[decision-state]]></emphasis><![CDATA[ id="checkUserLogin">
+    <if test="UserService.isUserLogin(userId)" then="getCategory" else="backtolist" />
+</decision-state>]]></programlisting>
+			</para>
+		</section>
+	</section>
+	
+	<section id="webflow_flow_el">
+		<title>Expression Language</title>
+		<para>
+			In Spring Web Flow, model object can be accessed or action can be executed through Expression Language(EL). 
+			In this case, Unified EL is used, and currently Spring Web Flow uses jboss-el as implementation. 
+			The developer should use this EL to access input data entered by client or data contained in request parameter 
+			or data used in flow such as flowScope. 
+			Also, class defined as Spring Bean can be called. 
+		</para>
+		
+		<section id="webflow_flow_el_special">
+			<title>Special EL variables</title>
+			<para>
+				The following are variables that can be used in flow file.
+				<itemizedlist>
+					<listitem>
+						<para>
+							flowScope : Can be assigned to variables that can be used within flow. 
+							flowScope exists while flow handles request, is created when flow is called, 
+							and destroyed after flow returned outcome. 
+							<programlisting language="xml"><![CDATA[<evaluate expression="foundationProductService.get(prodNo)" result="]]><emphasis role="bold"><![CDATA[flowScope.product]]></emphasis><![CDATA["/>]]></programlisting>
+						</para>
+					</listitem>
+					<listitem>
+						<para>
+							viewScope : Can be assigned to variables that can be used in view. 
+							Continued from the time view status start throughout the time it exists. 
+							Can be referred to from outside. 
+							<programlisting language="xml"><![CDATA[<evaluate expression="foundationProductService.get(prodNo)" result="]]><emphasis role="bold"><![CDATA[viewScope.product]]></emphasis><![CDATA["/>]]></programlisting>
+							<note>
+								<title>How does view access variables in viewScope?</title>
+								<para>
+									When you want to get the variable declared on viewScope in jsp, 
+									you can get it easily by using Expression Language in JSP.									
+									<programlisting language="jsp"><![CDATA[${product}]]></programlisting>
+								</para>
+							</note>
+						</para>
+					</listitem>
+					<listitem>
+						<para>
+							requestScope : Can be assigned to variables that can be used in request. 
+							Exists while flow handles request, and is created when called by flow and destroyed when flow returns outcome. 
+							<programlisting language="xml"><![CDATA[<evaluate expression="foundationProductService.get(prodNo)"
+        result="]]><emphasis role="bold"><![CDATA[requestScope.product]]></emphasis><![CDATA["/>]]></programlisting>
+						</para>
+					</listitem>
+					<listitem>
+						<para>
+							flashScope : Is created when flow starts and the value is deleted when the next view is rendered after assigning value.
+							<programlisting language="xml"><![CDATA[<evaluate expression="foundationProductService.get(prodNo)"
+        result="]]><emphasis role="bold"><![CDATA[flashScope.product]]></emphasis><![CDATA["/>]]></programlisting>
+						</para>
+					</listitem>
+					<listitem>
+						<para>
+							conversationScope : Is assigned when the top-level flow starts, and destroyed when the top-level flow terminates. 
+							Therefore, variable set as conversationScope can also be accessed in subflow that the top-level flow has.
+							<programlisting language="xml"><![CDATA[<evaluate expression="foundationProductService.get(prodNo)"
+        result="]]><emphasis role="bold"><![CDATA[conversationScope.product]]></emphasis><![CDATA["/>]]></programlisting>
+						</para>
+					</listitem>
+					<listitem>
+						<para>
+							requestParameters : Can access values transferred from request parameter in client side.
+							<programlisting language="xml"><![CDATA[<set name="flowScope.userId" value="]]><emphasis role="bold"><![CDATA[requestParameters.userId"]]></emphasis><![CDATA[ />]]></programlisting>
+							When defined as above, is the same as getParameter("userId") of HttpServletRequest in Java.
+						</para>
+					</listitem>
+				</itemizedlist>
+				For more information on Expression Language provided by Spring Web Flow, refer to 
+	            <ulink url="http://static.springsource.org/spring-webflow/docs/2.0.x/reference/htmlsingle/spring-webflow-reference.html">Spring Web Flow Reference</ulink>.
+			</para>
+		</section>
+	</section>
+	
+	<section id="webflow_flow_subflow">
+		<title>Subflow</title>
+		<para>
+			Subflow is used when call another flow as subflow. 
+			In this case, The flow will wait until the subflow returns. 
+		</para>
+		
+		<section id="webflow_flow_subflow_state">
+			<title>subflow-state</title>
+			<para>
+				First, define subflow-state in state that will call subflow, and define the id of subflow to be executed. 
+				The code below is a part of the flow definition.
+				<programlisting language="xml"><![CDATA[<]]><emphasis role="bold"><![CDATA[subflow-state]]></emphasis><![CDATA[ id="viewCategory" subflow="viewCategorySubFlow">
+    <!-- transition definition -->
+    <transition ... />
+</subflow-state>]]></programlisting>
+				As defined above, in a viewCategory state, execute flow whose id is viewCategorySubFlow as subflow.</para>
+		</section>
+		
+		<section id="webflow_flow_subflow_input">
+			<title>input</title>
+			<para>
+				Use input when there is an object to pass to subflow.
+				<programlisting language="xml"><![CDATA[<subflow-state id="viewCategory" subflow="viewCategory">
+    <!-- Define data needed in subflow as input value -->
+    ]]><emphasis role="bold"><![CDATA[<input name="categoryNo" value="product.category.categoryNo"/>]]></emphasis><![CDATA[
+    <!-- transition definition -->
+    <transition ... />
+</subflow-state>]]></programlisting>     
+				For the input value passed by parent flow to be transferred, input should also be defined in child flow. 
+				The below code is part of child flow definition. 
+				<programlisting language="xml"><![CDATA[<!-- Definition of input value passed from parent flow -->
+]]><emphasis role="bold"><![CDATA[<input name="categoryNo"/>]]></emphasis><![CDATA[
+<view-state id="viewCategory"
+        view="/WEB-INF/jsp/webflow/sales/category/viewCategoryForFlow.jsp">
+    <on-render>
+        <evaluate 
+            expression="foundationCategoryService.get(categoryNo)" 
+            result="category"/>
+        <set name="viewScope.category" value="category"/>
+    </on-render>
+    <transition ... />
+</view-state>]]></programlisting></para>
+		</section>
+		
+		<section id="webflow_flow_subflow_output">
+			<title>output</title>
+			<para>
+				Progress flow in child flow, and when there is an object to return to parent class, define as output. 
+				<programlisting language="xml"><![CDATA[<end-state id="submit">
+    <!-- Define data to return to parent flow as output-->
+    ]]><emphasis role="bold"><![CDATA[<output name="category" value="category" />]]></emphasis><![CDATA[
+</end-state>]]></programlisting>
+				Like input, output object passed from child flow should be also defined as output in the parent flow.
+				<programlisting language="xml"><emphasis role="bold"><![CDATA[<output name="category" />]]></emphasis></programlisting>
+			</para>
+		</section>		
+	</section>
+	
+	<section id="webflow_flow_inheritance">
+		<title>Flow inheritance</title>
+		<para>
+			When defining flow file, one flow can inherit another flow, 
+			and this is possible with flow level and state level. 
+			Generally, global transition or global exception is defined as parent. 
+			When child flow inherits parent flow, the related element is not overridden but merged. 
+			However, bean-import, evaluate, exception-handler, and persistence-context, render property cannot be merged. 
+		</para>
+		
+		<section id="webflow_flow_inheritance_flowlevel">
+			<title>Flow level inheritance</title>
+			<para>
+				In flow level inheritance, several flows can be inherited. 
+				In this case they are separated with comma (,).
+				<programlisting language="xml"><![CDATA[<flow xmlns="http://www.springframework.org/schema/webflow"
+    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+    xsi:schemaLocation="http://www.springframework.org/schema/webflow  
+    http://www.springframework.org/schema/webflow/spring-webflow-2.0.xsd" ]]>
+    <emphasis role="bold"><![CDATA[parent="webflowParent1, webflowParent2"]]></emphasis><![CDATA[>]]></programlisting>
+			</para>
+		</section>
+		
+		<section id="webflow_flow_inheritance_statelevel">
+			<title>state level inheritance</title>
+			<para>
+				In state level inheritance, one state can inherit only one state. 
+				Also, child state and parent state should be the same type. 
+				For instance, if child state is view-state, parent state should also be view-state. 
+				The separator between flow id and state id is "#".
+				<programlisting language="xml"><![CDATA[<view-state id="getProduct" model="product"
+        view="/WEB-INF/jsp/webflow/sales/product
+        /viewProduct.jsp" ]]><emphasis role="bold"><![CDATA[parent="webflowParent#stateParent"]]></emphasis><![CDATA[>
+        ...
+</view-state>]]></programlisting>
+			</para>
+		</section>
+	</section>	
+</chapter>

@@ -228,7 +228,7 @@ public class MiPQueryServiceTest extends
 					e instanceof QueryServiceException);
 			assertEquals(
 					"Fail to compare exception message.",
-					"Query Service : Fail to find queryId [notexistqueryid] in mapping xml files. ",
+					"Query Service : Fail to find queryId [notexistqueryid] in mapping xml files.",
 					((QueryServiceException) e).getMessage());
 		}
 	}

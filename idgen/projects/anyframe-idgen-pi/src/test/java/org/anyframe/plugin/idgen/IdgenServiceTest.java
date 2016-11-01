@@ -51,8 +51,16 @@ public class IdgenServiceTest {
 	IdGenService tableidSimple;
 
 	@Inject
-	@Named("TableIdGenWithStrategyService")
-	IdGenService tableidStrategy;
+	@Named("TableIdGenSimpleServiceWithKey")
+	IdGenService tableidSimpleWithKey;
+
+	@Inject
+	@Named("TableIdGenWithMixPrefix")
+	IdGenService tableidMixPrefix;
+
+	@Inject
+	@Named("TableIdGenWithTimestamp")
+	IdGenService tableidTimestamp;
 
 	@Inject
 	@Named("SequenceIdGenService")
@@ -77,8 +85,8 @@ public class IdgenServiceTest {
 	}
 
 	/**
-	 * [Flow #-2] Positive Case : try to get next Long id from id generator with
-	 * block size = 1
+	 * [Flow #-2] Positive Case : try to get next String id from tableid
+	 * generator with target table
 	 * 
 	 * @throws Exception
 	 *             fail to test
@@ -86,27 +94,59 @@ public class IdgenServiceTest {
 	@Test
 	public void testSimpleTableId() throws Exception {
 		// 1. get id twice to compare with each other
-		String id1 = tableidSimple.getNextStringId();
-		String id2 = tableidSimple.getNextStringId();
+		String id1 = tableidSimple.getNextStringId("IDGEN_MOVIE");
+		String id2 = tableidSimple.getNextStringId("IDGEN_MOVIE");
 		assertEquals("fail to get differenct id", true, !id1.equals(id2));
 	}
 
 	/**
-	 * [Flow #-3] Positive Case : when generate id, apply generation strategy.
+	 * [Flow #-3] Positive Case : try to get next String id from tableid
+	 * generator with target table definition
 	 * 
 	 * @throws Exception
 	 *             fail to test
 	 */
 	@Test
-	public void testWithStrategy() throws Exception {
+	public void testSimpleTableIdWithKeyDef() throws Exception {
 		// 1. get id twice to compare with each other
-		String id1 = tableidStrategy.getNextStringId();
-		String id2 = tableidStrategy.getNextStringId();
+		String id1 = tableidSimpleWithKey.getNextStringId();
+		String id2 = tableidSimpleWithKey.getNextStringId();
 		assertEquals("fail to get differenct id", true, !id1.equals(id2));
 	}
 
 	/**
-	 * [Flow #-4] Positive Case : try to get next Long id
+	 * [Flow #-4] Positive Case : when generate id, apply generation 'MixPrefix'
+	 * strategy.
+	 * 
+	 * @throws Exception
+	 *             fail to test
+	 */
+	@Test
+	public void testWithMixPrefix() throws Exception {
+		// 1. get id twice to compare with each other
+		String id1 = tableidMixPrefix.getNextStringId("IDGEN_MOVIE");
+		String id2 = tableidMixPrefix.getNextStringId("IDGEN_MOVIE");
+		assertEquals("fail to get differenct id", true, !id1.equals(id2));
+	}
+
+	/**
+	 * [Flow #-5] Positive Case : when generate id, apply generation 'Timestamp'
+	 * strategy.
+	 * 
+	 * @throws Exception
+	 *             fail to test
+	 */
+	@Test
+	public void testWithTimestamp() throws Exception {
+		// 1. get id twice to compare with each other
+		String id1 = tableidTimestamp.getNextStringId("IDGEN_MOVIE");
+		String id2 = tableidTimestamp.getNextStringId("IDGEN_MOVIE");
+		assertEquals("fail to get differenct id", true, !id1.equals(id2));
+	}
+
+	/**
+	 * [Flow #-6] Positive Case : try to get next String id from sequenceid
+	 * generator
 	 * 
 	 * @throws Exception
 	 *             fail to test

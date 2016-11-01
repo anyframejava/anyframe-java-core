@@ -89,7 +89,7 @@ public class FileMonitorTest {
 		init(targetDir);
 
 		// when directly returning logger - the logger name in the below console is shown as
-		// [anyframe.core.util.system.FileMonitorTest]
+		// [org.anyframe.util.system.FileMonitorTest]
 		Log log = LogFactory.getLog(this.getClass());
 		FileMonitor.startSingleton(log, targetDir, 5000);
 

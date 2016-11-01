@@ -37,7 +37,7 @@ public class SystemUtilBase {
 	 * @return
 	 */
 	public static String concatStrArray(String[] arr) {
-		StringBuffer sb = new StringBuffer();
+		StringBuilder sb = new StringBuilder();
 		for (String tmp : arr) {
 			sb.append(tmp);
 			sb.append(" ");

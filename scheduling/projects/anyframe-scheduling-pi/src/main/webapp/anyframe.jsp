@@ -13,7 +13,7 @@
 <!-- Top -->
   <tr>
     <td height="100%" align="left" valign="middle">
-		<font size="5">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Anyframe Java 5.0.0.RC1</font>
+		<font size="5">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Anyframe Java 5.0.1</font>
     </td>
   </tr>
 </table>
@@ -30,7 +30,7 @@
 		<tr class="board">
 				<td class="underline">
 					<!--scheduling-menu-START-->
-					<a href="${ctx}/schedulingMovieList.do"><font size="2">- Scheduling 1.0.0.RC1</font></a><br/>
+					<a href="${ctx}/schedulingMovieList.do"><font size="2">- Scheduling 1.0.1</font></a><br/>
 					<!--scheduling-menu-END-->
 					<!--Add new menu here-->
 				</td>

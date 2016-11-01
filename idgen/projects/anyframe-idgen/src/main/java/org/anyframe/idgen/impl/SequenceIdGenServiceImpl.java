@@ -19,7 +19,6 @@ import java.math.BigDecimal;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
-import java.util.Locale;
 
 import org.anyframe.exception.BaseException;
 import org.springframework.beans.factory.InitializingBean;
@@ -34,12 +33,8 @@ import org.springframework.jdbc.datasource.DataSourceUtils;
  * The Configuration to use a SequenceIdGenerator look like the following:
  * 
  * <pre>
- *  &lt;property name=&quot;dataSource&quot;&gt;
- *  &lt;ref bean=&quot;util_datasource&quot;/&gt;
- *  &lt;/property&gt;
- *  &lt;config:configuration  block-size=&quot;1&quot; table=&quot;idstest&quot; key-table=&quot;does-not-exist&quot;&gt;	
- *  &lt;query&gt;SELECT nonexisting-sequence.NEXTVAL FROM DUAL&lt;/query&gt;		
- *  &lt;/config:configuration&gt;
+ *  &lt;property name=&quot;dataSource&quot; ref=&quot;util_datasource&quot;/&gt;
+ *  &lt;property name=&quot;query&quot; value=&quot;SELECT idstest.NEXTVAL FROM DUAL&quot;/&gt;
  * </pre>
  * 
  * Where user-db is the name of a DataSource configured in a datasources
@@ -64,10 +59,32 @@ import org.springframework.jdbc.datasource.DataSourceUtils;
  * @author modified by SoYon Lim
  * @author modified by JongHoon Kim
  */
-public class SequenceIdGenServiceImpl extends
-		AbstractDataSourceIdGenService implements InitializingBean {
+public class SequenceIdGenServiceImpl extends AbstractDataSourceIdGenService
+		implements InitializingBean {
 
 	private String query;
+
+	protected BigDecimal getNextBigDecimalIdInner(String  tableName)
+			throws BaseException {
+		if (!tableName.equals("")) {
+			throw new BaseException(
+					"[IDGeneration Service] Current service doesn't support to generate next id based on table '"
+							+ tableName + "'.");
+		}
+
+		return getNextBigDecimalIdInner();
+	}
+
+	protected long getNextLongIdInner(String tableName)
+			throws BaseException {
+		if (!tableName.equals("")) {
+			throw new BaseException(
+					"[IDGeneration Service] Current service doesn't support to generate next id based on table '"
+							+ tableName + "'.");
+		}
+
+		return getNextLongIdInner();
+	}
 
 	/**
 	 * Gets the next id as a Big Decimal. This method will only be called when
@@ -80,9 +97,8 @@ public class SequenceIdGenServiceImpl extends
 	protected BigDecimal getNextBigDecimalIdInner() throws BaseException {
 		if (getLogger().isDebugEnabled())
 			getLogger().debug(
-					messageSource.getMessage("debug.idgen.sequenceid.query",
-							new String[] { query }, Locale.getDefault()));
-
+					"[IDGeneration Service] Requesting an Id using query: "
+							+ query);
 		try {
 			// 2009.10.08 - without handling connection directly
 			Connection conn = DataSourceUtils.getConnection(getDataSource());
@@ -95,13 +111,9 @@ public class SequenceIdGenServiceImpl extends
 					if (getLogger().isErrorEnabled())
 						getLogger()
 								.error(
-										messageSource
-												.getMessage(
-														"error.idgen.sequenceid.notallocate.id",
-														new String[] {}, Locale
-																.getDefault()));
-					throw new BaseException(messageSource,
-							"error.idgen.sequenceid.notallocate.id");
+										"[IDGeneration Service] Unable to allocate a block of Ids. Query for Id did not return a value.");
+					throw new BaseException(
+							"[IDGeneration Service] Unable to allocate a block of Ids. Query for Id did not return a value.");
 				}
 			} finally {
 				// 2009.10.08 - without handling connection directly
@@ -112,11 +124,13 @@ public class SequenceIdGenServiceImpl extends
 			if (e instanceof BaseException)
 				throw (BaseException) e;
 			if (getLogger().isErrorEnabled())
-				getLogger().error(
-						messageSource.getMessage("error.idgen.get.connection",
-								new String[] {}, Locale.getDefault()));
-			throw new BaseException(messageSource,
-					"error.idgen.get.connection", e);
+				getLogger()
+						.error(
+								"[IDGeneration Service] We can't get a connection. So, unable to allocate a block of Ids.",
+								e);
+			throw new BaseException(
+					"[IDGeneration Service] We can't get a connection. So, unable to allocate a block of Ids.",
+					e);
 		}
 	}
 
@@ -131,8 +145,8 @@ public class SequenceIdGenServiceImpl extends
 	protected long getNextLongIdInner() throws BaseException {
 		if (getLogger().isDebugEnabled())
 			getLogger().debug(
-					messageSource.getMessage("debug.idgen.sequenceid.query",
-							new String[] { query }, Locale.getDefault()));
+					"[IDGeneration Service] Requesting an Id using query: "
+							+ query);
 
 		try {
 			// 2009.10.08 - without handling connection directly
@@ -147,13 +161,9 @@ public class SequenceIdGenServiceImpl extends
 					if (getLogger().isErrorEnabled())
 						getLogger()
 								.error(
-										messageSource
-												.getMessage(
-														"error.idgen.sequenceid.notallocate.id",
-														new String[] {}, Locale
-																.getDefault()));
-					throw new BaseException(messageSource,
-							"error.idgen.sequenceid.notallocate.id");
+										"[IDGeneration Service] Unable to allocate a block of Ids. Query for Id did not return a value.");
+					throw new BaseException(
+							"[IDGeneration Service] Unable to allocate a block of Ids. Query for Id did not return a value.");
 				}
 			} finally {
 				// 2009.10.08 - without handling connection directly
@@ -164,11 +174,13 @@ public class SequenceIdGenServiceImpl extends
 			if (e instanceof BaseException)
 				throw (BaseException) e;
 			if (getLogger().isErrorEnabled())
-				getLogger().error(
-						messageSource.getMessage("error.idgen.get.connection",
-								new String[] {}, Locale.getDefault()));
-			throw new BaseException(messageSource,
-					"error.idgen.get.connection", e);
+				getLogger()
+						.error(
+								"[IDGeneration Service] We can't get a connection. So, unable to allocate a block of Ids.",
+								e);
+			throw new BaseException(
+					"[IDGeneration Service] We can't get a connection. So, unable to allocate a block of Ids.",
+					e);
 		}
 	}
 
@@ -180,12 +192,10 @@ public class SequenceIdGenServiceImpl extends
 	}
 
 	/**
-	 * Called by the Container to configure the component.
+	 * Called by the Container to initialize.
 	 * 
-	 * @param configuration
-	 *            configuration info used to setup the component.
 	 * @throws Exception
-	 *             if there are any problems with the configuration.
+	 *             if there is any problem initializing
 	 */
 	public void afterPropertiesSet() throws Exception {
 		if (this.query == null || this.query.equals("")) {

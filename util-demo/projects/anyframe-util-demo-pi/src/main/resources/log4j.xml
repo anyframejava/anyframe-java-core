@@ -13,13 +13,25 @@
         <appender-ref ref="console"/>
     </logger>   
     
-    <!--log SQL (pre-execution) plus exceptions caused by SQL-->
-	<logger name="jdbc.sqlonly" additivity="false">
+    <!--log SQL and replace SQL with the given pattern for preventing SQL Injection with jdbc-support plugin -->
+	<logger name="org.anyframe.jdbc.support.CompleteQueryPostProcessor" additivity="false">
+		<level value="INFO" />
+		<appender-ref ref="console" />
+	</logger>
+
+	<logger name="org.anyframe.jdbc.support.InjectionPatternPostProcessor" additivity="false">
+		<level value="WARN" />
+		<appender-ref ref="console" />
+	</logger>
+   
+    <!--log SQL (pre-execution) plus exceptions caused by SQL with logging-sql plugin,
+        it recommends to use jdbc-support plugin instead of logging-sql plugin for SQL logging. -->
+  	<logger name="jdbc.sqlonly" additivity="false">
 		<level value="DEBUG" />
 		<appender-ref ref="console" />
 	</logger>
 	
-	<!--log SQL with timing information, post execution, all jdbc calls except ResultSet calls, jdbc ResultSet calls-->
+	<!--log SQL with timing information, post execution, all jdbc calls except ResultSet calls, jdbc ResultSet calls  with logging-sql plugin -->
 	<logger name="jdbc" additivity="false">
 		<level value="OFF" />
 		<appender-ref ref="console" />
@@ -43,7 +55,7 @@
     </logger>   
         
     <root>
-    	<level value="OFF"/>
+    	<level value="ERROR"/>
     	<appender-ref ref="console"/>
     </root>
 </log4j:configuration>

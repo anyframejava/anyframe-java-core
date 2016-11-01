@@ -1,173 +1,137 @@
 <%@ page language="java" errorPage="/sample/common/error.jsp" pageEncoding="UTF-8" contentType="text/html;charset=utf-8" %>
-<%@ include file="/sample/common/taglibs.jsp"%>
-<head>
-    <%@ include file="/sample/common/meta.jsp" %>
-    <title><spring:message code="movieDetail.title"/></title>
-    <meta name="heading" content="<spring:message code='movieDetail.heading'/>"/>   
-	<link rel="stylesheet" href="<c:url value='/sample/css/admin.css'/>" type="text/css">            
-	<script type="text/javascript" src="<c:url value='/sample/javascript/CommonScript.js'/>"></script>
-	<script type="text/javascript" src="<c:url value='/sample/javascript/InputCalendar.js'/>"></script>
-	<script type="text/javascript">
-		function fncSubmit(method) {
-			if(method != 'post') {
-				document.movieForm._method.value=method;
-				
-				if(method == 'delete') {
-					if(!confirmDelete('movie')) {
-						return;
-					}
+<%@ include file="/sample/common/top.jsp"%>
+		<div class="location"><a href="<c:url value='/anyframe.jsp'/>">Home</a> &gt; <a href="<c:url value='/springrest/movies.html'/>">Spring REST 1.0.1</a></div>
+    </div>
+    <hr />
+<script type="text/javascript" src="<c:url value='/sample/javascript/InputCalendar.js'/>"></script>
+<script type="text/javascript" src="<c:url value='/sample/javascript/CommonScript.js'/>"></script>   
+<script type="text/javascript">
+	function fncSubmit(method) {
+		if(method != 'post') {
+			document.movieForm._method.value=method;
+			
+			if(method == 'delete') {
+				if(!confirmDelete('movie')) {
+					return;
 				}
 			}
-			<c:if test="${empty movie.movieId}">
-			document.movieForm.action = "<c:url value='/springrest/movies.html'/>";
-			</c:if>
-			document.movieForm.submit();
 		}
-	</script>
-</head>
-<!--************************** begin of contents *****************************-->
-
-<!--begin of title-->
-<table width="100%" height="24" border="0" cellpadding="0" cellspacing="0">
-	<tr>
-		<td background="<c:url value='/sample/images/ct_ttl_img02.gif'/>" width="100%">
-		<table width="100%" height="24" border="0" cellpadding="0" cellspacing="0">
-			<tr>
-				<td height="24" class="ct_ttl01" style="padding-left: 12px">
-				 	<c:if test="${empty movie.movieId}">
-				 	Add Movie Information
+		<c:if test="${empty movie.movieId}">
+		document.movieForm.action = "<c:url value='/springrest/movies.html'/>";
+		</c:if>
+		document.movieForm.submit();
+	}	
+</script>    
+    <div id="container">
+    	<div class="cont_top">
+        	<h2>
+        		<c:if test="${empty movie.movieId}">
+				 	<spring:message code='movie.add'/>
 				 	<c:set var="readonly" value="false"/>
-					</c:if>
+				</c:if>
 			
-				    <c:if test="${not empty movie.movieId}">	
-					Update Movie Information
+				<c:if test="${not empty movie.movieId}">	
+					<spring:message code='movie.update'/>
 					<c:set var="readonly" value="true"/>				 
-					</c:if>					
-				</td>
-			</tr>
-		</table>
-		</td>
-	</tr>
-</table>
-<c:choose>
-	<c:when test="${not empty movie.movieId}">
-		<c:set var="method" value="put" />
-	</c:when>
-	<c:otherwise>
-		<c:set var="method" value="post" />
-	</c:otherwise>
-</c:choose>
-<form:form modelAttribute="movie" name="movieForm" method="${method}">
-	
-	<table width="100%" border="0" cellspacing="0" cellpadding="0" style="margin-top: 13px;">
-		<c:if test="${not empty movie.movieId}">
+				</c:if>
+			</h2>
+        </div>
+        <c:choose>
+			<c:when test="${not empty movie.movieId}">
+				<c:set var="method" value="put" />
+			</c:when>
+			<c:otherwise>
+				<c:set var="method" value="post" />
+			</c:otherwise>
+		</c:choose>
+        <div class="view">
+        <form:form modelAttribute="movie" name="movieForm" method="${method}">
+        <c:if test="${not empty movie.movieId}">
 			<form:hidden path="movieId" />
 		</c:if>
-		
-		<tr>
-			<td width="150" class="ct_td"><spring:message code="movie.title" />&nbsp;*</td>
-			<td bgcolor="D6D6D6" width="1"></td>
-			<td class="ct_write01">
-				<form:input path="title" cssClass="ct_input_g" cssErrorClass="text medium error" size="40" maxlength="50" /> <form:errors path="title" cssClass="errors" />
-			</td>
-		</tr>
-		<tr>
-			<td height="1" colspan="3" bgcolor="D6D6D6"></td>
-		</tr>
-		<tr>
-			<td width="150" class="ct_td"><spring:message code="movie.director" />&nbsp;*</td>
-			<td bgcolor="D6D6D6" width="1"></td>
-			<td class="ct_write01">
-				<form:input path="director" cssClass="ct_input_g" cssErrorClass="text medium error" size="40" maxlength="50" /> 
-				<form:errors path="director" cssClass="errors" />
-			</td>
-		</tr>
-		<tr>
-			<td height="1" colspan="3" bgcolor="D6D6D6"></td>
-		</tr>
-		<tr>
-			<td width="150" class="ct_td"><spring:message code="movie.genre" />&nbsp;*</td>
-			<td bgcolor="D6D6D6" width="1"></td>
-			<td class="ct_write01">
-			<form:select path="genre.genreId">
-            	<form:options items="${genreList}" itemValue="genreId" itemLabel="name"/>
-          	</form:select>
-			</td>
-		</tr>
-		<tr>
-			<td height="1" colspan="3" bgcolor="D6D6D6"></td>
-		</tr>
-		<tr>
-			<td width="150" class="ct_td"><spring:message code="movie.actors" />&nbsp;*</td>
-			<td bgcolor="D6D6D6" width="1"></td>
-			<td class="ct_write01">
-				<form:input path="actors" cssClass="ct_input_g" cssErrorClass="text medium error" size="40" maxlength="50" /> 
-				<form:errors path="actors" cssClass="errors" />
-			</td>
-		</tr>
-		<tr>
-			<td height="1" colspan="3" bgcolor="D6D6D6"></td>
-		</tr>
-		<tr>
-			<td width="150" class="ct_td"><spring:message code="movie.runtime" /></td>
-			<td bgcolor="D6D6D6" width="1"></td>
-			<td class="ct_write01">
-				<form:input path="runtime" cssClass="ct_input_g" cssErrorClass="text medium error" size="10" maxlength="3" /> min. 
-				<form:errors path="runtime" cssClass="errors" />
-			</td>
-		</tr>
-		<tr>
-			<td height="1" colspan="3" bgcolor="D6D6D6"></td>
-		</tr>
-		<tr>
-			<td width="150" class="ct_td"><spring:message code="movie.releaseDate" /></td>
-			<td bgcolor="D6D6D6" width="1"></td>
-			<td class="ct_write01">
-				<form:input path="releaseDate" id="releaseDate" cssClass="ct_input_g" cssErrorClass="text medium error" maxlength="10" />
-				<a href="javascript:popUpCalendar(document.movieForm.releaseDate, 'yyyy-mm-dd');"><img src="<c:url value='/sample/images/ct_icon_date.gif'/>" width="16" height="18" border="0" align="absmiddle"></img></a>
-				<form:errors path="releaseDate" cssClass="errors" />
-			</td>
-		</tr>
-		<tr>
-			<td height="1" colspan="3" bgcolor="D6D6D6"></td>
-		</tr>
-		<tr>
-			<td width="150" class="ct_td"><spring:message code="movie.ticketPrice" /></td>
-			<td bgcolor="D6D6D6" width="1"></td>
-			<td class="ct_write01">
-				<form:input id="ticketPrice" path="ticketPrice" cssClass="ct_input_g" cssErrorClass="text medium error" maxlength="5" /> 
-				<form:errors path="ticketPrice" cssClass="errors" />
-			</td>
-		</tr>
-		<tr>
-			<td height="1" colspan="3" bgcolor="D6D6D6"></td>
-		</tr>
-		<tr>
-			<td width="150" class="ct_td"><spring:message code="movie.nowPlaying" /></td>
-			<td bgcolor="D6D6D6" width="1"></td>
-			<td class="ct_write01">Is this movie now playing ? <form:checkbox path="nowPlaying" value="Y" />
-			<input type="hidden" name="!nowPlaying" value="N" /></td>
-		</tr>
-		<tr>
-			<td height="1" colspan="3" bgcolor="D6D6D6"></td>
-		</tr>	
-	</table>
-	<!--begin of button-->
-	<table width="100%" border="0" cellspacing="0" cellpadding="0" style="margin-top: 10px;">
-		<tr>
-			<td height="24" colspan="2" align="center">
-				<c:if test="${empty movie.movieId}">
-					<a id="createlink" href="javascript:fncSubmit('post');"><img src="<c:url value='/sample/images/btn_add.png'/>" width="64" height="18" border="0" /></a>
-				</c:if>
-				<c:if test="${not empty movie.movieId}">
-					<a id="updatelink" href="javascript:fncSubmit('put');"><img src="<c:url value='/sample/images/btn_update.png'/>" width="64" height="18" border="0" /></a>
-					<a href="javascript:fncSubmit('delete');"><img src="<c:url value='/sample/images/btn_delete.png'/>" width="64" height="18" border="0" /></a>
-					<spring:url value="/springrest/movies/{id}.xml" var="movieUrl" htmlEscape="true" >
-						<spring:param name="id" value="${movie.movieId}" />
-					</spring:url>
-					<a href="${movieUrl}"><img src="<c:url value='/sample/images/btn_viewxml.png'/>" width="110" height="18" border="0"/></a>
-				</c:if>
-			</td>
-		</tr>
-	</table>
-</form:form>
+      		<table summary="This table shows detail information about genre, title, director, actors, runtime, release date, ticket price of the movie">
+            	<caption>Detail information</caption>
+                <colgroup>
+                	<col style="width:20%;" />
+                    <col style="width:80%;" />
+                </colgroup>
+                <tbody>
+                	<tr>
+                    	<th><label for="title"><spring:message code="movie.title" />&nbsp;*</label></th>
+                        <td><form:input path="title" cssClass="w_normal" /><form:errors path="title" cssClass="errors" /></td>
+                    </tr>
+                    <tr>
+                    	<th><label for="director"><spring:message code="movie.director" />&nbsp;*</label></th>
+                        <td><form:input path="director" cssClass="w_normal" /><form:errors path="director" cssClass="errors" /></td>
+                    </tr>
+                    <tr>
+                    	<th><label for="genre"><spring:message code="movie.genre" />&nbsp;*</label></th>
+                        <td>
+                        	<form:select id="genre" path="genre.genreId">
+            					<form:options items="${genreList}" itemValue="genreId" itemLabel="name"/>
+				          	</form:select>
+          				</td>
+                    </tr>
+                    <tr>
+                    	<th><label for="actors"><spring:message code="movie.actors" />&nbsp;*</label></th>
+                        <td><form:input path="actors" cssClass="w_normal" /><form:errors path="actors" cssClass="errors" /></td>
+                    </tr>
+                    <tr>
+                    	<th><label for="runtime"><spring:message code="movie.runtime" /></label></th>
+                        <td><form:input path="runtime" cssClass="w_time" />min.<form:errors path="runtime" cssClass="errors" /></td>
+                    </tr>
+                    <tr>
+                    	<th><label for="releaseDate"><spring:message code="movie.releaseDate" /></label></th>
+                        <td>
+                        <span class="float_left margin_right5"><form:input path="releaseDate" cssClass="w_date"  maxlength="10" /></span>
+                        <label for="calendar" class="float_left">
+                        <a href="javascript:popUpCalendar(document.movieForm.releaseDate, 'yyyy-mm-dd');">
+                        	<img id="calendar" src="<c:url value='/sample/images/btn_calendar_i.gif'/>" alt="Calendar" />
+                        </a>	
+                        </label></td>
+                    </tr>
+                    <tr>
+                    	<th><label for="ticketPrice"><spring:message code="movie.ticketPrice" /></label></th>
+                        <td><form:input path="ticketPrice" cssClass="w_price" /><form:errors path="ticketPrice" cssClass="errors" /></td>
+                    </tr>
+                    <tr>
+                    	<th><label for="nowPlaying"><spring:message code="movie.nowPlaying" /></label></th>
+                        <td><span class="float_left"><spring:message code="movie.isNowPlaying" /></span>
+                        <span class="float_left margin_left5"><form:checkbox id="nowPlaying" path="nowPlaying" value="Y" /></span></td>
+                    </tr>
+                </tbody>
+            </table>
+            </form:form>
+        </div><!-- // list E -->
+        <div class="btncontainer_center">
+        <span class="button default icon">
+            <span class="list"></span>
+            <a href="<c:url value='/springrest/movies.html'/>"><spring:message code="movie.button.list" /></a>
+        </span>
+        <c:if test="${empty movie.movieId}">
+	        <span class="button default icon">
+	            <span class="add"></span>
+	            <a href="javascript:fncSubmit('post');"><spring:message code="movie.button.add" /></a>
+	        </span>
+        </c:if>
+        <c:if test="${not empty movie.movieId}">
+        	<span class="button default icon">
+	            <span class="update"></span>
+	            <a href="javascript:fncSubmit('put');"><spring:message code="movie.button.update" /></a>
+	        </span>
+	         <span class="button default icon">
+                <span class="delete">&nbsp;</span>
+                <a href="javascript:fncSubmit('delete');">Delete</a>
+            </span>
+            <spring:url value="/springrest/movies/{id}.xml" var="movieUrl" htmlEscape="true" >
+				<spring:param name="id" value="${movie.movieId}" />
+			</spring:url>
+            <span class="button default icon">
+                <span class="view">&nbsp;</span>
+                <a href="${movieUrl}">View as XML</a>
+            </span>
+        </c:if>
+    	</div>
+	</div>
+    <hr />
+<%@ include file="/sample/common/bottom.jsp"%>

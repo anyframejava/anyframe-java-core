@@ -43,8 +43,8 @@ public class LoggingAspect {
 		String methodName = thisJoinPoint.getSignature().getName();
 		Object[] arguments = thisJoinPoint.getArgs();
 
-		StringBuffer argBuf = new StringBuffer();
-		StringBuffer argValueBuf = new StringBuffer();
+		StringBuilder argBuf = new StringBuilder();
+		StringBuilder argValueBuf = new StringBuilder();
 		int i = 0;
 		for (Object argument : arguments) {
 			String argClassName = argument.getClass().getSimpleName();
@@ -59,7 +59,7 @@ public class LoggingAspect {
 			argValueBuf.append("No arguments\n");
 		}
 
-		StringBuffer messageBuf = new StringBuffer();
+		StringBuilder messageBuf = new StringBuilder();
 		messageBuf.append("before executing " + methodName + "("
 				+ argBuf.toString() + ") method");
 		messageBuf

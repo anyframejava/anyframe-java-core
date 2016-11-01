@@ -58,7 +58,7 @@ public class DefaultActionSupportExceptionTestAction extends AbstractActionSuppo
         	ApplicationContext context = getWebApplicationContext();
     		MessageSource messageSource = (MessageSource)context.getBean("messageSource");
 
-            throw new BaseException(messageSource, "error.common.msg.biz");
+            throw new BaseException(messageSource, "common.msg.biz");
         }
         // AuthorizationException Test
         else if (request.getAttribute("DefaultException").equals(

@@ -93,7 +93,7 @@ public class ExceptionTransfer {
 
 		Log logger = LogFactory.getLog(target.getClass());
 
-		logger.info("***** Around Advice of ExceptionTransfer [" + className + "."
+		logger.debug("***** Around Advice of ExceptionTransfer [" + className + "."
 				+ opName + "()]");
 
 		// before logic

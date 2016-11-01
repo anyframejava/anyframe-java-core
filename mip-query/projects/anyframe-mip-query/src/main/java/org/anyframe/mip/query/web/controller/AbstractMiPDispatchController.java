@@ -31,9 +31,6 @@ import com.tobesoft.platform.data.VariableList;
 
 public class AbstractMiPDispatchController extends AbstractMiPController {
 
-	private Log logger = LogFactory
-			.getLog(AbstractMiPDispatchController.class);
-
 	/**
 	 * The set of Method objects we have intrespected for this class, keyed by
 	 * method name. This collection is populated as different methods are

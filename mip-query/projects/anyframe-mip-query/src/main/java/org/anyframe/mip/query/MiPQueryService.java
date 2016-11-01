@@ -28,35 +28,49 @@ import com.tobesoft.platform.data.VariableList;
  * This is the interface used for manipulating database in developing the
  * presentation layer using MiPlatform which is the X-Internet solution of the
  * TOBE Software company.
- * <p>
- * In order to use MiPQueryService the
- * anyframe.core.query.ria.impl.RiaQueryServiceImpl</code> class has to be
- * registered as Bean.
- * </p>
+ * 
  * MiPQueryService Configuration Example:
  * 
  * <pre>
- * &lt;bean name=&quot;riaQueryService&quot; class=&quot;anyframe.core.query.ria.impl.RiaQueryServiceImpl&quot;&gt;
- *      &lt;property name=&quot;jdbcTemplate&quot; ref=&quot;pagingNamedParamJdbcTemplate&quot;/&gt;
- *      &lt;property name=&quot;lobHandler&quot; ref=&quot;lobHandler&quot;/&gt;
- *      &lt;property name=&quot;sqlRepository&quot; ref=&quot;sqlLoader&quot;/&gt;
- * &lt;/bean&gt;
- * &lt;bean id=&quot;mipQueryService&quot; class=&quot;anyframe.core.query.ria.mip.impl.MiPQueryServiceImpl&quot;&gt;
- *      &lt;property name=&quot;riaQueryService&quot; ref=&quot;riaQueryService&quot;/&gt;
- *      &lt;property name=&quot;sqlRepository&quot; ref=&quot;sqlLoader&quot;/&gt;
+ * &lt;bean id=&quot;mipQueryService&quot; class=&quot;org.anyframe.mip.query.impl.MiPQueryServiceImpl&quot;&gt;
+ *     &lt;property name=&quot;namedParamJdbcTemplate&quot; ref=&quot;pagingNamedParamJdbcTemplate&quot;/&gt;
+ *     &lt;property name=&quot;lobHandler&quot; ref=&quot;lobHandler&quot;/&gt;
+ *     &lt;property name=&quot;sqlRepository&quot; ref=&quot;sqlLoader&quot;/&gt;
+ *     &lt;lookup-method name=&quot;getRowCallbackHandler&quot; bean=&quot;rowCallbackHandler&quot;/&gt;
+ *     &lt;lookup-method name=&quot;getCallableStatementCallbackHandler&quot; bean=&quot;callableStatementCallbackHandler&quot;/&gt;
+ *     &lt;lookup-method name=&quot;getPrintWriterRowCallbackHandler&quot; bean=&quot;printWriterRowCallbackHandler&quot;/&gt;
  * &lt;/bean&gt;
  * 
  * &lt;bean id=&quot;pagingNamedParamJdbcTemplate&quot; 
- *          class=&quot;anyframe.core.query.impl.jdbc.PagingNamedParamJdbcTemplate&quot;&gt;
- *      &lt;constructor-arg index=&quot;0&quot; ref=&quot;pagingJdbcTemplate&quot;/&gt;
- *      &lt;constructor-arg index=&quot;1&quot; ref=&quot;dataSource&quot;/&gt;
+ *          class=&quot;org.anyframe.query.impl.jdbc.PagingNamedParamJdbcTemplate&quot;&gt;
+ *      &lt;constructor-arg ref=&quot;pagingJdbcTemplate&quot;/&gt;
  * &lt;/bean&gt;
- * </pre>
  * 
- * <p>
- * The MiQueryService's configuration has <code>riaQueryService</code>,
- * <code>sqlRepository</code>.
- * </p>
+ * &lt;bean id="lobHandler" class=&quot;org.springframework.jdbc.support.lob.OracleLobHandler&quot; lazy-init=&quot;true&quot;&gt
+ *     &lt;property name=&quot;nativeJdbcExtractor&quot; ref=&quot;nativeJdbcExtractor&quot;/&gt;
+ * &lt;/bean&gt;
+ * 
+ * &lt;bean name="sqlLoader" class="org.anyframe.query.impl.config.loader.SQLLoader"&gt;
+ *      &lt;property name="mappingFiles"&gt;
+ *           &lt;value&gt;classpath:/mappings/testcase-*.xml&lt;/value&gt;
+ *      &lt;/property&gt;
+ *      &lt;property name="nullchecks"&gt;
+ *           &lt;map&gt;
+ *                &lt;entry key="VARCHAR" value=""/&gt;
+ *           &lt;/map&gt;
+ *      &lt;/property&gt;    
+ *      &lt;property name="skipError" value="true" /&gt;			
+ * &lt;/bean&gt;
+ * 
+ * &lt;bean id=&quot;callableStatementCallbackHandler&quot; 
+ *     class=&quot;org.anyframe.mip.query.impl.jdbc.mapper.MiPCallableStatementCallbackHandler&quot; scope=&quot;prototype&quot;/&gt;
+ * 
+ * &lt;bean id=&quot;rowCallbackHandler&quot; 
+ *     class=&quot;org.anyframe.mip.query.impl.jdbc.mapper.MiPDataSetCallbackHandler&quot; scope=&quot;prototype&quot;/&gt;
+ * 
+ * &lt;bean id=&quot;printWriterRowCallbackHandler&quot; 
+ *     class=&quot;org.anyframe.mip.query.impl.jdbc.mapper.MiPPrintWriterCallbackHandler&quot; scope=&quot;prototype&quot;/&gt;
+ * </pre>
  * 
  * @author Soyon Lim
  * @author JongHoon Kim

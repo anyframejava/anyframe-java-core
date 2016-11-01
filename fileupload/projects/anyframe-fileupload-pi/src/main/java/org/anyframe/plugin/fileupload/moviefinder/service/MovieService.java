@@ -16,6 +16,7 @@
 package org.anyframe.plugin.fileupload.moviefinder.service;
 
 import org.anyframe.plugin.fileupload.domain.Movie;
+import org.springframework.web.multipart.MultipartFile;
 
 /**
  * This MovieService class is an Interface class to provide movie crud
@@ -27,10 +28,10 @@ public interface MovieService {
 
 	Movie get(String movieId) throws Exception;
 
-	void create(Movie movie) throws Exception;
+	void create(Movie movie, MultipartFile[] files) throws Exception;
 
 	void update(Movie movie) throws Exception;
 
-	void remove(String movieId) throws Exception;
+	void remove(Movie movie) throws Exception;
 
 }

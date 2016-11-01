@@ -1,0 +1,115 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+
+<!DOCTYPE book PUBLIC "-//OASIS//DTD DocBook XML V4.5//EN" "http://www.oasis-open.org/docbook/xml/4.5/docbookx.dtd"
+[
+<!ENTITY cache_configuration SYSTEM "cache/configuration.xml">
+<!ENTITY cache_samples SYSTEM "cache/samples.xml">
+<!ENTITY cache_resources SYSTEM "cache/resources.xml">
+
+]
+>
+
+<!--
+		Licensed to the Apache Software Foundation (ASF) under one or more
+		contributor license agreements. See the NOTICE file distributed with
+		this work for additional information regarding copyright ownership.
+		The ASF licenses this file to you under the Apache License, Version
+		2.0 (the "License"); you may not use this file except in compliance
+		with the License. You may obtain a copy of the License at
+
+		http://www.apache.org/licenses/LICENSE-2.0 Unless required by
+		applicable law or agreed to in writing, software distributed under the
+		License is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR
+		CONDITIONS OF ANY KIND, either express or implied. See the License for
+		the specific language governing permissions and limitations under the
+		License.
+-->
+    
+<book lang="ko">
+	<title>Anyframe Cache Plugin</title>
+	
+	<bookinfo>
+		<copyright>
+			<year>2007-2011</year>
+			<holder>삼성SDS</holder>
+		</copyright>
+		<releaseinfo>Version 1.0.1</releaseinfo>
+
+		<productname>Anyframe Cache Plugin</productname>
+
+		<authorgroup>
+			<corpauthor></corpauthor>
+		</authorgroup>
+
+		<mediaobject>
+			<imageobject>
+				<!-- logo 변경 -->
+				<imagedata fileref="../image/common/logo_pdf.jpg"/>
+			</imageobject>
+		</mediaobject>
+		<legalnotice>
+			<para>본 문서의 저작권은 삼성SDS에 있으며 Anyframe 오픈소스 커뮤니티 활동의 목적하에서 자유로운 이용이 가능합니다.
+			본 문서를 복제, 배포할 경우에는 저작권자를 명시하여 주시기 바라며 본 문서를 변경하실 경우에는 원문과 변경된 내용을 표시하여 주시기 바랍니다. 
+			원문과 변경된 문서에 대한 상업적 용도의 활용은 허용되지 않습니다. 본 문서에 오류가 있다고 판단될 경우 이슈로 등록해 주시면 적절한 조치를 취하도록 하겠습니다.
+			</para>
+		</legalnotice>
+	</bookinfo>
+	
+	<part id="cache_introduction_part">
+		<title>Introduction</title>
+		<partintro id="cache_introduction_part_intro">
+			<para>
+				cache plugin은 opensymphony의 <ulink url="http://www.opensymphony.com/oscache/">OSCache</ulink>를 간편하게 활용할 수 있도록 하기 위해
+				제공되는 Cache Service의 기본 활용 방법을 가이드하기 위한 샘플 코드와 이를 활용하는데 필요한 참조 라이브러리들로 구성되어 있다.
+			</para>
+			<para role="introduction_title"><emphasis role="bold">Installation</emphasis></para>
+			<para>Command 창에서 다음과 같이 명령어를 입력하여 cache plugin을 설치한다.</para>
+			<programlisting language="java"><![CDATA[mvn anyframe:install -Dname=cache]]></programlisting>
+			<para>
+				installed(mvn anyframe:installed) 혹은 jetty:run(mvn clean jetty:run) command를 이용하여 설치 결과를 확인해볼 수 있다. 
+			</para>
+			<para role="introduction_title"><emphasis role="bold">Dependent Plugins</emphasis></para>
+			<informaltable>
+				<tgroup cols="2">
+					<colspec colnum="1" colname="col1" colwidth="5*" />
+					<colspec colnum="2" colname="col2" colwidth="5*" />
+					<thead>
+						<row>
+							<entry align="center">Plugin Name</entry>
+							<entry align="center">Version Range</entry>
+						</row>
+					</thead>
+					<tbody>
+						<row>
+							<entry align="center"><ulink url="http://dev.anyframejava.org/docs/anyframe/plugin/optional/query/1.1.1/reference/htmlsingle/query.html">query</ulink></entry>
+							<entry align="center" valign="middle">2.0.0 > *</entry>
+						</row>
+					</tbody>
+				</tgroup>
+			</informaltable>
+		</partintro>
+	</part>	
+	
+	<part id="cache_cache_part">
+		<title>Cache</title>
+		<partintro id="cache_cache_part_intro">
+			<para>
+				Cache Service는 opensymphony의 <ulink url="http://www.opensymphony.com/oscache/">OSCache</ulink>를 기반으로 개발되었으며,
+				상태를 공유할 수 있는 객체를 cache하는 기능을 제공하는 서비스이다. 변경이 자주 일어나지 않지만 사용빈도가 높고 생성하는데 비용이 많이 드는 객체일 경우, 
+				Cache를 이용하면 다음과 같은 장점을 얻을 수 있다.
+			</para>
+			<itemizedlist>
+				<listitem>
+					<para>자주 접근하는 데이터를 매번 데이터베이스로부터 fetch할 필요가 없으므로 오버헤드가 줄어든다.</para>
+				</listitem>
+		
+				<listitem>
+					<para>객체를 매번 생성하지 않기 때문에 메모리를 효율적으로 사용할 수 있다.</para>
+				</listitem>
+			</itemizedlist>
+		</partintro>
+		&cache_configuration;
+		&cache_samples;
+		&cache_resources;
+	</part>	
+</book>

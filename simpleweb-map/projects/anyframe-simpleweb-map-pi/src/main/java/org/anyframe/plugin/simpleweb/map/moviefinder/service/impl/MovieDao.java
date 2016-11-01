@@ -76,7 +76,7 @@ public class MovieDao extends AbstractDao {
 	 * @return the String stripped from all the supplied characters.
 	 */
 	private String removeChars(String original, char ch) {
-		StringBuffer r = new StringBuffer();
+		StringBuilder r = new StringBuilder();
 		for (int i = 0; i < original.length(); i++) {
 			char compare = original.charAt(i);
 			if (compare != ch)

@@ -52,8 +52,8 @@ public class LoginController extends AbstractMiPController {
             outDl.add("gdsUser", gdsUser);
             
         } catch (Exception e) {
-            if (getLogger().isDebugEnabled()) {
-                getLogger().debug(e.getMessage());
+            if (logger.isDebugEnabled()) {
+            	logger.debug(e.getMessage());
             }
             throw e;
         }

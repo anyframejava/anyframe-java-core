@@ -17,6 +17,7 @@ package org.anyframe.tag;
 
 import java.io.IOException;
 
+import org.springframework.context.MessageSource;
 import org.springframework.web.servlet.tags.MessageTag;
 
 /**
@@ -24,27 +25,45 @@ import org.springframework.web.servlet.tags.MessageTag;
  */
 public class MessagesTag extends MessageTag {
 
-    private static final long serialVersionUID = 4191756720267199343L;
+	private static final long serialVersionUID = 4191756720267199343L;
 
-    /** 
-     * Write the message to the page.
-     * <p>
-     * Can be overridden in subclasses, e.g. for
-     * testing purposes.
-     * @param msg
-     *        the message to write
-     * @throws IOException
-     *         if writing failed
-     */
-    protected void writeMessage(String msg) throws IOException {
+	private String messageSource = "messageSource";
 
-        String charSet =
-            getRequestContext().getWebApplicationContext().getServletContext()
-                .getInitParameter("character-encoding");
-        if (charSet == null)
-            charSet = "euc-kr";
+	/**
+	 * Write the message to the page.
+	 * <p>
+	 * Can be overridden in subclasses, e.g. for testing purposes.
+	 * 
+	 * @param msg
+	 *            the message to write
+	 * @throws IOException
+	 *             if writing failed
+	 */
+	protected void writeMessage(String msg) throws IOException {
 
-        String finalMsg = new String(msg.getBytes("8859_1"), charSet);
-        pageContext.getOut().write(String.valueOf(finalMsg));
-    }
+		String charSet = getRequestContext().getWebApplicationContext()
+				.getServletContext().getInitParameter("character-encoding");
+		if (charSet == null)
+			charSet = "euc-kr";
+
+		String finalMsg = new String(msg.getBytes("8859_1"), charSet);
+		pageContext.getOut().write(String.valueOf(finalMsg));
+	}
+
+	/**
+	 * find messageSource bean through the current RequestContext's application
+	 * context as MessageSource.
+	 */
+	protected MessageSource getMessageSource() {
+		if (this.messageSource.equals("messageSource")) {
+			return getRequestContext().getMessageSource();
+		}
+
+		return getRequestContext().getWebApplicationContext().getBean(
+				messageSource, MessageSource.class);
+	}
+
+	public void setMessageSource(String messageSource) {
+		this.messageSource = messageSource;
+	}
 }

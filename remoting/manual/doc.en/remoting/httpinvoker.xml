@@ -1,0 +1,342 @@
+<chapter id="remoting_httpinvoker">
+	<title>HTTP Invoker</title>
+	
+    <para>
+    	HTTP Invoker is a Remoting function provided by Spring that enables lightweight remoting service through HTTP. 
+    	RMI and Hessian/Burlap have the following demerits which can be supplemented by HTTP Invoker. 
+    </para>
+
+    <itemizedlist>
+      	<listitem>
+        	<para>
+        		RMI: RMI uses the Java standard object serialization, but cannot easily pass through firewall.
+        	</para>
+      	</listitem>
+
+      	<listitem>
+        	<para>
+        		Hessian/Burlap: Can easily pass through firewall, 
+        		but problems can occur when using it's own object serialization mechanism to perform complex object serialization.
+        	</para>
+      	</listitem>
+    </itemizedlist>
+
+    <para>
+    	HTTP Invoker supplements the demerits of RMI and Hessian/Burlap. 
+    	It uses the Remoting provided by Spring to perform Remoting, 
+    	and uses the Java standard serialization mechanism. 
+    	However, <emphasis
+    	role="bold">this Remoting technology is only provided by Spring, so client and remoting service should all be Spring
+    	applications</emphasis>.
+    </para>
+
+    <para>
+    	The following is on how to use HTTP Invoker for server and client layer.
+    </para>
+
+    <section id="emoting_remoting_httpinvoker_serverconfiguration">
+		<title>Server Configuration</title>
+
+      	<para>
+      		Server implementation is the same as general bean development. 
+      		HttpInvokerServiceExporter class can be used to easily expose service developed with general Spring Bean as HTTP Invoker Service. 
+      		In this case, all public methods are exposed as service method.
+      	</para>
+
+      	<informaltable>
+        	<tgroup cols="4">
+         		<colspec colnum="1" colname="col1" colwidth="2*"/>
+        		<colspec colnum="2" colname="col2" colwidth="5*"/>
+        		<colspec colnum="3" colname="col3" colwidth="1*"/>
+        		<colspec colnum="4" colname="col4" colwidth="2*"/>
+          		<thead>
+            		<row>
+              			<entry align="center">Property Name</entry>
+
+              			<entry align="center">Description</entry>
+
+              			<entry align="center">Required</entry>
+
+              			<entry align="center">Default Value</entry>
+            		</row>
+          		</thead>
+
+          		<tbody>
+            		<row>
+              			<entry>service</entry>
+
+              			<entry>Set the id of the Spring Bean you wish to expose as HTTP Invoker service.</entry>
+
+              			<entry align="center">Y</entry>
+
+              			<entry align="center">N/A</entry>
+            		</row>
+
+            		<row>
+              			<entry>serviceInterface</entry>
+
+	              		<entry>
+	              			Set the Interface class of service exposed as HTTP Invoker service along with package.
+	              		</entry>
+	
+	              		<entry align="center">Y</entry>
+	
+	              		<entry align="center">N/A</entry>
+            		</row>
+          		</tbody>
+        	</tgroup>
+		</informaltable>
+
+		<section id="emoting_remoting_httpinvoker_serverconfiguration_sample">
+        	<title>Samples</title>
+
+        	<para>
+        		The following is an example on the properties for HTTP Invoker server implementation. 
+        		The service development is the same as general Spring Bean 
+        		and is exposed as HTTP Invoker service referring to the property in HttpInvokerServiceExporter Bean.
+        	</para>
+
+        	<itemizedlist>
+          		<listitem>
+            		<para>
+            			<emphasis role="bold">Configuration</emphasis>
+            		</para>
+
+            		<para>
+            			The following is part of context-remoting-httpinvoker.xml 
+            			which defines the property of HttpInvokerServiceExporter 
+            			that supports HTTP Invoker service.
+            			<programlisting language="xml"><![CDATA[<bean id="httpinvokerMovieService"]]> 
+        <emphasis role="bold">class="org.springframework.remoting.httpinvoker.HttpInvokerServiceExporter"</emphasis><![CDATA[>
+    <property name="service" ref=]]><emphasis role="bold">"org.anyframe.sample.remoting.moviefinder.service.MovieService"</emphasis><![CDATA[/>
+    <property name="serviceInterface" 
+            value="org.anyframe.sample.remoting.moviefinder.service.MovieService" />
+</bean>]]></programlisting>
+    				</para>
+
+           			<para>
+            			HttpInvokerServiceExporter bean is developed with Spring MVC controller, 
+            			so Spring MVC DispatcherServlet should be defined in web.xml. 
+            			To provide service in HTTP, the service is deployed and provided in web application. 
+            			The following is part of web.xml of server side web application.
+            			<programlisting language="xml"><![CDATA[<web-app id="WebApp_ID" version="2.4"
+    xmlns="http://java.sun.com/xml/ns/j2ee"
+    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+    xsi:schemaLocation="http://java.sun.com/xml/ns/j2ee
+            http://java.sun.com/xml/ns/j2ee/web-app_2_4.xsd">
+    <display-name>sample-web</display-name>
+    <context-param>
+        <param-name>contextConfigLocation</param-name>
+        <param-value>WEB-INF/context-remoting-httpinvoker.xml</param-value>
+    </context-param>
+    
+    ...
+
+    <listener>
+        <listener-class>org.springframework.web.context.ContextLoaderListener
+        </listener-class>
+    </listener>
+    
+    <servlet>
+        <servlet-name>action</servlet-name>
+        <servlet-class>
+            org.springframework.web.servlet.DispatcherServlet
+        </servlet-class>
+        <init-param>
+            <param-name>contextConfigLocation</param-name>
+            <param-value>/WEB-INF/remoting-httpinvoker-servlet.xml</param-value>
+        </init-param>
+        <load-on-startup>1</load-on-startup>
+    </servlet>
+    
+    <servlet-mapping>
+        <servlet-name>action</servlet-name>
+        <url-pattern>*.do</url-pattern>
+    </servlet-mapping>
+    
+    <!-- remoting-configuration-START -->  
+    <servlet>
+        <servlet-name>remoting</servlet-name>
+        <servlet-class>org.springframework.web.servlet.DispatcherServlet</servlet-class>
+        <init-param>
+            <param-name>contextConfigLocation</param-name>
+            <param-value>classpath:/springmvc/remoting-servlet.xml</param-value>
+        </init-param>
+    </servlet>    
+    
+    <servlet-mapping>
+        <servlet-name>remoting</servlet-name>
+        <url-pattern>/remoting/*</url-pattern>
+    </servlet-mapping>    
+    <!-- remoting-configuration-END -->
+    ...
+</web-app>]]></programlisting>
+           			</para>
+
+            		<para>
+            			Use URL Mapping of Spring MVC to call HTTP Invoker controller based on HTTP. 
+            			The following is a part of remoting-httpinvoker-servlet.xml of server side web application. 
+            			<![CDATA[*]]> After all URL requests of pattern have been transferred to DispatcherServlet, 
+            			remotingMovieService is called by urlMapping, and HTTP Invoker service is supported.
+            			<programlisting language="xml"><![CDATA[<bean class="org.springframework.web.servlet.handler.SimpleUrlHandlerMapping">
+    <property name="mappings">
+        <props>
+            <prop key="/MovieService">httpinvokerMovieService</prop>
+        </props>
+    </property>
+</bean>]]></programlisting>
+					</para>
+          		</listitem>
+          
+        	</itemizedlist>
+        </section>
+	</section>
+
+    <section id="remoting_httpinvoker_clientconfiguration">
+		<title>Client Configuration</title>
+
+      	<para>
+      		Client can use org.springframework.remoting.httpinvoker.HttpInvokerProxyFactoryBean class provided by 
+      		Spring to access HTTP Invoker Service.
+      	</para>
+
+		<informaltable>
+        	<tgroup cols="4">
+				<colspec colnum="1" colname="col1" colwidth="2*"/>
+        		<colspec colnum="2" colname="col2" colwidth="5*"/>
+        		<colspec colnum="3" colname="col3" colwidth="1*"/>
+        		<colspec colnum="4" colname="col4" colwidth="2*"/>
+          		<thead>
+	            	<row>
+	              		<entry align="center">Property Name</entry>
+	
+	              		<entry align="center">Description</entry>
+	
+	              		<entry align="center">Required</entry>
+	
+	              		<entry align="center">Default Value</entry>
+	            	</row>
+          		</thead>
+
+          		<tbody>
+            		<row>
+              			<entry>serviceUrl</entry>
+
+              			<entry>
+              				HTTP Invoker service access URL. "http://" + server ip + ":" +
+              				port number + "/" + service name
+              				(ex.http://localhost:9002/MovieService)
+              			</entry>
+
+              			<entry align="center">Y</entry>
+
+              			<entry align="center">N/A</entry>
+            		</row>
+
+            		<row>
+              			<entry>serviceInterface</entry>
+
+              			<entry>
+              				Set the Interface class of service exposed as HTTP Invoker service along with package.
+              			</entry>
+
+              			<entry align="center">Y</entry>
+
+              			<entry align="center">N/A</entry>
+            		</row>
+          		</tbody>
+        	</tgroup>
+		</informaltable>
+
+		<section id="remoting_httpinvoker_clientconfiguration_sample">
+        	<title>Samples</title>
+
+        	<para>
+        		The following is an example of HTTP Invoker client property. 
+        		Client refers to property of HttpInvokerProxyFactoryBean to access HTTP Invoker service.
+        	</para>
+
+        	<itemizedlist>
+          		<listitem>
+            		<para>
+            			<emphasis role="bold">Configuration</emphasis>
+            		</para>
+
+            		<para>    			
+            			The following is a part of context-remoting-httpinvoker-client.xml
+            			which defines the properties of HttpInvokerProxyFactoryBean that accesses HTTP Invoker service.
+            			<programlisting language="xml"><![CDATA[<bean id="movieServiceClient"]]>
+    <emphasis role="bold">class="org.springframework.remoting.httpinvoker.HttpInvokerProxyFactoryBean"</emphasis><![CDATA[>
+    <property name="serviceUrl"
+        value="http://localhost:9002/MovieService" />
+    <property name="serviceInterface"
+        value="org.anyframe.sample.remoting.moviefinder.service.MovieService" />
+</bean>]]></programlisting>
+					</para>
+
+            		<para>
+            			Like a client that accesses Hessian/Burlap service, 
+            			set Interface class that is implemented by service in serviceInterface Property. 
+            			Service URL is set in serviceUrl Property. 
+            			As indicated in the name, HTTP Invoker is provided based on HTTP, 
+            			so an HTTP URL should be set. 
+            			When remote service is called in HTTP, HTTP client can be selected. 
+            			Basically, HttpInvokerProxyFactoryBean uses J2SE HTTP client, 
+            			but httpInvokerRequestExecutor property can be set to use Apache Commons HttpClient.
+            			
+            			<programlisting language="xml"><![CDATA[<!-- Add HTTP Invoker Client -->
+<bean id="movieServiceClient" 
+        class="org.springframework.remoting.httpinvoker.HttpInvokerProxyFactoryBean">
+    <property name="serviceUrl" value="http://localhost:9002/MovieService" />
+    <property name="serviceInterface" 
+            value="org.anyframe.sample.remoting.moviefinder.service.MovieService"/>
+    <property name="httpInvokerRequestExecutor" ref="httpClient"/>    
+</bean>
+
+<bean id="httpClient" 
+      class="org.springframework.remoting.httpinvoker.CommonsHttpInvokerRequestExecutor"> 
+    <property name="httpClient"> 
+        <bean class="org.apache.commons.httpclient.HttpClient"> 
+            <property name="connectionTimeout" value="2000"/> 
+        </bean> 
+    </property> 
+</bean>]]></programlisting>
+					</para>
+          		</listitem>
+
+          		<listitem>
+            		<para>
+            			<emphasis role="bold">Test Case</emphasis>
+            		</para>
+
+            		<para>
+            			The following is part of MovieController.java that is a sample of accessing HTTP Invoker service 
+            			based on the properties defined above. 
+            			<programlisting language="java">@Controller
+@RequestMapping("/remotingMovieExporter.do")
+public class MovieController {
+    <emphasis role="bold">@Inject
+    @Named("remotingMovieClient")
+    private MovieService movieService;</emphasis>
+
+    @RequestMapping(params = "method=get")
+    public String get(@RequestParam("movieId") String movieId, Model model)
+        throws Exception {
+        <emphasis role="bold">Movie movie = this.movieService.get(movieId);</emphasis>
+        if (movie == null) {
+            throw new Exception("Resource not found " + movieId);
+        }
+        model.addAttribute(movie);
+
+        return "remoting/moviefinder/movie/form";
+    }	
+    
+    // ...    
+}</programlisting>
+            		</para>
+				</listitem>
+			</itemizedlist>
+		</section>
+	</section>
+	
+</chapter>

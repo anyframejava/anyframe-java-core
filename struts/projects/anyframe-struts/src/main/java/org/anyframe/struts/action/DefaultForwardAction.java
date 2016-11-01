@@ -28,7 +28,7 @@ import org.apache.struts.util.ModuleException;
 
 /**
  * 
- * The class expanding the anyframe.web.struts.action.AbstractActionSupport.
+ * The class expanding the org.anyframe.struts.action.AbstractActionSupport.
  * It has the same functionality as org.apache.struts.action.ActionForward.
  * At the execution of process method, it leaves a log.
  * @author Byunghun Woo

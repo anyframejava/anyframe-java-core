@@ -1,58 +1,58 @@
 <%@ page language="java" errorPage="/sample/common/error.jsp" pageEncoding="UTF-8" contentType="text/html;charset=utf-8" %>
-<%@ include file="/sample/common/taglibs.jsp"%>
-<html>
-<head>
-	<meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
-	<title>Anyframe Plugins</title>
-	<link rel="stylesheet" href="<c:url value='/sample/css/admin.css'/>" type="text/css">
-	<link rel="stylesheet" href="<c:url value='/sample/css/left.css'/>" type="text/css">
-	<script type="text/javascript" src="<c:url value='/sample/javascript/CommonScript.js'/>"></script>
-</head>
-<body>
-<table width="100%" height="50" border="0" cellpadding="0" cellspacing="0">
-<!-- Top -->
-  <tr>
-    <td height="100%" align="left" valign="middle">
-		<font size="5">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Anyframe Java 5.0.0.RC1</font>
-    </td>
-  </tr>
-</table>
-<!-- Body -->
-<center>
-<table class="scrollTable" width="90%" border="0" cellspacing="0" cellpadding="0" style="margin-top:10px;">
-	<thead>
-		<tr>
-			<th scope="col" style="border-right: 1px #CCCCCC solid"><font size="2">Installed Plugins</font></th>
-			<th scope="col" style="border-right: 1px #CCCCCC solid"><font size="2">Generated CRUD Codes</font></th>
-		</tr>
-	</thead>
-	<tbody>
-		<tr class="board">
-				<td class="underline">
-					<a href="${ctx}/coreMovieFinder.do?method=list"><font size="2">- Core 1.0.0.RC1</font></a><br/>
-<!--Add new menu here-->
-<!--logging-menu-START-->
-<font size="2">- Logging 1.0.0.RC1</font><br/>
-<!--logging-menu-END-->
-<!--dashboard-menu-START-->
-<font size="2">- Dashboard 1.0.0.RC1</font><br/>
-<!--dashboard-menu-END-->
-<!--spring-menu-START-->
-<font size="2">- Spring 1.0.0.RC1</font><br/>
-<!--spring-menu-END-->
-<!--datasource-menu-START-->
-<font size="2">- Datasource 1.0.0.RC1</font><br/>
-<!--datasource-menu-END-->
-<!--util-demo-menu-START-->
-<a href="${ctx}/utilDemo/utilDemoList.do"><font size="2">- util-demo 1.0.0.RC1</font></a><br/>
-<!--util-demo-menu-END-->
-				</td>
-				<td class="underline" valign="top">
-<!--Add new crud generation menu here-->
-				</td>
-		</tr>
-	</tbody>
-</table>
-</center>
-</body>
-</html>
+<%@ include file="/sample/common/top.jsp"%>
+	</div>
+    <hr />
+  	<div id="container">
+    	<div class="main_greeting">
+        	<dl>
+                <dt>Welcome to Anyframe 5.1.0</dt>
+                <dd>Congratulations! Anyframe application has been successfully installed. Anyframe is an open source project and application framework that provides basic architecture, common technical services, templates to help you develop web applications on the Java platform quickly and efficiently.</dd>
+            </dl>
+        </div>
+        <hr />
+        
+        <div class="itemBox_1">
+        	<table summary="This is a list of installed plugins">
+            <caption>A list of installed plugins</caption>
+            	<colgroup>
+                	<col style="width:230px;" />
+                    <col style="" />
+                </colgroup>
+            	<tr>
+                	<th>Installed Plugins</th>
+                    <td>
+                        <ul>
+                        <!--Add new menu here-->
+                        <!--util-demo-menu-START-->
+                            <li><a href="<c:url value='/utilDemo/utilDemoList.do'/>">Util-demo 1.0.1</a></li>
+                        <!--util-demo-menu-END-->
+                        </ul>
+                    </td>
+                </tr>
+            </table>
+        </div>
+        <hr />
+        
+        <div class="itemBox_1 itemBox_2">
+        	<table summary="This is a list of generated CRUD codes">
+            <caption>A list of generated CRUD codes</caption>
+            	<colgroup>
+                	<col style="width:230px;" />
+                    <col style="" />
+                </colgroup>
+            	<tr>
+                	<th>Generated CRUD Codes</th>
+                    <td>
+                    	<ul>
+                            <li>
+                            <!--Add new crud generation menu here-->
+                            </li>
+                        </ul>
+                    </td>
+                </tr>
+            </table>
+        </div>
+
+    </div>
+    <hr />
+<%@ include file="/sample/common/bottom.jsp"%>

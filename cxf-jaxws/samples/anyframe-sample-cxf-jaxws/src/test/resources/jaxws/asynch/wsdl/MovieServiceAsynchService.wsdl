@@ -1,0 +1,68 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<wsdl:definitions name="MovieServiceAsynchService" targetNamespace="http://service.asynch.moviefinder.jaxws.cxf.sample.anyframe.org/asynch_soap_http" xmlns:tns="http://service.asynch.moviefinder.jaxws.cxf.sample.anyframe.org/asynch_soap_http" xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:soap="http://schemas.xmlsoap.org/wsdl/soap/" xmlns:wsdl="http://schemas.xmlsoap.org/wsdl/">
+  <wsdl:types>
+<xs:schema xmlns:xs="http://www.w3.org/2001/XMLSchema" xmlns:tns="http://service.asynch.moviefinder.jaxws.cxf.sample.anyframe.org/asynch_soap_http" attributeFormDefault="unqualified" elementFormDefault="unqualified" targetNamespace="http://service.asynch.moviefinder.jaxws.cxf.sample.anyframe.org/asynch_soap_http">
+    <xs:element name="findMovieListAll" type="tns:findMovieListAll"/>
+    <xs:element name="findMovieListAllResponse" type="tns:findMovieListAllResponse"/>
+    <xs:complexType name="findMovieListAll">
+        <xs:sequence/>
+    </xs:complexType>
+    <xs:complexType name="findMovieListAllResponse">
+        <xs:sequence>
+            <xs:element maxOccurs="unbounded" minOccurs="0" name="return" type="tns:movie"/>
+        </xs:sequence>
+    </xs:complexType>
+    <xs:complexType name="movie">
+        <xs:sequence>
+            <xs:element xmlns:ns1="http://www.w3.org/2005/05/xmlmime" minOccurs="0" name="posterImgDataHandler" ns1:expectedContentTypes="application/octet-stream" type="xs:base64Binary"/>
+            <xs:element minOccurs="0" name="bdVal" type="xs:decimal"/>
+            <xs:element name="booleanVal" type="xs:boolean"/>
+            <xs:element name="charVal" type="xs:unsignedShort"/>
+            <xs:element minOccurs="0" name="characterVal" type="xs:unsignedShort"/>
+            <xs:element minOccurs="0" name="director" type="xs:string"/>
+            <xs:element name="doubleVal" type="xs:double"/>
+            <xs:element name="floatVal" type="xs:float"/>
+            <xs:element name="intVal" type="xs:int"/>
+            <xs:element name="longVal" type="xs:long"/>
+            <xs:element minOccurs="0" name="movieId" type="xs:string"/>
+            <xs:element minOccurs="0" name="posterImgByteArray" type="xs:base64Binary"/>
+            <xs:element name="shortVal" type="xs:short"/>
+            <xs:element minOccurs="0" name="title" type="xs:string"/>
+        </xs:sequence>
+    </xs:complexType>
+</xs:schema>
+  </wsdl:types>
+  <wsdl:message name="findMovieListAll">
+    <wsdl:part name="parameters" element="tns:findMovieListAll">
+    </wsdl:part>
+  </wsdl:message>
+  <wsdl:message name="findMovieListAllResponse">
+    <wsdl:part name="parameters" element="tns:findMovieListAllResponse">
+    </wsdl:part>
+  </wsdl:message>
+  <wsdl:portType name="MovieServiceAsynch">
+    <wsdl:operation name="findMovieListAll">
+      <wsdl:input name="findMovieListAll" message="tns:findMovieListAll">
+    </wsdl:input>
+      <wsdl:output name="findMovieListAllResponse" message="tns:findMovieListAllResponse">
+    </wsdl:output>
+    </wsdl:operation>
+  </wsdl:portType>
+  <wsdl:binding name="MovieServiceAsynchServiceSoapBinding" type="tns:MovieServiceAsynch">
+    <soap:binding style="document" transport="http://schemas.xmlsoap.org/soap/http"/>
+    <wsdl:operation name="findMovieListAll">
+      <soap:operation soapAction="" style="document"/>
+      <wsdl:input name="findMovieListAll">
+        <soap:body use="literal"/>
+      </wsdl:input>
+      <wsdl:output name="findMovieListAllResponse">
+        <soap:body use="literal"/>
+      </wsdl:output>
+    </wsdl:operation>
+  </wsdl:binding>
+  <wsdl:service name="MovieServiceAsynchService">
+    <wsdl:port name="MovieServiceAsynchPort" binding="tns:MovieServiceAsynchServiceSoapBinding">
+      <soap:address location="http://localhost:9002/Movie"/>
+    </wsdl:port>
+  </wsdl:service>
+</wsdl:definitions>

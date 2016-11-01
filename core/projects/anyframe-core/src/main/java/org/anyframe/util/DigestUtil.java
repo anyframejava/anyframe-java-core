@@ -114,7 +114,7 @@ public abstract class DigestUtil {
 		// now calculate the hash
 		byte[] encodedPassword = md.digest();
 
-		StringBuffer buf = new StringBuffer();
+		StringBuilder buf = new StringBuilder();
 
 		for (int i = 0; i < encodedPassword.length; i++) {
 			if (((int) encodedPassword[i] & 0xff) < 0x10) {

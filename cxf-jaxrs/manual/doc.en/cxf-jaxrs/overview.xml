@@ -1,0 +1,164 @@
+<chapter id="cxf_webservices_overview">
+	<title>Overview</title>
+	<para>
+		For more information on REST, <emphasis role="bold">refer to Anyframe Spring REST Plugin</emphasis>. 
+		In this chapter, we will briefly introduce REST and describe how to implement RESTful service based on JAX-RS.
+	</para>
+	<para>
+		Representational state transfer (REST), like World Wide Web, has a software architecture style for distributed hypermedia system. 
+		Note that REST which is a popular topic in web service discussions and proposed by Roy T. Fielding, 
+		is architecture *style* for network-based application, not standard or spec. 
+		Representational state transfer is a developed term meaning resources running as if the status is changing according to request. 
+		RESTful means following REST rules, RESTful Web Service is a service that is developed using RESTful architecture style. 
+		RESTful web service development is based on SOAP protocol and is suggested as an alternative to deploying service on the Internet. 
+		That is because it is lighter than SOAP-based web service, and can directly send data through HTTP. 
+	</para>
+	<para>
+		<emphasis role="bold">The characteristics of REST (XML over HTTP)</emphasis> are as follows.
+	</para>
+	<itemizedlist>
+		<listitem>
+			<para>
+				<emphasis role="bold">Using HTTP and XML</emphasis>
+			</para>
+			<para>Use web service transmitting data with HTTP and XML.</para>
+		</listitem>
+		<listitem>
+			<para>
+				<emphasis role="bold">Software architecture style</emphasis>
+			</para>
+			<para>
+				Software architecture style, not standard technology.   
+                Architecture style is a combination defining the limits and constraints regarding architecture.
+                Architecture guide that enables well-designed web application using existing technology such as HTTP.
+		   	</para>
+		</listitem>
+		<listitem>
+			<para>
+				<emphasis role="bold">WWW (web), Open API </emphasis>
+			</para>
+			<para>
+				Examples include  WWW (web), and Open API (e.g., Google, Microsoft, Amazone, eBay, Yahoo, etc.) 
+                For more details, refer to REST examples.
+		     </para>
+		</listitem>
+	</itemizedlist>
+
+	<para>
+		The following is a figure (example) comparing SOAP-based web service and REST-based web service.
+        When requesting "http://***/movieservice/movies/001" type URL like in the figure,
+        the result data is returned in xml format.
+		<mediaobject>
+			<imageobject>
+				<imagedata align="center" fileref="../image/cxf-jaxrs/webservices/restful.jpg" />
+			</imageobject>
+		</mediaobject>
+	</para>
+	<para>
+		There are three ways to <emphasis role="bold">use Apache CXF to implement RESTful service</emphasis> as the following. 
+	    Among those, Anyframe recommends using JAX-RS Frontend model that chooses JAX-RS (JSR-311) which is standard API. 
+	    So, the manual does not state specific information on implementing RESTful service using HTTP Binding and JAX-WS Provider/Dispatch API.
+	</para>
+
+	<itemizedlist>
+		<listitem>
+			<para>
+				<emphasis role="bold">JAX-RS Frontend</emphasis>
+			</para>
+			<para>
+				Implements RESTful service using JAX-RS(JSR-311) Spec. 
+				Enables RESTful service development in standard way by providing implementation of Spec. in Apache CXF. 
+				Uses Annotation setting provided in JAX-RS.
+		    </para>
+		</listitem>
+		<listitem>
+			<para>
+				<emphasis role="bold">HTTP Binding </emphasis>
+			</para>
+			<para>
+				Enables development of RESTful service in a non-standard and easy way. 
+                Uses JRA(Java REST Annotation) setting or Naming Convention-based mapping method.
+		     </para>
+		</listitem>
+
+		<listitem>
+			<para>
+				<emphasis role="bold">JAX-WS Provider/Dispatch API</emphasis>
+			</para>
+			<para>
+			Supports simple RESTful service development. 
+			Uses standard API, but the structure is not as flexible as HTTP Binding method.
+			</para>
+		</listitem>
+	</itemizedlist>
+	<para>Examples of REST are as follows.</para>
+	<itemizedlist>
+		<listitem>
+			<para>WWW (web)</para>
+			<para>The most common example of REST usage is WWW (web).</para>
+			<informaltable>
+				<tgroup cols="1">
+					<thead>
+						<row>
+							<entry align="center">Description</entry>
+						</row>
+					</thead>
+					<tbody>
+						<row>
+							<entry>Has client/server architecture that does not maintain state.</entry>
+						</row>
+						<row>
+							<entry>
+								Has interface that is applicable to any case (e.g., GET, POST, PUT, DELETE).
+	                        </entry>
+						</row>
+						<row>
+							<entry>All resources can be named uniquely by using URI.</entry>
+						</row>
+						<row>
+							<entry>Representation of resources are linked with each other through URI.</entry>
+						</row>
+					</tbody>
+				</tgroup>
+			</informaltable>
+		</listitem>
+
+		<listitem>
+			<para>
+				Open API
+				<informaltable>
+					<tgroup cols="1">
+						<thead>
+							<row>
+								<entry align="center">Description</entry>
+							</row>
+						</thead>
+
+						<tbody>
+							<row>
+								<entry>
+									Open API is a service where service provider 
+									that has specific function or contents reveals ways to access its service.
+								</entry>
+							</row>
+
+							<row>
+								<entry>
+									New service can be developed using Open API.
+                                    In other words, Open API is rule or standard interface for accessing relevant services.
+		                        </entry>
+							</row>
+
+							<row>
+								<entry>
+									Google, Microsoft, Amazon, eBay, and Yahoo already open various Open API.
+            	                </entry>
+							</row>
+						</tbody>
+					</tgroup>
+				</informaltable>
+			</para>
+		</listitem>
+	</itemizedlist>
+
+</chapter>

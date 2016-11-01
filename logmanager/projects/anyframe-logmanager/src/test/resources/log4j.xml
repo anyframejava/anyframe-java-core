@@ -1,0 +1,35 @@
+<?xml version="1.0" encoding="ISO-8859-1" standalone="no"?>
+<!DOCTYPE log4j:configuration SYSTEM "log4j.dtd">
+<log4j:configuration xmlns:log4j="http://jakarta.apache.org/log4j/" debug="false">
+    
+    <appender class="org.apache.log4j.ConsoleAppender" name="console">
+        <layout class="org.apache.log4j.PatternLayout">
+            <param name="ConversionPattern" value="[%-5p] %d{yyyy-MM-dd HH:mm:ss} %c %n%m%n"/>
+        </layout>   
+    </appender>
+   
+   <!-- mongodb appender -->
+    <appender class="org.anyframe.logmanager.log4mongo.MongoDbPatternLayoutAppender" name="mongodb">
+        <layout class="org.anyframe.logmanager.log4mongo.MongoDbPatternLayout">
+            <param name="ConversionPattern" value="level:%p,thread:%t,message:%m,className:%C,methodName:%M,lineNumber:%L,userId:%X{userId},userName:%X{userName},clientIp:%X{clientIp},serverId:%X{serverId},appName:%X{appName},category:%c"/>
+        </layout>
+        <param name="hostname" value="localhost"/>
+        <param name="port" value="27017"/>
+        <param name="userName" value=""/>
+        <param name="password" value=""/>
+        <param name="databaseName" value="logs"/>
+        <param name="collectionName" value="moviefinderlogs"/>
+        <param name="monitorLevel" value="1"/>
+    </appender>
+
+	<!-- logging for log analyzer -->
+	<logger additivity="false" name="org.anyframe.logmanager.log4mongo">	
+        <level value="DEBUG"/>
+        <appender-ref ref="mongodb"/>
+    </logger>
+        
+    <root>
+    	<level value="ERROR"/>
+    	<appender-ref ref="console"/>
+    </root>
+</log4j:configuration>

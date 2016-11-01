@@ -399,6 +399,7 @@ public class SubmitTag extends BodyTagSupport  {
 	        	generatedCodes = appendCodes(generatedCodes,"<span id=\"" + this.id + "\"" + " style=\"cursor:pointer;" +"\">" + title + "</span>");
         		
 	        generatedCodes = appendCodes(generatedCodes,"<script type=\"text/javascript\">");
+	        generatedCodes = appendCodes(generatedCodes,"<!--");  
 	        
 	        if(isUpload) {
 	        	generatedCodes = appendCodes(generatedCodes,"$(document).ready(function() {");
@@ -514,6 +515,7 @@ public class SubmitTag extends BodyTagSupport  {
 				if(StringUtil.isNotEmpty(ifstatement)) generatedCodes = appendCodes(generatedCodes,"   }");	
 				generatedCodes = appendCodes(generatedCodes,"   };");
 			}
+			generatedCodes = appendCodes(generatedCodes,"//-->");  
 			generatedCodes = appendCodes(generatedCodes,"</script>");
 			generatedCodes = appendCodes(generatedCodes,"<!-- [END] Generated script codes from Anyframe tag -->");		  
 	        
@@ -548,12 +550,12 @@ public class SubmitTag extends BodyTagSupport  {
     }
     
     protected String appendCodes(String all, String part){
-    	StringBuffer result = new StringBuffer(all.length()+part.length()+1).append(all).append(part).append("\n");
+    	StringBuilder result = new StringBuilder(all.length()+part.length()+1).append(all).append(part).append("\n");
     	return result.toString();
     }
 
     protected String appendCodesBack(String all, String part){
-    	StringBuffer result = new StringBuffer(all.length()+part.length()).append(all).append(part);
+    	StringBuilder result = new StringBuilder(all.length()+part.length()).append(all).append(part);
     	return result.toString();
     }
     

@@ -18,8 +18,8 @@ package org.anyframe.util.system.sigar;
 import java.io.Serializable;
 
 /**
- * This ProcessStatInfo class is a Value Object class for process stat information.
- * 
+ * This ProcessStatInfo class is a Value Object class for process status information of system.
+ *
  * @author ByungHun Woo
  */
 public class ProcessStatInfo implements Serializable {

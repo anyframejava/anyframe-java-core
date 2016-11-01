@@ -12,7 +12,7 @@
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
  * See the License for the specific language governing permissions and
  * limitations under the License.
-*/
+ */
 package org.anyframe.util.properties;
 
 import java.util.Iterator;
@@ -27,30 +27,46 @@ import org.apache.commons.logging.LogFactory;
  * through managing the information for system environment. It is not needed for
  * EJB components because they present the functions originally.
  * 
+ * *
+ * <p>
+ * PropertiesService Configuration Example:
+ * 
+ * <pre>
+ * &lt;property name=&quot;dynamicReload&quot; value=&quot;1000&quot; /&gt;
+ * &lt;property name=&quot;encoding&quot; value=&quot;UTF-8&quot; /&gt;
+ * &lt;property name=&quot;fileNames&quot;&gt;
+ *   &lt;value&gt;
+ *     file:./src/*-resource.properties,
+ *     classpath:/resource.properties
+ *   &lt;/value&gt;
+ * &lt;/property&gt;
+ * </pre>
+ * 
  * @author SoYon Lim
  * @author JongHoon Kim
  */
 public interface PropertiesService {
 	Log LOGGER = LogFactory.getLog(PropertiesService.class);
+
 	/**
 	 * The purpose of this method is to get the configuration resource with the
 	 * given name as a boolean value.
 	 * 
 	 * @param name
-	 *            The resource name.
-	 * @return The value of the named resource as a boolean.
+	 *            The resource name
+	 * @return The value of the named resource as a boolean
 	 */
 	boolean getBoolean(String name);
 
 	/**
-	 * The purppose of this method is to get the configuration resource with the
+	 * The purpose of this method is to get the configuration resource with the
 	 * given name as a boolean value, or a default value.
 	 * 
 	 * @param name
-	 *            The resource name.
+	 *            The resource name
 	 * @param def
 	 *            The default value of the resource.
-	 * @return The value of the named resource as a boolean.
+	 * @return The value of the named resource as a boolean
 	 */
 	boolean getBoolean(String name, boolean def);
 
@@ -59,8 +75,8 @@ public interface PropertiesService {
 	 * given name as a double.
 	 * 
 	 * @param name
-	 *            The resource name.
-	 * @return The value of the named resource as a double.
+	 *            The resource name
+	 * @return The value of the named resource as a double
 	 */
 	double getDouble(String name);
 
@@ -69,10 +85,10 @@ public interface PropertiesService {
 	 * given name as a double, or a default value.
 	 * 
 	 * @param name
-	 *            The resource name.
+	 *            The resource name
 	 * @param def
-	 *            The default value of the resource.
-	 * @return The value of the named resource as a double.
+	 *            The default value of the resource
+	 * @return The value of the named resource as a double
 	 */
 	double getDouble(String name, double def);
 
@@ -81,8 +97,8 @@ public interface PropertiesService {
 	 * given name as a float.
 	 * 
 	 * @param name
-	 *            The resource name.
-	 * @return The value of the named resource as a float.
+	 *            The resource name
+	 * @return The value of the named resource as a float
 	 */
 	float getFloat(String name);
 
@@ -91,10 +107,10 @@ public interface PropertiesService {
 	 * given name as a float, or a default value.
 	 * 
 	 * @param name
-	 *            The resource name.
+	 *            The resource name
 	 * @param def
-	 *            The default value of the resource.
-	 * @return The value of the named resource as a float.
+	 *            The default value of the resource
+	 * @return The value of the named resource as a float
 	 */
 	float getFloat(String name, float def);
 
@@ -103,37 +119,37 @@ public interface PropertiesService {
 	 * given name as an integer.
 	 * 
 	 * @param name
-	 *            The resource name.
-	 * @return The value of the named resource as an integer.
+	 *            The resource name
+	 * @return The value of the named resource as an integer
 	 */
 	int getInt(String name);
 
 	/**
-	 * The purpose of this method is to get the configuration resource with the 
+	 * The purpose of this method is to get the configuration resource with the
 	 * given name as an integer, or a default value.
 	 * 
 	 * @param name
-	 *            The resource name.
+	 *            The resource name
 	 * @param def
-	 *            The default value of the resource.
-	 * @return The value of the named resource as an integer.
+	 *            The default value of the resource
+	 * @return The value of the named resource as an integer
 	 */
 	int getInt(String name, int def);
 
 	/**
-	 * Get the list of the keys contained in the configuration repository.
+	 * Get keys contained in the configuration repository.
 	 * 
-	 * @return An Iterator with all the keys.
+	 * @return all the keys
 	 */
 	Iterator getKeys();
 
 	/**
-	 * Get the list of the keys contained in the configuration repository that
-	 * match the specified prefix.
+	 * Get keys contained in the configuration repository that match the
+	 * specified prefix.
 	 * 
 	 * @param prefix
-	 *            A String prefix to test against.
-	 * @return An Iterator of keys that match the prefix.
+	 *            A String prefix to test against
+	 * @return all the keys that match the prefix
 	 */
 	Iterator getKeys(String prefix);
 
@@ -142,8 +158,8 @@ public interface PropertiesService {
 	 * given name as a long.
 	 * 
 	 * @param name
-	 *            The resource name.
-	 * @return The value of the named resource as a long.
+	 *            The resource name
+	 * @return The value of the named resource as a long
 	 */
 	long getLong(String name);
 
@@ -152,52 +168,52 @@ public interface PropertiesService {
 	 * given name as a long, or a default value.
 	 * 
 	 * @param name
-	 *            The resource name.
+	 *            The resource name
 	 * @param def
-	 *            The default value of the resource.
-	 * @return The value of the named resource as a long.
+	 *            The default value of the resource
+	 * @return The value of the named resource as a long
 	 */
 	long getLong(String name, long def);
 
 	/**
 	 * The purpose of this method is to get the configuration resource with the
-	 * given name as a string .
+	 * given name as a string.
 	 * 
 	 * @param name
-	 *            The resource name.
-	 * @return The value of the named resource as a string .
+	 *            The resource name
+	 * @return The value of the named resource as a string
 	 */
 	String getString(String name);
 
 	/**
 	 * The purpose of this method is to get the configuration resource with the
-	 * given name as a string , or a default value.
+	 * given name as a string, or a default value.
 	 * 
 	 * @param name
-	 *            The resource name.
+	 *            The resource name
 	 * @param def
-	 *            The default value of the resource.
-	 * @return The value of the named resource as a string .
+	 *            The default value of the resource
+	 * @return The value of the named resource as a string
 	 */
 	String getString(String name, String def);
 
 	/**
 	 * The purpose of this method is to get the configuration resource with the
-	 * given name as a string array .
+	 * given name as a string array.
 	 * 
 	 * @param name
-	 *            The resource name.
-	 * @return The value of the named resource as a string array.
+	 *            The resource name
+	 * @return The value of the named resource as a string array
 	 */
 	String[] getStringArray(String name);
 
 	/**
 	 * The purpose of this method is to get the configuration resource with the
-	 * given name as a vector .
+	 * given name as a vector.
 	 * 
 	 * @param name
-	 *            The resource name.
-	 * @return The value of the named resource as a vector .
+	 *            The resource name
+	 * @return The value of the named resource as a vector
 	 */
 	Vector getVector(String name);
 
@@ -206,10 +222,10 @@ public interface PropertiesService {
 	 * given name as a vector, or a default value.
 	 * 
 	 * @param name
-	 *            The resource name.
+	 *            The resource name
 	 * @param def
-	 *            The default value of the resource.
-	 * @return The value of the named resource as a vector .
+	 *            The default value of the resource
+	 * @return The value of the named resource as a vector
 	 */
 	Vector getVector(String name, Vector def);
 

@@ -27,14 +27,14 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 /**
- * The class implementing anyframe.web.struts.filter
+ * The class implementing javax.servlet.Filter.
  * Changes the encoding of parameter value with respect to the encoding value configured in web.xml
- * <p>web.xml configuration method</p>
+ * <p>web.xml configuration example : </p>
  * <pre>
  * &lt;servlet&gt;
  * 		&lt;servlet-name&gt;action&lt;/servlet-name&gt;
  * 		&lt;servlet-class&gt;
- *			anyframe.web.struts.common.action.DefaultActionServlet
+ *			org.anyframe.struts.action.DefaultActionServlet
  *		&lt;/servlet-class&gt;
  *		&lt;init-param&gt;
  *			&lt;param-name&gt;config&lt;/param-name&gt;

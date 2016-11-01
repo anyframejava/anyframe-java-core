@@ -68,8 +68,8 @@ public class SequenceIdGenServiceTest extends
 		try {
 			idGenerator.getNextBigDecimalId();
 		} catch (BaseException e) {
-			assertEquals("error.idgen.sequenceid.notallocate.id", e
-					.getMessages().getMessageKey());
+			assertEquals( "[IDGeneration Service] Unable to allocate a block of Ids. Query for Id did not return a value.", e
+					.getMessage());
 		}
 	}
 
@@ -91,8 +91,8 @@ public class SequenceIdGenServiceTest extends
 		try {
 			idGenerator.getNextLongId();
 		} catch (BaseException e) {
-			assertEquals("error.idgen.sequenceid.notallocate.id", e
-					.getMessages().getMessageKey());
+			assertEquals( "[IDGeneration Service] Unable to allocate a block of Ids. Query for Id did not return a value.", e
+					.getMessage());
 		}
 	}
 
@@ -114,8 +114,7 @@ public class SequenceIdGenServiceTest extends
 		try {
 			idGenerator.getNextBigDecimalId();
 		} catch (BaseException e) {
-			assertEquals("error.idgen.get.connection", e.getMessages()
-					.getMessageKey());
+			assertEquals("[IDGeneration Service] We can't get a connection. So, unable to allocate a block of Ids.", e.getMessage());
 		}
 	}
 
@@ -137,8 +136,7 @@ public class SequenceIdGenServiceTest extends
 		try {
 			idGenerator.getNextLongId();
 		} catch (BaseException e) {
-			assertEquals("error.idgen.get.connection", e.getMessages()
-					.getMessageKey());
+			assertEquals("[IDGeneration Service] We can't get a connection. So, unable to allocate a block of Ids.", e.getMessage());
 		}
 	}
 

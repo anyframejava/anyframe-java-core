@@ -28,9 +28,9 @@ import org.apache.struts.util.ModuleException;
  * <pre>
  * &lt;exception 
  *     	path="/sample/common/error.jsp"
- *     	key="error.common.msg.authentication"
- *     	type="anyframe.web.struts.common.util.AuthenticationException"
- *     	handler="com.sds.emp.common.EmpExceptionHandler" /&gt;
+ *     	key="common.msg.authentication"
+ *     	type="org.anyframe.struts.util.AuthenticationException"
+ *     	handler="org.anyframe.sample.common.EmpExceptionHandler" /&gt;
  * </pre>
  * Brings as the Exception message by finding in the message resources
  * the value appropriate to the key when the authentication fails by 
@@ -45,10 +45,10 @@ public class AuthenticationException extends ModuleException {
 	
 	/**
 	 * The case for creating the instance without the key value for Exception Message
-	 * The message's key is <code>error.common.msg.authentication</code>.
+	 * The message's key is <code>common.msg.authentication</code>.
 	 */
 	public AuthenticationException() {
-        super("error.common.msg.authentication");
+        super("common.msg.authentication");
     }
 	
 	/**

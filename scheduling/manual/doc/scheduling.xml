@@ -1,0 +1,117 @@
+<?xml version="1.0" encoding="utf-8"?>
+
+<!DOCTYPE book PUBLIC "-//OASIS//DTD DocBook XML V4.5//EN" "http://www.oasis-open.org/docbook/xml/4.5/docbookx.dtd"
+[
+<!ENTITY scheduling_scheduling SYSTEM "scheduling/scheduling.xml">
+<!ENTITY scheduling_quartz SYSTEM "scheduling/quartz.xml">
+]
+>
+
+<!--
+		Licensed to the Apache Software Foundation (ASF) under one or more
+		contributor license agreements. See the NOTICE file distributed with
+		this work for additional information regarding copyright ownership.
+		The ASF licenses this file to you under the Apache License, Version
+		2.0 (the "License"); you may not use this file except in compliance
+		with the License. You may obtain a copy of the License at
+
+		http://www.apache.org/licenses/LICENSE-2.0 Unless required by
+		applicable law or agreed to in writing, software distributed under the
+		License is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR
+		CONDITIONS OF ANY KIND, either express or implied. See the License for
+		the specific language governing permissions and limitations under the
+		License.
+-->
+    
+<book lang="ko">
+	<title>Anyframe Scheduling Plugin</title>
+	
+	<bookinfo>
+		<copyright>
+			<year>2007-2011</year>
+			<holder>삼성SDS</holder>
+		</copyright>
+		<releaseinfo>Version 1.0.1</releaseinfo>
+
+		<productname>Anyframe Scheduling Plugin</productname>
+
+		<authorgroup>
+			<corpauthor></corpauthor>
+		</authorgroup>
+
+		<mediaobject>
+			<imageobject>
+				<!-- logo 변경 -->
+				<imagedata fileref="../image/common/logo_pdf.jpg"/>
+			</imageobject>
+		</mediaobject>
+		<legalnotice>
+			<para>본 문서의 저작권은 삼성SDS에 있으며 Anyframe 오픈소스 커뮤니티 활동의 목적하에서 자유로운 이용이 가능합니다.
+			본 문서를 복제, 배포할 경우에는 저작권자를 명시하여 주시기 바라며 본 문서를 변경하실 경우에는 원문과 변경된 내용을 표시하여 주시기 바랍니다. 
+			원문과 변경된 문서에 대한 상업적 용도의 활용은 허용되지 않습니다. 본 문서에 오류가 있다고 판단될 경우 이슈로 등록해 주시면 적절한 조치를 취하도록 하겠습니다.
+			</para>
+		</legalnotice>
+	</bookinfo>
+		
+	<part id="scheduling_introduction_part">
+		<title>Introduction</title>
+		<partintro id="scheduling_introduction_part_intro">
+			<para>
+				Scheduling Plugin은 Spring과 오픈 소스 작업 스케줄링 프레임워크인 <ulink url="http://www.opensymphony.com/quartz/">Quartz</ulink>를 연계하여 
+				특정 작업에 대해 스케쥴링하는 방법을 가이드하기 위한 샘플 코드와 이 오픈소스들을 활용하는데 필요한 참조 라이브러리들로 구성되어 있다.
+			</para>
+			<para role="introduction_title"><emphasis role="bold">Installation</emphasis></para>
+			<para>Command 창에서 다음과 같이 명령어를 입력하여 scheduling-plugin을 설치한다.</para>
+			<programlisting language="java"><![CDATA[mvn anyframe:install -Dname=scheduling]]></programlisting>
+			<para>
+				installed(mvn anyframe:installed) 혹은 jetty:run(mvn clean jetty:run) command를 이용하여 설치 결과를 확인해볼 수 있다. 
+			</para>
+			<para role="introduction_title"><emphasis role="bold">Dependent Plugins</emphasis></para>
+			<informaltable>
+				<tgroup cols="2">
+					<colspec colnum="1" colname="col1" colwidth="5*" />
+					<colspec colnum="2" colname="col2" colwidth="5*" />
+					<thead>
+						<row>
+							<entry align="center">Plugin Name</entry>
+							<entry align="center">Version Range</entry>
+						</row>
+					</thead>
+					<tbody>
+						<row>
+							<entry align="center"><ulink url="http://dev.anyframejava.org/docs/anyframe/plugin/optional/query/1.1.1/reference/htmlsingle/query.html">Query</ulink></entry>
+							<entry align="center" valign="middle">2.0.0 > *</entry>
+						</row>
+					</tbody>
+				</tgroup>
+			</informaltable>	
+		</partintro>
+	</part>	
+	
+	<part id="scheduling_schedulling_part">
+		<title>Spring Scheduling</title>
+		<partintro id="scheduling_schedulling_part_intro">
+			<para>
+				Spring은 특정 Task에 대한 Asynchronous Execution과 Scheduling을 위해 TaskExecutor와 TaskScheduler(Spring 3 이후)를 제공하고 있다.
+			</para>
+		</partintro>
+		&scheduling_scheduling;
+	</part>	
+	
+	<part id="scheduling_quartz_part">
+		<title>Quartz Scheduling</title>
+		<partintro id="scheduling_quartz_part_intro">
+			<para>
+				Spring은 JDK 1.3이후 제공되는 Timer Scheduler와 Quartz Scheduler(
+				<ulink url="http://www.opensymphony.com/quartz/">http://www.opensymphony.com/quartz/</ulink>)를 이용한 스케쥴링을 지원한다.
+			</para>
+			<para>
+				<emphasis role="bold">Quartz</emphasis>는 오픈 소스 작업 스케줄링 프레임워크이다. Quartz는 완전히 자바로 작성되어 있으며 매우 유연하고 단순한 구조를 
+				제공하여 간단한 작업은 물론 복잡한 작업 모두에 대한 스케줄링을 작성할 수 있다. 또한 EJB, JavaMail 등을 위한 데이터베이스 지원, 클러스터링, 플러그 인, 미리 내장된 작업들을
+				포함하고 있다.
+			</para>
+		</partintro>
+		&scheduling_quartz;
+	</part>				
+
+</book>

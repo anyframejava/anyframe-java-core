@@ -20,7 +20,6 @@ import java.util.Enumeration;
 import java.util.Hashtable;
 import java.util.Iterator;
 import java.util.List;
-import java.util.Locale;
 import java.util.Vector;
 
 import org.anyframe.exception.BaseException;
@@ -28,13 +27,9 @@ import org.anyframe.exception.NestedRuntimeException;
 import org.anyframe.util.StringUtil;
 import org.anyframe.util.properties.PropertiesService;
 import org.apache.commons.collections.ExtendedProperties;
-import org.springframework.beans.BeansException;
 import org.springframework.beans.factory.BeanDefinitionStoreException;
 import org.springframework.beans.factory.DisposableBean;
 import org.springframework.beans.factory.InitializingBean;
-import org.springframework.context.ApplicationContext;
-import org.springframework.context.ApplicationContextAware;
-import org.springframework.context.MessageSource;
 import org.springframework.context.ResourceLoaderAware;
 import org.springframework.core.io.Resource;
 import org.springframework.core.io.ResourceLoader;
@@ -46,12 +41,9 @@ import org.springframework.util.Assert;
  * @author JongHoon Kim
  */
 public class PropertiesServiceImpl implements PropertiesService,
-		ApplicationContextAware, InitializingBean, DisposableBean,
-		ResourceLoaderAware {
+		InitializingBean, DisposableBean, ResourceLoaderAware {
 	private ExtendedProperties anyframeProperties = null;
 	private ResourceLoader resourceLoader = null;
-
-	private MessageSource messageSource;
 
 	private Watcher watcher;
 	private long dynamicReload = -1;
@@ -75,22 +67,22 @@ public class PropertiesServiceImpl implements PropertiesService,
 	 * given name as a boolean value.
 	 * 
 	 * @param name
-	 *            The resource name.
-	 * @return The value of the named resource as a boolean.
+	 *            The resource name
+	 * @return The value of the named resource as a boolean
 	 */
 	public boolean getBoolean(String name) {
 		return getConfiguration().getBoolean(name);
 	}
 
 	/**
-	 * The purppose of this method is to get the configuration resource with the
+	 * The purpose of this method is to get the configuration resource with the
 	 * given name as a boolean value, or a default value.
 	 * 
 	 * @param name
-	 *            The resource name.
+	 *            The resource name
 	 * @param def
 	 *            The default value of the resource.
-	 * @return The value of the named resource as a boolean.
+	 * @return The value of the named resource as a boolean
 	 */
 	public boolean getBoolean(String name, boolean def) {
 		return getConfiguration().getBoolean(name, def);
@@ -101,8 +93,8 @@ public class PropertiesServiceImpl implements PropertiesService,
 	 * given name as a double.
 	 * 
 	 * @param name
-	 *            The resource name.
-	 * @return The value of the named resource as a double.
+	 *            The resource name
+	 * @return The value of the named resource as a double
 	 */
 	public double getDouble(String name) {
 		return getConfiguration().getDouble(name);
@@ -113,10 +105,10 @@ public class PropertiesServiceImpl implements PropertiesService,
 	 * given name as a double, or a default value.
 	 * 
 	 * @param name
-	 *            The resource name.
+	 *            The resource name
 	 * @param def
-	 *            The default value of the resource.
-	 * @return The value of the named resource as a double.
+	 *            The default value of the resource
+	 * @return The value of the named resource as a double
 	 */
 	public double getDouble(String name, double def) {
 		return getConfiguration().getDouble(name, def);
@@ -127,8 +119,8 @@ public class PropertiesServiceImpl implements PropertiesService,
 	 * given name as a float.
 	 * 
 	 * @param name
-	 *            The resource name.
-	 * @return The value of the named resource as a float.
+	 *            The resource name
+	 * @return The value of the named resource as a float
 	 */
 	public float getFloat(String name) {
 		return getConfiguration().getFloat(name);
@@ -139,10 +131,10 @@ public class PropertiesServiceImpl implements PropertiesService,
 	 * given name as a float, or a default value.
 	 * 
 	 * @param name
-	 *            The resource name.
+	 *            The resource name
 	 * @param def
-	 *            The default value of the resource.
-	 * @return The value of the named resource as a float.
+	 *            The default value of the resource
+	 * @return The value of the named resource as a float
 	 */
 	public float getFloat(String name, float def) {
 		return getConfiguration().getFloat(name, def);
@@ -153,8 +145,8 @@ public class PropertiesServiceImpl implements PropertiesService,
 	 * given name as an integer.
 	 * 
 	 * @param name
-	 *            The resource name.
-	 * @return The value of the named resource as an integer.
+	 *            The resource name
+	 * @return The value of the named resource as an integer
 	 */
 	public int getInt(String name) {
 		return getConfiguration().getInt(name);
@@ -165,31 +157,31 @@ public class PropertiesServiceImpl implements PropertiesService,
 	 * given name as an integer, or a default value.
 	 * 
 	 * @param name
-	 *            The resource name.
+	 *            The resource name
 	 * @param def
-	 *            The default value of the resource.
-	 * @return The value of the named resource as an integer.
+	 *            The default value of the resource
+	 * @return The value of the named resource as an integer
 	 */
 	public int getInt(String name, int def) {
 		return getConfiguration().getInt(name, def);
 	}
 
 	/**
-	 * Get the list of the keys contained in the configuration repository.
+	 * Get keys contained in the configuration repository.
 	 * 
-	 * @return An Iterator with all the keys.
+	 * @return all the keys
 	 */
 	public Iterator getKeys() {
 		return getConfiguration().getKeys();
 	}
 
 	/**
-	 * Get the list of the keys contained in the configuration repository that
-	 * match the specified prefix.
+	 * Get keys contained in the configuration repository that match the
+	 * specified prefix.
 	 * 
 	 * @param prefix
-	 *            A String prefix to test against.
-	 * @return An Iterator of keys that match the prefix.
+	 *            A String prefix to test against
+	 * @return all the keys that match the prefix
 	 */
 	public Iterator getKeys(String prefix) {
 		return getConfiguration().getKeys(prefix);
@@ -200,8 +192,8 @@ public class PropertiesServiceImpl implements PropertiesService,
 	 * given name as a long.
 	 * 
 	 * @param name
-	 *            The resource name.
-	 * @return The value of the named resource as a long.
+	 *            The resource name
+	 * @return The value of the named resource as a long
 	 */
 	public long getLong(String name) {
 		return getConfiguration().getLong(name);
@@ -212,10 +204,10 @@ public class PropertiesServiceImpl implements PropertiesService,
 	 * given name as a long, or a default value.
 	 * 
 	 * @param name
-	 *            The resource name.
+	 *            The resource name
 	 * @param def
-	 *            The default value of the resource.
-	 * @return The value of the named resource as a long.
+	 *            The default value of the resource
+	 * @return The value of the named resource as a long
 	 */
 	public long getLong(String name, long def) {
 		return getConfiguration().getLong(name, def);
@@ -223,11 +215,11 @@ public class PropertiesServiceImpl implements PropertiesService,
 
 	/**
 	 * The purpose of this method is to get the configuration resource with the
-	 * given name as a string .
+	 * given name as a string.
 	 * 
 	 * @param name
-	 *            The resource name.
-	 * @return The value of the named resource as a string .
+	 *            The resource name
+	 * @return The value of the named resource as a string
 	 */
 	public String getString(String name) {
 		return getConfiguration().getString(name);
@@ -235,13 +227,13 @@ public class PropertiesServiceImpl implements PropertiesService,
 
 	/**
 	 * The purpose of this method is to get the configuration resource with the
-	 * given name as a string , or a default value.
+	 * given name as a string, or a default value.
 	 * 
 	 * @param name
-	 *            The resource name.
+	 *            The resource name
 	 * @param def
-	 *            The default value of the resource.
-	 * @return The value of the named resource as a string .
+	 *            The default value of the resource
+	 * @return The value of the named resource as a string
 	 */
 	public String getString(String name, String def) {
 		return getConfiguration().getString(name, def);
@@ -249,11 +241,11 @@ public class PropertiesServiceImpl implements PropertiesService,
 
 	/**
 	 * The purpose of this method is to get the configuration resource with the
-	 * given name as a string array .
+	 * given name as a string array.
 	 * 
 	 * @param name
-	 *            The resource name.
-	 * @return The value of the named resource as a string array.
+	 *            The resource name
+	 * @return The value of the named resource as a string array
 	 */
 	public String[] getStringArray(String name) {
 		return getConfiguration().getStringArray(name);
@@ -261,11 +253,11 @@ public class PropertiesServiceImpl implements PropertiesService,
 
 	/**
 	 * The purpose of this method is to get the configuration resource with the
-	 * given name as a vector .
+	 * given name as a vector.
 	 * 
 	 * @param name
-	 *            The resource name.
-	 * @return The value of the named resource as a vector .
+	 *            The resource name
+	 * @return The value of the named resource as a vector
 	 */
 	public Vector getVector(String name) {
 		return getConfiguration().getVector(name);
@@ -276,10 +268,10 @@ public class PropertiesServiceImpl implements PropertiesService,
 	 * given name as a vector, or a default value.
 	 * 
 	 * @param name
-	 *            The resource name.
+	 *            The resource name
 	 * @param def
-	 *            The default value of the resource.
-	 * @return The value of the named resource as a vector .
+	 *            The default value of the resource
+	 * @return The value of the named resource as a vector
 	 */
 	public Vector getVector(String name, Vector def) {
 		return getConfiguration().getVector(name, def);
@@ -310,15 +302,15 @@ public class PropertiesServiceImpl implements PropertiesService,
 			}
 		} catch (Exception e) {
 			if (PropertiesService.LOGGER.isErrorEnabled()) {
-				PropertiesService.LOGGER.error(messageSource.getMessage(
-						"error.properties.refresh.files",
-						new String[] { fileName }, Locale.getDefault()));
-				PropertiesService.LOGGER.error(messageSource.getMessage(
-						"error.properties.refresh.files.reason",
-						new String[] {}, Locale.getDefault()));
+				PropertiesService.LOGGER
+						.error("[Properties Service] Fail to refresh file properties "
+								+ fileName + ".");
+				PropertiesService.LOGGER
+						.error("[Properties Service] Some property files doesn't exist or there are wrong definitions in property files.");
 			}
-			throw new NestedRuntimeException("error.properties.refresh.files",
-					new String[] { fileName }, e);
+			throw new NestedRuntimeException(
+					"[Properties Service] Fail to refresh file properties "
+							+ fileName + ".", e);
 		}
 	}
 
@@ -352,11 +344,11 @@ public class PropertiesServiceImpl implements PropertiesService,
 				throw (BaseException) e;
 			else {
 				if (PropertiesService.LOGGER.isErrorEnabled())
-					PropertiesService.LOGGER.error(messageSource.getMessage(
-							"error.properties.initialize.reason",
-							new String[] {}, Locale.getDefault()));
-				throw new BaseException(messageSource,
-						"error.properties.initialize", e);
+					PropertiesService.LOGGER
+							.error("[Properties Service] There are something wrong definitions in a service configuration file or property files.");
+				throw new BaseException(
+						"[Properties Service] Fail to initialize a Properties Service.",
+						e);
 			}
 		}
 	}
@@ -377,18 +369,6 @@ public class PropertiesServiceImpl implements PropertiesService,
 
 	public void setResourceLoader(ResourceLoader resourceLoader) {
 		this.resourceLoader = resourceLoader;
-	}
-
-	/**
-	 * set ApplicationContext
-	 * 
-	 * @param applicationContext
-	 *            to be set by container
-	 */
-	public void setApplicationContext(ApplicationContext applicationContext)
-			throws BeansException {
-		this.messageSource = (MessageSource) applicationContext
-				.getBean("messageSource");
 	}
 
 	private void loadPropertiesDefinition(String location, String encoding)
@@ -422,10 +402,11 @@ public class PropertiesServiceImpl implements PropertiesService,
 	private void loadPropertiesDefinition(Resource resource, String encoding)
 			throws Exception {
 		if (PropertiesService.LOGGER.isDebugEnabled()) {
-			PropertiesService.LOGGER.debug(messageSource.getMessage(
-					"debug.properties.filename",
-					new String[] { resource.getFilename(), encoding },
-					Locale.getDefault()));
+			PropertiesService.LOGGER
+					.debug("[Properties Service] Property file is a "
+							+ resource.getFilename()
+							+ ". Encoding Type of the file is" + encoding
+							+ " .");
 		}
 		ExtendedProperties anyframeProperty = new ExtendedProperties();
 		anyframeProperty.load(resource.getInputStream(), encoding);
@@ -518,7 +499,8 @@ public class PropertiesServiceImpl implements PropertiesService,
 								}
 							} catch (Exception e) {
 								PropertiesService.LOGGER
-										.error("Properties Service : Fail to check whether propertis files are modified.",
+										.error(
+												"Properties Service : Fail to check whether propertis files are modified.",
 												e);
 							}
 						}
@@ -531,7 +513,8 @@ public class PropertiesServiceImpl implements PropertiesService,
 							}
 						} catch (Exception e) {
 							PropertiesService.LOGGER
-									.error("Properties Service : Fail to reload properties.",
+									.error(
+											"Properties Service : Fail to reload properties.",
 											e);
 						}
 						sleep(getRefreshRate());

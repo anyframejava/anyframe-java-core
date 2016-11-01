@@ -37,6 +37,7 @@ public abstract class AbstractCallbackSupport{
     protected Pagination pagination;
 	private Map nullchecks;
     private LobHandler lobHandler;
+    protected boolean needColumnInfo = true;
     
     public void setQueryInfo(QueryInfo queryInfo) {
 		this.queryInfo = queryInfo;
@@ -49,6 +50,14 @@ public abstract class AbstractCallbackSupport{
     	this.pagination = pagination;   
 	}
     
+    public boolean isNeedColumnInfo() {
+		return needColumnInfo;
+	}
+
+	public void setNeedColumnInfo(boolean needColumnInfo) {
+		this.needColumnInfo = needColumnInfo;
+	}
+	
     protected abstract short getDsType(int rsType) throws SQLException;
 
     protected Object getValues(ResultSet rs, int count, int columnType) {

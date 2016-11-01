@@ -23,7 +23,7 @@
 		</c:if>
 		
 		<tr>
-			<td width="150" class="ct_td"><anyframe:message code="movie.title" />&nbsp;*</td>
+			<td width="150" class="ct_td"><spring:message code="movie.title" />&nbsp;*</td>
 			<td bgcolor="D6D6D6" width="1"></td>
 			<td class="ct_write01">
 			<form:input path="title" cssClass="ct_input_g" cssErrorClass="text medium error" size="40" maxlength="50" />
@@ -34,7 +34,7 @@
 			<td height="1" colspan="3" bgcolor="D6D6D6"></td>
 		</tr>
 		<tr>
-			<td width="150" class="ct_td"><anyframe:message code="movie.director" />&nbsp;*</td>
+			<td width="150" class="ct_td"><spring:message code="movie.director" />&nbsp;*</td>
 			<td bgcolor="D6D6D6" width="1"></td>
 			<td class="ct_write01"><form:input path="director" cssClass="ct_input_g" cssErrorClass="text medium error" size="40" maxlength="50" />
 			<simpleweb:validate id="director" required="true" />
@@ -44,7 +44,7 @@
 			<td height="1" colspan="3" bgcolor="D6D6D6"></td>
 		</tr>
 		<tr>
-			<td width="150" class="ct_td"><anyframe:message code="movie.genre" />&nbsp;*</td>
+			<td width="150" class="ct_td"><spring:message code="movie.genre" />&nbsp;*</td>
 			<td bgcolor="D6D6D6" width="1"></td>
 			<td class="ct_write01">
 			<form:select path="genre.genreId">
@@ -56,7 +56,7 @@
 			<td height="1" colspan="3" bgcolor="D6D6D6"></td>
 		</tr>
 		<tr>
-			<td width="150" class="ct_td"><anyframe:message code="movie.actors" />&nbsp;*</td>
+			<td width="150" class="ct_td"><spring:message code="movie.actors" />&nbsp;*</td>
 			<td bgcolor="D6D6D6" width="1"></td>
 			<td class="ct_write01">
 			<form:input path="actors" cssClass="ct_input_g" cssErrorClass="text medium error" size="60" maxlength="50" /></td>
@@ -66,7 +66,7 @@
 			<td height="1" colspan="3" bgcolor="D6D6D6"></td>
 		</tr>
 		<tr>
-			<td width="150" class="ct_td"><anyframe:message code="movie.runtime" /></td>
+			<td width="150" class="ct_td"><spring:message code="movie.runtime" /></td>
 			<td bgcolor="D6D6D6" width="1"></td>
 			<td class="ct_write01"><form:input path="runtime" cssClass="ct_input_g" cssErrorClass="text medium error" size="10" maxlength="3" /> min.
 			<simpleweb:validate id="runtime" type="Number"/>
@@ -76,7 +76,7 @@
 			<td height="1" colspan="3" bgcolor="D6D6D6"></td>
 		</tr>
 		<tr>
-			<td width="150" class="ct_td"><anyframe:message code="movie.releaseDate" /></td>
+			<td width="150" class="ct_td"><spring:message code="movie.releaseDate" /></td>
 			<td bgcolor="D6D6D6" width="1"></td>
 			<td class="ct_write01"><form:input path="releaseDate" id="releaseDate" cssClass="ct_input_g"
 				cssErrorClass="text medium error" maxlength="10" />
@@ -92,7 +92,7 @@
 			<td height="1" colspan="3" bgcolor="D6D6D6"></td>
 		</tr>
 		<tr>
-			<td width="150" class="ct_td"><anyframe:message code="movie.ticketPrice" /></td>
+			<td width="150" class="ct_td"><spring:message code="movie.ticketPrice" /></td>
 			<td bgcolor="D6D6D6" width="1"></td>
 			<td class="ct_write01"><form:input path="ticketPrice" cssClass="ct_input_g" cssErrorClass="text medium error" maxlength="4" />
 			<simpleweb:validate id="ticketPrice" type="Number"/>
@@ -102,7 +102,7 @@
 			<td height="1" colspan="3" bgcolor="D6D6D6"></td>
 		</tr>
 		<tr>
-			<td width="150" class="ct_td"><anyframe:message code="movie.nowPlaying" /></td>
+			<td width="150" class="ct_td"><spring:message code="movie.nowPlaying" /></td>
 			<td bgcolor="D6D6D6" width="1"></td>
 			<td class="ct_write01">Is this movie now playing ? <form:checkbox path="nowPlaying" value="Y"/>
 			</td>
@@ -112,7 +112,7 @@
 		</tr>		
 		<tr>
 			<td width="150" class="ct_td">
-			<anyframe:message code="movie.posterFile"/></td>
+			<spring:message code="movie.posterFile"/></td>
 			<td bgcolor="D6D6D6" width="1"></td>
 			<td class="ct_write01" style="vertical-align: center;">	
 				<c:if test="${not empty movie.filePaths}">					

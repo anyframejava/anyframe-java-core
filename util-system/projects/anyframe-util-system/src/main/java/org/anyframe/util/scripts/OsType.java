@@ -20,7 +20,7 @@ import java.util.Collections;
 import java.util.List;
 
 /**
- * 
+ *
  * Hierarchical structures with Java Enums - http://blog.cedarsoft.com/2010/10/hierarchical-structures-with-java-enums/
  *
  * @author Johannes Schneider
@@ -33,10 +33,13 @@ public enum OsType {
 			WindowsNT(Windows),
 				WindowsNTWorkstation(WindowsNT),
 				WindowsNTServer(WindowsNT),
+				WindowsNTunknown(WindowsNT),	// JVM 버전 등이 맞지 않으면 Windows 7 등이 Windows NT (unknown) 과 같이 나오는 경우가 있음
 			Windows2000(Windows),
 				Windows2000Server(Windows2000),
 				Windows2000Workstation(Windows2000),
 			Windows2003(Windows),
+			WindowsServer2008(Windows),
+				WindowsServer2008R2(WindowsServer2008),
 			WindowsXp(Windows),
 			WindowsVista(Windows),
 			Windows7(Windows),

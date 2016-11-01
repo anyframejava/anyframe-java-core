@@ -1,0 +1,142 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+
+<!DOCTYPE book PUBLIC "-//OASIS//DTD DocBook XML V4.5//EN" "http://www.oasis-open.org/docbook/xml/4.5/docbookx.dtd"
+[
+<!ENTITY generic_implementation_domain SYSTEM "generic/domain.xml">
+<!ENTITY generic_implementation_usage SYSTEM "generic/usage.xml">
+<!ENTITY generic_implementation_test SYSTEM "generic/test.xml">
+<!ENTITY generic_implementation_resources SYSTEM "generic/resources.xml">
+]
+>
+
+<!--
+		Licensed to the Apache Software Foundation (ASF) under one or more
+		contributor license agreements. See the NOTICE file distributed with
+		this work for additional information regarding copyright ownership.
+		The ASF licenses this file to you under the Apache License, Version
+		2.0 (the "License"); you may not use this file except in compliance
+		with the License. You may obtain a copy of the License at
+
+		http://www.apache.org/licenses/LICENSE-2.0 Unless required by
+		applicable law or agreed to in writing, software distributed under the
+		License is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR
+		CONDITIONS OF ANY KIND, either express or implied. See the License for
+		the specific language governing permissions and limitations under the
+		License.
+-->
+    
+<book lang="ko">
+	<title>Anyframe Generic Plugin</title>
+	
+	<bookinfo>
+		<copyright>
+			<year>2007-2011</year>
+			<holder>삼성SDS</holder>
+		</copyright>
+		<releaseinfo>Version 1.0.1</releaseinfo>
+
+		<productname>Anyframe Generic Plugin</productname>
+		
+		<authorgroup>
+			<corpauthor></corpauthor>
+		</authorgroup>
+		
+		<mediaobject>
+			<imageobject>
+				<imagedata fileref="../image/common/logo_pdf.jpg"/>
+			</imageobject>
+		</mediaobject>
+		<legalnotice>
+			<para>
+				본 문서의 저작권은 삼성SDS에 있으며 Anyframe 오픈소스 커뮤니티 활동의 목적하에서 자유로운 이용이 가능합니다.
+				본 문서를 복제, 배포할 경우에는 저작권자를 명시하여 주시기 바라며 본 문서를 변경하실 경우에는 원문과 변경된 내용을 표시하여 주시기 바랍니다. 
+				원문과 변경된 문서에 대한 상업적 용도의 활용은 허용되지 않습니다. 본 문서에 오류가 있다고 판단될 경우 이슈로 등록해 주시면 적절한 조치를 취하도록 하겠습니다.
+			</para>
+		</legalnotice>
+	</bookinfo>
+ 
+	<part id="generic_introduction_part">
+		<title>Introduction</title>
+		<partintro id="generic_introduction_partintro">
+			<para>
+				Anyframe의 generic 서비스는 Java5부터 지원하는 <emphasis role="bold">Generics</emphasis> 개념을 기반으로 개발된 것으로, 
+				도메인 클래스 기반의 Service 인터페이스/구현 클래스, DAO 인어페이스/구현클래스(Hibernate/JPA, Query Service 지원) 등의 
+				기본 CRUD 기능이 모두 구현된 클래스를 제공하고 있다. 
+				어플리케이션 개발 시에는 Generic 서비스의 클래스들을 그대로 이용하거나 상속받아서 추가적인 기능을 개발할 수 있다.
+				generic plugin은 이 generic 서비스를 활용하는 방법을 가이드하는 샘플코드와 참조라이브러리들로 구성되어 있다.
+			</para>		
+			<para role="introduction_title"><emphasis role="bold">Installation</emphasis></para>
+			<para>Command 창에서 다음과 같이 명령어를 입력하여 generic plugin을 설치한다.</para>
+			<programlisting language="java"><![CDATA[mvn anyframe:install -Dname=generic]]></programlisting>
+			<para>
+				installed(mvn anyframe:installed) 혹은 jetty:run(mvn clean jetty:run) command를 이용하여 설치 결과를 확인해볼 수 있다. 
+			</para>
+			<para role="introduction_title"><emphasis role="bold">Dependent Plugins</emphasis></para>
+			<informaltable>
+				<tgroup cols="2">
+					<colspec colnum="1" colname="col1" colwidth="5*" />
+					<colspec colnum="2" colname="col2" colwidth="5*" />
+					<thead>
+						<row>
+							<entry align="center">Plugin Name</entry>
+							<entry align="center">Version Range</entry>
+						</row>
+					</thead>
+					<tbody>
+						<row>
+							<entry align="center"><ulink url="http://dev.anyframejava.org/docs/anyframe/plugin/optional/query/1.1.1/reference/htmlsingle/query.html">query</ulink></entry>
+							<entry align="center" valign="middle">2.0.0 > *</entry>
+						</row>
+					</tbody>
+				</tgroup>
+			</informaltable>		
+		</partintro>
+	</part>
+ 	 
+	<part id="generic_generic_part">
+		<title>Generic</title>
+		<partintro id="generic_generic_part_intro">
+			<para>
+				Generic Service는 <ulink url="http://appfuse.org/display/APF/Home">AppFuse Framework</ulink>
+				(http://appfuse.org/display/APF/Home)의 개념과 소스 코드(템플릿 포함)를 참고하여 Anyframe에 맞게 수정되었다. 
+				아래의 Generic Service 구성 클래스들을 활용한 샘플 코드들은 직접 작성하여 사용할 수도 있고, 
+				Anyframe IDE Editor의 CRUD Generation 기능을 통해 자동생성되는 코드를 사용할 수도 있다.
+			</para>
+			<para>Generic Service를 이용하여 개발 시 다음과 같은 특징을 갖는다.</para>
+			<itemizedlist>
+				<listitem>
+					<para>도메인 모델 객체를 중심으로 기본 CRUD 코드들을 쉽게 작성할 수 있다.</para>
+				</listitem>
+				<listitem>
+					<para>개발자가 Business Layer, Data Access Layer 코드를 작성하지 않고 Generic Service에서 제공하는
+						Service 클래스와 Dao 클래스들을 그대로 재사용하여 기본 CRUD 기능을 구현할 수 있다.
+					</para>
+				</listitem>
+				<listitem>
+					<para>기본 CRUD 외의 부가 기능이 필요한 경우 Generic Service에서 제공하는 클래스를 상속받아서 부가
+						기능에 대해서만 추가 기능을 구현할 수 있다.
+					</para>
+				</listitem>
+				<listitem>
+					<para>DAO Framework으로 Hibernate/JPA, Query Service를 지원한다.</para>
+				</listitem>
+			</itemizedlist>
+			<para> Generic Service 클래스들의 관계에 대한 구조도이다. </para>
+			<mediaobject>
+				<imageobject>
+					<imagedata align="center" fileref="../image/generic/generic-flow.jpg" />
+				</imageobject>
+			</mediaobject>
+			Generic 개념은 Java 5의 가장 큰 특징 중의 하나로 Collection이 포함하게 될 객체의 타입을 미리 선언하는 것을 말한다.
+			
+					과거에 List list = new ArrayList(); 로 표현했던 것을 Generic을 적용하면 List&lt;String&gt; list = new ArrayList(); 으로 
+		표현할 수 있으며, 지정된 타입 이외의 객체를 사용할 경우 컴파일 에러가 발생한다. 따라서, 캐스팅 작업은 없어지고 명시적으로
+		어떤 타입을 사용할 것인지 표현하여 가독성을 향상시킬 수 있다. 또한, Generic 타입을 사용하면 프로그래머가 원하는 객체의 타입을
+		명시해서 의도하지 않은 객체는 저장될 수 없도록 컴파일 시에 오류를 확인할 수 있게 된다.
+		</partintro>
+		&generic_implementation_domain;
+		&generic_implementation_usage;
+		&generic_implementation_test;
+		&generic_implementation_resources;
+	</part>
+</book>

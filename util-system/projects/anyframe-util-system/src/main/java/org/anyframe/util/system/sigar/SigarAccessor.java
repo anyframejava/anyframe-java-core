@@ -104,7 +104,8 @@ public class SigarAccessor extends org.hyperic.sigar.cmd.SysInfo {
 		}
 		else {
 			if (!javaLibPath.contains("sigar")) {
-				System.setProperty("java.library.path", javaLibPath + ";" + sigarLibPath);
+				String delimiter = DefaultScriptExecutor.getOs().is(OsType.Windows) ? ";" : ":";
+				System.setProperty("java.library.path", javaLibPath + delimiter + sigarLibPath);
 			}
 		}
 
@@ -368,7 +369,7 @@ public class SigarAccessor extends org.hyperic.sigar.cmd.SysInfo {
 		MemoryInfo memoryInfo = new MemoryInfo();
 		Mem mem = getInstance().sigar.getMem();
 		Swap swap = getInstance().sigar.getSwap();
-		memoryInfo.setMemTotal(mem.getTotal() / 1024); // MB
+		memoryInfo.setMemTotal(mem.getTotal() / 1024); // KB
 		memoryInfo.setMemUsed(mem.getUsed() / 1024);
 		memoryInfo.setMemFree(mem.getFree() / 1024);
 		memoryInfo.setActualUsed(mem.getActualUsed() / 1024);
@@ -939,7 +940,7 @@ public class SigarAccessor extends org.hyperic.sigar.cmd.SysInfo {
 	 * @return
 	 */
 	public static String print(List<String> info, int mod) {
-		StringBuffer buf = new StringBuffer();
+		StringBuilder buf = new StringBuilder();
 		Iterator<String> i = info.iterator();
 		boolean hasNext = i.hasNext();
 		int index = 0;
