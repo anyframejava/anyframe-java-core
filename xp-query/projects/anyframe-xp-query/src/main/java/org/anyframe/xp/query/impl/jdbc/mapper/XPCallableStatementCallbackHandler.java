@@ -39,22 +39,23 @@ import com.tobesoft.xplatform.data.DataTypes;
 public class XPCallableStatementCallbackHandler extends XPCallbackSupport
 		implements RiaCallableStatementCallback {
 
-    public XPCallableStatementCallbackHandler() {
+	public XPCallableStatementCallbackHandler() {
+		
 	}
 
 	private List<SqlParameter> sqlParams;
 
 	@SuppressWarnings("unused")
 	private LobHandler lobHandler;
-
-    public void setSQLParams(List<SqlParameter> sqlParams) {
+	
+	public void setSQLParams(List<SqlParameter> sqlParams) {
 		this.sqlParams = sqlParams;
 	}
 
 	public void setLobHandler(LobHandler lobHandler) {
 		this.lobHandler = lobHandler;
 	}
-
+	
 	public Object doInCallableStatement(CallableStatement cs)
 			throws SQLException {
 
@@ -73,11 +74,12 @@ public class XPCallableStatementCallbackHandler extends XPCallbackSupport
 					dataSetList.add(setResultDataSet(paramName, rs));
 				} else {
 					Object obj = cs.getObject(i + 1);
-
-                    DataSet outDs = new DataSet(paramName);
+					DataSet outDs = new DataSet(paramName);
 					outDs.addColumn(paramName, getDsType(sqlType), 1);
+					
 					outDs.newRow();
 					outDs.set(0, paramName, obj);
+					
 					dataSetList.add(outDs);
 				}
 			}

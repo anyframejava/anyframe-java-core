@@ -1,0 +1,23 @@
+<chapter id="core_properties_dynamic">
+	<title>Dynamic Reloading</title>
+	<para>
+		PropertiesService provides Dynamic Reload function for managed Property file (PropertiesService 4.2.0 onwards). 
+		If you use Dynamic Reload, the change of property file monitored during system operation is identified and Reload is executed internally. 
+		Thus the information on changed property can be read without restarting the server.
+		
+	</para>
+	<para>
+		To apply Dynamic Reload, 'dynamicReload' property should be defined additionally.
+	</para>
+	<important>
+		<title>Note for using Dynamic Reload</title>
+		<para>
+			Note that the Dynamic Reload function is applied only to the Property File loaded through the file system 
+			and not to individual properties that PropertiesService defined in XML or the Property File that exists in Classpath. 
+			Also, since the properties previously loaded are cleared and new properties are reflected when Dynamic Reload is executed, 
+			only the Property File based on the file system should be used, 
+			not individual property definition and the Property File that exists in Classpath, 
+			when the property of PropertiesService Bean is defined.
+		</para>
+	</important>
+</chapter>

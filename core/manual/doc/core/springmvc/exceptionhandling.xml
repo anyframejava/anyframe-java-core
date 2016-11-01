@@ -1,0 +1,171 @@
+<chapter id="core_springmvc_exceptionhandling">
+	<title>Exception Handling</title>
+
+		<para>
+			Spring MVC에서는 선언적인 Exception Handling을 위해서 ExceptionResolver를 제공한다.
+			이는 Exception의 종류에 따라 Exception 페이지를 지정해 줄 수 있다. 또한 Controller단에서
+			try~catch문을 이용하여 발생한 exception에 대한 메시지를 입력 뷰에 다시 출력해 줄 수도 있다.
+ 		</para>
+
+	<section id="core_springmvc_exceptionhandling_specialerrorpage">
+    <title>특정 error 페이지로 이동하여 에러 메시지 출력</title>
+
+    	<para>
+    		Spring MVC에서는 Exception Handling을 위한 HandlerExceptionResolvers를 제공한다.
+    		이는 특정 exception이 발생했을 때 특정 페이지로 이동시킬 수 있다. 일단, 사용자 exception을 정의해준다.
+    	</para>
+
+    	<programlisting language="java">public class UserException extends Exception {
+    public UserException(){
+        super();
+    }
+    public UserException(String message){
+        super(message);
+    }
+}</programlisting>
+
+		<para>
+			이렇게 정의된 사용자 exception을 Controller 단, 또는 Service 단에서 exception을 throw할
+    		수 있다. 다음은 UserException을 throw한 예이다.
+    	</para>
+
+	    <programlisting language="java">//입력된 userName이 "test"가 아닐경우 UserException을 throw해준다.
+if(!a.equals("test"))
+    throw new UserException(new String(messageSource.getMessage("error.exception.user"
+                                , new String[]{}, Locale.getDefault())));</programlisting>
+
+	    <para>
+	    	exception을 throw할 때 messageSource를 사용하여 properties파일에 정의된
+    		"error.exception.user"키값에 대한 메시지를 출력한다. exception 발생 후 포워딩 될 페이지 정보를 매핑하기
+    		위해서 다음과 같이 HandlerExceptionResolvers를 정의해 준다.
+    	</para>
+
+  		<programlisting language="xml"><![CDATA[<bean id="]]><emphasis role="bold">exceptionResolver</emphasis><![CDATA[" 
+        class="org.springframework.web.servlet.handler.SimpleMappingExceptionResolver">
+    <property name="]]><emphasis role="bold">exceptionMappings</emphasis><![CDATA[">
+        <props>
+            <prop key="sample.services.UserException">userError</prop>
+        </props>
+    </property>
+    <property name="exceptionAttribute" value="sampleException"/>
+    <property name="defaultErrorView" value="error"/>
+</bean>]]></programlisting>
+
+    	<para>
+    		위 같이 정의할 경우 Controller 내에서 sample.services.UserException이 발생할 경우
+    		viewResolver에 의해 userError라는 view를 찾게되고 그 view에 에러 메시지를 출력하게 된다. 발생한
+    		Exception은 "sampleException" 이름으로 userError.jsp 페이지에 전달하도록 설정하였다. 만약
+    		exceptionAttribute 속성을 사용하지 않았을 때의 디폴트 값은 "exception"이다. 마지막으로 설정한
+    		defaultErrorView 속성은 앞에서 매핑한 Exception외의 다른 에러가 발생할 경우 error.jsp에 에러메시지를
+    		출력하도록 설정하였다. 간단한 Expression Language를 이용하여 발생한 에러 메시지를 출력할 수 있다.
+    	</para>
+
+    	<para>
+    		<programlisting language="java"><![CDATA[<h3>${simpleException.message}</h3>]]></programlisting>
+    	</para>
+	</section>
+
+	<section id="core_springmvc_exceptionhandling_printerror">
+    <title>에러 페이지에 에러 메시지 출력</title>
+
+		<para>
+			UI 계층의 에러 처리 부분에서 위와같은 방법을 사용하게 되면 사용자가 입력했던 값이 모두 사라지게 되는
+			불편함이 생기게 된다. 이러한 불편을 해소하기 위해서 입력 폼 페이지에서 에러 메시지를 출력하고 사용자가
+			입력한 값을 유지해 줘야하는데 이는 컨트롤러에서 exception을 직접 처리 해줘야한다. 처리 예는 다음과 같다.
+		</para>
+
+		<programlisting language="java">protected ModelAndView onSubmit(HttpServletRequest request,
+                                    HttpServletResponse response, Object command,
+                                        BindException exception) throws Exception {
+    ...중략...
+    HelloVO vo = (HelloVO) command;
+    ...중략...
+   <emphasis role="bold"> try{
+        helloworldService.getMessage(vo);
+        }catch (UserException e){
+            ModelAndView mav = new ModelAndView(getFormView());
+            mav.addObject("user",vo);
+            mav.addObject("userException",e);
+            request.setAttribute("userException",e);
+            return mav;
+        }</emphasis>
+    return new ModelAndView(getSuccessView(),"vo",vo);
+}
+protected Object formBackingObject(HttpServletRequest request)
+    throws Exception {
+	request.setAttribute("user",new sample.services.HelloVO());
+	return new HelloVO();
+}</programlisting>
+
+    	<para>
+    		위의 코드를 보면 getMessage()메소드를 호출할때 UserException을 try~catch로 직접 처리 한
+    		다음 이 exception과 사용자가 입력한 데이터를 ModelAndView를 이용하여 전달하고 있다. 이렇게 전달한
+    		error 메시지는 JSP 파일에서 jstl 태그를 사용하여 출력할 수 있다.
+    	</para>
+
+    	<programlisting language="xml"><![CDATA[<c:if test="${not empty userException}">
+<h3><font color="red">Error : 
+<]]><emphasis role="bold">c:out value="${userException.message}"/</emphasis><![CDATA[><]]><emphasis
+        role="bold">/font</emphasis><![CDATA[></h3>
+</c:if>]]></programlisting>
+	</section>
+
+	<section id="springmvc_exceptionhandling_changelocale">
+	<title>Presentation Layer에서 message key를 이용한 locale 변경</title>
+
+    	<para>
+    		Business Layer에서 BaseException이 발생하였을 때 messageKey를 파라미터로 넘겨주면
+    		Presentation Layer에서 그 messageKey를 받아와 원하는 Locale에 맞게 메시지를 조작할 수 있다.
+    	</para>
+
+		<section id="springmvc_exceptionhandling_changelocale_baseexception">
+		<title>Business Layer의 BaseException 발생</title>
+
+      		<para>
+      			<programlisting language="java">public class UserService implements ApplicationContextAware{
+    
+    private static Log logger = LogFactory.getLogger(UserService.class);
+    private MessageSource messageSource;
+    
+    public UserVO getUser(UserVO userVO) throws Exception{
+        logger.debug("\n=============== UserService is called ===============\n");
+        <emphasis role="bold">throw new BaseException(messageSource,"error.test.message"
+                    , new Object[]{}, "default message");</emphasis>
+        //return userVO;
+    }
+    public void setApplicationContext(ApplicationContext applicaionContext)
+            throws BeansException {
+       this.messageSource = applicaionContext;
+    }
+}</programlisting>
+			</para>
+
+      		<para>위에서 "error.test.message"라는 key 값을 파라미터로 넘겨 주었다.</para>
+		</section>
+
+		<section id="springmvc_exceptionhandling_changelocale_setlocale">
+		<title>Presentation Layer에서 꺼낸 message key 값에 새로운 Locale로 셋팅</title>
+	
+			<para>
+				<programlisting language="java"> try {
+    // call business service
+
+    userVO = userService.getUser(userVO);
+    // setting view name
+    ModelAndView mav = new ModelAndView("/jsp/user/getUser.jsp");
+    mav.addObject(userVO);
+    // return a ModelAndView object.
+    return mav;
+} catch (BaseException e) {
+    //발생한 BaseException에서 getMessageKey() 메소드를 통해 message key를 추출한다. 
+    String messageKey = <emphasis role="bold">e.getMessageKey()</emphasis>;
+    System.out.println("\n messageKey ==========" + messageKey
+                    + "============\n");
+    //추출한 messageKey를 가지고 ENGLISH 로케일로 다시 셋팅해 주었다. 
+    throw new BaseException(messageSource.getMessage(<emphasis role="bold">messageKey</emphasis>,
+        new String[] {}, <emphasis role="bold">Locale.ENGLISH</emphasis>));
+}</programlisting>
+			</para>
+		</section>
+	</section>
+</chapter>

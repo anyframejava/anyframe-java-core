@@ -1,0 +1,1266 @@
+<chapter id="hibernate_hibernate_mappingfile">
+	<title>Mapping File</title>
+
+	<para>
+    	Mapping XML File은 모델 객체와 데이터베이스의 테이블간의 매핑 정보를 담고 있는 설정 파일이다. Mapping File을 작성할 때
+    	는 일정한 규약이 있으며 http://hibernate.sourceforge.net/hibernate-mapping-3.0.dtd에 맞게 작성을 해야 한다. 다음은
+    	Mapping File 작성 방법, Java Data Type와 DB의 Data Type과의 매핑, 그리고 Hibernate Generator에 대한 내용이다.
+    </para>
+
+	<section id="hibernate_hibernate_mapping_write">
+		<title>Mapping File의 작성</title>
+
+		<section id="hibernate_hibernate_mapping_write_component">
+        	<title>Mapping File 구성</title>
+
+			<para>
+				Mapping File의 전체적인 구성은 아래와 같다. Movie.hbm.xml 파일의 일부이다.
+                <programlisting language="xml"><![CDATA[<?xml version="1.0"?>]]>
+<![CDATA[<!DOCTYPE hibernate-mapping PUBLIC "-//Hibernate/Hibernate Mapping DTD 3.0//EN"
+        "http://hibernate.sourceforge.net/hibernate-mapping-3.0.dtd">
+<hibernate-mapping>
+    <class name="org.anyframe.sample.model.bidirection.Country" table="COUNTRY"
+            lazy="true" schema="PUBLIC">
+        <id name="countryCode" type="string">
+            <column name="COUNTRY_CODE" length="12" />
+            <generator class="assigned" />
+        </id>
+        <property name="countryId" type="string">
+            <column name="COUNTRY_ID" length="2" not-null="true" />
+        </property>
+        <property name="countryName" type="string">
+            <column name="COUNTRY_NAME" length="50" not-null="true" />
+        </property>
+        ...중략
+    </class>
+</hibernate-mapping>]]></programlisting>
+			</para>
+
+			<para>Hibernate 매핑 파일은 크게 다섯 부분으로 나눠져 있다.</para>
+
+			<orderedlist>
+				<listitem>
+					<para>
+						<emphasis role="bold">Hibernate mapping DTD정의</emphasis>
+					</para>
+
+					<para>
+						Hibernate mapping DTD를 정의하는 부분으로 XML 파일의 validation 체크를 위해서 필요하다.
+                        <programlisting language="xml"><![CDATA[<!DOCTYPE hibernate-mapping PUBLIC "-//Hibernate/Hibernate Mapping DTD 3.0//EN"
+        "http://hibernate.sourceforge.net/hibernate-mapping-3.0.dtd">]]></programlisting>
+					</para>
+				</listitem>
+
+				<listitem>
+					<para>
+						<emphasis role="bold">
+							<![CDATA[<hibernate-mapping>태그]]>
+						</emphasis>
+					</para>
+	
+					<para>
+						<![CDATA[<hibernate-mapping>]]> 태그 안에는 위에서 보는 것 처럼 여러개의 하위 태그를 정의한다.
+					</para>
+	
+					<informaltable>
+						<caption><![CDATA[<hibernate-mapping>]]> 속성 목록</caption>
+						<tgroup cols="4">
+							<colspec colnum="1" colname="col1" colwidth="1*" />
+							<colspec colnum="2" colname="col2" colwidth="3*" />
+							<colspec colnum="3" colname="col3" colwidth="1*" />
+							<colspec colnum="4" colname="col4" colwidth="1*" />
+							<thead>
+								<row>
+									<entry align="center">속성</entry>
+	
+									<entry align="center">설명</entry>
+	
+									<entry align="center">필수/선택</entry>
+	
+									<entry align="center">기본값</entry>
+								</row>
+							</thead>
+							<tbody>
+								<row>
+									<entry align="center">schema</entry>
+	
+									<entry>DB schema의 이름</entry>
+	
+									<entry align="center">선택</entry>
+	
+									<entry align="center">N/A</entry>
+								</row>
+	
+								<row>
+									<entry align="center">catalog</entry>
+	
+									<entry>DB catalog의 이름</entry>
+	
+									<entry align="center">선택</entry>
+	
+									<entry align="center">N/A</entry>
+								</row>
+	
+								<row>
+									<entry align="center">package</entry>
+	
+									<entry>매핑 클래스가 있는 패키지 이름</entry>
+	
+									<entry align="center">선택</entry>
+	
+									<entry align="center">N/A</entry>
+								</row>
+	
+								<row>
+									<entry align="center">default-lazy</entry>
+	
+									<entry>Class, Class내 정의된 Collection에 대한 기본 lazy 로딩 속성</entry>
+	
+									<entry align="center">선택</entry>
+	
+									<entry align="center">true</entry>
+								</row>
+							</tbody>
+						</tgroup>
+					</informaltable>
+				</listitem>
+	
+				<listitem>
+					<para>
+						<emphasis role="bold">클래스와 DB 테이블 매핑</emphasis>
+					</para>
+
+					<para>
+						<![CDATA[<hibernate-mapping>]]> 하위에 한개 이상의 <![CDATA[<class>]]> 를 정의할 수 있다.
+                        <programlisting language="xml"><![CDATA[<hibernate-mapping schema=".." package=“…”>]]>
+    <emphasis role="bold"><![CDATA[<]]><![CDATA[class name="Foo" table=“TBL_FOO"]]></emphasis><![CDATA[>
+    …
+    </class>
+</hibernate-mapping>]]></programlisting>
+					</para>
+
+					<para>
+						<![CDATA[<class>]]>태그의 property는 다음과 같다.
+					</para>
+					<informaltable>
+						<caption><![CDATA[<class>]]> 속성 목록</caption>
+						<tgroup cols="4">
+							<colspec colnum="1" colname="col1" colwidth="1*" />
+							<colspec colnum="2" colname="col2" colwidth="3*" />
+							<colspec colnum="3" colname="col3" colwidth="1*" />
+							<colspec colnum="4" colname="col4" colwidth="2*" />
+							<thead>
+								<row>
+									<entry align="center">속성</entry>
+
+									<entry align="center">설명</entry>
+	
+									<entry align="center">필수/선택</entry>
+
+									<entry align="center">기본값</entry>
+								</row>
+							</thead>
+							<tbody>
+								<row>
+									<entry align="center">name</entry>
+
+									<entry>
+										매핑 클래스의 이름(hibernate-mapping 태그에서 package를 정의하지 않았다면 클래스의
+										패키지명도 함께 정의한다.)
+									</entry>
+
+									<entry align="center">필수</entry>
+
+									<entry align="center">N/A</entry>
+								</row>
+
+								<row>
+									<entry align="center">table</entry>
+
+									<entry>DB 테이블 명</entry>
+
+									<entry align="center">필수</entry>
+
+									<entry align="center">N/A</entry>
+								</row>
+
+								<row>
+									<entry align="center">lazy</entry>
+
+									<entry>true일 경우 객체가 필요한 순간에 로딩한다.</entry>
+
+									<entry align="center">선택</entry>
+
+									<entry align="center">
+										<![CDATA[<hibernate-mapping>]]> 내의 default-lazy 속성값
+									</entry>
+								</row>
+
+								<row>
+									<entry align="center">schema</entry>
+
+									<entry>DB schema의 이름(상위 태그에서 명시를 안했을 경우 정의 할 수 있다.)</entry>
+
+									<entry align="center">선택</entry>
+
+									<entry align="center">
+										<![CDATA[<hibernate-mapping>]]> 내의 schema 속성값
+									</entry>
+								</row>
+							</tbody>
+						</tgroup>
+					</informaltable>
+				</listitem>
+
+				<listitem>
+					<para>
+						<emphasis role="bold">식별자 필드 매핑</emphasis>
+					</para>
+
+					<para>
+						<![CDATA[<id>]]> 태그는 DB의 특정 Table의 Primary Key와 매핑될 attribute를 명시한다.
+						<![CDATA[<id> 태그는 <generator>]]> 태그와 함께 사용된다.
+						<![CDATA[<generator> ]]>에 대한 상세 내용은 <link linkend="hibernate_hibernate_mapping_generator">Hibernate Generator</link>
+						를 참고한다.
+                        <programlisting language="xml"><![CDATA[<class name="Foo" table="TBL_FOO">]]>
+    <emphasis role="bold"><![CDATA[<id name="id" column="ID" type="int">]]></emphasis>
+        <emphasis role="bold"><![CDATA[<generator class="assigned"/>]]></emphasis>
+    <emphasis role="bold"><![CDATA[</id>]]></emphasis>
+    <![CDATA[<property name="name" column="NAME" type="string" />
+</class>]]></programlisting>
+					</para>
+
+					<para>
+						Primary Key가 여러 개인 경우, 아래와 같이 <![CDATA[<composite-id>]]> 태그를 사용하여 정의한다.
+                        <programlisting language="xml"><![CDATA[<class name="Foo" table="TBL_FOO">]]>
+    <emphasis role="bold"><![CDATA[<composite-id>]]></emphasis>
+        <emphasis role="bold"><![CDATA[<key-property name="username"]]></emphasis> <emphasis role="bold"><![CDATA[column="USERNAME" />]]></emphasis>
+        <emphasis role="bold"><![CDATA[<key-property name="organizationId"]]></emphasis> <emphasis role="bold"><![CDATA[column="ORGANIZATION_ID" />]]></emphasis>							
+    <emphasis role="bold"><![CDATA[</composite-id>]]></emphasis>
+	…중략
+<![CDATA[</class>]]></programlisting>
+					</para>
+
+					<para>
+						<![CDATA[<id>]]>의 property는 다음과 같다.
+					</para>
+
+					<informaltable>
+						<caption><![CDATA[<id>]]> 속성 목록</caption>
+						<tgroup cols="4">
+							<colspec colnum="1" colname="col1" colwidth="1*" />
+							<colspec colnum="2" colname="col2" colwidth="3*" />
+							<colspec colnum="3" colname="col3" colwidth="1*" />
+							<colspec colnum="4" colname="col4" colwidth="1*" />
+							<thead>
+								<row>
+									<entry align="center">속성</entry>
+
+									<entry align="center">설명</entry>
+
+									<entry align="center">필수/선택</entry>
+
+									<entry align="center">기본값</entry>
+								</row>
+							</thead>
+							<tbody>
+								<row>
+									<entry align="center">name</entry>
+
+									<entry>DB의 primary key칼럼과 매핑 될 attribute 이름</entry>
+
+									<entry align="center">선택</entry>
+
+									<entry align="center">N/A</entry>
+								</row>
+
+								<row>
+									<entry align="center">column</entry>
+
+									<entry>DB 테이블의 key칼럼 이름</entry>
+
+									<entry align="center">선택</entry>
+
+									<entry align="center">name 속성의 값</entry>
+								</row>
+
+								<row>
+									<entry align="center">type</entry>
+
+									<entry>attribute 타입(Java 객체의 type가 아니라 Hibernate의 매핑타입)</entry>
+
+									<entry align="center">선택</entry>
+
+									<entry align="center">N/A</entry>
+								</row>
+							</tbody>
+						</tgroup>
+					</informaltable>
+
+					<para>
+						* name 속성값이 정의되어 있지 않은 경우 해당 클래스는 식별자를 가지지 않은 것으로 간주된다. 또한
+						type 속성값이 정의되어 있지 않은 경우 해당 클래스의 식별자 필드의 타입을 찾아, Hibernate의 타입으로
+						매핑된다.
+					</para>
+				</listitem>
+
+				<listitem>
+					<para>
+						<emphasis role="bold">일반 필드 매핑</emphasis>
+					</para>
+
+					<para>
+						<![CDATA[<property>]]> 태그는 DB의 일반 컬럼과 매핑 클래스의 attribute를 명시한다. <![CDATA[<property>]]> 의
+						태그를 사용하여 매핑 정보를 설정하는 방법은 다음과 같다. <![CDATA[<property>]]> 는 하위에 <![CDATA[<column>, 
+						<formula>, <meta>]]> 를 가질 수 있으나, 여기에서는 일반적으로 사용되는 <![CDATA[<column>]]> 태그를
+						사용해서 작성하는 방법에 대해서만 다루기로 한다.
+                        <programlisting language="xml"><![CDATA[<property name="countryId" type="string">
+    <column name="COUNTRY_ID" length="2" not-null="true" />
+</property>]]></programlisting>
+					</para>
+
+					<para>
+						<![CDATA[<property>]]>태그
+					</para>
+
+					<informaltable>
+						<caption><![CDATA[<property>]]> 속성 목록</caption>
+						<tgroup cols="4">
+							<colspec colnum="1" colname="col1" colwidth="1*" />
+							<colspec colnum="2" colname="col2" colwidth="3*" />
+							<colspec colnum="3" colname="col3" colwidth="1*" />
+							<colspec colnum="4" colname="col4" colwidth="1*" />
+							<thead>
+								<row>
+									<entry align="center">속성</entry>
+
+									<entry align="center">설명</entry>
+
+									<entry align="center">필수/선택</entry>
+
+									<entry align="center">기본값</entry>
+								</row>
+							</thead>
+							<tbody>
+								<row>
+									<entry align="center">name</entry>
+
+									<entry>매핑 될 attribute 이름</entry>
+
+									<entry align="center">필수</entry>
+
+									<entry align="center">N/A</entry>
+								</row>
+
+								<row>
+									<entry align="center">type</entry>
+
+									<entry>attribute 타입(Java 객체의 type가 아니라 Hibernate의 매핑타입)</entry>
+
+									<entry align="center">선택</entry>
+
+									<entry align="center">N/A</entry>
+								</row>
+							</tbody>
+						</tgroup>
+					</informaltable>
+
+					<para>
+						* type 속성값이 정의되어 있지 않은 경우 해당 클래스의 필드 타입을 찾아, Hibernate의 타입으로 매핑된다.
+					</para>
+
+					<para>
+						<![CDATA[<column>]]>태그
+					</para>
+
+					<informaltable>
+						<caption><![CDATA[<column>]]> 속성 목록</caption>
+						<tgroup cols="4">
+							<colspec colnum="1" colname="col1" colwidth="1*" />
+							<colspec colnum="2" colname="col2" colwidth="3*" />
+							<colspec colnum="3" colname="col3" colwidth="1*" />
+							<colspec colnum="4" colname="col4" colwidth="1*" />
+							<thead>
+								<row>
+									<entry align="center">속성</entry>
+
+									<entry align="center">설명</entry>
+
+									<entry align="center">필수/선택</entry>
+
+									<entry align="center">기본값</entry>
+								</row>
+							</thead>
+							<tbody>
+								<row>
+									<entry align="center">name</entry>
+
+									<entry>DB 테이블의 컬럼 이름</entry>
+
+									<entry align="center">필수</entry>
+
+									<entry align="center">N/A</entry>
+								</row>
+
+								<row>
+									<entry align="center">length</entry>
+
+									<entry>컴럼의 값의 길이</entry>
+
+									<entry align="center">선택</entry>
+
+									<entry align="center">255</entry>
+								</row>
+
+								<row>
+									<entry align="center">not-null</entry>
+
+									<entry>컬럼값이 필수인지 아닌지 설정 (true or false)</entry>
+
+									<entry align="center">N/A</entry>
+
+									<entry align="center">true</entry>
+								</row>
+							</tbody>
+						</tgroup>
+					</informaltable>
+				</listitem>
+			</orderedlist>
+		</section>
+	</section>
+
+    <section id="hibernate_hibernate_mapping_datatype">
+      	<title>Data Type의 매핑</title>
+
+      	<section id="hibernate_hibernate_mapping_datatype_dt">
+        	<title>Data Type의 매핑</title>
+
+        	<para>
+        		Mapping File에 대한 기본 설정 방법은 위에서 언급한 것처럼 다음과 같다. 
+                <programlisting language="xml"><![CDATA[<property name="countryId" type="string">
+    <column name="COUNTRY_ID" length="2" not-null="true" />
+</property>]]></programlisting>
+			</para>
+
+        	<para>
+        		위의 설정에서 보면 type은 countryId라는 자바 attribute와 COUNTRY_ID라는 DB 컬럼의 매핑을 위해 설정한다. 
+        		type에 설정된 매핑 타입을 이용해 자바 attribute와 DB 컬럼 사이의 값을 알맞게 변환한다. type에 설정되는 매핑 
+        		타입은 Hibernate에서 기본적으로 제공하는 것 외에 개발자가 커스터마이즈할 수 있다.
+        	</para>
+
+        	<itemizedlist>
+          		<listitem>
+            		<para><emphasis role="bold">Java Primitive Mapping Type</emphasis></para>
+
+            		<para>
+            			다음은 Hibernate에서 제공하는 Java primitive mapping type이다. (참고 : Oracle Data Type는 
+            			Oracle 10g에서 테이블 생성 시 설정할 Column Type 이다.)
+            		</para>
+
+					<informaltable>
+						<caption>Java primitive mapping type 목록</caption>
+						<tgroup align="center" cols="4">
+              				<colspec colnum="1" colname="col1" colwidth="1*"/>
+							<colspec colnum="2" colname="col2" colwidth="3*"/>
+							<colspec colnum="3" colname="col3" colwidth="1*"/>
+							<colspec colnum="4" colname="col4" colwidth="1*"/>
+							<thead>
+                
+                  				<row>
+                    				<entry>Mapping Type</entry>
+
+                   					 <entry>Java Type</entry>
+
+                    				<entry>Standard SQL built-in type</entry>
+
+                    				<entry>Oracle Column Type</entry>
+                  				</row>
+                  			</thead>
+							<tbody>
+	                  			<row>
+	                    			<entry>integer</entry>
+	
+	                    			<entry>int or java.lang.Integer</entry>
+	
+	                    			<entry>INTEGER</entry>
+	
+	                    			<entry>NUMBER(10,0)</entry>
+	                  			</row>
+	
+	                  			<row>
+	                    			<entry>long</entry>
+	
+	                    			<entry>long or java.lang.Long</entry>
+	
+	                    			<entry>BIGINT</entry>
+	
+	                    			<entry>NUMBER(19,0)</entry>
+	                  			</row>
+	
+	                  			<row>
+	                    			<entry>short</entry>
+	
+	                    			<entry>short or java.lang.Short</entry>
+	
+	                    			<entry>SMALLINT</entry>
+	
+	                    			<entry>NUMBER(5,0)</entry>
+	                  			</row>
+	
+	                  			<row>
+	                    			<entry>float</entry>
+	
+	                    			<entry>float or java.lang.Float</entry>
+	
+	                    			<entry>FLOAT</entry>
+	
+	                    			<entry>FLOAT</entry>
+	                  			</row>
+	
+	                  			<row>
+	                    			<entry>double</entry>
+	
+	                    			<entry>double or java.lang.Double</entry>
+	
+	                    			<entry>DOUBLE</entry>
+	
+	                    			<entry>DOUBLE PRECISION</entry>
+	                  			</row>
+	
+	                  			<row>
+	                    			<entry>big_decimal</entry>
+	
+	                    			<entry>java.math.BigDecimal</entry>
+	
+	                    			<entry>NUMERIC</entry>
+	
+	                    			<entry>NUMBER(19,2)</entry>
+	                 			</row>
+	
+	                  			<row>
+	                    			<entry>character</entry>
+	
+	                    			<entry>char or java.lang.Character</entry>
+	
+	                    			<entry>CHAR(1)</entry>
+	
+	                    			<entry>CHAR(1 CHAR)</entry>
+	                  			</row>
+	
+	                  			<row>
+	                    			<entry>string</entry>
+	
+	                    			<entry>java.lang.String</entry>
+	
+	                    			<entry>VARCHAR</entry>
+	
+	                    			<entry>VARCHAR2(255 CHAR)</entry>
+	                  			</row>
+	
+	                  			<row>
+	                    			<entry>byte</entry>
+	
+	                    			<entry>byte or java.lang.Byte</entry>
+	
+	                    			<entry>TINYINT</entry>
+	
+	                    			<entry>NUMBER(3,0)</entry>
+	                  			</row>
+	
+	                  			<row>
+	                    			<entry>boolean</entry>
+	
+	                    			<entry>boolean or java.lang.Boolean</entry>
+	
+	                    			<entry>BIT</entry>
+	
+	                    			<entry>NUMBER(1,0)</entry>
+	                  			</row>
+	
+	                  			<row>
+	                    			<entry>yes_no</entry>
+	
+	                    			<entry>boolean or java.lang.Boolean</entry>
+	
+	                    			<entry>CHAR(1) ( ture : false = Y : N )</entry>
+	
+	                    			<entry>CHAR(1 CHAR)</entry>
+	                  			</row>
+	
+	                  			<row>
+	                    			<entry>true_false</entry>
+	
+	                    			<entry>boolean or java.lang.Boolean</entry>
+	
+	                    			<entry>CHAR(1) ( ture : false = T : F )</entry>
+		
+	                    			<entry>CHAR(1 CHAR)</entry>
+	                  			</row>
+	                		</tbody>
+						</tgroup>
+					</informaltable>
+
+            		<para>
+            			위 표를 참고하여 자바 프로퍼티와 DB 컬럼 type에 맞게 설정하면 된다. 다음은 Java primitive type을 
+            			테스트 하기 위해 작성한 JavaDataType.java 파일의 일부이다.
+                        <programlisting language="java"><![CDATA[public class JavaDataType {
+    private int id;
+    private int intType;
+    private long longType;
+    private short shortType;
+    private float floatType;
+    private double doubleType;
+    private java.math.BigDecimal bigDecimalType;
+    private String stringType;
+    private char charType;
+    private byte byteType;
+    private boolean booleanType;
+    private boolean yesNoType;
+    private boolean trueFalseType;
+    ...중략]]></programlisting>
+						아래는 JavaDataType.java에 정의 된 attribute 타입과 DB Coulmn 타입 매핑 설정을 위해 작성한 
+						JavaDataType.hbm.xml 파일의 일부이다.
+                        <programlisting language="xml"><![CDATA[<property name="intType" column="INT_TYPE" type="int"/>
+<property name="longType" column="LONG_TYPE" type="long"/>
+<property name="shortType" column="SHORT_TYPE" type="short"/>
+<property name="floatType" column="FLOAT_TYPE" type="float"/>
+<property name="doubleType" column="DOUBLE_TYPE" type="double"/>
+<property name="bigDecimalType" column="BIGDECIMAL_TYPE" type="big_decimal"/>
+<property name="charType" column="CHAR_TYPE" type="character"/>
+<property name="stringType" column="STRING_TYPE" type="string"/>
+<property name="byteType" column="BYTE_TYPE" type="byte"/>
+<property name="booleanType" column="BOOLEAN_TYPE" type="boolean"/>
+<property name="yesNoType" column="YES_NO_TYPE" type="yes_no"/>
+<property name="trueFalseType" column="TRUE_FALSE_TYPE" type="true_false"/>]]></programlisting>
+					</para>
+
+            		<para>
+            			Java primitive type과 DB Column type에 대한 테스트 코드 보기
+            		</para>
+          		</listitem>
+
+          		<listitem>
+            		<para><emphasis role="bold">Date And Time Mapping Type</emphasis></para>
+
+            		<para>
+            			아래는 Hibernate에서 제공하는 date와 time에 대한 mapping type이다. (참고 :Oracle Data Type는 
+            			Oracle 10g에서 테이블 생성 시 설정할 Column Type 이다.)
+            		</para>
+
+            		<informaltable>
+            			<caption>Date And Time Mapping Type 목록</caption>
+              			<tgroup align="center" cols="4">
+               				<colspec colnum="1" colname="col1" colwidth="1*"/>
+							<colspec colnum="2" colname="col2" colwidth="3*"/>
+							<colspec colnum="3" colname="col3" colwidth="1*"/>
+							<colspec colnum="4" colname="col4" colwidth="1*"/>
+                			<thead>
+                  				<row>
+                    				<entry>Mapping Type</entry>
+
+                    				<entry>Java Type</entry>
+
+                    				<entry>Standard SQL built-in type</entry>
+
+                    				<entry>Oracle Column Type</entry>
+                  				</row>
+                 			</thead>
+							<tbody>
+                  				<row>
+                    				<entry>date</entry>
+
+                    				<entry>java.util.Date or java.sql.Date</entry>
+
+                    				<entry>DATE</entry>
+
+                    				<entry>DATE</entry>
+                  				</row>
+
+                  				<row>
+                    				<entry>time</entry>
+
+                    				<entry>java.util.Date or java.sql.Time</entry>
+
+                    				<entry>TIME</entry>
+
+                    				<entry>DATE</entry>
+                  				</row>
+
+                 		 		<row>
+                    				<entry>timestamp</entry>
+
+                    				<entry>java.util.Date or java.sql.TimeStamp</entry>
+
+                    				<entry>TIMESTAMP</entry>
+
+                    				<entry>TIMESTAMP</entry>
+                  				</row>
+
+                  				<row>
+                    				<entry>calendar</entry>
+
+                    				<entry>java.util.Calendar</entry>
+
+                    				<entry>TIMESTAMP</entry>
+
+                    				<entry>TIMESTAMP</entry>
+                  				</row>
+
+                  				<row>
+                    				<entry>calendar_date</entry>
+
+                    				<entry>java.util.Calendar</entry>
+
+                    				<entry>TIMESTAMP</entry>
+
+                    				<entry>DATE</entry>
+                  				</row>
+                			</tbody>
+              			</tgroup>
+            		</informaltable>
+
+            		<para>
+            			mapping flie작성 시 위 표를 참고하여 자바 객체의 attribute 타입에 맞게 mapping file을 작성하면 된다. 
+            			다음은 time, data type을 테스트 하기 위해 작성한 TimeDateType.java 파일의 일부이다. 
+                        <programlisting language="java"><![CDATA[public class TimeDateType {
+    private java.sql.Date dateType;
+    private java.sql.Time timeType;
+    private java.sql.Timestamp timestampType;
+    private java.util.Calendar calendarType;
+    private java.util.Calendar calendarDateType;
+    ...중략]]></programlisting>
+    				</para>
+
+            		<para>
+            			위의 attribute 타입에 맞게 mapping file를 설정하면 된다. 다음은 TimeDataType.java파일과 DB 
+            			테이블의 mapping정보를 설정한 TimeDateType.hbm.xml 파일의 일부이다. 
+                        <programlisting language="xml"><![CDATA[<property name="dateType" column="DATE_TYPE" type="date"/>
+<property name="timeType" column="TIME_TYPE" type="time"/>
+<property name="timestampType" column="TIMESTAMP_TYPE" type="timestamp"/>
+<property name="calendarType" column="CALENDAR_TYPE" type="calendar"/>
+<property name="calendarDateType" column="CALENDAR_DATE_TYPE" type="calendar_date"/>
+]]></programlisting></para>
+
+            		<para>
+            			Java Date, Time type과 DB Column type에 대한 테스트 코드 보기
+            		</para>
+          		</listitem>
+
+          		<listitem>
+            		<para>
+            			<emphasis role="bold">Binary And Large Object Mapping Type</emphasis>
+            		</para>
+
+					<informaltable>
+						<caption>Binary And Large Object Mapping Type 목록</caption>
+						<tgroup align="center" cols="4">
+              					<colspec colnum="1" colname="col1" colwidth="1*"/>
+								<colspec colnum="2" colname="col2" colwidth="3*"/>
+								<colspec colnum="3" colname="col3" colwidth="1*"/>
+								<colspec colnum="4" colname="col4" colwidth="1*"/>
+					            <thead>
+               
+                  					<row>
+                    					<entry>Mapping Type</entry>
+
+                    					<entry>Java Type</entry>
+
+                    					<entry>Standard SQL built-in type</entry>
+
+                    					<entry>Oracle Column Type</entry>
+                  					</row>
+                  				</thead>
+ 								<tbody>
+                  					<row>
+                    					<entry>binary</entry>
+
+                    					<entry>byte[]</entry>
+
+                    					<entry>VARBINARY</entry>
+
+                    					<entry>BLOB(자동 생성 시 RAW)</entry>
+                  					</row>
+
+                  					<row>
+                    					<entry>text</entry>
+
+                    					<entry>java.lang.String</entry>
+
+                    					<entry>CLOB</entry>
+
+                    					<entry>CLOB</entry>
+                  					</row>
+
+                  					<row>
+                    					<entry>clob</entry>
+
+                    					<entry>java.sql.Clob</entry>
+
+                    					<entry>CLOB</entry>
+
+                    					<entry>CLOB</entry>
+                  					</row>
+
+                  					<row>
+                    					<entry>blob</entry>
+
+                    					<entry>java.sql.Blob</entry>
+
+                    					<entry>BLOB</entry>
+
+                    					<entry>BLOB</entry>
+                  					</row>
+
+                  					<row>
+                    					<entry>serializable</entry>
+
+                    					<entry>java.io.Serializable</entry>
+
+                    					<entry>VARBINARY</entry>
+
+                    					<entry>-</entry>
+                  					</row>
+                				</tbody>
+             	 			</tgroup>
+						</informaltable>
+
+            			<para>
+            				mapping flie작성 시 위 표를 참고 하여 자바 attribute 타입에 맞게 mapping file을 작성하면 된다. 
+            				다음은 binary, large object type을 테스트 하기 위해 작성한 BlobDataType.java , ClobDataType.java 의 일부분이다. 
+                            <programlisting language="java"><![CDATA[public class BlobDataType {
+    private String fileName;
+    private java.math.BigDecimal fileSize;
+    private byte[] fileContentByte;
+    private Blob fileContentBlob;]]></programlisting>
+    					</para>
+
+            			<para>
+                            <programlisting language="java"><![CDATA[public class ClobDataType {
+    private String title;
+    private String contentString;
+    private Clob contentClob;]]></programlisting>
+							위의 attribute 타입에 맞게 mapping file을 설정하면 된다. 다음은 BlobData.java파일과 DB 테이블의
+							mapping정보를 설정한 BlobDataType.hbm.xml 과 ClobDataType.hbm.xml 파일의 일부이다.
+                            <programlisting language="xml"><![CDATA[<property name="fileName" column="FILE_NAME" type="text"/>
+<property name="fileSize" column="FILE_SIZE" type="big_decimal"/>
+<property name="fileContentByte" column="FILE_CONTENT_BYTE" type="binary" />
+<property name="fileContentBlob" column="FILE_CONTENT_BLOB" type="blob"/>]]></programlisting>
+						</para>
+
+            			<para>
+                            <programlisting language="xml"><![CDATA[<property name="title" column="TITLE" type="text"/>
+<property name="contentString" column="CONTENT_STRING" type="text"/>
+<property name="contentClob" column="CONTENT_CLOB" type="clob"/>]]></programlisting>
+								Binary, LOB Type과 DB Column type 매핑에 대한 테스트 코드 보기
+						</para>
+
+            			<para>
+            				CLOB Type과 DB Column type 매핑에 대한 테스트 코드 보기
+            			</para>
+          			</listitem>
+        		</itemizedlist>
+		</section>
+    </section>
+
+	<section id="hibernate_hibernate_mapping_generator">
+      	<title>Hibernate Generator</title>
+
+      	<para>
+      		앞에서 설명한 식별자 필드 매핑에 이용되는 <![CDATA[<id>]]>태그안의 <![CDATA[<generator>]]>태그는 객체 저장시 식별자 값의 생성 방식을 지정
+      		한다. 그렇기 때문에 Mapping XML 파일 작성 시 신규 데이터를 추가하기 위해 해당 데이터의 유일한 Id를 할당받기 위한 
+      		방법을 선택해야 한다. 생성 방법에는 Hibernate에서 제공하는 기본 Id Generator 이용하는 방법과 직접 생성하는 방법
+      		이 있다.
+      	</para>
+
+		<section id="hibernate_hibernate_mapping_generator_id">
+        	<title>Hibernate 기본 Id Generator</title>
+
+        	<para>Hibernate에서 제공하는 기본 Id Generator</para>
+
+        	<itemizedlist>
+          		<listitem>
+            		<para>
+            			identity : DB2, MySQL, MS SQL Server, Sybase, HypersonicSQL에서 제공하는 identity column을
+            			지원하고 return되는 identifier type는 int, short, long이다.
+            		</para>
+          		</listitem>
+
+          		<listitem>
+            		<para>
+            			native : DB에 의존하여 Hibernate가 자동으로 신규 Id를 할당한다.
+            		</para>
+          		</listitem>
+
+          		<listitem>
+            		<para>
+            			hilo : hi/lo 알고리즘이 적용된 특정 테이블의 칼럼값을 이용하여 Id를 생성한다. return되는
+            			identifier type는 int, short, long이다.
+            		</para>
+          		</listitem>
+
+          		<listitem>
+            		<para>
+            			increment : Hibernate가 값을 1씩 증가시켜 Id를 생성한다.
+            		</para>
+          		</listitem>
+
+          		<listitem>
+            		<para>
+            			guid : MS SQL과 MySQL에서 생성한 GUID 문자열을 Id로 전달한다.
+            		</para>
+          		</listitem>
+
+          		<listitem>
+            		<para>
+            			sequence : Oracle, DB2, PostgreSQL, SAP DB, Mckoi에서 사용하는 Sequence를 사용하여 Id를 
+            			생성한다. 리턴되는 identifier type는 int, short, long이다.
+            		</para>
+          		</listitem>
+
+          		<listitem>
+            		<para>
+            			uuid : UUID 알고리즘을 이용하여 128 bit Id를 생성한다. 생성된 문자열은 32 글자의 16진법으로 
+            			인코딩되어 표시된다.
+            		</para>
+          		</listitem>
+
+          		<listitem>
+            		<para>
+            			seqhilo : hilo와 동일하나 주어진 DB의 Sequence로부터 hi 값을 가져온다.
+            		</para>
+          		</listitem>
+
+          		<listitem>
+            		<para>
+            			<emphasis role="bold">identity</emphasis>
+            		</para>
+
+            		<para>
+            			identity는 MySQL, MS SQL Server와 같이 DBMS에서 제공하는 identifier를  제공한다. identity 
+            			generator를 이용하여 identifier를 생성하기 위한 설정을 보여주는 CountryWithIdentity.hbm.xml 
+            			의 일부분이다. 
+                        <programlisting language="xml"><![CDATA[<class name="org.anyframe.sample.model.unidirection.generator.CountryWithIdentity"
+        table="COUNTRY_IDENTITY" lazy="true" schema="PUBLIC">
+    <id name="countryCode" column="COUNTRY_CODE" type="int">
+        <generator class="identity" />
+    </id>
+    ...중략]]></programlisting>
+					</para>
+            		<para>
+            			아래는 identity generator를 이용하여 COUNTRY 테이블의 primary key인 COUNTRY_CODE를 자동 
+            			생성하고 테스트 하는 HibernateIdGenerator.java 의 일부분이다. 
+            			<programlisting language="java"><![CDATA[public void addCountryWithIdentityGenerator() throws Exception {
+    CountryWithIdentity country1 = new CountryWithIdentity();
+    country1.setCountryId("KR");
+    country1.setCountryName("Korea");
+
+    Integer countryCode = (Integer) session.save(country1);
+    ...중략
+}]]></programlisting>
+					</para>
+
+            		<para>
+            			위 테스트 케이스를 실행해보면 COUNTRY_CODE에 자동으로 identifier가 생성되어 저장되는 것을
+            			확인할 수 있다.
+            		</para>
+          		</listitem>
+
+          		<listitem>
+            		<para><emphasis role="bold">sequence</emphasis></para>
+
+            		<para>
+            			Oracle과 같이 Sequence를 사용할 수 있는 DBMS에서 Sequence를 사용하여 Id를 생성한다. 다음은 
+            			sequence generator를 이용하여 identifier를 생성하기 위한 설정파일 CountryWithSequence.hbm.xml
+            			의 일부분이다. 
+                        <programlisting language="xml"><![CDATA[<class name="org.anyframe.sample.model.unidirection.generator.CountryWithSequence"
+        table="COUNTRY_SEQ" lazy="true" schema="PUBLIC">
+    <id name="countryCode" type="int">
+        <column name="COUNTRY_CODE" length="12" />
+        <generator class="sequence">
+            <param name="sequence">COUNTRY_ID_SEQ</param>
+        </generator>
+    </id>
+    ...중략]]></programlisting>
+					</para>
+
+            		<para>
+            			DBMS의 COUNTRY_ID_SEQ 이름의 Sequence값으로 identifier를 생성한다. 아래는 sequence generator
+            			를 이용해 DBMS의 특정 Sequence으로 primary key column에 데이터를 저장하고 테스트하는 HibernateIdGenerator.java 의 일부분이다.
+                        <programlisting language="java"><![CDATA[public void addCountryWithSequenceGenerator() throws Exception {
+    CountryWithSequence country1 = new CountryWithSequence();
+    country1.setCountryId("KR");
+    country1.setCountryName("Korea");
+
+    Integer countryCode = (Integer) session.save(country1);
+    ...중략
+}]]></programlisting>
+					</para>
+
+            		<para>
+            			위 테스트 케이스를 실행해 보면 DBMS에서 COUNTRY_ID_SEQ의 Sequence값이 COUNTRY_CODE에 입력되는 
+            			것을 확인 할 수 있다.
+            		</para>
+          		</listitem>
+
+          		<listitem>
+            		<para><emphasis role="bold">hilo</emphasis></para>
+
+            		<para>
+            			hilo generator는 hi/lo알고리즘을 사용하여 identifier를 생성한다. 다음은 hilo를 이용해 
+            			identifier를 생성하도록 설정한 CountryWithHilo.hbm.xml 의 일부분이다.
+                        <programlisting language="xml"><![CDATA[<class name="org.anyframe.sample.model.unidirection.generator.CountryWithHilo"
+        table="COUNTRY_HILO" lazy="true" schema="PUBLIC">
+    <id name="countryCode" column="COUNTRY_CODE" type="int">
+        <generator class="hilo">
+            <param name="table">ID_MANAGEMENT</param>
+            <param name="column">NEXT_VALUE</param>
+            <param name="max_lo">2</param>
+        </generator>
+    </id>
+    ...중략]]></programlisting>
+					</para>
+
+            		<para>
+            			위 Mapping File는 ID_MANAGEMENT 테이블의 NEXT_VALUE 컬럼에서 identifier를 얻고 다음에 유일한 
+            			아이디를 제공하기 위해 NEXT_VALUE 컬럼의 값에 1을 더한 값을 업데이트 한다. max_lo는 hilo generator 
+            			실행 시 생성 되는 신규 identifier의 개수이다. 다음은 위 Mapping File로 테스트케이스를 실행했을 때 
+            			identifier가 생성되는 query에 대한 로그이다. 
+                        <programlisting language="xml"><![CDATA[select NEXT_VALUE from ID_MANAGEMENT 
+update ID_MANAGEMENT set NEXT_VALUE = 1 where NEXT_VALUE = 0]]></programlisting>
+					</para>
+
+            		<para>
+            			ID_MANAGEMENT 테이블에서 NEXT_VALUE을 얻어와서 identifier를 생성한 다음 update하는 query를 
+            			볼 수있다. 다음은 hilo generator를 테스트 하기 위한 HibernateIdGenerator.java 의 일부분이다. 
+                        <programlisting language="java"><![CDATA[public void addCountryWithHiloGenerator() throws Exception {
+    CountryWithSeqHilo country1 = new CountryWithSeqHilo();
+    country1.setCountryId("KR");
+    country1.setCountryName("Korea");
+
+    Integer countryCode1 = (Integer) session.save(country1);
+    ...중략
+    CountryWithSeqHilo country2 = new CountryWithSeqHilo();
+    country2.setCountryId("JP");
+    country2.setCountryName("Japan");
+
+    Integer countryCode2 = (Integer) session.save(country2);
+    ...중략
+    CountryWithSeqHilo country3 = new CountryWithSeqHilo();
+    country3.setCountryId("US");
+    country3.setCountryName("U.S.A");
+
+    Integer countryCode3 = (Integer) session.save(country3);
+}]]></programlisting>
+					</para>
+
+            		<para>
+            			위 테스트 코드를 디버그 모드로 실행해 보면 country2를 저장 할 때까지는 ID_MANAGEMENT 테이블에서 
+            			NEXT_VALUE 컬럼의 값을 select하는 로그는 한 번만 남을 것이다. 그리고 country3를 저장 할 때 다시 
+            			한번 ID_MANAGEMENT 테이블에서 NEXT_VALUE 컬럼의 값을 select하는 로그가 남는 것을 확인할 수 있다. 
+            			이는 Mapping File에 max_lo값을 2로 세팅 했기 때문에 처음 identifier 생성시 2개를 생성하기 때문이다.
+            		</para>
+					
+					<para>
+            			<emphasis role="bold">#참고 : table, column을 Mapping File에  세팅하지 않을 경우 기본 table, 
+            			column은 hibernate_unique_key, next_hi이다.</emphasis>
+            		</para>
+          		</listitem>
+
+          		<listitem>
+            		<para>
+            			<emphasis role="bold">seqhilo</emphasis>
+            		</para>
+
+            		<para>
+            			hilo와 동일 하지만 DB의 특정 테이블의 컬럼이 아닌 DBMS의 Sequence로부터 hi값을 가져와 identifier를
+            			생성한다. 아래는 seqhilo를 이용하여 identifier를 생성하기 위한 CountryWithSeqHilo.hbm.xml 의 
+            			일부분이다. 
+                        <programlisting language="xml"><![CDATA[<class name="org.anyframe.sample.model.unidirection.generator.CountryWithSeqHilo"
+        table="COUNTRY_SEQHILO" lazy="true" schema="PUBLIC">
+    <id name="countryCode" column="COUNTRY_CODE" type="int">
+        <generator class="seqhilo">
+            <param name="sequence">COUNTRY_ID_SEQ</param>
+            <param name="max_lo">2</param>
+        </generator>
+    </id>
+    ...중략]]></programlisting>
+					</para>
+
+            		<para>
+            			위 Mapping File에서는 Primary Key인 COUNTRY_CODE의 identifier를 생성하기 위해서 DBMS의 
+            			COUNTRY_ID_SEQ란 이름의 sequence를 이용해 identifier를 생성한다. 아래는 seqhilo generator를 
+            			이용해 identifier를 생성할 때 DBMS에서 값을 얻기 위해 실행되는 query 로그이다. 
+                        <programlisting language="xml"><![CDATA[call next value for COUNTRY_ID_SEQ]]></programlisting>
+                    </para>
+
+            		<para>
+            			다음은 seqhilo generator에 대한 테스트 코드 HibernateIdGenerator.java 의 일부분이다. 
+                        <programlisting language="java"><![CDATA[public void addCountryWithSeqHiloGenerator() throws Exception {
+    CountryWithSeqHilo country1 = new CountryWithSeqHilo();
+    country1.setCountryId("KR");
+    country1.setCountryName("Korea");
+
+    Integer countryCode1 = (Integer) session.save(country1);
+    ...중략
+    CountryWithSeqHilo country2 = new CountryWithSeqHilo();
+    country2.setCountryId("JP");
+    country2.setCountryName("Japan");
+
+    Integer countryCode2 = (Integer) session.save(country2);
+    ...중략
+    CountryWithSeqHilo country3 = new CountryWithSeqHilo();
+    country3.setCountryId("US");
+    country3.setCountryName("U.S.A");
+
+    Integer countryCode3 = (Integer) session.save(country3);
+    ...중략
+}]]></programlisting>
+					</para>
+
+            		<para>
+            			위의 테스트 케이스도 hilo와 마찬가지로 max_lo를 2로 설정 했기 때문에 country2를 save할 때까지 
+            			DBMS의 sequence를 이용해 identifier를 생성하는 로그가 한번만 남는다. 그리고 country3를 save할 때
+            			identifier를 생성하기 위해 DBMS에서 sequence를 얻어 오는 로그가 남는다.
+            		</para>
+          		</listitem>
+
+          		<listitem>
+            		<para>
+            			<emphasis role="bold">increment</emphasis>
+            		</para>
+
+            		<para>
+            			increment generator는 매핑되는 primary key값의 최고값을 얻어와서 Hibernate가 1을 증가시킨 
+            			다음에 identifier를 생성한다. 아래는 increment generator를 이용해 identifier를 생성하기 위해 
+            			설정한 CountryWithIncrement.hbm.xml 의 일부분이다.
+                        <programlisting language="xml"><![CDATA[<class name="org.anyframe.sample.model.unidirection.generator.CountryWithIncrement"
+        table="COUNTRY_INCREMENT" lazy="true" schema="PUBLIC">
+    <id name="countryCode" type="int">
+        <column name="COUNTRY_CODE" length="12" />
+        <generator class="increment" />
+    </id>
+     ..중략]]></programlisting>
+					</para>
+
+            		<para>
+            			increment generator를 이용하여 키 생성이 필요할 때 실행되는 query는 아래와 같다.
+                        <programlisting language="xml"><![CDATA[select max(COUNTRY_CODE) from COUNTRY_INCREMENT]]></programlisting>
+                    </para>
+
+            		<para>
+            			위의 query는 identifier가 필요할 때마다 생성 되는 것이 아니라 처음 실행된 이후 메모리에서 1씩 증가
+            			하는 것이기 때문에 분산환경에서 사용 할 경우 제대로 된 identifier를 생성하지 못 할 수도 있다.다음은 
+            			increment generator를 이용해 identifier를 생성하는 테스트 코드 HibernateIdGenerator.java 의
+            			일부분이다. 
+                        <programlisting language="java"><![CDATA[public void addCountryWithIncrementGenerator() throws Exception {
+    CountryWithIncrement country1 = new CountryWithIncrement();
+    country1.setCountryId("KR");
+    country1.setCountryName("Korea");
+
+    Integer countryCode1 = (Integer) session.save(country1);
+    ...중략                
+    CountryWithIncrement country2 = new CountryWithIncrement();
+    country2.setCountryId("JP");
+    country2.setCountryName("Japan");
+
+    Integer countryCode2 = (Integer) session.save(country2);
+    ...중략                
+    CountryWithIncrement country3 = new CountryWithIncrement();
+    country3.setCountryId("US");
+    country3.setCountryName("U.S.A");
+
+    Integer countryCode3 = (Integer) session.save(country3);
+}]]></programlisting>
+					</para>
+
+            		<para>
+            			위의 테스트 코드를 실행해 보면 처음 DB에서 최대 키 값을 얻어 온 이후 다시 얻어오는 query는 실행
+            			되지 않는다.
+            		</para>
+          		</listitem>
+
+          		<listitem>
+            		<para><emphasis role="bold">uuid</emphasis></para>
+
+            		<para>
+            			UUID알고리즘을 사용하여 16진법으로 32글자의 identifier를 생성한다. 아래는 UUID를 사용해
+            			identifier를 생성하기 위해 설정한 CountryWithUUID.hbm.xml 의 일부분이다.
+                        <programlisting language="xml"><![CDATA[<class name="org.anyframe.sample.model.unidirection.generator.CountryWithUUID"
+        table="COUNTRY_UUID" lazy="true" schema="PUBLIC">
+    <id name="countryCode" column="COUNTRY_CODE" type="string">
+        <generator class="uuid">
+            <param name="separator">#</param>
+        </generator>
+    </id>
+    ...중략	]]></programlisting>
+					</para>
+
+            		<para>
+            			다음은 UUID generator에 대한 테스트 코드 HibernateIdGenerator.java 의 일부분이다. 
+                        <programlisting language="java"><![CDATA[public void addCountryWithUUIDGenerator() throws Exception {
+    CountryWithUUID country1 = new CountryWithUUID();
+    country1.setCountryId("KR");
+    country1.setCountryName("대한민국");
+	
+    String countryCode = (String) session.save(country1);
+}]]></programlisting>
+					</para>
+
+            		<para>
+            			위의 테스트 코드를 실행 시켰을 때 query 로그는 다음과 같다.
+            		</para>
+            					
+
+            		<para>
+            			<programlisting language="xml"><![CDATA[insert into PUBLIC.COUNTRY_UUID 
+    (COUNTRY_ID, COUNTRY_NAME, COUNTRY_CODE) 
+        values ('KR', '대한민국', 'c687b6dc#1c894fc4#011c#894fc5ef#0001')]]></programlisting>
+                			Mapping File에 separator에 대한 값을 #으로 했기 때문에 생성되는 identifier값에 구분자로 '#'이 
+                			사용 된 것을 확인 할 수 있다.
+                	</para>
+          		</listitem>
+			</itemizedlist>
+		</section>
+
+		<section id="hibernate_hibernate_mapping_generator_assigned">
+        	<title>직접생성</title>
+
+        	<para>
+        		Hibernate에서 제공하는 기본 gernerator를 이용할 수도 있겠지만 직접 키 값을 생성해서 저장하는 경우도 있다. 
+        		'MV-00001', 'MV-00002'과 같이 identifier를 저장하고 싶을 때는 위에서 언급한 Hibernate 기본 
+        		generator를 사용 할 수 없다.
+        	</para>
+
+        	<itemizedlist>
+          		<listitem>
+            		<para>assigned</para>
+
+            		<para>
+            			<![CDATA[<generator>]]>의 class 속성 값을 assigned로 정의한 경우 객체에 저장된 값을 그대로 이용
+            			하게 된다. 사용자가 정의한 별도 Id Generator가 있는 경우 class 속성 값에 해당 클래스를 정의할 수 
+            			있다. 다음은 assigned하기 위해 Mappping File에 설정한 샘플 소스이다.
+                        <programlisting language="xml"><![CDATA[<id name="categoryNo" type="string">
+    <column name="CATEGORY_NO" length="16" />
+    <generator class="assigned" />
+</id>]]></programlisting>
+					</para>
+
+            		<para>
+	            		generator를 assigned로 설정 했다면 객체를 저장하기 전에 categoryNo에 값을 세팅해야  한다. 다음은 
+	            		Anyframe의 기술공통 서비스인 IdGenerationService를 이용해 identifier을 얻어서 객체에 세팅하고 
+	            		저장하는 샘플 소스이다. 
+                        <programlisting language="java"><![CDATA[category.setCategoryNo(idGenerationService.getNextStringId());
+...중략
+session.save(category);
+]]></programlisting>
+					</para>
+
+            		<para>
+	            		assigned generator는 일반적으로 가장 많이 이용하는 형태로 Anyframe의 IdGenerationService과 
+	            		함께 사용 시 유용하다.
+	            	</para>
+	          	</listitem>
+        	</itemizedlist>
+		</section>
+    </section>
+</chapter>

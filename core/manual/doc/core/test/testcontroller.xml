@@ -1,0 +1,65 @@
+<chapter id="core_test_testcontroller">
+	<title>Controller Code Test</title>
+    <para>
+    	이번 절에서는 Controller class 검증을 위한 Testcase 개발 방법에 대해 설명 하고자 한다.
+    	여기서는 Controller class를 테스트 하기 위한 몇 가지 방법 중에서 Controller bean을 직접 Inject 받는 방법을
+    	설명 하고자 한다. 
+   	</para>
+
+	<section id="core_test_testcontroller_example">
+		<title>TestCode</title>
+
+     	<para>
+			아래는 MovieController class를 테스트하기 위해 작성된 MovieControllerTest 코드의 일부이다.
+			MovieController bean을 @Inject annotation을 이용하여 직접 호출하고 있다.	
+   	</para>
+
+		<para>
+			<programlisting language="java">@RunWith(SpringJUnit4ClassRunner.class)
+@ContextConfiguration(locations = { "file:./src/main/resources/spring/context-*.xml", "file:./src/main/resources/spring/*-servlet.xml"})
+public class MovieControllerTest {
+
+	private final String SUCCESS_CREATEVIEW = "moviefinder/movie/form";
+	private final String SUCCESS_CREATE = "redirect:/movieFinder.do?method=list";
+	private final String SUCCESS_GET = "moviefinder/movie/form";
+	private final String SUCCESS_UPDATE = "redirect:/movieFinder.do?method=list";
+	
+	@Inject
+	private MovieController movieController;
+	
+// ...중략
+	
+	@Test
+	public void testCreate() throws Exception{
+		
+		Movie movie = new Movie();
+		movie.setTitle("Shrek (2001)");
+		movie.setActors("Shrek");
+		movie.setDirector("Andrew Adamson");
+		Genre genre = new Genre();
+		genre.setGenreId("GR-03");
+		movie.setGenre(genre);
+		movie.setReleaseDate(new Date(20120515));
+		movie.setRuntime(new Long(120));
+		movie.setTicketPrice(8000f);
+		
+		String viewName = movieController.create(movie, new BeanPropertyBindingResult(movie, "movie"), new SimpleSessionStatus());
+		
+		assertEquals(SUCCESS_CREATE, viewName);
+		
+	}
+	
+// ...중략	
+</programlisting>
+		</para>
+
+		<para>
+			위의 예제 코드에서 @ContextConfiguration annotation을 이용하여 service 및 controller에서 사용하는 bean 설정 등록을
+			읽어오고 있다. bean으로 등록된 MovieController를 직접 Inject 받아서 테스트 코드 내에서 사용하는 것을 확인할 수 있다.
+		</para>
+		<para>
+			MovieController가 내부적으로 Service bean을 참조하고 있기 때문에, @ContextConfiguration annotation 등록 시, 
+			*-servlet.xml 뿐 아니라 context-*.xml 설정을 함께 등록하는 것을 확인할 수 있다. 
+		</para>
+ 	</section>
+</chapter>

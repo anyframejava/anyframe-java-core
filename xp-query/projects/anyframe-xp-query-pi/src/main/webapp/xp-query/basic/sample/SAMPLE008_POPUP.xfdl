@@ -1,0 +1,198 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<FDL version="1.4">
+  <TypeDefinition url="..\default_typedef.xml"/>
+  <Form id="frmSAMPLE008_POPUP" classname="SAMPLE008_POPUP" inheritanceid="" position="absolute 0 0 380 480" titletext="사용자 상세 정보" onload="SAMPLE008_POPUP_onload" style="background:#f2f2efff;">
+    <Layouts>
+      <Layout>
+        <Tab id="tbUserInfo" taborder="0" tabindex="0" scrollbars="autoboth" position="absolute 0 0 380 450" anchor="all">
+          <Tabpages>
+            <Tabpage id="tabpage1" text="global.domain.basicinfo">
+              <Layouts>
+                <Layout>
+                  <GroupBox id="grBxUser" text="global.domain.user" position="absolute 2 2 376 179" style="titlealign:topleft;opacity:100%;" anchor="left top right"/>
+                  <Static id="stUserId" text="global.domain.userid" position="absolute 11 18 86 49"/>
+                  <Edit id="edtUserId" taborder="21" readonly="true" enable="false" position="absolute 137 21 371 45" anchor="left top right"/>
+                  <Edit id="edtUserName" taborder="22" position="absolute 137 61 371 85" anchor="left top right"/>
+                  <Static id="stUserName" text="global.domain.username" position="absolute 11 58 86 89"/>
+                  <Static id="stPassword" text="global.domain.password" position="absolute 11 98 86 129"/>
+                  <Edit id="edtPassword" taborder="23" password="true" position="absolute 137 101 371 125" anchor="left top right"/>
+                  <Edit id="edtEnName" taborder="24" position="absolute 137 141 371 165" anchor="left top right"/>
+                  <Static id="stEnName" text="global.domain.enname" position="absolute 11 138 86 169"/>
+                  <GroupBox id="grBxPhone" text="global.domain.phone" position="absolute 2 216 376 304" style="titlealign:topleft;opacity:100%;" anchor="left top right"/>
+                  <Static id="stHomeNumber" text="global.domain.homenumber" position="absolute 11 232 86 263"/>
+                  <Edit id="edtHomeNumber" taborder="25" position="absolute 137 235 371 259" anchor="left top right"/>
+                  <Static id="stCellPhone" text="global.domain.cellphone" position="absolute 11 269 86 300"/>
+                  <Edit id="edtCellPhone" taborder="26" position="absolute 137 272 371 296" anchor="left top right"/>
+                  <GroupBox id="grBxAddr" text="global.domain.addr" position="absolute 2 336 376 424" style="titlealign:topleft;opacity:100%;" anchor="left top right"/>
+                  <Static id="stZipCode" text="global.domain.zipcode" position="absolute 11 353 86 384"/>
+                  <MaskEdit id="mskEdtZipCode" taborder="27" text="___-___" type="string" mask="###-###" position="absolute 137 356 371 380" style="align:left middle;" anchor="left top right"/>
+                  <Static id="stDetailAddr" text="global.domain.detailaddr" position="absolute 11 390 86 421"/>
+                  <Edit id="edtDetailAddr" taborder="28" position="absolute 137 393 371 417" anchor="left top right"/>
+                </Layout>
+              </Layouts>
+            </Tabpage>
+            <Tabpage id="tabpage2" text="global.domain.additionalinfo">
+              <Layouts>
+                <Layout>
+                  <GroupBox id="grBxPlace" text="global.domain.place" position="absolute 2 2 376 179" style="titlealign:topleft;opacity:100%;" anchor="left top right"/>
+                  <Static id="stCompany" text="global.domain.company" position="absolute 11 18 86 49"/>
+                  <Edit id="edtCompany" taborder="0" position="absolute 137 21 371 46" readonly="true" anchor="left top right"/>
+                  <Static id="stDepartment" text="global.domain.department" position="absolute 11 58 86 89"/>
+                  <Static id="stPosition" text="global.domain.position" position="absolute 11 98 86 129"/>
+                  <Edit id="edtPosition" taborder="2" position="absolute 137 101 371 125" anchor="left top right"/>
+                  <Edit id="edtAssignment" taborder="3" position="absolute 137 141 371 165" anchor="left top right"/>
+                  <Static id="stAssignment" text="global.domain.assignment" position="absolute 11 138 86 169"/>
+                  <GroupBox id="grBxContactAddr" text="global.domain.contactaddr" position="absolute 2 216 376 304" style="titlealign:topleft;opacity:100%;" anchor="left top right"/>
+                  <Static id="stFax" text="global.domain.fax" position="absolute 11 232 86 263"/>
+                  <Edit id="edtFax" taborder="4" position="absolute 137 235 371 259" anchor="left top right"/>
+                  <Edit id="edtEmail" taborder="5" position="absolute 137 272 371 296" anchor="left top right"/>
+                  <Static id="stEmail" text="global.domain.email" position="absolute 11 269 86 300"/>
+                  <GroupBox id="grBxOfficeAddr" text="global.domain.officeaddr" position="absolute 2 336 376 424" style="titlealign:topleft;opacity:100%;" anchor="left top right"/>
+                  <Static id="stCompZipCode" text="global.domain.compzipcode" position="absolute 11 353 86 384"/>
+                  <MaskEdit id="mskEdtCompZipCode" taborder="6" text="___-___" type="string" mask="###-###" position="absolute 137 356 371 380" style="align:left middle;" anchor="left top right"/>
+                  <Edit id="edtOfficeDetailAddr" taborder="7" position="absolute 137 393 371 417" anchor="left top right"/>
+                  <Static id="stOfficeDetailAddr" text="global.domain.officedetailaddr" position="absolute 11 390 86 421"/>
+                  <Combo id="cmbDept" taborder="1" codecolumn="DEPT_ID" datacolumn="DEPT_NAME" position="absolute 137 61 371 85" index="-1" innerdataset="@dsTrvDeptPopup" enable="false" anchor="left top right"/>
+                </Layout>
+              </Layouts>
+            </Tabpage>
+          </Tabpages>
+        </Tab>
+        <Button id="btSaveTemp" taborder="1" text="global.domain.savetemp" onclick="btSaveTemp_onclick" position="absolute 202 452 292 480"/>
+        <Button id="btCancel" taborder="2" text="global.domain.cancle" onclick="btCancel_onclick" position="absolute 294 452 380 480"/>
+      </Layout>
+    </Layouts>
+    <Objects>
+      <Dataset id="dsGrdUser" firefirstcount="0" firenextcount="0" useclientlayout="false" updatecontrol="true" enableevent="true" loadkeymode="keep" loadfiltermode="keep" reversesubsum="false">
+        <ColumnInfo>
+          <Column id="USER_ID" type="STRING" size="256"/>
+          <Column id="USER_NAME" type="STRING" size="256"/>
+          <Column id="EN_NAME" type="STRING" size="256"/>
+          <Column id="COMP_PHONE" type="STRING" size="256"/>
+          <Column id="PHONE" type="STRING" size="256"/>
+          <Column id="CELL_PHONE" type="STRING" size="256"/>
+          <Column id="COMPANY" type="STRING" size="256"/>
+          <Column id="DEPT_ID" type="STRING" size="256"/>
+          <Column id="JOB_POSITION" type="STRING" size="256"/>
+          <Column id="ASSIGNMENT" type="STRING" size="256"/>
+          <Column id="OFFICER_YN" type="STRING" size="1"/>
+          <Column id="FAX" type="STRING" size="256"/>
+          <Column id="EMAIL" type="STRING" size="256"/>
+          <Column id="ZIP_CODE" type="STRING" size="256"/>
+          <Column id="ADDRESS" type="STRING" size="256"/>
+          <Column id="COMP_ZIP_CODE" type="STRING" size="256"/>
+          <Column id="COMP_ADDRESS" type="STRING" size="256"/>
+          <Column id="PASSWORD" type="STRING" size="256"/>
+        </ColumnInfo>
+      </Dataset>
+      <Dataset id="dsTrvDeptPopup" firefirstcount="0" firenextcount="0" useclientlayout="false" updatecontrol="true" enableevent="true" loadkeymode="keep" loadfiltermode="keep" reversesubsum="false">
+        <ColumnInfo>
+          <Column id="DEPT_ID" type="STRING" size="256"/>
+          <Column id="DEPT_LEVEL" type="STRING" size="256"/>
+          <Column id="DEPT_NAME" type="STRING" size="256"/>
+        </ColumnInfo>
+      </Dataset>
+      <Dataset id="dsGrdUserValid" firefirstcount="0" firenextcount="0" useclientlayout="false" updatecontrol="true" enableevent="true" loadkeymode="keep" loadfiltermode="keep" reversesubsum="false">
+        <ColumnInfo>
+          <Column id="USER_ID" type="STRING" size="256"/>
+          <Column id="USER_NAME" type="STRING" size="256"/>
+          <Column id="EN_NAME" type="STRING" size="256"/>
+          <Column id="COMP_PHONE" type="STRING" size="256"/>
+          <Column id="PHONE" type="STRING" size="256"/>
+          <Column id="CELL_PHONE" type="STRING" size="256"/>
+          <Column id="COMPANY" type="STRING" size="256"/>
+          <Column id="DEPT_ID" type="STRING" size="256"/>
+          <Column id="JOB_POSITION" type="STRING" size="256"/>
+          <Column id="ASSIGNMENT" type="STRING" size="256"/>
+          <Column id="OFFICER_YN" type="STRING" size="1"/>
+          <Column id="FAX" type="STRING" size="256"/>
+          <Column id="EMAIL" type="STRING" size="256"/>
+          <Column id="ZIP_CODE" type="STRING" size="256"/>
+          <Column id="ADDRESS" type="STRING" size="256"/>
+          <Column id="COMP_ZIP_CODE" type="STRING" size="256"/>
+          <Column id="COMP_ADDRESS" type="STRING" size="256"/>
+          <Column id="PASSWORD" type="STRING" size="256"/>
+        </ColumnInfo>
+        <Rows>
+          <Row>
+            <Col id="USER_NAME">title:username,required:true,maxlength:20</Col>
+            <Col id="COMP_PHONE">title:phone,format:phone,maxlength:20</Col>
+            <Col id="PHONE">title:phone,format:phone,maxlength:20</Col>
+            <Col id="CELL_PHONE">title:cellphone,format:phone,maxlength:20</Col>
+            <Col id="PASSWORD">title:password,required:true,maxlength:16</Col>
+            <Col id="FAX">title:fax,format:phone,maxlength:20</Col>
+            <Col id="EMAIL">title:email,format:mail,maxlength:30</Col>
+            <Col id="ZIP_CODE">title:zipcode,format:zipcode,maxlength:10</Col>
+            <Col id="COMP_ZIP_CODE">title:compzipcode,format:zipcode,maxlength:10</Col>
+            <Col id="EN_NAME">title:enname,maxlength:20</Col>
+            <Col id="COMPANY">title:company,maxlength:60</Col>
+            <Col id="JOB_POSITION">title:position,maxlength:60</Col>
+            <Col id="ASSIGNMENT">title:assignment,maxlength:60</Col>
+            <Col id="ADDRESS">title:detailaddr,maxlength:300</Col>
+            <Col id="COMP_ADDRESS">title:officedetailaddr,maxlength:300</Col>
+          </Row>
+        </Rows>
+      </Dataset>
+    </Objects>
+    <Bind>
+      <BindItem id="item0" compid="tbUserInfo.tabpage1.edtUserId" propid="value" datasetid="dsGrdUser" columnid="USER_ID"/>
+      <BindItem id="item1" compid="tbUserInfo.tabpage1.edtUserName" propid="value" datasetid="dsGrdUser" columnid="USER_NAME"/>
+      <BindItem id="item2" compid="tbUserInfo.tabpage1.edtPassword" propid="value" datasetid="dsGrdUser" columnid="PASSWORD"/>
+      <BindItem id="item3" compid="tbUserInfo.tabpage1.edtEnName" propid="value" datasetid="dsGrdUser" columnid="EN_NAME"/>
+      <BindItem id="item4" compid="tbUserInfo.tabpage1.edtHomeNumber" propid="value" datasetid="dsGrdUser" columnid="PHONE"/>
+      <BindItem id="item5" compid="tbUserInfo.tabpage1.edtCellPhone" propid="value" datasetid="dsGrdUser" columnid="CELL_PHONE"/>
+      <BindItem id="item6" compid="tbUserInfo.tabpage1.mskEdtZipCode" propid="value" datasetid="dsGrdUser" columnid="ZIP_CODE"/>
+      <BindItem id="item7" compid="tbUserInfo.tabpage1.edtDetailAddr" propid="value" datasetid="dsGrdUser" columnid="ADDRESS"/>
+      <BindItem id="item8" compid="tbUserInfo.tabpage2.edtOfficeDetailAddr" propid="value" datasetid="dsGrdUser" columnid="COMP_ADDRESS"/>
+      <BindItem id="item9" compid="tbUserInfo.tabpage2.mskEdtCompZipCode" propid="value" datasetid="dsGrdUser" columnid="COMP_ZIP_CODE"/>
+      <BindItem id="item10" compid="tbUserInfo.tabpage2.edtEmail" propid="value" datasetid="dsGrdUser" columnid="EMAIL"/>
+      <BindItem id="item11" compid="tbUserInfo.tabpage2.edtFax" propid="value" datasetid="dsGrdUser" columnid="FAX"/>
+      <BindItem id="item12" compid="tbUserInfo.tabpage2.edtAssignment" propid="value" datasetid="dsGrdUser" columnid="ASSIGNMENT"/>
+      <BindItem id="item13" compid="tbUserInfo.tabpage2.edtPosition" propid="value" datasetid="dsGrdUser" columnid="JOB_POSITION"/>
+      <BindItem id="item14" compid="tbUserInfo.tabpage2.cmbDept" propid="value" datasetid="dsGrdUser" columnid="DEPT_ID"/>
+      <BindItem id="item15" compid="tbUserInfo.tabpage2.edtCompany" propid="value" datasetid="dsGrdUser" columnid="COMPANY"/>
+    </Bind>
+    <Script type="xscript4.0"><![CDATA[include "lib::commonScript.xjs";
+
+// Form onload 이벤트 처리
+function SAMPLE008_POPUP_onload(obj:Form, e:LoadEventInfo)
+{
+	// 각 컴포넌트 타이틀 국제화 처리
+	gfnSetTitle();
+	
+	// 부모창에서 전송받은 파라미터 설정
+	strMode = this.getOwnerFrame().paramMode;
+	dsGrdUser.clearData();
+	dsGrdUser.addRow();
+	dsTrvDeptPopup.copyData(dsDept);
+
+	// strMode : C - 새로운 데이터 생성
+	//		   : U - 기존의 데이터 수정
+	if(strMode == "C") {
+		dsGrdUser.setColumn(0, "DEPT_ID", dsDept.getColumn(dsDept.rowposition, "DEPT_ID"));
+		dsGrdUser.setColumn(0, "COMPANY", "삼성SDS");
+	} else{
+		dsGrdUser.copyRow(0, dsArg, dsArg.rowposition);
+	}
+}
+
+// 취소 버튼 클릭 이벤트
+function btCancel_onclick(obj:Button,  e:ClickEventInfo)
+{
+	// 팝업창을 닫고 부모창으로 리턴
+	close("N");
+}
+
+// 임시 저장 버튼 클릭 이벤트
+function btSaveTemp_onclick(obj:Button,  e:ClickEventInfo)
+{
+	// 유효성 검사 후 이상 없는 경우 팝업창을 닫고 부모창으로 데이터 리턴
+	if(gfnDsCheckValid(dsGrdUser)){
+		var resultDs = new Dataset;
+		resultDs.copyData(dsGrdUser);
+		close(resultDs);
+	}
+}
+]]></Script>
+  </Form>
+</FDL>

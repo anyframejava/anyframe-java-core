@@ -1,0 +1,561 @@
+<chapter id="hibernate_hibernate_performance">
+	<title>Performance Strategy</title>
+	<para>
+		Hibnernate은 성능 개선을 위해 Cache와 Fetch등의 Performance Strategy를 제공한다. 크게 Cache는 1 Level Cache와 
+		2 Level Cache 등으로 구분되며 이는 매번 DB에 접근 없이 해당 Cache를 이용하여 객체를 조회 또는 보관할 수 있도록 한다. 
+		또한 여러가지 Fetch 전략을 적절히 적용함으로써 Lazy Loading으로 발생할 수 있는 N+1 SELECT 이슈를 처리할 수 있다.
+	</para>
+
+	<section id="hibernate_hibernate_cache">
+		<title>Cache</title>
+
+      	<para>
+      		Hibernate을 사용하면 입력 인자로 전달된 객체를 정의된 테이블로 매핑시켜 데이터 액세스 처리를 수행해야 하는데
+      		Hibernate에서는 이로 인해 발생 가능한 성능 이슈를 개선하기 위해 Cache를 활용한다. 특히, 어플리케이션의 조회 기능이
+      		전체 실행 시간의 많은 비중을 차지하는 경우 매번 DB에 접근하지 않고 Cache에 저장된 객체를 사용함으로써 성능을 향상시킬 수
+     		 있게 되는 것이다.
+     	</para>
+
+		<section id="hibernate_hibernate_cache_1lc">
+        	<title>1LC (1 Level Cache)</title>
+
+        	<para>
+        		Hibernate Session 내부에 정의된 Cache로, Session의 시작과 종료 사이에서 사용되며 한 Session 내에서 Hibernate을 
+        		통해 읽혀진 객체들을 보관하는 역할을 수행한다. Hibernate은 하나의 Session 내에서 동일한 객체를 한 번 이상 Loading할 
+        		경우 2번째부터는 1LC로부터 해당 객체를 추출하고 또한, 한 Session 범위 내에서 객체의 속성 변경시 변경 사항은 Session 
+        		종료시에 자동적으로 DB에 반영하도록 한다. 즉, 하나의 Hibernate Session 내에서 동일한 객체에 대한 재조회가 이루어지
+        		는 경우 1LC를 이용함으로써 DB 접근 횟수를 줄여주기 때문에 어플리케이션 성능 향상에 도움이 되는 것이다. 
+        		1LC는 Hibernate에서 기본적으로 제공하는 Cache이므로 별도의 설정없이도 적용된다. 
+                <programlisting language="java"><![CDATA[public void findMovie() throws Exception {
+    newSession();
+    // Add data to DB]]>
+    <emphasis role="bold">SetUpInitData.initializeData(session);</emphasis>	
+    // 2. find a movie without accessing DB (using 1LC)
+    <emphasis role="bold"><![CDATA[/* #1 */ Movie movie = (Movie) session.get(Movie.class, "MV-00001");]]></emphasis>
+	
+    <![CDATA[Set categories = movie.getCategories();
+    categories.iterator();
+	
+    // 3. find a movie again without accessing DB (using 1LC)]]>
+    <emphasis role="bold"><![CDATA[movie = (Movie) session.get(Movie.class, "MV-00001");]]></emphasis>
+	
+    <![CDATA[categories = movie.getCategories();
+    categories.iterator();
+    closeSession();
+}]]></programlisting>
+			</para>
+
+        	<para>
+        		위와 같이 작성할 경우 동일한 Session 내에서 SetUpInitData.initializeData(session)를 통해 save된 Persistence 
+        		객체는 1LC에 저장되므로 다음에 #1번 코드에서처럼 동일한 Persistence 객체 조회시 DB에 재접근하지 않고도, Cache를 
+        		통해 조회된다. findMovie() 메소드를 포함한 HibernateFirstLevelCache.java 테스트 소스를 DEBUG 모드로 실행시켜서 
+        		실행되는 쿼리를 콘솔창을 통해 확인해 보면 이를 확인할 수 있을 것이다. SetUpInitData.java에 대한 내용은 여기 에서 확인할 수 있다.
+        	</para>
+		</section>
+
+      	<section id="hibernate_hibernate_cache_2lc">
+			<title>2LC (2 Level Cache)</title>
+
+        	<para>
+        		2LC는 어플리케이션 단위의 Cache로, 어플리케이션 관점에서의 Cache 기능을 지원한다. 이는 여러 트랜잭션들을 통해 
+        		Load된 Persistence 객체를 Session Factory 레벨에서 저장하는 방법으로 처리된다.
+        	</para>
+
+        	<para>
+        		<emphasis role="bold"><![CDATA[hibernate.cache.use_second_level_cache, hibernate.cache.provider_class]]> 
+        		등을 정의</emphasis> 하고, 2LC에 저장되어야 할 Persistence Class 매핑 파일의 <emphasis role="bold"><![CDATA[<cache>]]></emphasis> 
+        		속성을 정의하면 해당 어플리케이션을 구성하는 특정 Persistence 객체들에 대해 2LC를 적용할 수 있다.
+        	</para>
+
+        	<para>
+        		다음은 2LC에 대한 속성이 정의되어 있는 hibernate.cfg.xml 파일의 일부이다.
+                <programlisting language="xml"><![CDATA[<property name="]]><emphasis role="bold"><![CDATA[hibernate.cache.provider_class]]></emphasis>"><![CDATA[org.hibernate.cache.EhCacheProvider
+</property>]]>
+<![CDATA[<property name="]]><emphasis role="bold"><![CDATA[hibernate.cache.use_second_level_cache]]]></emphasis>"><![CDATA[true
+</property>]]></programlisting>
+			</para>
+
+        	<para>
+        		다음은 cache 속성이 read-write로 설정되어 있는 Persistence Class 매핑 파일 Country.hbm.xml 의 일부이다. 
+                <programlisting language="xml"><![CDATA[<]]><![CDATA[class name="org.anyframe.sample.model.bidirection.Country" table="COUNTRY" lazy="true"
+        schema="PUBLIC">]]>
+    <![CDATA[<]]><emphasis role="bold"><![CDATA[cache usage="read-write"/]]></emphasis>>
+    <![CDATA[<id name="countryCode" type="string">
+        <column name="COUNTRY_CODE" length="12" />
+        <generator class="assigned" />
+    </id>
+    <property name="countryId" type="string">
+        <column name="COUNTRY_ID" length="2" not-null="true" />
+    </property>
+	...
+ </class>]]></programlisting>
+ 			</para>
+
+        	<para>
+        		cache의 속성은 위에서 언급한 read-write외에도 다음과 같은 속성값으로 정의할 수 있다.
+        	</para>
+
+        	<itemizedlist>
+          		<listitem>
+            		<para>
+            			<emphasis role="bold">read-only</emphasis> : Persistence 객체가 변경되지 않는 경우에 사용 가능하다. 
+            			수정이 없으므로 분산 환경에서도 안전하게 사용 가능하며 가장 빠른 성능을 제공한다.
+            		</para>
+          		</listitem>
+
+          		<listitem>
+            		<para>
+            			<emphasis role="bold">read-write</emphasis> : Persistence 객체가 변경되는 경우에 사용 가능하다. 
+            			DBMS의 read-committed와 동일하게 동시 접근을 관리한다.
+            		</para>
+          		</listitem>
+
+          		<listitem>
+            		<para>
+            			<emphasis role="bold">nonstrict-read-write</emphasis> : 트랜잭션 격리를 엄격히 적용할 필요가 없는 
+            			경우 사용 가능하다.
+            		</para>
+          		</listitem>
+
+          		<listitem>
+            		<para>
+            			<emphasis role="bold">transactional</emphasis> : 완전한 트랜잭션을 보장하나 가장 느린 성능을 제공한다. 
+            			JTA 환경 내에서만 사용된다.
+            		</para>
+          		</listitem>
+			</itemizedlist>
+
+        	<para>
+        		위와 같은 설정을 기반으로 HibernateSecondLevelCache.java findCountry() 메소드를 실행해보면 다음의 #1번 코드에 
+        		의해 새로운 Session이 시작되었음에도 #2번 코드에서 DB에 접근하지 않고 이전 Session에서 Cache에 저장한 값을 가지고 
+        		사용한다는 것을 확인할 수 있다.
+                <programlisting language="java"><![CDATA[public void findCountry() throws Exception {
+    newSession();
+    SetUpInitData.initializeData(session);
+    closeSession();]]>
+	
+    // 2. find a movie without accessing DB (using 2LC)
+    <emphasis role="bold"><![CDATA[/* #1 */ newSession();]]></emphasis>
+    <emphasis role="bold"><![CDATA[/* #2 */ Country country = (Country) session.get(Country.class, "COUNTRY-0001");]]></emphasis>
+	
+    <![CDATA[Set movies = country.getMovies();
+    movies.iterator();
+    closeSession();
+	
+    // 3. find a movie again without accessing DB (using 2LC)
+    newSession();
+    country = (Country) session.get(Country.class, "COUNTRY-0001");
+	
+    movies = country.getMovies();
+    movies.iterator();
+    closeSession();
+}]]></programlisting>
+			</para>
+
+        	<para>
+        		DEBUG 모드에서 테스트케이스를 실행시켜보면서 DB에 접근하지 않고도 2LC를 통해 객체가 조회되는 것을 살펴볼 것을 권장
+        		한다. HibernateSecondLevelCache.java 의 findMovie()는 2LC 사용하지 않는 Persistence Class인 Movie에 대한 
+        		테스트로써 앞서 언급한 findCountry()와 달리 Session이 다를 경우 매번 DB에 접근하여 해당 Persistence 객체를 조회해
+        		오는 것을 알 수 있다.
+        	</para>
+
+        	<para>
+        		단, 2LC를 적용하고자 할 경우 해당 어플리케이션을 통하지 않고, 외부에서 직접적으로 DB 정보가 수정될 가능성이
+        		있다면 데이터의 동기화를 위해 세밀한 Cache 속성 제어가 필요함에 유의하도록 한다.
+        	</para>
+		</section>
+
+		<section id="hibernate_hibernate_cache_distributed">
+        	<title>분산 Cache</title>
+
+	        <para>
+	        	하나의 어플리케이션을 대상으로 하는 경우 앞서 언급한 2LC를 사용하는데 문제가 없으나, 일반적인 Clustered
+	       		 환경에서 실행된 여러 개의 어플리케이션에 속한 2LC 사이의 데이터 동기화는 중요한 사항이 될 것이다. 이를 위해
+	        	Hibernate는 분산 Cache를 지원하는 구현체를 통해 분산 어플리케이션에 대한 Cache 기능을 지원한다.
+	        </para>
+
+        	<para>
+        		다음에서는 분산 Cache를 지원하는 구현체별로 설정 방법 및 실행 결과에 대해 살펴보기로 하자.
+        	</para>
+	
+	        <section id="hibernate_hibernate_cache_distributed_oscache">
+				<title>OSCacheProvider 이용</title>
+	
+	          	<para>
+	          		OSCache 2.0부터 분산 Cache를 지원한다. 현재 OSCache는 분산된 Cache들이 Caching하고 있는 데이터 동기화를 위해 
+	          		JavaGroups 또는 JMS를 통해 Event를 처리할 수 있도록 구현체를 제공한다. 단, 분산 Cache 사이에서 flush Event 
+	          		발생시(Caching된 객체를 Cache에서 지울때)에만 Message를 broadcast하는 기능이 지원된다.
+	          	</para>
+
+	          	<para>
+	          		본 페이지에서는 OSCacheProvider와 JMS 기능을 제공하는 오픈소스 ActiveMQ를 사용하여 분산 Cache를 관리하는 방법에 
+	          		대해 알아볼 것이다. 다음은 Hibernate Configuration 파일로, <emphasis role="bold"><![CDATA[hibernate.cache.
+	          		provider_class]]></emphasis> 속성값으로 OSCacheProvider를 지정하고 있음을 알 수 있다.
+                    <programlisting language="java"><![CDATA[<session-factory>
+    ...중략    	
+    <property name="hibernate.format_sql">true</property>
+    <property name="hbm2ddl.auto">create</property>
+    <property name="hibernate.cache.use_second_level_cache">true</property>
+    <property name="]]><emphasis role="bold"><![CDATA[hibernate.cache.provider_class]]></emphasis>">
+            <![CDATA[com.opensymphony.oscache.hibernate.OSCacheProvider</property>
+    <property name="]]><emphasis role="bold"><![CDATA[hibernate.cache.region_prefix]]></emphasis>">
+            <![CDATA[hibernate.cache</property> 
+    <property name="]]><emphasis role="bold"><![CDATA[com.opensymphony.oscache.configurationResourceName]]></emphasis>">
+            <![CDATA[oscache-hibernate.properties</property>
+    ...중략
+</session-factory>]]></programlisting>
+				</para>
+	
+	          	<para>
+	          		또한, Hibernate Cache 영역에 대해 <emphasis role="bold"><![CDATA[hibernate.cache.region_prefix ]]></emphasis>를 
+	          		별도로 지정하였다. (hibernate.cache.region_prefix가 위와 같이 정의된 경우, Persistence Class인 anyframe.
+	          		sample.model.bidirection.Country는 해당 2LC의 <emphasis role="bold">hibernate.cache.</emphasis>
+	          		org.anyframe.sample.model.bidirection.Country 영역에 Caching된다.) 끝으로, <emphasis role="bold">com.opensymphony.
+	          		oscache.configurationResourceName </emphasis>속성에 OSCacheProvider가 분산 Cache들 사이의 데이터 동기화를 위해
+	          		필요로 하는 모든 속성 정보를 정의해 주어야 한다.
+	          	</para>
+
+	          	<para>
+	          		위에서 com.opensymphony.oscache.configurationResourceName의 속성값으로 정의한 oscache-hibernate.properties 
+	          		파일 내용은 다음과 같다. 
+                    <programlisting><![CDATA[cache.event.listeners=org.anyframe.cache.listener.JMSBroadcastingListener
+cache.cluster.jndi.config=jndi.properties
+
+cache.cluster.jms.topic.factory=TopicConnectionFactory
+cache.cluster.jms.topic.name=dynamicTopics/topic
+cache.cluster.jms.node.name=node1]]></programlisting>
+				</para>
+
+	          	<para>
+	          		각 속성은 다음과 같은 의미를 지닌다.
+	          	</para>
+	
+				<itemizedlist>
+	            	<listitem>
+	              		<para>
+	              			cache.event.listeners : 한 Cache에 변경 사항이 발생한 경우 분산 Cache간 동기화를 위해 Event 처리가 
+	              			필요하며, OSCache에서는 JMS를 통해 Event를 처리하기 위해 기본적으로 com.opensymphony.oscache.plugins.
+	              			clustersupport.JMSBroadcastingListener를 제공한다. 그러나 이것은 앞서 언급했듯이 flush Event 발생시
+	              			에만 Message를 broadcast하는  기능만 지원되므로 Caching된 객체에 대해 수정이 발생한 경우에는 Message Broadcasting
+	              			되지 않는 취약점이 있다. 따라서, <emphasis role="bold">Anyframe에서는 이를 보완한 별도 Cache Event Listener
+	              			클래스(org.anyframe.cache.listener.JMSBroadcastingListener)를 제공</emphasis> 하고 있다. Anyframe의 
+	              			JMSBroadcastingListener는 특정  어플리케이션을 통해 Caching된 객체에 수정이 발생한 경우 Clustering된 모든 
+	              			어플리케이션의 Cache에서 해당 객체를 지우도록 Event를 보낸다.
+	              		</para>
+	            	</listitem>
+	
+	            	<listitem>
+	              		<para>
+	              			cache.cluster.jndi.config : Cache Event Listener에서 JMS Server에 접근하기 위해 필요한 환경 정보를 
+	              			정의하기 위한 파일이다. JMS Server의 InitialContextFactory 클래스를 정의하기 위한 <emphasis role="bold">java.
+	              			naming.factory.initial</emphasis> 와 Provider URL 정의를 위한 <emphasis role="bold">java.naming.
+	              			provider.url</emphasis> 를 정의해준다. 다음은 jndi.properties 파일 내용이다.
+	                        <programlisting><![CDATA[java.naming.factory.initial=org.apache.activemq.jndi.ActiveMQInitialContextFactory
+java.naming.provider.url=tcp://localhost:61616]]></programlisting>
+						</para>
+	            	</listitem>
+	
+	            	<listitem>
+	              		<para>
+	              			cache.cluster.jms.topic.factory : JMS topic connection factory에 접근하기 위한 JNDI명을 정의한다. ActiveMQ의 경우,
+	              			TopicConnectionFactory와 같이 정의하면 Topic을 사용하여 Messaging 처리를 수행하게 된다.
+	              		</para>
+	            	</listitem>
+	
+	            	<listitem>
+	              		<para>
+	              			cache.cluster.jms.topic.name : OSCache에서 Message를 보내기 위해 사용할 Topic의 JNDI명을 정의한다. 
+	              			ActiveMQ의 경우, dynamicTopics/ 다음에 ActiveMQ에 생성한 Topic명을 정의해 주는데 만일 정의한 이름을 
+	              			가진 Topic이 존재하지 않으면, 해당 Topic이 신규로 생성된다.
+						</para>
+	            	</listitem>
+	
+	            	<listitem>
+	              		<para>
+	              			cache.cluster.jms.node.name : 분산 환경을 구성하는 여러 어플리케이션 중 해당  어플리케이션을 식별하기 
+	              			위한 식별자를 정의한다. 분산 환경을 구성하고 있는 각 어플리케이션들은 모두 다른 node명을 갖도록 지정해야 
+	              			한다. Cache Event가 발생할 때 해당 어플리케이션을 포함하여 분산 환경을 구성하고 있는 모든 어플리케이션의 
+	              			Cache에 해당 Event가 Send되는데, Cache Event가 발생한 해당 어플리케이션에서는 Event를 받더라도 아무런
+	              			Action을 취할 필요가 없다. 따라서, <emphasis role="bold">cache.cluster.jms.node.name</emphasis>는 
+	              			Cache Event가 어느 어플리케이션에서 발생했는지 알 수 있는 정보로 활용된다.
+	              		</para>
+	            	</listitem>
+				</itemizedlist>
+	
+	          	<para>
+	          		위와 같은 설정이 모두 완료되었다면, 동일한 어플리케이션 2개를 각기 다른 WAS를 통해 시작시킨 후 다음과 같은 유형의 요청 
+	          		수행시 Cache가 제대로 동작하는지 확인해보자. 이때, 사용하는 JMS 서버 라이브러리와 함께 jms spec., j2ee management 
+	          		spec. 라이브러리를 각 어플리케이션에 배포하여 구동시켜줘야 한다. 이 예제에서는 JMS 서버로 ActiveMQ를 사용하므로, 
+	          		각 어플리케이션의 WEB-INF/lib 폴더에 activemq-core-x.x.x.jar와 jms spec jar, j2ee management spec jar 파일을
+	          		배포하여 테스트하였다.
+	          	</para>
+
+				<itemizedlist>
+	            	<listitem>
+	              		<para>
+	              			어플리케이션 A에서 특정 데이터 조회 후, 어플리케이션 B에서 동일한 데이터 조회시 별도 쿼리문 수행없이 해당 
+	              			데이터가 조회되는지 확인한다. 즉, 어플리케이션 B는 DB에 접근하지 않고 Cache를 통해 데이터를 조회하는지 확인
+	              			한다.
+	             		</para>
+	            	</listitem>
+	
+	            	<listitem>
+	              		<para>
+	              			어플리케이션 A에서 특정 데이터 수정 후, Event가 Send되고 어플케이션 B에서 해당 Event를 Receive하는지 
+	              			확인한다.
+	              		</para>
+	
+		              	<mediaobject>
+		                	<imageobject>
+								<imagedata align="center"
+									fileref="../image/hibernate/clusteredcache1.jpg" />
+		                	</imageobject>
+		                	<textobject>
+		                		<phrase>
+		                			INFO 레벨의 로그 메시지를 보여주고 있는 그림으로, 어플리케이션 A에서 특정 데이터 수정 후, 이벤트가 전송되고 어플케이션 B에서 해당 이벤트를 
+		                			받았는지 확인할 수 있다. 
+		                		</phrase>
+		                	</textobject>
+		              	</mediaobject>
+		
+						<para>
+							또한 어플리케이션 B에서 어플리케이션 A를 통해 수정한 데이터 조회시 해당 객체는 Cache Event Listener에 의해 
+							Cache로부터 지워졌으므로, 기존에 Caching된 객체를 그대로 읽지 않고, DB에 접근하여 변경된 데이터를 읽어오는지 
+							확인한다.
+						</para>
+						
+	
+	              		<mediaobject>
+	                		<imageobject>
+	                  			<imagedata align="center"
+									fileref="../image/hibernate/clusteredcache2.jpg" />
+	                		</imageobject>
+	                		<textobject>
+	                			<phrase>Hibernate를 통해 실행되는 쿼리문을 보여주고 있는 그림으로, 어플리케이션 B에서 어플리케이션 A를 통해 수정한 데이터를 조회할 때
+	                			해당 객체는 Cache Event Listener에 의해 Cache로부터 지워졌으므로, 기존에 Caching된 객체를 그대로 읽지 않고, DB에 다시 접근하여 변경된 
+	                			데이터를 다시 읽어오고 있음을 알 수 있다.</phrase>
+	                		</textobject>
+	              		</mediaobject>
+	            	</listitem>
+				</itemizedlist>
+
+          		<para>
+          			(* WAS가 Tomcat일 경우 spring-tomcat-weaver.jar 파일을 다운로드하여 Tomcat 설치 폴더\server\lib에 복사해야
+          			 한다.)
+          		</para>
+			</section>
+		</section>
+	</section>
+    
+	<section id="hibernate_hibernate_fetch">
+		<title>Fetch Strategy</title>
+
+		<para>
+      		Lazy Loading 이란 Hibernate에서 기본적으로 객체가 실제로 필요하기 전까지 SQL을 실행하지 않고 Proxy 객체로 리턴하는 것을 
+      		말한다. 이러한 Lazy Loading을 통해 불필요한 DB 접근을 줄이고 Session 내에 존재하는 Persistence 객체의 개수를 감소시킬 
+      		수 있다. 하지만 이러한 Lazy Loading을 처리하기 위해 다음과 같은 N+1 SELECT 이슈가 발생하게 된다. 다음은 Lazy Loading
+      		으로 발생할 수 있는 N+1 SELECT 문제를 테스트할 수 있는 HibernateFetchWithDefaultLazyLoading.java 파일의 일부이다.
+            <programlisting language="java"><![CDATA[hqlBuf.append("FROM Category category ");
+hqlBuf.append("ORDER BY category.categoryName ASC");
+Query query = session.createQuery(hqlBuf.toString());]]>
+
+<emphasis role="bold">/*1번의 쿼리 수행 :</emphasis>
+<![CDATA[select category0_.CATEGORY_ID as CATEGORY1_0_, 
+category0_.CATEGORY_NAME as CATEGORY2_0_, category0_.CATEGORY_DESC as 
+CATEGORY3_0_ ]]><emphasis role="bold"><![CDATA[from PUBLIC.CATEGORY category0_]]></emphasis>
+        <![CDATA[order by category0_.CATEGORY_NAME ASC */
+List categoryList = query.list();
+
+for (int i = 0; i < categoryList.size(); i++) {
+    Category category = (Category) categoryList.get(i);
+
+    if (i == 0) {
+        Set movies = category.getMovies();]]>
+		
+        /* <emphasis role="bold">n번의 쿼리 수행 :</emphasis>
+        <![CDATA[select movies0_.CATEGORY_ID as CATEGORY1_1_, movies0_.MOVIE_ID 
+        as MOVIE2_1_, movie1_.MOVIE_ID as MOVIE1_3_0_, movie1_.COUNTRY_CODE 
+        as COUNTRY2_3_0_, movie1_.TITLE as TITLE3_0_, movie1_.DIRECTOR 
+        as DIRECTOR3_0_, movie1_.RELEASE_DATE as RELEASE5_3_0_]]> 
+        <emphasis role="bold"><![CDATA[from MOVIE_CATEGORY movies0_ left outer join PUBLIC.MOVIE movie1_ ]]></emphasis>
+        <emphasis role="bold"><![CDATA[on movies0_.MOVIE_ID=movie1_.MOVIE_ID]]></emphasis>
+        <![CDATA[where movies0_.CATEGORY_ID=? */
+        
+    } else if (i == 1) {
+        Set movies = category.getMovies();
+    ...
+}]]></programlisting>
+		</para>
+
+		<para>
+			Category에 대한 조회 작업을 수행하며 특정 Category에 속한 Movie Set 조회시 Movie 정보 조회를 위한 SELECT문이 수행된다. 
+			이를 해결하기 위해 Fetch 방식에 대한 제어가 필요하며 그 예는 다음과  같다.
+		</para>
+
+		<section id="hibernate_hibernate_fetch_batch">
+        	<title>Batch를 이용하여 데이터 조회</title>
+
+        	<para>
+        		Hibernate Mapping XML 파일 내에 특정 객체에 대한 batch-size를 지정할 경우 지정한 개수만큼 해당 객체를 로딩하는 
+        		방식으로 쿼리 실행 회수가 n/batch size + 1로 감소한다. 다음은 batch-size 설정 예인 Country.hbm.xml 파일의 
+        		일부이다. 
+                <programlisting language="xml"><![CDATA[<hibernate-mapping>
+    <class name="org.anyframe.sample.model.bidirection.Country" table="COUNTRY" 
+            lazy="true" schema="PUBLIC">
+        <id name="countryCode" type="string">
+        ..
+        </id>
+        <property name="countryId" type="string">
+            <column name="COUNTRY_ID" length="2" not-null="true" />
+        </property>
+        ..        
+        <set name="movies" inverse="true" cascade="save-update" batch-size="2">
+            <key>
+                <column name="COUNTRY_CODE" length="12" />
+            </key>
+            <one-to-many class="org.anyframe.sample.model.bidirection.Movie" />
+        </set>
+    </class>
+</hibernate-mapping>]]></programlisting>
+			</para>
+
+        	<para>
+        		위와 같이 정의할 경우 Country:Movie 관계에서 Movie Set에 대한 Fetch Strategy를 Batch Fetching한다.(여기서는 
+        		batch-size="2"로 정의함.) 특정 Country에 속한 Movie Set을 조회하고자 할 때 batch-size를 기반으로 SELECT문이 
+        		수행된다. 
+                <programlisting language="java"><![CDATA[hqlBuf.append("FROM Country");
+Query query = session.createQuery(hqlBuf.toString());
+List countryList = query.list();
+
+// 3. check result - country
+
+for (int i = 0; i < countryList.size(); i++) {
+    Country country = (Country) countryList.get(i);
+
+    if (i == 0) {
+        Set movies = country.getMovies();
+		
+        /* batch-size가 2이므로 2개씩 조회
+        select movies0_.COUNTRY_CODE as COUNTRY2_1_, movies0_.MOVIE_ID as MOVIE1_1_,
+        movies0_.MOVIE_ID	as MOVIE1_3_0_, movies0_.COUNTRY_CODE as COUNTRY2_3_0_,
+        movies0_.TITLE as TITLE3_0_, movies0_.DIRECTOR as DIRECTOR3_0_, 
+        movies0_.RELEASE_DATE as RELEASE5_3_0_ from PUBLIC.MOVIE movies0_ 
+        where movies0_.COUNTRY_CODE]]> <emphasis role="bold"><![CDATA[in ('COUNTRY-0001', 'COUNTRY-0003')'*/]]></emphasis>        
+    <![CDATA[} else if (i == 1) {
+        Set movies = country.getMovies();]]>
+        //<emphasis role="bold">쿼리 수행 안함.</emphasis>
+}</programlisting>
+			</para>
+
+        	<para>
+        		위에 대한 테스트 코드는 HibernateFetchWithBatchSize.java 를 참고한다.
+        	</para>
+		</section>
+
+		<section id="hibernate_hibernate_fetch_subquery">
+        	<title>Sub-Query를 이용하여 데이터 조회</title>
+
+        	<para>
+        		또다른 fetch 전략으로 subselect 속성을 주는 방법이 있다. subselect 속성 정의 방법은 Mapping XML 파일인
+        	 	Movie.hbm.xml 에서 다음과 같이 확인할 수 있다. 
+                <programlisting language="xml"><![CDATA[<hibernate-mapping>
+    <class name="org.anyframe.sample.model.bidirection.Movie" table="MOVIE" lazy="true"..>
+        <id name="movieId" type="string">
+            <column name="MOVIE_ID" />
+            <generator class="assigned" />
+        </id>
+        <property name="title" type="string">
+            <column name="TITLE" length="100" not-null="true" />
+        </property>
+		...
+        <set name="categories" inverse="false" table="MOVIE_CATEGORY" fetch="subselect">
+            <key>
+                <column name="MOVIE_ID" length="8" not-null="true" />
+            </key>
+            ..
+        </set>
+    </class>           
+</hibernate-mapping>]]></programlisting>
+			</para>
+
+			<para>
+        		위와 같이 Movie 클래스 내의 categories set에 대해 fetch 속성의 값을 subselect로 정의할 경우 해당 데이터를 불러올때 
+        		Sub Query 형태의 SELECT 문이 수행되며 한번에 모두 로딩하게 된다.
+                <programlisting language="java"><![CDATA[for (int i = 0; i < movieList.size(); i++) {
+    Movie movie = (Movie) movieList.get(i);
+
+    if (i == 0) {
+    ..
+		
+        Set categories = movie.getCategories();
+		
+        /* categories에 대한 Sub Query 형태의 SELECT문이 발생한다.
+        select categories0_.MOVIE_ID as MOVIE2_1_, categories0_.CATEGORY_ID 
+        as CATEGORY1_1_, category1_.CATEGORY_ID as CATEGORY1_0_0_, category1_.CATEGORY_NAME 
+        as CATEGORY2_0_0_, category1_.CATEGORY_DESC as CATEGORY3_0_0_ 
+        from MOVIE_CATEGORY categories0_ 
+        left outer join PUBLIC.CATEGORY category1_ 
+        on categories0_.CATEGORY_ID=category1_.CATEGORY_ID
+        where categories0_.MOVIE_ID 
+        in ]]><emphasis role="bold"><![CDATA[(select movie0_.MOVIE_ID from PUBLIC.MOVIE movie0_)]]></emphasis> */
+				
+     <![CDATA[} else if (i == 1) {
+        ..
+        Set categories = movie.getCategories();]]>
+        <emphasis role="bold">//쿼리 수행 안함.</emphasis>
+    ...</programlisting>
+    		</para>
+
+        	<para>
+   	     		하지만 최초로 필요한 순간에 모든 데이터를 로딩하므로 동시에 많은 데이터 요청이 있을 경우 메모리 사용량이 급격히
+        		증가할 수 있음에 유의한다. 위의 테스트 코드는 HibernateFetchWithSubselect.java 에서 확인할 수 있다.
+        	</para>
+		</section>
+
+      	<section id="hibernate_hibernate_fetch_join">
+        	<title>join fetch를 이용하여 데이터 한꺼번에 조회</title>
+
+        	<para>
+        		특정 HQL문에 "join fetch"절을 사용하게 되면 해당 Join 객체에 대해서 Lazy Loading과 다른 방식으로 한 번에 필요한 
+        		데이터를 모두 로딩하게 된다. 다음은 join fetch가 적용된 HibernateFetchWithoutLazyLoading.java 파일의 일부이다. <programlisting language="java">StringBuilder hqlBuf = new StringBuilder();
+<![CDATA[hqlBuf.append("SELECT movie ");
+hqlBuf.append("FROM Movie movie ]]><emphasis role="bold">join fetch</emphasis><![CDATA[ movie.categories category ");
+hqlBuf.append("WHERE category.categoryName = ?");
+Query query = session.createQuery(hqlBuf.toString());
+query.setParameter(0, "Romantic");
+
+/* fetch join된 categories의 데이터도 한꺼번에 모두 로드시킨다. (Lazy Loading이 아님)
+select movie0_.MOVIE_ID as MOVIE1_3_0_, category2_.CATEGORY_ID as CATEGORY1_0_1_, 
+movie0_.COUNTRY_CODE as COUNTRY2_3_0_, movie0_.TITLE as TITLE3_0_, 
+movie0_.DIRECTOR as DIRECTOR3_0_, movie0_.RELEASE_DATE as RELEASE5_3_0_, 
+category2_.CATEGORY_NAME as CATEGORY2_0_1_, category2_.CATEGORY_DESC as CATEGORY3_0_1_, 
+categories1_.MOVIE_ID as MOVIE2_0__,]]> <emphasis role="bold"><![CDATA[categories1_.CATEGORY_ID as CATEGORY1_0__]]></emphasis> 
+<![CDATA[from PUBLIC.MOVIE movie0_]]> <emphasis role="bold">inner join MOVIE_CATEGORY categories1_</emphasis> 
+<![CDATA[on movie0_.MOVIE_ID=categories1_.MOVIE_ID inner join PUBLIC.CATEGORY category2_ 
+on categories1_.CATEGORY_ID=category2_.CATEGORY_ID where category2_.CATEGORY_NAME='Romantic' */
+List movieList = query.list();
+
+// 3. check result - movie
+
+for (int i = 0; i < movieList.size(); i++) {
+    Movie movie = (Movie) movieList.get(i);
+
+    if (i == 0) {
+		..
+        Set categories = movie.getCategories();]]>
+        //<emphasis role="bold">쿼리 수행 안함.</emphasis>
+    <![CDATA[} else if (i == 1) {
+        ..
+        Set categories = movie.getCategories();]]>
+        //<emphasis role="bold">쿼리 수행 안함.</emphasis>
+    ...</programlisting>
+    		</para>
+
+        	<para>
+        		이는 categories에 대한 fetch 속성을 "join"으로 준것과 같이 동작하게 된다. 하지만 Mapping XML에 정의할 경우 Movie를 
+        		조회할 때마다(Category 목록이 필요하지 않은 경우에도) 모든 Category 목록도 함께 초기화되어 메모리에 올라 오게 되므로
+        		위와 같이 HQL문에 join fetch를 사용하여 필요한 경우에만 적용되도록 하는 것이 효율적이다.
+        	</para>
+		</section>
+	</section>
+</chapter>

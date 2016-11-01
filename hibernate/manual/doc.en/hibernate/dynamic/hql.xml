@@ -1,0 +1,51 @@
+<chapter id="hibernate_dynamic_hql">
+	<title>Dynamic HQL(Hibernate Query Language)</title>
+	<para>
+		<![CDATA[The composition of Dynamic HQL definition file defined with fileNames value in DynamicHibernateService configruation file is as the following.
+		<dynamic-hibernate> tag can contain several query tags. <query> tag is to define Dynamic HQL statement by grafting Velocity Rule,
+		and must have "name" property to identify the relevant HQL.
+		Within <query>tag, Dynamic HQL definition is supported through text replacement and named parameter format.
+		By using above-mentioned DinamicHibernateService syntax, 
+		it is possible to conver HQL dynamically according to the condition value when operating them in various formats.]]>
+	</para>
+       
+
+    <para>
+		The following is a part of dynamic-hibernate.xml file, which contains Dynamic HQL.
+		If director information is included in input condition, HQL which searches for director information in "like" condition will be created.
+		Otherwise, HQL which searches for title information in "like" condition will be created.
+		On top of these, sortColumn and sortDirection information is also defined to get as an input condition.
+        <programlisting language="xml"><![CDATA[<dynamic-hibernate>
+         <query name="findMovieListAll">
+                  FROM Movie movie
+                  WHERE]]> 
+                           <emphasis role="bold">#if(${director})</emphasis>
+                                    <emphasis role="bold">movie.director like :director</emphasis>
+                           <emphasis role="bold">#else</emphasis>
+                                    <emphasis role="bold">movie.title       like :title</emphasis>
+                           <emphasis role="bold">#end</emphasis>
+                  <emphasis role="bold">ORDER BY {{sortColumn}} {{sortDirection}}</emphasis>
+
+         <![CDATA[</query>
+</dynamic-hibernate>]]></programlisting>
+	</para>
+	
+	<para>
+		To utilize DynamicHibernateService, transfer input condition and the relevant Dynamic HQL name through DynamicHibernateService
+		as in MovieDAOHibernateImpl code.
+        <programlisting language="java">public List findMovieList(int conditionType, String condition) {
+    Object[] args = new Object[3];
+    if (conditionType == 0) {
+        <emphasis role="bold">args[0] = "director=%" + condition</emphasis> + "%";
+        <emphasis role="bold">args[1] = "sortColumn=movie.director";</emphasis>
+    } else {
+        <emphasis role="bold">args[0] = "title=%" + condition</emphasis> + "%";
+        <emphasis role="bold">args[1] = "sortColumn=movie.title";</emphasis>
+    }
+    <emphasis role="bold">args[2] = "sortDirection=ASC";</emphasis>
+
+    return <emphasis role="bold">dynamicHibernateService.findList("findMovieListAll", args);</emphasis>
+}</programlisting>
+	</para>
+	
+</chapter>

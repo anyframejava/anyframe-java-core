@@ -5,8 +5,6 @@ import com.tobesoft.xplatform.data.DataSetList;
 import com.tobesoft.xplatform.data.DataTypes;
 import com.tobesoft.xplatform.data.VariableList;
 import junit.framework.Assert;
-import org.anyframe.xp.query.XPQueryService;
-import org.anyframe.xp.query.service.XPService;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -58,11 +56,11 @@ import java.sql.Statement;
 public class XPServiceProcedureTest {
 
 	@Inject
-	private XPQueryService xpQueryService;
+	private org.anyframe.xp.query.XPQueryService xpQueryService;
 
     @Inject
     @Named("xpService")
-    private XPService xpService;
+    private org.anyframe.xp.query.service.XPService xpService;
 
 
 	@Inject

@@ -1,0 +1,305 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<FDL version="1.4">
+  <TypeDefinition url="..\default_typedef.xml"/>
+  <Form id="frmSAMPLE012" classname="SAMPLE012" inheritanceid="" position="absolute 0 0 765 540" titletext="SAMPLE012" onload="SAMPLE012_onload" style="background:#f2f2efff;">
+    <Layouts>
+      <Layout>
+        <Div id="divSearch" taborder="1" text="Div00" position="absolute 0 40 765 80">
+          <Layouts>
+            <Layout>
+              <Button id="btLeft" taborder="0" text="◀" position="absolute 0 11 23 33" onclick="divSearch_btLeft_onclick"/>
+              <Button id="btMoveTo" taborder="3" text="global.domain.movecalandar" position="absolute 700 11 765 33" onclick="divSearch_btMoveTo_onclick"/>
+              <Button id="btRight" taborder="1" text="▶" position="absolute 130 11 152 33" onclick="divSearch_btRight_onclick"/>
+              <Calendar id="calSearchDate" taborder="2" position="absolute 588 11 698 33" dateformat="yyyy-MM-dd" value="null"/>
+              <Static id="Static00" text="global.domain.selectdate.ko" position="absolute 519 11 586 33"/>
+              <Static id="stWeek" text="stWeek" position="absolute 29 11 128 33"/>
+            </Layout>
+          </Layouts>
+        </Div>
+        <Grid id="grdCalendar" taborder="2" useinputpanel="false" position="absolute 0 80 765 540" binddataset="dsGrdCalendar" formats="&lt;Formats&gt;&#10;  &lt;Format id=&quot;default&quot;&gt;&#10;    &lt;Columns&gt;&#10;      &lt;Col size=&quot;80&quot;/&gt;&#10;      &lt;Col size=&quot;80&quot;/&gt;&#10;      &lt;Col size=&quot;80&quot;/&gt;&#10;      &lt;Col size=&quot;80&quot;/&gt;&#10;      &lt;Col size=&quot;80&quot;/&gt;&#10;      &lt;Col size=&quot;80&quot;/&gt;&#10;    &lt;/Columns&gt;&#10;    &lt;Rows&gt;&#10;      &lt;Row band=&quot;head&quot; size=&quot;24&quot;/&gt;&#10;      &lt;Row band=&quot;body&quot; size=&quot;24&quot;/&gt;&#10;    &lt;/Rows&gt;&#10;    &lt;Band id=&quot;head&quot;&gt;&#10;      &lt;Cell col=&quot;0&quot; disptype=&quot;normal&quot; text=&quot;DAY&quot;/&gt;&#10;      &lt;Cell col=&quot;1&quot; disptype=&quot;normal&quot; text=&quot;INFO&quot;/&gt;&#10;      &lt;Cell col=&quot;2&quot; disptype=&quot;normal&quot; text=&quot;BASE_INFO&quot;/&gt;&#10;      &lt;Cell col=&quot;3&quot; disptype=&quot;normal&quot; text=&quot;HOL&quot;/&gt;&#10;      &lt;Cell col=&quot;4&quot; disptype=&quot;normal&quot; text=&quot;IMPL&quot;/&gt;&#10;      &lt;Cell col=&quot;5&quot; disptype=&quot;normal&quot; text=&quot;SCHO_ID&quot;/&gt;&#10;    &lt;/Band&gt;&#10;    &lt;Band id=&quot;body&quot;&gt;&#10;      &lt;Cell col=&quot;0&quot; disptype=&quot;normal&quot; text=&quot;bind:DAY&quot;/&gt;&#10;      &lt;Cell col=&quot;1&quot; disptype=&quot;normal&quot; text=&quot;bind:INFO&quot;/&gt;&#10;      &lt;Cell col=&quot;2&quot; disptype=&quot;normal&quot; text=&quot;bind:BASE_INFO&quot;/&gt;&#10;      &lt;Cell col=&quot;3&quot; disptype=&quot;normal&quot; text=&quot;bind:HOL&quot;/&gt;&#10;      &lt;Cell col=&quot;4&quot; disptype=&quot;normal&quot; text=&quot;bind:IMPL&quot;/&gt;&#10;      &lt;Cell col=&quot;5&quot; disptype=&quot;normal&quot; text=&quot;bind:SCHO_ID&quot;/&gt;&#10;    &lt;/Band&gt;&#10;  &lt;/Format&gt;&#10;&lt;/Formats&gt;&#10;" userData="" oncelldblclick="grdCalendar_oncelldblclick" autofittype="allboth" anchor="all">
+          <Formats>
+            <Format id="default">
+              <Columns>
+                <Column size="130"/>
+                <Column size="64"/>
+                <Column size="576"/>
+              </Columns>
+              <Rows>
+                <Row size="64"/>
+              </Rows>
+              <Band id="body">
+                <Cell style="align:center;" expr="expr:(DAY.toString()).substr(0,4) + &quot;-&quot; + (DAY.toString()).substr(4,2) + &quot;-&quot; + (DAY.toString()).substr(6,2)"/>
+                <Cell col="1" text="bind:BASE_INFO"/>
+                <Cell col="2" style="align:left;" text="bind:INFO"/>
+              </Band>
+            </Format>
+          </Formats>
+        </Grid>
+        <Div id="Div00" taborder="3" text="Div00" position="absolute 0 0 765 40">
+          <Layouts>
+            <Layout>
+              <Static id="stTitle" text="global.domain.weeklyschd" position="absolute 18 10 219 32"/>
+            </Layout>
+          </Layouts>
+        </Div>
+        <Static id="Static00" position="absolute 2 10 16 32" style="background:URL('image::bullet_WF_Lev1.png') left middle; " text=""/>
+      </Layout>
+    </Layouts>
+    <Objects>
+      <Dataset id="dsBaseInfo" firefirstcount="0" firenextcount="0" useclientlayout="false" updatecontrol="true" enableevent="true" loadkeymode="keep" loadfiltermode="keep" reversesubsum="false">
+        <ColumnInfo>
+          <Column id="DATE" type="STRING" size="256"/>
+          <Column id="INFO" type="STRING" size="256"/>
+        </ColumnInfo>
+      </Dataset>
+      <Dataset id="dsSchd" firefirstcount="0" firenextcount="0" useclientlayout="false" updatecontrol="true" enableevent="true" loadkeymode="keep" loadfiltermode="keep" reversesubsum="false">
+        <ColumnInfo>
+          <Column id="SCHD_ID" type="STRING" size="256"/>
+          <Column id="SCHD_STARTDATE" type="STRING" size="256"/>
+          <Column id="SCHD_ENDDATE" type="STRING" size="256"/>
+          <Column id="SCHD_TITLE" type="STRING" size="256"/>
+          <Column id="SCHD_CONTENTS" type="STRING" size="256"/>
+          <Column id="SCHD_PLACE" type="STRING" size="256"/>
+        </ColumnInfo>
+      </Dataset>
+      <Dataset id="dsGrdCalendar" firefirstcount="0" firenextcount="0" useclientlayout="false" updatecontrol="true" enableevent="true" loadkeymode="keep" loadfiltermode="keep" reversesubsum="false">
+        <ColumnInfo>
+          <Column id="DAY" type="STRING" size="256"/>
+          <Column id="INFO" type="STRING" size="256"/>
+          <Column id="BASE_INFO" type="STRING" size="256"/>
+          <Column id="HOL" type="STRING" size="256"/>
+          <Column id="IMPL" type="STRING" size="256"/>
+          <Column id="SCHD_ID" type="STRING" size="256"/>
+        </ColumnInfo>
+      </Dataset>
+      <Dataset id="dsSearch" firefirstcount="0" firenextcount="0" useclientlayout="false" updatecontrol="true" enableevent="true" loadkeymode="keep" loadfiltermode="keep" reversesubsum="false">
+        <ColumnInfo>
+          <Column id="SEARCH_CONDITION" type="STRING" size="256"/>
+          <Column id="SEARCH_KEYWORD" type="STRING" size="256"/>
+        </ColumnInfo>
+      </Dataset>
+      <Dataset id="dsService" firefirstcount="0" firenextcount="0" useclientlayout="false" updatecontrol="true" enableevent="true" loadkeymode="keep" loadfiltermode="keep" reversesubsum="false">
+        <ColumnInfo>
+          <Column id="SVC_ID" type="STRING" size="100"/>
+          <Column id="QUERY_LIST" type="STRING" size="256"/>
+          <Column id="SERVICE" type="STRING" size="100"/>
+          <Column id="IN_DATASET_LIST" type="STRING" size="256"/>
+          <Column id="OUT_DATASET_LIST" type="STRING" size="256"/>
+          <Column id="CONTROLLER" type="STRING" size="512"/>
+          <Column id="CALLBACK" type="STRING" size="100"/>
+          <Column id="SYNC_YN" type="STRING" size="1"/>
+        </ColumnInfo>
+        <Rows>
+          <Row>
+            <Col id="SVC_ID">getListSchedule</Col>
+            <Col id="QUERY_LIST">querySet1=findXPScheduleList</Col>
+            <Col id="OUT_DATASET_LIST">dsSchd=querySet1</Col>
+            <Col id="IN_DATASET_LIST">querySet1=dsSearch</Col>
+          </Row>
+        </Rows>
+      </Dataset>
+    </Objects>
+    <Script type="xscript4.0"><![CDATA[include "lib::commonScript.xjs";
+
+var strDateOfToday = gfnToday();
+
+// Form onload 이벤트 처리
+function SAMPLE012_onload(obj:Form, e:LoadEventInfo)
+{
+	// 데이터를 수신
+	gfnService("getListSchedule");
+	
+	// 각 컴포넌트 타이틀 국제화 처리
+	gfnSetTitle();
+}
+
+// 주간 일정 달력을 그리는 함수
+function fnDrawCalendarWeekly(objGridDataset, objGrid, objBaseInfoDataset, objScheduleDataset) {
+	strDateOfToday = gfnIsNull(strDateOfToday) ? gfnToday() : strDateOfToday;
+	
+	var strDate, nNewRow;
+	var nDayOfToday;
+	
+	fnMakeBaseInfo(dsBaseInfo, strDateOfToday);
+	
+	objGrid.binddataset = "";
+	objGridDataset.clearData();
+	
+	nDayOfToday = gfnGetDay(strDateOfToday);
+	strDate = gfnAddDate(strDateOfToday, -nDayOfToday);
+	
+	objGrid.userData = strDate;
+	
+	for(var i = 0 ; i <= 6 ; i++){
+		nNewRow = objGridDataset.addRow();
+		objGridDataset.setColumn(nNewRow, "DAY", strDate);
+		
+		// 휴일 처리
+//		if(gfnIsHoliday(strDate) != ""){
+//			objGridDataset.setColumn(nNewRow, "HOL", "1");
+//		}
+		
+		// dsBaseInfo : 달력 Data
+		var nBaseInfoRow = objBaseInfoDataset.findRow("DATE", strDate);
+		if(nBaseInfoRow >= 0){
+			objGridDataset.setColumn(nNewRow, "BASE_INFO", objBaseInfoDataset.getColumn(nBaseInfoRow, "INFO"));
+		}
+		strDate = gfnAddDate(strDate, 1);	
+	}
+	
+	var nScheduleRow, nCalendarRow;
+	var strScheduleStartDate, strScheduleEndDate, strScheduledDate;
+	
+	// 스케쥴 시작일~종료일 SCHD_TITLE로 setColumn
+	for(nScheduleRow = 0 ; nScheduleRow < objScheduleDataset.rowcount ; nScheduleRow++){
+		strScheduleStartDate = objScheduleDataset.getColumn(nScheduleRow, "SCHD_STARTDATE");
+		strScheduleEndDate = objScheduleDataset.getColumn(nScheduleRow, "SCHD_ENDDATE");
+		
+		// 이번주 일정인지 확인
+		if((strScheduleStartDate >= objGrid.userData && strScheduleStartDate <= gfnAddDate(objGrid.userData, 6)) || 
+				(strScheduleEndDate >= objGrid.userData && strScheduleEndDate <= gfnAddDate(objGrid.userData, 6))){
+				
+				strScheduledDate = strScheduleStartDate + "";
+				
+				for(i = 0 ; i < gfnGetDiffDay(strScheduleStartDate, strScheduleEndDate) ; i++){
+					nCalendarRow = objGridDataset.findRow("DAY", strScheduledDate);
+					
+					if(nCalendarRow >= 0){
+						
+						objGridDataset.setColumn(nCalendarRow, "INFO", objScheduleDataset.getColumn(nScheduleRow, "SCHD_TITLE"));
+						objGridDataset.setColumn(nCalendarRow, "SCHD_ID", objScheduleDataset.getColumn(nScheduleRow, "SCHD_ID"));
+					}
+					strScheduledDate = gfnAddDate(strScheduledDate, 1);
+				}
+		}
+	}
+	
+	var nOrderOfWeek;
+	strDate = gfnAddDate(objGrid.userData, 6);
+	nOrderOfWeek = parseInt(gfnSubStr(strDate, 6, 2)) / 7;
+	if(nOrderOfWeek <= 1)
+		nOrderOfWeek = 1;
+	else if(nOrderOfWeek <= 2)
+		nOrderOfWeek = 2;
+	else if(nOrderOfWeek <= 3)
+		nOrderOfWeek = 3;
+	else if(nOrderOfWeek <= 4)
+		nOrderOfWeek = 4;
+	else if(nOrderOfWeek <= 5)
+		nOrderOfWeek = 5;
+	divSearch.stWeek.text = gfnSubStr(strDate, 0, 4) + "년 " + gfnSubStr(strDate, 4, 2) + "월 " + nOrderOfWeek + "주차";
+		
+	objGrid.binddataset = objGridDataset.name;
+}
+
+// 달력 기본 정보 처리(공휴일, 음력)
+function fnMakeBaseInfo(objBaseInfoDataset, strDateOfToday) {
+	var strHolidayName, strLunar, nMonthOfLunar, nDayOfLunar;
+	var nNewRow;
+	var strDate;
+	var nDayOfToday = gfnGetDay(strDateOfToday);
+	
+	objBaseInfoDataset.clearData();
+	strDate = gfnAddDate(strDateOfToday, -nDayOfToday);
+	
+	// 공휴일 지정
+//	for(var i = 0 ; i <= 6 ; i++){
+//		strHolidayName = gfnIsHoliday(strDate);
+		
+//		if(strHolidayName != "") {
+//			nNewRow = objBaseInfoDataset.addRow();
+//			objBaseInfoDataset.setColumn(nNewRow, "DATE", strDate);
+//			objBaseInfoDataset.setColumn(nNewRow, "INFO", strHolidayName);
+//		}
+		
+		// 음력 표기
+//		if(i % 5 == 1){
+//			strLunar = gfnSolar2Lunar(strDate);
+//			nMonthOfLunar = parseInt(gfnSubStr(strLunar, 5, 2));
+//			nDayOfLunar = parseInt(gfnSubStr(strLunar, 7, 2));
+//			nNewRow = objBaseInfoDataset.addRow();
+//			objBaseInfoDataset.setColumn(nNewRow, "DATE", strDate);
+//			objBaseInfoDataset.setColumn(nNewRow, "INFO", "(" + nMonthOfLunar + "." + nDayOfLunar + ")");
+//		}
+//		strDate = gfnAddDate(strDate, 1);
+//	}
+}
+
+// ◀ 버튼 클릭 이벤트
+function divSearch_btLeft_onclick(obj:Button,  e:ClickEventInfo)
+{
+	// 현재 날짜에서 한 주 전 정보로 달력을 그림
+	strDateOfToday = gfnAddDate(strDateOfToday, -7);
+	
+	fnDrawCalendarWeekly(dsGrdCalendar, grdCalendar, dsBaseInfo, dsSchd);
+}
+
+// ▶ 버튼 클릭 이벤트
+function divSearch_btRight_onclick(obj:Button,  e:ClickEventInfo)
+{
+	// 현재 날짜 기준 다움즈 정보를 달력에 그림
+	strDateOfToday = gfnAddDate(strDateOfToday, 7);
+	
+	fnDrawCalendarWeekly(dsGrdCalendar, grdCalendar, dsBaseInfo, dsSchd);	
+}
+
+// 날짜 이동 버튼 클릭
+function divSearch_btMoveTo_onclick(obj:Button,  e:ClickEventInfo)
+{
+	var strDate = gfnGetComponentValue("calSearchDate", "value");
+	trace(strDate);
+	if(gfnIsNull(strDate)){
+		gfnAlertMsg("msg.noselect.date", "WARN");
+		return;
+	} else if(parseInt(strDate) <= 20000101){ 
+		gfnAlertMsg("msg.gt.maxdate", "ERR");
+		return;
+	} else {
+		strDateOfToday = gfnGetComponentValue("calSearchDate", "value") + "";
+		fnDrawCalendarWeekly(dsGrdCalendar, grdCalendar, dsBaseInfo, dsSchd);		
+	}
+}
+
+// 달력 더블 클릭 이벤트 처리
+function grdCalendar_oncelldblclick(obj:Grid, e:GridClickEventInfo)
+{
+	var strSelectDate = dsGrdCalendar.getColumn(e.row, "DAY");
+	var strScheduleId = dsGrdCalendar.getColumn(e.row, "SCHD_ID");
+	var retStr;
+	
+	// 클릭한 날의 일정이 있는 경우 기존의 일정을 수정하는 팝업 생성
+	// 일정이 없는 경우 새로운 일정을 추가 하는 팝업 생성
+	if(e.cell == 2){
+		if(gfnIsNull(strScheduleId)){
+			retStr = gfnShowModal("sample::SAMPLE012_POPUP.xfdl", {paramMode:"C", paramDate:strSelectDate}, "global.domain.schddetail", 525, 300);
+		} else {
+			dsSchd.rowposition = dsSchd.findRow("SCHD_ID", strScheduleId);
+			retStr = gfnShowModal("sample::SAMPLE012_POPUP.xfdl", {paramMode:"U", dsArg:dsSchd}, "global.domain.schddetail", 525, 300);
+		}
+		
+		if(retStr == "Y"){
+			gfnService("getListSchedule");
+		}
+	}
+}
+
+// 달력 expr 처리 함수
+function fnGridTodayCellExpr(strDate){
+	trace(strDate);
+	return gfnSubStr(strDate, 0, 4) + " " + gfnSubStr(strDate, 4, 6) + " " + gfnSubStr(strDate, 6, 8);
+}
+
+// gfnService 실행 후 Callback 공통 처리
+function fnCallback(strServiceId, strErrorCode, strErrorMsg){
+	if(strErrorCode == -1){
+		gfnAlertMsg(strErrorMsg, "ERR");
+	} else {
+		if(strServiceId == "getListSchedule"){
+			fnDrawCalendarWeekly(dsGrdCalendar, grdCalendar, dsBaseInfo, dsSchd);
+		} else {
+			frm11CALMTLY_OnLoadCompleted();
+		}
+	}
+}]]></Script>
+  </Form>
+</FDL>

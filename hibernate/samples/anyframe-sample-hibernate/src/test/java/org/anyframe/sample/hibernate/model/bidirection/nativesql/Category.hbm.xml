@@ -1,0 +1,35 @@
+<?xml version="1.0"?>
+<!DOCTYPE hibernate-mapping PUBLIC "-//Hibernate/Hibernate Mapping DTD 3.0//EN"
+"http://hibernate.sourceforge.net/hibernate-mapping-3.0.dtd">
+<!-- Generated 2008. 9. 1 ???? 1:00:43 by Hibernate Tools 3.2.1.GA -->
+<hibernate-mapping>
+	<!-- reference schema attribute when hbm2ddl tool create table. so, remove schema definition. (schema=DEFULAT)--> 
+    <class name="org.anyframe.sample.hibernate.model.bidirection.Category" table="HIBERNATE_CATEGORY" lazy="true">
+        <id name="categoryId" type="string">
+            <column name="CATEGORY_ID" length="9" />
+            <generator class="assigned" />
+        </id>
+        <property name="categoryName" type="string">
+            <column name="CATEGORY_NAME" length="50" not-null="true" />
+        </property>
+        <property name="categoryDesc" type="string">
+            <column name="CATEGORY_DESC" length="100" />
+        </property>
+        <set name="movies" inverse="true" table="HIBERNATE_MOVIE_CATEGORY" cascade="save-update">
+            <key>
+                <column name="CATEGORY_ID" length="9" not-null="true" />
+            </key>
+            <many-to-many entity-name="org.anyframe.sample.hibernate.model.bidirection.Movie">
+                <column name="MOVIE_ID" length="8" not-null="true" />
+            </many-to-many>
+        </set>
+    </class>     
+    
+    
+	<sql-query name="callFindCategoryList" callable="true">
+		<return alias="category" class="org.anyframe.sample.hibernate.model.bidirection.Category"/>
+		<![CDATA[	
+		{ call FIND_CATEGORY_LIST (?, :condition) }
+		]]>
+	</sql-query>      
+</hibernate-mapping>

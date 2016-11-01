@@ -1,0 +1,19 @@
+		<!--xp-query-findXPBoardList-START-->
+			SELECT
+			TITLE, CONTENTS, REG_ID, REG_DATE, COMMUNITY_ID, POST_ID
+			FROM XP_BOARD
+			<!--Velocity-Support-findXPBoardList-START-->
+			#if ($SEARCH_CONDITION.length() &gt; 0 &amp;&amp; "0" == $SEARCH_CONDITION)
+				WHERE TITLE like CONCAT('%' , :SEARCH_KEYWORD , '%')
+			#elseif ($SEARCH_CONDITION.length() &gt; 0 &amp;&amp; "1" == $SEARCH_CONDITION)
+			    WHERE REG_ID like CONCAT('%' , :SEARCH_KEYWORD , '%')
+			#end
+			<!--Velocity-Support-findXPBoardList-END-->
+			ORDER BY REG_DATE DESC		
+		<!--xp-query-findXPBoardList-END-->
+		<!--xp-query-createXPBoard-START-->
+			INSERT INTO XP_BOARD
+			(TITLE, CONTENTS, REG_ID, REG_DATE, COMMUNITY_ID, POST_ID)
+			VALUES (:TITLE, :CONTENTS, :REG_ID, now(), :COMMUNITY_ID, CONCAT('POST-' , XP_POST_ID_SEQ_NEXT_VALUE()))		
+		<!--xp-query-createXPBoard-END-->
+		
