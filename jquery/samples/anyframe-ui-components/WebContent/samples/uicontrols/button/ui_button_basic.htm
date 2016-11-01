@@ -1,0 +1,116 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN"
+"http://www.w3.org/TR/html4/loose.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+ 
+ <!-- Start of head-->
+<head>
+<meta http-equiv="content-type" content="text/html; charset=UTF-8" />
+<title>BUTTON : Basics </title>
+
+<!-- include required common files  ----------------------------------------------------->
+<script type="text/javascript" src="../../../common/exlibs/jquery-1.9.0.js" ></script>
+<script type="text/javascript" src="../../../common/exlibs/highlighter/scripts/shCore.js" ></script>
+<script type="text/javascript" src="../../../common/exlibs/highlighter/scripts/shBrushJScript.js" ></script>
+<script type="text/javascript" src="../../../common/js/template_common.js" ></script>
+
+<!--  stylesheet  -->
+<link type="text/css" rel="stylesheet" href="../../../common/exlibs/highlighter/styles/shCore.css"/>
+<link type="text/css" rel="stylesheet" href="../../../common/exlibs/highlighter/styles/shCoreDefault.css"/>
+<link type="text/css" rel="stylesheet" href="../../../common/css/style.css"/>
+
+<!-- scripts to support sample page  ----------------------------------------------------->
+<script type="text/javascript">
+
+$(function() {
+	JTemplate.load("ui_button_basic_src.htm");
+	JTemplate.loadDemo2("ui_button_basic_src.htm", {height:'300px'});
+});  
+
+</script>
+ 
+</head>
+<!-- End of head -->
+
+<!-- Start of body -->
+ <body >
+ <!-- HEADER BAR -------------------------------------------------------------->
+<div class="content-title">Component - Button</div>
+ 
+ <!-- START OF PAGE ... -------------------------------------------------------->
+<div id="page">
+	<p class = "header-title">Button 기본기능</p>
+	<p class="header-desc">: Button 의 기본적인 기능으로, 4가지 기본적인 옵션을 사용한 컨트롤을 제공하는 예이다.</p>
+<!-- DEMO ----------------------------------------------------------------------->
+	<div class="demo">
+		<h3 >Demo</h3>
+		<div id="visualExample"></div>
+	</div>
+
+
+<!-- DEMO DESCRIPTION----------------------------------------------------->
+	<div class="desc">
+		<h3>Demo Description </h3>
+		<hr>
+		<p class="desc-title">Button 내부형태</p>
+		<p class="desc-overall">  
+		: 버튼 내부의 텍스트 사용여부, 레이블의 변경, 아이콘의 활용, 활성여부에 관해 옵션설정을 바꾸어보며 실제 시각적으로 바뀌는 것을 확인해 볼 수 있다.
+		</p>
+		<ul class ="desc-hypl">
+			<li><span>아이콘</span> : 버튼 내 아이콘과 텍스트가 함께 쓰이는 형태에 대해 4가지 타입을 확인해 볼 수 있다.</li>
+			<li><span>라벨</span> : 버튼 내부의 라벨을 사용자 임의로 변경해 볼 수 있다.</li>
+			<li><span>비활성화</span> 버튼을 사용가능 혹은 불가능하도록 비활성화시킨다.</li>
+		</ul>
+		
+	</div>
+
+<!-- CODE------------------------------------------------------------------------>
+	<div class="code">
+		<h3>Code Source </h3>
+		<pre id="codeExample" class="brush: js"></pre>
+	</div>
+	
+	
+<!-- CODE DESCRIPTION------------------------------------------------------>
+	<div class="desc">
+		<h3>Code Description </h3>
+		<hr>
+		<p class="desc-title">옵션: 초기화 설정</p>
+		<p class="desc-overall">: 다음과 같이 button 컴포넌트를 처음에 생성할 때, 적용하고자 하는 옵션값을 설정할 수 있다.</p>
+		<div class="code-block">
+			<pre>
+$("#button").accordion({
+	text : true,
+	label : "변경할 텍스트",
+	icons : { primary : "아이콘을 설정해 놓은 클래스명", secondary : "아이콘을 설정해 놓은 클래스명" },
+	disabled : true
+});	</pre>
+		</div>
+		<p>(Default 값 : text : true  /  label: null/ icon : { primary: null, secondary: null } / disabled : false)</p>
+		<p class="desc-title">옵션: 재설정</p>
+		<p class="desc-overall"> 
+		초기화된 후, 옵션을 재설정하여 사용가능하다. 본 예제에서도 초기생성 후, 옵션 재설정하여 사용하는 것에 대하여 구현해 두었다.
+		</p>
+		<div class="code-block">
+			<pre>
+$("#button").button("option", "옵션이름", "옵션 값");</pre>
+		</div>
+			
+	</div>
+	
+<!-- RELATED LINKS ----------------------------------------------------------->
+	<div class="related">
+		<h3>Related Links</h3>
+		<hr>
+		 <ul class="desc-hypl">
+           	<li>
+           		<span>Button API</span>
+           		<a href = "http://api.jqueryui.com/button"></a>
+           	</li>
+		</ul>
+	</div>
+
+</div>
+<!-- END OF PAGE------------------------------------------------------------->
+</body>
+<!-- End of body-->
+</html>

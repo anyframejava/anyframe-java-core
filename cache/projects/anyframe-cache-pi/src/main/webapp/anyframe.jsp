@@ -5,7 +5,7 @@
   	<div id="container">
     	<div class="main_greeting">
         	<dl>
-                <dt>Welcome to Anyframe 5.5.0.RC1</dt>
+                <dt>Welcome to Anyframe 5.5.1</dt>
                 <dd>Congratulations! Anyframe application has been successfully installed. Anyframe is an open source project and application framework that provides basic architecture, common technical services, templates to help you develop web applications on the Java platform quickly and efficiently.</dd>
             </dl>
         </div>
@@ -23,7 +23,7 @@
                     <td>
                     	<ul>
                     	 <!--cache-menu-START-->
-                            <li><a href="<c:url value='/cacheGenre.do?method=list'/>">Cache 1.0.4.RC1</a></li>
+                            <li><a href="<c:url value='/cacheGenre.do?method=list'/>">Cache 1.0.5</a></li>
                          <!--cache-menu-END-->
                         <!--Add new menu here-->
                         </ul>

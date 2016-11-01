@@ -38,36 +38,35 @@ public class MovieDao {
 		MOVIES.put(movie2.getMovieId(), movie2);
 	}
 
-	public List<Movie> findMovieListAll() throws Exception {
+	public List<Movie> findMovieListAll() {
 		List<Movie> movieList = new ArrayList<Movie>();
 		Iterator<Movie> itr = this.MOVIES.values().iterator();
 		while (itr.hasNext())
-			movieList.add((Movie) itr.next());
+			movieList.add(itr.next());
 		return movieList;
 	}
 
-	public Map<String, Movie> findMovieMapAll() throws Exception {
+	public Map<String, Movie> findMovieMapAll() {
 		return this.MOVIES;
 	}
 
-	public List<Movie> findMovieList(Country country, Category category)
-			throws Exception {
+	public List<Movie> findMovieList(Country country, Category category) {
 		return null;
 	}
 
-	public Movie fineMovie(String movieId) throws Exception {
-		return (Movie) this.MOVIES.get(movieId);
+	public Movie fineMovie(String movieId) {
+		return this.MOVIES.get(movieId);
 	}
 
-	public void createMovie(Movie movie) throws Exception {
+	public void createMovie(Movie movie) {
 		this.MOVIES.put(movie.getMovieId(), movie);
 	}
 
-	public void updateMovie(Movie movie) throws Exception {
+	public void updateMovie(Movie movie) {
 		this.MOVIES.put(movie.getMovieId(), movie);
 	}
 
-	public void removeMovie(Movie movie) throws Exception {
+	public void removeMovie(Movie movie) {
 		this.MOVIES.remove(movie.getMovieId());
 	}
 }

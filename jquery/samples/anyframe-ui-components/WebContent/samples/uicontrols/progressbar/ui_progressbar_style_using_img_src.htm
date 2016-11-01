@@ -1,0 +1,153 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN"
+"http://www.w3.org/TR/html4/loose.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+
+<head>
+<meta http-equiv="content-type" content="text/html; charset=UTF-8" />
+<title>[Progressbar] Img Style Sample</title>
+<link href="../../../common/css/smoothness/jquery-ui-1.10.0.custom.css"
+	rel="stylesheet">
+<script src="../../../common/exlibs/jquery-1.9.0.js"></script>
+<script src="../../../common/exlibs/jquery-ui-1.10.0.custom.js"></script>
+
+<link type="text/css" rel="stylesheet"
+	href="../../../common/css/style.css" />
+<link type="text/css" rel="stylesheet" href="sub_css/pbstyle.css">
+
+<script type="text/javascript">
+
+	var ENV = {
+		ID_PBAR_CIRCLE : "#progressbarCircle",
+		ID_PBAR_SQUARE : "#progressbarSquare",
+		ID_PBAR_POINT : "#progressbarPoint",
+		VALUE_INTERVAL_N : 1,
+		CHECK_STOP : false,
+		TIME : 50
+	};
+
+	var progressbarStyleImgView = {
+
+		setChange : function(target) {
+			var n = ENV.VALUE_INTERVAL_N;
+
+			function changeVal() {
+
+				var val = $(target).progressbar("option", "value") || 0;
+				$(target).progressbar("option", "value", val + n);
+
+				if (val <= 99 && ENV.CHECK_STOP == false) {
+					setTimeout(changeVal, ENV.TIME);
+				};
+			}
+
+			setTimeout(changeVal, 100);
+		},
+
+		setStartBtn : function(startBtn, target) {
+			$(startBtn).bind("click", function() {
+				ENV.CHECK_STOP = false;
+				progressbarStyleImgView.setChange(target);
+				var val = $(target).progressbar("option", "value");
+				if (val == 100) {
+					$(target).progressbar("option", "value", 0);
+				}
+			});
+		},
+
+		setStopBtn : function(stopBtn, target) {
+			$(stopBtn).on("click", function() {
+				ENV.CHECK_STOP = true;
+				progressbarStyleImgView.setChange(target);
+			});
+		},
+
+		setValueImg : function(outImg, inValImg, target) {
+			var pbarOuter = $(target);
+			pbarOuter.css({
+				"border" : "none",
+				"height" : "40px",
+				"background" : outImg
+				});
+		
+			var pbarInVal = $(target).find(".ui-progressbar-value");
+			pbarInVal.css({
+				"border" : "none",
+				"margin" : "0",
+				"background" : inValImg
+			});
+		},
+
+		setPointValImg : function(srcImg, target) {
+			$(target).css("border-width", "0 0 2px 0");
+			var pbarInVal = $(target).find(".ui-progressbar-value");
+			pbarInVal.css({
+				"border" : "none",
+				"background" : "none",
+				"text-align" : "right"
+			});
+			pbarInVal.append("<div><img src='"+srcImg+"' width='41' height='22' ></div>");
+		}
+
+	};
+
+	$(document).ready(	function() {
+
+		$("button").button();
+		$(ENV.ID_PBAR_SQUARE).progressbar();
+		$(ENV.ID_PBAR_CIRCLE).progressbar();
+		$(ENV.ID_PBAR_POINT).progressbar();
+
+		//각 progressbar의 start, stop button 조작
+		progressbarStyleImgView.setStartBtn("#squareStartBtn", ENV.ID_PBAR_SQUARE);
+		progressbarStyleImgView.setStopBtn("#squareStopBtn", ENV.ID_PBAR_SQUARE);
+		progressbarStyleImgView.setStartBtn("#circleStartBtn", ENV.ID_PBAR_CIRCLE);
+		progressbarStyleImgView.setStopBtn("#circleStopBtn", ENV.ID_PBAR_CIRCLE);
+		progressbarStyleImgView.setStartBtn("#pointStartBtn", ENV.ID_PBAR_POINT);
+		progressbarStyleImgView.setStopBtn("#pointStopBtn", ENV.ID_PBAR_POINT);
+
+		//value image class 조작	
+		var squareOuter = "url('sub_css/images/square_all_out.jpg') no-repeat";
+		var squareInVal = "url('sub_css/images/square_all_in.jpg') no-repeat";
+		progressbarStyleImgView.setValueImg(squareOuter, squareInVal, ENV.ID_PBAR_SQUARE);
+		
+
+		var circleOuter = "url('sub_css/images/circle_all_out.jpg') no-repeat";
+		var circleInVal = "url('sub_css/images/circle_all_in.jpg') no-repeat";
+		progressbarStyleImgView.setValueImg(circleOuter, circleInVal, ENV.ID_PBAR_CIRCLE);
+
+		//value pointer image 조작
+		var pointImg = "sub_css/images/icon_car_large.png";
+		progressbarStyleImgView.setPointValImg(pointImg, ENV.ID_PBAR_POINT);
+
+	});
+</script>
+</head>
+<body>
+
+	<div class="title">Square-Shape Type</div>
+	<div id="progressbarSquare" class="display-area img-square"></div>
+
+	<div class="sub-div">
+		<button id="squareStartBtn" type="button">start</button>
+		<button id="squareStopBtn" type="button">stop</button>
+	</div>
+
+	<div class="title">Circle-Shape Type</div>
+	<div id="progressbarCircle" class="display-area img-circle"></div>
+
+	<div class="sub-div">
+		<button id="circleStartBtn" type="button">start</button>
+		<button id="circleStopBtn" type="button">stop</button>
+	</div>
+
+
+	<div class="title">Point Type</div>
+	<div id="progressbarPoint" class="display-area"></div>
+
+	<div class="sub-div">
+		<button id="pointStartBtn" type="button">start</button>
+		<button id="pointStopBtn" type="button">stop</button>
+	</div>
+
+</body>
+</html>

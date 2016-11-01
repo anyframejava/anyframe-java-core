@@ -1,0 +1,146 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN"
+"http://www.w3.org/TR/html4/loose.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+
+<head>
+<meta http-equiv="content-type" content="text/html; charset=UTF-8" />
+<title>[Accordion] Basic Sample</title>
+<link href="../../../common/css/smoothness/jquery-ui-1.10.0.custom.css"	rel="stylesheet">
+<script src="../../../common/exlibs/jquery-1.9.0.js"></script>
+<script src="../../../common/exlibs/jquery-ui-1.10.0.custom.js"></script>
+
+<link type="text/css" rel="stylesheet" href="../../../common/css/style.css" />
+<link type="text/css" rel="stylesheet" href="sub_css/basic.css">
+
+<script type="text/javascript">
+
+	var ENV = {
+		ID_ACCORDION : "#accordion",
+		LAST_ACTIVE_POS : 0
+	};
+	
+	var OPTIONS = {
+			COLLAPSIBLE : "collapsible",
+			ACTIVE : "active",
+			EVENT : "event"
+	};	
+			
+	function setOptions(target, kind, value){
+		$(target).accordion("option", kind, value);
+	};
+		
+	function getOptions(target, kind) {
+		return $(target).accordion("option", kind);
+	};
+
+	$(document).ready(function() {
+
+		$(ENV.ID_ACCORDION).accordion( 
+				{
+					activate: function(evt, ui) {
+						if (ui.newHeader.attr("id") !== undefined) {
+							var tmpArry = ui.newHeader.attr("id").split('-');
+							ENV.LAST_ACTIVE_POS = parseInt(tmpArry[tmpArry.length - 1]);
+						}
+					}			
+				}
+		);
+		
+		$("button[name='active']").button();
+
+		$("#collapsible").on("click", function() {
+			setOptions(ENV.ID_ACCORDION, OPTIONS.ACTIVE, ENV.LAST_ACTIVE_POS);
+			setOptions(ENV.ID_ACCORDION, OPTIONS.COLLAPSIBLE , $(this).is(":checked"));
+		});
+		
+		$("input:radio[name='event']").on("click", function() {
+			setOptions(ENV.ID_ACCORDION, OPTIONS.EVENT , $(this).val());
+		});
+		
+		$("button[name='active']").on("click", function(){
+			setOptions( ENV.ID_ACCORDION, OPTIONS.ACTIVE, parseInt($(this).val()) );
+		});		
+
+	});
+</script>
+</head>
+
+<body>
+
+	<div class="title">기본 accordion형태 조작</div>
+	<div>
+		<div class="text-area">모두닫힘 여부 :</div>
+		<div class="input-area">
+			<input type="checkbox" id="collapsible" />
+			<label>collapsible(하위 CONTENTS 창이 접힐 수 있는지 결정)</label>
+		</div>
+	</div>
+
+	<div>
+		<div class="text-area">이벤트 변경 :</div>
+		<div class="input-area">
+			<input type="radio" name="event" value="click"  checked="checked"/>click
+			<input type="radio" name="event" value="mouseover" />mouse over
+		</div>
+	</div>
+	
+	<div>
+		<div class="text-area">창 열림 제어 :</div>
+		<div class="input-area">
+			<button name="active" value="0">section 1</button>
+			<button name="active" value="1">section 2</button>
+			<button name="active" value="2">section 3</button>
+			<button name="active" value="3">section 4</button>
+		</div>
+	</div>
+
+	<div class="display-area">
+		<div id="accordion">
+
+			<h3>Section 1</h3>
+			<div>
+				<p>
+					Accordion : Convert a pair of headers and content panels into an accordion.
+				</p>
+				<div align="center">
+					<img src="sub_css/images/accordion-cabinet.jpg" alt="Accordion Cabinet" align="middle" width="200px" height="140px">
+				</div>
+			</div>
+
+			<h3>Section 2</h3>
+			<div>
+				<p>
+					Accordions support arbitrary markup, but each content panel must always be the next sibling after its associated header. 
+					See the header option for information on how to use custom markup structures. The panels can be activated programmatically 
+					by setting the active option.
+				</p>
+			</div>
+			<h3>Section 3</h3>
+			<div>
+				<p>
+					This widget requires some functional CSS, otherwise it won't work. 
+					If you build a custom theme, use the widget's specific CSS file as a starting point.
+				</p>
+				<ul>
+					<li>header theme</li>
+					<li>panel theme</li>
+					<li>others</li>
+				</ul>
+			</div>
+			<h3>Section 4</h3>
+			<div>
+				<p>
+					Header :Selector for the header element, applied via .find() on the main accordion element. 
+					Content panels must be the sibling immedately after their associated headers.
+				</p>
+				<p>
+					Active<br> 
+					Boolean: Setting active to false will collapse all panels. This requires the collapsible option to be true. 
+					Integer: The zero-based index of the panel that is active (open). 
+					A negative value selects panels going backward from the last panel.
+				</p>
+			</div>
+		</div>
+	</div>
+</body>
+</html>

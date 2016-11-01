@@ -1,0 +1,120 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN"
+"http://www.w3.org/TR/html4/loose.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+
+<head>
+<meta http-equiv="content-type" content="text/html; charset=UTF-8" />
+<title>[Accordion] Disabled</title>
+<link href="../../../common/css/smoothness/jquery-ui-1.10.0.custom.css" rel="stylesheet">
+<script src="../../../common/exlibs/jquery-1.9.0.js"></script>
+<script src="../../../common/exlibs/jquery-ui-1.10.0.custom.js"></script>
+
+<link type="text/css" rel="stylesheet" href="../../../common/css/style.css" />
+<link type="text/css" rel="stylesheet" href="sub_css/disabled.css">
+
+<script type="text/javascript">
+	var ENV = {
+		ID_ACCORDION : "#accordion"
+	};
+
+	var mainView = {
+
+		setDisabled : function(target, checked, index) {
+			var disabled = $(target).find("h3").eq(index);
+			var active = $(target).accordion("option", "active");
+			var disabledClass = "ui-state-disabled";
+
+			if (checked == true) {
+				disabled.addClass(disabledClass);
+				if (index == active) {
+					disabled.next().addClass(disabledClass);
+				}
+			} else {
+				disabled.removeClass(disabledClass);
+				if (index == active) {
+					disabled.next().removeClass(disabledClass);
+				}
+			}
+		}
+	};
+
+	$(document).ready(function() {
+
+				$(ENV.ID_ACCORDION).accordion();
+
+				$("input:checkbox[name='disabled']").on("click", function() {
+							var index = parseInt($(this).val());
+							mainView.setDisabled(ENV.ID_ACCORDION, $(this).is(":checked"), index);
+				});
+
+	});
+</script>
+
+
+</head>
+
+<body>
+
+	<div class="title">섹셜별 비활성화</div>
+	<div>
+		<div class="text-area">비활성화 :</div>
+		<div class="input-area">
+			<input type="checkbox" name="disabled" value="0">section 1 <input
+				type="checkbox" name="disabled" value="1">section 2 <input
+				type="checkbox" name="disabled" value="2">section 3 <input
+				type="checkbox" name="disabled" value="3">section 4
+		</div>
+	</div>
+
+
+	<div class="display-area">
+		<div id="accordion">
+
+			<h3>Section 1</h3>
+			<div>
+				<p>
+					Accordion : Convert a pair of headers and content panels into an accordion.
+				</p>
+				<div align="center">
+					<img src="sub_css/images/accordion-cabinet.jpg" alt="Accordion Cabinet" align="middle" width="200px" height="140px">
+				</div>
+			</div>
+
+			<h3>Section 2</h3>
+			<div>
+				<p>
+					Accordions support arbitrary markup, but each content panel must always be the next sibling after its associated header. 
+					See the header option for information on how to use custom markup structures. The panels can be activated programmatically 
+					by setting the active option.
+				</p>
+			</div>
+			<h3>Section 3</h3>
+			<div>
+				<p>
+					This widget requires some functional CSS, otherwise it won't work. 
+					If you build a custom theme, use the widget's specific CSS file as a starting point.
+				</p>
+				<ul>
+					<li>header theme</li>
+					<li>panel theme</li>
+					<li>others</li>
+				</ul>
+			</div>
+			<h3>Section 4</h3>
+			<div>
+				<p>
+					Header :Selector for the header element, applied via .find() on the main accordion element. 
+					Content panels must be the sibling immedately after their associated headers.
+				</p>
+				<p>
+					Active<br> 
+					Boolean: Setting active to false will collapse all panels. This requires the collapsible option to be true. 
+					Integer: The zero-based index of the panel that is active (open). 
+					A negative value selects panels going backward from the last panel.
+				</p>
+			</div>
+		</div>
+	</div>
+	
+</body>
+</html>

@@ -1,0 +1,75 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN"
+"http://www.w3.org/TR/html4/loose.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+
+<head>
+<meta http-equiv="content-type" content="text/html; charset=UTF-8" />
+<title>[AnyFrame UI Button] Basic Sample</title>
+ <link href="../../../common/css/smoothness/jquery-ui-1.10.0.custom.css" rel="stylesheet">
+<script src="../../../common/exlibs/jquery-1.9.0.js"></script>
+<script src="../../../common/exlibs/jquery-ui-1.10.0.custom.js"></script>
+
+<link type="text/css" rel="stylesheet" href="../../../common/css/style.css" />
+<link type="text/css" rel="stylesheet" href="sub_css/inputInfo.css">
+    
+</head>
+
+
+<script>
+
+	$(document).ready(function() {
+		
+		$("input:submit, input:reset").button();
+
+		$("form").submit(function(event) {			
+			
+			$("input:text[name='name']").each(function(index) {
+				$(".writeName").eq(index).text($(this).val());
+			});
+		});
+
+	});
+</script>
+</head>
+
+
+<body>
+	<div class="title">submit/Reset 버튼 조작</div>
+	
+	<form action="javascript:alert('you submitted!');">
+		<div>
+			<div class="text-area">First name:</div>
+			<div class="input-area">
+				<input type="text" name="name" value="이름"><br>
+			</div>
+		</div>
+		<div>
+			<div class="text-area">Last name:</div>
+			<div class="input-area">
+				 <input type="text" name="name" value="성"><br>
+			</div>
+		</div>
+		<div class="button-area">
+			<input type="submit" value="Submit" /> 
+			<input type="reset"  value="Reset" />
+		</div>
+	</form>
+	<br> -----------------------------------------------------------------------------------
+	<br>
+	<div class="text-area"><결과정보></div>
+	<div>
+		<div class="text-area">First name:</div>
+		<div class="input-area">
+			<span class="writeName" style="color: blue;"></span><br>
+		</div>
+	</div>
+	<div>
+		<div class="text-area">Last name:</div>
+		<div class="input-area">
+			<span class="writeName" style="color: blue;"></span>
+		</div>
+	</div>
+</body>
+
+</html>
+

@@ -1,0 +1,128 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN"
+"http://www.w3.org/TR/html4/loose.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+ 
+ <!-- Start of head-->
+<head>
+<meta http-equiv="content-type" content="text/html; charset=UTF-8" />
+<title>Tab 기본 </title>
+
+
+<!-- include required common files  ----------------------------------------------------->
+<script type="text/javascript" src="../../../common/exlibs/jquery-1.9.0.js" ></script>
+
+<script type="text/javascript" src="../../../common/exlibs/highlighter/scripts/shCore.js" ></script>
+<script type="text/javascript" src="../../../common/exlibs/highlighter/scripts/shBrushJScript.js" ></script>
+
+<script type="text/javascript" src="../../../common/js/template_common.js" ></script>
+
+<!--  stylesheet  -->
+<link type="text/css" rel="stylesheet" href="../../../common/exlibs/highlighter/styles/shCore.css"/>
+<link type="text/css" rel="stylesheet" href="../../../common/exlibs/highlighter/styles/shCoreDefault.css"/>
+ <link rel="stylesheet" type="text/css" href="../../../common/css/style.css" media="screen" /> <!---->
+
+
+
+<!-- scripts to support sample page  ----------------------------------------------------->
+<script type="text/javascript">
+
+$(function() {
+	$("#common").load("../../../common/basicinfo.htm");												//common : basic informations
+})
+
+
+$(function() {
+	JTemplate.load("layout_tab_basic_src.htm");					//{TODO} source url 수정
+	JTemplate.loadDemo2("layout_tab_basic_src.htm", {height:"600px"});			//{TODO} source url 수정, show visaul demo sample
+}); 
+	
+</script> 
+</head>
+<!-- End of head -->
+
+<!-- Start of body -->
+<body>
+
+<!-- HEADER BAR -------------------------------------------------------------->
+	<div class="content-title">Layout - Tab</div>
+
+
+<!-- START OF PAGE ... -------------------------------------------------------->
+	<div id="page">
+		<p class="header-title">기본기능</p>
+		<p class="header-desc">: 기본적인 TAB 유형에 대한 예들을 보여준다.</p>
+ 
+<!-- DEMO ----------------------------------------------------------------------->
+		<div class="demo">
+			<h3 >Demo</h3>
+	       	<div id ="visualExample"></div>
+		</div>
+        
+<!-- DEMO DESCRIPTION----------------------------------------------------->	
+		<div class="desc">
+			<h3>Demo Description</h3>
+			<hr>
+			<p class="desc-overall">
+			상단 TAB, 하단 TAB, Contents 영역인 Panel 부분이 접히는 유형을 구현하였다.<br>
+			추가적으로 마우스 클릭이 아닌, MouseOver 시 에 도 같은 동작을 하는 예를 구현하였다.		
+			</p>
+		</div>
+		        
+<!-- CODE------------------------------------------------------------------------>
+		<div class="code">
+			<h3>Code Source</h3>
+			<pre id="codeExample" class="brush: js"></pre>
+        </div>
+        
+        
+<!-- CODE DESCRIPTION------------------------------------------------------>
+		<div class="desc">
+		    <h3>Code Description</h3>
+		    <hr>
+		    
+		    <p class="desc-title">초기화</p>
+		    <p class="desc-overall">
+		    ul, li, a 태그들로 TAB 버튼 영역을 구현하고, Contents 영역인 패널부분은 Div 태그로 내용을 구현한다.<br>
+			container 가 되는 element 를 대상으로 "$(element).tabs()" 와 같이 호출하면 된다.<br>
+			이 때 parameter 로 전달되는 값들은 초기화 시 사용된다.
+		    </p>
+		    
+		    <p class="desc-title">상/하 위치</p>
+		    <span class="code-line">#117 ~ #150</span>
+		    <p class="desc-overall">
+		    상단 TAB 과 하단 TAB의 모습은 해당 영역을 구성하는 ul 이하의 트리가 panel 영역 (div 영역) 의 앞/뒤 위치에 따라 결정된다.
+		    </p>
+		    
+			<p class="desc-title">탭 접기</p>
+		    <span class="code-line">#47 ~ #68</span>
+		    <p class="desc-overall">
+		    display style 값, aria-expanded 및 aria-hidden attribute 값을 조정하여 구현되었다.
+		    </p>		    
+		    
+		    <p class="desc-title">이벤트 변경</p>
+		    <span class="code-line">#80 ~ #87</span>
+		    <p class="desc-overall">
+		    $(element).tabs("option", "event", "mouseover") 와 같이 호출하면 된다. "mouseover" 값 대신  "click" 을 입력하면 기본값으로 설정된다.
+		    </p>
+		    
+		</div>
+        
+<!-- RELATED LINKS ----------------------------------------------------------->
+        <div class="related">
+            <h3>Related Links</h3>
+            <hr>
+            <ul class="desc-hypl">
+            	<li>
+            		<span>TAB API</span>
+            		<a href="http://api.jqueryui.com/tabs/"></a>
+            	</li>
+            </ul>          
+      	</div>
+      	      
+	</div>      
+<!-- End of Page-->
+
+</body>
+<!-- End of body-->
+
+</html>

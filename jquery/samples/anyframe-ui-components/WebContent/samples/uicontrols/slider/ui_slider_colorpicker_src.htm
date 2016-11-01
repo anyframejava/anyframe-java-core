@@ -1,0 +1,136 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN"
+"http://www.w3.org/TR/html4/loose.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+
+<head>
+<meta http-equiv="content-type" content="text/html; charset=UTF-8" />
+<title>[Slider] Colorpicker Sample</title>
+<link href="../../../common/css/smoothness/jquery-ui-1.10.0.custom.css"
+	rel="stylesheet">
+<script src="../../../common/exlibs/jquery-1.9.0.js"></script>
+<script src="../../../common/exlibs/jquery-ui-1.10.0.custom.js"></script>
+
+<link type="text/css" rel="stylesheet" href="../../../common/css/style.css" />
+<link type="text/css" rel="stylesheet" href="sub_css/colorpicker.css">
+
+<script type="text/javascript">
+
+	var ENV = {
+		ID_SLIDER_RED : "#redSlider",
+		ID_SLIDER_GREEN : "#greenSlider",
+		ID_SLIDER_BLUE : "#blueSlider",
+		ID_RESULT : "#result"
+	};
+
+	var mainView = {
+			
+		red : 0, 
+		green : 0, 
+		blue : 0,
+			
+		init : function() {
+			
+			$(ENV.ID_SLIDER_RED).find(".ui-slider-range")
+								.removeClass("ui-widget-header")
+								.css("background-color", "red");
+			
+			$(ENV.ID_SLIDER_GREEN).find(".ui-slider-range")
+								  .removeClass("ui-widget-header")
+								  .css("background-color", "green");
+
+			$(ENV.ID_SLIDER_BLUE).find(".ui-slider-range")
+								 .removeClass("ui-widget-header")
+								 .css("background-color", "blue");
+			
+			this.updateResult();
+		},
+		    
+		setRGB : function(red, green, blue) {
+
+			var red 	= $(ENV.ID_SLIDER_RED).slider("option", "value"),
+				green 	= $(ENV.ID_SLIDER_GREEN).slider("option", "value"),
+				blue 	= $(ENV.ID_SLIDER_BLUE).slider("option", "value"),
+				rgb 	= "rgb(" + red + "," + green + "," + blue + ")";
+			
+			$("#red").text(red);
+			$("#green").text(green);
+			$("#blue").text(blue);
+			
+			$(ENV.ID_RESULT).css("background-color", rgb);
+		},
+		
+		updateRed : function(val) {
+			this.red = val;
+			$("#red").text(val);
+			
+			this.updateResult();
+		},
+		
+		updateGreen : function(val) {
+			this.green = val;
+			$("#green").text(val);
+			
+			this.updateResult();
+		},
+		
+		updateBlue : function(val) {
+			this.blue = val;
+			$("#blue").text(val);
+			
+			this.updateResult();
+		},
+		
+		updateResult : function() {
+			$(ENV.ID_RESULT).css("background-color", "rgb(" + this.red + "," + this.green + "," + this.blue + ")");
+		}
+
+	};
+
+	$(document).ready(function() {
+		
+		$("#redSlider, #greenSlider, #blueSlider").slider({
+			range : "min",
+			min : 0,
+			max : 255,
+			step : 1,
+			value: 0,
+			slide : function(evt, ui){
+				if (this.id == "redSlider")
+					mainView.updateRed(ui.value);
+				else if (this.id == "greenSlider")
+					mainView.updateGreen(ui.value);
+				else if (this.id == "blueSlider") 
+					mainView.updateBlue(ui.value);
+			}
+		});
+		
+		mainView.init();
+				
+	});
+</script>
+</head>
+<body>
+	
+	<div class="title">Color Picker</div>
+	
+	<div class="display-outer">
+		<div class="display-area"> 
+			<div id="redSlider"></div><span id="red">0</span>
+		</div>
+		
+		<div class="display-area"> 
+			<div id="greenSlider" ></div><span id="green">0</span>
+		</div>
+		
+		<div class="display-area"> 
+			<div id="blueSlider" ></div><span id="blue">0</span>
+		</div>
+	
+	</div>
+	
+	<div id="result" class="result-area"></div>
+	
+	
+	
+</body>
+</html>

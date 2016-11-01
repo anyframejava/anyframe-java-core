@@ -19,6 +19,7 @@ import java.io.Serializable;
 import java.util.Date;
 
 import javax.validation.constraints.DecimalMax;
+import javax.validation.constraints.DecimalMin;
 import javax.validation.constraints.Digits;
 import javax.validation.constraints.Past;
 import javax.validation.constraints.Size;
@@ -57,9 +58,12 @@ public class Movie implements Serializable {
 	@Past
 	private Date releaseDate;
 
+	//Velocity-Support-ticketPrice-START
 	@NumberFormat(pattern = "#,###")
-	@Digits(integer = 5, fraction = 0)
+	@DecimalMin(value = "1")
+	@Digits(integer = 4, fraction = 0)
 	private Float ticketPrice;
+	//Velocity-Support-ticketPrice-END
 	
 	private String state;
 

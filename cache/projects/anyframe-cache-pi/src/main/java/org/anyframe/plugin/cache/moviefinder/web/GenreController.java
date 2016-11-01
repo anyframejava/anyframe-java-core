@@ -58,7 +58,7 @@ public class GenreController {
 			throws Exception {
 
 		if (!StringUtils.isBlank(genreId)) {
-			Genre genre = this.genreService.get(genreId);
+			Genre genre = genreService.get(genreId);
 			model.addAttribute("genre", genre);
 		}
 
@@ -67,20 +67,20 @@ public class GenreController {
 
 	@RequestMapping(params = "method=update")
 	public String update(Genre genre) throws Exception {
-		this.genreService.update(genre);
+		genreService.update(genre);
 		return "redirect:/cacheGenre.do?method=list";
 	}
 
 	@RequestMapping(params = "method=remove")
 	public String remove(@RequestParam("genreId") String genreId)
 			throws Exception {
-		this.genreService.remove(genreId);
+		genreService.remove(genreId);
 		return "redirect:/cacheGenre.do?method=list";
 	}
 
 	@RequestMapping(params = "method=list")
 	public String list(Model model) throws Exception {
-		model.addAttribute("genres", this.genreService.getList());
+		model.addAttribute("genres", genreService.getList());
 		return "cache/moviefinder/genre/list";
 	}
 }

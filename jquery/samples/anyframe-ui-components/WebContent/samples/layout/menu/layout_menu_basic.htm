@@ -1,0 +1,136 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN"
+"http://www.w3.org/TR/html4/loose.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+ 
+ <!-- Start of head-->
+<head>
+<meta http-equiv="content-type" content="text/html; charset=UTF-8" />
+<title>Menu 기본 </title>
+
+
+<!-- include required common files  ----------------------------------------------------->
+<script type="text/javascript" src="../../../common/exlibs/jquery-1.9.0.js" ></script>
+
+<script type="text/javascript" src="../../../common/exlibs/highlighter/scripts/shCore.js" ></script>
+<script type="text/javascript" src="../../../common/exlibs/highlighter/scripts/shBrushJScript.js" ></script>
+
+<script type="text/javascript" src="../../../common/js/template_common.js" ></script>
+
+<!--  stylesheet  -->
+<link type="text/css" rel="stylesheet" href="../../../common/exlibs/highlighter/styles/shCore.css"/>
+<link type="text/css" rel="stylesheet" href="../../../common/exlibs/highlighter/styles/shCoreDefault.css"/>
+ <link rel="stylesheet" type="text/css" href="../../../common/css/style.css" media="screen" /> <!---->
+
+
+
+<!-- scripts to support sample page  ----------------------------------------------------->
+<script type="text/javascript">
+
+$(function() {
+	$("#common").load("../../../common/basicinfo.htm");												//common : basic informations
+})
+
+
+$(function() {
+	JTemplate.load("layout_menu_basic_src.htm");					//{TODO} source url 수정
+	JTemplate.loadDemo("layout_menu_basic_src.htm");			//{TODO} source url 수정, show visaul demo sample
+}); 
+	
+</script> 
+</head>
+<!-- End of head -->
+
+<!-- Start of body -->
+ <body>
+ 
+<!-- HEADER BAR -------------------------------------------------------------->
+	<div class="content-title">Layout - Menu</div>
+
+
+<!-- START OF PAGE ... -------------------------------------------------------->
+	<div id="page">
+		<p class="header-title">Menu 기본기능</p>
+		<p class="header-desc">: 기본적인 가로, 세로 형태의 메뉴 예를 보여준다.</p>
+ 
+<!-- DEMO ----------------------------------------------------------------------->
+		<div class="demo">
+			<h3 >Demo</h3>
+	       	<div id ="visualExample"></div>
+		</div>
+		
+<!-- DEMO DESCRIPTION----------------------------------------------------->	
+		<div class="desc">
+			<h3>Demo Description</h3>
+			<hr>
+			<p class="desc-overall">
+			가로형태 메뉴의 경우엔, CSS의 display 속성과 SubMenu 의 position 등 을 조정하여 구현되었다. <br>
+			특히, SubMenu 의 position 을 동적으로 변경하도록 구현되었다.			
+			</p>
+		</div>
+		
+<!-- CODE------------------------------------------------------------------------>
+		<div class="code">
+			<h3>Code Source</h3>
+			<pre id="codeExample" class="brush: js"></pre>
+        </div>
+        
+        
+<!-- CODE DESCRIPTION------------------------------------------------------>
+		<div class="desc">
+		    <h3>Code Description</h3>
+		    <hr>
+			
+			<p class="desc-title">초기화</p>
+			<p class="desc-overall">
+			ul, li, a 태그들로 구성한 후, container 가 되는 element 를 대상으로 "$(element).menu()" 와 같이 호출하면 된다.<br>
+			이 때 parameter 로 전달되는 값들은 초기화 시 사용된다.
+			</p>
+			
+			<span class="code-line">#45,</span><span class="code-line">#67</span>
+			<div class="code-block">
+			<pre>
+$("#hmenu").menu( { position: { my: "left top", at: "right+2 top+2" } } );
+$("#vmenu").menu( { position: { my: "left top", at: "right+2 top+2" } } );			
+</pre>
+			</div>
+			<p class="desc-overall">			
+			* 위의 형태는 오직 초기화 시 사용되는 parameter 형태임을 주의하자. 그 외, 각 attribute 의 get/set 은 아래와 같은 형태로 구현된다.<br>
+			</p>
+			
+			<span class="code-line">#55,</span><span class="code-line">#57</span>
+			<div class="code-block">
+			<pre>
+var position = $(evt.target).menu('option', 'position');
+$(evt.target).menu('option', 'position', position);			
+</pre>
+			</div>
+			
+			<p class="desc-title">동적 위치변경</p>
+			<p class="desc-overall">
+			가로 메뉴의 경우 Level1 의 SubMenu 만을 Filtering 하여 기준 메뉴의 하단에 위치하도록 동적 구성 하였음 을 볼 수 있다.
+			<span class="code-line">#47 ~ #65</span> 
+			</p>			
+			
+
+		</div>
+
+<!-- RELATED LINKS ----------------------------------------------------------->
+        <div class="related">
+            <h3>Related Links</h3>
+            <hr>
+            <ul class="desc-hypl">
+            	<li>
+            		<span>Menu API</span>
+            		<a href="http://api.jqueryui.com/menu/"></a>
+            	</li>
+            </ul>          
+      	</div>
+      	      
+	</div>      
+<!-- End of Page-->
+
+
+</body>
+<!-- End of body-->
+
+</html>

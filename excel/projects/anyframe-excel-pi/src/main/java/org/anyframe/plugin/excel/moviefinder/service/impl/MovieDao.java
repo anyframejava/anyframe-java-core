@@ -31,12 +31,13 @@ import org.springframework.stereotype.Repository;
  */
 @Repository("excelMovieDao")
 public class MovieDao extends QueryServiceDaoSupport {
-	
+	//Velocity-Support-contextProperties-START
 	@Value("#{contextProperties['pageSize'] ?: 10}")
 	int pageSize;
 
 	@Value("#{contextProperties['pageUnit'] ?: 10}")
 	int pageUnit;
+	//Velocity-Support-contextProperties-END
 
 	@Inject
 	public void setQueryService(QueryService queryService) {
@@ -44,8 +45,8 @@ public class MovieDao extends QueryServiceDaoSupport {
 	}
 
 	public Page getPagingList(Movie movie, int pageIndex) {
-		return this.findListWithPaging("excel.findMovieList", movie, pageIndex,
-				pageSize, pageUnit);
+		return super.findListWithPaging("excel.findMovieList", movie,
+				pageIndex, pageSize, pageUnit);
 	}
-	
+
 }

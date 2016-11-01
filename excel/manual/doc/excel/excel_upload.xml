@@ -11,6 +11,11 @@
           			<imagedata align="center"
                      	fileref="../image/excel/excel_upload_jsp.png" />
         		</imageobject>
+        		<textobject>
+        			<phrase>Anyframe excel plugin에서 샘플로 제공하고 있는 화면을 캡춰한 그림으로써, 영화 목록이 보여지고, 우측 하단에 찾아보기, Excel Up, Excel Down 버튼이 
+        			추가되어 있다.
+        			</phrase>
+        		</textobject>
         </mediaobject>
         <para>화면 하단의 파일 찾기 버튼을 누르면 아래와 같이 로컬에서 Excel파일을 선택 할 수 있다.</para>
         <mediaobject>
@@ -18,6 +23,9 @@
           			<imagedata align="center"
                      	fileref="../image/excel/excel_upload_select.png" />
         		</imageobject>
+        		<textobject>
+        			<phrase>Anyframe excel plugin에서 샘플로 제공하고 있는 화면에서 우측 하단의 찾아보기 버튼을 클릭하면 나타나는 탐색기 창을 보여주는 그림이다.</phrase>
+        		</textobject>
         </mediaobject>
         <para>Excel 파일을 Upload 하기 위해서는 Download와 마찬가지로 jsp에서 서버로 전송해야할 변수 값들이 있다.
         	아래는 Upload하기 위해 설정된 jsp파일 내의 변수들이다. Upload를 위해 사용되는 form tag의 enctype은 반드시  multipart/form-data이다.</para>
@@ -79,10 +87,10 @@
  	 	<title>ExcelController의 excelUpload</title>
  	 	<para>ExcelController의excelUpload메소드 전송 된 Excel파일을 분석해 데이터를 HashMap형태로 만든 다음 ExcelService의 upload메소드를 호출해 DB에 데이터를 저장한다.
  	 	아래는 ExcelController excelUpload 메소드 소스코드의 일부이다.</para>
- 	 	<programlisting language="xml"><![CDATA[@RequestMapping(params = "method=excelUpload")
+ 	 	<programlisting language="java"><![CDATA[@RequestMapping(params = "method=excelUpload")
 public String excelUpload(HttpServletRequest request, @RequestParam(value = "excelFile", required = false) MultipartFile excelFile) throws Exception {
 		
-    Map paramMap = bindRequestToMap(request);
+    Map<String, Object> paramMap = bindRequestToMap(request);
 		
     int startRow = 1;
 //저장을 시작할 row값, 설정이 없을 경우 1부터 시작, 0은 Heder정보
@@ -153,7 +161,7 @@ public String excelUpload(HttpServletRequest request, @RequestParam(value = "exc
     }
 }
 		
-    List<ListOrderedMap> insertList = new ArrayList();
+    List<ListOrderedMap> insertList = new ArrayList<ListOrderedMap>();
     ListOrderedMap insertMap = null;
 		
 //컬럼 값 추출

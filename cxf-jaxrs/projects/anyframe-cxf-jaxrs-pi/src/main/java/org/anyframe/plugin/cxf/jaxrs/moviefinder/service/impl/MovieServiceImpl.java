@@ -54,18 +54,18 @@ public class MovieServiceImpl implements MovieService {
 	}
 
 	public Response update(Movie movie) throws Exception {
-		this.movieDao.update(movie);
+		movieDao.update(movie);
 		return Response.status(Status.NO_CONTENT).build();
 	}
 
 	public Response remove(String movieId) throws Exception {
-		this.movieDao.remove(movieId);
+		movieDao.remove(movieId);
 		return Response.status(Status.NO_CONTENT).build();
 	}
 
 	public Response getPagingList(Movie movie, int pageIndex) throws Exception {
 		ResultPage resultPage = new ResultPage();
-		resultPage.setPage(this.movieDao.getPagingList(movie, pageIndex));
+		resultPage.setPage(movieDao.getPagingList(movie, pageIndex));
 		return Response.ok(resultPage).build();
 	}
 }

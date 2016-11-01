@@ -1,0 +1,177 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN"
+"http://www.w3.org/TR/html4/loose.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+ 
+ <!-- Start of head-->
+<head>
+<meta http-equiv="content-type" content="text/html; charset=UTF-8" />
+<title>Grid Edit Type 별 처리 </title>
+
+
+<!-- include required common files  ----------------------------------------------------->
+<script type="text/javascript" src="../../../common/exlibs/jquery-1.9.0.js" ></script>
+
+<script type="text/javascript" src="../../../common/exlibs/highlighter/scripts/shCore.js" ></script>
+<script type="text/javascript" src="../../../common/exlibs/highlighter/scripts/shBrushJScript.js" ></script>
+
+<script type="text/javascript" src="../../../common/js/template_common.js" ></script>
+
+<!--  stylesheet  -->
+<link type="text/css" rel="stylesheet" href="../../../common/exlibs/highlighter/styles/shCore.css"/>
+<link type="text/css" rel="stylesheet" href="../../../common/exlibs/highlighter/styles/shCoreDefault.css"/>
+<link rel="stylesheet" type="text/css" href="../../../common/css/style.css" /> 
+
+
+<!-- scripts to support sample page  ----------------------------------------------------->
+<script type="text/javascript">
+
+$(function() {
+	$("#common").load("../../../common/basicinfo.htm");												//common : basic informations	
+})
+
+
+$(function() {
+	JTemplate.load("ui_grid_edittype_control_src.htm");					//{TODO} source url 수정
+	JTemplate.loadDemo2("ui_grid_edittype_control_src.htm", {height:"850px"});			//{TODO} source url 수정, show visaul demo sample
+}); 
+	
+</script> 
+</head>
+<!-- End of head -->
+
+<!-- Start of body -->
+ <body >
+      
+<!-- HEADER BAR -------------------------------------------------------------->
+	<div class="content-title">Grid - Grid</div>
+
+    
+<!-- START OF PAGE ... -------------------------------------------------------->       
+	<div id="page">
+		<p class="header-title">Grid Edit Type 별 처리</p>
+		<p class="header-desc">: 컬럼 편집 시, Type 별로  입력 UI 를 다르게 구현하는 예를 보여준다.</p>
+          
+      
+<!-- DEMO ----------------------------------------------------------------------->
+		<div class="demo">
+			<h3 >Demo</h3>
+			<div id="visualExample"></div>
+		</div>
+        
+<!-- DEMO DESCRIPTION ----------------------------------------------------->
+		<div class="desc">
+			<h3>Demo Description</h3>
+			<hr>
+			<p class="desc-overall">
+			Grid 컬럼의 Edit 시, 사용될 수 있는 UI 형태별로 데모를 구성하였다.					<br> 
+			데모에서 볼 수 있는 것 처럼, 지원되는 각각의 형태는 html 의 "input" 태그의 type 과 같은 것임을 알 수 있다. <br><br>
+			
+			각 형태별로 Grid 를 구성하였고, 각각의 colModel 에 설정된 "edittype", "editoptions" 값에 따라 그 형태가 달라짐을 볼 수 있다. 
+			</p>
+		</div>
+             
+<!-- CODE ------------------------------------------------------------------------>
+		<div class="code">
+			<h3>Code Source</h3>
+			<pre id="codeExample" class="brush: js"></pre>
+        </div>
+
+
+<!-- CODE DESCRIPTION ------------------------------------------------------>
+		<div class="desc">
+			<h3>Code Description</h3>
+			<hr>
+			<p class="desc-title">Text Type</p>
+			<span class="code-line">#73</span>
+			<div class="code-block">
+			<pre>
+{name: "input", editable:true,  edittype:"text"} 			
+</pre>
+			</div>
+			
+			<p class="desc-title">TextArea Type</p>
+			<span class="code-line">#97</span>
+			<div class="code-block">
+			<pre>
+{name: "input", editable:true,  edittype:"textarea"}		
+</pre>
+			</div>			
+
+			<p class="desc-title">Select Type</p>
+			<span class="code-line">#122 ~ #127</span>
+			<div class="code-block">
+			<pre>
+{name: "input1",    editable:true,  edittype:"select", editoptions: { value: "opt1:선택1; opt2:선택2" } }, 
+{name: "input2",    editable:true,  edittype:"select", editoptions: { value: {opt1:'선택1', opt2:'선택2', op3:'선택3' }  } }		
+</pre>
+			</div>
+
+			<p class="desc-title">Checkbox Type</p>
+			<span class="code-line">#152 ~ #153</span>
+			<div class="code-block">
+			<pre>
+{name: "input",     editable:true,  edittype:"checkbox", editoptions: { value: "Check:UnCheck" } }		
+</pre>
+			</div>
+			
+			<p class="desc-title">Password Type</p>
+			<span class="code-line">#178 ~ #179</span>
+			<div class="code-block">
+			<pre>
+{name: "input",     editable:true,  edittype:"password", editoptions: { maxlength: 10 } } 
+</pre>
+			</div>			
+			
+			<p class="desc-title">Button Type</p>
+			<span class="code-line">#204 ~ #205</span>
+			<div class="code-block">
+			<pre>
+{name: "input",     editable:true,  edittype:"button", editoptions: { value: "TestButton" } } 
+</pre>
+			</div>			
+			
+			<p class="desc-title">Image Type</p>
+			<span class="code-line">#230 ~ #231</span>
+			<div class="code-block">
+			<pre>
+{name: "input",     editable:true,  edittype:"image", editoptions: { src: "sub/logo-jquery-ui.png" } } 
+</pre>
+			</div>			
+			
+			<p class="desc-title">File Type</p>
+			<span class="code-line">#256</span>
+			<div class="code-block">
+			<pre>
+{name: "input",     editable:true,  edittype:"file"}
+</pre>
+			</div>
+			
+			<p class="desc-overall">
+			위 각 타입별 코드에서 알 수 있듯이, <span class="bold">"edittype" 과 "editoptions"</span> 를 설정하여 원하는 편집 형태를 결정할 수 있다.  
+			</p>		
+
+					
+		</div>
+      
+<!-- RELATED LINKS ----------------------------------------------------->
+        <div class="related">
+            <h3>Related Links</h3>
+            <ul class="desc-hypl">
+				<li>
+					<span>Grid Doc</span>
+					<a href="http://www.trirand.com/jqgridwiki/doku.php?id=wiki:jqgriddocs"></a>
+				</li>
+				<li>
+					<span>Grid Edit Type</span>
+					<a href="http://www.trirand.com/jqgridwiki/doku.php?id=wiki:common_rules"></a>
+				</li>            
+            </ul>
+      </div>
+
+</div>      
+<!-- End of Page-->
+
+</body>
+<!-- End of body-->
+
+</html>

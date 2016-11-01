@@ -26,7 +26,7 @@ public class ClientInfo {
 	/**
 	 * service interface class(SEI, Service Endpoint Interface).
 	 */
-	private Class interfaceClass = null;
+	private Class<?> interfaceClass = null;
 	/** access address url. */
 	private String address = "";
 	/** AegisBinding usage. */
@@ -38,19 +38,19 @@ public class ClientInfo {
 	public ClientInfo() {
 	}
 
-	public ClientInfo(Class interfaceClass, String address) {
+	public ClientInfo(Class<?> interfaceClass, String address) {
 		this.setInterfaceClass(interfaceClass);
 		this.setAddress(address);
 	}
 
-	public ClientInfo(Class interfaceClass, String address,
+	public ClientInfo(Class<?> interfaceClass, String address,
 			boolean useAegisBinding) {
 		this.setInterfaceClass(interfaceClass);
 		this.setAddress(address);
 		this.setUseAegisBinding(useAegisBinding);
 	}
 
-	public ClientInfo(Class interfaceClass, String address,
+	public ClientInfo(Class<?> interfaceClass, String address,
 			boolean useAegisBinding, boolean useMTOMBinding) {
 		this.setInterfaceClass(interfaceClass);
 		this.setAddress(address);
@@ -58,11 +58,11 @@ public class ClientInfo {
 		this.setUseMTOMBinding(useMTOMBinding);
 	}
 
-	public Class getInterfaceClass() {
+	public Class<?> getInterfaceClass() {
 		return interfaceClass;
 	}
 
-	public void setInterfaceClass(Class interfaceClass) {
+	public void setInterfaceClass(Class<?> interfaceClass) {
 		this.interfaceClass = interfaceClass;
 	}
 

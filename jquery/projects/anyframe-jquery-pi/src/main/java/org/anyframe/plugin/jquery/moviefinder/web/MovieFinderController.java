@@ -50,7 +50,7 @@ public class MovieFinderController {
 
 	@ModelAttribute("genreList")
 	public Collection<Genre> populateGenreList() throws Exception {
-		return this.genreService.getDropDownGenreList();
+		return genreService.getDropDownGenreList();
 	}
 	
 	@RequestMapping(params = "method=list")

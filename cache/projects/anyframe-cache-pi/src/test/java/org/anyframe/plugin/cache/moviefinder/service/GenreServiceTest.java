@@ -29,6 +29,7 @@ import org.junit.runner.RunWith;
 import org.springframework.test.annotation.Rollback;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
+import org.springframework.transaction.annotation.Transactional;
 
 /**
  * This GenreServiceTest class is a Test Case class for GenreService.
@@ -44,6 +45,7 @@ public class GenreServiceTest {
 	private GenreService genreService;
 
 	@Test
+	@Transactional(value = "txManager")
 	@Rollback(value = true)
 	public void manageGenre() throws Exception {
 		GenreService.LOGGER.info("------ manageGenre test ------");

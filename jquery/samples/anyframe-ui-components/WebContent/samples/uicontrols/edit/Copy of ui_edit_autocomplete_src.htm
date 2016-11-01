@@ -1,0 +1,120 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN"
+"http://www.w3.org/TR/html4/loose.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+
+<head>
+<meta http-equiv="content-type" content="text/html; charset=UTF-8" />
+<title>[AnyFrame UI Button] Basic Sample</title>
+<link href="../../../common/css/smoothness/jquery-ui-1.10.0.custom.css"	rel="stylesheet">
+<script src="../../../common/exlibs/jquery-1.9.0.js"></script>
+<script src="../../../common/exlibs/jquery-ui-1.10.0.custom.js"></script>
+
+<link type="text/css" rel="stylesheet" href="../../../common/css/style.css" />
+<link type="text/css" rel="stylesheet" href="sub_css/autocomplete.css">
+
+<script type="text/javascript">
+
+	var ENV = {
+			ID_AUTOCOMPLETE : "#testAutocomplete",
+			ID_AUTOCOMPLETE_RESULT : "#testResult",
+			ID_AUTOCOMPLETE_LIST : "#autocompleteList",
+			ID_ADD_DATA : "#addData"
+			
+	};
+	
+	
+	var mainView = {
+
+		data : [
+		                 {label: "East", category : "arrow", icon :"ui-icon-arrowthick-1-e"},
+		                 {label: "West", category : "arrow", icon : "ui-icon-arrowthick-1-w"},
+		                 {label: "South", category : "arrow", icon : "ui-icon-arrowthick-1-s"},
+		                 {label: "North", category : "arrow", icon : "ui-icon-arrowthick-1-n"},
+		                 {label: "SouthEast", category : "arrow", icon : "ui-icon-arrowthick-1-se"},
+		                 {label: "SouthWest", category : "arrow", icon : "ui-icon-arrowthick-1-sw"},
+		                 {label: "NorthEast", category : "arrow", icon : "ui-icon-arrowthick-1-ne"},
+		                 {label: "NorthWest", category : "arrow", icon : "ui-icon-arrowthick-1-nw"},
+		                 
+		                 ],
+
+		init : function() {
+				for(var i=0; i<this.data.length; i++){
+					$(ENV.ID_AUTOCOMPLETE_LIST).append('<br><span>'+this.data[i].label+'</span>');
+					$(ENV.ID_AUTOCOMPLETE_LIST).append("<div class='ui-state-default ui-icon "+ this.data[i].icon+"' style='display:inline-block; margin-left:10px;'></div>");
+				};
+		},
+		
+		addAutocompleteData : function(label, category, icon){
+			var tagObj = {label : label , category : category, icon : icon};
+			this.data.push(tagObj);
+		},
+		
+		showAddedList : function(data){
+			$(ENV.ID_AUTOCOMPLETE_LIST).append('<br><span>'+data+'</span>');
+		},
+		
+		message : function(item) {
+			var message = "선택값 =  category : " + item.category + " / label : " + item.label + " / icon : ";
+			$(ENV.ID_AUTOCOMPLETE_RESULT).append("<li>"+ message + "<span style='display:inline-block;' class='ui-state-default ui-icon "+ item.icon+"' ></span></li><br>");
+	      }	
+	};
+
+	$(document).ready(function() {
+
+		mainView.init();
+		
+		var applyBtn = $(ENV.ID_ADD_DATA).next();
+		applyBtn.button().on("click", function(){
+			mainView.addAutocompleteData($(ENV.ID_ADD_DATA).val());
+			mainView.showAddedList($(ENV.ID_ADD_DATA).val());
+		});
+
+		$(ENV.ID_AUTOCOMPLETE).autocomplete(
+					 {
+						minlength : 0,
+						source : mainView.data,
+						select : function(event, ui) {
+							mainView.message(ui.item);
+						},
+						focus : function(event, ui) {
+							$(this).val(ui.item.value);
+						}
+		});
+
+	});
+</script>
+
+</head>
+
+<body >
+	<div class="title">자동완성기능</div>
+	<div class="display-area">
+		<div class="input-area">
+			자동완성기능 테스트 : <input id="testAutocomplete" type="text" />
+		</div>
+		<hr>
+		<div class="test-area">
+			<u>선택된 데이터 리스트</u> <br> <br>
+			<div id="testResult"></div>
+		</div>
+		<hr>
+	</div>
+
+
+	<div class="display-area">
+		<div class="input-area">
+			자동완성될 데이터 추가 : <input id="addData" type="text" value="테스트.." /> 
+			<input id="addButton" type="submit" value="add" />
+		</div>
+		<hr>
+		<div class="test-area">
+			<u>자동완성 가능한 데이터 리스트</u>
+			<div id="autocompleteList"></div>
+		</div>
+		<hr>
+	</div>
+
+</body>
+
+</html>
+

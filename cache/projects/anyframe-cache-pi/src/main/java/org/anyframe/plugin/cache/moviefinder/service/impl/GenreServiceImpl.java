@@ -63,8 +63,9 @@ public class GenreServiceImpl implements GenreService {
 		Genre genre = genreDao.get(genreId);
 		return genre;
 	}
-
+	//Velocity-Support-cacheevict-START
 	@Caching(evict = { @CacheEvict(value = "genre", key = "#genre.genreId"),
+	//Velocity-Support-cacheevict-END		
 			@CacheEvict(value = "genreList", allEntries = true) })
 	public void update(Genre genre) throws Exception {
 		GenreService.LOGGER.info("always execute update method - genreId = {}",
@@ -72,7 +73,9 @@ public class GenreServiceImpl implements GenreService {
 		genreDao.update(genre);
 	}
 
+	//Velocity-Support-cacheput-START
 	@CachePut(value = "genre", key = "#genre.genreId")
+	//Velocity-Support-cacheput-END
 	public Genre updateAndGet(Genre genre) throws Exception {
 		GenreService.LOGGER.info("always execute update method - genreId = {}",
 				genre.getGenreId());

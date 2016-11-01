@@ -1,0 +1,131 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN"
+"http://www.w3.org/TR/html4/loose.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+ 
+ <!-- Start of head-->
+<head>
+<meta http-equiv="content-type" content="text/html; charset=UTF-8" />
+<title>Edit : Formatter </title> <!-- TODO: 타이틀 작성 -->
+
+
+<!-- include required common files  ----------------------------------------------------->
+<script type="text/javascript" src="../../../common/exlibs/jquery-1.9.0.js" ></script>
+<script type="text/javascript" src="../../../common/exlibs/highlighter/scripts/shCore.js" ></script>
+<script type="text/javascript" src="../../../common/exlibs/highlighter/scripts/shBrushJScript.js" ></script>
+<script type="text/javascript" src="../../../common/js/template_common.js" ></script>
+
+<!--  stylesheet  -->
+<link type="text/css" rel="stylesheet" href="../../../common/exlibs/highlighter/styles/shCore.css"/>
+<link type="text/css" rel="stylesheet" href="../../../common/exlibs/highlighter/styles/shCoreDefault.css"/>
+<link type="text/css" rel="stylesheet" href="../../../common/css/style.css"/>
+
+<!-- scripts to support sample page  ----------------------------------------------------->
+<script type="text/javascript">
+
+$(function() {
+	JTemplate.load("ui_edit_formatter_src.htm");			
+	JTemplate.loadDemo2("ui_edit_formatter_src.htm", {height:'200px'});	
+});  
+
+</script>
+ 
+</head>
+<!-- End of head -->
+
+<!-- Start of body -->
+ <body >
+ 
+  <!-- HEADER BAR -------------------------------------------------------------->
+<div class="content-title">Component - Edit</div>
+ 
+ <!-- START OF PAGE ... -------------------------------------------------------->
+<div id="page">
+	<p class = "header-title">Edit Formatter</p>
+	<p class="header-desc">: Edit 입력창에서 화폐단위형식, 번호 단위형식을 자동으로 맞추어 주는 기능을 보여주는 예시이다.</p>
+<!-- DEMO ----------------------------------------------------------------------->
+	<div class="demo">
+		<h3 >Demo</h3>
+		<div id="visualExample"></div>
+	</div>
+
+
+<!-- DEMO DESCRIPTION----------------------------------------------------->
+	<div class="desc">
+		<h3>Demo Description </h3>
+		<hr>
+		
+		<p class="desc-title">숫자 형식화: Formatter</p>
+		<p class="desc-overall">  
+		: 입력창에서 사용자의 입력값을 특정형식에 맞게 자동으로 포맷을 맞추어 준다.
+		</p>
+		<ul class ="desc-hypl">
+			<li>
+				<span>화폐단위 형식</span> 
+				: comma(",")가 세자리수마다 존재하여 화폐단위 형식으로 자동으로 포맷을 맞추어 준다.
+			</li>
+			<li>
+				<span>숫자단위 형식</span> 
+				: hyphen("-")이 세번째, 다음 네번째, 다음 네번째 숫자사이에 존재하여 휴대전화번호 형식으로 자동으로 맞추어 준다.
+			</li>
+		</ul>
+	</div>
+
+<!-- CODE------------------------------------------------------------------------>
+	<div class="code">
+		<h3>Code Source </h3>
+		<pre id="codeExample" class="brush: js"></pre>
+	</div>
+	
+	
+<!-- CODE DESCRIPTION------------------------------------------------------>
+	<div class="desc">
+		<h3>Code Description </h3>
+		<hr>
+		<p class="desc-title">Autocomplete : search 이벤트</p>
+		<span class="code-line">#85 - #87 </span>
+		<span class="code-line">#93 - #95 </span>
+		<p class="desc-overall">
+		:  입력값에 대해 autocomplete의 데이터를 검색하기 전에 발생되는 이벤트로, 
+		본 예제에서는 자동으로 형식을 맞추어주는 동작을 이 search 이벤트를 이용하여 구현하였다.<br>
+		</p>
+
+		<p class="desc-title">Formatter 값의 반환</p>
+		<span class="code-line">#23 - #29</span>
+		<span class="code-line">#52 - #57 </span>
+		<p class="desc-overall">
+		:  현재 입력창에 들어온 입력값을 val()함수로 얻어서 넘겨주면 이를 각 _moneyFormatter, _phoneFormatter 함수를 거쳐 출력값을 반환하여 입력창에 적용되도록한다.(val()함수 이용)
+		</p>
+		<ul class="desc-ul" >
+				<li>
+					<span>_moneyFormatter</span>
+					: 한글자단위로 가장 뒤의 숫자부터 하나씩 얻어(charAt()이용) 숫자 3개 후에 네번째에 comma"," 가 들어가도록 구현하였다.
+				</li>
+				<li>
+					<span>_phoneFormatter</span>
+					: 한글자단위로 가장 첫번째 숫자부터 하나씩 얻어(charAt()이용) 세번째 숫자 후, 7번째 숫자 후에  hyphen"-" 가 들어가도록 구현하였다.
+				</li>
+				<li>
+					<span></span>
+					: (또한, 정규식을 이용하여 숫자값만 들어오도록 체크하였음)
+				</li>
+	  		</ul>	
+		</div>
+	</div>
+
+<!-- RELATED LINKS ----------------------------------------------------------->
+	<div class="related">
+		<h3>Related Links</h3>
+		<hr>
+		 <ul class="desc-hypl">
+           	<li>
+           		<span>Autocomplete API</span>
+           		<a href = "http://api.jqueryui.com/autocomplete/"></a>
+           	</li>
+		</ul>
+	</div>
+	
+</div>
+	<!-- End of Page-->
+</body>
+<!-- End of body-->
+</html>

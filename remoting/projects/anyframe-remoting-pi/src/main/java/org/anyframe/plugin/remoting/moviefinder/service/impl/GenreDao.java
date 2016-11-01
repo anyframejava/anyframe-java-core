@@ -38,9 +38,7 @@ public class GenreDao extends QueryServiceDaoSupport {
 	}
 
 	public List<Genre> getList() {
-		List<Genre> results = this.findList("findRemotingGenreList",
-				new Object[] {});
-		return results;
+		return super.findList("findRemotingGenreList", new Object[] {});
 	}
 
 }

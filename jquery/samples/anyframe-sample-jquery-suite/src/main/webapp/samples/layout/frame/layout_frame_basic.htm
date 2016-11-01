@@ -1,0 +1,135 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN"
+"http://www.w3.org/TR/html4/loose.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+ 
+ <!-- Start of head-->
+<head>
+<meta http-equiv="content-type" content="text/html; charset=UTF-8" />
+<title>Frame 기본 </title>
+
+
+<!-- include required common files  ----------------------------------------------------->
+<script type="text/javascript" src="../../../common/exlibs/jquery-1.9.0.js" ></script>
+
+<script type="text/javascript" src="../../../common/exlibs/highlighter/scripts/shCore.js" ></script>
+<script type="text/javascript" src="../../../common/exlibs/highlighter/scripts/shBrushJScript.js" ></script>
+
+<script type="text/javascript" src="../../../common/js/template_common.js" ></script>
+
+<!--  stylesheet  -->
+<link type="text/css" rel="stylesheet" href="../../../common/exlibs/highlighter/styles/shCore.css"/>
+<link type="text/css" rel="stylesheet" href="../../../common/exlibs/highlighter/styles/shCoreDefault.css"/>
+ <link rel="stylesheet" type="text/css" href="../../../common/css/style.css" media="screen" /> <!---->
+
+
+
+<!-- scripts to support sample page  ----------------------------------------------------->
+<script type="text/javascript">
+
+$(function() {
+	$("#common").load("../../../common/basicinfo.htm");												//common : basic informations
+})
+
+
+$(function() {
+	JTemplate.load("layout_frame_basic_src.htm");					//{TODO} source url 수정
+	JTemplate.loadDemo2("layout_frame_basic_src.htm", {height:'95%', border:true});
+}); 
+	
+</script> 
+</head>
+<!-- End of head -->
+
+<!-- Start of body -->
+ <body >
+ 
+<!-- HEADER BAR -------------------------------------------------------------->
+	<div class="content-title">Layout - Frame</div>
+
+
+<!-- START OF PAGE ... -------------------------------------------------------->
+	<div id="page">
+		<p class="header-title">Frame 기본기능</p>
+		<p class="header-desc">: Frame 이 갖고 있는 기본적인 속성을 이용하여, 화면을 나누어 작업하는 예를 보여준다.</p>
+
+<!-- DEMO ----------------------------------------------------------------------->
+		<div class="demo" style="height:700px;">
+			<h3 >Demo</h3>
+			<iframe id="visualExample"></iframe>
+		</div>
+		
+<!-- DEMO DESCRIPTION----------------------------------------------------->	
+		<div class="desc">
+			<h3>Demo Description</h3>
+			<hr>
+			<p class="desc-overall">
+			Frame Layout 을 구성하는 HTML 문서는 일반적인 HTML 문서의 구성과 다르게, BODY 태그 위치에 FRAMESET 및 FRAME 태그들로 구성된다.
+			</p>
+			
+			<ul class="desc-ul">
+				<li><span>Frame1, Frame2</span>: "cols" attribute 를 이용하여, 가로를 30%, 70% 비율로 나누어 Frame 을 구성한다.</li>
+				<li><span>Frame3 - 6</span>: marginwidth, marginheight attribute 를 적용한 예를 보여준다. IE 에서는 한 가지 값만 지정시, 기본값 적용 결과가 상이하게 나타나는 증상이 있다.</li>
+				<li><span>Frame7 - 9</span>: noresize attribute 를 적용한 예를 보여주며, noresize attribute 의 경우에는 해당 attribute 의 존재 여부로 resize 여부를 결정한다.</li>
+				<li><span></span>: <u>기본값은 resizable</u> 이다. Frame7 과 Frame8 사이는 수직 경계선은 noresize 가 적용되었고,</li>
+				<li><span></span>: Frame8 과 Frame9 사이의 수평 경계선은 resize 가 적용된 것을 확인 할 수 있다.</li>
+				<li><span>Frame10 - 12</span>: frameborder attribute 의 값을 0 으로 설정하여, Frame 들 사이의 경계를 그려지지 않도록 한 예를 보여준다.</li>
+			</ul>
+		</div>
+
+<!-- CODE------------------------------------------------------------------------>
+		<div class="code">
+			<h3>Code Source</h3>
+			<pre id="codeExample" class="brush: js"></pre>
+        </div>
+        
+<!-- CODE DESCRIPTION------------------------------------------------------>
+		<div class="desc">
+		    <h3>Code Description</h3>
+		    <hr>
+			<p class="desc-title">FRAMESET ELEMENT - 주요 attributes</p>
+			<ul class="desc-ul">
+				<li><span>- rows</span>: 수평으로 배치될 프레임의 구성을 정의한다.<br>
+					<span></span>: 각 값은 comma 로 분리하여 작성하며, 픽셀, 퍼센티지, 상대길이 값 등을 조합하여 작성된다. (기본값은 100%)
+				</li>
+				<li><span>- cols</span>: 수직으로 배치될 프레임의 구성을 정의한다. 적용되는 값은 rows 의 것과 같음.
+				</li>
+			</ul>
+			
+			<p class="desc-title">FRAME ELEMENT - 주요 attributes</p>
+			<ul class="desc-ul">
+				<li><span>- name</span>: target 프레임을 지정할 목적으로, 프레임의 이름을 정의 (타 프레임안의 데이타에 접근 시 사용됨)</li>
+				<li><span>- src</span>: 해당 프레임에 로드 될 문서 위치 정보</li>
+				<li><span>- frameborder</span>: 프레임 보더의 사용여부 결정. 0|1. (기본값은 1)</li>
+				<li><span></span>: IE 경우, 프레임들 사이의 공간을 명시하는 <strong>framespacing</strong> 속성을 지정해야 한다. (기본값은 2)</li>
+				<li><span>- marginwidth</span>: 픽셀값. 프레임 가로 마진</li>
+				<li><span>- marginheight</span>: 픽셀값. 프레임 세로 마진</li>
+				<li><span>- noresize</span>: resize 여부를 결정. attribute 존재여부로 값을 결정함. (기본값은 resizable)</li>
+				<li><span>- scrolling</span>: 스크롤 바 사용여부. yes|no|auto. (기본값은 auto)</li>								
+			</ul>
+
+		</div>
+      
+<!-- RELATED LINKS ----------------------------------------------------------->
+        <div class="related">
+            <h3>Related Links</h3>
+            <hr>
+            <ul class="desc-hypl">
+            	<li>
+            		<span>W3C HTML - Frame Spec</span>
+            		<a href="http://www.w3.org/TR/1999/REC-html401-19991224/present/frames.html#h-16.2.2"></a>
+            	</li>
+            	<li>
+            		<span>MSDN - FrameSpacing</span>
+            		<a href="http://msdn.microsoft.com/en-us/library/ie/ms533772(v=vs.85).aspx"></a>
+            	</li>
+            </ul>          
+      	</div>      
+      
+
+</div>      
+<!-- End of Page-->
+
+</body>
+<!-- End of body-->
+
+</html>

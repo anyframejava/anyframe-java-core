@@ -1,0 +1,159 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN"
+"http://www.w3.org/TR/html4/loose.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+
+<head>
+<meta http-equiv="content-type" content="text/html; charset=UTF-8" />
+<title>[Dialog] Basic Sample</title>
+<link href="../../../common/css/smoothness/jquery-ui-1.10.0.custom.css"	rel="stylesheet">
+<script src="../../../common/exlibs/jquery-1.9.0.js"></script>
+<script src="../../../common/exlibs/jquery-ui-1.10.0.custom.js"></script>
+
+<link type="text/css" rel="stylesheet" href="../../../common/css/style.css"/>
+<link type="text/css" rel="stylesheet" href="sub_css/basic.css">
+
+<script type="text/javascript">
+
+	var ENV = {
+		ID_DIALOG : "#dialog",
+		ID_OPEN : "#open",
+		ID_CLOSE : "#close",
+		ID_CHECK_BUTTONBAR : "#buttonBar",
+		ID_CHECK_MODAL : "#modal",
+		ID_CHECK_RESIZABLE : "#resizable",
+		ID_CHECK_DRAGGABLE : "#draggable"
+	};
+
+	var dialogBasicView = {
+
+		setButtonBar : function() {
+			$(ENV.ID_CHECK_BUTTONBAR).on("click", function() {
+				if ($(ENV.ID_CHECK_BUTTONBAR).is(":checked") == true) {
+					$(ENV.ID_DIALOG).dialog("option", "buttons", [ {
+						text : "Ok",
+						click : function() {
+							$(this).dialog("close");
+						}
+					} ]);
+				} else {
+					$(ENV.ID_DIALOG).dialog("option", "buttons", {});
+				}
+				;
+			});
+		},
+
+		setModal : function() {
+			$(ENV.ID_CHECK_MODAL).on("click", function() {
+				if ($(ENV.ID_CHECK_MODAL).is(":checked") == true) {
+					$(ENV.ID_DIALOG).dialog("option", "modal", true);
+				} else {
+					$(ENV.ID_DIALOG).dialog("option", "modal", false);
+				};
+			});
+		},
+
+		setResizable : function() {
+			$(ENV.ID_CHECK_RESIZABLE).on("click", function() {
+				if ($(ENV.ID_CHECK_RESIZABLE).is(":checked") == true) {
+					$(ENV.ID_DIALOG).dialog("option", "resizable", true);
+				} else {
+					$(ENV.ID_DIALOG).dialog("option", "resizable", false);
+				};
+			});
+		},
+
+		setDraggable : function() {
+			$(ENV.ID_CHECK_DRAGGABLE).on("click", function() {
+				if ($(ENV.ID_CHECK_DRAGGABLE).is(":checked") == true) {
+					$(ENV.ID_DIALOG).dialog("option", "draggable", true);
+				} else {
+					$(ENV.ID_DIALOG).dialog("option", "draggable", false);
+				};
+			});
+		},
+
+		setTitleText : function() {
+			$("#titleTextBtn").on(
+					"click",
+					function() {
+						$(ENV.ID_DIALOG).dialog("option", "title",
+								$("#titleText").val());
+					});
+		},
+
+		setContentText : function() {
+			$("#contentTextBtn").on(
+					"click",
+					function() {
+						$(ENV.ID_DIALOG).children().remove();
+						$(ENV.ID_DIALOG).append(
+								"<pre>" + $("#contentText").val() + "</pre>");
+					});
+
+		}
+
+	};
+
+	
+	$(document).ready(function() {
+
+		dialogBasicView.setModal();
+		dialogBasicView.setResizable();
+		dialogBasicView.setDraggable();
+		dialogBasicView.setButtonBar();
+		dialogBasicView.setTitleText();
+		dialogBasicView.setContentText();
+
+		$("#open, #close, #titleTextBtn, #contentTextBtn").button();
+
+		$(ENV.ID_DIALOG).dialog({
+			autoOpen : false
+		});
+
+		$(ENV.ID_OPEN).on("click", function() {
+			$(ENV.ID_DIALOG).dialog("open");
+		});
+
+	});
+</script>
+</head>
+<body>
+
+	<div id="dialog" title="Basic dialog"></div>
+
+	<div class="title">Dialog Interaction</div>
+	<div class="button-div">
+		<button id="open" type="button">open</button>
+	</div>
+
+	<div>
+		<ul class="input-area">
+			<li><input id="buttonBar" type="checkbox" value="buttonBar" /><label for="buttonBar">Button bar</label></li>
+			<li><input id="modal" type="checkbox" value="modal" /><label for="modal">Modal</label></li>
+			<li><input id="resizable" type="checkbox" value="resizable" checked /><label for="resizable">Resizable</label></li>
+			<li><input id="draggable" type="checkbox" value="draggable" checked /><label for="draggable">Draggable</label></li>
+		</ul>
+	</div>
+
+
+
+	<div class="title">Dialog 구성요소</div>
+	<div>
+		<div class="text-area">Title :</div>
+		<div class="input-area">
+			<input id="titleText" type="text" value ="test title"/>
+			<button id="titleTextBtn" type="button" >change</button>
+		</div>
+	</div>
+
+	<div>
+		<div class="text-area">Content :</div>
+		<div class="input-area">
+			<textarea id="contentText">test content text</textarea>
+			<button id="contentTextBtn" type="button">change</button>
+		</div>
+	</div>
+
+
+</body>
+</html>

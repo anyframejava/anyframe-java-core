@@ -1,0 +1,231 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
+<html>
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+<title>Grid Sample - Basic</title>
+
+<link href="../../../common/css/smoothness/jquery-ui-1.10.0.custom.css" rel="stylesheet">
+<link href="../../../common/exlibs/css/ui.jqgrid.css" rel="stylesheet">
+<script src="../../../common/exlibs/jquery-1.9.0.js"></script>
+<script src="../../../common/exlibs/jquery-ui-1.10.0.custom.js"></script>
+<script src="../../../common/exlibs/jquery.jqGrid.src.js"></script>
+
+<link href="sub_css/basic.css" rel="stylesheet">
+
+<script type="text/javascript">
+
+	var ENV = {
+			ID_GRID : "#grid"
+	};
+	
+	var GRID_DATA = [ 
+	                	{id:"1", date:"2013-02-01", name:"client1", balance:120000, deposit:20000, notes:"note0"},
+	                	{id:"2", date:"2013-02-01", name:"client2", balance:120000, deposit:20000, notes:"note0"},	                 
+	                	{id:"3", date:"2013-02-01", name:"client3", balance:120000, deposit:20000, notes:"note0"},
+	                	{id:"4", date:"2013-02-02", name:"client4", balance:120000, deposit:20000, notes:"note0"},
+	                	{id:"5", date:"2013-02-02", name:"client5", balance:120000, deposit:20000, notes:"note0"},
+	                	{id:"6", date:"2013-02-03", name:"client6", balance:120000, deposit:20000, notes:"note0"},
+	                	{id:"7", date:"2013-02-03", name:"client7", balance:120000, deposit:20000, notes:"note0"},
+	                	{id:"8", date:"2013-02-03", name:"client8", balance:120000, deposit:20000, notes:"note0"},
+	                	{id:"9", date:"2013-02-04", name:"client1", balance:140000, deposit:20000, notes:"note0"},
+	                	{id:"10", date:"2013-02-05", name:"client1", balance:160000, deposit:20000, notes:"note0"},
+	                ];
+	
+	var grid_defaults = {
+			 
+	}
+
+	var mainView = {
+			
+			init : function()
+			{
+				$.jgrid.defaults = grid_defaults;
+				
+				// Grid 초기화
+				$(ENV.ID_GRID).jqGrid({
+					
+					datatype: "local",
+					data: GRID_DATA,
+					colModel: [
+					          	{name:"id", sortable:false},
+					          	{name:"date"},
+					          	{name:"name"},
+					          	{name:"balance"},
+					          	{name:"deposit"},
+					          	{name:"notes"}					          	
+					          ]					
+				});
+				
+				// Grid 초기화 (more options)
+				/*
+				$(ENV.ID_GRID).jqGrid({
+					
+					datatype: "local",
+					data: GRID_DATA,
+					width: 700,
+					height: 300,
+					caption: "Basic Grid",
+					direction: "ltr",
+					multiselect: true,
+					rownumbers: false,
+					sortable: true,
+					colNames: [ "아이디", "일시", "고객", "잔액", "입금액", "기타" ],					
+					colModel: [
+					          	{name:"id", sortable:false},
+					          	{name:"date"},
+					          	{name:"name"},
+					          	{name:"balance"},
+					          	{name:"deposit"},
+					          	{name:"notes"}					          	
+					          ]					
+				});
+				*/
+
+			},
+			
+			_getGridParam : function(prop)
+			{
+				return $(ENV.ID_GRID).jqGrid('getGridParam', prop);
+			},
+			
+			_setGridParam : function(prop, newval)
+			{
+				switch (prop)
+				{
+				case "width" :
+					$(ENV.ID_GRID).jqGrid('setGridWidth', newval).trigger("reloadGrid");
+					break;
+				case "height" : 
+					$(ENV.ID_GRID).jqGrid('setGridHeight', newval).trigger("reloadGrid");
+					break;
+				case "caption" :
+					$(ENV.ID_GRID).jqGrid('setCaption', newval).trigger("reloadGrid");
+					break;
+				default:
+					$(ENV.ID_GRID).jqGrid('setGridParam', prop, newval).trigger("reloadGrid");
+					break;	
+				}
+			},
+			
+			getGridInfo : function(evt) 
+			{
+				var getwhat = $(evt.target).siblings("label").text();
+				var target = $(evt.target).siblings("input");
+				
+				target.val(this._getGridParam(getwhat));
+			},
+			
+			setGridInfo : function(evt)
+			{
+				var getwhat = $(evt.target).siblings("label").text();
+				var target = $(evt.target).siblings("input");
+				
+				this._setGridParam(getwhat, target.val());
+			}
+			
+	};
+
+	$(document).ready(function() {
+		
+		$("#rebuildconfig").accordion({collapsible: true, active: false});
+
+		mainView.init();
+		
+		$("button").click(function(evt) {
+			
+			var cmdWhat = $(this).text();
+			
+			if (cmdWhat == "GET") 
+			{
+				mainView.getGridInfo(evt);
+			}
+			else if (cmdWhat == "SET") 
+			{
+				mainView.setGridInfo(evt);
+			}
+			else if (cmdWhat == "Run Rebuild")
+			{
+				//when rebuild, modify property				
+				grid_defaults.direction = $("select[name='direction']").val();
+				grid_defaults.multiselect = ($("select[name='multiselect']").val() === "true") ? true : false;
+				grid_defaults.rownumbers = ($("select[name='rownumbers']").val() === "true") ? true : false;
+				grid_defaults.sortable = ($("select[name='sortable']").val() === "true") ? true : false;
+				
+				var inColNameArry = ( $("#colNames_in").val() ).split(',');
+				
+				if (inColNameArry.length !== undefined && inColNameArry.length == 6)
+				{
+					grid_defaults.colNames = inColNameArry;
+				}
+				else if (grid_defaults.colNames !== undefined)
+				{
+					delete grid_defaults.colNames;
+				}
+				
+				$("#grid_container").empty().html("<table id='grid'></table>");
+				
+				mainView.init();				
+			}
+		});
+		
+	});
+	
+</script>
+
+</head>
+<body class="grid_demo">
+	<div>
+		<ul>
+			<li><label>width</label><button>GET</button><input type="text"/><button>SET</button></li>
+			<li><label>height</label><button>GET</button><input type="text"/><button>SET</button></li>
+			<li><label>caption</label><button>GET</button><input type="text"/><button>SET</button></li>
+			<li><label>direction</label><button>GET</button><input type="text"/><span>동적으로 변경 불가능. "ltr" or "rtl"</span></li>
+			<li><label>multiselect</label><button>GET</button><input type="text"/><span>동적으로 변경 불가능. "true" or "false"</span></li>
+			<li><label>colNames</label><button>GET</button><input type="text"/><span>동적으로 변경 불가능.</span></li>
+			<li><label>rownumbers</label><button>GET</button><input type="text"/><span>동적으로 변경 불가능.</span></li>
+		</ul>	
+	</div>
+	
+	<div id="rebuildconfig" style="width:650px; margin-left: 30px; margin-bottom: 20px;">
+		<span>Grid 재구성</span>
+		<div>
+			<button>Run Rebuild</button>
+			<ul>
+				<li><label>direction</label>
+					<select name="direction">
+							<option>ltr</option>
+							<option>rtl</option>
+					</select>
+				</li>
+				<li><label>multiselect</label>
+					<select name="multiselect">
+							<option>false</option>
+							<option>true</option>
+					</select>
+				</li>		
+				<li><label>rownumbers</label>
+					<select name="rownumbers">
+							<option>false</option>
+							<option>true</option>
+					</select>
+				</li>
+				<li><label>sortable</label>
+					<select name="sortable">
+							<option>false</option>
+							<option>true</option>
+					</select>
+					<span>컬럼을 Drag & Drop 할 수 있음</span>
+				</li>
+				<li><label>colNames</label>
+					<input type="text" id="colNames_in" />
+					<span>comma 로 구분된 6개의 컬럼명 입력</span>
+				</li>
+			</ul>		
+		</div>
+	</div>
+	
+	<div id="grid_container">
+		<table id="grid"></table>
+	</div>
+</body>
+</html>

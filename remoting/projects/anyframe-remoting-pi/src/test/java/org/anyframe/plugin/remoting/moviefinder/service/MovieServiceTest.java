@@ -28,7 +28,6 @@ import org.anyframe.plugin.remoting.domain.Genre;
 import org.anyframe.plugin.remoting.domain.Movie;
 import org.junit.Test;
 import org.junit.runner.RunWith;
-import org.springframework.test.annotation.Rollback;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 
@@ -50,7 +49,6 @@ public class MovieServiceTest {
 	private MovieFinder movieFinder;
 
 	@Test
-	@Rollback(value = true)
 	public void manageMovie() throws Exception {
 		// 1. create a new movie
 		Movie movie = getMovie();

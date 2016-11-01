@@ -144,7 +144,7 @@ public class MovieController {
 	}
 
 	private WebClient getClient() {
-		if (this.client == null)
+		if (client == null)
 			client = WebClient.fromClient(WebClient.client(movieService));
 		return client.reset();
 	}

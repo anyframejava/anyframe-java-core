@@ -42,11 +42,11 @@ public class MovieDao {
 		MOVIES.put(movie2.getMovieId(), movie2);
 	}
 
-	public List<Movie> findMovieListAll() throws Exception {
+	public List<Movie> findMovieListAll() {
 		List<Movie> movieList = new ArrayList<Movie>();
 		Iterator<Movie> itr = this.MOVIES.values().iterator();
 		while (itr.hasNext())
-			movieList.add((Movie) itr.next());
+			movieList.add(itr.next());
 		return movieList;
 	}
 }

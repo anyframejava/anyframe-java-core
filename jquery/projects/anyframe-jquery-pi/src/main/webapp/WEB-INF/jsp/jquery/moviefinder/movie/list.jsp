@@ -1,11 +1,26 @@
 <%@ page language="java" errorPage="/sample/common/error.jsp" pageEncoding="UTF-8" contentType="text/html;charset=utf-8" %>
 <%@ include file="/sample/common/top.jsp"%>
-		<div class="location"><a href="<c:url value='/anyframe.jsp'/>">Home</a> &gt; <a href="<c:url value='/jqueryMovieFinder.do?method=listView'/>">jQuery 1.0.4.RC1</a></div>
+		<div class="location"><a href="<c:url value='/anyframe.jsp'/>">Home</a> &gt; <a href="<c:url value='/jqueryMovieFinder.do?method=listView'/>">jQuery 1.0.5</a></div>
     </div>
     <hr />
 <%@ include file="menu.jsp"%>	
 
 <script type="text/javascript">
+<!--
+/*
+ *1322559786997 을 srcformat:'u' , newformat:'d-M-Y' 로 변환하면 19-Dec-43879 로 출력된다.
+ *위의 Timestamp값이 String이기 때문이다.
+ *timeStampFormatter를 정의해서 TimeStamp를 변경한다.
+ *
+ */
+function timeStampFormatter(cellval, opts, rawObject) {
+	 if(cellval == null || cellval =="") {
+		return "";
+	 }
+	var date = new Date(cellval);
+	opts = $.extend({}, $.jgrid.formatter.date, opts);
+	return $.fmatter.util.DateFormat("" , date, 'Y-m-d', opts);
+}
 
 // jqGrid Start
 jQuery(document).ready( function() {
@@ -25,7 +40,7 @@ jQuery(document).ready( function() {
 			{name : 'title', index : 'title', align : 'center'},
 			{name : 'director', index :'director' , align : 'center'}, 
 			{name : 'actors', index : 'actors' , align : 'center'}, 
-			{name : 'releaseDate', index : 'releaseDate', align : 'center'}],
+			{name : 'releaseDate', index : 'releaseDate', sorttype: 'date' , formatter:timeStampFormatter,  align : 'center'}],
 		autowidth : true,
 		height	  : 69,	
 		scroll : false, 
@@ -64,6 +79,7 @@ jQuery(document).ready( function() {
 	        return (cm[i].name === 'cb');
 	    }
 	});
+	
 	// DELETE Button Click
 	$('[name=deletelink]').click( function(){
 		var rowNum;
@@ -86,7 +102,8 @@ jQuery(document).ready( function() {
 					       { ids : rowArray},
 					       function(data) {
 					    	    document.searchForm.pageIndex.value=1;
-					    	    jQuery("[name=searchMovies]").click();
+					    	    searchMovies();
+					    	   // jQuery("[name=searchMovies]").click();
 				     }); 
 			}
 		}
@@ -97,7 +114,7 @@ jQuery(document).ready( function() {
 		openMovieFormDialog('add');
 	});	
 	
-	//Search Button Click
+	//searchMovies Anchor tag clicked
 	$("[name=searchMovies]").click( function() {
 		jQuery("#grid").setGridParam({
 			page : $("#pageIndex").val(),
@@ -110,6 +127,13 @@ jQuery(document).ready( function() {
 		return false;
 	});
 
+	//Search Button Click
+	$("[name=btnSearchMovie]").click( function() {
+		document.searchForm.pageIndex.value=1;
+		$("[name=searchMovies]").trigger("click");
+		return false;
+	});
+	
 	// auto click by enter key 
 	$("#searchKeyword").keypress(function (e) {
 		document.searchForm.pageIndex.value=1;
@@ -156,10 +180,11 @@ jQuery(document).ready( function() {
 function reloadGrid(){
 	jQuery('#grid').trigger("reloadGrid");
 }
-
+-->
 </script>
 
 <script type="text/javascript">
+<!--
 //Global variable for selecting dialog type
 var dialogMode = "";
 
@@ -239,9 +264,18 @@ function openMovieFormDialog(_dialogMode, movieId) {
 			$('#selectGenreId').val(data.movie.genre.genreId);
 			$('#actors').val(data.movie.actors);
 			$('#runtime').val(data.movie.runtime);
-			$('#releaseDate').val(data.movie.releaseDate);
+			$('#releaseDate').val(convertTimeStampToDate(data.movie.releaseDate));
 			$('#ticketPrice').val(data.movie.ticketPrice);
-			$('#nowPlaying').val(data.movie.nowPlaying);
+			
+			//Form 화면을 hide(), show()로 전환하기 때문에, CheckBox의 선택/해제를 nowPlaying값에 따라 설정한다.
+			var nowPlaying = data.movie.nowPlaying;
+			if(nowPlaying == 'Y') {
+				$('input[name=nowPlaying]').attr('checked', true);
+			} else {
+				$('input[name=nowPlaying]').attr('checked', false);
+			}
+			$('#nowPlaying').val(nowPlaying);
+			
 			$('#filePaths').val(data.movie.filePaths);
 			$('#realFileName').val(data.movie.realFileName);
 			if(data.movie.filePaths != "") {
@@ -284,9 +318,30 @@ function postMovieForm(){
 		});
 	} else {
 		logger.log('dialogMode is invalid : ' + dialogMode);
+	}	
+}
+
+//DatePicker에 yyyy-mm-dd 형식의 날짜를 전달하기 위한 Formatter 함수
+function convertTimeStampToDate(cellval) {
+	if(cellval == null || cellval == "") {
+		return "";	
 	}
 	
+	//cellval의 type은 String. new Date객체를 생성.
+	var date = new Date(cellval);
+
+	var curr_date = date.getDate();
+	if(curr_date < 10) curr_date = "0"+curr_date;
+	
+	var curr_month = date.getMonth();
+	curr_month++; // date.getMonth()에서 January의 값은 0이다.
+	if(curr_month < 10) curr_month = "0"+curr_month;
+	
+	var curr_year = date.getFullYear();
+	
+	return curr_year + "-" + curr_month + "-" + curr_date;
 }
+-->
 </script>
 
 <!-- File Upload -->
@@ -294,7 +349,7 @@ function postMovieForm(){
 
 function drawUploadPane() {
 	$('#uploadPane').attachment({
-		'contextRoot' : '${ctx}',
+		'contextRoot' : '${ctx}' ,
 		'callBack' : function() {
 			postMovieForm();
 		}
@@ -312,6 +367,8 @@ function uploadFile(){
 }
 </script>
 
+
+
 <div id="content" style="height:100%;width:800px;margin-left:240px;">
   	<form:form modelAttribute="search" method="post" id="searchForm" name="searchForm">
     	<div id="hiddenDiv"></div>
@@ -328,9 +385,11 @@ function uploadFile(){
                     </form:select>
                     </label>
                     <label for="btnSearch" class="float_left">
-                    	<a id="searchMovies" name="searchMovies" href="#">
+                    	<a id="btnSearchMovie" name="btnSearchMovie" href="#">
                     		<input type="image" id="btnSearch" name="searchBtn" alt="Search" src="<c:url value='sample/images/btn_search_i.gif'/>"/>
                     	</a>
+                    	<!-- quickpager가 searchMovies 링크로 연결되어 있다. -->
+ 						<a id="searchMovies" name="searchMovies" href="#"></a>
                     </label>
                 </fieldset>
             </div>
@@ -339,7 +398,7 @@ function uploadFile(){
       	<div class="list">
       		<table id="grid" class="scroll" cellpadding="0" cellspacing="0"><tr><td/></tr></table>
       		<input type="hidden" value="1" name="pageIndex" id="pageIndex"/>
-			<div id=".boardNavigation">
+			<div id="boardNavigation">
 				<div id="pagination" class="pagination"></div>
 			</div>
 		</div>
@@ -366,10 +425,10 @@ function uploadFile(){
 <!-- Movie Form start -->
 <div id="dialog" class="dialog">
 <form:form modelAttribute="movie" method="post" id="movieForm" name="movieForm">
-	<table width="400px" summary="This table shows detail information about title, director, actors, runtime, release date, ticket price of the movie">
 	<form:hidden path="movieId" />
 	<form:hidden path="filePaths"/>
-	<form:hidden path="realFileName"/>	
+	<form:hidden path="realFileName"/>
+	<table width="400px" summary="This table shows detail information about title, director, actors, runtime, release date, ticket price of the movie">
 		<caption>Detail information</caption>
 	    <colgroup>
 		   	<col style="width:35%;" />
@@ -389,7 +448,7 @@ function uploadFile(){
 				</td>
 			</tr>
 			<tr>
-				<th><label for="genre"><spring:message code="movie.genre"/>&nbsp;</label></th>
+				<th><label for="selectGenreId"><spring:message code="movie.genre"/>&nbsp;</label></th>
 				<td>
 					<form:select id="selectGenreId" path="genre.genreId"  cssStyle="width:155px;">
        	            <form:options items="${genreList}" itemValue="genreId" itemLabel="name"/>
@@ -421,13 +480,14 @@ function uploadFile(){
 				</td>
 			</tr>
 			<tr>
-				<th><label for="nowPlaying"><spring:message code="movie.nowPlaying"/>&nbsp;</label></th>
+				<th><label for="nowPlaying1"><spring:message code="movie.nowPlaying"/>&nbsp;</label></th>
 				<td>
 					<spring:message code="movie.isNowPlaying"/><form:checkbox path="nowPlaying" value="Y"/>
+					<input type="hidden" name="!nowPlaying" value="N" />
 				</td>
 			</tr>
 			<tr>
-				<th><label for="posterFile"><spring:message code="movie.posterFile"/>&nbsp;</label></th>
+				<th><label for="poster"><spring:message code="movie.posterFile"/>&nbsp;</label></th>
 				<td>
 				<div id="imgPane">
 					<img id="poster" src="" alt="<spring:message code='movie.posterFile'/>" border="0" width="80" height="100" />

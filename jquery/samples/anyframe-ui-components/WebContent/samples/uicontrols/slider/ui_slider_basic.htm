@@ -1,0 +1,153 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN"
+"http://www.w3.org/TR/html4/loose.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+
+<head>
+<meta http-equiv="content-type" content="text/html; charset=UTF-8" />
+<title>Slider : Basics</title>
+
+<!-- FILES INCLUDED.. ----------------------------------------------------->
+<script type="text/javascript" src="../../../common/exlibs/jquery-1.9.0.js"></script>
+
+<script type="text/javascript" src="../../../common/exlibs/highlighter/scripts/shCore.js"></script>
+<script type="text/javascript" src="../../../common/exlibs/highlighter/scripts/shBrushJScript.js"></script>
+
+<script type="text/javascript" src="../../../common/js/template_common.js"></script>
+
+<!--  STYLESHEET  -->
+<link type="text/css" rel="stylesheet"
+	href="../../../common/exlibs/highlighter/styles/shCore.css" />
+<link type="text/css" rel="stylesheet" 	href="../../../common/exlibs/highlighter/styles/shCoreDefault.css" />
+<link type="text/css" rel="stylesheet" 	href="../../../common/css/style.css" />
+
+<!-- SCRIPT  ----------------------------------------------------->
+<script type="text/javascript">
+
+$(function() {
+	JTemplate.load("ui_slider_basic_src.htm");					
+	JTemplate.loadDemo2("ui_slider_basic_src.htm", {height:"500px"});				
+});  
+
+</script>
+
+</head>
+
+<!-- CONTENTS BODY -------------------------------------------------------------->
+<body >
+
+<!-- HEADER BAR -------------------------------------------------------------->
+<div class="content-title">Component - Slider</div>
+
+<!-- START OF PAGE ... -------------------------------------------------------->
+<div id="page">
+		<p class="header-title">Slider 기본기능</p>
+		<p class="header-desc">: slider의 형태에 따라 각 기본타입을 확인해 볼 수 있다.</p>
+
+<!-- DEMO ----------------------------------------------------------------------->
+			<div class="demo">
+				<h3 >Demo</h3>
+				<div id="visualExample"></div>
+			</div>
+
+<!-- DEMO DESCRIPTION----------------------------------------------------->
+		<div class="desc">
+			<h3>Demo Description</h3>
+			<hr>
+			<p class = "desc-title">형태 타입별 슬라이더</p>
+			<p class ="desc-overall">
+				: 크게 가로,세로방향의 기본 슬라이더, 단계별로 나뉠 수 있는 슬라이더, 범위를 설정할 수 있는 슬라이더의 타입이 있다.<br>
+			</p>
+			<ul class ="desc-hypl">
+				<li><span>기본 슬라이더 </span>: 기본 생성되는 슬라이더로, 방향설정에 따라 가로, 세로의 슬라이더 형태가 나타날 수 있다</li>
+				<li><span>단계형 슬라이더</span>: 슬라이더가 움직일때, 주어진 숫자간격 만큼 한꺼번에 이동하게 된다.</li>
+				<li><span>범위설정형 슬라이더</span>: 1개 또는 2개의 핸들러가 존재할 수 있으며, 이 핸들러들을 통해 범위를 설정하는 용도로 사용할 수 있다.</li>
+			</ul>
+		</div>
+
+<!-- CODE------------------------------------------------------------------------>
+			<div class="code">
+				<h3>Code Source </h3>
+				<pre id="codeExample" class="brush: js"></pre>
+			</div>
+
+<!-- CODE DESCRIPTION------------------------------------------------------>
+			<div class="desc">
+				<h3>Code Description </h3>
+				<hr>
+				<p class="desc-title">기본 슬라이더 생성</p>
+				<span class="code-line">#58 - #60</span>
+				<p class = "desc-overall">
+				:  .slider() 코드로 기본 가로형태의 슬라이더를 생성할 수 있으며, orientation 옵션을 통해 방향을 설정할 수 있다.
+				</p>
+				
+				<p class="desc-title">단계(이동간격) 설정</p>
+				<span class="code-line">#62 - #65</span>
+				<p class = "desc-overall">
+				: step 옵션으로 이동간격 값을 설정할 수 있다. 단, 설정값은 숫자 상수 혹은 number 타입의 변수여야 한다.
+				</p>
+				
+				<p class="desc-title">범위설정형 슬라이더 : range 옵션</p>
+				<p class = "desc-overall">
+				: range 옵션으로 범위형 슬라이더를 생성할 수 있으며, 값의 형태는 다음과 같다.
+				</p>
+				<ul class="desc-hypl">
+					<span class="code-line">#72 - #88</span>
+					<li><span>"min"</span>
+					: 슬라이더의 가장 왼쪽에 있는 최소값을 시작점으로 고정하고, 움직이는 슬라이더 핸들러까지를 범위로 설정하는 형태로 생성된다.
+					</li>
+					<li><span>"max"</span>
+					: 슬라이더의 가장 오른쪽에 있는 최대값을 시작점으로 고정하고, 움직이는 슬라이더 핸들러까지를 범위로 설정하는 형태로 생성된다.
+					</li>
+					<span class="code-line">#100 - #103</span>
+					<li><span>true</span>
+					: range 옵션을 true로 초기설정을 하면 범위를 컨트롤할 수 있는 두개의 핸들러가 생성되고, values 옵션으로 값도 2개를 각각 설정할 수 있다.
+					</li>
+				</ul>
+				
+				<p class="desc-title">value / values</p>
+				<p class = "desc-overall">
+				: 핸들러가 하나인 경우, value 옵션으로 값을 1개 설정하고, 핸들러가 두개 필요한 경우, values 옵션으로 2개를 배열로(다음과 같은 형태로) 설정해 주어야 한다.
+				<div class="code-block">
+				<pre>
+$(ENV.ID_SLIDER_RANGE_TWO).slider({
+     range : true,
+     values : [10, 65]
+});
+</pre>
+				</div>
+				
+				<p class="desc-title">range 동적설정</p>
+					<p class = "desc-overall">
+					:  범위형 슬라이더로 range : "min" 또는 "max" 값으로 동적으로 바꾸고자 재설정할 때, 값이 제대로 바뀌지 않는다. 
+					필요한 경우, 직접 클래스에 접근하여 해당클래스를 제거하고 재설정하며, 값을 0 또는 100으로 이동시켜 다시 이동하도록 해야한다.
+				</p>
+				<span class="code-line">#100 - #103</span>
+			</div>
+				 
+		
+		
+
+<!-- RELATED LINKS ----------------------------------------------------------->
+	<div class="related">
+		<h3>Related Links</h3>
+		<hr>
+		 <ul class="desc-hypl">
+           	<li>
+           		<span>Slider API</span>
+           		<a href = "http://api.jqueryui.com/slider/"></a>
+           	</li>
+           	<li>
+           		<span>range 옵션</span>
+           		<a href = "http://api.jqueryui.com/slider/#option-range"></a>
+           	</li>
+           	<li>
+           		<span>slide 이벤트</span>
+           		<a href = "http://api.jqueryui.com/slider/#event-slide"></a>
+           	</li>              	
+		</ul>
+	</div>
+	
+</div>
+<!-- END OF PAGE------------------------------------------------------------->
+</body>
+</html>

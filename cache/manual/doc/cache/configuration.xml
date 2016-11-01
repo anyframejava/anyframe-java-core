@@ -68,18 +68,19 @@
 						<para>Cache 적용 대상 메소드의 파라미터가 여러개인 경우 Cache 키로 사용할 파라미터를 SpEL을 사용하여 설정할 수 있다.</para>
 						<para>메소드 파라미터 중에 Cache 관련된 파라미터가 일부이고 나머지 파라미터의 경우 메소드 로직 내에서 사용되는 경우에 사용한다.</para>
     					<programlisting language="java"><![CDATA[@Cacheable(value="movie", key="#movieId")
-public Book findMovie(String movieId)]]></programlisting>
+public Movie findMovie(String movieId)]]></programlisting>
 					</listitem>
 					<listitem>
 						<para>Conditional caching (조건적인 캐싱)</para>
 						<para>condition 속성의 조건에 맞는 경우에만 Cache 저장소에 저장해야 하는 경우가 있을 때 사용한다.</para>
 						<para>condition 속성 내에 SpEL 표현식을 사용하여 true 혹은 false 결과값이 나오도록 조건문을 작성할 수 있다.</para>
     					<programlisting language="java"><![CDATA[@Cacheable(value="movie", condition="#movieId.length < 16")
-public Book findMovie(String movieId)]]></programlisting>
+public Movie findMovie(String movieId)]]></programlisting>
 					</listitem>
 					<listitem>
 						<para>Available caching SpEL evaluation context (사용 가능한 캐싱 SpEL 평가식 컨텍스트) </para>
 						<informaltable>
+							<caption>Available caching SpEL evaluation context</caption>
 							<tgroup cols="4">
 								<colspec colnum="1" colname="col1" colwidth="1*" />
 								<colspec colnum="2" colname="col2" colwidth="1*" />
@@ -195,6 +196,7 @@ public void update(Genre genre) throws Exception {]]></programlisting>
 					<listitem>
 						<para><![CDATA[<cache:annotation-driven/> 설정 어트리뷰트 표]]></para>
 						<informaltable>
+							<caption><![CDATA[<cache:annotation-driven/> 설정 어트리뷰트 표]]></caption>
 							<tgroup cols="3">
 								<colspec colnum="1" colname="col1" colwidth="1*" />
 								<colspec colnum="2" colname="col2" colwidth="1*" />
@@ -266,12 +268,12 @@ public @interface SlowService {
 				위에서 보는바와 같이 @Cacheable 로 annotation된 SlowService 자체를 annotation 으로 정의하면 아래의 코드를
 				</para>
 				<programlisting language="java"><![CDATA[@Cacheable(value="movie", key="#movieId")
-public Book findMovie(String movieId)]]></programlisting>
+public Movie findMovie(String movieId)]]></programlisting>
 				<para>
 				다음과 같이 대체할 수 있다.
 				</para>
 				<programlisting language="java"><![CDATA[@SlowService
-public Book findMovie(String movieId)]]></programlisting>
+public Movie findMovie(String movieId)]]></programlisting>
 				<para>
 				@SlowService 가 Spring annotation이 아니더라도, 컨테이너가 자동적으로 런타임시 선언 내용을 인식한다. 단, annotation-driven 이 활성화되어 있어야 한다.
 				</para>

@@ -34,12 +34,13 @@ import org.springframework.stereotype.Repository;
  */
 @Repository("excelDao")
 public class ExcelDao {
-
+	//Velocity-Support-contextProperties-START
 	@Value("#{contextProperties['pageSize'] ?: 10}")
 	int pageSize;
 
 	@Value("#{contextProperties['pageUnit'] ?: 10}")
 	int pageUnit;
+	//Velocity-Support-contextProperties-END
 
 	@Inject
 	@Named("queryService")

@@ -1,0 +1,293 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN"
+"http://www.w3.org/TR/html4/loose.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+
+<head>
+<meta http-equiv="content-type" content="text/html; charset=UTF-8" />
+<title>[Accordion] Basic Sample</title>
+<link href="../../../common/css/smoothness/jquery-ui-1.10.0.custom.css"	rel="stylesheet">
+<script src="../../../common/exlibs/jquery-1.9.0.js"></script>
+<script src="../../../common/exlibs/jquery-ui-1.10.0.custom.js"></script>
+
+<link type="text/css" rel="stylesheet" href="../../../common/css/style.css" />
+<link type="text/css" rel="stylesheet" href="sub_css/scroll.css">
+
+<script type="text/javascript">
+	var ENV = {
+		ID_SLIDER_HORZ : "#sliderHorizontal",
+		ID_SLIDER_VERT : "#sliderVertical",
+		CLS_OUTER : ".outer",
+		CLS_OUTER_VERT : ".outer-vert",
+		CLS_CONTENT : ".content",
+		CLS_CONTENT_VERT : ".content-vert",
+		CLS_SLIDER_OUTER : ".scroll-slider-outer",
+		CLS_SLIDER_OUTER_VERT : ".scroll-slider-outer-vert",
+		
+		RESOURCE_IMAGE_SCROLLHANDLE: "sub_css/images/slider_handler.png"
+	};
+
+
+	var sliderBasicView = {
+			
+		h_contentSize	: 0,
+		h_outerSize		: 0,
+		h_marginDir		: "margin-left",
+		v_contentSize	: 0,
+		v_outerSize		: 0,
+		v_marginDir		: "margin-top",
+		
+		init : function() {
+			
+			var jqoHSlider, jqoHSliderOuter, jqoHSliderHandle, 
+				jqoVSlider, jqoVSliderOuter, jqoVSliderHandle;
+			
+			jqoHSlider = $(ENV.ID_SLIDER_HORZ);
+			jqoHSliderOuter = $(ENV.CLS_SLIDER_OUTER);
+			jqoHSliderHandle = jqoHSlider.find(".ui-slider-handle");
+			
+			jqoVSlider = $(ENV.ID_SLIDER_VERT);
+			jqoVSliderOuter = $(ENV.CLS_SLIDER_OUTER_VERT);
+			jqoVSliderHandle = jqoVSlider.find(".ui-slider-handle");
+			
+			
+			//horizontal slider
+			this.h_contentSize = $(ENV.CLS_CONTENT).width();
+			this.h_outerSize = $(ENV.CLS_OUTER).width();
+			
+			jqoHSlider.css({
+							 "height": "2em",
+							 "background": "none",
+							 "border": "none"				
+						   })
+					  .width( jqoHSliderOuter.width() );
+			
+			jqoHSliderOuter.width( jqoHSlider.width() + 
+								   jqoHSliderHandle.width() + 
+								   Math.abs( parseInt(jqoHSliderHandle.css("margin-left")) ) 
+								  )
+						   .css({ "background": "lightgrey" });
+			
+			jqoHSliderHandle.css({ 
+									"margin": "8px 0px",
+									"background": "none",
+									"border": "none"
+								  })
+							.append("<div><img src= '"+ENV.RESOURCE_IMAGE_SCROLLHANDLE+"' width='20px' height='20px' border='none'></div>");
+			
+			
+			//vertical slider
+			this.v_contentSize = $(ENV.CLS_CONTENT_VERT).height();
+			this.v_outerSize = $(ENV.CLS_CONTENT).height();
+			
+			jqoVSlider.css({
+								"width" : "2em",
+								"height" : jqoVSliderOuter.height(),
+								"background": "none",
+								"border": "none"
+							})
+					  .height( jqoVSliderOuter.height() );
+			
+			jqoVSliderOuter.height( jqoVSlider.height() +
+									jqoVSliderHandle.height() +
+									Math.abs( parseInt(jqoVSliderHandle.css("margin-top")) )
+								   )
+						   .css({ "background": "lightgrey" });
+
+			jqoVSliderHandle.css({ 
+									"margin": "0px 8px",
+									"background": "none",
+									"border": "none"
+								  })
+						    .append("<div><img src= '"+ENV.RESOURCE_IMAGE_SCROLLHANDLE+"' width='20px' height='20px' border='none'></div>");
+		},
+		
+		onSlideHorizontal : function(evt, ui) {
+			
+			if (this.h_contentSize > this.h_outerSize) {
+				var offsetX = Math.round( ui.value / 100 * (this.h_outerSize - this.h_contentSize) );
+				$(ENV.CLS_CONTENT).css( this.h_marginDir, (offsetX + "px") );
+			}
+			else {
+				$(ENV.CLS_CONTENT).css( this.h_marginDir, 0);
+			};
+		},
+		
+		onSlideVertical : function(evt, ui) {
+			
+			var newvalue = 100 - ui.value;
+
+			if ( this.v_contentSize > this.v_outerSize) {
+				var offsetY = Math.round( newvalue / 100 * (this.v_outerSize - this.v_contentSize));
+				$(ENV.CLS_CONTENT_VERT).css( this.v_marginDir, (offsetY + "px") );
+			}else {
+				$(ENV.CLS_CONTENT_VERT).css(this.v_marginDir, 0);
+			};
+		}
+
+	};
+
+	$(document).ready(function() {
+		
+		$(ENV.ID_SLIDER_HORZ).slider({
+			min: 1,
+			max: 100,
+			value: 1,
+			slide: function(evt, ui) {
+				sliderBasicView.onSlideHorizontal(evt, ui);
+			}
+		});
+		$(ENV.ID_SLIDER_VERT).slider({
+			orientation : "vertical",
+			min: 1,
+			max: 100,
+			value : 100,
+			slide: function(evt, ui) {
+				sliderBasicView.onSlideVertical(evt, ui);
+			}
+		});
+		
+		sliderBasicView.init();		
+	});
+</script>
+</head>
+<body>
+	<div class="title">Horizontal slider</div>
+
+	<div id="outer" class="outer">
+	
+		<div id="content" class="content">
+			<div class="content-box">
+				<div class="content-in-box">A</div>
+				<div class = "content-text">1</div>
+			</div>
+			<div class="content-box">
+				<div class="content-in-box">B</div>
+				<div class = "content-text">2</div>
+			</div>
+			<div class="content-box">
+				<div class="content-in-box">C</div>
+				<div class = "content-text">3</div>
+			</div>
+			<div class="content-box">
+				<div class="content-in-box">D</div>
+				<div class = "content-text">4</div>
+			</div>
+			<div class="content-box">
+				<div class="content-in-box">E</div>
+				<div class = "content-text">5</div>
+			</div>
+			<div class="content-box">
+				<div class="content-in-box">F</div>
+				<div class = "content-text">6</div>
+			</div>
+			<div class="content-box">
+				<div class="content-in-box">G</div>
+				<div class = "content-text">7</div>
+			</div>
+			<div class="content-box">
+				<div class="content-in-box">H</div>
+				<div class = "content-text">8</div>
+			</div>
+			<div class="content-box">
+				<div class="content-in-box">I</div>
+				<div class = "content-text">9</div>
+			</div>
+			<div class="content-box">
+				<div class="content-in-box">J</div>
+				<div class = "content-text">10</div>
+			</div>
+			<div class="content-box">
+				<div class="content-in-box">K</div>
+				<div class = "content-text">11</div>
+			</div>
+				<div class="content-box">
+				<div class="content-in-box">L</div>
+				<div class = "content-text">12</div>
+			</div>
+				<div class="content-box">
+				<div class="content-in-box">M</div>
+				<div class = "content-text">13</div>
+			</div>
+				<div class="content-box">
+				<div class="content-in-box">N</div>
+				<div class = "content-text">14</div>
+			</div>
+		
+		</div>
+ 
+		<div class="scroll-slider-outer" >
+			<div id="sliderHorizontal" ></div>
+		</div>
+</div>
+		
+
+	
+	<div class="title">Vertical slider</div>
+		<div class="outer-vert">
+		<div class="content-vert">
+			<div class="content-box">
+				<div class="content-in-box">A</div>
+				<div class = "content-text">1</div>
+			</div>
+			<div class="content-box">
+				<div class="content-in-box">B</div>
+				<div class = "content-text">2</div>
+			</div>
+			<div class="content-box">
+				<div class="content-in-box">C</div>
+				<div class = "content-text">3</div>
+			</div>
+			<div class="content-box">
+				<div class="content-in-box">D</div>
+				<div class = "content-text">4</div>
+			</div>
+			<div class="content-box">
+				<div class="content-in-box">E</div>
+				<div class = "content-text">5</div>
+			</div>
+			<div class="content-box">
+				<div class="content-in-box">F</div>
+				<div class = "content-text">6</div>
+			</div>
+			<div class="content-box">
+				<div class="content-in-box">G</div>
+				<div class = "content-text">7</div>
+			</div>
+			<div class="content-box">
+				<div class="content-in-box">H</div>
+				<div class = "content-text">8</div>
+			</div>
+			<div class="content-box">
+				<div class="content-in-box">I</div>
+				<div class = "content-text">9</div>
+			</div>
+			<div class="content-box">
+				<div class="content-in-box">J</div>
+				<div class = "content-text">10</div>
+			</div>
+			<div class="content-box">
+				<div class="content-in-box">K</div>
+				<div class = "content-text">11</div>
+			</div>
+				<div class="content-box">
+				<div class="content-in-box">L</div>
+				<div class = "content-text">12</div>
+			</div>
+				<div class="content-box">
+				<div class="content-in-box">M</div>
+				<div class = "content-text">13</div>
+			</div>
+				<div class="content-box">
+				<div class="content-in-box">N</div>
+				<div class = "content-text">14</div>
+			</div>
+		</div>
+	
+		<div class="scroll-slider-outer-vert">
+			<div id="sliderVertical"></div>
+		</div>
+	</div>
+
+	
+</body>
+</html>

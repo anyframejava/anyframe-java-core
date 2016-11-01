@@ -1,0 +1,104 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE queryservice PUBLIC "-//ANYFRAME//DTD QUERYSERVICE//EN"
+"http://www.anyframejava.org/dtd/anyframe-query-mapping-1.0.dtd">
+<queryservice>
+	<queries>
+		<query id="createMiPQueryService" isDynamic="true">
+			<statement>
+				<![CDATA[
+				INSERT INTO TB_MIP_TEST 
+				(TEST_CHAR, TEST_VARCHAR2, TEST_NUMBER, TEST_DOUBLE, TEST_DATE)
+				 VALUES(:TEST_CHAR, :TEST_VARCHAR2, :TEST_NUMBER, :TEST_DOUBLE, :TEST_DATE)
+				]]>
+			</statement>
+		</query>
+		
+		<query id="updateMiPQueryService" isDynamic="true">
+			<statement>
+				<![CDATA[
+				UPDATE TB_MIP_TEST
+				SET  TEST_VARCHAR2 = :TEST_VARCHAR2, 
+				TEST_NUMBER = :TEST_NUMBER , TEST_DOUBLE = :TEST_DOUBLE , TEST_DATE = :TEST_DATE
+				WHERE TEST_CHAR = :TEST_CHAR
+				]]>
+			</statement>
+		</query>
+		
+		<query id="deleteMiPQueryService" isDynamic="true">
+			<statement>
+				<![CDATA[
+				DELETE FROM TB_MIP_TEST WHERE TEST_CHAR = :TEST_CHAR
+				]]>
+			</statement>
+		</query>
+		
+		<query id="findMiPQueryService" isDynamic="true" mappingStyle="none">
+			<statement>
+				<![CDATA[
+				SELECT * 
+				FROM TB_MIP_TEST 
+				WHERE TEST_CHAR = :SEARCH_KEYWORD
+				]]>
+			</statement>
+		</query>
+		
+		<query id="findListMiPQueryService" isDynamic="true" mappingStyle="none">
+			<statement>
+				<![CDATA[
+				SELECT * 
+				FROM TB_MIP_TEST 
+				WHERE TEST_CHAR like :SEARCH_KEYWORD
+				]]>
+			</statement>
+		</query>		
+		
+		<query id="createBlobClob" isDynamic="true">
+			<statement>
+				<![CDATA[
+				INSERT INTO TB_MIP_BLOBCLOB 
+				(TEST_CHAR, TEST_BLOB, TEST_CLOB, TEST_DATE)
+				 VALUES( :TEST_CHAR , :TEST_BLOB , :TEST_CLOB, :TEST_DATE )
+				]]>
+			</statement>
+		</query>
+		
+		<query id="updateBlobClob" isDynamic="true">
+			<statement>
+				<![CDATA[
+				UPDATE TB_MIP_BLOBCLOB 
+				SET 
+				TEST_BLOB = :TEST_BLOB , TEST_CLOB =:TEST_CLOB , TEST_DATE = :TEST_DATE
+				WHERE TEST_CHAR = :TEST_CHAR 
+				]]>
+			</statement>
+		</query>
+		
+		<query id="findBlobClob" isDynamic="true">
+			<statement>
+				<![CDATA[
+				SELECT * FROM TB_MIP_BLOBCLOB
+				WHERE TEST_CHAR LIKE :SEARCH_KEYWORD
+				]]>
+			</statement>
+		</query>
+		
+		<query id="findMiPQueryServiceWithoutDynamic" isDynamic="false">
+			<statement>
+				<![CDATA[
+				SELECT * FROM TB_MIP_TEST
+				WHERE TEST_CHAR LIKE :SEARCH_KEYWORD
+				]]>
+			</statement>
+		</query>
+		
+		<query id="findMiPQueryServiceWithWrongQuery" isDynamic="true">
+			<statement>
+				<![CDATA[
+				SELECT a.notexitcolumn, a.* 
+				FROM TB_MIP_TEST a
+				WHERE TEST_CHAR LIKE :SEARCH_KEYWORD
+				]]>
+			</statement>
+		</query>
+	</queries>
+</queryservice>

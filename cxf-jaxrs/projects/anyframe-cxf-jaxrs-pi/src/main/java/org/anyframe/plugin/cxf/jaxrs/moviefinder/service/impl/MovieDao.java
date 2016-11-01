@@ -31,11 +31,13 @@ import org.springframework.stereotype.Repository;
  */
 @Repository("cxfJaxRsMovieDao")
 public class MovieDao extends QueryServiceDaoSupport {
+	//Velocity-Support-contextProperties-START
 	@Value("#{contextProperties['pageSize'] ?: 10}")
 	int pageSize;
 
 	@Value("#{contextProperties['pageUnit'] ?: 10}")
 	int pageUnit;
+	//Velocity-Support-contextProperties-END
 
 	@Inject
 	public void setQueryService(QueryService queryService) {
@@ -51,7 +53,7 @@ public class MovieDao extends QueryServiceDaoSupport {
 	public Movie get(String movieId) {
 		Movie movie = new Movie();
 		movie.setMovieId(movieId);
-		return findByPk("findCxfJaxRsMovieByPk", movie);
+		return super.findByPk("findCxfJaxRsMovieByPk", movie);
 	}
 
 	public void update(Movie movie) {
@@ -65,7 +67,7 @@ public class MovieDao extends QueryServiceDaoSupport {
 	}
 
 	public Page getPagingList(Movie movie, int pageIndex) {
-		return this.findListWithPaging("findCxfJaxRsMovieList", movie,
+		return super.findListWithPaging("findCxfJaxRsMovieList", movie,
 				pageIndex, pageSize, pageUnit);
 	}
 }

@@ -20,8 +20,6 @@ import java.util.Locale;
 import javax.inject.Inject;
 import javax.ws.rs.core.Response;
 
-import org.anyframe.exception.BaseException;
-import org.anyframe.exception.BaseRuntimeException;
 import org.anyframe.plugin.common.MovieFinderException;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -70,26 +68,16 @@ public class ExceptionTransfer {
 			throw movieFinderEx;
 		}
 
-		if (exception instanceof BaseException) {
-			BaseException baseEx = (BaseException) exception;
-			logger.error(baseEx.getMessage(), baseEx);
-			throw new MovieFinderException(messageSource, "error." + className
-					+ "." + opName, new String[] {}, exception);
+		try {
+			logger.error(messageSource.getMessage("error." + className + "."
+					+ opName, new String[] {}, Locale.getDefault()), exception);
+		} catch (Exception e) {
+			logger.error(messageSource.getMessage("error.common",
+					new String[] {}, Locale.getDefault()), exception);
+			throw new MovieFinderException(messageSource, "error.common");
 		}
-		
-		if (exception instanceof BaseRuntimeException) {
-			BaseRuntimeException baseEx = (BaseRuntimeException) exception;
-			logger.error(baseEx.getMessage(), baseEx);
-			throw new MovieFinderException(messageSource, "error." + className
-					+ "." + opName, new String[] {}, exception);
-		}
-
-		logger.error(messageSource.getMessage("error." + className + "."
-				+ opName, new String[] {}, "no messages", Locale.getDefault()),
-				exception);
-
 		throw new MovieFinderException(messageSource, "error." + className
-				+ "." + opName, new String[] {}, exception);
+				+ "." + opName);
 	}
 
 	@Around("serviceMethod()")
@@ -101,8 +89,8 @@ public class ExceptionTransfer {
 
 		Log logger = LogFactory.getLog(target.getClass());
 
-		logger.debug("***** Around Advice of ExceptionTransfer [" + className + "."
-				+ opName + "()]");
+		logger.debug("***** Around Advice of ExceptionTransfer [" + className
+				+ "." + opName + "()]");
 
 		// before logic
 		Object retVal = null;

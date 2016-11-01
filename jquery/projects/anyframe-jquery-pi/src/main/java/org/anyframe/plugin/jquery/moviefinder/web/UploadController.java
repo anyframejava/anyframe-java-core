@@ -29,10 +29,11 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.multipart.MultipartFile;
 
 /**
- * This UploadController class is a Controller class to provide file upload functionality.
+ * This UploadController class is a Controller class to provide file upload
+ * functionality.
  * 
  * @author Sunjoong Kim
- *
+ * 
  */
 
 @Controller("jqueryUploadController")
@@ -44,28 +45,31 @@ public class UploadController {
 	public String uploadFile(
 			@RequestParam(value = "fileData", required = false) MultipartFile file,
 			Model model, HttpServletRequest request) throws Exception {
-		
-		String destDir = request.getSession().getServletContext().getRealPath(uploadPath);
-		
+
+		String destDir = request.getSession().getServletContext().getRealPath(
+				uploadPath);
+
 		File repositoryDir = new File(destDir);
-		if(!repositoryDir.exists()) {
+		if (!repositoryDir.exists()) {
 			boolean created = repositoryDir.mkdirs();
-			if(!created) {
+			if (!created) {
 				throw new Exception(
 						"Fail to create a directory for attached file ["
 								+ repositoryDir + "]");
 			}
 		}
 
-		SimpleDateFormat formatter = new SimpleDateFormat("yyyyMMddHHmmssSSS", new Locale("ko", "KR"));
+		SimpleDateFormat formatter = new SimpleDateFormat("yyyyMMddHHmmssSSS",
+				new Locale("ko", "KR"));
 
 		String realFileName = file.getOriginalFilename();
-		String fileNameExtension = realFileName.substring(realFileName.lastIndexOf(".")).toLowerCase();
+		String fileNameExtension = realFileName.substring(
+				realFileName.lastIndexOf(".")).toLowerCase();
 		String fileId = "FILE-" + formatter.format(new Date());
 		String convertedFileName = fileId + fileNameExtension;
 		String filePathToBeStored = uploadPath + "/" + convertedFileName;
-		
-		file.transferTo(new File(destDir + "/" + convertedFileName ));
+
+		file.transferTo(new File(destDir + "/" + convertedFileName));
 
 		model.addAttribute("filePaths", filePathToBeStored);
 		model.addAttribute("realFileName", realFileName);

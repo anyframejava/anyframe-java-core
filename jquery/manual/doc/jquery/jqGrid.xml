@@ -7,41 +7,42 @@
 	<section id="jquery_jqGrid_sec002">
 		<title>jqGrid를 위한 Spring MVC Controller 구현</title>
 		<section id="jquery_jqGrid_sec002_001">
-			<title>JqGridVO 상속</title>
-			<para>JqGridVO는 jqGrid 적용을 위한 Abstract Domain Class로서 jqGrid에서 parameter로 제공하는 page, sord, sidx를 member로 가지고 있으므로 이 클래스를 상속받아 Domain 객체를 구현하면 별도의 추가적인 코딩 없이 jqGrid 연동 Controller를 구현하는 것이 가능하다.</para>
-			<para>다음은 jqGrid 적용을 위해서 JqGridVO를 상속받은 Board Domain Class의 코드 일부이다.</para>
-			<programlisting language="xml">
+			<title>MovieSearchVO 생성</title>
+			<para>MovieSearchVO는 jqGrid에서 parameter로 제공하는 page, sord, sidx를 멤버로 가지고 있는 클래스이다.</para>
+			<para>MovieSearchVO는 SearchVO 클래스를 상속받는데, SearchVO 클래스에는 영화 검색시 키워드를 저장할 멤버 변수를 갖고 있다. </para>
+			
+			<para>다음은 jqGrid 적용을 위해서 작성한 MovieSearchVO의 코드 일부이다.</para>
+
+			<programlisting language="java">
 <![CDATA[package org.anyframe.plugin.jquery.domain;
 
-public class Board extends JqGridVO implements Serializable{
-...중략...
-}
+public class MovieSearchVO extends SearchVO{
+
+    private String nowPlayingCondition = "Y"; 
+
+    private String sord;
+	
+    private String sidx;
+    
+    private int page = 1;
+	
+	... 중략 ...
 ]]></programlisting>
 		</section>
 		<section id="jquery_jqGrid_sec002_002">
-			<title>BoardController.list()</title>
-			<para>현재 jQuery plugin에서는 jQuery의 Grid 컴포넌트(jqgrid plugin)에서 Grid를 그릴 때 비즈니스 서비스 호출 후 반환되는 Page 객체를 바로 받을 수 있는 것이 아닌 Grid에서 인식할 수 있는 Key와 Value 쌍의 Map 형태로 Model 객체에 셋팅해줘야 한다. 다음은 BoardController 클래스의 일부이다.</para>
-			<programlisting language="xml">
+			<title>MovieFinderController.list()</title>
+			<para>현재 jQuery plugin에서는 jQuery의 Grid 컴포넌트(jqgrid plugin)에서 Grid를 그릴 때 비즈니스 서비스 호출 후 반환되는 Page 객체를 바로 받을 수 있는 것이 아닌 Grid에서 인식할 수 있는 Key와 Value 쌍의 Map 형태로 Model 객체에 셋팅해줘야 한다. 
+			다음은 MovieFinderController 클래스의 일부이다.</para>
+			<programlisting language="java">
 <![CDATA[@RequestMapping(params = "method=list")
-public String list(
-		@RequestParam(value = "searchKeyword", defaultValue = "") String searchKeyword,
-		@RequestParam(value = "searchCondition", defaultValue = "") String searchCondition,
-		@RequestParam(value = "communityId", required = false) String communityId,
-		Board board, Model model, HttpServletRequest request)
-		throws Exception {
-		
-...중략...
+public String list(MovieSearchVO search, Model model) throws Exception {
 
-	Page resultPage = boardService.getPagingList(board);
+	Page resultPage = movieFinder.getPagingList(search);
 
-	Map<String, Object> jsonModel = new HashMap<String, Object>();
-	
-	jsonModel.put("page", resultPage.getCurrentPage() + "");
-	jsonModel.put("total", resultPage.getMaxPage() + "");
-	jsonModel.put("records", resultPage.getTotalCount() + "");
-	jsonModel.put("rows", resultPage.getList());
-	
-	model.addAllAttributes(jsonModel);
+	model.addAttribute("page", String.valueOf(resultPage.getCurrentPage()));
+	model.addAttribute("total", String.valueOf(resultPage.getMaxPage()));
+	model.addAttribute("records", String.valueOf(resultPage.getTotalCount()));
+	model.addAttribute("rows", resultPage.getList());
 	return "jsonView";
 }
 ]]></programlisting>
@@ -54,30 +55,32 @@ public String list(
 		<section id="jquery_grGrid_sec003_001">
 			<title>jqGrid를 위한 Javascript 라이브러리 dependency</title>
 			<para>jqGrid를 사용하기 위해서는 jquery, jquery-ui, jqGrid 라이브러리가 필요하다.</para>
-			<programlisting><![CDATA[<!-- jquery -->
-<script type="text/javascript" src="<c:url value='/jquery/jquery/jquery-1.6.2.min.js'/>"></script>
-<script type="text/javascript" src="<c:url value='/jquery/jquery/validation/jquery.validate.js'/>"></script>
+			<programlisting><![CDATA[
+<!-- jquery -->
+<script type="text/javascript" src="<c:url value='/jquery/jquery/jquery-1.7.2.min.js'/>"></script>
+<script type="text/javascript" src="<c:url value='/jquery/jquery/superfish/superfish.js'/>"></script>
 
-<!-- jquery-ui -->
-<script type="text/javascript" src="<c:url value='/jquery/jquery/jquery-ui/jquery-ui-1.8.16.custom.min.js'/>"></script>
+<!-- jquery ui-->
+<script type="text/javascript" src="<c:url value='/jquery/jquery/jquery-ui/jquery-ui-1.8.22.custom.min.js'/>"></script>
+<link href="<c:url value='/jquery/jquery/jquery-ui/themes/smoothness/jquery-ui-1.8.22.custom.css'/>" rel="stylesheet" type="text/css" />
 
 <!-- jqGrid -->
 <script type="text/javascript" src="<c:url value='/jquery/jquery/jqgrid/i18n/grid.locale-en.js'/>"></script>
 <script type="text/javascript" src="<c:url value='/jquery/jquery/jqgrid/jquery.jqGrid.min.js'/>"></script>
-<script type="text/javascript" src="<c:url value='/jquery/jquery/jqgrid/plugins/grid.setcolumns.js'/>"></script>]]></programlisting>
+<link href="<c:url value='/jquery/jquery/jqgrid/ui.jqgrid.css'/>" rel="stylesheet" type="text/css" />]]></programlisting>
 			<note>
-				<para>※ 라이브러리 참조 선언의 순서에 주의하여야 한다.</para>
+				<para>※ 라이브러리 참조 선언의 순서에 주의하여야 한다. jQuery -> jQuery ui -> jqGrid 순으로 정의를 한다.</para>
 				<para>※※ jqGrid의 경우 필요에 따라 추가적인 플러그인 라이브러리를 호출하여 사용할 수 있다.(jqGrid 위키사이트 참조 : <ulink url="http://www.trirand.com/jqgridwiki/doku.php">http://www.trirand.com/jqgridwiki/doku.php</ulink>)</para>
 			</note>
 		</section>
 		
-		<para>jquery plugin 에서는 크게 두 가지 형태의 jqGrid 적용 type을 제공하고 있다.</para>
+		<para>다음은 jquery plugin 에서는 제공하는 jqGrid MovieFinder 샘플이다.</para>
 		
 		<section id="jquery_grGrid_sec003_002">
-			<title>jqGrid Type 1</title>
+			<title>jqGrid Movie Finder</title>
 			<itemizedlist>
 				<listitem>
-					<para><emphasis role="bold">i.</emphasis> : 커뮤티니의 게시물 list를 제공
+					<para><emphasis role="bold">i.</emphasis> : 영화 리스트를 제공
 					 </para>
 				</listitem>
 				<listitem>
@@ -85,7 +88,7 @@ public String list(
 					 </para>
 				</listitem>
 				<listitem>
-					<para><emphasis role="bold">iii.</emphasis> : jquery-ui에서 제공하는 dialog widget과 연동하여 등록/수정 기능을 제공
+					<para><emphasis role="bold">iii.</emphasis> : jquery-ui에서 제공하는 dialog widget과 연동하여 영화 등록/수정 기능을 제공
 					 </para>
 				</listitem>
 				<listitem>
@@ -93,357 +96,79 @@ public String list(
 					 </para>
 				</listitem>
 	  		</itemizedlist>
-			<para>다음은 type 1 게시물 리스트를 출력하는 tabMain.jsp 파일의 일부이다.</para>
-			<programlisting><![CDATA[function _createGridType1(id) {
-	var gridId = '#grid_' + id;
-	var paginationId = gridId + '_pagination';
-	
-	$(gridId).jqGrid({
-		url: "<c:url value='/jqueryBoard.do?method=list' />",
+			<para>다음은 영화 목록을 출력하는 list.jsp파일의 일부이다.</para>
+			<programlisting><![CDATA[jQuery(document).ready( function() {
+	jQuery('#grid').jqGrid( 
+	{
+		url: "<c:url value='/jqueryMovieFinder.do?method=list'/>",
 		mtype:'POST',
 		datatype : "json",
-		postData : {'communityId' : id, 'searchKeyword' : '', 'searchCondition' : ''},
-		colNames : [ '<spring:message code="board.id" />', '<spring:message code="category.name" />', '<spring:message code="board.title" />', 
-		             '<spring:message code="board.contents" />', '<spring:message code="board.regId" />', 
-		             '<spring:message code="board.regDate" />', '<spring:message code="community.id" />'],
-		jsonReader: {repeatitems: false},
-		colModel : [ 
-			{key : true, name : 'postId', editable:false, hidden:true}, 
-			{name : 'communityName', name : 'communityName', editable:false, hidden:true},
-			{name : 'title', index : 'title', align : 'center', editable:true}, 
-			{name : 'contents', index :'contents' , align : 'left', editable:true, hidden : false}, 
-			{name : 'regId', index : 'regId' , align : 'center', editable:false, width:50}, 
-			{name : 'regDate', index : 'regDate', align : 'center', sorttype:"date", editable:true,width:70},
-			{name : 'communityId', name : 'communityId', editable:false, hidden:true}],
+		colNames : [ '<spring:message code="movie.genre" />','id','<spring:message code="movie.title" />', '<spring:message code="movie.director" />'
+		 			,'<spring:message code="movie.actors" />', '<spring:message code="movie.releaseDate" />'],
+		jsonReader: {
+				     repeatitems: false
+		},
+		colModel : [
+			{name : 'genre.name', index : 'genre.name', align : 'center'},
+			{key : true, name : 'movieId', hidden : true},
+			{name : 'title', index : 'title', align : 'center'},
+			{name : 'director', index :'director' , align : 'center'}, 
+			{name : 'actors', index : 'actors' , align : 'center'}, 
+			{name : 'releaseDate', index : 'releaseDate', align : 'center'}],
 		autowidth : true,
-		height : "auto",	
+		height	  : 69,	
+		scroll : false, 
+		//forceFit:true,	
+		multiselect : true, 
 		viewrecords : true,	
-		rowNum : 10, sortable : true,
+		rowNum : 3, 
+		sortable : true,
 		loadComplete : function(xhr) {
-			$(paginationId).quickPager( {
-	    		pageSize: "10",
-	    		pageUnit: "10",
-	    		pageIndexId: 'grid_' + id + "_pageIndex",
-	    		searchButtonId: 'grid_' + id + "_btnSearch", 
-	    		currentPage: $(gridId).getGridParam("page"),
-	    		totalCount: $(gridId).getGridParam("records"),
-	    		searchUrl: "#"
+			$('#pagination').quickPager( {
+	    		pageSize: '3',
+	    		pageUnit: '3',
+	    		pageIndexId: 'pageIndex',
+	    		searchButtonId: 'searchMovies', 
+	    		currentPage: jQuery('#grid').getGridParam('page'),
+	    		totalCount: jQuery('#grid').getGridParam('records'),
+	    		searchUrl: '#'
 	    		});
 	    },
-	    gridComplete: function() { 
-	    	$("#_empty",gridId).addClass("nodrag nodrop"); 
-	    	//$("#grid").tableDnDUpdate(); 
-	    	$(gridId).setGridWidth($('#right').width() - 40);
-	    	$(window).bind('resize', function() {
-	    	    $(gridId).setGridWidth($('#right').width() - 40);
-	    	}).trigger('resize');
-	    }, 
+	    gridComplete : function() {
+	    },
 		loadError: function(xhr,st,err) {
-			alert(err); 
-		}
-	});
-
-	$("button", ".buttons").button();
-	
-	$(gridId + "_btnAdd").click(function() { 
-		dialogMode = "add";
-		AnyframeUpload.options.refId = '';
-		$("#dialog-form").dialog( "open" );
-	});
-
-	$(gridId + "_btnEdit").click(function() { 
-		var rowNum = $(gridId).jqGrid('getGridParam','selrow');
-		if(rowNum == null || rowNum == ""){
-			alert('<spring:message code="board.msg.delete.alert" />');
-		}else{
-			dialogMode = "edit";
-			$.post(
-			       "<c:url value='/jqueryBoard.do?method=get'/>", {postId : rowNum}, 
-			       function(data) {
-			    	   $("#boardPostId").val(data.board.postId);
-			    	   $("#boardTitle").val(data.board.title);
-			    	   $("#boardContents").val(data.board.contents);
-			    	   $("#boardRegId").val(data.board.regId);
-			    	   $("#boardRegDate").val(data.board.regDate);
-			    	   $("#communities").val(data.board.communityName).selected;
-
-			    	   AnyframeUpload.options.refId = data.board.postId;
-			    	   AnyframeUpload.loadAttachedFileList('uploadPane');
-			    	   
-			    	   $( "#dialog-form" ).dialog( "open" );
-		     }); 
-		}
+			alert('<spring:message code="error.moviefinderimpl.getpaginglist" />');
+		}, 
+		ondblClickRow: function(rowId) {
+			var rowData = jQuery('#grid').getRowData(rowId);
+			
+			openMovieFormDialog('edit', rowData.movieId);
+	    },
+	    beforeSelectRow: function (rowid, e) {
+	    	//Default multi selection works whenever a row of jqGrid clikced.
+	    	//Configuring beforeSelectRow for Multi selection to work when check boxes are clicked - not the rows.
+	        var $myGrid = $(this),
+	            i = $.jgrid.getCellIndex($(e.target).closest('td')[0]),
+	            cm = $myGrid.jqGrid('getGridParam', 'colModel');
+	        return (cm[i].name === 'cb');
+	    }
 	});
 	
-	$(gridId + "_btnRemove").click(function() { 
-		var rowNum = $(gridId).jqGrid('getGridParam','selrow');
-		var postId = $(gridId).getCell(rowNum, 'postId');
-		$(gridId).delGridRow( rowNum, {
-			reloadAfterSubmit:true,
-			msg:'<spring:message code="board.msg.delete.confirm" />',
-			delData:{postId: postId},
-			url:"<c:url value='/jqueryBoard.do?method=remove'/>"
-		});
-	});
-	
-	$(gridId + "_btnRefresh").click(function() { 
-		$(gridId).trigger("reloadGrid");
-	});
-	
-	$(gridId + "_btnSearch").click(function() {
-		$(gridId).setGridParam({
-			page: $(gridId + "_pageIndex").val(),
-			postData: {
-				searchKeyword:$(gridId + "_searchKeyword").val(), 
-				searchCondition:$(gridId + "_searchCondition").val()
-			}
-		});
-		$(gridId).setGridParam({url:"<c:url value='/jqueryBoard.do?method=list'/>"}).trigger("reloadGrid");
-	});
-	
-	/* auto click by enter key */
-	$(gridId + "_searchKeyword").keypress(function (e) {
-		if (e.which == 13){
-			$(gridId + "_pageIndex").val('1');
-			$(gridId + "_btnSearch").trigger("click");
-			return false;
-		}
-	});
+	.
+	.
+	.
+	중략
 
-	$(gridId + "_searchKeyword").autocomplete({
-		source : function(request, response){
-			logger.log('call');
-			$.ajax({
-				'url' : '<c:url value="/jqueryBoard.do?method=searchKeyword"/>',
-				'type' : 'POST',
-				'async' : false,
-				'data' : 'searchKeyword=' + $(gridId + "_searchKeyword").val() + '&searchCondition=' + $(gridId + "_searchCondition").val() + '&communityId=' + _currentNodeId,
-				'dataType' : 'json',
-				'success' : function(data){
-					logger.log('return:data.r.length=' + data.r.length);
-					response(data.r);
-				}
-			});
-		},
-		minLength : 1,
-		select : function(event, ui) {
-			logger.log('autocomplete selected:' + ui.item.value);
-			$(gridId + '_searchKeyword').val(ui.item.value);
-			$(gridId + '_pageIndex').val('1');
-			$(gridId + '_btnSearch').trigger("click");
-			return false;
-		}
-	});
-
-}]]></programlisting>
+]]></programlisting>
 			<para>위와 같이 jqgrid로 구현된 리스트의 모습은 아래와 같다.</para>
 			<mediaobject>
 				<imageobject>
-					<imagedata fileref="../image/jquery/jqgrid001.jpg"	align="center" />
+					<imagedata fileref="../image/jquery/jquery_grid.png"	align="center" />
 				</imageobject>
+				<textobject>
+					<phrase>jqgrid로 구현된 리스트의 모습</phrase>
+				</textobject>
 			</mediaobject>
 		</section>
-		<section id="jquery_grGrid_sec003_003">
-			<title>jqGrid Type 2</title>
-			<itemizedlist>
-				<listitem>
-					<para><emphasis role="bold">i.</emphasis> : 카테고리에 속한 커뮤니티 list를 제공
-					 </para>
-				</listitem>
-				<listitem>
-					<para><emphasis role="bold">ii.</emphasis> : cell 단위로 select/edit 할 수 있으며, scroll down 방식의 page navigation을 제공
-					 </para>
-				</listitem>
-				<listitem>
-					<para><emphasis role="bold">iii.</emphasis> : jquery-ui의 date-picker 컴포넌트와 연동하여 date 형식의 data 수정
-					 </para>
-				</listitem>
-				<listitem>
-					<para><emphasis role="bold">iv.</emphasis> : jquery-ui에서 제공하는 autocomplete 와 연동하여 목록에 대한 검색기능을 제공
-					 </para>
-				</listitem>
-				<listitem>
-					<para><emphasis role="bold">v.</emphasis> : 그리드 내 버튼을 통한 삭제 기능 제공
-					 </para>
-				</listitem>
-	  		</itemizedlist>
-			<para>다음은 type 2 방식의 커뮤니티 리스트를 출력하는 tabMain.jsp 파일의 일부이다.</para>
-			<programlisting><![CDATA[var isCellSaved;
-var lastsel_row;
-var lastsel_col;
-
-function _createGridType2(id) {
-	
-	var gridId = '#grid_' + id;
-	
-	$(gridId).jqGrid({
-		url: "<c:url value='/jqueryCommunity.do?method=list' />",
-		mtype:'POST',
-		datatype : "json",
-		postData : {'categoryId' : id},
-		colNames : ['<spring:message code="community.id" />','<spring:message code="community" /> <spring:message code="community.name" />', '<spring:message code="community.desc" />', 
-		            '<spring:message code="community.redId" />', '<spring:message code="community.regDate" />', '<spring:message code="category.id" />', '<spring:message code="category.name" />',''],
-		jsonReader: {repeatitems: false},
-		colModel : [ 
-		{key : true, name : 'communityId', editable:false, hidden:true}, 
-		{name : 'communityName', index : 'communityName', align : 'center', editable:true}, 
-		{name : 'communityDesc', index :'communityDesc' , align : 'left', editable:true}, 
-		{name : 'regId', index : 'regId' , align : 'center', editable:false, width:75}, 
-		{name : 'regDate', index : 'regDate', align : 'center', sorttype:"date", width:100, editable:true,
-			editoptions: {
-	              dataInit: function(element) {
-           		    $(element).datepicker({ 
-           		    	dateFormat: 'yy/mm/dd',
-           		    	onSelect: function(dataText, inst){
-           		    		$(gridId).jqGrid('saveCell',lastsel_row, lastsel_col); 
-           		    	}
-    		    	});
-	              }
-	          }	
-		},
-		{name : 'categoryId', name : 'categoryId', editable:false, hidden:true},
-		{name : 'categoryName', name : 'categoryName', editable:false, hidden:true},
-		{name: 'myac', width:40, fixed:true, sortable:false, resize:false, formatter:'actions', 
-			formatoptions:{editbutton:false, keys:true,
-				delOptions:{msg:'<spring:message code="board.msg.delete.confirm" />',
-					onclickSubmit:function(rp_ge, rowid){
-					$(gridId).delGridRow( rowid, {
-						reloadAfterSubmit:true,
-						delData:{communityId: rowid},
-						url:"<c:url value='/jqueryCommunity.do?method=remove'/>",
-						afterComplete : function (response, postdata, formid) {
-							$('#${treeId}').jstree("remove","#" + rowid);
-							return false;
-						} 
-					});
-				}}
-			}
-		}],
-		scroll : true,
-		height : 220,
-		multiselect : false, viewrecords : true,	
-		rowNum : 10, sortable : true,
-		cellEdit: true, cellsubmit:"remote",
-		cellurl:"<c:url value='/jqueryCommunity.do?method=updateCell'/>",
-		beforeEditCell: function(id,name,val,iRow,iCol){     
-			lastsel_row = iRow;
-			lastsel_col = iCol;
-			isCellSaved = false;
-		},
-		beforeSaveCell: function(id,name,val,iRow,iCol){  
-			isCellSaved = true;
-		},
-		afterSaveCell:function(rowid, cellname, value, iRow, iCol){
-			if(cellname=="communityName"){
-				$('#${treeId}').jstree('get_selected').find("#"+rowid+" a").html('<ins class="jstree-icon">&nbsp;</ins>' + value);
-			}
-		},
-	    gridComplete: function() { 
-	    	$("#_empty",gridId).addClass("nodrag nodrop"); 
-	    	$(gridId).setGridWidth($('#right').width() - 40);
-	    	$(window).bind('resize', function() {
-	    	    $(gridId).setGridWidth($('#right').width() - 40);
-	    	}).trigger('resize');
-	    }, 
-		loadError: function(xhr,st,err) {
-			alert(err); 
-		}
-	});
-	
-	$(gridId + "_btnSearch").click( function() {
-		$(gridId).setGridParam({
-			postData: {
-				searchKeyword:$(gridId + "_searchKeyword").val(), 
-				searchCondition:$(gridId + "_searchCondition").val()
-			}
-		});
-		$(gridId).setGridParam({url:"<c:url value='/jqueryCommunity.do?method=list'/>"}).trigger("reloadGrid");
-		return false;
-	});
-
-	/* auto click by enter key */
-	$(gridId + "_searchKeyword").keypress(function (e) {
-		if (e.which == 13){
-			$(gridId + "_btnSearch").trigger("click");
-			return false;
-		}
-	});
-
-	$(gridId + "_searchKeyword").autocomplete({
-		source : function(request, response){
-			logger.log('call');
-			$.ajax({
-				'url' : '<c:url value="/jqueryCommunity.do?method=searchKeyword"/>',
-				'type' : 'POST',
-				'async' : false,
-				'data' : 'searchKeyword=' + $(gridId + "_searchKeyword").val() + '&searchCondition=' + $(gridId + "_searchCondition").val() + '&categoryId=' + id,
-				'dataType' : 'json',
-				'success' : function(data){
-					logger.log('return:data.r.length=' + data.r.length);
-					response(data.r);
-				}
-			});
-		},
-		minLength : 1,
-		select : function(event, ui) {
-			logger.log('autocomplete selected:' + ui.item.value);
-			$(gridId + '_searchKeyword').val(ui.item.value);
-			$(gridId + '_pageIndex').val('1');
-			$(gridId + '_btnSearch').trigger("click");
-			return false;
-		}
-	});
-
-	//$(gridId).jqGrid('gridResize');
-}]]></programlisting>
-			<para>위와 같이 jqgrid로 구현된 리스트의 모습은 아래와 같다.</para>
-			<mediaobject>
-				<imageobject>
-					<imagedata fileref="../image/jquery/jqgrid002.jpg"	align="center" />
-				</imageobject>
-			</mediaobject>
-		</section>
-		
-		<section id="jquery_grGrid_sec003_004">
-			<title>jqGrid와 jstree 연동</title>
-			<itemizedlist>
-				<listitem>
-					<para><emphasis role="bold">i.</emphasis> : 커뮤니티 리스트가 삭제되거나 수정되는 경우, jstree에도 이를 반영
-					 </para>
-				</listitem>
-	  		</itemizedlist>
-	  		<programlisting><![CDATA[$(gridId).jqGrid({
-		...중략...
-		{name: 'myac', width:40, fixed:true, sortable:false, resize:false, formatter:'actions', 
-			formatoptions:{editbutton:false, keys:true,
-				delOptions:{msg:'<spring:message code="board.msg.delete.confirm" />',
-					onclickSubmit:function(rp_ge, rowid){
-					$(gridId).delGridRow( rowid, {
-						reloadAfterSubmit:true,
-						delData:{communityId: rowid},
-						url:"<c:url value='/jqueryCommunity.do?method=remove'/>",
-						afterComplete : function (response, postdata, formid) {
-							$('#${treeId}').jstree("remove","#" + rowid); // 커뮤니티 삭제 시 tree 반영
-							return false;
-						} 
-					});
-				}}
-			}
-		}],
-		...중략...
-		afterSaveCell:function(rowid, cellname, value, iRow, iCol){
-			if(cellname=="communityName"){
-				// 커뮤니티 수정 시 tree 반영
-				$('#${treeId}').jstree('get_selected').find("#"+rowid+" a").html('<ins class="jstree-icon">&nbsp;</ins>' + value);
-			}
-		},
-	    ...중략...
-	});]]></programlisting>
-		</section>
-		
-		<note>
-			<para>※ jqgrid를 사용하여 리스트를 작성할 때 너무 많은 양의 데이터를 한꺼번에 출력하려고 하면 리스트를 출력하는데 있어서 많은 시간이 걸리거나 브라우저가 멈추는 현상이 발생할 수 있다. 이에 한번에 출력하는 데이터의 건수는 100개 이내로 하며 데이터가 많을 경우 pager를 이용해 paging 처리 할 것을 권고한다.</para>
-		</note>
-		
 	</section>
 </chapter>

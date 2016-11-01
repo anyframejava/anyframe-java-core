@@ -62,6 +62,13 @@
     	<imageobject>
       		<imagedata align="center" fileref="../image/cxf-jaxws/webservices/jaxws.jpg" />
     	</imageobject>
+    	<textobject>
+    		<phrase>
+    			JAX-WS 프로세스를 순서대로 나타낸 그림이다. 순서대로 표시하면, 1) 웹서비스 클라이언트가 서버로부터 WSDL을 얻는다. 2) WSDL을 기반으로 SOAP 메시지를 생성하여 웹서비스 
+    			실행을 요청한다. 3) EndPoint Listener가 웹서비스 요청을 받고, mustUnderstandProcessing, SOAPHandler 순으로 요청이 전달된다. 4) 데이터 바인딩이 이루어진다.
+    			5) 웹서비스가 실행된다. 6) 실행 결과가 SOAP 프로토콜에 바인딩되어 SOAP 메시지 형태로 웹서비스 클라이언트에게 전달됨을 보여주고 있다.   
+    		</phrase>
+    	</textobject>
   	</mediaobject>
 
   	<para>
@@ -238,6 +245,7 @@ public class MovieServiceImpl implements MovieService {
     	</para>
 
     	<informaltable>
+    		<caption><![CDATA[<jaxws:endpoint/>]]> 속성 목록</caption>
       		<tgroup cols="4">
             	<colspec colnum="1" colname="col1" colwidth="2*"/>
                 <colspec colnum="2" colname="col2" colwidth="6*"/>
@@ -428,6 +436,7 @@ svrFactory.create();</programlisting>
     		다음 표와 같다. 아래 표에 나와있지 않은 속성들도 여러 가지가 존재한다. 단, 여기서는 필수적으로 작성해야 하는 Attribute
     		속성값에 대한 설명을 작성해놓은 것으로 나머지 속성 값들에 대한 설명은 ]]><ulink url="http://cxf.apache.org/docs/jax-ws-configuration.html">JAX-WS Configuration</ulink>을 참고하도록 한다.
     		<informaltable>
+    			<caption><![CDATA[<jaxws:client/>]]> 속성 목록</caption>
         		<tgroup cols="4">
           			<thead>
             			<row>
@@ -594,6 +603,7 @@ Map<String, Movie> resultMap = movieService.get("MV-00003");]]></programlisting>
       			되도록 많은 정보를 작성하는 것을 권장한다. SEI에 더 많은 Annotation 정보를 작성할 수록 잘 정의된 WSDL을
       			생성시킬 수 있기 때문이다. Property에 대한 세부 내용은 다음 표와 같다.
       			<informaltable>
+      				<caption>@WebService 속성 목록</caption>
           			<tgroup cols="6">
                 		<colspec colnum="1" colname="col1" colwidth="2*"/>
 		                <colspec colnum="2" colname="col2" colwidth="1*"/>
@@ -755,7 +765,9 @@ Map<String, Movie> resultMap = movieService.get("MV-00003");]]></programlisting>
 
       		<para>
       			Web Service의 자바 메소드의 입력 파라미터와 WSDL 파일에서 파라미터를 표현하는 XML element 간의
-      			매핑을 설정하며 Property에 대한 세부 내용은 다음 표와 같다. <informaltable>
+      			매핑을 설정하며 Property에 대한 세부 내용은 다음 표와 같다. 
+      			<informaltable>
+      			<caption>@WebParam 속성 목록</caption>
           		<tgroup cols="4">
 	                <colspec colnum="1" colname="col1" colwidth="1*"/>
 	                <colspec colnum="2" colname="col2" colwidth="1*"/>
@@ -844,6 +856,7 @@ Map<String, Movie> resultMap = movieService.get("MV-00003");]]></programlisting>
       			Web Service 메소드로 공개되는 메소드를 설정할 때 사용하며 @WebMethod annotation은
       			@WebService annotation 설정이 된 클래스에서만 지원된다. Property에 대한 세부 내용은 다음 표와 같다.
       			<informaltable>
+      				<caption>@WebMethod 속성 목록</caption>
           			<tgroup cols="4">
                 		<colspec colnum="1" colname="col1" colwidth="2*"/>
                 		<colspec colnum="2" colname="col2" colwidth="1*"/>
@@ -917,6 +930,7 @@ Map<String, Movie> resultMap = movieService.get("MV-00003");]]></programlisting>
       			Web Service 메소드로 공개되는 메소드의 리턴 값과 WSDL의 리턴 값을 표현하는 XML 요소 간의 매핑을
       			설정할 때 사용한다. Property에 대한 세부 내용은 다음 표와 같다.
       			<informaltable>
+      				<caption>@WebResult 속성 목록</caption>
 	          		<tgroup cols="4">
 	                	<colspec colnum="1" colname="col1" colwidth="2*"/>
 	                	<colspec colnum="2" colname="col2" colwidth="1*"/>

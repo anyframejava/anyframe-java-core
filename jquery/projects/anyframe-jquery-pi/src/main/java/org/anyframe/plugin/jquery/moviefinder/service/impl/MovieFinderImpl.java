@@ -40,11 +40,11 @@ public class MovieFinderImpl implements MovieFinder {
 	private MovieDao movieDao;
 
 	public Page getPagingList(MovieSearchVO search) throws Exception {
-		return this.movieDao.getPagingList(search);
+		return movieDao.getPagingList(search);
 	}
 
 	public List<Movie> getListByCategory(MovieSearchVO search) throws Exception {
-		return this.movieDao.getListByCategory(search);
+		return movieDao.getListByCategory(search);
 	}
 	
 }

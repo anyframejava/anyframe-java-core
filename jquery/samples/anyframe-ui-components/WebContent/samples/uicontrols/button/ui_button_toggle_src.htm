@@ -1,0 +1,120 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN"
+"http://www.w3.org/TR/html4/loose.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+
+<head>
+<meta http-equiv="content-type" content="text/html; charset=UTF-8" />
+<title>[AnyFrame UI Button] Basic Sample</title>
+<link href="../../../common/css/smoothness/jquery-ui-1.10.0.custom.css"	rel="stylesheet">
+<script src="../../../common/exlibs/jquery-1.9.0.js"></script>
+<script src="../../../common/exlibs/jquery-ui-1.10.0.custom.js"></script>
+
+<link type="text/css" rel="stylesheet" href="../../../common/css/style.css" />
+<link type="text/css" rel="stylesheet" href="sub_css/toggle.css">
+
+<style>
+  .blue { background-color:blue; }
+  .red { background-color:red; }
+  .yellow { background-color:yellow; }
+  </style>
+<script type="text/javascript">
+	
+	var ENV = {
+			ID_TOGGLE_BTN : "#toggleBtn",
+			ID_TOGGLE : "#toggle",
+			ID_TOGGLE_CLS_BTN : "#toggleClassBtn",
+			ID_TOGGLE_CLS : "#toggleClass",
+			ID_TOGGLE_FADE_BTN : "#toggleFadeBtn",
+			ID_TOGGLE_SLIDE_BTN : "#toggleSlideBtn",
+			ID_TOGGLE_HIGHLIGHT_BTN : "#toggleHighlightBtn",
+			ID_TOGGLE_FADE : "#toggleFade",
+			ID_TOGGLE_SLIDE : "#toggleSlide",
+			ID_TOGGLE_HIGHLIGHT : "#toggleHighlight"
+			
+	};
+	
+	var mainView = {
+			
+			nposToggleClass : 0,
+			arryToggleClass : [ "blue", "red", "yellow" ],
+			
+			setToggle : function(){
+				$(ENV.ID_TOGGLE).toggle();
+			},
+			
+			setToggleClass : function() {
+				
+				for(var i=0; i < this.arryToggleClass.length; i++){
+					$(ENV.ID_TOGGLE_CLS).toggleClass(this.arryToggleClass[i], (this.nposToggleClass == i));
+				}
+				this.nposToggleClass =  ( this.nposToggleClass == (this.arryToggleClass.length - 1) ? 0 : this.nposToggleClass + 1 );
+			},			
+			
+			setToggleEffect : function(type) {
+				switch(type)
+				{
+				case "fade"		: $(ENV.ID_TOGGLE_FADE).fadeToggle(); break;
+				case "slide"	: $(ENV.ID_TOGGLE_SLIDE).slideToggle(); break;
+				case "highlight": $(ENV.ID_TOGGLE_HIGHLIGHT).toggle("highlight"); break;
+				}
+			}
+	};
+
+	$(document).ready(function() {
+		
+		$(":button").button();
+		
+		$(ENV.ID_TOGGLE_BTN).on("click", function(){ mainView.setToggle(); });		
+		$(ENV.ID_TOGGLE_CLS_BTN).on("click", function(){ mainView.setToggleClass(); });
+		$(ENV.ID_TOGGLE_FADE_BTN+","+
+		  ENV.ID_TOGGLE_SLIDE_BTN+","+
+		  ENV.ID_TOGGLE_HIGHLIGHT_BTN).on('click', function(evt) {			 
+			  mainView.setToggleEffect( $(this).text() );			  
+		  });
+	});
+</script>
+
+</head>
+
+<body>
+
+	<div class="title">toggle 기본</div>
+	<div class="input-area">
+		<button id="toggleBtn">toggle</button>
+	</div>
+	:
+	<div id="toggle" class="display-area">hello! :-)</div>
+
+	<div class="title">toggle 클래스적용</div>
+	<div class="input-area">
+		<button id="toggleClassBtn">toggle</button>
+	</div>
+	:
+	<div id="toggleClass" class="display-area">hello! :-)</div>
+
+	<div class="title">toggle 효과적용</div>
+	<div class="input-area">
+		<button id="toggleFadeBtn">fade</button>
+	</div>
+	:
+	<div id="toggleFade" class="display-area">hello! :-)</div>
+	<br>
+
+	<div class="input-area">
+		<button id="toggleSlideBtn">slide</button>
+	</div>
+	:
+	<div id="toggleSlide" class="display-area">hello! :-)</div>
+	<br>
+
+	<div class="input-area">
+		<button id="toggleHighlightBtn">highlight</button>
+	</div>
+	:
+	<div id="toggleHighlight" class="display-area">hello! :-)</div>
+
+</body>
+
+
+</html>
+

@@ -40,47 +40,46 @@ public class MovieDao {
 		MOVIES.put(movie2.getMovieId(), movie2);
 	}
 
-	public List<Movie> findMovieListAll() throws Exception {
+	public List<Movie> findMovieListAll() {
 		List<Movie> movieList = new ArrayList<Movie>();
 		Iterator<Movie> itr = this.MOVIES.values().iterator();
 		while (itr.hasNext()) {
-			Movie movie = (Movie) itr.next();
+			Movie movie = itr.next();
 			movieList.add(movie);
 		}
 		System.out.println("IMP movieList size=" + movieList.size());
 		return movieList;
 	}
 
-	public Map<String, Movie> findMovieMapAll() throws Exception {
+	public Map<String, Movie> findMovieMapAll() {
 		return this.MOVIES;
 	}
 
-	public List<Movie> findMovieList(Country country, Category category)
-			throws Exception {
+	public List<Movie> findMovieList(Country country, Category category) {
 		return null;
 	}
 
-	public Movie fineMovie(String movieId) throws Exception {
-		return (Movie) this.MOVIES.get(movieId);
+	public Movie fineMovie(String movieId) {
+		return this.MOVIES.get(movieId);
 	}
 
-	public void createMovie(Movie movie) throws Exception {
+	public void createMovie(Movie movie) {
 		this.MOVIES.put(movie.getMovieId(), movie);
 	}
 
-	public void updateMovie(Movie movie) throws Exception {
+	public void updateMovie(Movie movie) {
 		this.MOVIES.put(movie.getMovieId(), movie);
 	}
 
-	public void removeMovie(Movie movie) throws Exception {
+	public void removeMovie(Movie movie) {
 		this.MOVIES.remove(movie.getMovieId());
 	}
 
-	public void createMovies(Movies movies) throws Exception {
+	public void createMovies(Movies movies) {
 		Collection<Movie> col = movies.getMovie();
 		Iterator<Movie> itr = col.iterator();
 		while (itr.hasNext()) {
-			Movie movie = (Movie) itr.next();
+			Movie movie = itr.next();
 			System.out.println("[Create movie id=" + movie.getMovieId()
 					+ ",title=" + movie.getTitle());
 			this.MOVIES.put(movie.getMovieId(), movie);

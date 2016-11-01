@@ -37,7 +37,8 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 
 /**
- * This MovieFinderTreeController class is a Controller class to provide movie list and genre list functionality.
+ * This MovieFinderTreeController class is a Controller class to provide movie
+ * list and genre list functionality.
  * 
  * @author Sunjoong Kim
  */
@@ -53,66 +54,72 @@ public class MovieTreeController {
 	@Inject
 	@Named("jqueryMovieFinder")
 	private MovieFinder movieFinder;
-	
+
 	@Inject
-	@Named("jqueryMovieService") 
+	@Named("jqueryMovieService")
 	private MovieService movieService;
 
 	@ModelAttribute("genreList")
 	public Collection<Genre> populateGenreList() throws Exception {
-		return this.genreService.getDropDownGenreList();
+		return genreService.getDropDownGenreList();
 	}
-	
+
 	@RequestMapping(params = "method=treeView")
 	public String treeView(Movie movie, Model model) {
 		model.addAttribute("movie", movie);
 		return "jquery/moviefinder/movie/tree";
 	}
-	
+
 	@RequestMapping(params = "method=tree")
-	public String tree(@RequestParam("id") String id, MovieSearchVO search, Model model) throws Exception {
-		List<JSTreeNode> nodeList = buildTree(id,search);
+	public String tree(@RequestParam("id") String id, MovieSearchVO search,
+			Model model) throws Exception {
+		List<JSTreeNode> nodeList = buildTree(id, search);
 		model.addAttribute("JSTreeNodeList", nodeList);
 		return "jsonView";
 	}
-	
+
 	@RequestMapping(params = "method=getGenre")
-	public String getGenre(@RequestParam("genreId") String genreId, Model model) throws Exception {
+	public String getGenre(@RequestParam("genreId") String genreId, Model model)
+			throws Exception {
 		Genre genre = genreService.getGenre(genreId);
 		model.addAttribute("genre", genre);
 		return "jsonView";
 	}
-	
+
 	@RequestMapping(params = "method=get")
-	public String getMovie(@RequestParam("movieId") String movieId, Model model) throws Exception {
-		Movie movie = this.movieService.get(movieId);
+	public String getMovie(@RequestParam("movieId") String movieId, Model model)
+			throws Exception {
+		Movie movie = movieService.get(movieId);
 		model.addAttribute("movie", movie);
 		return "jsonView";
 	}
-	
+
 	@RequestMapping(params = "method=remove")
-	public String removeMovie(@RequestParam("movieId") String movieId) throws Exception {
-		this.movieService.remove(movieId);
+	public String removeMovie(@RequestParam("movieId") String movieId)
+			throws Exception {
+		movieService.remove(movieId);
 		return "jsonView";
 	}
-	
+
 	@RequestMapping(params = "method=getGenreNameList")
-	public String listGenreName(@RequestParam("term") String keyword, Model model)
-			throws Exception {
+	public String listGenreName(@RequestParam("term") String keyword,
+			Model model) throws Exception {
 		List<String> genres = genreService.getGenreNameList(keyword);
 		model.addAttribute("autoData", genres);
 		return "jsonView";
 	}
-	
-	private List<JSTreeNode> buildTree(String id, MovieSearchVO search) throws Exception {
+
+	private List<JSTreeNode> buildTree(String id, MovieSearchVO search)
+			throws Exception {
 		JSTreeNode node = null;
 		Attributes attribute = null;
 		List<?> jsTreeList = null;
 		List<JSTreeNode> nodeList = new ArrayList<JSTreeNode>();
-		
- 		if (id.equals("0")) {
- 			//If id equals to "0", it means jsTree need a list of genre to generate its root. (root is a genre in this sample)
- 			jsTreeList = genreService.getGenreList(search);
+
+		if (id.equals("0")) {
+			// If id equals to "0", it means jsTree need a list of genre to
+			// generate its root. (root is a genre in this sample)
+			jsTreeList = genreService.getGenreList(search);
 			for (int i = 0; i < jsTreeList.size(); i++) {
 				Genre genre = (Genre) jsTreeList.get(i);
 				node = new JSTreeNode();
@@ -122,7 +129,8 @@ public class MovieTreeController {
 
 				node.setAttr(attribute);
 				node.setData(genre.getName());
-				//if the value of state is "closed", jsTree generates an expendable button on the left of its folder image.
+				// if the value of state is "closed", jsTree generates an
+				// expendable button on the left of its folder image.
 				node.setState(genre.getState());
 				if (genre.getState() == null || "".equals(genre.getState()))
 					attribute.setRel("lockedroot");
@@ -130,11 +138,12 @@ public class MovieTreeController {
 					attribute.setRel("root");
 				nodeList.add(node);
 			}
-		} else { 
+		} else {
 			/*
-			 * If id does not equal to "0", it means jsTree need a leaf data of the selected root. (In this case, id is one of genres id, not "0")
-			 * The leaf data is a list of movie.   
-			*/
+			 * If id does not equal to "0", it means jsTree need a leaf data of
+			 * the selected root. (In this case, id is one of genres id, not
+			 * "0") The leaf data is a list of movie.
+			 */
 			jsTreeList = movieFinder.getListByCategory(search);
 			if (jsTreeList.size() > 0) {
 				for (int i = 0; i < jsTreeList.size(); i++) {

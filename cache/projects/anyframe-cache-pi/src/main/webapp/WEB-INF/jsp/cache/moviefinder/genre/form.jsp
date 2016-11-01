@@ -1,6 +1,6 @@
 <%@ page language="java" errorPage="/sample/common/error.jsp" pageEncoding="UTF-8" contentType="text/html;charset=utf-8" %>
 <%@ include file="/sample/common/top.jsp"%>
-		<div class="location"><a href="<c:url value='/anyframe.jsp'/>">Home</a> &gt; <a href="<c:url value='/cacheGenre.do?method=list'/>">Cache 1.0.4.RC1</a></div>
+		<div class="location"><a href="<c:url value='/anyframe.jsp'/>">Home</a> &gt; <a href="<c:url value='/cacheGenre.do?method=list'/>">Cache 1.0.5</a></div>
     </div>
     <hr />
 <script type="text/javascript" src="<c:url value='/sample/javascript/InputCalendar.js'/>"></script>
@@ -48,12 +48,12 @@
                 <tbody>
                 <c:if test="${readonly}">
                 	<tr>
-                	<th><label for="title"><spring:message code="genre.id" />&nbsp;*</label></th>
+                	<th><label for="genreId"><spring:message code="genre.id" />&nbsp;*</label></th>
                         <td><form:input path="genreId" cssClass="w_normal" readonly="${readonly}" /><form:errors path="genreId" cssClass="errors" /></td>
                     </tr>
 				</c:if>
 					<tr>
-                    	<th><label for="director"><spring:message code="genre.name" />&nbsp;*</label></th>
+                    	<th><label for="name"><spring:message code="genre.name" />&nbsp;*</label></th>
                         <td><form:input path="name" cssClass="w_normal" /><form:errors path="name" cssClass="errors" /></td>
                     </tr>
 				</tbody>

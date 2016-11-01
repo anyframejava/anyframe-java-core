@@ -54,10 +54,10 @@ public class MovieServiceImpl implements MovieService {
 	}
 
 	public Map<String, Movie> get(String movieId) throws Exception {
-		return this.movieDao.get(movieId);
+		return movieDao.get(movieId);
 	}
 
 	public Page getPagingList(Movie movie, int pageIndex) throws Exception {
-		return this.movieDao.getPagingList(movie, pageIndex);
+		return movieDao.getPagingList(movie, pageIndex);
 	}
 }

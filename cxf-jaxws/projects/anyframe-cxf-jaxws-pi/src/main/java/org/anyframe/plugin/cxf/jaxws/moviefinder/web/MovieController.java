@@ -57,7 +57,7 @@ public class MovieController {
 
 	@ModelAttribute("genreList")
 	public Collection<Genre> populateGenreList() throws Exception {
-		return this.genreService.getList();
+		return genreService.getList();
 	}
 
 	@RequestMapping(params = "method=createView")
@@ -74,7 +74,7 @@ public class MovieController {
 			return "cxf-jaxws/moviefinder/movie/form";
 		}
 
-		this.movieService.create(movie);
+		movieService.create(movie);
 		status.setComplete();
 
 		return "redirect:/cxfJaxWsMovieFinder.do?method=list";
@@ -83,7 +83,7 @@ public class MovieController {
 	@RequestMapping(params = "method=get")
 	public String get(@RequestParam("movieId") String movieId, Model model)
 			throws Exception {
-		Map<String, Movie> resultMap = this.movieService.get(movieId);
+		Map<String, Movie> resultMap = movieService.get(movieId);
 		model.addAttribute(resultMap.get("movie"));
 
 		return "cxf-jaxws/moviefinder/movie/form";
@@ -97,7 +97,7 @@ public class MovieController {
 			return "cxf-jaxws/moviefinder/movie/form";
 		}
 
-		this.movieService.update(movie);
+		movieService.update(movie);
 		status.setComplete();
 
 		return "redirect:/cxfJaxWsMovieFinder.do?method=list";
@@ -106,7 +106,7 @@ public class MovieController {
 	@RequestMapping(params = "method=remove")
 	public String remove(@RequestParam("movieId") String movieId)
 			throws Exception {
-		this.movieService.remove(movieId);
+		movieService.remove(movieId);
 		return "redirect:/cxfJaxWsMovieFinder.do?method=list";
 	}
 }

@@ -35,11 +35,13 @@ import org.springframework.stereotype.Repository;
 @Repository("jqueryMovieDao")
 public class MovieDao extends QueryServiceDaoSupport {
 
+	//Velocity-Support-contextProperties-START
 	@Value("#{contextProperties['pageSize'] ?: 5}")
 	int pageSize;
 
 	@Value("#{contextProperties['pageUnit'] ?: 5}")
 	int pageUnit;
+	//Velocity-Support-contextProperties-END
 
 	@Inject
 	public void setQueryService(QueryService queryService) {
@@ -48,35 +50,37 @@ public class MovieDao extends QueryServiceDaoSupport {
 
 	public void create(Movie movie) {
 		movie.setMovieId("MV-" + System.currentTimeMillis());
-		create("createJqueryMovie", movie);
+		super.create("createJqueryMovie", movie);
 	}
 
 	public void remove(String movieId) {
 		Movie movie = new Movie();
 		movie.setMovieId(movieId);
-		remove("removeJqueryMovie", movie);
+		super.remove("removeJqueryMovie", movie);
 	}
 
 	public void update(Movie movie) {
-		update("updateJqueryMovie", movie);
+		super.update("updateJqueryMovie", movie);
 	}
 
 	public Movie get(String movieId) {
 		Movie movie = new Movie();
 		movie.setMovieId(movieId);
-		return findByPk("findJqueryMovieByPk", movie);
+		return super.findByPk("findJqueryMovieByPk", movie);
 	}
 
 	public Page getPagingList(MovieSearchVO search) {
-		return this.findListWithPaging("findJqueryMovieList", search, search.getPage(), pageSize, pageUnit);
+		return super.findListWithPaging("findJqueryMovieList", search, search
+				.getPage(), pageSize, pageUnit);
 	}
 
 	public List<String> getMovieTitleList(String keyword) {
-		List<String> results = this.getQueryService().find("findMovieTitle", new Object[] { new Object[] { "keyword", keyword } });
-		return results;
+		return super.getQueryService().find("findMovieTitle",
+				new Object[] { new Object[] { "keyword", keyword } });
 	}
 
 	public List<Movie> getListByCategory(MovieSearchVO search) {
-		return this.findList("findMovieByCategoryList", search);
+		return super.findList("findMovieByCategoryList", search);
 	}
+
 }

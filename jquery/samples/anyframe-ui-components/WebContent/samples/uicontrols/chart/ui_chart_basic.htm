@@ -1,0 +1,229 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN"
+"http://www.w3.org/TR/html4/loose.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+
+<head>
+<meta http-equiv="content-type" content="text/html; charset=UTF-8" />
+<title>Chart : Basics</title>
+
+<!-- FILES INCLUDED.. ----------------------------------------------------->
+<script type="text/javascript" src="../../../common/exlibs/jquery-1.9.0.js"></script>
+<script type="text/javascript" src="../../../common/exlibs/highlighter/scripts/shCore.js"></script>
+<script type="text/javascript" src="../../../common/exlibs/highlighter/scripts/shBrushJScript.js"></script>
+<script type="text/javascript" src="../../../common/js/template_common.js"></script>
+
+<!--  STYLESHEET  -->
+<link type="text/css" rel="stylesheet" href="../../../common/exlibs/highlighter/styles/shCore.css" />
+<link type="text/css" rel="stylesheet" 	href="../../../common/exlibs/highlighter/styles/shCoreDefault.css" />
+<link type="text/css" rel="stylesheet" 	href="../../../common/css/style.css" />
+
+<!-- SCRIPT  ----------------------------------------------------->
+<script type="text/javascript">
+
+$(function() {
+	JTemplate.load("ui_chart_basic_src.htm");
+	JTemplate.loadDemo2("ui_chart_basic_src.htm", {height:"1300px", width:"90%"});
+});  
+
+</script>
+
+</head>
+<style>
+.desc ul.desc-hypl li span {
+	min-width : 80px;
+}
+</style>
+
+<!-- CONTENTS BODY -------------------------------------------------------------->
+<body >
+
+<!-- HEADER BAR -------------------------------------------------------------->
+<div class="content-title">Chart - Chart</div>
+
+<!-- START OF PAGE ... -------------------------------------------------------->
+<div id="page">
+		<p class="header-title">Chart 기본기능</p>
+		<p class="header-desc">: 차트의 유형에 따라 각 기본형태를 확인하고, 최소생성조건과 데이터 타입을 알 수 있다.</p>
+
+<!-- DEMO ----------------------------------------------------------------------->
+			<div class="demo">
+				<h3 >Demo</h3>
+				<div id="visualExample"></div>
+			</div>
+
+<!-- DEMO DESCRIPTION----------------------------------------------------->
+		<div class="desc">
+			<h3>Demo Description</h3>
+			<hr>
+			<p class = "desc-title">차트의 종류</p>
+			<p class ="desc-overall">
+				: 차트는 용도와 형태에 따라 위의 데모에서 보는 것과 같이  Line, Bar, Candle, Pie, Donut, Bubble 의 6가지가 있다.<br>
+			</p>
+		</div>
+
+<!-- CODE------------------------------------------------------------------------>
+			<div class="code">
+				<h3>Code Source </h3>
+				<pre id="codeExample" class="brush: js"></pre>
+			</div>
+
+<!-- CODE DESCRIPTION------------------------------------------------------>
+			<div class="desc">
+				<h3>Code Description </h3>
+				<hr>
+				<p class="desc-title">jqplot 기본 생성구조</p>
+				<p class = "desc-overall">
+				: 기본적으로 차트를 생성하기 위해서는 <span class="bold underline">$.jqplot ("id값", [데이터], 옵션) </span>와 같은 형식으로 작성하여야 하며, 각각의 형태는 다음과 같다.
+				</p>			
+				<ul class="desc-hypl">
+					<li>
+					<span class = "bold" style="min-width:65px;">id값</span>
+					: id값은 div 태그 내에서 선언한 id값을 말하며, jqplot의 경우 #을 제외한 순수   string id 값만을 써 주어야 한다.
+					</li>
+					<li>
+					<span class = "bold">데이터</span>
+					: 한 차트에서 표현될 수 있는 최소 기본형태는 [ [ [a], [b], [c], ...] ] 와 같고, 여기서 a, b, c와 같이 표현된 것은 단순 숫자값(y값) 혹은 (x값, y값)의 쌍이 될 수도 있다.<br>
+					 또한 한 차트에서 여러개의 라인, 바가 동시에 표현해야할 경우, [ [ [a], [b], [c], ...], [ [a'], [b'], [c'], ...], [ [a''], [b''], [c''], ... ] ] 와 같은 배열구조로 쓰일 수 있다.
+					</li>
+					<li>
+					<span class = "bold">옵션</span>
+					: 옵션은 title, axes(xaxis, yaxis), series 와 같은 차트에서 쓰이는 여러가지 요소들을 정의한 set 이다.  
+					각 차트의 성격과 용도에 따라 API 정보를 통해 구현하면 된다.
+					</li>
+				</ul>
+				
+			
+				<p class="desc-title">Line Type</p>
+				<p class = "desc-overall">
+				: 라인형태로 차트가 그려지는 것에 대한 데이터 형태와 기본 생성옵션 조건은 다음과 같다.
+				</p>
+							
+				<ul class="desc-hypl">
+					<li>					
+					<span>데이터 형태</span>
+					: <span class="bold">[[x1, y1], [x2, y2], [x3, y3] ...]</span> 와 같이 x축과 y축의 값이 쌍으로 배열로써 주어지는 형태이다.
+					(또는 y축의 값 하나만 써도 가능하며, default x축 label은 1,2,3,4.. 와 같이 순차적인 카운팅이 주어지게 된다.) <span class="code-line">#40</span>
+					</li>
+					
+					<li>
+					<span>기본 생성 옵션</span>
+					: 차트제목에 해당하는 텍스트를  title  옵션으로, axesDefault옵션의 padSize를 1.2로 주어 차트의 사이즈를 적당히 조절하면(default는 처음과 끝의 꼭지점이 처음부터 시작되는 형태임) 기본 line이 생성된다.
+					<span class="code-line">#89 - #99</span>
+					</li>
+				</ul>
+
+				
+				<p class="desc-title">Bar Type</p>
+				<p class = "desc-overall">
+				: 막대 그래프 형태로 차트가 그려지는 것에 대한 데이터 형태와 기본 생성옵션 조건은 다음과 같다.
+				</p>				
+				<ul class="desc-hypl">
+					<span class="code-line">#40</span><span class="code-line">#71</span>
+					<li>
+					<span>데이터 형태</span>
+					: <span class="bold"> [[x1, y1], [x2, y2], [x3, y3] ...]</span> 와 같이 x축과 y축의 값이 쌍으로 배열로써 주어지는 형태이다.
+					(또는 y축의 값 하나만 써도 가능하며, x축은 따로 텍스트레이블을 가지는 배열데이터를 옵션으로 넣어 설정해줄 수 있다.)
+					</li>
+					<span class="code-line">#101 - #119</span>
+					<li>
+					<span>기본 생성 옵션</span>
+					: x축에 텍스트 레이블을 따로 써주기 위해서는 axes  옵션 내, xaxis 옵션에 대해 renderer를 $.jqplot.CategoryAxisRenderer 로,  
+					ticks를 배열 데이터로 정해주면 해당 텍스트가 적용되어 차트가 그려진다.
+					</li>
+				</ul>
+				
+				<p class="desc-title">Candle Type</p>
+				<p class = "desc-overall">
+				: 주식차트형태로 차트가 그려지는 것에 대한 데이터 형태와 기본 생성옵션 조건은 다음과 같다.
+				</p>				
+				<ul class="desc-hypl">
+					<span class="code-line">#41 - #49</span>
+					<li>
+					<span>데이터 형태</span>
+					: <span class="bold">[날짜, 시가, 고가, 저가, 종가] </span>와 같은 배열의 데이터가 나열되는 형태이다.
+					</li>
+					<span class="code-line">#125 - #150</span>
+					<li>
+					<span>기본 생성 옵션</span>
+					: series 옵션으로 candle renderer를 정의하고($.jqplot.OHLCRenderer),  rendererOptions로 candle stick을  true로 설정한다.
+					</li>
+				</ul>
+				
+				<p class="desc-title">Pie Type</p>
+				<p class = "desc-overall">
+				: 원형 형태로 차트가 그려지는 것에 대한 데이터 형태와 기본 생성옵션 조건은 다음과 같다.
+				</p>				
+				<ul class="desc-hypl">
+					<span class="code-line">#50 - #54</span>
+					<li>
+					<span>데이터 형태</span>
+					: <span class="bold">[ [ ["영역 텍스트 1", value1], ["영역 텍스트 2", value2], ["영역 텍스트 3", value3], ...] ] ]</span> 와 같은 배열의 데이터 형태이다. 
+					영역 텍스트란, 원형에서 차지하는 영역에 대해 범례로써 보여질 레이블 텍스트를 의미하기도 한다.
+					</li>
+					<span class="code-line">#152 - #169</span>
+					<li>
+					<span>기본 생성 옵션</span>
+					: series 옵션으로 pie renderer를 정의하고($.jqplot.PieRenderer),  
+					위의 데이터 형식에서 영역텍스트 부분이 존재하면 rendererOptions로 showDataLabels를  true로 설정한다.
+					또한 범례가 나타나기 위해서는 legend 옵션의  show를  true로 설정한다.
+					</li>
+				</ul>
+				
+				<p class="desc-title">Donut Type</p>
+				<p class = "desc-overall">
+				: 도넛형태의 차트가 그려지는 것에 대한 데이터 형태와 기본 생성옵션 조건은 다음과 같다.
+				</p>				
+				<ul class="desc-hypl">
+					<span class="code-line">#55 - #64</span>
+					<li>
+					<span>데이터 형태</span>
+					: <span class="bold"> [ ["영역 텍스트 1", value1], ["영역 텍스트 2", value2], ["영역 텍스트 3", value3], ...]  와 같은 배열이 2세트 이상 나열</span>된 형태이다.
+					</li>
+					<span class="code-line">#171 - #191</span>
+					<li>
+					<span>기본 생성 옵션</span>
+					: series 옵션으로 donut renderer를 정의하고($.jqplot.DonutRenderer),  
+					위의 데이터 형식에서 영역텍스트 부분이 존재하면 rendererOptions로 showDataLabels를  true로 설정한다.
+					또한 범례가 나타나기 위해서는 legend 옵션의  show를  true로 설정한다.
+					</li>
+				</ul>
+				
+				<p class="desc-title">Bubble Type</p>
+				<p class = "desc-overall">
+				: 버블형태의 차트가 그려지는 것에 대한 데이터 형태와 기본 생성옵션 조건은 다음과 같다.
+				</p>				
+				<ul class="desc-hypl">
+					<span class="code-line">#65 - #70</span>
+					<li>
+					<span>데이터 형태</span>
+					: <span class="bold"> [ x-value, y-value, radius, label or object] </span>와 같은 배열의 데이터가 나열되는 형태이다.
+					</li>
+					<span class="code-line">#193 - #209</span>
+					<li>
+					<span>기본 생성 옵션</span>
+					: series 옵션으로 bubble renderer를 정의하고($.jqplot.BubbleRenderer), bubble 원에 적용되는 스타일(그림자, 그라데이션 등)은 사용자 임의로 바꾸면 된다.
+					</li>
+				</ul>
+				
+			</div>
+				 
+		
+		
+
+<!-- RELATED LINKS ----------------------------------------------------------->
+	<div class="related">
+		<h3>Related Links</h3>
+		<hr>
+		 <ul class="desc-hypl">
+           	<li>
+           		<span>jqPlot API</span>
+           		<a href = "http://www.jqplot.com/docs/files/jqplot-core-js.html"></a>
+           	</li>
+           	
+		</ul>
+	</div>
+	
+</div>
+<!-- END OF PAGE------------------------------------------------------------->
+</body>
+</html>

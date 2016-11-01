@@ -1,0 +1,162 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN"
+"http://www.w3.org/TR/html4/loose.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+
+<head>
+           <meta http-equiv="content-type" content="text/html; charset=UTF-8" />
+            <title>[AnyFrame UI Accordion] Horizontal Sample</title>
+            <link href="../../../common/css/smoothness/jquery-ui-1.10.0.custom.css" rel="stylesheet">
+			<script src="../../../common/exlibs/jquery-1.9.0.js"></script>
+			<script src="../../../common/exlibs/jquery-ui-1.10.0.custom.js"></script>
+
+	<script type="text/javascript">
+	
+		var horizontalView = {
+				
+				init : function() {
+
+					initAccordion();
+
+					function initAccordion() {
+						$("#accordion").accordion();
+					};
+					
+				},
+
+			//가로로 펼쳐지는 accordion 컴포넌트 함수
+			horizontal : function() {
+
+				var horizontalIcons = {
+					activeHeader : "ui-icon-carat-1-w",
+					header : "ui-icon-carat-1-e"
+				};
+
+				function horizontalCss() {
+					//webkit 엔진 이용 : 세로로 텍스트가 나오도록 css 설정(webkit이 가능한  웹브라우저인 chrome, safari 에만 적용될 수 있다.)
+				$("#accordion").css('-webkit-writing-mode', 'vertical-lr');
+						
+					$(".ui-accordion .ui-accordion-content").css({
+						'-webkit-writing-mode' : 'horizontal-tb',
+						'width' : '600px',
+						'height' : '400px'
+					});
+					
+					$(".ui-accordion .ui-accordion-icons").css('padding-left',  '.7em');
+				
+					
+					$(".ui-accordion .ui-accordion-header .ui-accordion-header-icon").css('top', '7.5em');
+
+	
+					$(".ui-state-default").css({
+						'background': '#e6e6e6 url(images/ui-bg_glass_75_e6e6e6_1x400.png) 50% 50% repeat-y'
+					});
+				}
+				;
+
+				$("#accordion").accordion({
+					collapsible : true,
+					animate : false,
+					icons : horizontalIcons
+				});
+
+				horizontalCss();
+			},
+
+			//세로로 펼쳐지는 accordion 컴포넌트 함수
+			vertical : function() {
+
+				var verticalIcons = {
+					activeHeader : "ui-icon-triangle-1-s",
+					header : "ui-icon-triangle-1-e"
+				};
+
+				function verticalCss() {
+					//webkit 엔진 이용 : 가로로 텍스트가 나오도록 css 설정(webkit이 가능한  웹브라우저인 chrome, safari 에만 적용될 수 있다.)
+					$("#accordion")
+							.css('-webkit-writing-mode', 'horizontal-tb');
+
+					//$(".ui-accordion .ui-accordion-header").css('padding', '.5em .5em .5em .7em');
+
+					$(".ui-accordion .ui-accordion-content").css({
+						'-webkit-writing-mode' : 'horizontal-tb',
+						'width' : 'auto',
+						'height' : 'auto'
+					});
+
+					$(	".ui-accordion .ui-accordion-header .ui-accordion-header-icon").css('top', '50%');
+				
+					$(".ui-accordion .ui-accordion-icons").css('padding-left',  '2.2em');
+				};
+				
+				$("#accordion").accordion({
+					collapsible : true,
+					animation : true,
+					icons : verticalIcons
+				});
+
+				verticalCss();
+			}
+		};
+
+		$(document).ready(function() {
+
+			horizontalView.init();
+
+			$("#vertical").button().click(function() {
+				horizontalView.vertical();
+			});
+
+			$("#horizontal").button().click(function() {
+				horizontalView.horizontal();
+			});
+		});
+	</script>
+	
+	
+</head>
+
+<body>
+<br>
+<button id = "vertical">vertical</button>
+<button id = "horizontal">horizontal</button>
+<br><br>
+
+<div  id= "accordion" class = "horizontal">
+	<h3>Section 1</h3>
+	<div>
+	<div>
+		<p>Mauris mauris ante, blandit et, ultrices a, suscipit eget, quam. Integer ut neque. Vivamus nisi metus, molestie vel, gravida in, condimentum sit amet, nunc. Nam a nibh. Donec suscipit eros. Nam mi. Proin viverra leo ut odio. Curabitur malesuada. Vestibulum a velit eu ante scelerisque vulputate.</p>
+		</div>
+	<div align = "center">
+	<img src="accordion-cabinet.jpg" alt="Accordion Cabinet" align = "middle" style="float:center"width ="200", height="180">
+	</div>
+	</div>
+
+	<h3>Section 2</h3>
+	<div>
+		<p>Sed non urna. Donec et ante. Phasellus eu ligula. Vestibulum sit amet purus. Vivamus hendrerit, dolor at aliquet laoreet, mauris turpis porttitor velit, faucibus interdum tellus libero ac justo. Vivamus non quam. In suscipit faucibus urna. </p>
+	</div>
+	<h3>Section 3</h3>
+	<div>
+		<p>Nam enim risus, molestie et, porta ac, aliquam ac, risus. Quisque lobortis. Phasellus pellentesque purus in massa. Aenean in pede. Phasellus ac libero ac tellus pellentesque semper. Sed ac felis. Sed commodo, magna quis lacinia ornare, quam ante aliquam nisi, eu iaculis leo purus venenatis dui. </p>
+		<ul>
+			<li>List item one</li>
+			<li>List item two</li>
+			<li>List item three</li>
+		</ul>
+	</div>
+	<h3>Section 4</h3>
+	<div>
+		<p>Cras dictum. Pellentesque habitant morbi tristique senectus et netus et malesuada fames ac turpis egestas. Vestibulum ante ipsum primis in faucibus orci luctus et ultrices posuere cubilia Curae; Aenean lacinia mauris vel est. </p><p>Suspendisse eu nisl. Nullam ut libero. Integer dignissim consequat lectus. Class aptent taciti sociosqu ad litora torquent per conubia nostra, per inceptos himenaeos. </p>
+	</div>
+</div>
+
+<div>
+
+</div>
+
+<div class="demo-description">
+<p>By default, accordions always keep one section open. To allow for all sections to be be collapsible, set the <code>collapsible</code> option to true. Click on the currently open section to collapse its content pane.</p>
+</div>
+</body>
+</html>

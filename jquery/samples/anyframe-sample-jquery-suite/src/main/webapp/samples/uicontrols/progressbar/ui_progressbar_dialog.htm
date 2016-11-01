@@ -1,0 +1,129 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN"
+"http://www.w3.org/TR/html4/loose.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+
+<head>
+<meta http-equiv="content-type" content="text/html; charset=UTF-8" />
+<title>Progressbar : Dialog형식</title>
+
+<!-- FILES INCLUDED.. ----------------------------------------------------->
+<script type="text/javascript" src="../../../common/exlibs/jquery-1.9.0.js"></script>
+
+<script type="text/javascript" src="../../../common/exlibs/highlighter/scripts/shCore.js"></script>
+<script type="text/javascript" src="../../../common/exlibs/highlighter/scripts/shBrushJScript.js"></script>
+
+<script type="text/javascript" src="../../../common/js/template_common.js"></script>
+
+<!--  STYLESHEET  -->
+<link type="text/css" rel="stylesheet"
+	href="../../../common/exlibs/highlighter/styles/shCore.css" />
+<link type="text/css" rel="stylesheet" 	href="../../../common/exlibs/highlighter/styles/shCoreDefault.css" />
+<link type="text/css" rel="stylesheet" 	href="../../../common/css/style.css" />
+
+<!-- SCRIPT  ----------------------------------------------------->
+<script type="text/javascript">
+
+
+$(function() {
+	JTemplate.load("ui_progressbar_dialog_src.htm");					
+	JTemplate.loadDemo("ui_progressbar_dialog_src.htm");			
+});  
+
+</script>
+
+</head>
+
+<!-- CONTENTS BODY -------------------------------------------------------------->
+<body >
+
+<!-- HEADER BAR -------------------------------------------------------------->
+<div class="content-title">Component - Progressbar</div>
+
+<!-- START OF PAGE ... -------------------------------------------------------->
+<div id="page">
+		<p class="header-title">Dialog형 Progressbar</p>
+		<p class="header-desc">: progressbar 다이얼로그형식으로 나타나는 예시를 보여준다.</p>
+
+<!-- DEMO ----------------------------------------------------------------------->
+			<div class="demo">
+				<h3 >Demo</h3>
+				<div id="visualExample"></div>
+			</div>
+
+<!-- DEMO DESCRIPTION----------------------------------------------------->
+		<div class="desc">
+			<h3>Demo Description</h3>
+			<hr>
+			<p class = "desc-title">다이얼로그</p>
+			<p class ="desc-overall">
+				: Progressbar가 dialog안에서 나타나서 동작하게 된다.<br>
+			</p>
+			<ul class ="desc-hypl">
+				<li><span>dialog </span>: start 버튼을 누르면 modal 상태로 다이얼로그가 나타나며, 그 안에서 progressbar가 나타나 진행상태를 보여주게 된다.</li>
+				<li><span>진행상황 텍스트</span>: 다이얼로그에서 진행되는 value를 % 단위의 텍스트로 보여지게 되며, 모든 진행이 완료되면 complete 텍스트가 나타나게 된다.</li>
+			</ul>
+
+		</div>
+
+
+<!-- CODE------------------------------------------------------------------------>
+			<div class="code">
+				<h3>Code Source </h3>
+				<pre id="codeExample" class="brush: js"></pre>
+			</div>
+
+<!-- CODE DESCRIPTION------------------------------------------------------>
+			<div class="desc">
+				<h3>Code Description </h3>
+				<hr>
+				<p class="desc-title">Dialog  내부요소 삭제/변경</p>
+				<p class = "desc-overall">
+				: 기본적으로 생성되는 dialog에 대하여 progressbar 만 나타나도록 내부적이 요소들이 삭제, 변환되어야 한다.
+				</p>
+				
+				<ul class="desc-hypl">
+					<li><span>타이틀 바</span>
+						: dailog의 타이틀 바는 id= "dialog"로 생성하는 것의 이전요소이다. 
+						따라서 이를 삭제하기위해서는 다음과 같이  prev()로 요소선택을 한 후, remove() 메소드로 삭제해 주어야 한다.
+						<div class="code-block">$(ENV.ID_DIALOG).prev().remove();</div>
+					</li>
+					<li><span>width 조정</span>
+					: dialog의 width 는 기본 300으로 값이 정해져 있으므로, 이를   auto로 값을 바꾸어야 한다.
+					</li>
+				</ul>
+
+			</div>
+				 
+		
+<!-- RELATED LINKS ----------------------------------------------------------->
+		<div class="related">
+			<h3>Related Links</h3>
+			<hr>			
+			<ul class ="desc-hypl">
+				<li>
+					<span>Progressbar API</span>
+					<a href="http://api.jqueryui.com/progressbar/"></a>
+				</li>
+				<li>
+					<span>Dialog API</span>
+					<a href="http://api.jqueryui.com/dialog/"></a>
+				</li>
+				<li>
+					<span>CSS</span>
+					<a href="http://api.jquery.com/css/"></a>
+				</li>
+				<li>
+					<span>prev</span>
+					<a href="http://api.jquery.com/prev/"></a>
+				</li>
+				<li>
+					<span>remove</span>
+					<a href="http://api.jquery.com/remove/"></a>
+				</li>
+			</ul>
+		</div>
+
+</div>
+<!-- END OF PAGE------------------------------------------------------------->
+</body>
+</html>

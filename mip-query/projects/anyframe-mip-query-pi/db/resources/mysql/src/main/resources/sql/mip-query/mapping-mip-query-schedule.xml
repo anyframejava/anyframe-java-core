@@ -1,0 +1,15 @@
+		<!--mip-query-findScheduleList-START-->
+			SELECT SCHD_ID, USER_ID, SCHD_TITLE, SCHD_CONTENTS, SCHD_STARTDATE, SCHD_ENDDATE, SCHD_PLACE
+			FROM MIP_SCHD
+			<!--Velocity-Support-findScheduleList-START-->
+			#if ($SEARCH_CONDITION.length() &gt; 0 &amp;&amp; "0" == $SEARCH_CONDITION)
+				WHERE SCHD_TITLE like CONCAT('%' , :SEARCH_KEYWORD , '%')
+			<!--Velocity-Support-findScheduleList-END-->
+			#end		
+		<!--mip-query-findScheduleList-END-->
+		<!--mip-query-createSchedule-START-->
+			INSERT INTO MIP_SCHD
+			(SCHD_ID, USER_ID, SCHD_TITLE, SCHD_CONTENTS, SCHD_STARTDATE, SCHD_ENDDATE, SCHD_PLACE)
+			VALUES(CONCAT('SCHD-' , SCHD_ID_SEQ_NEXT_VALUE()), :USER_ID, :SCHD_TITLE, :SCHD_CONTENTS, :SCHD_STARTDATE, :SCHD_ENDDATE, :SCHD_PLACE)
+		<!--mip-query-createSchedule-END-->
+		

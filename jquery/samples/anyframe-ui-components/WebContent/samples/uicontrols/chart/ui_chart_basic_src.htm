@@ -1,0 +1,248 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
+<html>
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+<title>Grid Sample - Basic</title>
+
+<link href="../../../common/css/smoothness/jquery-ui-1.10.0.custom.css" rel="stylesheet">
+<link href="../../../common/exlibs/css/jquery.jqplot.css" rel="stylesheet">
+<script src="../../../common/exlibs/jquery-1.9.0.js"></script>
+<script src="../../../common/exlibs/jquery-ui-1.10.0.custom.js"></script>
+<script src="../../../common/exlibs/jquery.jqplot.js"></script>
+<script src="../../../common/exlibs/excanvas.js" ></script>
+<script src="../../../common/exlibs/jqplot.plugins.js"></script>
+
+<link href="sub_css/basic.css" rel="stylesheet">
+
+<script type="text/javascript">
+
+	var RENDERER = {
+			AXIS_LABEL : $.jqplot.CanvasAxisLabelRenderer,
+			AXIS_CATEGORY : $.jqplot.CategoryAxisRenderer,
+			AXIS_DATA : $.jqplot.DateAxisRenderer,
+			BAR : $.jqplot.BarRenderer,
+			CANDLE : $.jqplot.OHLCRenderer,
+			PIE : $.jqplot.PieRenderer,
+			DONUT : $.jqplot.DonutRenderer,
+			BUBBLE : $.jqplot.BubbleRenderer
+	};
+	
+	var ENV = {
+			ID_LINE_CHART : "lineChart",
+			ID_BAR_CHART : "barChart",
+			ID_CANDLE_CHART : "candleChart",
+			ID_PIE_CHART : "pieChart",
+			ID_DONUT_CHART : "donutChart",
+			ID_BUBBLE_CHART : "bubbleChart"
+	};
+	
+	var CHART_DATA = {
+			TYPE_XY_FLAT :  [  [ [1,2], [2,3], [3,6], [4,1], [5,5], [6,2] ]  ],			
+			TYPE_CANDLE : [
+			              	[
+				           		['06/15/2009 16:00:00', 136.01, 139.5, 134.53, 139.48],
+			                   	['06/08/2009 16:00:00', 143.82, 144.56, 136.04, 136.97],
+			                   	['06/01/2009 16:00:00', 136.47, 146.4, 136, 144.67],
+			                   	['05/26/2009 16:00:00', 124.76, 135.9, 124.55, 135.81],
+			                   	['05/18/2009 16:00:00', 123.73, 129.31, 121.57, 122.5],
+			                   	['05/11/2009 16:00:00', 127.37, 130.96, 119.38, 122.42]
+			              	]	],			
+			TYPE_PIE : [
+			            [
+			               		['Line Chart', 16],['Bar Chart', 14], ['Candle Chart', 5], 
+			               		['Pie Chart', 10],['Donut Chart', 7], ['Bubble', 3]
+			          	]	],			
+			TYPE_DONUT : [
+			                 [
+				               ['Line Chart', 16],['Bar Chart', 14], ['Candle Chart', 5], 
+				               ['Pie Chart', 10],['Donut Chart', 7], ['Bubble', 3]
+				             ],
+				             [
+				              
+				                ['Line Chart', 10],['Bar Chart', 9], ['Candle Chart', 15], 
+				                ['Pie Chart', 6],['Donut Chart', 10], ['Bubble', 5]
+				             ]	],			
+			TYPE_BUBBLE : [
+			              	[
+			                	[12, 98, 1634, "Line Chart"], 	[7, 23, 1543, "Bar Chart"], 
+			                   	[25, 134, 550, "Candle Chart"], [50, 65, 1080, "Pie Chart"], 
+			                   	[34, 43, 660, "Donut Chart"], 	[64, 25, 1870, "Bubble Chart"]
+	                   		]	],
+			LABEL_X : ['first', 'second', 'third', 'fourth', 'fifth', 'sixth' ]
+	};
+	
+
+	var mainView = {
+			
+			init : function()
+			{
+				var padSize = 1.2;
+				
+				this._setLineChart('Line Type', CHART_DATA.TYPE_XY_FLAT , padSize);
+				this._setBarChart('Bar Type', CHART_DATA.TYPE_XY_FLAT, CHART_DATA.LABEL_X, padSize);
+				this._setCandleChart('Candle Type', CHART_DATA.TYPE_CANDLE, padSize);
+				this._setPieChart('Pie Type', CHART_DATA.TYPE_PIE);
+				this._setDonutChart('Donut Type', CHART_DATA.TYPE_DONUT);
+				this._setBubbleChart('Bubble Type', CHART_DATA.TYPE_BUBBLE);
+			},
+			
+			_setLineChart : function(title, data, padSize){
+				
+				var options = {
+							title : title,							
+							axesDefaults: {
+											pad : padSize
+							}
+				};
+						
+				$.jqplot (ENV.ID_LINE_CHART, data, options);
+			},
+			
+			_setBarChart : function(title, data, xLabelData, padSize){
+				
+				var options = {
+							title : title,
+							seriesDefaults : {
+											renderer : RENDERER.BAR
+								
+							},
+							axesDefaults: {
+											pointLabels: { show: true },
+											pad : padSize
+							},
+							axes : {
+								xaxis : {
+											renderer : RENDERER.AXIS_CATEGORY,
+											ticks : xLabelData
+								}
+							}
+				};
+				
+				$.jqplot (ENV.ID_BAR_CHART, data, options);
+			},
+			
+			
+			_setCandleChart : function(title, data, padSize){
+				
+				var options = {
+							title : title,
+							series : [
+							          {
+							        	  renderer : RENDERER.CANDLE,
+										  rendererOptions:{ candleStick:true }
+							          }
+							],
+							axesDefaults: {
+											pad : padSize
+							},
+							axes : {
+								xaxis : {
+											renderer : RENDERER.AXIS_DATA,
+											tickOptions : {
+												formatString : '%b'
+											}
+											
+								}
+							}
+				};
+						
+				$.jqplot (ENV.ID_CANDLE_CHART, data, options);
+			},
+			
+			_setPieChart : function(title, data){	
+				
+				var options = {
+							title : title,
+							seriesDefaults : {
+											renderer : RENDERER.PIE,
+											rendererOptions : {
+																showDataLabels : true
+											}
+							},
+							legend : {
+										show : false,
+										location : 'e'
+							}
+				};
+							
+				$.jqplot (ENV.ID_PIE_CHART, data, options);
+			},
+			
+			_setDonutChart : function(title, data){
+				
+				var options = {
+							title : title,
+							seriesDefaults : {
+								renderer : RENDERER.DONUT,
+								rendererOptions : {
+												showDataLabels : true,
+												sliceMargin : 3,
+										startAngle : -90,
+										dataLabels : 'value'
+								}
+							},
+							legend : {
+								show : false,
+								location : 'e'
+							}
+				};
+				
+				$.jqplot (ENV.ID_DONUT_CHART, data, options);
+			},
+			
+			_setBubbleChart : function(title, data){
+				
+				var options = {
+							title : title,
+							seriesDefaults : {
+								renderer : RENDERER.BUBBLE,
+								rendererOptions : {
+									bubbleGradients : true
+								},
+								shadow : true
+							}
+				};
+				
+				$.jqplot (ENV.ID_BUBBLE_CHART, data,options);
+			}
+			
+	};
+
+	$(document).ready(function() {		
+				mainView.init();
+	});
+	
+</script>
+
+</head>
+<body>
+	<div>
+		<div class="chart-container">
+			<div id="lineChart"></div>
+		</div>
+		
+		<div class="chart-container">
+			<div id="barChart"></div>
+		</div>
+		
+		<div class="chart-container">
+			<div id="candleChart"></div>
+		</div>
+	</div>
+	
+	<div>
+		<div class="chart-container">
+			<div id="pieChart" ></div>
+		</div>
+		
+		<div class="chart-container">
+			<div id="donutChart" ></div>
+		</div>
+		
+		<div class="chart-container">
+			<div id="bubbleChart"></div>
+		</div>
+	</div>
+	
+</body>
+</html>

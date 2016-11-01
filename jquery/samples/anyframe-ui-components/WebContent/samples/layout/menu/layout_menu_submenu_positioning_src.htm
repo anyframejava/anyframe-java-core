@@ -1,0 +1,156 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
+<html>
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+<title>Menu Sample - Submenu 위치시키기</title>
+
+<link href="../../../common/css/smoothness/jquery-ui-1.10.0.custom.css" rel="stylesheet">
+<script src="../../../common/exlibs/jquery-1.9.0.js"></script>
+<script src="../../../common/exlibs/jquery-ui-1.10.0.custom.js"></script>
+
+<style type="text/css">
+
+	.ui-menu {
+		font-size: 12px;
+		width: 150px;
+	}
+	
+	.section {
+		margin-bottom: 10px;
+		padding: 10px;
+		background-color: #E0ECF8;
+		width: 500px;		
+	}
+	
+	body {
+		font-size: 12px;
+	}
+	
+</style> 
+
+<script type="text/javascript">
+
+	var ENV = {
+		ID_RADIO_LEFT : "#radio_left",
+		ID_RADIO_TOP : "#radio_top",
+		ID_RADIO_RIGHT : "#radio_right",
+		ID_RADIO_BOTTOM : "#radio_bottom",
+		ID_VMENU : "#vmenu"
+	};
+
+	var mainView = {
+			
+			init : function() 
+			{
+				var first_radio = $(ENV.ID_RADIO_RIGHT);
+				
+				first_radio.attr("checked", true);
+				this.selectPosition( first_radio.get() );				
+			},
+			
+			selectPosition : function(elm)
+			{
+				var pos = $(elm).attr('id');
+				var menu_pos = $(ENV.ID_VMENU).menu('option', 'position');
+				
+				pos = pos.slice( pos.indexOf('_') + 1 );
+
+				switch (pos)
+				{
+				case "left":
+					menu_pos.my = "right top";
+					menu_pos.at = "left top";
+					break;
+				case "top":
+					menu_pos.my = "left bottom";
+					menu_pos.at = "left top";
+					break;
+				case "right":
+					menu_pos.my = "left top";
+					menu_pos.at = "right top";					
+					break;
+				case "bottom":
+					menu_pos.my = "left top";
+					menu_pos.at = "left bottom";
+					break;
+				}
+				
+				$(ENV.ID_VMENU).menu('option', 'position', menu_pos);				 
+			}
+			
+	};
+
+	$(document).ready(function() {
+		
+		$("#vmenu").menu();
+		
+		$("input[name='submenu_pos']").click(function(evt) {
+			mainView.selectPosition( this );
+		});
+		
+		mainView.init();
+		
+	});
+	
+</script>
+
+</head>
+<body>
+
+<div class="section">
+	<div style="display:inline-block;width:150px;">
+		<span class="ui-icon ui-icon-check" style="display:inline-block;"></span>
+		<span>SubMenu 위치선택 :</span>
+	</div>
+	
+	<div style="display:inline-block;position:relative;left:10px">
+		<input type="radio" id="radio_left" name="submenu_pos" /><label for="radio_left">Left</label>
+		<input type="radio" id="radio_top" name="submenu_pos"/><label for="radio_top">Top</label>
+		<input type="radio" id="radio_right" name="submenu_pos"/><label for="radio_right">Right</label>
+		<input type="radio" id="radio_bottom" name="submenu_pos"/><label for="radio_bottom">Bottom</label>
+	</div>		
+</div>
+
+<div class="section" align="center" style="height:300px;">
+	<ul id="vmenu" style="position:relative;top:100px;">
+		<li><a href="#">Level1 메뉴 A</a>
+			<ul>
+				<li><a href="#">Level2 메뉴 A</a></li>
+				<li><a href="#">Level2 메뉴 B</a>
+					<ul>
+						<li><a href="#">Level3 메뉴 A</a></li>
+						<li><a href="#">Level3 메뉴 B</a></li>					
+					</ul>
+				</li>
+				<li><a href="#">Level2 메뉴 C</a>
+					<ul>
+						<li><a href="#">Level3 메뉴 A</a></li>
+						<li><a href="#">Level3 메뉴 B</a></li>					
+					</ul>			
+				</li>
+			</ul>
+		</li>
+		<li><a href="#">Level1 메뉴 B</a>
+			<ul>
+				<li><a href="#">Level2 메뉴 A</a></li>
+				<li><a href="#">Level2 메뉴 B</a>
+					<ul>
+						<li><a href="#">Level3 메뉴 A</a></li>
+						<li><a href="#">Level3 메뉴 B</a></li>					
+					</ul>
+				</li>
+				<li><a href="#">Level2 메뉴 C</a>
+					<ul>
+						<li><a href="#">Level3 메뉴 A</a></li>
+						<li><a href="#">Level3 메뉴 B</a></li>					
+					</ul>			
+				</li>
+			</ul>
+		</li>
+		<li><a href="#">Level1 메뉴 C</a></li>
+		<li><a href="#">Level1 메뉴 D</a></li>
+	</ul>	
+</div>
+
+</body>
+</html>

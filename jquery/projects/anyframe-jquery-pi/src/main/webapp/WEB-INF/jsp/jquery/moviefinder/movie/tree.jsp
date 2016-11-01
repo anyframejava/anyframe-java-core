@@ -1,11 +1,12 @@
 <%@ page language="java" errorPage="/sample/common/error.jsp" pageEncoding="UTF-8" contentType="text/html;charset=utf-8" %>
 <%@ include file="/sample/common/top.jsp"%>
-		<div class="location"><a href="<c:url value='/anyframe.jsp'/>">Home</a> &gt; <a href="<c:url value='/jqueryMovieFinder.do?method=listView'/>">jQuery 1.0.4.RC1</a></div>
+		<div class="location"><a href="<c:url value='/anyframe.jsp'/>">Home</a> &gt; <a href="<c:url value='/jqueryMovieFinder.do?method=listView'/>">jQuery 1.0.5</a></div>
     </div>
     <hr />
 <%@ include file="menu.jsp"%>
 
 <script type="text/javascript">
+<!--
 function showRequest(formData, jqForm, options) { 
 	if(document.movieForm.nowPlaying.checked){
 		document.movieForm.nowPlaying.value ="Y";
@@ -15,6 +16,7 @@ function showRequest(formData, jqForm, options) {
 	}
 	return true;
 } 
+
 function showResponse(data, responseText, statusText, xhr, $form)  {
 	alert("Save successfully");
 	$("#refresh").trigger("click");
@@ -157,7 +159,7 @@ function showResponse(data, responseText, statusText, xhr, $form)  {
 					}
 
 					//for safari
-					document.getElementById("releaseDate").value=data.movie.releaseDate;
+					document.getElementById("releaseDate").value=convertTimeStampToDate(data.movie.releaseDate);
 					
 					if(document.getElementById("releaseDate").value=="null"){
 						document.getElementById("releaseDate").value="";
@@ -271,6 +273,28 @@ function showResponse(data, responseText, statusText, xhr, $form)  {
 		}
 		return default_object;
 	}
+	
+
+	//DatePicker에 yyyy-mm-dd 형식의 날짜를 전달하기 위한 Formatter 함수
+	function convertTimeStampToDate(cellval) {
+		//cellval의 type은 String. new Date객체를 생성.
+		if(cellval == null || cellval == "") {
+			return "";	
+		}
+		var date = new Date(cellval);
+
+		var curr_date = date.getDate();
+		if(curr_date < 10) curr_date = "0"+curr_date;
+		
+		var curr_month = date.getMonth();
+		curr_month++; // date.getMonth()에서 January의 값은 0이다.
+		if(curr_month < 10) curr_month = "0"+curr_month;
+		
+		var curr_year = date.getFullYear();
+		
+		return curr_year + "-" + curr_month + "-" + curr_date;
+	}
+-->
 </script>
 
 <div id="content" style="height:auto;width:800px;margin-left:240px;">
@@ -308,7 +332,7 @@ function showResponse(data, responseText, statusText, xhr, $form)  {
 			        </colgroup>
 			        <tbody>
 						<tr>
-							<th><label for="id"><spring:message code="genre.id"/>&nbsp;</label></th>
+							<th><label for="genreId1"><spring:message code="genre.id"/>&nbsp;</label></th>
 							<td>
 								<input type="text" name="genreId1" id="genreId1" class="ct_input_g" size="40" maxlength="50" readonly="readonly"/>
 							</td>
@@ -325,8 +349,8 @@ function showResponse(data, responseText, statusText, xhr, $form)  {
 			</div>
 			<div id="movieTab">
 				<form:form modelAttribute="movie" method="post" id="movieForm" name="movieForm" enctype="multipart/form-data">
+					<form:hidden path="movieId" />
 					<table width="430" summary="This table shows detail information about title, director, actors, runtime, release date, ticket price of the movie">
-						<form:hidden path="movieId" />
 						<caption>Detail information</caption>
 				        <colgroup>
 				        	<col style="width:40%;" />
@@ -346,7 +370,7 @@ function showResponse(data, responseText, statusText, xhr, $form)  {
 								</td>
 							</tr>
 							<tr>
-								<th><label for="genre"><spring:message code="movie.genre"/>&nbsp;</label></th>
+								<th><label for="genreId"><spring:message code="movie.genre"/>&nbsp;</label></th>
 								<td>
 									<form:select id="genreId" path="genre.genreId"  cssStyle="width:155px;">
 						              <form:options items="${genreList}" itemValue="genreId" itemLabel="name"/>
@@ -372,19 +396,19 @@ function showResponse(data, responseText, statusText, xhr, $form)  {
 								</td>
 							</tr>
 							<tr>
-								<th><label for="releaseDate"><spring:message code="movie.ticketPrice"/>&nbsp;</label></th>
+								<th><label for="ticketPrice"><spring:message code="movie.ticketPrice"/>&nbsp;</label></th>
 								<td>
 									<form:input path="ticketPrice" cssClass="number ct_input_g" cssErrorClass="text medium error" cssStyle="width:150px;" size="40" maxlength="4" />
 								</td>
 							</tr>
 							<tr>
-								<th><label for="nowPlaying"><spring:message code="movie.nowPlaying"/>&nbsp;</label></th>
+								<th><label for="nowPlaying1"><spring:message code="movie.nowPlaying"/>&nbsp;</label></th>
 								<td>
 									<spring:message code="movie.isNowPlaying"/><form:checkbox path="nowPlaying" value="Y"/>
 								</td>
 							</tr>
 							<tr>
-								<th><label for="posterFile"><spring:message code="movie.posterFile"/>&nbsp;</label></th>
+								<th><label for="poster"><spring:message code="movie.posterFile"/>&nbsp;</label></th>
 								<td>
 									<div id="imgSrc">
 										<img id="poster" src="<c:url value="${movie.filePaths}"/>"

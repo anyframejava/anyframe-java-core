@@ -1,0 +1,143 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN"
+"http://www.w3.org/TR/html4/loose.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+ 
+ <!-- Start of head-->
+<head>
+<meta http-equiv="content-type" content="text/html; charset=UTF-8" />
+<title>BUTTON : SET </title> <!-- TODO: 타이틀 작성 -->
+
+
+<!-- include required common files  ----------------------------------------------------->
+<script type="text/javascript" src="../../../common/exlibs/jquery-1.9.0.js" ></script>
+<script type="text/javascript" src="../../../common/exlibs/highlighter/scripts/shCore.js" ></script>
+<script type="text/javascript" src="../../../common/exlibs/highlighter/scripts/shBrushJScript.js" ></script>
+<script type="text/javascript" src="../../../common/js/template_common.js" ></script>
+
+<!--  stylesheet  -->
+<link type="text/css" rel="stylesheet" href="../../../common/exlibs/highlighter/styles/shCore.css"/>
+<link type="text/css" rel="stylesheet" href="../../../common/exlibs/highlighter/styles/shCoreDefault.css"/>
+<link type="text/css" rel="stylesheet" href="../../../common/css/style.css"/>
+
+<!-- scripts to support sample page  ----------------------------------------------------->
+<script type="text/javascript">
+
+$(function() {
+	JTemplate.load("ui_button_set_src.htm");		
+	JTemplate.loadDemo2("ui_button_set_src.htm", {height:'300px'});	
+});  
+</script>
+ 
+</head>
+<!-- End of head -->
+
+<!-- Start of body -->
+ <body >
+ 
+ <!-- HEADER BAR -------------------------------------------------------------->
+<div class="content-title">Component - Button</div>
+ 
+ <!-- START OF PAGE ... -------------------------------------------------------->
+<div id="page">
+	<p class = "header-title">Button SET</p>
+	<p class="header-desc">: Button이 라디오버튼, 체크박스 타입과 같은 형태로 묶여져 하나의 세트로 기능을 구현한 예를 보여준다.</p>
+
+<!-- DEMO ----------------------------------------------------------------------->
+	<div class="demo">
+		<h3 >Demo</h3>
+		<div id="visualExample"></div>
+	</div>
+
+<!-- DEMO DESCRIPTION----------------------------------------------------->
+	<div class="desc">
+		<h3>Demo Description </h3>
+		<hr>
+		<p class="desc-title">Button SET</p>
+		<p class="desc-overall">  
+		: 라디오버튼이나 체크박스로 이루어진 버튼세트의 형태에 대해서 어떻게 컨트롤할 수 있는지를 보여준다.
+		</p>
+		<ul class ="desc-hypl">
+			<li><span>Radio button</span> : show/hide  로 구성되어 1개의 선택만이 가능하며, 선택에 따라 블럭이 보여지거나 사라진다.</li>
+			<li><span>Checkbox button</span> : A/B/C/D 의 4개 버튼에 대해 체크된 알파벳만 각 결과화면에 text로 보여지게 된다.</li>
+			<li><span>Toolbar button</span> : 여러 버튼들이 하나로 묶여진 툴바형태로  존재하며, 각 내부 버튼으로 결과화면의 텍스트들을 조작할 수 있다.</li>
+		</ul>
+	</div>
+ 
+ <!-- CODE------------------------------------------------------------------------>
+	<div class="code">
+		<h3>Code Source </h3>
+		<pre id="codeExample" class="brush: js"></pre>
+	</div>
+	
+ 
+ <!-- CODE DESCRIPTION------------------------------------------------------>
+	<div class="desc">
+		<h3>Code Description </h3>
+		<hr>
+		<!-- TODO: 재 작성
+		<p class="desc-title">Button Set 기본형태 생성</p>
+		<span class="code-line">#98 - #101</span>
+		<span class="code-line">#107 - #114</span>
+		<span class="code-line">#128 - #132</span>
+		<p class="desc-overall">
+		: $(selector).buttonset() 으로 생성하며, 이 selector의 경우, 여러개의 버튼을 하나의 태그로 감싼 선택자여야 한다.<br>
+		또한 그 선택자를 지정할 수 있는 태그는 div, p, span 과같이 하나의 블럭을 구성하는 것이여야 한다.<br>
+		버튼은 button 태그와 input 태그(type="button")로 생성가능한데, 세트형식으로 구성하기 위해서는label 태그를 반드시 써 주어야 하며, 
+		이 레이블 태그의 for 값은 매칭되는 각 input 태그의 아이디값과 같아야 한다.<br>
+		(button 태그로 사용할 경우, 아이디값의 표기가 필수적이지 않음)
+		</p>
+		
+		<p class="desc-title">Toolbar 형태생성</p>
+		<p class="desc-overall"> 
+		 :  css style로  toolbar 스타일을 클래스 혹은 아이디값으로 지정해 두고,
+		<span class="code-line">#15 - #19</span>
+		  하나로 묶어 툴바로 구성하고자 하는 여러 버튼을 div, p, span과 같은 태그로 묶어 적용시킨다.
+		</p>
+		
+		<p class="desc-title">Checkbox 선택자</p>
+		<p class="desc-overall"> 
+		 : 체크박스 타입의 input 태그로 사용한 경우, 다음과 같이 selector를 설정해 줄 수 있다. <br>
+		 또한 위의 예제에서 처럼 is() 메소드와 ":checked" 선택자를 활용하여 체크된 것의 여부를 true/false 로 알아내어 기능을 구현할 수 있다.
+		<span class="code-line">#74 </span> 
+		<span class="code-line">#78 </span> 
+		 </p>
+		
+		<p class="desc-title">getTarget 함수</p>
+		<span class="code-line">#48 -  #52 </span> 
+		<p class="desc-overall"> 
+		 : getTarget함수는 체크한 항목 각각이 컨트롤하고 있는 타겟의 선택자를 얻는 함수이다.   <br>
+		 매개변수로 컨트롤하는 버튼타겟을 받아 index() 메소드로 몇번째 요소인지 알아낸다음, 결과타겟에 대해 매칭되도록 인덱스를 조정하여 조작할 타겟을 selector로써 리턴해준다.
+		 </p>
+		</div>
+		
+		 -->
+		
+	</div>   
+
+<!-- RELATED LINKS ----------------------------------------------------------->
+        <div class="related">
+			<h3>Related Links</h3>
+			<hr>
+			<ul class="desc-hypl">
+				<li>
+					<span>Button API</span>
+					<a href="http://api.jqueryui.com/button/"></a>
+				</li>
+				<li>	
+					<span>Attribute Selector</span>
+					<a href="http://api.jquery.com/attribute-contains-selector/"></a>
+				</li>
+				<li>
+					<span>is 메소드</span>
+					<a href="http://api.jquery.com/is/"></a>
+				</li>
+			</ul>            
+		</div>
+
+	</div>      
+<!-- End of Page-->
+
+</body>
+<!-- End of body-->
+
+</html>

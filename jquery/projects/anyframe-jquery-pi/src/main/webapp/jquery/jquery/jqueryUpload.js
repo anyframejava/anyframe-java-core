@@ -17,16 +17,17 @@
 		html += '</div>\n';
 
 		$('#' + id).append(html);
-	
+
 		$("#uploadify").uploadify({
-			swf			:  options.contextRoot + '/jquery/jquery/uploadify/uploadify.swf', 
-			uploader	:  options.contextRoot + '/jqueryUploadFile.do', 
+			swf			: options.contextRoot + '/jquery/jquery/uploadify/uploadify.swf' ,
+			uploader	: options.contextRoot + '/jqueryUploadFile.do', 
 			queueID		: "fileQueue",
 			fileObjName : "fileData",
 			auto		: false,
 			multi		: false,
 			width		: 80,
 			height		: 24,
+			debug		: false,
 			removeTimeout : 0,
 			fileTypeExts : '*.jpg; *.gif; *.png;',
 			fileSizeLimit	: 10000000,

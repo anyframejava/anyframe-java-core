@@ -41,18 +41,18 @@ public class ServerInfo extends ClientInfo {
 		super();
 	}
 
-	public ServerInfo(Class interfaceClass, Object impleClass, String address) {
+	public ServerInfo(Class<?> interfaceClass, Object impleClass, String address) {
 		super(interfaceClass, address);
 		this.setImpleClass(impleClass);
 	}
 
-	public ServerInfo(Class interfaceClass, Object impleClass, String address,
+	public ServerInfo(Class<?> interfaceClass, Object impleClass, String address,
 			boolean useAegisBinding) {
 		super(interfaceClass, address, useAegisBinding);
 		this.setImpleClass(impleClass);
 	}
 
-	public ServerInfo(Class interfaceClass, Object impleClass, String address,
+	public ServerInfo(Class<?> interfaceClass, Object impleClass, String address,
 			boolean useAegisBinding, boolean useMTOMBinding) {
 		super(interfaceClass, address, useAegisBinding, useMTOMBinding);
 		this.setImpleClass(impleClass);
