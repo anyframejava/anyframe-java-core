@@ -1,0 +1,745 @@
+<chapter id="cxf_jaxrs">
+	<title>JAX-RS Frontend</title>
+	<para>
+		A frontend model that enables the implementation of RESTful web services through annotation using JAX-RS (JSR-311).
+  	</para>
+
+  	<para>
+  		JAX-RS (Java API for RESTful Web Services) is java API that supports REST style web service implementation on java platform. 
+  		It uses Annotation introduced in Java SE 5 to develop and deploy RESTful Web Services server module easier. 
+  		Implementations among open source include <ulink url="http://cxf.apache.org/docs/restful-services.html">Apache CXF</ulink>, 
+  		<ulink url="http://jersey.java.net/">Jersey</ulink>, <ulink url="http://www.restlet.org/">Restlet</ulink>, and 
+  		<ulink url="http://www.jboss.org/resteasy">JBoss RESTEasy</ulink>.
+  		</para>
+
+<section id="cxf_restful_jaxrs">
+	<title>RESTful service implementation using JAX-RS	</title>
+	<para>
+		By using <ulink url="http://jcp.org/en/jsr/detail?id=311">JAX-RS(JSR-311) Spec</ulink>. 
+    	RESTful service is implemented.
+        Apache CXF provides implementation about spec. and helps develop RESTful service in standard method.
+        Use annotation setting provided in JAX-RS.
+    </para>
+    <para>
+    	RESTful Web Service can be easily implemented by setting Annotation(javax.ws.rs.*) provided by JAX-RS for each method of 
+    	Service Interface class to be exposed as Web Service. (e.g., @Path, @GET, @GET, @PUT, @DELETE, @Produces, etc.)
+    </para>
+    
+    <para>
+    	The following is how to use JAX-RS in Server and Client layer when implementing RESTful service. 
+    </para>
+    <itemizedlist>
+ 		<listitem>
+        	<para>Server Configuration</para>
+      		<orderedlist>
+        		<listitem>
+          			<para>
+          				<link linkend="cxf_restful_jaxrs_webservice">RESTful Web Service development</link>
+          			</para>
+        		</listitem>
+        		<listitem>
+          			<para>
+          				Server run
+          			</para>
+          			<itemizedlist>
+            			<listitem>
+              				<para>
+              					<link linkend="cxf_restful_jaxrs_serverconfig">Use Spring
+              					Configuration XML - <![CDATA[<jaxrs:server/> tag]]></link>
+              				</para>
+            			</listitem>            
+          			</itemizedlist>
+        		</listitem>
+			</orderedlist>        	
+      	</listitem>
+	    <listitem>
+     		<para>Client Configuration</para>
+			<orderedlist>
+        		<listitem>
+          			<para>
+          				Client development
+          			</para>
+          			<itemizedlist>
+            			<listitem>
+              				<para>
+              					<link linkend="cxf_restful_jaxrs_clientconfig">Use Spring
+              					Configuration XML - <![CDATA[<jaxrs:client/> tag]]></link>
+              				</para>
+            			</listitem>            
+          			</itemizedlist>
+        		</listitem>
+			</orderedlist>        	     		
+      	</listitem>
+    </itemizedlist>
+
+    <section id="cxf_restful_jaxrs_webservice">
+		<title>RESTful Web Service development</title>
+
+      	<para>
+      		Let's expose Movie Service as RESTful Web Services using JAX-RS Annotation.
+      	</para>
+      	<para>
+      	Define web resource so that it can access through RESTful Web Services. 
+      	Web resource should be implemented as resource class and should handle request using resource method. 
+      	In this case, resource method is defined as public modifier, and void, Response or other java types can be used as return type.
+      	</para>
+
+	<para>Annotation setting is as the following table.	</para>
+   	<informaltable>
+      		<tgroup cols="3">
+            	<colspec colnum="1" colname="col1" colwidth="2*"/>
+                <colspec colnum="2" colname="col2" colwidth="4*"/>
+                <colspec colnum="3" colname="col3" colwidth="4*"/>
+        		<thead>
+          			<row>
+            			<entry align="center">Annotation</entry>
+
+            			<entry align="center">Description</entry>
+            			
+            			<entry align="center">Example</entry>
+          			</row>
+        		</thead>
+
+        		<tbody>
+          			<row>
+			            <entry>@Path</entry>
+			            <entry>Use @Path Annotation to combine resource with URI, and express as relative path. 
+							   This Annotation can be set in class and method. 
+							   @Path Annotation setting value can also use regular expression. 
+			            </entry>
+			            <entry>@Path("/movies/"), @Path("/{movieId}/"), @Path("/subresource/{n1:.*}")</entry>
+          			</row>
+          			<row>
+			            <entry>@HttpMethod</entry>
+			            <entry>JAX-RS provides various HTTP method Annotation such as @GET, @PUT, @POST, and @DELETE. 
+			            You can use @HttpMethod Annotation to make custom Annotation.</entry>			            
+			            <entry>@Target({ElementType.METHOD}) @Retention(RetentionPolicy.RUNTIME) @HttpMethod("PATCH") public @interface PATCH {}</entry>
+          			</row>          			
+          			<row>
+            			<entry>@Produces</entry>
+            			<entry>[Media Type] Defines MIME Type of HTTP Response. 
+            			Annotation to define type that returns to client. 
+            			Type can be defined through Accept Header information.</entry>			       
+			            <entry>@Produces("application/xml"), @Produces("application/json")</entry>
+          			</row>
+					<row>
+            			<entry>@Consumes</entry>
+            			<entry>[Media Type] Defines MIME Type of HTTP Request. 
+            			Annotation to define type for Request body. 
+            			Type can be defined through Content-Type Header information.
+            			</entry>
+            			<entry>@Consumes({"application/xml", "application/json"}), @Consumes("application/x-www-form-urlencoded")</entry>
+          			</row>    
+          			<row>
+            			<entry>@GET</entry>
+            			<entry>
+            				[HTTP Method] Annotation set in resource method.
+            				Expresses HTTP request method type. Used for list and detailed search method.
+            			</entry>
+            			<entry>@GET	@Path("/{movieId}/") Response get(@PathParam("movieId") String movieId)</entry>
+          			</row>
+          			<row>
+            			<entry>@POST</entry>
+            			<entry>
+            				[HTTP Method] Annotation set in resource method. 
+            				Expresses HTTP request method type. Used in create method. 
+            			</entry>
+            			<entry>@POST Response create(Movie movie)</entry>
+          			</row>
+          			<row>
+            			<entry>@PUT</entry>
+            			<entry>
+            				[HTTP Method] Annotation set in  resource method. 
+            				Expresses HTTP request method type. Used in modify method.
+            			</entry>
+            			<entry>@PUT Response update(Movie movie)</entry>
+          			</row>
+          			<row>
+            			<entry>@DELETE</entry>
+            			<entry>
+            				[HTTP Method] Annotation set in resource method. Expresses HTTP request method type. 
+            				Used in delete and cancel method.
+            			</entry>
+            			<entry>@DELETE @Path("/{movieId}/") Response remove(@PathParam("movieId") String movieId)</entry>
+          			</row> 
+          			<row>
+            			<entry>@PathParam</entry>
+            			<entry>
+            				[PARAMETER] Gets value stated in URI template.
+            			</entry>
+            			<entry>get(@PathParam("movieId") String movieId)</entry>
+          			</row>
+          			<row>
+            			<entry>@QueryParam</entry>
+            			<entry>
+            				[PARAMETER] Gets URI query parameter value. 
+            				When directly mapped as object, enter bean string in @QueryParam Annotation value. 
+            			</entry>
+            			<entry>When requested in <![CDATA[http://.../movies?title=Avatar&pageIndex=1]]> format, 
+            			value can be bound as Movie object that has member variable as title like getPagingList(@QueryParam("") Movie movie, @QueryParam("pageIndex") int pageIndex).
+            			</entry>
+          			</row>  
+          			<row>
+            			<entry>@FormParam</entry>
+            			<entry>
+            				[PARAMETER] Annotation used when reading value saved in Form when Form Submit occurs. 
+            				Among method parameters, the one that does not have Annotation is entity parameter. 
+            				When using @FormParam Annotation, entity parameter type should be <![CDATA[MultivaluedMap<String,String>]]>.
+            			</entry>
+            			<entry>create(@FormParam("movieId") String movieId, <![CDATA[MultivaluedMap<String, String> form]]>)</entry>
+          			</row>  
+          			<row>
+            			<entry>@HeaderParam</entry>
+            			<entry>
+            				[PARAMETER] Gets header value.
+            			</entry>
+            			<entry>Book getBookByHeader(@HeaderParam("BOOK2") String id) </entry>
+          			</row> 
+          			<row>
+            			<entry>@MatrixParam</entry>
+            			<entry>
+            				[PARAMETER] Gets value from matrix URI. 
+            				matrix URI is URI developed using semicolon like http://.../movies/color;lat=50;long=20;scale=32000.
+            			</entry>
+            			<entry>
+            			Book getBookByMatrixParams(@MatrixParam("first") String s1, @MatrixParam("second") String s2)
+            			</entry>
+          			</row>    
+          			<row>
+            			<entry>@CookieParam</entry>
+            			<entry>
+            				[PARAMETER] Gets cookie value.
+            			</entry>
+            			<entry>Book getTheBook2(@CookieParam("n5") String name5)</entry>
+          			</row> 
+          			<row>
+            			<entry>@DefaultValue</entry>
+            			<entry>
+            				[PARAMETER] Used when defining default in 
+            				@PathParam, @QueryParam, @FormParam, @HeaderParam, @MatrixParam, @CookieParam Annotation.
+            			</entry>
+            			<entry>getPagingList(@QueryParam("pageIndex") @DefaultValue("1") int pageIndex)</entry>
+          			</row>    
+          			<row>
+            			<entry>@Encoded</entry>
+            			<entry>
+            				[PARAMETER] Used when not automatically decoding parameter when using @PathParam, @QueryParam, @FormParam, @MatrixParam Annotation. 
+            				This Annotation can be set in class and method. 
+            				When set in class, all parameter values from all methods are not decoded.
+            			</entry>
+            			<entry>@Encoded</entry>
+          			</row>     
+          			<row>
+            			<entry>@Context</entry>
+            			<entry>When using injected information such as HTTP Request Header or URI.
+            			</entry>
+            			<entry>get(@Context UriInfo uri){ <![CDATA[MultivaluedMap<String,String>]]> params = uri.getQueryParameters();}, 
+            				   get(@Context HttpHeaders header) { <![CDATA[Map<String,Cookie>]]> map = header.getCookies();}
+            			 </entry>
+          			</row>      			      			
+        		</tbody>
+      		</tgroup>
+		</informaltable>
+		
+      	<section id="cxf_restful_jaxrs_serverconfig_samples">
+        	<title>Samples</title>
+
+	        <para>The following is an example of movie service interface class definition.</para>
+
+        	<itemizedlist>
+          		<listitem>
+            		<para>Interface Class</para>
+            		<para>
+            			The following is a part of MovieService.java which developed movie service interface class.
+                        Note annotation setting.
+            			<programlisting language="java"><![CDATA[import javax.ws.rs.Path;
+import javax.ws.rs.Produces;
+
+]]><emphasis role="bold">@Path("/movies/")</emphasis><![CDATA[
+]]><emphasis role="bold">@Produces("application/xml")</emphasis><![CDATA[
+public interface MovieService {
+
+    ]]><emphasis role="bold">@POST</emphasis><![CDATA[
+    Response create(Movie movie) throws Exception;
+
+    ]]><emphasis role="bold">@GET</emphasis><![CDATA[
+    ]]><emphasis role="bold">@Path("/{movieId}/")</emphasis><![CDATA[
+    Response get(@PathParam("movieId") String movieId)
+           throws Exception;
+
+    ]]><emphasis role="bold">@PUT</emphasis><![CDATA[
+    Response update(Movie movie) throws Exception;
+
+    ]]><emphasis role="bold">@DELETE</emphasis><![CDATA[
+    ]]><emphasis role="bold">@Path("/{movieId}/")</emphasis><![CDATA[
+    Response remove(@PathParam("movieId") String movieId)
+           throws Exception;
+
+    ]]><emphasis role="bold">@GET</emphasis><![CDATA[
+	Response getPagingList(@QueryParam("") Movie movie,
+			@QueryParam("pageIndex") @DefaultValue("1") int pageIndex)
+			throws Exception;
+...]]></programlisting>
+    				</para>
+          		</listitem>
+        		<listitem>
+          			<para>
+          				Implementation Class
+          			</para>
+
+          			<para>
+          				Class that implemented Interface Class. Can be developed without Annotation setting related to JAX-RS. 
+          				In this case, Response object can be returned or not returned for each service method. 
+          				In the example that provides as cxf-jaxrs plugin sample code, 
+          				Response object is returned, because it can be sent by setting Status Code. 
+          			</para>
+          			<para>	
+          				The following is a part of MovieServiceImpl.java that has implemented Movie Service interface.
+          				<programlisting language="java"><emphasis role="bold">@Service("cxfJaxRsMovieService")</emphasis><![CDATA[
+@Transactional(rollbackFor = { Exception.class }, propagation = Propagation.REQUIRED)
+public class MovieServiceImpl implements MovieService {
+
+	@Inject
+	@Named("cxfJaxRsMovieDao")
+	private MovieDao movieDao;
+
+	public Response create(Movie movie) throws Exception {
+		movieDao.create(movie);
+		return  ]]><emphasis role="bold">Response.status(Status.CREATED).build();</emphasis><![CDATA[
+	}
+
+	public Response get(String movieId) throws Exception {
+		Movie movie = movieDao.get(movieId);
+		if (movie == null)
+		    ]]><emphasis role="bold">return Response.status(Status.NOT_FOUND).build();</emphasis><![CDATA[
+		return ]]><emphasis role="bold">Response.ok(movie).build();</emphasis><![CDATA[
+	}
+
+	public Response update(Movie movie) throws Exception {
+		this.movieDao.update(movie);
+		return ]]><emphasis role="bold">Response.status(Status.NO_CONTENT).build();</emphasis><![CDATA[
+	}
+
+	public Response remove(String movieId) throws Exception {
+		this.movieDao.remove(movieId);
+		return ]]><emphasis role="bold">Response.status(Status.NO_CONTENT).build();</emphasis><![CDATA[
+	}
+
+	public Response getPagingList(Movie movie, int pageIndex) throws Exception {
+		ResultPage resultPage = new ResultPage();
+		resultPage.setPage(this.movieDao.getPagingList(movie, pageIndex));
+		return ]]><emphasis role="bold">Response.ok(resultPage).build();</emphasis><![CDATA[
+	}
+...]]></programlisting></para>
+				</listitem>   
+				
+				<listitem>
+          			<para>
+          				Java Beans Class
+          			</para>				
+            		<para>
+            			The following is a part of Movie.java used as return value when searching detailed movie information in interface class of Movie Service. 
+            			Note the setting of @XmlRootElement Annotation that has been developed when defining Movie class. 
+            			Use this Annotation information when converting XML to JavaBeans using JAXB.
+            			<programlisting language="java">import javax.xml.bind.annotation.XmlRootElement;
+
+@<emphasis role="bold">XmlRootElement</emphasis>
+public class Movie implements Serializable {
+	private String movieId;
+
+	@NotNull
+	@Size(min = 1, max = 50)
+	private String title = "";
+	
+	@NotNull
+	@Size(min = 1, max = 50)
+	private String director;
+	
+...</programlisting>
+    				</para>
+    				
+            		<para>
+            			The following is a part of ResultPage.java that is used as return value when searching list in interface class of Movie Service. 
+            			When defining ResultPage class, note the setting of @XmlRootElement and @XmlSeeAlso(Movie.class) Annotation. 
+            			Use this Annotation information when converting XML to JavaBeans using JAXB. 
+            			Especially, return value used for list search result is an internal member variable that uses Page object. 
+            			In this case, Page class is org.anyframe.pagination.Page class and contains Collection object. 
+            			For JAXB Databinding of JavaBeans object saved in Collection object, set @XmlSeeAlso(Movie.class) Annotation.
+            			<programlisting language="java">import javax.xml.bind.annotation.XmlRootElement;
+import javax.xml.bind.annotation.XmlSeeAlso;
+import org.anyframe.pagination.Page;
+
+@<emphasis role="bold">XmlRootElement</emphasis>
+@<emphasis role="bold">XmlSeeAlso(Movie.class)</emphasis>
+public class ResultPage implements Serializable {
+	private Page page;
+
+	public Page getPage() {
+		return page;
+	}
+
+	public void setPage(Page page) {
+		this.page = page;
+	}
+...</programlisting>
+    				</para>    								
+				</listitem>				
+        		<listitem>
+          			<para>
+          				Exception Transfer Aspect for error handling
+          			</para>
+
+          			<para>
+          				When error occurs during Movie Service business method execution, 
+          				develop ExceptionTransfer Aspect class to transfer Internal Server Error(500) Code value to Response object. 
+          			</para>
+          			<para>	
+          				The following is a part of ExceptionTransfer.java.
+          				<programlisting language="java"><emphasis role="bold">@Aspect</emphasis><![CDATA[
+@Service("cxfJaxRsExceptionTransfer")
+public class ExceptionTransfer {
+
+	@Pointcut("execution(* myproject.cxf.jaxrs..*Impl.*(..))")
+	public void serviceMethod() {
+	}
+	
+    ]]><emphasis role="bold">@Around("serviceMethod()")</emphasis><![CDATA[
+	public Object aroundExecuteServiceMethod(ProceedingJoinPoint thisJoinPoint)
+			throws Throwable {
+		Object target = thisJoinPoint.getTarget();
+		String className = target.getClass().getSimpleName().toLowerCase();
+		String opName = (thisJoinPoint.getSignature().getName()).toLowerCase();
+
+		Log logger = LogFactory.getLog(target.getClass());
+
+		logger.debug("***** Around Advice of ExceptionTransfer [" + className + "."
+				+ opName + "()]");
+
+		// before logic
+		Object retVal = null;
+		try {
+			retVal = thisJoinPoint.proceed();
+		} catch (Exception e) {
+			]]><emphasis role="bold">return Response.serverError().build();</emphasis><![CDATA[
+		}
+		// after logic
+		return retVal;
+	}	
+...]]></programlisting></para>
+				</listitem> 				       	
+        	</itemizedlist>
+      	</section>
+	</section>
+	
+    <section id="cxf_restful_jaxrs_serverconfig">
+		<title>Use Spring Configuration XML - <![CDATA[<jaxrs:server/> tag]]></title>
+
+    	<para>
+    		Run server that exposes developed service as Web Service by using Spring Configuration XML - <![CDATA[<jaxrs:server/> tag]]>.
+    	</para>
+    	<para>
+    		Descriptions for each property value of <![CDATA[<jaxrs:server/> tag]]> is as the following table. 
+            There are also various properties that are not mentioned in the table. 
+            Here stated are the essential properties. For more information on various ways to use properties refer to 
+            <ulink url="http://cxf.apache.org/docs/jax-rs.html#JAX-RS-ConfiguringJAXRSservicesincontainerwithSpringconfigurationfile.">JAX-RS Spring Configuration</ulink>.
+    	</para>
+
+    	<informaltable>
+      		<tgroup cols="4">
+            	<colspec colnum="1" colname="col1" colwidth="2*"/>
+                <colspec colnum="2" colname="col2" colwidth="6*"/>
+                <colspec colnum="3" colname="col3" colwidth="1*"/>
+                <colspec colnum="4" colname="col4" colwidth="1*"/>
+
+        		<thead>
+          			<row>
+            			<entry align="center">Property Name</entry>
+
+            			<entry align="center">Description</entry>
+
+            			<entry align="center">Required</entry>
+
+            			<entry align="center">Default Value</entry>
+          			</row>
+        		</thead>
+
+        		<tbody>
+          			<row>
+			            <entry>id</entry>
+			
+			            <entry>Develop spring bean id.</entry>
+			
+			            <entry align="center">Y</entry>
+			
+			            <entry align="center">N/A</entry>
+          			</row>
+          			<row>
+            			<entry>address</entry>
+
+            			<entry>Develop address for service run as relative path.</entry>
+
+			            <entry align="center">Y</entry>
+
+			            <entry align="center">N/A</entry>
+          			</row>
+					<row>
+            			<entry>[Child Tag] serviceBeans</entry>
+
+            			<entry>
+            				Develop implementation class to be exposed as RESTful Web Services. 
+            				Directly develop class name or develop spring bean id for related class. 
+            				(e.g., <![CDATA[<bean class="myproject.cxf.jaxrs.moviefinder.service.impl.MovieServiceImpl"/> or <ref bean="cxfJaxRsMovieService" />]]>)
+            			</entry>
+
+            			<entry align="center">Y</entry>
+
+            			<entry align="center">N/A</entry>
+          			</row>          			
+        		</tbody>
+      		</tgroup>
+		</informaltable>
+
+    	<section id="cxf_restful_jaxrs_serverconfig_sample">
+      		<title>Samples</title>
+
+      		<para>
+      			<![CDATA[The following is an example of using Spring Configuration XML - <jaxrs:server/> tag 
+      			to run server that exposes Movie Service as Web Service.]]>
+      		</para>
+
+      		<itemizedlist>
+        		<listitem>
+          			
+          			<para>
+          				<![CDATA[The following is a part of context-cxf-jaxrs.xml which defines <jaxrs:server/>
+          				tag property that exposes Business Layer service as Web Service.]]>
+          				<para>
+          				Configuration
+          			</para><programlisting language="xml"><![CDATA[<beans xmlns="http://www.springframework.org/schema/beans"
+  xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+  xmlns:cxf="http://cxf.apache.org/core"
+  ]]><emphasis role="bold">xmlns:jaxrs="http://cxf.apache.org/jaxrs"</emphasis><![CDATA[	
+  xsi:schemaLocation="http://www.springframework.org/schema/beans
+  http://www.springframework.org/schema/beans/spring-beans-3.0.xsd
+  http://cxf.apache.org/core http://cxf.apache.org/schemas/core.xsd
+  ]]><emphasis role="bold">http://cxf.apache.org/jaxrs http://cxf.apache.org/schemas/jaxrs.xsd</emphasis><![CDATA["> 
+          			
+    <!-- Load CXF modules from cxf.jar -->
+    <import resource="classpath:META-INF/cxf/cxf.xml" />
+    <import resource="classpath:META-INF/cxf/cxf-extension-jaxrs-binding.xml" />
+    <import resource="classpath:META-INF/cxf/cxf-servlet.xml" /> 
+	
+	<]]><emphasis role="bold">jaxrs:server</emphasis><![CDATA[ id="restCxfJaxRsMovieService" address="/movie">
+		<jaxrs:serviceBeans>
+			<ref bean="cxfJaxRsMovieService" />
+		</jaxrs:serviceBeans>
+		<!-- Enable message logging using the CXF logging feature -->
+		<jaxrs:features>
+			<cxf:logging />
+		</jaxrs:features>
+	</jaxrs:server>
+...
+]]></programlisting>
+    				</para>
+
+          			<para>
+          				Run web application using WAS of Jetty or Tomcat server, etc. and expose Business Layer Service as Web Service. 
+          				In this case, Spring configuration XML file should be registered in web.xml file 
+          				using org.springframework.web.context.ContextLoaderListener. 
+          				The following is a part of web.xml that defines CXFServlet and ContextLoaderListener.
+          				
+          				<programlisting language="xml"><![CDATA[<web-app 
+    ...
+    <context-param>
+        <param-name>contextConfigLocation</param-name>
+        <param-value>
+            classpath:/spring/context-*.xml
+        </param-value>
+    </context-param>
+	
+    <listener>
+        <listener-class>]]><emphasis role="bold">org.springframework.web.context.ContextLoaderListener</emphasis><![CDATA[</listener-class>
+    </listener>
+	...
+    <!-- cxf-configuration-START -->  
+    <servlet>
+        <servlet-name>CXF-JAXRS-Servlet</servlet-name>
+           <servlet-class>]]><emphasis role="bold">org.apache.cxf.transport.servlet.CXFServlet</emphasis><![CDATA[</servlet-class>
+        <load-on-startup>1</load-on-startup>
+    </servlet>	
+	
+    <servlet-mapping>
+        <servlet-name>CXF-JAXRS-Servlet</servlet-name>
+        <url-pattern>/cxf-jaxrs/*</url-pattern>
+    </servlet-mapping>	    
+    ...
+</web-app>]]></programlisting>
+					</para>
+        		</listitem>
+      		</itemizedlist>
+    	</section>
+  	</section>
+
+	<section id="cxf_restful_jaxrs_clientconfig">
+      	<title>Use Spring Configuration XML - <![CDATA[<jaxrs:client/> tag]]></title>
+
+      	<para>
+      		Develop client for accessing RESTful Web Services. 
+      		When using WebClient API provided in Apache CXF, you can easily develop client code. 
+      		This chapter only describes with a simple example. For more information, 
+      		refer to <ulink url="http://cxf.apache.org/docs/jax-rs.html#JAX-RS-ClientAPI">JAX-RS Client API of Apache CXF manual</ulink>.
+      	</para>
+
+		<section id="cxf_restful_jaxrs_clientconfig_samples">
+        	<title>Samples</title>
+        	<para>
+        		The following is an example of using <![CDATA[<jaxrs:client/> tag]]> and WebClient API in Spring MVC Controller 
+        		to access Movie Service exposed as RESTful Web Services. 
+        		In this case, RESTful WebService return value is returned in XML format. 
+        		This can be converted into JavaBeans through JAXB Databinding and used in client code.
+        	</para>
+	        <itemizedlist>
+          		<listitem>
+            		<para>Spring Configuration XML Client development</para>
+
+		            <para>
+		            	Spring configuration file can be used when implementing client to access RESTful service. 
+		            </para>
+ 
+		            <para>
+		            <![CDATA[The following is a part of cxf-jaxrs-servlet.xml that defines <jaxrs:client/> tag 
+		            for implementing client to access RESTful service.]]>
+          				<para>
+          				Configuration
+          				</para>
+            			<programlisting language="xml"><![CDATA[<beans xmlns="http://www.springframework.org/schema/beans"
+    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+    ]]><emphasis role="bold">xmlns:jaxrs="http://cxf.apache.org/jaxrs"</emphasis><![CDATA[
+    xsi:schemaLocation="http://www.springframework.org/schema/beans
+    http://www.springframework.org/schema/beans/spring-beans-3.0.xsd
+    ]]><emphasis role="bold">http://cxf.apache.org/jaxrs http://cxf.apache.org/schemas/jaxrs.xsd</emphasis><![CDATA[">
+    
+	<]]><emphasis role="bold">jaxrs:client</emphasis><![CDATA[ id="cxfJaxRsClientMovieService"
+		address="http://localhost:8080/myproject/cxf-jaxrs" serviceClass="myproject.cxf.jaxrs.moviefinder.service.MovieService">
+	</jaxrs:client>
+ ...]]></programlisting>
+					</para>
+				</listitem>		        
+          		<listitem>
+            		<para>Exception Handling</para>
+		            <para>
+		            	When calling RESTful Web Services, 
+		            	register Exception Resolver that handles WebApplicationException in Spring Configuration XML 
+		            	because javax.ws.rs.WebApplicationException is thrown in WebClient when error occurs. 
+            		</para>
+            		<para>
+            			The following is a part of cxf-jaxrs-servlet.xml that defines SimpleMappingExceptionResolver class. 
+            			When javax.ws.rs.WebApplicationException occurs, set so that it moves to cxfJaxRsError view, not default error view.
+            			<programlisting language="xml"><![CDATA[<bean id="cxfJaxRsExceptionResolver"
+	class="org.springframework.web.servlet.handler.SimpleMappingExceptionResolver">
+	<property name="exceptionMappings">
+		<props>
+		    <prop key="]]><emphasis role="bold">javax.ws.rs.WebApplicationException</emphasis><![CDATA[">cxf-jaxrs/common/error</prop>
+		</props>
+	</property>
+	<property name="defaultErrorView" value="forward:/sample/common/error.jsp" />
+	<property name="order" value="1" />
+</bean>
+...]]></programlisting>
+    				</para>
+          		</listitem>
+
+          		<listitem>
+            		<para>Test Case</para>
+
+		            <para>
+		            	The following is a part of Controller class that develops client code to access Movie Service 
+                        exposed as RESTful Web Services.
+
+		            <programlisting language="java"><![CDATA[@Controller("cxfJaxRsMovieController")
+@DependsOn("cxfJaxRsClientMovieService")
+@RequestMapping("/cxfJaxRsMovie.do")
+public class MovieController {
+	@Inject
+	@Named("cxfJaxRsClientMovieService")
+	private MovieService movieService;
+
+	private WebClient client;	
+
+	private WebClient getClient() {
+		if (this.client == null)
+			client = ]]><emphasis role="bold">WebClient.fromClient(WebClient.client(movieService));</emphasis><![CDATA[
+		return client.reset();
+	}  
+	
+	@RequestMapping(params = "method=create")
+	public String create(Movie movie, BindingResult results,
+			SessionStatus status) throws Exception {
+		if (results.hasErrors()) {
+			return "cxf-jaxrs/moviefinder/movie/form";
+		}
+		]]><emphasis role="bold">Response response = getClient().path("/movies").post(movie);</emphasis><![CDATA[
+		if (response.getStatus() == Status.INTERNAL_SERVER_ERROR
+				.getStatusCode()) {
+			throw new Exception("Fail to create : Movie Title="
+					+ movie.getTitle());
+		}
+
+		status.setComplete();
+		return "redirect:/cxfJaxRsMovie.do?method=list";
+	}
+
+	@RequestMapping(params = "method=get")
+	public String get(@RequestParam("movieId") String movieId, Model model)
+			throws Exception {
+		]]><emphasis role="bold">Movie movie = getClient().path("/movies/" + movieId).get(Movie.class);</emphasis><![CDATA[
+		model.addAttribute("movie", movie);
+
+		return "cxf-jaxrs/moviefinder/movie/form";
+	}
+
+	@RequestMapping(params = "method=list")
+	public String list(
+			@RequestParam(value = "pageIndex", defaultValue = "1") int pageIndex,
+			Movie movie, BindingResult result, Model model) throws Exception {
+		]]><emphasis role="bold">ResultPage resultPage = getClient().path("/movies").query("title",
+				movie.getTitle()).query("nowPlaying", movie.getNowPlaying())
+				.query("pageIndex", pageIndex).get(ResultPage.class);</emphasis><![CDATA[
+		Page page = resultPage.getPage();
+
+		model.addAttribute("movie", movie);
+		model.addAttribute("movies", page.getList());
+		model.addAttribute("resultPage", page);
+
+		return "cxf-jaxrs/moviefinder/movie/list";
+	}          
+...]]></programlisting>
+					</para>
+				</listitem>
+			
+			</itemizedlist>
+		</section>
+	</section>
+</section>
+
+  	<section id="cxf_jaxrs_resource">
+		<title>Resources</title>
+		<para>
+			<itemizedlist>
+				<listitem>
+					<para>
+						References
+					</para>
+					<itemizedlist>
+					<listitem><para><ulink url="http://www.ics.uci.edu/~fielding/pubs/dissertation/top.htm">Architectural Styles and the Design of Network-based Software Architectures, Roy Thomas Fielding, 2000</ulink></para></listitem>
+					<listitem><para><ulink url="http://java.sun.com/developer/technicalArticles/WebServices/restful/">Sun Article: RESTful Web Services</ulink></para></listitem>
+					<listitem><para><ulink url="http://www.stefan-marr.de/downloads/RESTful-Web-Services.slides.pdf">RESTful Web Services slides</ulink></para></listitem>
+					<listitem><para><ulink url="http://rest.blueoxen.net/cgi-bin/wiki.pl?FrontPage">REST Wiki FrontPage</ulink></para></listitem>
+					<listitem><para><ulink url="http://mercury.ccil.org/~cowan/restws.pdf">RESTful Web Services, John Cowan, 2005</ulink></para></listitem>
+					<listitem><para><ulink url="http://www.xfront.com/REST-Web-Services.html">Building Web Services the REST Way</ulink></para></listitem>
+				</itemizedlist>
+				</listitem>
+			</itemizedlist>
+		</para>
+	</section>
+</chapter>

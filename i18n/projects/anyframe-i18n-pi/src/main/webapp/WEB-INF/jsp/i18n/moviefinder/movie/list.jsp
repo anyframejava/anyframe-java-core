@@ -1,26 +1,28 @@
 <%@ page language="java" errorPage="/sample/common/error.jsp" pageEncoding="UTF-8" contentType="text/html;charset=utf-8" %>
 <%@ include file="/sample/common/top.jsp"%>
-		<div class="location"><a href="<c:url value='/anyframe.jsp'/>">Home</a> &gt; <a href="<c:url value='/i18nLoginView.do'/>">I18N 1.0.3.RC1</a></div>
+		<div class="location"><a href="<c:url value='/anyframe.jsp'/>">Home</a> &gt; <a href="<c:url value='/i18nLoginView.do'/>">I18N 1.0.4</a></div>
     </div>
     <hr />
 <script type="text/javascript" src="<c:url value='/sample/javascript/CommonScript.js'/>"></script>    
 <script type="text/javascript">
-		function fncCreateMovieView() {
-			document.location.href="<c:url value='/i18nMovie.do?method=createView'/>";
-		}	
-		function fncSearchMovie(arg) {
-		   	document.searchForm.action="<c:url value='/i18nMovieFinder.do?method=list'/>";
-		   	document.searchForm.submit();						
-		}	
+<!--
+function fncCreateMovieView() {
+	document.location.href="<c:url value='/i18nMovie.do?method=createView'/>";
+}	
+function fncSearchMovie(arg) {
+   	document.searchForm.action="<c:url value='/i18nMovieFinder.do?method=list'/>";
+   	document.searchForm.submit();						
+}	
 		
-		function fncChangeLocale(arg) {
-			document.location.href="<c:url value='i18nMovieFinder.do?method=list&locale='/>"+arg;
-		}
+function fncChangeLocale(arg) {
+	document.location.href="<c:url value='i18nMovieFinder.do?method=list&locale='/>"+arg;
+}
 		
-		function fncLogout() {
-		   	document.searchForm.action="<c:url value='/i18nLogout.do'/>";
-		   	document.searchForm.submit();						
-		}	
+function fncLogout() {
+   	document.searchForm.action="<c:url value='/i18nLogout.do'/>";
+   	document.searchForm.submit();						
+}
+-->
 </script>
   	<div id="container">
   	<form:form modelAttribute="movie" method="post" name="searchForm">
@@ -35,7 +37,7 @@
       		<div class="search_list" style="right:90px">  
                 <fieldset>
                     <legend>Search</legend>
-                    <label for="txtSearch" class="float_left margin_right5"><spring:message code="movie.title"/>: <form:input path="title" cssClass="w_search" /></label>
+                    <label for="title" class="float_left margin_right5"><spring:message code="movie.title"/>: <form:input path="title" cssClass="w_search" /></label>
                     <label for="nowPlaying" class="float_left margin_right5"><spring:message code="movie.nowPlaying" />: 
                     <form:select path="nowPlaying" id="nowPlaying" cssClass="w_search" >
                     	<form:option value="Y">Playing</form:option>

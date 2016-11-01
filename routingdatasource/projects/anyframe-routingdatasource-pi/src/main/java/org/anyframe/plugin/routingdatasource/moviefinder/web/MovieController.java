@@ -56,12 +56,11 @@ public class MovieController {
 
 	@ModelAttribute("genreList")
 	public Collection<Genre> populateGenreList() throws Exception {
-		return this.genreService.getList();
+		return genreService.getList();
 	}
 
 	@RequestMapping(params = "method=createView")
-	public String createView(
-			@RequestParam(value = "theater") String theater,
+	public String createView(@RequestParam(value = "theater") String theater,
 			Model model) throws Exception {
 		model.addAttribute(new Movie());
 		model.addAttribute("theater", theater);
@@ -79,10 +78,11 @@ public class MovieController {
 			return "routingdatasource/moviefinder/movie/form";
 		}
 
-		this.movieService.create(movie);
+		movieService.create(movie);
 		status.setComplete();
 
-		return "redirect:/routingDataSourceMovieFinder.do?method=list&theater=" + theater;
+		return "redirect:/routingDataSourceMovieFinder.do?method=list&theater="
+				+ theater;
 	}
 
 	@RequestMapping(params = "method=get")
@@ -90,7 +90,7 @@ public class MovieController {
 			@RequestParam(value = "theater", defaultValue = "ABCCinema") String theater,
 			@RequestParam("movieId") String movieId, Model model)
 			throws Exception {
-		Movie movie = this.movieService.get(movieId);
+		Movie movie = movieService.get(movieId);
 		if (movie == null) {
 			throw new Exception("Resource not found " + movieId);
 		}
@@ -103,25 +103,26 @@ public class MovieController {
 	@RequestMapping(params = "method=update")
 	public String update(
 			@RequestParam(value = "theater", defaultValue = "ABCCinema") String theater,
-			@Valid Movie movie, BindingResult results,
-			Model model, SessionStatus status) throws Exception {
+			@Valid Movie movie, BindingResult results, Model model,
+			SessionStatus status) throws Exception {
 		if (results.hasErrors()) {
 			model.addAttribute("theater", theater);
 			return "routingdatasource/moviefinder/movie/form";
 		}
 
-		this.movieService.update(movie);
+		movieService.update(movie);
 		status.setComplete();
 
-		return "redirect:/routingDataSourceMovieFinder.do?method=list&theater=" + theater;
+		return "redirect:/routingDataSourceMovieFinder.do?method=list&theater="
+				+ theater;
 	}
 
 	@RequestMapping(params = "method=remove")
 	public String remove(
 			@RequestParam(value = "theater", defaultValue = "ABCCinema") String theater,
-			@RequestParam("movieId") String movieId)
-			throws Exception {
-		this.movieService.remove(movieId);
-		return "redirect:/routingDataSourceMovieFinder.do?method=list&theater=" + theater;
+			@RequestParam("movieId") String movieId) throws Exception {
+		movieService.remove(movieId);
+		return "redirect:/routingDataSourceMovieFinder.do?method=list&theater="
+				+ theater;
 	}
 }

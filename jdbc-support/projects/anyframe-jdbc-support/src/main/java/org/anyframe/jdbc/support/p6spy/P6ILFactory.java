@@ -82,11 +82,11 @@ import com.p6spy.engine.spy.P6Statement;
  * @author Byunghun Woo
  *
  */
-public class P6ILFactory extends P6CoreFactory {
+public class P6ILFactory extends P6CoreFactory { 
 
-	private InjectionPatternPostProcessor injectionPatternPostProcessor;
+	private final InjectionPatternPostProcessor injectionPatternPostProcessor;
 
-	private CompleteQueryPostProcessor completeQueryPostProcessor;
+	private final CompleteQueryPostProcessor completeQueryPostProcessor;
 
 	public P6ILFactory(InjectionPatternPostProcessor injectionPatternPostProcessor,
 			CompleteQueryPostProcessor completeQueryPostProcessor) {

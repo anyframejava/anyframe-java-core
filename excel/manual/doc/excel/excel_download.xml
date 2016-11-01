@@ -1,0 +1,140 @@
+<chapter id="excel_download">
+	<title>Excel Download</title>
+	<para>
+		Excel Download는 QueryService의 조회 결과를 Apache POI를 이용해 Excel파일로 만드는 기능이다. Anyframe excel plugin에서는 
+		Excel Download를 하기위해 ExcelController, ExcelInfoHandler, ExcelService등의 클래스를 제공한다.
+		각 각의 클래스는 다음과 같은 역할을 한다.
+	</para>
+	<itemizedlist>
+      	<listitem>
+      		<para>
+      			<emphasis role="bold">ExcelService</emphasis> : QueryService를 이용해 특정 Query를 실행하고 결과값을 리턴한다.
+      		</para>
+      	</listitem>
+      	<listitem>
+      		<para>
+      			<emphasis role="bold">ExcelInfoHandler</emphasis> : Excel Sheet Configuration XML파일을 읽어 컬럼 정보를 생성한다.
+      		</para>
+      	</listitem>
+      	<listitem>
+      		<para>
+      			<emphasis role="bold">ExcelController</emphasis> : ExcelService를 통해 조회 된 데이터를 HSSF를 이용해 Excel파일을 만든다.
+      		</para>
+      	</listitem>
+ 	 </itemizedlist>
+ 	 <section id="excel_download_jsp">
+ 	 	<title>Download JSP</title>
+ 	 	<para>다음은 Anyframe excel plugin에서 샘플로 제공하고 있는 화면이다.</para>
+ 	 	<mediaobject>
+		 		<imageobject>
+          			<imagedata align="center"
+                     	fileref="../image/excel/excel_download_jsp.png" />
+        		</imageobject>
+        		<textobject>
+        			<phrase>Anyframe excel plugin에서 샘플로 제공하고 있는 화면을 캡춰한 그림으로써, 영화 목록이 보여지고, 우측 하단에 찾아보기, Excel Up, Excel Down 버튼이 
+        			추가되어 있다.
+        			</phrase>
+        		</textobject>
+        </mediaobject>
+        <para>화면 하단의 Excel Down 버튼을 클릭하면 jsp에서 지정한 query id를 이용해 쿼리가 실행되고 그 결과가 Excel파일로 다운로드 된다.
+        	아래는 Excel Download를 하기 위해 필요한 변수값을 jsp파일에 세팅한 예이다.</para>
+        <programlisting language="xml"><![CDATA[<form:form method="post" name="excelDownloadForm">
+    <input name="queryId" type="hidden" value="" />
+    <input name="title" type="hidden" value="" />
+    <input name="nowPlaying" type="hidden" value="Y" />
+    <input name="fileName" type="hidden" value="movie" />
+    <input name="columnInfoFile" type="hidden" value="movie" />
+</form:form>
+        ]]></programlisting>
+        <para>queryId, columnInfoFile, fileName은 Excel Download기능을 위한 필수 변수이다.</para>
+        <itemizedlist>
+      	<listitem>
+      		<para>
+      			<emphasis role="bold">queryId</emphasis> : QueryService를 이용해 실행할 Query Mapping XML 파일의 Query ID이다.
+      		</para>
+      	</listitem>
+      	<listitem>
+      		<para>
+      			<emphasis role="bold">fileName</emphasis> : Download할  Excel파일의 파일명이다.
+      		</para>
+      	</listitem>
+      	<listitem>
+      		<para>
+      			<emphasis role="bold">columnInfoFile</emphasis> : Excel Sheet Configuration XML파일명이다.
+      		</para>
+      	</listitem>
+ 	 </itemizedlist>
+ 	 <para>title, nowPlaying과 같은 변수는 Query를 실행할 때 필요한 변수들이다(조회조건)</para>
+ 	 <para>Excel Download 버튼을 클릭했을 때 실행되는 javascript는 다음과 같다.</para>
+ 	 <programlisting language="xml"><![CDATA[function fncExcelDownload() {
+    document.excelDownloadForm.queryId.value="excel.findMovieList";
+    document.excelDownloadForm.action="<c:url value='/excelDownload.do?method=excelDownload'/>";
+    document.excelDownloadForm.submit();	
+}]]></programlisting>
+	<para>Excel Download의 URL은 /excelDownload.do?method=excelDownload이다. Excel Down버튼을 클릭해 Query Id가 excel.findMovieList인 쿼리를 실행하고
+	결과가 정상적으로 Excel파일로 만들어졌다면 아래와 같은 화면을 볼 수 있다.</para>
+	<mediaobject>
+		 		<imageobject>
+          			<imagedata align="center"
+                     	fileref="../image/excel/excel_download_save.png" />
+        		</imageobject>
+        		<textobject>
+        			<phrase>Excel Down버튼을 클릭하여 쿼리가 실행되고 정상적으로 Excel 파일이 만들어진 경우 보여지는 창의 내용을 캡춰한 화면이다.
+        			이 파일을 열거나 저장하시겠습니까? 라는 메시지와 함께 해당 파일에 대해 '열기', '저장', '취소' 기능을 수행할 수 있도록 버튼을 제공하고 있다. 
+        			</phrase>
+        		</textobject>
+        </mediaobject>
+        <para>Anyframe Excel Plugin은 약 65000 ROW에 대한 Download 테스트가 완료 되었다.</para>
+        <para>아래는 Download된 Excel 파일의 일부이다.</para>
+        <mediaobject>
+		 		<imageobject>
+          			<imagedata align="center"
+                     	fileref="../image/excel/excel_download_file.png" />
+        		</imageobject>
+        		<textobject>
+        			<phrase>Download된 Excel 파일의 일부를 캡춰한 화면이다. 복수개의 영화에 대해 ID, 장르, 제목, 감독, 배우, 티켓 가격, 개봉일자 순으로 상세 정보를 
+        			보여주고 있다.</phrase>
+        		</textobject>
+        </mediaobject>
+ 	 </section>
+ 	 <section id="excel_download_controller">
+ 	 	<title>ExcelController의 excelDownload</title>
+ 	 	<para>ExcelController의 excelDownload는 ExcelService의 download메소드를 호출하고 그 결과값을 HSSF를 이용해 Excel파일을 생성한다.
+ 	 	아래는 ExcelController excelDownload 메소드 소스코드의 일부이다.</para>
+ 	 	<programlisting language="java"><![CDATA[@RequestMapping(params = "method=excelDownload")
+public void excelDownload(HttpServletRequest request, HttpServletResponse response) throws Exception {
+//중략
+        List<Map<String, Object>> resultList = excelService.download(searchMap);
+		
+//중략
+    	
+        HSSFWorkbook workbook = new HSSFWorkbook();
+        HSSFSheet sheet = workbook.createSheet(fileName);
+    	
+        OutputStream fileOut = null;
+        try {
+            fileOut = response.getOutputStream();
+            HSSFRow row;
+            HSSFCellStyle style = workbook.createCellStyle();
+            style.setAlignment(HSSFCellStyle.ALIGN_CENTER);
+    		
+            HSSFCell cell;
+    		
+            row = sheet.createRow(0);
+    		
+            List<ColumnInfo> columnInfoList = getColumnInfo(request, columnInfoFile);
+    		
+            int columnCount = columnInfoList.size();
+            String[] header = new String[columnCount];
+            int[] cellwidth = new int[columnCount];
+            String[] fieldName = new String[columnCount];
+            String[] columnType = new String[columnCount];
+            String[] mask = new String[columnCount];
+    		
+            ColumnInfo columnInfo = null;
+            short width = 265;
+//중략
+    }
+}]]></programlisting>
+ 	 </section>
+</chapter>

@@ -1,0 +1,193 @@
+<chapter id="jquery_upload">
+	<title>Upload</title>
+	<para>
+		jQuery와 AJAX를 활용한 Multi file 첨부기능을 구현하여 제공하고 있다.
+	</para> 
+	<section id="jquery_upload_sec001">
+		<title>uploadify 소개</title>
+			<para>
+				uploadify는 jquery와 flash Object를 통하여 간편하게 file 첨부를 구현할 수 있게 해주는 오픈소스 컴포넌트이다.
+  자세한 내용은 <ulink url="http://www.uploadify.com/">http://www.uploadify.com/</ulink> 사이트를 참조하기 바란다.
+  			</para>
+	</section>
+	
+	<section id="jquery_upload_sec002">
+		<title>jqueryUpload.js</title>
+		<para>
+			jquery plugin에서는 uploadify를 사용하여 파일첨부를 구현한 별도의 서브셋을 jqueryUpload.js 에 별도로 구현하였다. 
+  이를 통해서 파일 첨부 관련 코드가 비즈니스 로직에 추가되는 것을 최소화하도록 의도된 것이다. 
+		</para>
+		<para>파일 업로드 컴포넌트는 다음과 같이 인스턴스화 시킨다.</para>
+		<programlisting><![CDATA[$(document).ready(function() {
+function drawUploadPane() {
+	$('#uploadPane').attachment({
+		'contextRoot' : '${ctx}',
+		'callBack' : function() {
+			postMovieForm();
+		}
+	});
+}]]></programlisting>
+		<para>위의 코드에서 'uploadPane', 즉, 첨부파일 UI가 표시될 영역은 영화 등록 form 인 'dialog' 영역에 선언되어 있다.</para>
+		<para>아래는 영화 등록 form 이다. </para>
+		<programlisting><![CDATA[
+<!-- Movie Form start -->
+<div id="dialog" class="dialog">
+<form:form modelAttribute="movie" method="post" id="movieForm" name="movieForm">
+	<table width="400px">
+	    <colgroup>
+		   	<col style="width:35%;" />
+		    <col style="width:65%;" />
+		</colgroup>
+		<tbody>
+			...중략...
+				<th><label for="posterFile"><spring:message code="movie.posterFile"/>&nbsp;</label></th>
+				<td>
+					<div id="imgPane">
+						<img id="poster" src="" alt="<spring:message code='movie.posterFile'/>" border="0" width="80" height="100" />
+					</div>
+					<div id="uploadPane"></div>
+				</td>
+			</tr>
+		</tbody>
+	</table>
+</form:form>
+</div>]]></programlisting>
+		<para>영화 등록 form은 업로드한 이미지가 없는 경우 업로드 UI를 보여주고, 이미지가 있는 경우 미리보기 화면을 제공한다. 이는 jquery를 이용해서 구현한다.</para>
+		<programlisting><![CDATA[
+$('#filePaths').val(data.movie.filePaths);
+	if(data.movie.filePaths != "") {
+		$('#poster').attr("src", '${ctx}'+data.movie.filePaths);  
+		$('#imgPane').show();
+	} else {
+		$('#uploadPane').show();
+	}
+]]>	</programlisting>
+		
+		<para> 다음은 upload 경로 등의 정보를 담고 있는 jqueryUpload.js의 일부분이다. </para>
+		
+		<programlisting><![CDATA[
+$("#uploadify").uploadify({
+	swf			: options.contextRoot + '/jquery/jquery/uploadify/uploadify.swf' ,
+	uploader	: options.contextRoot + '/jqueryUploadFile.do', 
+	queueID		: "fileQueue",
+	fileObjName : "fileData",
+	auto		: false,
+	multi		: false,
+	width		: 80,
+	height		: 24,
+	debug		: false,
+	removeTimeout : 0,
+	fileTypeExts : '*.jpg; *.gif; *.png;',
+	fileSizeLimit	: 10000000,
+	buttonImage	: options.contextRoot + '/jquery/image/uploadBrowse.png',
+	onUploadSuccess	: function(file, data, response) {
+		.
+		.
+		.
+       중략
+}
+	]]></programlisting>
+			
+		<para>파일을 업로드한 후 실제 게시물을 등록시켜야 하므로 실제로 게시물을 저장하는 스크립트 함수인 postMovieForm()을 callback으로 선언한다. </para>
+		
+		<programlisting><![CDATA[		
+function postMovieForm(){
+	if(dialogMode == 'add') {
+		$.post('<c:url value="/jqueryMovie.do?method=create"/>',
+		$('#movieForm').serialize(), 
+		function(data) {
+			reloadGrid();
+			$('#movieForm').dialog('close');
+		});
+	} else if(dialogMode == 'edit') {
+		$.post('<c:url value="/jqueryMovie.do?method=update"/>', $('#movieForm').serialize(), 
+			function(data) {
+				reloadGrid();
+				$('#movieForm').dialog('close');
+			});
+	} else {
+			logger.log('dialogMode is invalid : ' + dialogMode);
+	}	
+}
+	]]>	</programlisting>	
+		
+		<para>파일 업로드를 구현한 UploadController.java는 다음과 같다. </para>
+		<programlisting><![CDATA[
+@Controller("jqueryUploadController")
+@RequestMapping("/jqueryUploadFile.do")
+public class UploadController {
+	private String uploadPath = "/upload";
+
+	@RequestMapping
+	public String uploadFile(@RequestParam(value = "fileData", required = false) MultipartFile file,
+			Model model, HttpServletRequest request) throws Exception {
+
+		String destDir = request.getSession().getServletContext().getRealPath(
+				uploadPath);
+
+		File repositoryDir = new File(destDir);
+		if (!repositoryDir.exists()) {
+			boolean created = repositoryDir.mkdirs();
+			if (!created) {
+				throw new Exception(
+						"Fail to create a directory for attached file ["
+								+ repositoryDir + "]");
+			}
+		}
+
+		SimpleDateFormat formatter = new SimpleDateFormat("yyyyMMddHHmmssSSS",
+				new Locale("ko", "KR"));
+
+		String realFileName = file.getOriginalFilename();
+		String fileNameExtension = realFileName.substring(realFileName.lastIndexOf(".")).toLowerCase();
+		String fileId = "FILE-" + formatter.format(new Date());
+		String convertedFileName = fileId + fileNameExtension;
+		String filePathToBeStored = uploadPath + "/" + convertedFileName;
+
+		file.transferTo(new File(destDir + "/" + convertedFileName));
+
+		model.addAttribute("filePaths", filePathToBeStored);
+		model.addAttribute("realFileName", realFileName);
+
+		return "jsonView";
+	}
+}
+]]></programlisting>
+		
+		<note>
+			<title>
+				Weblogic을 WAS로 사용하는 경우 주의사항
+			</title>
+			<para> 
+				1. Flash 동작오류 : uploadify는 Upload 기능을 Flash를 이용하여 구현한다. Weblogic과 IE를 사용하는 경우 Flash가 정상적으로 동작하지 않을 수 있다. 이런 경우 web.xml 파일에 'mime-mapping'을 추가한다. 
+			</para>
+			<programlisting><![CDATA[
+<mime-mapping>
+	<extension >swf</extension>
+	<mime-type >application/x- shockwave-flash</mime-type >
+</mime-mapping >
+			]]></programlisting>
+			<para> 
+				2. WAR 로 Weblogic에 배포하는 경우 오류 : War로 배포하는 경우, Upload Path를 못 가져올 수 있다. 이런 경우 다음과 같이 조치한다.
+			</para>
+			<para>
+				- Weblogic Console 화면에서 Domain -> Web Application -> Archive Path 체크 박스 선택
+			</para>
+		</note>
+
+		<note>
+			<para>
+				※ jqueryUpload.js 내에 구현된 내용은 하나의 구현 사례이므로 구현 요건에 따라 자유롭게 재구성될 수 있다. 
+			</para>
+		</note>
+		<para>다음은 uploadify와 jqueryUpload.js를 활용하여 파일첨부 기능을 구현한 것이다.</para>
+		<mediaobject>
+			<imageobject>
+				<imagedata fileref="../image/jquery/jquery_upload.png"	align="center" />
+			</imageobject>
+			<textobject>
+				<phrase>uploadify와 jqueryUpload.js를 활용한 파일첨부</phrase>
+			</textobject>
+		</mediaobject>
+	</section>
+</chapter>

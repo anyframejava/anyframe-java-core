@@ -49,7 +49,7 @@ public class AuthenticationController {
 		boolean certification = authenticationService.authenticate(id, password);
 
 		if (certification) {
-			return "forward:/i18nMovieFinder.do?method=list";
+			return "redirect:/i18nMovieFinder.do?method=list";
 		} else {
 			model.addAttribute("loginError", "i18n.error");
 			return "/i18n/login";

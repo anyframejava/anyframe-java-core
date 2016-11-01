@@ -22,13 +22,12 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.io.ClassPathResource;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.RowMapper;
-import org.springframework.jdbc.core.simple.SimpleJdbcTemplate;
 import org.springframework.jdbc.core.support.AbstractLobCreatingPreparedStatementCallback;
+import org.springframework.jdbc.support.lob.DefaultLobHandler;
 import org.springframework.jdbc.support.lob.LobCreator;
-import org.springframework.jdbc.support.lob.OracleLobHandler;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
-import org.springframework.test.jdbc.SimpleJdbcTestUtils;
+import org.springframework.test.jdbc.JdbcTestUtils;
 
 @RunWith(SpringJUnit4ClassRunner.class)
 @ContextConfiguration(locations = { "classpath:spring/lobhandler/context-*.xml" })
@@ -38,13 +37,12 @@ public class OracleLobHandlerWithP6spyNativeJdbcExtractorTest {
 	private DataSource dataSource;
 
 	@Autowired
-	private OracleLobHandler lobHandler;
+	private DefaultLobHandler lobHandler;
 
 	@Before
 	public void onSetUp() {
-		// TODO : SimpleJdbcTemplate is deprecated
-		SimpleJdbcTestUtils.executeSqlScript(new SimpleJdbcTemplate(dataSource), new ClassPathResource(
-				"testdata_oracle_lob.sql"), true);
+		JdbcTestUtils.executeSqlScript(new JdbcTemplate(dataSource),
+				new ClassPathResource("testdata_oracle_lob.sql"), true);
 	}
 
 	// test data
@@ -80,7 +78,8 @@ public class OracleLobHandlerWithP6spyNativeJdbcExtractorTest {
 			+ "30무궁화꽃이피었습니다무궁화꽃이피었습니다무궁화꽃이피었습니다무궁화꽃이피었습니다무궁화꽃이피었습니다무궁화꽃이피었습니다무궁화꽃이피었습니다무궁화꽃이피었습니다무궁화꽃이피었습니다무궁화꽃이피었습니다\n";
 
 	@Test
-	public void testOracleLobHandlerWithP6spyNativeJdbcExtractor() throws IOException {
+	public void testOracleLobHandlerWithP6spyNativeJdbcExtractor()
+			throws IOException {
 		JdbcTemplate jdbcTemplate = new JdbcTemplate(dataSource);
 
 		// insert blob, clob
@@ -90,26 +89,34 @@ public class OracleLobHandlerWithP6spyNativeJdbcExtractorTest {
 
 		// ref. config replacePatterns - ";.*" -> ""
 		// ; DROP TABLE TB_BINARY_TEST will be deleted
-		jdbcTemplate.execute(
-				"INSERT INTO TB_BINARY_TEST (bin_id, myblob, myclob) VALUES (?, ?, ?); DROP TABLE TB_BINARY_TEST ",
-				new AbstractLobCreatingPreparedStatementCallback(lobHandler) {
-					protected void setValues(PreparedStatement ps, LobCreator lobCreator) throws SQLException {
-						ps.setInt(1, 1);
-						lobCreator.setBlobAsBinaryStream(ps, 2, blobIs, (int) byteArr.length);
-						lobCreator.setClobAsString(ps, 3, val);
-					}
-				});
+		jdbcTemplate
+				.execute(
+						"INSERT INTO TB_BINARY_TEST (bin_id, myblob, myclob) VALUES (?, ?, ?); DROP TABLE TB_BINARY_TEST ",
+						new AbstractLobCreatingPreparedStatementCallback(
+								lobHandler) {
+							protected void setValues(PreparedStatement ps,
+									LobCreator lobCreator) throws SQLException {
+								ps.setInt(1, 1);
+								lobCreator.setBlobAsBinaryStream(ps, 2, blobIs,
+										(int) byteArr.length);
+								lobCreator.setClobAsString(ps, 3, val);
+							}
+						});
 
 		blobIs.close();
 
 		// select blob, clob
-		List<Map<String, Object>> result = jdbcTemplate.query("SELECT bin_id, myblob, myclob FROM TB_BINARY_TEST",
+		List<Map<String, Object>> result = jdbcTemplate.query(
+				"SELECT bin_id, myblob, myclob FROM TB_BINARY_TEST",
 				new RowMapper<Map<String, Object>>() {
-					public Map<String, Object> mapRow(ResultSet rs, int i) throws SQLException {
+					public Map<String, Object> mapRow(ResultSet rs, int i)
+							throws SQLException {
 						Map<String, Object> results = new HashMap<String, Object>();
-						byte[] blobBytes = lobHandler.getBlobAsBytes(rs, "myblob");
+						byte[] blobBytes = lobHandler.getBlobAsBytes(rs,
+								"myblob");
 						results.put("myblob", blobBytes);
-						String clobText = lobHandler.getClobAsString(rs, "myclob");
+						String clobText = lobHandler.getClobAsString(rs,
+								"myclob");
 						results.put("myclob", clobText);
 						return results;
 					}

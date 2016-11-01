@@ -1,0 +1,519 @@
+<chapter id="mip_query_mipuisample_commonflow">
+	<title>Working with Common Flow</title>
+	<para>
+		As explained before, Anyframe provides Anyframe Ria MiPlatform 
+		so that the functions of all views of simple CRUD works can be processed through <emphasis role="bold">Common Flow</emphasis> 
+		when MiPlatform is used as UI development platform.	 
+	</para>
+	
+	<section id="mip_query_mipuisample_commonflow_commonscript">
+		<title>Common Script</title>
+		<para>
+			The form scripts of all views must have <emphasis role="bold">“#include javascript::common.js"</emphasis> written on the top. 
+			common.js defines the script functions that are commonly used in the Anyframe MiPlatform UI Sample, 
+			and includes other common script files (e.g., message.js, util.js). 
+			Among the functions defined in common.js, the functions that are related to Service Call are as follows.
+		</para>
+		
+		<section id="mip_query_mipuisample_commonflow_commonscript_servicecall">
+			<title>Service Call</title>
+			<para>
+				gfnService() is a function to request service to server. 
+				It calls transaction() which is an internal MiPlatform Service API.
+			</para>
+			
+			<section id="mip_query_mipuisample_commonflow_commonscript_servicecall_syntax">
+				<title>Syntax</title>
+				<para>
+					<emphasis role="bold">gfnService(strServiceId, strArgument)</emphasis>
+				</para>
+				<para>
+					e.g.) gfnService(“getListCommunity”), gfnService(“saveAllBoard”)	
+				</para>
+			</section>
+			
+			<section id="mip_query_mipuisample_commonflow_commonscript_servicecall_parameters">
+				<title>Parameters</title>
+				
+				<informaltable>
+					<tgroup cols="2">
+						<colspec colnum="1" colname="col1" colwidth="3*" />
+						<colspec colnum="2" colname="col2" colwidth="7*" />
+						<thead>
+							<row>
+								<entry align="center">Parameter</entry>
+								<entry align="center">Description</entry>
+							</row>
+						</thead>
+
+						<tbody>
+							<row>
+								<entry align="left">strServiceId</entry>
+								<entry align="left">
+									The ID prefixes of service that are selected by user are limited to the following.
+									<itemizedlist>
+										<listitem>
+											<para><emphasis role="bold">getList: Search</emphasis></para>
+										</listitem>
+				
+										<listitem>
+											<para><emphasis role="bold">getPagingList: Page Search</emphasis></para>
+										</listitem>
+			
+										<listitem>
+											<para><emphasis role="bold">get: Single Item Search</emphasis></para>										</listitem>
+												
+										<listitem>
+											<para><emphasis role="bold">create: Register</emphasis></para>
+										</listitem>
+												
+										<listitem>
+											<para><emphasis role="bold">update: Modify</emphasis></para>
+										</listitem>
+												
+										<listitem>
+											<para><emphasis role="bold">remove: Delete</emphasis></para>
+										</listitem>
+												
+										<listitem>
+											<para><emphasis role="bold">saveAll: Executed on create/update/remove (One transaction)</emphasis></para>
+										</listitem>
+												
+										<listitem>
+											<para><emphasis role="bold">execute: Execute Stored Procedure of DBMS</emphasis></para>
+										</listitem>
+									</itemizedlist>			
+									e.g.) getListCommunity
+								</entry>
+							</row>
+							<row>
+								<entry align="left">strArgument</entry>
+								<entry align="left">
+									<para>Parameter that will be transferred in the HTTP GET method when serviced is called</para> 
+									Syntax: “name1=value1 name2=value2”
+								</entry>
+							</row>
+						</tbody>
+					</tgroup>
+				</informaltable>
+			</section>
+		</section>
+		
+		<section id="mip_query_mipuisample_commonflow_commonscript_callback">
+			<title>Callback</title>
+			<para>
+				For MiPlatform, service call basically uses Async. 
+				When request is sent to server using gfnService(), 
+				the function called as default when reply arrives is <emphasis role="bold">gfnCallback()</emphasis>. 
+				In gfnCallback(), <emphasis role="bold">fnCallback()</emphasis> within the view script is called as default. 
+				So, after service call is completed, fnCallback() should be defined so that message processing, component reload, etc. are executed.
+			</para>
+			
+			<section id="mip_query_mipuisample_commonflow_commonscript_callback_syntax">
+				<title>Syntax</title>
+				<para>
+					<emphasis role="bold">fnCallback(strServiceId, strErrorCode, strErrorMsg)</emphasis>
+				</para>
+				<para>e.g.)
+                    <programlisting language="java"><![CDATA[function fnCallback(strServiceId, strErrorCode, strErrorMsg) {
+    if ( strErrorCode == -1 ) {
+        gfnMsg(strErrorMsg, "ERR");
+    } else {
+        if(strServiceId == "getPagingListBoard") {
+            divPage.objListDataset = dsGrdBoard;
+            divPage.objPageDataset = dsSearch;
+            divPage.fnMakePage();
+        } else if(strServiceId == "saveAllBoard") {
+            gfnMsg("MSG_SAVE_SUCCESS");
+            divSearch_btnSearch_OnClick();
+        }
+    }
+}]]></programlisting>
+				</para>
+			</section>
+			
+			<section id="mip_query_mipuisample_commonflow_commonscript_callback_parameters">
+				<title>Parameters</title>
+				
+				<informaltable>
+					<tgroup cols="2">
+						<colspec colnum="1" colname="col1" colwidth="3*" />
+						<colspec colnum="2" colname="col2" colwidth="7*" />
+						<thead>
+							<row>
+								<entry align="center">Parameter</entry>
+								<entry align="center">Description</entry>
+							</row>
+						</thead>
+
+						<tbody>
+							<row>
+								<entry align="left">strServiceId</entry>
+								<entry align="left">Same value as strServiceId used when calling service with gfnService().</entry>
+							</row>
+							
+							<row>
+								<entry align="left">strErrorCode</entry>
+								<entry align="left">Error code, ‘-1’ means error</entry>
+							</row>
+							
+							<row>
+								<entry align="left">strErrorMsg</entry>
+								<entry align="left">Error message transferred from called service</entry>
+							</row>
+						</tbody>
+					</tgroup>
+				</informaltable>
+			</section>
+		</section>
+	</section>	
+	
+	<section id="mip_query_mipuisample_commonflow_dataset">
+		<title>Common Dataset</title>
+		
+		<section id="mip_query_mipuisample_commonflow_dataset_service">
+			<title>Dataset for Service</title>
+			<para>
+				Various parameter information on the service to be called with gfnService() to obtain data is defined in Dataset. 
+				Therefore, a Dataset named <emphasis role="bold">'dsService'</emphasis> that defines the following values should be included in all views.
+			</para>
+			
+			<informaltable>
+				<tgroup cols="2">
+					<colspec colnum="1" colname="col1" colwidth="3*" />
+					<colspec colnum="2" colname="col2" colwidth="7*" />
+					<thead>
+						<row>
+							<entry align="center">Column</entry>
+							<entry align="center">Description</entry>
+						</row>
+					</thead>
+					
+					<tbody>
+						<row>
+							<entry align="left">SVC_ID</entry>
+							<entry align="left">
+								<para>Has the same value as strServiceId of gfnService()</para>
+								<para>e.g.) getListCommunity</para>
+							</entry>
+						</row>
+						
+						<row>
+							<entry align="left">QUERY_LIST</entry>
+							<entry align="left">
+								<para>
+								Query ID that should be executed in service (multiple input possible by separating IDs with space)
+								</para>
+								Syntax: “querySet” + Sequence Number + “=” + Query ID
+	                            <para>
+								e.g.) querySet1=getListMethodCode
+								querySet1=getListMethodCode querySet2=getListCategory
+								</para>
+	                            <para>
+								When SVC_ID starts with ‘saveAll’ (save all in Grid), use comma to <emphasis role="bold">select create, update, and remove query at once</emphasis>.
+								</para>
+								<para>
+								e.g.) querySet1=createCategory, updateCategory, removeCategory
+								</para>
+							</entry>
+						</row>
+						
+						<row>
+							<entry align="left">SERVICE</entry>
+							<entry align="left">
+								<para>
+								When service information to call when common service is not used has not been decided, 
+								'mipService' which is a common service that is defined in ‘gvService’ as default is called.
+								</para>
+								Syntax: Service Name + “.” + Method Name
+	                            <para></para>
+								e.g.) categoryMgmtService.getListCategory, categoryMgmtService.createCategory
+							</entry>
+						</row>
+						
+						<row>
+							<entry align="left">IN_DATASET_LIST</entry>
+							<entry align="left">
+								<para>Dataset ID used as parameter when executing query (multiple input possible - separated by space).</para>
+								Syntax: “querySet”+ Sequence Number + “=” + DatasetID
+	                            <para></para>
+								e.g.) querySet1=dsSearch
+	 							querySet1=dsSearch querySet2=dsParam
+							</entry>
+						</row>
+						
+						<row>
+							<entry align="left">OUT_DATASET_LIST</entry>
+							<entry align="left">
+								<para>List of Datasets to receive as a result of query execution (multiple input possible - separated by space)</para>
+								Syntax: DatasetID + “=” + “querySet” + Sequence Number
+	                            <para></para>
+								e.g.) dsSearch=querySet1
+								dsSearch=querySet1 dsParam=querySet2
+							</entry>
+						</row>
+						
+						<row>
+							<entry align="left">CALLBACK</entry>
+							<entry align="left">
+								Call within the callback function name gfnCallback() to be executed when receiving reply from service. 
+								When undefined, call ‘fnCallback’ as default.
+							</entry>
+						</row>
+						
+						<row>
+							<entry align="left">SYNC_YN</entry>
+							<entry align="left">
+								Y: Sync call
+								N: Async call (default) – Recommended
+							</entry>
+						</row>
+						
+						<row>
+							<entry align="left">CONTROLLER</entry>
+							<entry align="left">
+								When the controller information to be called when Common Controller is not used has not been decided, 
+								‘mipController.do’ which is a Common Controller defined as default in ‘gvController’ is called.
+	                            <para></para>
+	                            When Common Controller is not used, 
+	                            the property of service does not have to be defined separately
+	                            because the service information to be called is included in the newly developed controller.
+							</entry>
+						</row>		
+					</tbody>
+				</tgroup>
+			</informaltable>
+			<para></para>
+			<mediaobject>
+          		<imageobject>
+           			<imagedata align="center"
+                       	fileref="../image/mip-query/mipuisample/dsservice.png" />
+          		</imageobject>
+        	</mediaobject>
+		</section>
+	</section>
+	
+	<section id="mip_query_mipuisample_commonflow_example">
+		<title>Example</title>
+		
+		<para>
+			Based on the instructions above, create a simple search view that searches community list and renders it with Grid. 
+		</para>
+		<itemizedlist>
+			<listitem>
+				<para>
+					Select ‘samples’ AppGroup on the Project Explorer of MiPlatform PID, and click File > New on the menu bar.
+				</para>
+			</listitem>
+			<listitem>
+				<para>
+					Select ‘Form’ on the ‘Make New...’ popup window and click the OK button.
+				</para>
+				<mediaobject>
+	          		<imageobject>
+	           			<imagedata align="center"
+	                       	fileref="../image/mip-query/mipuisample/newform.png" />
+	          		</imageobject>
+	        	</mediaobject>
+	        	<para></para>
+        	</listitem>
+        	<listitem>
+        		<para>
+        			Select ‘Empty Form’ on the Select Template popup window and click the Next button.
+        		</para>
+        		<mediaobject>
+	          		<imageobject>
+	           			<imagedata align="center"
+	                       	fileref="../image/mip-query/mipuisample/select.png" />
+	          		</imageobject>
+	        	</mediaobject>	
+        	</listitem>
+			<listitem>
+        		<para>
+        			Input form name, file name, title, etc. on the Form Properties popup window 
+        			and click the Finish button to create a new form.
+        		</para>
+        		<mediaobject>
+	          		<imageobject>
+	           			<imagedata align="center"
+	                       	fileref="../image/mip-query/mipuisample/form.png" />
+	          		</imageobject>
+	        	</mediaobject>
+	        	<para></para>
+        	</listitem>
+			<listitem>
+        		<para>
+        			Open the Dataset tab on the bottom of the edit page of the created form. 
+        			Use the + button to add Dataset (‘dsService’, ‘dsGrdCommunity’). 
+        			Copy and paste ‘dsService’ and ‘dsGrdCommunity’ Dataset from another sample view.
+        		</para>
+        		<mediaobject>
+	          		<imageobject>
+	           			<imagedata align="center"
+	                       	fileref="../image/mip-query/mipuisample/dataset.png"/>
+	          		</imageobject>
+	        	</mediaobject>
+	        	<para>
+	        		‘dsService’ includes the following column data.
+	        	</para>
+				<informaltable>
+					<tgroup cols="2">
+						<colspec colnum="1" colname="col1" colwidth="3*" />
+						<colspec colnum="2" colname="col2" colwidth="7*" />
+						<thead>
+							<row>
+								<entry align="center">Column</entry>
+								<entry align="center">Description</entry>
+							</row>
+						</thead>
+						
+						<tbody>
+							<row>
+								<entry align="left">SVC_ID</entry>
+								<entry align="left">getListCommunity</entry>
+							</row>
+							<row>
+								<entry align="left">QUERY_LIST</entry>
+								<entry align="left">querySet1=findCommunityList</entry>
+							</row>
+							<row>
+								<entry align="left">SERVICE</entry>
+							</row>
+							<row>
+								<entry align="left">IN_DATASET_LIST</entry>
+							</row>
+							<row>
+								<entry align="left">OUT_DATASET_LIST</entry>
+								<entry align="left">dsGrdCommunity=querySet1</entry>
+							</row>
+							<row>
+								<entry align="left">CALLBACK</entry>
+							</row>
+							<row>
+								<entry align="left">SYNC_YN</entry>
+							</row>
+							<row>
+								<entry align="left">CONTROLLER</entry>
+							</row>
+						</tbody>
+					</tgroup>
+				</informaltable>
+				<para>‘dsGrdCommunity’ consists of the following.</para>
+				<informaltable>
+				<tgroup cols="3">
+						<colspec colnum="1" colname="col1" colwidth="4*" />
+						<colspec colnum="1" colname="col1" colwidth="3*" />
+						<colspec colnum="2" colname="col2" colwidth="3*" />
+						<thead>
+							<row>
+								<entry align="center">Column</entry>
+								<entry align="center">Type</entry>
+								<entry align="center">Size</entry>
+							</row>
+						</thead>
+						
+						<tbody>
+							<row>
+								<entry align="left">COMMUNITY_ID</entry>
+								<entry align="left">STRING</entry>
+								<entry align="left">16</entry>
+							</row>
+							<row>
+								<entry align="left">COMMUNITY_NAME</entry>
+								<entry align="left">STRING</entry>
+								<entry align="left">256</entry>
+							</row>
+							<row>
+								<entry align="left">COMMUNITY_DESC</entry>
+								<entry align="left">STRING</entry>
+								<entry align="left">256</entry>
+							</row>
+							<row>
+								<entry align="left">CATEGORY_ID</entry>
+								<entry align="left">STRING</entry>
+								<entry align="left">16</entry>
+							</row>
+							<row>
+								<entry align="left">REG_ID</entry>
+								<entry align="left">STRING</entry>
+								<entry align="left">256</entry>
+							</row>
+							<row>
+								<entry align="left">REG_DATE</entry>
+								<entry align="left">STRING</entry>
+								<entry align="left">10</entry>
+							</row>
+						</tbody>
+					</tgroup>	
+				</informaltable>
+				<para></para>
+			</listitem>
+			<listitem>
+				<para>
+					Click the Design tab and open the form edit page. 
+					Click the See Event icon in Properties (<imageobject><imagedata align="center" fileref="../image/mipsample/mipuisample/icon_event.png"/>
+	          		</imageobject>) on the right, and double-click ComboBox of the form OnLoadCompleted event.
+				</para>
+				<mediaobject>
+	          		<imageobject>
+	           			<imagedata align="center"
+	                       	fileref="../image/mip-query/mipuisample/onload.png" />
+	          		</imageobject>
+	        	</mediaobject>
+	        	<para></para>
+	        </listitem>
+        	<listitem>
+        		<para>
+        			The script function to be called when OnLoadCompleted event occurs is automatically created, and script edit window appears. 
+        			Declare common.js to include on the very upper part of the script edit page as the following, 
+        			and edit the automatically created script function.
+                    <programlisting language="java"><emphasis role="bold">#include "javascript::common.js";</emphasis>
+function frmFORM_EXAMPLE_OnLoadCompleted(obj) {
+     <emphasis role="bold">gfnService("getListCommunity");</emphasis>
+}</programlisting>
+        		</para>
+        	</listitem>
+        	<listitem>
+        		<para>
+        			Click the Design tab again and open the form edit page. 
+        			Click the Grid icon (<imageobject><imagedata align="center" fileref="../image/mip-query/mipuisample/icon_grid.png" />
+	          		</imageobject>) on Components Tool Bar. 
+	          		Create a Grid with the right size by dragging onto form.
+        		</para>
+        		<mediaobject>
+	          		<imageobject>
+	           			<imagedata align="center"
+	                       	fileref="../image/mip-query/mipuisample/drawing.png" />
+	          		</imageobject>
+	        	</mediaobject>
+	        	<para></para>
+        	</listitem>
+        	<listitem>
+        		<para>
+        			On the left Project Explorer, select ‘dsGrdCommunity’ from the Datasets under FORM_EXAMPLE and drag onto the Grid created above. 
+        			Then, click the see property icon (<imageobject><imagedata align="center" fileref="../image/mip-query/mipuisample/icon_prop.png" />
+	          		</imageobject> ) in Properties on the right and change the AutoFit property to True.
+        		</para>
+        		<mediaobject>
+	          		<imageobject>
+	           			<imagedata align="center"
+	                       	fileref="../image/mip-query/mipuisample/autofit.png" />
+	          		</imageobject>
+	        	</mediaobject>
+	        	<para></para>
+        	</listitem>
+        	<listitem>
+        		<para>
+        			If you click the ‘Quick View’ icon (<imageobject><imagedata align="center" fileref="../image/mip-query/mipuisample/icon_quick.png" />
+	          		</imageobject>) on the above Tool Bar, you can see the community list being rendered.
+        		</para>
+        		<mediaobject>
+	          		<imageobject>
+	           			<imagedata align="center"
+	                       	fileref="../image/mip-query/mipuisample/frm_form.png" />
+	          		</imageobject>
+	        	</mediaobject>
+        	</listitem>
+        </itemizedlist>
+	</section>		
+</chapter>

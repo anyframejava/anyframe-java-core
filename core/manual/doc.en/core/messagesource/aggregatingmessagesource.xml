@@ -1,0 +1,79 @@
+<chapter id="core_aggregating_messagesource">
+	<title>AggregatingMessageSource</title>
+	<para>
+		When applications are developed, different types of message resources can be managed, dividing the characteristics of the message information for each locale to be used for globalization. 
+		For this, Anyframe provides org.anyframe.spring.message.AggregatingMessageSource. 
+		Accordingly, to support globalization of applications using various types of Message Resources, 
+		define AggregatingMessageSource as the default 'messageSource' bean and access each Message Resource through AggregatingMessageSource.
+	</para>
+	<para>
+		To use AggregatingMessageSource, the following properties should be defined. Let us look at the meaning of the properties below.
+	</para>
+    <informaltable>
+		<tgroup cols="4">
+			<colspec colname="col1" colnum="1" colwidth="2.5*" />
+			<colspec colname="col2" colnum="2" colwidth="6*" />
+			<colspec colname="col3" colnum="3" colwidth="1*" />
+			<colspec colname="col4" colnum="4" colwidth="1*" />
+	
+			<thead>
+				<row>
+					<entry align="center">Property</entry>
+					<entry align="center">Description</entry>
+					<entry align="center">Required</entry>
+					<entry align="center">Default Value</entry>
+				</row>
+			</thead>
+	
+			<tbody>
+				<row>
+					<entry>messageSources</entry>
+					<entry>
+						Defines the list of id of MessageSource bean to be aggregated. The defined bean should be in the MessageSource type.
+						The order of defined bean is the same as the order of bean referenced when AggregatingMessageSource retrieves Message. 
+					</entry>
+					<entry>Y</entry>
+					<entry>N/A</entry>
+				</row>
+			</tbody>
+		</tgroup>
+	</informaltable>				
+	<para>
+		The following is part of context-message.xml that contains AggregatingMessageSource mentioned above. 		
+	</para>		
+	<programlisting language="xml"><![CDATA[<bean name="messageSource" 
+    class="org.anyframe.spring.message.AggregatingMessageSource">
+    <property ]]><emphasis role="bold">name="messageSources"</emphasis><![CDATA[>
+        <list>
+            <]]><emphasis role="bold">ref bean="databaseMessageSource"</emphasis><![CDATA[/>
+            <]]><emphasis role="bold">ref bean="fileMessageSource"</emphasis><![CDATA[/>
+        </list>
+    </property>
+</bean>
+	
+<bean name="fileMessageSource" class="org.springframework.context.support.ResourceBundleMessageSource">
+    <property name="useCodeAsDefaultMessage">
+        <value>false</value>
+    </property>
+    <property name="basenames">
+        <list>
+            <value>anyframe-message</value>	
+        </list>
+    </property>
+</bean>	 	
+	
+<bean name="databaseMessageSource" class="org.anyframe.spring.message.DatabaseMessageSource">
+    <property name="dataSource" ref="dataSource"/>
+    <property name="messageTable">
+        <props>
+            <prop key="table">TEST_MESSAGE_SOURCE</prop>
+        </props>
+    </property>
+    <property name="cacheConfiguration" value="classpath:/spring/message/ehcache.xml"/>
+</bean>]]></programlisting>
+	<para>
+		By the property definition above, AggregatingMessageSource will retrieve proper messages using 'databaseMessageSource' bean and 'fileMessageSource' bean internally. 
+		That is, AggregatingMessageSource will look for messages in 'databaseMessageSource' first based on the entered Locale information(Language information, Country information) and Message Key, 
+		and if there is not the proper message, it will again look for a proper message in 'fileMessageSource'.
+	</para>
+</chapter>

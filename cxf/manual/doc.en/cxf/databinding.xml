@@ -1,0 +1,547 @@
+<chapter id="cxf_webservices_databinding">
+  	<title>Databinding</title>
+
+  	<para>
+  		Databinding means mapping XML document and JavaBeans objects based on XSD Schema of XML document. 
+        It is a technology used to transfer XML document between server and client in Web Services. 
+        Apache CXF uses JAXB as a default for databinding, and additionally supports Aegis and MTOM. 
+        Types of databinding are as follows. 
+  	</para>
+	<itemizedlist>
+    	<listitem>
+      		<para><emphasis role="bold">JAXB</emphasis></para>
+      		<para>
+      			JAXB stands for Java Architecture for XML Binding. It binds class data and performs unmarshalling of object 
+                from XML. On the other hand, it can also perform marshalling by saving object in xml.
+      		</para>
+    	</listitem>
+	    <listitem>
+      		<para><emphasis role="bold">Aegis</emphasis></para>
+		    <para>
+		    	Unlike JAXB, Aegis is not standard (Spec.), but plays a same role to JAXB as a function provided only in Apache CXF.
+                It first started as a part of Xfire project, but has been developed to be included in Apache CXF 
+                as a combination of Celtix and Xfire. 
+                Anyframe recommends using JAXB Databinding, so this manual does not include details about Aegis Databinding.
+		    </para>
+    	</listitem>
+    	<listitem>
+      		<para><emphasis role="bold">MTOM</emphasis></para>
+      		<para>
+      			MTOM stands for Message Transmission Optimization Mechanism. It is an optimization mechanism of SOAP message
+                transmission. This is a standard to transmit binary data more conveniently through Web Service.
+      		</para>
+    	</listitem>
+  	</itemizedlist>
+
+  	<para>
+  		Types of databinding technology are shown in the following figure.
+        Usually, databinding is used in JAXB, <emphasis role="bold">JAXB+MTOM, Aegis, Aegis+MTOM</emphasis> type.
+        In the figure, the reason there is a common ground between JAXB and Aegis is that
+        several JAXB annotations can be used while using Aegis.
+  	</para>
+
+	<mediaobject>
+	  <imageobject>
+	    <imagedata align="center" fileref="../image/cxf/webservices/databind.jpg" />
+	  </imageobject>
+	</mediaobject>
+
+  	<para>Here is how to use databinding by each technology. </para>
+
+  	<section id="webservices_databinding_jaxb">
+    	<title>JAXB Databinding</title>
+
+    	<para>
+    		JAXB stands for Java Architecture for XML Binding.
+            It binds class data from XML Schema and performs the unmarshalling of object from XML. 
+            On the other hand, it can also perform marshalling by saving object in xml.
+    	</para>
+
+    <para><emphasis role="bold">The characteristics of JAXB</emphasis> are the following.</para>
+    <itemizedlist>
+		<listitem>
+        	<para>When using Apache CXF, default databinding is JAXB. Therefore, no additional setting for JAXB is needed.</para>
+      	</listitem>
+      	<listitem>
+        	<para>By setting Annotation such as @XmlElement in JavaBeans code, you can modify the element name.</para>
+      	</listitem>
+      	<listitem>
+        	<para>You can use JAXB even without annotation in JavaBeans code.</para>
+      	</listitem>
+      	<listitem>
+        	<para>
+        		As databinding supports list-type but not map-type,
+                XmlAdapter class must be additionally developed to perform databinding using map-type.
+        	</para>
+      	</listitem>
+    </itemizedlist>
+
+    <para><emphasis role="bold">The mapping relation between JavaBeans object and XML Schema</emphasis> is as follows.</para>
+
+    <mediaobject>
+      <imageobject>
+        <imagedata align="center" fileref="../image/cxf/webservices/databind-mapping.jpg" />
+      </imageobject>
+    </mediaobject>
+
+    <para>The following figure shows the performing of JAXB role.</para>
+
+    <mediaobject>
+      <imageobject>
+        <imagedata align="center" fileref="../image/cxf/webservices/jaxb.jpg" />
+      </imageobject>
+    </mediaobject>
+
+    <para>The following is how to use JAXB function between server and client layer.</para>
+
+	    <section id="webservices_databinding_jaxb_serverconfig">
+	    	<title>Server Configuration</title>
+	
+	      	<para>
+	      		When exposing Movie Service to Web Services using JAX-WS Frontend, 
+                declare and test the types of interface method parameter and return value in various types.
+	      	</para>
+	
+	      	<section id="webservices_databinding_jaxb_serverconfig_samples">
+	        	<title>Samples</title>
+	
+		        <para>
+		        	Here is an example of the definition of Movie Service interface class and XmlAdapter class
+                    to use map type.
+		        </para>
+		        <itemizedlist>
+		          	<listitem>
+		            	<para>Interface Class</para>
+		            	<para>The following is a part of MovieService.java which developed Movie Service interface class.</para>
+						<para>
+						   Note that @XmlSeeAlso annotation is set because Movie class type saved in Map object during JAXB Databinding should be known. 
+						   @XmlSeeAlso annotation does not have to be set if another method of this Web Service uses Movie object as Input or Output parameter class type.
+						</para>
+		            	<programlisting language="java"><![CDATA[@WebService
+@XmlSeeAlso(Movie.class)		            	
+public interface MovieFinder {
+
+    @XmlJavaTypeAdapter(CXFMapAdapter.class)
+    Map<String, Movie> get(String movieId) throws Exception;
+    ...]]></programlisting>
+	          		</listitem>
+	
+	          		<listitem>
+	            		<para>XmlAdapter Class [Provided by Anyframe]</para>
+	
+		            	<para>
+		            		If return type is Map among interface methods of Movie Service, XmlAdapter should be additionally developed.
+                            If Map type is not used, there is no need to develop this.
+                            The following is a part of CXFMapAdapter.java that inherits and implements XmlAdapter class. 
+                            Developers use org.anyframe.cxf.adapter.CXFMapAdapter class provided by Anyframe, without needing special implementation. 
+		            		<programlisting
+		            		language="java"><![CDATA[public class CXFMapAdapter extends XmlAdapter<CXFMap, Map<String, Object>> {
+    public CXFMap ]]><emphasis role="bold">marshal</emphasis><![CDATA[(Map<String, Object> v) throws Exception {
+        CXFMap map = new CXFMap();
+        for (Map.Entry<String, Object> e : v.entrySet()) {
+            CXFMap.CXFEntry iue = new CXFMap.CXFEntry();
+            iue.setValue(e.getValue());
+            iue.setKey(e.getKey());
+            map.getEntries().add(iue);
+        }
+        return map;
+    }
+
+    public Map<String, Object> ]]><emphasis role="bold">unmarshal</emphasis><![CDATA[(CXFMap v) throws Exception {
+        Map<String, Object> map = new LinkedHashMap<String, Object>();
+        for (CXFMap.CXFEntry e : v.getEntries()) {
+            map.put(e.getKey(), e.getValue());
+        }
+        return map;
+    }
+}
+...]]></programlisting>
+						</para>
+	          		</listitem>
+	          		<listitem>
+		            	<para>Additional class used in XmlAdapter Class [Provided by Anyframe]</para>
+		
+		            	<para>
+		            		When performing marshalling/unmarshalling in XmlAdapter class developed above,
+                            CXFMap class used must also be additionally developed.
+                            If map type is not used, there is no need to develop this.
+                            The following is a part of CXFMap.java developing CXFMap class. 
+                            Developers use org.anyframe.cxf.adapter.CXFMap class provided by Anyframe, without needing without special implementation. 
+		            		<programlisting language="java"><![CDATA[@XmlType(name = "CXFMap")
+@XmlAccessorType(XmlAccessType.FIELD)
+public class CXFMap {
+    @XmlElement(nillable = false, name = "entry")
+    private List<CXFEntry> entries = new ArrayList<CXFEntry>();
+
+    public List<CXFEntry> getEntries() {
+        return entries;
+    }
+
+    @XmlAccessorType(XmlAccessType.FIELD)
+    @XmlType(name = "IdentifiedCXF")
+    static class CXFEntry {
+        // Map keys cannot be null
+        @XmlElement(required = true, nillable = false)
+        private String key;
+        private Object value;
+
+        public String getKey() {
+            return key;
+        }
+        public void setKey(String key) {
+            this.key = key;
+        }
+        public Object getValue() {
+            return value;
+        }
+        public void setValue(Object value) {
+            this.value = value;
+        }
+        ...]]></programlisting>
+						</para>
+					</listitem>
+				</itemizedlist>
+			</section>
+		</section>
+
+    	<section id="webservices_databinding_jaxb_caution">
+      		<title>Notes</title>
+
+      		<para>
+      			Notes when accessing method exposed to Web Services using JAXB Databinding.
+      		</para>
+
+      		<section id="webservices_databinding_jaxb_caution_nondefinedSEIclass">
+        		<title>When databinding is needed in Java Type class undefined in SEI class during runtime</title>
+
+        		<para>
+        			In case of Java Type class which was not referred to as input value or return value
+                    of the method defined in SEI class, 
+                    the following error message appears during databinding at runtime.
+        		</para>
+
+        		<para>
+        			org.apache.cxf.interceptor.Fault: Marshalling Error: class
+        			anyframe.sample.domain.Movie nor any of its super class is known to this context.
+        		</para>
+        		<para>The problem is solved as below.</para>
+
+        		<itemizedlist>
+          			<listitem>
+            			<para>Interface Class</para>
+
+            			<para>
+            		    	If method that returns List-type return value from SEI (Service Endpoint Interface) class method exists 
+                            and Java Type class saved in the related List is not referred to, 
+                            when client calls the method, JAXB Databinding is tried at runtime and Marshalling Error occurs.
+                            To prevent this, set @XmlSeeAlso Annotation or Generic Type of JDK1.5.
+            			</para>
+
+            			<para>
+            				Example of using @XmlSeeAlso
+            				<programlisting language="java">@WebService
+@<emphasis role="bold">XmlSeeAlso({Movie.class})</emphasis>
+public interface MovieService {
+
+    public List getMovieList(SearchVO searchVO);
+    ...</programlisting>
+    					</para>
+
+            			<para>
+            				Example of using Generic Type of JDK 1.5
+            				<programlisting language="java"><![CDATA[@WebService
+public interface MovieService {
+
+    public List<]]><emphasis role="bold">Movie</emphasis><![CDATA[> getMovieList(SearchVO searchVO);
+    ...]]></programlisting>
+    					</para>
+					</listitem>
+				</itemizedlist>
+			</section>
+		</section>
+	</section>
+
+  	<section id="webservices_databinding_mtom">
+    	<title>MTOM Databinding</title>
+
+    	<para>
+    		MTOM stands for Message Transmission Optimization Mechanism. 
+    		It is an optimization mechanism of SOAP message transmission. 
+    		This is a standard to transmit binary data more conveniently through Web Service. 
+            It can be used with JAXB Databinding or Aegis Databinding. 
+            This is a standard enabling transmitting binary data more effectively through service, 
+            and data is transmitted in attachment type that is not in XML document by setting annotation in Schema Type or Java code. 
+            If xmime:expectedContentTypes="application/octet-stream" is additionally set in Schema Type, 
+            byte[] array type for base64Binary element is not created, 
+            but DataHandler for data streaming is created. 
+    	</para>
+
+   		<para><emphasis role="bold">The characteristics of MTOM</emphasis> are as follows.</para>
+
+    	<itemizedlist>
+      		<listitem>
+        		<para>When using Apache CXF, as MTOM function is not working as default,
+                additional setting is needed to use MTOM.</para>
+      		</listitem>
+      		<listitem>
+        		<para>Data is transmitted in attachment type, not in xml document.</para>
+      		</listitem>
+      		<listitem>
+        		<para>
+        			Define attribute of JavaBeans which shows binary data as javax.activation.DataHandler type,
+                    and additionally set @XmlMimeType("application/octet-stream") Annotation.
+        		</para>
+      		</listitem>
+    	</itemizedlist>
+
+    	<para>
+    		The following is how to use MTOM function between server and client layer.
+            Example includes using JAX-WS Frontend, JAXB, and MTOM together.
+    	</para>
+
+    	<itemizedlist>
+      		<listitem>
+        		<para>Server Configuration</para>
+      		</listitem>
+      		<listitem>
+        		<para>Client Configuration</para>
+      		</listitem>
+      		<listitem>
+        		<para>References - Contents related to MTOM</para>
+      		</listitem>
+    	</itemizedlist>
+    	<section id="webservices_databinding_mtom_serverconfig">
+      		<title>Server Configuration</title>
+
+      		<para>
+      			This is an example of exposing movie service to Web Services using JAX-WS Frontend.
+                Let's take a look at additional task for testing MTOM.
+                Also, let's take a look at the case of transmitting binary data in the existing xml document not using MOTM,
+                and the case of transmitting data in attachment type (not in xml document) using MTOM.
+                The example will check whether binary transmission is properly working in those cases. 
+      		</para>
+
+      		<section id="webservices_databinding_mtom_serverconfig_samples">
+        		<title>Samples</title>
+
+        		<para>
+        		
+        			The following is an example of Movie class definition, data transmitted between client and server
+                    through Movie Service interface method. 
+        		</para>
+
+        		<itemizedlist>
+          			<listitem>
+            			<para>JavaBeans Class</para>
+
+            			<para>
+            				The following is a part of Movie.java which states Movie class, 
+                            that is data transmitted between client and server,
+                            through Movie Service interface method.
+            				<programlisting language="java"><![CDATA[public class Movie implements Serializable {
+    private String movieId = "";
+    private String title = "";
+    private String director = "";
+
+    <!-- When transmitting binary data as a part of existing xml document, instead of using MTOM -->
+    private byte[] posterImgByteArray = null;
+
+    <!-- When transmitting binary data in attachment type, not as a part of xml document, using MTOM -->
+    @]]><emphasis role="bold">XmlMimeType</emphasis>("<emphasis role="bold">application/octet-stream</emphasis>")
+    private <emphasis role="bold">DataHandler</emphasis> posterImgDataHandler = null;
+
+    public byte[] getPosterImgByteArray() {
+        return posterImgByteArray;
+    }
+
+    public void setPosterImgByteArray(byte[] posterImgByteArray) {
+        this.posterImgByteArray = posterImgByteArray;
+    }
+
+    public DataHandler getPosterImgMTOM() {
+        return posterImgDataHandler;
+    }
+
+    public void setPosterImgDataHandler(DataHandler posterImgDataHandler) {
+        this.posterImgDataHandler = posterImgDataHandler;
+    }
+        ...</programlisting>
+        				</para>
+          			</listitem>
+
+          			<listitem>
+            			<para>Test case</para>
+            			<para>
+            				<emphasis
+            				role="bold">Using Spring Configuration XML Server setting (JAX-WS Frontend)</emphasis>
+            			</para>
+
+            			<para>
+            				Using MTOM Databinding can be defined through setting Spring Configuration XML.
+            				<programlisting
+            				language="xml"><![CDATA[<!-- JAX-WS Frontend to expose MovieService with MTOM Databinding -->
+<jaxws:endpoint id="movieService" implementor="org.anyframe.sample.cxf.jaxws.movie.impl.MovieServiceImpl" address="/ws">
+     <jaxws:properties>
+        <]]><emphasis role="bold">entry key</emphasis>="<emphasis role="bold">mtom-enabled</emphasis>" <emphasis
+                  role="bold">value</emphasis>="<emphasis role="bold">true</emphasis><![CDATA["/>
+     </jaxws:properties>
+</jaxws:endpoint>
+...]]></programlisting>
+						</para>
+          			</listitem>
+        		</itemizedlist>
+      		</section>
+    	</section>
+
+    	<section id="webservices_databinding_mtom_clientconfig">
+			<title>Client Configuration</title>
+
+      		<para>
+      			Among ways to develop client to access Web Services, if you use Spring Configuration XML setting,
+                you can use it simply and conveniently.
+       		</para>
+
+      		<section id="webservices_databinding_mtom_clientconfig_samples">
+ 		       	<title>Samples</title>
+
+        		<para>The following is an example of accessing Movie Service exposed to Web Services.</para>
+
+        		<itemizedlist>
+          			<listitem>
+            			<para>Test Case</para>
+            			<para>
+            				When using binary data in attachment type, not as a part of xml document, using MTOM,
+                            it tests whether MTOM Databinding is properly working and thereby
+                            searching and modifying poster image binary file of Movie.
+            			</para>
+            			<para>
+            				<emphasis
+            				role="bold">Using Spring Configuration XML Client setting (JAX-WS Frontend)</emphasis>
+            			</para>
+
+            			<para>
+            				Using MTOM Databinding can be defined through setting Spring Configuration XML.
+            				<programlisting
+            				language="xml"><![CDATA[<!-- JAX-WS Frontend to access MovieService with MTOM Databinding -->
+<jaxws:client id="movieService" serviceClass="org.anyframe.sample.cxf.jaxws.movie.MovieService" 
+     address="http://localhost:8080/myproject/cxf-jaxws/ws">
+     <jaxws:properties>
+        <]]><emphasis role="bold">entry key</emphasis>="<emphasis role="bold">mtom-enabled</emphasis>" <emphasis
+                  role="bold">value</emphasis>="<emphasis role="bold">true</emphasis><![CDATA["/>
+     </jaxws:properties>
+</jaxws:client>
+...]]></programlisting>
+						</para>
+          			</listitem>
+        		</itemizedlist>
+      		</section>
+    	</section>
+
+    	<section id="webservices_databinding_mtom_comment">
+      		<title>References - Contents related to MTOM</title>
+
+      		<itemizedlist>
+        		<listitem>
+          			<para>Spec. suggested by W3C for enhancing Web Services performance</para>
+          			<itemizedlist>
+            			<listitem>
+              				<para>
+              					In January 2005,  W3C (World Wide Web Consortium) suggested the following three Web Services specs.
+                                They provide ways to efficiently package or transmit binary data referring to or including SOAP 1.2 message.
+              				</para>
+            			</listitem>
+			            <listitem>
+              				<para>
+               					XOP (XML-binary Optimized Packaging), MTOM (SOAP Message
+              					Transmission Optimization Mechanism), RRSHB (Resource
+              					Representation SOAP Header Block)
+              				</para>
+            			</listitem>
+          			</itemizedlist>
+        		</listitem>
+        		<listitem>
+          			<para>Binary data transmission</para>
+	          		<itemizedlist>
+            			<listitem>
+              				<para>
+              					When a part of xml document is binary data, it must be encoded as base64.
+                                This increases CPU usage percentage and payload size.
+                                One of the characteristics of Web Services is that transmitted message is composed of xml and eases
+                                transmission between heterogeneous systems.
+                                This is because of the fact that as xml is a kind of text document, the portability is good between different types.
+                                However, to add binary data to text xml document, encoding is needed in base64 type,
+                                which leads to more than 50% of binary data capacity.
+                                Also, to handle encoding and decoding, 5~10% of CPU load is added.
+                                In other words, when transferring binary data, using Web Services causes reduced performance.
+              				</para>
+            			</listitem>
+				           <listitem>
+              				<para>
+              					Using MTOM creates binary data in SOAP-Attachment type, not as a part of xml document.
+                                Therefore, it can resolve the problems mentioned above. 
+              				</para>
+            			</listitem>
+				           <listitem>
+              				<para>
+              					If you add xmime:expectedContentTypes="application/octet-stream" to Schema type,
+                                byte[] for base64Binary element is not created, but DataHandler for data streaming is created.
+              				</para>
+            			</listitem>
+          			</itemizedlist>
+        		</listitem>
+ 		    	<listitem>
+          			<para>Providing the means and ways to transmit large-size binary data.</para>
+          			<itemizedlist>
+            			<listitem>
+              				<para>By using XOP and MTOM, more efficient serialization and transmission of SOAP message is possible.</para>
+            			</listitem>
+            			<listitem>
+              				<para>
+              					As XOP provides a standard means to include binary data in transmission packet as it is,
+                                it can efficiently work even in a small space or narrow data transmission bandwidth.
+                                By using XML Information Set(InfoSet), xml document is serialized in various ways.
+              				</para>
+            			</listitem>
+            			<listitem>
+              				<para>
+              					MTOM which implements XOP handles SOAP transmission using functions provided by XOP.
+                                By defining transmission mechanism optimizing SOAP binding and transmission,
+                                it reduces required transmission bandwidth and time required for encoding and decoding large-size
+                                binary data. In addition, when transmitting various binary data, 
+                                it performs SOAP transmission in MIME attachment type.
+              				</para>
+            			</listitem>
+            			<listitem>
+              				<para>
+              					RRSHB(Resource Representation SOAP Header Block) enables SOAP message receiver
+                                to access local cache of remotely-located resources.
+                                By using it with MTOM, 
+                                request handling speed will dramatically improve when local cache already exists in the remotely-located data.
+                                For your reference, message receiver can select and use one between the file identified by URI
+                                or local cache sent in SOAP transmission.
+              				</para>
+            			</listitem>
+          			</itemizedlist>
+        		</listitem>
+      		</itemizedlist>
+    	</section>
+  	</section>
+  
+  	<section id="webservices_databinding_resources">
+  		<title>Resources</title>
+		<para>
+			<itemizedlist>
+				<listitem>
+					<para>References</para>
+					<itemizedlist>
+						<listitem><para><ulink url="http://jcp.org/en/jsr/detail?id=222">JSR 222: Java Architecture for XML Binding (JAXB) 2.0</ulink></para></listitem>
+						<listitem><para><ulink url="http://java.sun.com/developer/technicalArticles/WebServices/jaxb/">Java Architecture for XML Binding (JAXB)</ulink></para></listitem>
+						<listitem><para><ulink url="http://www.w3.org/TR/soap12-mtom/">SOAP Message Transmission Optimization Mechanism</ulink></para></listitem>
+						<listitem><para><ulink url="http://cxf.apache.org/docs/jaxb.html">Apache CXF User's Guide - JAXB Databinding</ulink></para></listitem>
+						<listitem><para><ulink url="http://cxf.apache.org/docs/mtom-attachments-with-jaxb.html">Apache CXF User's Guide - MTOM Attachments with JAXB</ulink></para></listitem>
+					</itemizedlist>
+				</listitem>
+			</itemizedlist>
+		</para>
+	</section>	
+</chapter>

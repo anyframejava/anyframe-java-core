@@ -1,0 +1,871 @@
+<chapter id="core_springmvc_conversion">
+	<title>Data Binding and Type Conversion</title>
+	<para>
+		There are two sections in Spring where type conversion occurs. 
+		First, is when the value defined using <![CDATA[<property />]]> in Bean definition xml is binding with Property of Bean object. 
+        The value that is defined as String in XML is set by being converted into Property type.
+	</para>
+	<para>
+		For instance, if Movie class is defined as the following 
+		<programlisting language="java">public class Movie {
+    String id;
+    String name;
+    int ticketPrice;
+}</programlisting>
+	
+		and 'movie' Bean is defined as below,
+		<programlisting language="xml"><![CDATA[<bean id="movie" class="sample.Movie">
+    <property name="name" value="Avatar"/>
+    <property name="ticketPrice" value="7500"/>
+</bean>]]></programlisting>
+
+		there is no problem in 'name' property because it is the same String type, 
+		but in case of 'ticketPrice', '7500' as a string value should be converted into 7500 of int type, and bound.
+	</para>
+	
+	<para>
+		Another case in which type conversion occurs 
+		is when the user input values passed to HTTP Request parameter are bound to Model object called 'Movie' 
+		like the code in the below example. 
+		Also, in this case, the value expressed as a string should be converted into a specific type. 
+	</para>
+	<programlisting language="java">@RequestMapping("/movies/new", method=RequestMethod.POST)
+public String create(@ModelAttribute Movie movie, BindingResult results) {
+
+    this.movieService.create(movie);
+    status.setComplete();
+
+    return "redirect:/movies";
+}</programlisting>
+	<para>
+		There are times when a specific format such as "$45.22" 
+		is applied to the value in the user View rather than simply converting the type.		
+	</para>
+	<para>	 
+		In this chapter, we will look into the technologies supported by Spring for type conversion.
+	</para>
+	<section id="core_springmvc_conversion_propertyeditor">
+		<title>PropertyEditor</title>
+		<para>
+			Spring has basically used PropertyEditor provided by JavaBean standards for type conversion as mentioned above. 
+			PropertyEditor is an interface that implements conversion logic between String and specific objects.
+		</para>
+		<section id="core_springmvc_conversion_propertyeditor_implement">
+			<title>Implementing Custom Editor</title>
+			<para>
+				There are four PropertyEditor methods called when converting type which are 
+				setValue()/getValue(), and setAsText()/getAsText(). 
+				If you inherit PropertyEditorSupport and override setAsText()/getAsText() method, 
+				you can implement PropertyEditor to convert specific type. 
+			</para>
+			<para>
+				Let's look into CustomBooleanEditor provided by Spring. 
+				In setAsText() method, logic that gets String value, converts it into boolean value, and performs setValue(), is implemented. 
+				In getAsText() method, logic that gets value by calling getValue(), converts to String, and returns, is implemented. 
+				<programlisting language="java">@Override
+public void <emphasis role="bold">setAsText(String text)</emphasis> throws IllegalArgumentException {
+    String input = (text != null ? text.trim() : null);
+    <![CDATA[if (this.allowEmpty && !StringUtils.hasLength(input)) {
+        setValue(null);
+    } else if (this.trueString != null && input.equalsIgnoreCase(this.trueString)) {]]>
+        <emphasis role="bold">setValue(Boolean.TRUE);</emphasis>
+    <![CDATA[} else if (this.falseString != null && input.equalsIgnoreCase(this.falseString)) {
+        setValue(Boolean.FALSE);
+    // ...
+    } else {
+        throw new IllegalArgumentException("Invalid boolean value [" + text + "]");
+    }]]>
+}
+
+@Override
+public String <emphasis role="bold">getAsText()</emphasis> {
+    if (Boolean.TRUE.equals(<emphasis role="bold">getValue()</emphasis>)) {
+        return (this.trueString != null ? this.trueString : VALUE_TRUE);
+    } else if (Boolean.FALSE.equals(getValue())) {
+        return (this.falseString != null ? this.falseString : VALUE_FALSE);
+    } else {
+        return "";
+    }
+}</programlisting>
+			</para>
+		</section>
+		<section id="core_springmvc_conversion_propertyeditor_default">
+			<title>Default PropertyEditors</title>
+			<para>
+				As seen in CustomBooleanEditor above, Spring provides various Build-in PropertyEditors already implemented for basic type. 
+				Built-in PropertyEditors all exist under <emphasis role="bold">org.springframework.beans.propertyeditors package</emphasis>.
+			</para>
+			<para>
+				As you can see in the names of Built-in PropertyEditors 
+				such as ClassEditor, FileEditor, InputStreamEditor, LocaleEditor, and PropertiesEditor, 
+				Built-in PropertyEditors are classes that add the name 'Editor' to the type to be converted. 
+				In the case of PropertyEditor in which user Customizing is possible, such as CustomNumberEditor, 'Custom' prefix is added. 
+				These are all registered as default and internally used, 
+				but <emphasis role="bold"> because CustomDateEditor and StringTrimmerEditor are not registered as default, 
+				they should be registered in code when used.</emphasis>
+			</para>
+		</section>
+		<section id="core_springmvc_conversion_propertyeditor_register">
+			<title>Register Custom Editor</title>
+			<para>
+				Spring basically registers Built-in PropertyEditors in advance. 
+  				When other Custom Editors are needed, they should be separately registered. 
+  				In this chapter, we will look into how to register Custom PropertyEditor. 
+  			    Below are three ways on how to register Custom PropertyEditor in Spring MVC.
+			</para>
+			<itemizedlist>
+				<listitem>
+					<para>Apply to individual controller</para>
+					<para>Defined method that registers PropertyEditor using @InitBinder annotation in Controller</para>
+					<programlisting language="java"><emphasis role="bold">@InitBinder</emphasis>
+public void initBinder(WebDataBinder binder) { 
+    DateFormat df = new SimpleDateFormat("yyyy-MM-dd");
+    <emphasis role="bold">binder.registerCustomEditor(Date.class, new CustomDateEditor(df, false));</emphasis>
+}</programlisting>
+				</listitem>
+				<listitem>
+					<para>Apply to entire controller</para>
+					<para>When Custom PropertyEditor is frequently used in the entire application,
+						<emphasis role="bold">use WebBindingInitializer.</emphasis>
+					</para>
+					
+					<orderedlist>
+						<listitem>
+							<para>Create class that implements WebBindingInitializer</para>
+							<programlisting language="java">public class ClinicBindingInitializer implements WebBindingInitializer {
+    @Autowired
+    private Clinic clinic;
+
+    public void initBinder(WebDataBinder binder, WebRequest request) {
+        SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd");
+        dateFormat.setLenient(false);
+        binder.registerCustomEditor(Date.class, new CustomDateEditor(dateFormat, false));
+        binder.registerCustomEditor(String.class, new StringTrimmerEditor(false));
+        binder.registerCustomEditor(PetType.class, new PetTypeEditor(this.clinic));
+    }
+}</programlisting>		
+						</listitem>
+						<listitem>
+							<para>Set custom WebBindingInitializer using <emphasis role="bold">webBindingInitializer property in AnnotationMethodHandlerAdapter</emphasis>.</para>
+							<programlisting language="xml"><![CDATA[<bean class="org.springframework.web.servlet.mvc.annotation.AnnotationMethodHandlerAdapter">
+    <property name="webBindingInitializer">
+        <bean class="org.springframework.samples.petclinic.web.ClinicBindingInitializer" />
+    </property>
+</bean>]]></programlisting>
+						</listitem>
+					</orderedlist>
+				</listitem>
+				<listitem>
+					<para>Apply several PropertyEditors to several controllers</para>
+					<para>When managed as several Custom PropertyEditor sets frequently used in several controllers
+					<emphasis role="bold">Use PropertyEditorRegistrar</emphasis>
+					</para>
+					<orderedlist>
+						<listitem>
+							<para>Create class that implements PropertyEditorRegistrars</para>
+							<programlisting language="java">package com.foo.editors.spring;
+					
+public final class CustomPropertyEditorRegistrar <emphasis role="bold">implements PropertyEditorRegistrar</emphasis> {
+    public void registerCustomEditors(PropertyEditorRegistry registry) {
+
+        // Create new PropertyEditor instance.
+        registry.registerCustomEditor(ExoticType.class, new ExoticTypeEditor());
+
+        // Add necessary Custom PropertyEditors
+    }
+}</programlisting>		
+						</listitem>
+						<listitem>
+							<para>Register implemented Custom PropertyEditorRegistrar as Bean</para>
+							<programlisting language="xml"><emphasis role="bold"><![CDATA[<bean id="customPropertyEditorRegistrar" class="com.foo.editors.spring.CustomPropertyEditorRegistrar"/>]]></emphasis></programlisting>
+						</listitem>
+						<listitem>
+							<para>Use in Controller with @InitBinder</para>
+							<programlisting language="java"><emphasis role="bold">@Inject
+private final PropertyEditorRegistrar customPropertyEditorRegistrar;
+					
+@InitBinder
+public void initBinder(WebDataBinder binder) { 
+    this.customPropertyEditorRegistrar.registerCustomEditors(binder);
+}</emphasis></programlisting>		
+						</listitem>
+					</orderedlist>
+				</listitem>
+			</itemizedlist>
+		</section>
+		<section id="core_springmvc_conversion_propertyeditor_flaw">
+			<title>Demerits of PropertyEditor</title>
+			<para>
+				PropertyEditor basically supports the conversion of String and specific type. 
+				During the PropertyEditor conversion process, 
+				Object or String to be converted are temporarily saved in PropertyEditor object. 
+                So, in a multi-threaded environment, the values during conversion can be changed, and 
+                an irrelevant conversion value can be returned. 
+                PropertyEditor is not Thread-Safe for his reason, 
+                so is cannot be used as Sington Bean but should always be created by 'new', like the code in the above example.
+			</para>
+		</section>
+	</section>
+	
+	<section id="core_springmvc_conversion_spring3convert">
+		<title>Spring 3 Type Conversion</title>
+		<para>
+			As mentioned before, there are a few demerits for PropertyEditor which is JaveaBeans standard. 
+			Also, Spring is internally requesting a more general type conversion instead of the type which one part is limited to String. 
+			So, Spring 3 has introduced an all-purpose Type Conversion System that can overcome the demerits of PropertyEditor 
+			and can be used in all places where internal type conversion is occurring. 
+			Classes that are related to this all exist under org.springframework.core.convert package. 
+			
+			In this chapter, we will look into how to use Type Conversion service introduced in Spring 3.
+		</para>
+		
+		<section id="core_springmvc_conversion_spring3convert_implement">
+			<title>Implementing Conveter</title>
+			<para>For Converter implementation, Spring 3 provides the following API.</para>
+			
+			<itemizedlist>
+				<listitem>
+					<para>Converter</para>
+					<para>
+						The object that is in charge of type conversion in the Spring 3 Type Conversion system is Converter. 
+						To develop converter, <emphasis role="bold">implement org.springframework.core.convert.converter.Converter<![CDATA[<S, T>]]> interface</emphasis>. 
+						Converter is defined using Generics, so runtime Type-Safety is guaranteed.</para>
+					<programlisting language="java"><![CDATA[package org.springframework.core.convert.converter;
+				
+public interface Converter<S, T> {
+    T convert(S source);    
+}]]></programlisting>
+					<para>
+						The only method to be implemented in Converter interface is convert() method. 
+						In other words, only oneway conversion is provided unlike PropertyEditor. 
+						Source type before conversion is indicated in 'S', 
+						and Target type to be converted is indicated in 'T'. 
+						Because Converter does not save the status value related with conversion, 
+						Converter can be registered in Singlton Bean and used safely in a Multi-thread environment.
+					</para>
+					<para>
+						The following is an example code of Converter implementation.
+					</para>
+					<programlisting language="java">final class StringToInteger implements Converter<![CDATA[<String, Integer>]]> {
+
+    public Integer convert(String source) {
+        return Integer.valueOf(source);
+    }   
+}</programlisting>
+				</listitem>
+				
+				<listitem>
+					<para>ConverterFactory</para>
+					<para>
+						When you need to centralize the conversion logic for an entire class hierarchy, for example, when converting from String to java.lang.Enum objects, implement ConverterFactory.
+						<programlisting language="java"><![CDATA[package org.springframework.core.convert.converter;
+				
+public interface ConverterFactory<S, R> {
+    <T extends R> Converter<S, T> getConverter(Class<T> targetType);
+}]]></programlisting>
+						State Source type before conversion in 'S', 
+						and state the parent base class of classes to be converted in 'R'. 
+						Also, implement getConverter() method. In this case, 'T' will be the subclass type of 'R'.
+					</para>
+						
+					<para>The following is an example of ConverterFactory implementation class. 
+					(StringToNumberConverterFactory provided in Spring)</para>
+					<programlisting language="java"><emphasis role="bold">final class StringToNumberConverterFactory implements <![CDATA[ConverterFactory<String, Number>]]></emphasis> {
+
+    <emphasis role="bold"><![CDATA[public <T extends Number> Converter<String, T> getConverter(Class<T> targetType) {]]></emphasis>
+        <![CDATA[return new StringToNumber<T>(targetType);
+    }
+
+    private static final class StringToNumber<T extends Number> implements Converter<String, T> {
+
+        private final Class<T> targetType;
+
+        public StringToNumber(Class<T> targetType) {
+            this.targetType = targetType;
+        }
+
+        public T convert(String source) {
+            if (source.length() == 0) {
+                return null;
+            }
+            return NumberUtils.parseNumber(source, this.targetType);
+        }
+    }
+}]]></programlisting>
+					
+				</listitem>
+				
+				<listitem>
+					<para>GenericConverter</para>
+					<para>
+						Also, when you require a sophisticated Converter implementation, consider the <emphasis role="bold">GenericConverter</emphasis> interface.
+						Several Source/Target types can be defined, 
+						and Field Context (all information related to Field including Annotation applied to Field or Generics) 
+						of Source or Target object can be used, 
+						So, even if it is a flexible Converter, it is hard and complicated to implement. 
+						<emphasis role="bold">
+						Generally, it is better not to use for basic conversion that can be covered only with Converter or ConverterFactory.
+						</emphasis> 						
+						<programlisting  language="java"><![CDATA[package org.springframework.core.convert.converter;
+					
+public interface GenericConverter {
+
+    public Set<ConvertiblePair> getConvertibleTypes();
+    
+    Object convert(Object source, TypeDescriptor sourceType, TypeDescriptor targetType);
+}]]></programlisting>
+						If you want to see the implementation of GenericConverter, 
+						Check org.springframework.core.convert.support.ArrayToCollectionConverter code that is one of the 
+						Built-in Converters provided by Spring.
+					</para>
+				</listitem>
+				
+				<listitem>
+					<para>ConditionalGenericConverter</para>
+					<para>
+						When developing Converter executed only when a certain condition is satisfied, 
+						develop <emphasis role="bold">ConditionalGenericConverter</emphasis> interface implementation class. 
+						An example of implementation that can be referred to is org.springframework.core.convert.support.IdToEntityConverter of Spring.
+					</para>
+				</listitem>
+				
+			</itemizedlist>
+		</section>
+		
+		<section id="core_springmvc_conversion_spring3convert_default">
+			<title>Default Converter</title>
+			<para>
+				Spring provides Built-in Converters that have already been implemented on basic type like PropertyEditor. 
+				All Built-in Converters exist <emphasis role="bold">under org.springframework.core.convert.support package</emphasis>.
+			</para>
+			<mediaobject>
+           		<imageobject>
+           			<imagedata align="center" fileref="../image/core/springmvc/builtin-converters.png"/>
+           		</imageobject>
+           	</mediaobject>
+		</section>
+		
+		<section id="core_springmvc_conversion_spring3convert_register">
+			<title>Register Converter</title>
+			<para>
+				To use Custom Converters additionally developed for the need of user, 
+				Converter should be registered like PropertyEditor. 
+				The difference is that each converters are not registered individually, 
+				but <emphasis role="bold">ConversionService</emphasis> that handles conversion with all Converters is registered as Bean, 
+				and used after being injected to places that need ConversionService Bean.
+			</para>
+			<programlisting language="java"><![CDATA[package org.springframework.core.convert;
+
+public interface ConversionService {
+
+    boolean canConvert(Class<?> sourceType, Class<?> targetType);
+    
+    <T> T convert(Object source, Class<T> targetType);
+    
+    boolean canConvert(TypeDescriptor sourceType, TypeDescriptor targetType);
+
+    Object convert(Object source, TypeDescriptor sourceType, TypeDescriptor targetType);
+}]]></programlisting>
+			<para> 
+				During runtime, the conversion logic of Converters are executed by ConversionService. 
+				ConversionService implementation class that is basically used in Spring is <emphasis role="bold">GenericConversionService</emphasis>. 
+				<emphasis role="bold">Most ConversionService implementation classes also implement ConverterRegistry that has a Converter registration function.</emphasis>
+			</para>
+			<itemizedlist>
+				<listitem>
+					<para><emphasis role="bold">Use 'converters' property when defining ConversionService Bean</emphasis></para>
+					<para>
+						GenericConversionService which is ConversionService implementation class can be registered as Bean using ConversionServiceFactoryBean. 
+						<emphasis role="bold">Custom Converter can be added by using the 'converters' property that ConversionServiceFactoryBean has.</emphasis>
+					</para>
+					<para>
+						The following is defining ConversionService as Bean using ConversionServiceFactoryBean.
+						<programlisting language="java"><emphasis role="bold"><![CDATA[<bean id="conversionService" class="org.springframework.context.support.ConversionServiceFactoryBean">
+    <!-- Set Custom Converter to add -->
+    <property name="converters">
+        <list>
+            <bean class="org.anyframe.sample.moviefinder.StringToFilmRatingConverter" />
+            <bean class="org.anyframe.sample.moviefinder.FilmRatingToStringConverter" />
+        </list>
+    </property>					
+</bean>]]></emphasis></programlisting>
+						ConversionServiceFactoryBean uses ConversionServiceFactory class to register default Converters in GenericConversionService, 
+						and registers Converters through 'converters' property. 
+					</para>
+					<warning>
+						<title>The 'conversionService' Bean name should be used only for Spring</title>
+						<para>
+							Spring 3 finds ConversionService Bean used during  through 'conversionService' name. 
+							Therefore, Beans for other purposes cannot be registered as 'conversionService'.
+						</para>
+					</warning>
+				</listitem>
+				
+			</itemizedlist>
+		</section>
+		
+		<section id="core_springmvc_conversion_spring3convert_use">
+			<title>Using ConversionService</title>
+			<para>
+			    Every time, PropertyEditor has to be created as a new instance using 'new' keyword, 
+				so the way of registering Custom PropertyEditor in individual controller and Custom PropertyEditor in entire controller are different. 
+				However, in case of Converter, ConversionService that has all converters is registered as Singleton Bean, 
+				so there is no difference between them.
+			</para>
+			<programlisting language="java">@Inject
+private ConversionService conversionService;
+
+@InitBinder
+public void initBinder(WebDataBinder binder) {
+    binder.setConversionService(this.conversionService);
+}</programlisting>
+			<para>
+			    Therefore, it is convenient to use class that implements WebBindingInitializer to register Custom Converter. 
+		        Spring provides 
+		        <emphasis role="bold"><ulink url="http://static.springsource.org/spring/docs/3.0.x/javadoc-api/org/springframework/web/bind/support/ConfigurableWebBindingInitializer.html">ConfigurableWebBindingInitializer</ulink></emphasis> 
+		        that does not directly implement WebBindingInitializer and initializes WebDataBinder setting only with declarative setting. 
+			</para>
+			<para>
+				If set as below, ConversionService in which Custom Converters are added, will be used when converting type.
+				<programlisting language="xml"><emphasis role="bold"><![CDATA[<!-- Inject webBindingInitializer into AnnotationMethodHandlerAdapter -->]]></emphasis>
+<![CDATA[<bean class="org.springframework.web.servlet.mvc.annotation.AnnotationMethodHandlerAdapter">
+    <property name="webBindingInitializer" ref="webBindingInitializer" />
+</bean>]]>
+
+<emphasis role="bold"><![CDATA[<!-- Inject Customized conversionService into WebBindingInitializer implementation -->]]></emphasis>
+<![CDATA[<bean id="webBindingInitializer" class="org.springframework.web.bind.support.ConfigurableWebBindingInitializer">
+    <property name="conversionService" ref="conversionService" />
+</bean>]]>
+
+<emphasis role="bold"><![CDATA[<!-- Define conversionService Bean that has added Custom Converters -->]]></emphasis>
+<![CDATA[<bean id="conversionService" class="org.springframework.context.support.ConversionServiceFactoryBean">
+    <property name="converters">
+        <list>
+            <bean class="org.anyframe.sample.moviefinder.StringToFilmRatingConverter" />
+        	<bean class="org.anyframe.sample.moviefinder.FilmRatingToStringConverter" />
+        </list>
+    </property>
+</bean>]]></programlisting>
+			</para>
+			<para>
+				<emphasis role="bold">Spring 3 provides mvc namespace so the complicated settings above can be done in a simple way.</emphasis>
+			</para>
+			<para>
+				For more information on <emphasis role="bold"><![CDATA[<mvc:annotation-driven>]]></emphasis>, 
+				refer to Configuration Simplification in this manual Spring MVC >> 
+				<link linkend="core_springmvc_configuration">Configuration</link> in this manual.
+			</para>
+		</section>
+		
+	</section>
+	
+	<section id="core_springmvc_conversion_spring3formatting">
+		<title>Spring 3 Formatting</title>
+		<para>
+			Conversion System is made for all-purpose use in Spring. 
+			This Conversion System is used not only when setting Bean Property in Spring container and binding data in controller, 
+			but also when binding data in spEL.
+		</para>
+		<para>
+			The ConversionService defines a unified API for executing type conversion logic at runtime.
+			However, in application in which user UI exists, 
+			there are times when instead of simply converting type, 
+			a specific format such as date or currency should be applied to object value to convert into String.
+			The more general core.convert Converter SPI does not address such formatting requirements directly.
+		</para>
+		<para>
+			Therefore, Spring 3 provides the following <emphasis role="bold">Formatter API</emphasis>.
+		</para>
+		<programlisting language="java"><![CDATA[package org.springframework.format;
+
+public interface Formatter<T> extends Printer<T>, Parser<T> {
+}]]></programlisting>
+
+		<programlisting language="java"><![CDATA[public interface Printer<T> {
+    String print(T fieldValue, Locale locale);
+}]]></programlisting>
+
+		<programlisting language="java"><![CDATA[import java.text.ParseException;
+
+public interface Parser<T> {
+    T parse(String clientValue, Locale locale) throws ParseException;
+}]]></programlisting>
+
+		<section id="core_springmvc_conversion_spring3formatting_implement">
+			<title>Implementing Formatter</title>
+			<para>
+				The above Formatter interface should be implemented to develop Formatter. 
+				In print() method, logic that applies format and shows, is implemented. 
+				In parse() method, logic which parses String value that applies format and converts to object instance, is implemented. 
+				As seen in the above interface definition, Locale information is also transferred, 
+				so Localization application can also be easily handled. 
+			</para>
+			<para>The following is example code of implementation of Formatter. 
+				<programlisting language="java"><emphasis role="bold"><![CDATA[public final class DateFormatter implements Formtter<Date>]]></emphasis><![CDATA[ {
+
+    private String pattern;
+    
+    public DateFormatter(String pattern) {
+        this.pattern = pattern;
+    }
+    
+    public String print(Date date, Locale locale) {
+        if (date == null) {
+            return "";
+        }
+        return getDateFormat(locale).format(date);
+    }
+
+    public Date parse(String formatted, Locale locale) throws ParseException {
+        if (formatted.length() == 0) {
+            return null;
+        }
+        return getDateFormat(locale).parse(formatted);
+    }
+
+    protected DateFormat getDateFormat(Locale locale) {
+        DateFormat dateFormat = new SimpleDateFormat(this.pattern, locale);
+        dateFormat.setLenient(false);
+        return dateFormat;
+    }
+}]]></programlisting>
+			</para>
+		</section>
+		
+		<section id="core_springmvc_conversion_spring3formatting_default">
+			<title>Default Formatter</title>
+			<para>
+				For your convenience, Spring also provides basic Built-in Formatter.
+			</para>
+			
+			<itemizedlist>
+				<listitem>
+					<para><emphasis role="bold">DateFormatter</emphasis></para>
+					<para>
+						Spring provides DateFormatter that handles formatting of java.util.Date object with java.text.DateFormat 
+						(org.springframework.format.datetime package). 
+						Spring also provides formatting that uses <ulink url="http://joda-time.sourceforge.net/">Joda Time Library</ulink> 
+						which supports strong Date/Time functions (org.springframework.format.datetime.joda package). 
+						If Joda Time Library exists on Classpath, it runs as default.
+					</para>
+				</listitem>
+				
+				<listitem>
+					<para><emphasis role="bold">NumberFormatter</emphasis></para>
+					<para>
+						Spring provides NumberFormatter, CurrencyFormatter, and PercentFormatter 
+						to handle formatting of java.lang.Number object that uses java.text.NumberFormat.
+					</para>
+				</listitem>
+			</itemizedlist>
+			<para>
+				<emphasis role="bold">Generally, rather than directly using the above Formatter, the Annotation-based Formatting as below, 
+				especially the Annotations related with Formatting basically provided by Spring, will be mainly used</emphasis>
+			</para>
+		</section>
+		
+		<section id="core_springmvc_conversion_spring3formatting_annotation">
+			<title>Annotation-based Formatting</title>
+			
+			<para>
+				As we will see in the next section, 
+				field formatting can be configured by field type or annotation. To bind an Annotation to a formatter, implement AnnotationFormatterFactory.
+			</para>
+			
+			<itemizedlist>
+				<listitem>
+					<para><emphasis role="bold">Implementation</emphasis></para>
+					<para>
+						To define Annotation related to Formatting 
+						and use a specific Formatter bound to field type conversion that annotates that Annotation, 
+						<emphasis role="bold">make Annotation to be used in field and AnnotationFormatterFacotry implementation.</emphasis>
+					</para>
+					<para>
+						<programlisting language="java"><![CDATA[package org.springframework.format;
+
+public interface AnnotationFormatterFactory<A extends Annotation> {
+
+    Set<Class<?>> getFieldTypes();    
+  
+    Printer<?> getPrinter(A annotation, Class<?> fieldType);
+    
+    Parser<?> getParser(A annotation, Class<?> fieldType);
+}]]></programlisting>
+						In 'A', state Annotation to be bound. 
+						getFieldTypes() method returns the types of fields the annotation may be used on. 
+						getPrinter()/getParser() returns each Printer to print the value of an annotated field and Parser to parse a clientValue for an annotated field.
+					</para>
+					
+					<para>
+						Let's look into how Annotation and AnnotationFormatterFacotry are implemented in case of @NumberFormat provided in Spring
+					</para>
+					<para>
+						The following is @NumberFormat Annotation implementation code.
+						<programlisting language="java">@Target({ElementType.METHOD, ElementType.FIELD, ElementType.PARAMETER})
+@Retention(RetentionPolicy.RUNTIME)
+public @interface NumberFormat {
+
+    Style style() default Style.NUMBER;
+
+    String pattern() default "";
+
+    public enum Style {
+        NUMBER,
+        CURRENCY,
+        PERCENT
+    }
+}</programlisting>
+					</para>
+					
+					<para>
+						The example AnnotationFormatterFactory implementation below binds the @NumberFormat Annotation to a formatter. 
+						This annotation allows either a number style or pattern to be specified.
+						<programlisting language="java"><emphasis role="bold"><![CDATA[public final class NumberFormatAnnotationFormatterFactory implements AnnotationFormatterFactory<NumberFormat>]]></emphasis><![CDATA[ {
+
+    public Set<Class<?>> getFieldTypes() {
+        return new HashSet<Class<?>>(asList(new Class<?>[] { 
+            Short.class, Integer.class, Long.class, Float.class, Double.class, BigDecimal.class, BigInteger.class }));
+    }
+    
+    public Printer<Number> getPrinter(NumberFormat annotation, Class<?> fieldType) {
+        return configureFormatterFrom(annotation, fieldType);
+    }
+    
+    public Parser<Number> getParser(NumberFormat annotation, Class<?> fieldType) {
+        return configureFormatterFrom(annotation, fieldType);
+    }
+
+    private Formatter<Number> configureFormatterFrom(NumberFormat annotation, Class<?> fieldType) {
+        if (!annotation.pattern().isEmpty()) {
+            return new NumberFormatter(annotation.pattern());
+        } else {
+            Style style = annotation.style();
+            if (style == Style.PERCENT) {
+                return new PercentFormatter();
+            } else if (style == Style.CURRENCY) {
+                return new CurrencyFormatter();
+            } else {
+                return new NumberFormatter();
+            }
+        }
+    }
+}]]></programlisting>
+					</para>
+					<para>
+						Formatter should be registered in FormatterRegistry in runtime.
+						To use Formatter implemented as such during runtime conversion, it should be registered. 
+						Formatter registration will be explained in the next section.
+					</para>
+				</listitem>
+				
+				<listitem>
+					<para><emphasis role="bold">Default annotations</emphasis></para>
+					<para>
+						<emphasis role="bold">There are two types of Format Annotations provided by Spring.</emphasis>
+					</para>
+					<itemizedlist>
+						<listitem>
+							<para><emphasis role="bold">@DateTimeFormat</emphasis> : 
+							Can be used for field formatting of java.util.Date, java.util.Calendar, java.util.Long, or Joda Time type (LocalDate, LocalTime, LocalDateTime, DateTime)</para>
+							<para>
+								<programlisting language="java">public class Movie {
+    // ...
+    <emphasis role="bold">@DateTimeFormat(pattern="yyyy-MM-dd")</emphasis>
+    private Date releaseDate;
+}</programlisting>
+								
+                                If @DateTimeFormat is applied in java.util.Date, java.util.Calendar, java.util.Long, or Joda Time field as above, 
+								Formatting occurs through Formatter bound to @DateTimeFormat.
+							</para>
+							<para>
+								Properties that can be used are as follows.
+								<informaltable>
+									<tgroup cols="2">
+										<colspec colnum="1" colname="col1" colwidth="2*" />
+										<colspec colnum="2" colname="col2" colwidth="8*" />
+				
+										<thead>
+											<row>
+												<entry align="center">Name</entry>
+												<entry align="center">Description</entry>
+											</row>
+										</thead>
+				
+										<tbody>
+											<row>
+												<entry>
+													<emphasis role="bold">style</emphasis>
+												</entry>
+					
+												<entry>
+													<para>
+														Defined by using 'S'-Short, 'M'-Medium, 'L'-Long, 'F'-Full, one letter for date and one for time. 
+														When you wish to omit date or time, use '-' (e.g., 'S-'). Default value is 'SS'. 
+														Appropriate format is applied according to Locale information.
+													</para>
+												</entry>
+											</row>
+				
+											<row>
+												<entry>
+													<emphasis role="bold">iso</emphasis>
+												</entry>
+				
+												<entry>
+													When using ISO standard, define as <emphasis role="bold">@DateTimeFormat(iso=ISO.DATE)</emphasis>. 
+													ISO.DATE, ISO.DATE_TIME, ISO.TIME, ISO.NONE can be used. 
+													Appropriate format is applied according to Locale information. 													
+												</entry>
+											</row>
+											
+											<row>
+												<entry>
+													<emphasis role="bold">pattern</emphasis>
+												</entry>
+				
+												<entry>
+													When using patterns regardless of Locale, define patterns such as ‘yyyy/mm/dd h:mm:ss a’.
+												</entry>
+											</row>							
+										</tbody>
+									</tgroup>	
+								</informaltable>
+							</para>
+						</listitem>
+						
+						<listitem>
+							<para><emphasis role="bold">@NumberFormat</emphasis> : Can be used for formatting java.lang.Number type field</para>
+							<para>
+								<programlisting language="java">public class Movie {
+    // ...
+    <emphasis role="bold">@NumberFormat(pattern = "#,##0")</emphasis>
+    private int ticketPrice;
+}</programlisting>
+								When @NumberFormat is applied to field as above, 
+								Formatting occurs through Formatter bound to @NumberFormat. 
+								It can be also used for the conversion of Byte, Double, Float, Integer, Long, Short, BigInteger, and BigDecimal 
+								which are subclasses of java.lang.Number.
+							</para>
+							<para>
+								The properties that can be used are as follows.
+								<informaltable>
+									<tgroup cols="2">
+										<colspec colnum="1" colname="col1" colwidth="2*" />
+										<colspec colnum="2" colname="col2" colwidth="8*" />
+				
+										<thead>
+											<row>
+												<entry align="center">Name</entry>
+												<entry align="center">Description</entry>
+											</row>
+										</thead>
+				
+										<tbody>
+											<row>
+												<entry>
+													<emphasis role="bold">style</emphasis>
+												</entry>
+					
+												<entry>
+													<para>
+														Can choose from NUMBER, CURRENCY, and PERCENT. 
+														Appropriate format is applied based on Locale information.
+													</para>
+												</entry>
+											</row>
+				
+											<row>
+												<entry>
+													<emphasis role="bold">pattern</emphasis>
+												</entry>
+				
+												<entry>
+													When using pattern regardless of Locale, define pattern such as ‘#,##0’.
+												</entry>
+											</row>							
+										</tbody>
+									</tgroup>	
+								</informaltable>
+							</para>
+						</listitem>
+					</itemizedlist>
+				</listitem>
+				
+			</itemizedlist>
+			
+		</section>
+		
+		<section id="core_springmvc_conversion_spring3formatting_register">
+			<title>Register Formatter</title>
+			<para>
+				In Converter section, 
+				if GenericConversionService is in charge of handling type conversion during runtime with registered Converters, 
+				<emphasis role="bold">FormattingConversionService</emphasis> plays a similar role to GentericConversionService in Formatter. 
+				<emphasis role="bold">FormattingConversionService inherits GenericConversionService.</emphasis>
+				
+			</para>
+			<para>
+				Unlike Converter registration,
+				Registering formatter implemented through the above process is inconvenient. 
+				A way to register as setting has not been provided. 
+				Class that inherits FormattingConversionServiceFactoryBean which initializes FormattingConversionService should be made 
+				to override installFormatters() method and add Custom Formatter.
+				
+				<programlisting language="java">public class CustomFormattingConversionServiceFactoryBean <emphasis role="bold">extends FormattingConversionServiceFactoryBean</emphasis> {
+
+    <emphasis role="bold">@Override
+    protected void installFormatters(FormatterRegistry registry)</emphasis> {
+        super.installFormatters(registry);
+        
+        <emphasis role="bold">// When registered by binding field type and Formatter
+        registry.addFormatterForFieldType</emphasis>(FilmRatings.class, new FilmRatingsFormatter());
+        
+        <emphasis role="bold">// When registered by binding Annotation and Formatter
+        registry.addFormatterForFieldAnnotation</emphasis>(new FilmRatingsFormatAnnotationFormatterFactory());
+    }
+}</programlisting>
+				In the above code, you can see <emphasis role="bold">FormatterRegistry</emphasis> provide method related to Formatter registration.  
+			</para>
+			<para>
+				You can register customized FormattingConversionServiceFactoryBean as Bean, 
+				and set 'conversionService' property of ConfigurableWebBindingInitializer.
+				
+				<programlisting language="xml"><![CDATA[<bean id="conversionService" class="org.anyframe.sample.format.CustomFormattingConversionServiceFactoryBean" />]]></programlisting>
+				
+				or you can use <emphasis role="bold"><![CDATA[<mvc:annotation-driven>]]></emphasis> of mvc namespace for simple setting.
+				
+				<programlisting language="xml"><emphasis role="bold"><![CDATA[<mvc:annotation-driven conversion-service="conversionService" />
+    
+<bean id="conversionService" class="org.anyframe.sample.format.CustomFormattingConversionServiceFactoryBean" />]]></emphasis></programlisting>
+			</para>
+			
+			<para>
+				By only setting <emphasis role="bold"><![CDATA[<mvc:annotation-driven>]]></emphasis>, 
+				you can use Built-in Converter and Built-in Formatter basically provided, 
+				and use @DateTimeFormat and @NumberFormat which is Annotation related to Formatting.
+			</para>
+		</section>
+	</section>
+	
+	<note>
+		<title>Order of execution between PropertyEditor and Spring 3 Converter</title>
+		<para>
+		    By default, if ConversionService is not registered, Spring executes type conversion based on PropertyEditor. 
+			Even when ConversionService has been registered, Custom PropertyEditor takes priority when Custom PropertyEditor is registered.
+		</para>
+		<para>
+		* The order of priority
+			<orderedlist>
+				<listitem>
+					<para>Custom PropertyEditor</para>
+				</listitem>
+				<listitem>
+					<para>Converter</para>
+				</listitem>
+				<listitem>
+					<para>Default PropertyEditor</para>
+				</listitem>
+			</orderedlist>
+		</para>
+	</note>
+</chapter>

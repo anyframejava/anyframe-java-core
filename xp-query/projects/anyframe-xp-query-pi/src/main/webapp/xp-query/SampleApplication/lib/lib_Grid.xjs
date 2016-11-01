@@ -1,0 +1,390 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Script type="xscript4.0"><![CDATA[
+/********************************************************************************
+ * Function Name	: gfnGridSort												*
+ * Desc				: Grid의 컬럼에 따라 정렬하는 함수						*
+ * Parameter		: obj(Grid)													*
+ *					  e(GridClickEventInfo)										*
+ * Return 			: 															*
+ ********************************************************************************/
+var CONST_ASC_MARK = "▲";
+var CONST_DESC_MARK = "▼";
+function gfnGridSort(obj:Grid, e:GridClickEventInfo)
+{
+	// 컬럼의 정렬방식을 'head'의 text에 "↑,↓"여부로 판단.
+	// 이미지로 대체 가능.
+	var CONST_SORT_FLAG = false;
+	var bindDs = eval(obj.binddataset);
+	if (bindDs.rowcount == 0) return false;
+		
+	var CONST_SORT_MARK = "";
+	var strHeadText = obj.getCellProperty("body", e.col,"text");
+	
+	strHeadText = gfnNvl(strHeadText);
+		
+	var BodyColId = (strHeadText).toString().split(":");	// e.col : 바인드된 컬럼.
+
+	if(strHeadText=="bind:_chk")
+		return false;
+	
+	for (var i = 0; i < obj.getCellCount("head"); i++) {
+		if(obj.getCellText(-1, i)=="undefined")
+			continue;
+		
+		var strHeadText = obj.getCellText(-1, i);
+		
+		if(i==e.cell){
+			//trace("		Event["+e.cell+"]="+obj.getCellText(-1, e.cell));	
+			if (strHeadText.substr(strHeadText.length-1) == CONST_ASC_MARK) {
+				obj.setCellProperty( "head", i, "text", strHeadText.substr(0, strHeadText.length - 1)+CONST_DESC_MARK);
+				bindDs.keystring = "S:-"+BodyColId[1];
+			}
+			else if (strHeadText.substr(strHeadText.length-1) == CONST_DESC_MARK) {
+				obj.setCellProperty( "head", i, "text", strHeadText.substr(0, strHeadText.length - 1)+CONST_ASC_MARK);
+				bindDs.keystring = "S:+"+BodyColId[1];
+			}
+			else {
+				obj.setCellProperty( "head", i, "text", strHeadText+CONST_ASC_MARK);
+				bindDs.keystring = "S:+"+BodyColId[1];
+			}
+		}
+		else	// 정렬표시 삭제
+		{
+			if (strHeadText.substr(strHeadText.length-1) == CONST_ASC_MARK || strHeadText.substr(strHeadText.length-1) == CONST_DESC_MARK) {
+				obj.setCellProperty( "head", i, "text", strHeadText.substr(0, strHeadText.length - 1));
+			}
+		}
+	}
+}
+
+/********************************************************************************
+ * Function Name	: gfnCheckedRowDelete										*
+ * Desc				: Grid의 Column중 Check box(_chk)가 존재하는 경우			*
+ *					  Check Box가 체크 된 상태인 Row만 삭제하는 함수		*
+ * Parameter		: objDs(DataSet)											*
+ * Return 			: 															*
+ ********************************************************************************/
+function gfnCheckedRowDelete(objDs){
+	var nRow = objDs.getRowCount();
+	var nSelectedRow = 0;
+	
+	for(var i = nRow - 1 ; i >= 0 ; i--){
+		var ckbox = objDs.getColumn(i, "_chk");
+		if(ckbox == 1){
+			nSelectedRow++;
+		}
+	}
+	
+	if(nSelectedRow == 0){
+		gfnAlertMsg("global.domain.noselectedrow", "WARN");
+		return;
+	}
+		
+	nSelectedRow = 0;
+			
+	var rtVal = gfnConfirm("msg.before.delete", "YN");
+				
+	if(rtVal == "Y"){
+		for(var i = nRow - 1 ; i >= 0 ; i--){
+			var ckbox = objDs.getColumn(i, "_chk");
+			if(ckbox == 1){
+				nSelectedRow++;
+				objDs.deleteRow(i);
+			}
+		}
+	} else {
+		return;
+	}		
+}
+
+/********************************************************************************
+ * Function Name	: gfnGridSetHeadText										*
+ * Desc				: Grid의 header를 공통 정의된 메세지 기반으로 처리하는	*
+ *					  함수														*
+ * Parameter		: obj(Grid)													*
+ * Return 			: 															*
+ ********************************************************************************/
+function gfnGridSetHeadText(obj:Grid)
+{
+	
+	var bindDs = eval(obj.binddataset);
+//	if (bindDs.rowcount == 0) return false;
+	
+	for (var i = 0; i < obj.getCellCount("head"); i++) {
+		
+		if(obj.getCellText(-1, i)=="undefined" || obj.getCellText(-1, i)=="_chk")
+			continue;
+		
+		var strHeadText = obj.getCellText(-1, i);
+		var strTemp = gfnGetMessage(strHeadText);
+		obj.setCellProperty( "head", i, "text", strTemp);
+	}
+}
+
+/********************************************************************************
+ * Function Name	: gfnDsCheckValid											*
+ * Desc				: DataSet 내의 데이터 뮤결성을 검사하는 함수			*
+ * Parameter		: objGrd(DataSet)											*
+ * Return 			: 															*
+ ********************************************************************************/
+ function gfnDsCheckValid(objGrd){
+	var objDsValid = objects(objGrd.name + "Valid");
+	var nRowCnt = objGrd.getRowCount();
+	var nColCnt = objGrd.getColCount();
+	for(var i = 0 ; i < nRowCnt ; i++) {
+		for(var j = 0 ; j < nColCnt ; j++) {
+			if(objGrd.getRowType(i) == 2 || objGrd.getRowType(i) == 4){
+				var rtnVar = gfnItemCheck(i, j, objGrd, objDsValid);
+				if(!rtnVar){
+					return false;
+				}
+			}
+		}
+	}
+	return true;
+}
+
+/********************************************************************************
+ * Function Name	: gfnItemCheck												*
+ * Desc				: DataSet 내의 데이터 무결성을 검사하는 함수			*
+ *					  private function											*
+ * Parameter		: rowNum = DataSet row position								*
+ *					  colNum = DataSet Column Index								*
+ *					  objGrd = DataSet(Grid에 bind된 DataSet)					*
+ *					  objDsValid = Dataset(objGrd의 무결성 검사용 DataSet		*
+ * Return 			: true = Data에 문제 없음									*
+ *					  false = 무결성 위한										*
+ ********************************************************************************/
+function gfnItemCheck(rowNum, colNum, objGrd, objDsValid) {
+	var arrItem = new Array();
+	var strColNm = objGrd.getColID(colNum);
+	var strCol = objDsValid.getColumn(0, strColNm);
+	if(gfnIsNull(strCol)) return true;
+	arrItem = strCol.split(",");
+	var value = objGrd.getColumn(rowNum, colNum);
+	
+	var returnVal;
+	var title = "";
+	for(var k = 0 ; k < arrItem.length ; k++) {
+//		returnVal = gfnItemValid(rowNum, arrItem[k], value, colNum, objGrd);
+		var arrItem2 = new Array();
+		
+		arrItem2 = arrItem[k].split(":");
+		switch(arrItem2[0]){
+			case "title":
+				title = gfnGetMessage("global.domain." + arrItem2[1]);
+				break;
+			case "required":
+				if(arrItem2[1] == "true"){
+					if(gfnIsNull(value)){
+						gfnAlertMsg("err.validator.required", "WARN" ,title);
+						return false;
+					}
+				}
+				break;
+			case "minlength":
+				if(gfnLength(value) < arrItem2[1]){
+					gfnAlertMsg("err.validator.minlength", "WARN", title, arrItem2[1]);
+					return false;
+				}
+				break;
+			case "maxlength":
+				if(gfnLength(value) > arrItem2[1]){
+					gfnAlertMsg("err.validator.maxlength", "WARN", title, arrItem2[1]);
+					return false;
+				}
+				break;
+			case "num":
+				if(arrItem2[1] == "f" && !gfnCheckNumber(value, ".-")){
+					gfnAlertMsg("err.validator.chknumber.f", "WARN", title, arrItem2[1]);
+					return false;
+				} else if(arrItem2[1] == "i" && !gfnCheckNumber(value, "-")){
+					gfnAlertMsg("err.validator.chknumber.i", "WARN", title, arrItem2[1]);
+					return false;
+				} else if(arrItem2[1] == "n" && !gfnCheckNumber(value)){
+					gfnAlertMsg("err.validator.chknumber.n", "WARN", title, arrItem2[1]);
+					return false;
+				}
+				break;
+			case "fromNum":
+				if(!gfnCheckNumber(value, ".-") || (parseFloat(arrItem2[1]) > parseFloat(value))){
+					gfnAlertMsg("err.validator.fromnum", "WARN", title, arrItem2[1]);
+					return false;
+				}
+				break;
+			case "toNum":
+				if(!gfnCheckNumber(value, ".-") || (parseFloat(arrItem2[1]) < parseFloat(value))){
+					gfnAlertMsg("err.validator.tonum", "WARN", title, arrItem2[1]);
+					return false;
+				}
+				break;
+			case "format":
+				if(gfnIsNull(value)){
+					break;
+				}
+				if(arrItem2[1] == "mail" && !gfnCheckEmail(value)){
+					gfnAlertMsg("err.validator.email", "WARN", title);
+					return false;
+				} else if(arrItem2[1] == "phone" && !gfnCheckPhone(value)){
+					gfnAlertMsg("err.validator.phone", "WARN", title);
+					return false;
+				} else if(arrItem2[1] == "url" && !gfnCheckURL(value)){
+					gfnAlertMsg("err.validator.url", "WARN", title);
+					return false;
+				} else if(arrItem2[1] == "date" && !gfnCheckDate8(value)){
+					gfnAlertMsg("err.validator.date8", "WARN", title);
+					return false;
+				} else if(arrItem2[1] == "date10" && !gfnCheckDate10(value)){
+					gfnAlertMsg("err.validator.date10", "WARN", title);
+					return false;
+				} else if(arrItem2[1] == "zipcode" && !gfnCheckNumber(value) && gfnLength(gfnReplace(value, " ", "")) != 6){
+					gfnAlertMsg("err.validator.zipcode", "WARN", title);
+					return false;
+				}
+				break;
+		}
+	}
+	return true;
+}
+
+/********************************************************************************
+ * Function Name	: gfnSetGridCheckAll										*
+ * Desc				: Grid Head중 check box가 있을 경우, check box 클릭		*
+ *					  이벤트 발생시 전체 row에 대한 check/uncheck 설정 함수	*
+ * Parameter		: obj = Grid												*
+ *					  e = GridClickEventInfo									*
+ * Return 			: 															*
+ ********************************************************************************/
+var isGridCheckAll = 0;
+function gfnSetGridCheckAll(obj:Grid, e:GridClickEventInfo)
+{
+	var dsObj = eval(obj.binddataset);
+	var strHeadText = obj.getCellProperty("body", e.cell, "text");
+	
+	strHeadText = gfnNvl(strHeadText);
+	
+	var v_Colid = strHeadText.replace("bind:", "");
+
+	if(dsObj.getColID(e.cell) == "_chk"){
+		
+		isGridCheckAll = (isGridCheckAll ? 0 : 1);
+		
+		dsObj.enableevent = false;
+
+		for (var i=0; i<dsObj.getRowCount(); i++) {
+			dsObj.setColumn(i, v_Colid, isGridCheckAll);
+		}
+		
+		obj.setCellProperty( "Head", 0, "expr", isGridCheckAll);
+	}
+	
+	dsObj.enableevent = true;
+}
+
+/********************************************************************************
+ * Function Name	: gfnFindInGrid												*
+ * Desc				: 주어진 keyword를 포함하는 Grid Cell을 검색하는 함수	*
+ * Parameter		: objGrid = Grid											*
+ *					  strValue = 검색 키워드									*
+ *					  nStartRow = 검색 시작 지점 Row 							*
+ *					  nStartCol = 검색 시작 지점 Column						*
+ *					  strDirection = 검색 방향(U:Up, D:Down)					*
+ * Return 			: 															*
+ ********************************************************************************/
+var strFindValue = "";
+var strFindDirection = "";
+function gfnFindInGrid(objGrid, strValue, nStartRow, nStartCol, strDirection){
+	var arrFindColumn = new Array();
+	var nRowCount = objGrid.rowcount;
+	var objGridDs = eval("opener." + objGrid.binddataset);
+	var nColCount = objGrid.getCellCount("body");
+	
+	if(strDirection == "U"){
+		
+		if(strFindValue != strValue || (strFindValue == strValue && strFindDirection != strDirection)){
+			strFindValue = strValue;
+			strFindDirection = strDirection;
+		} else {
+			--nStartCol;
+		}
+		
+		if((nStartCol - 1) < -1){
+			--nStartRow;
+			nStartCol = (nColCount - 1);
+		}
+		
+		if(nStartRow < 0) {
+			nStartRow = 0;
+			nStartCol = 0;
+		}
+		
+		for(var nRow = nStartRow ; nRow >= 0 ; nRow--){
+			for(var nCol = nStartCol ; nCol >= 0 ; nCol--){
+				if(gfnIndexOf(objGrid.getCellText(nRow, nCol), strValue) >= 0){
+					objGridDs.rowposition = nRow;
+					objGridDs.clearSelect();
+					objGridDs.selectRow(nRow);
+					objGrid.setCellPos(nCol);
+//					objGrid.setCellProperty("Body", nCol, "background", "red");
+					return;
+				}
+			}
+			nStartCol = (nColCount - 1);
+		}
+	} else {
+		
+		if(strFindValue != strValue || (strFindValue == strValue && strFindDirection != strDirection)){
+			strFindValue = strValue;
+			strFindDirection = strDirection;
+		} else {
+			++nStartCol;
+		}
+		
+		if((nStartCol + 1) > nColCount){
+			++nStartRow;
+			nStartCol = 0;
+		}
+		
+		if(nStartRow >= nRowCount){
+			nStartRow = nRowCount - 1;
+			nStartCol = nColCount - 1;
+		}
+		
+		if(nStartRow < 0){
+			nStartRow = 0;
+			nStartCol = 0;
+		}
+		
+		for(var nRow = nStartRow ; nRow < nRowCount ; nRow++){
+			for(var nCol = nStartCol ; nCol < nColCount ; nCol++){
+				if(gfnIndexOf(objGrid.getCellText(nRow, nCol), strValue) >= 0){
+					objGridDs.rowposition = nRow;
+					objGridDs.clearSelect();
+					objGridDs.selectRow(nRow);
+					objGrid.setCellPos(nCol);
+//					objGrid.setCellProperty("Body", nCol, "background", "red");
+					return;
+				}
+			}
+			nStartCol = 0;
+		}
+	}
+}
+
+/********************************************************************************
+ * Function Name	: fnGrid_onrbuttonup										*
+ * Desc				: Grid Component에서 마우스 우클릭 이벤트가 발생한 경우*
+ *					  팝업 메뉴를 보여주기 위한 함수						*
+ * Parameter		: obj = Grid												*
+ *					  e = GridMouseEventInfo									*
+ * Return 			: 															*
+ ********************************************************************************/
+function fnGrid_onrbuttonup(obj:Grid, e:GridMouseEventInfo)
+{
+	nSelectedCol = e.col;
+	nSelectedRow = e.row;
+	objFocusedGrd = obj;
+	var nGridX = system.cursorx;
+	var nGridY = system.cursory;
+	PopupMenuID.trackPopup(nGridX, nGridY);
+}]]></Script>

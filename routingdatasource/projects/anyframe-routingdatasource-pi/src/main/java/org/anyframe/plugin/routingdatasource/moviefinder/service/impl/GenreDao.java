@@ -40,9 +40,7 @@ public class GenreDao extends QueryServiceDaoSupport {
 	}
 
 	public List<Genre> getList() {
-		List<Genre> results = this.findList("findRoutingDataSourceGenreList",
-				new Object[] {});
-		return results;
+		return super.findList("findRoutingDataSourceGenreList", new Object[] {});
 	}
 
 }

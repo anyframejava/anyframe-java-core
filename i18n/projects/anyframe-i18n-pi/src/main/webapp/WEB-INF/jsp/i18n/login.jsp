@@ -1,10 +1,11 @@
 <%@ page language="java" errorPage="/sample/common/error.jsp" pageEncoding="UTF-8" contentType="text/html;charset=utf-8" %>
 <%@ include file="/sample/common/top.jsp"%>
-		<div class="location"><a href="<c:url value='/anyframe.jsp'/>">Home</a> &gt; <a href="<c:url value='/i18nLoginView.do'/>">I18N 1.0.3.RC1</a></div>
+		<div class="location"><a href="<c:url value='/anyframe.jsp'/>">Home</a> &gt; <a href="<c:url value='/i18nLoginView.do'/>">I18N 1.0.4</a></div>
     </div>
     <hr />
 <script type="text/javascript" src="<c:url value='/sample/javascript/CommonScript.js'/>"></script>    
 <script type="text/javascript">
+<!--
 function fncSubmit() {
 	var id = document.getElementsByName("id")[0];
 	var password = document.getElementsByName("password")[0];
@@ -22,7 +23,8 @@ function fncSubmit() {
 
 function fncChangeLocale(arg) {
 	document.location.href="<c:url value='i18nLoginView.do?locale='/>"+arg;
-}	
+}
+-->
 </script>
  	<div id="container">
  	 	<div style="top:2px;margin:5px 0;right:34%;" class="list_underbtn_right">

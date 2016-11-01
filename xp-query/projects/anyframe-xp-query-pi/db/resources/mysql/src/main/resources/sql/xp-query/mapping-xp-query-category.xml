@@ -1,0 +1,19 @@
+		<!--xp-query-findXPCategoryList-START-->
+			SELECT
+			CATEGORY_ID, CATEGORY_NAME, CATEGORY_DESC, REG_DATE
+			FROM XP_CATEGORY
+			<!--Velocity-Support-findXPCategoryList-START-->
+			#if ($SEARCH_CONDITION.length() &gt; 0 &amp;&amp; "0" == $SEARCH_CONDITION)
+				WHERE CATEGORY_NAME like CONCAT('%' , :SEARCH_KEYWORD , '%')
+			#elseif ($SEARCH_CONDITION.length() &gt; 0 &amp;&amp; "1" == $SEARCH_CONDITION)
+			    WHERE CATEGORY_DESC like CONCAT('%' , :SEARCH_KEYWORD , '%')
+			#end
+			<!--Velocity-Support-findXPCategoryList-END-->
+			ORDER BY REG_DATE DESC		
+		<!--xp-query-findXPCategoryList-END-->
+		<!--xp-query-createXPCategory-START-->
+			INSERT INTO XP_CATEGORY
+			(CATEGORY_ID, CATEGORY_NAME, CATEGORY_DESC, REG_DATE)
+			VALUES (CONCAT('CATEGORY-' , XP_CATEGORY_ID_SEQ_NEXT_VALUE()), :CATEGORY_NAME, :CATEGORY_DESC, now())		
+		<!--xp-query-createXPCategory-END-->
+		

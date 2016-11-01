@@ -1,0 +1,74 @@
+	<chapter id="cache_samples">
+		<title>Samples</title>
+			<para>The following is an example of configuration and test code of CacheServiceImpl.</para>
+			<itemizedlist>
+				<listitem>
+					<para>
+						<emphasis role="bold">Configuration</emphasis>
+					</para>
+					<para>
+						The following is a part of context-cache.xml, configuration file of cacheService and cache.
+						According to the contents of the file under the property definition, Cache properties for using 
+						in the test with cacheAdministrator Bean are defined. In addition, 
+						reference cache which is returned by getCache method in the cacheService Bean.
+						<programlisting language="xml"><![CDATA[<bean id="cacheService" class="org.anyframe.cache.impl.CacheServiceImpl">
+    <property name="cache" ref="cache" />
+</bean>
+
+<bean id="cache" factory-bean="cacheAdministrator" factory-method="getCache" />
+
+<bean id="cacheAdministrator"
+    class="com.opensymphony.oscache.general.GeneralCacheAdministrator"
+    destroy-method="destroy">
+    <constructor-arg index="0">
+        <props>
+            <prop key="cache.capacity">10</prop>
+        </props>
+    </constructor-arg>
+</bean>]]></programlisting>
+					</para>
+				</listitem>
+				<listitem>
+					<para>
+						<emphasis role="bold">TestCase</emphasis>
+					</para>
+					<para>
+						The following is a part of TestCase which tests sotre and retrieve data in 
+						Cache based on above-defined configuration
+						<programlisting language="java">public void manageGenre() throws Exception {
+    // 1. create a new genre
+    Genre genre = new Genre();
+    genre.setName("Western");
+    genreService.create(genre);
+    putInCache(genre);
+
+    // 2. assert - create
+    genre = getGenreByPk(genre.getGenreId());
+    assertNotNull("fail to fetch a genre", genre);
+    assertEquals("fail to compare a genre name", "Western", genre.getName());
+
+    // 3. update a name of genre
+    String name = "Western " + System.currentTimeMillis();
+    genre.setName(name);
+    genreService.update(genre);
+    putInCache(genre);
+
+    // 4. assert - update
+    genre = getGenreByPk(genre.getGenreId());
+    assertNotNull("fail to fetch a genre", genre);
+    assertEquals("fail to compare a updated name", name, genre.getName());
+
+    // 5. remove a genre
+    genreService.remove(genre.getGenreId());
+}
+
+private Genre getGenreByPk(String genreId) throws Exception{
+    Map&lt;String, Genre&gt; resultMap = (HashMap&lt;String, Genre&gt;) cacheService
+        .getFromCache("genreList");
+    Genre genre = resultMap.get(genreId);
+    return genre;
+}</programlisting>
+					</para>
+				</listitem>
+			</itemizedlist>
+	</chapter>

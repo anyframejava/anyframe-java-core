@@ -1,0 +1,48 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<queryservice xmlns="http://www.anyframejava.org/schema/query/mapping" 
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" 
+	xsi:schemaLocation="http://www.anyframejava.org/schema/query/mapping http://www.anyframejava.org/schema/query/mapping/anyframe-query-mapping-1.0.xsd ">
+
+	<queries>
+		<query id="findCategoryList" isDynamic="true" mappingStyle="upper">
+			<statement>
+			<!--mip-query-findCategoryList-START-->
+				SELECT
+				CATEGORY_ID, CATEGORY_NAME, CATEGORY_DESC, REG_DATE
+				FROM MIP_CATEGORY
+				<!--Velocity-Support-findCategoryList-START-->
+				#if ($SEARCH_CONDITION.length() &gt; 0 &amp;&amp; "0" == $SEARCH_CONDITION)
+					WHERE CATEGORY_NAME like '%' || :SEARCH_KEYWORD || '%'
+				#elseif ($SEARCH_CONDITION.length() &gt; 0 &amp;&amp; "1" == $SEARCH_CONDITION)
+				    WHERE CATEGORY_DESC like '%' || :SEARCH_KEYWORD || '%'
+				#end
+				<!--Velocity-Support-findCategoryList-END-->
+				ORDER BY REG_DATE DESC
+			<!--mip-query-findCategoryList-END-->
+			</statement>
+		</query>
+		<query id="createCategory" isDynamic="true" mappingStyle="upper">
+			<statement>
+			<!--mip-query-createCategory-START-->
+				INSERT INTO MIP_CATEGORY
+				(CATEGORY_ID, CATEGORY_NAME, CATEGORY_DESC, REG_DATE)
+				VALUES ('CATEGORY-'|| NEXT VALUE FOR CATEGORY_ID_SEQ, :CATEGORY_NAME, :CATEGORY_DESC, sysdate)
+			<!--mip-query-createCategory-END-->
+			</statement>
+		</query>
+		<query id="updateCategory" isDynamic="true" mappingStyle="upper">
+			<statement>
+				UPDATE MIP_CATEGORY
+				SET
+				CATEGORY_NAME = :CATEGORY_NAME, CATEGORY_DESC = :CATEGORY_DESC
+				WHERE CATEGORY_ID = :CATEGORY_ID
+			</statement>
+		</query>
+		<query id="removeCategory" isDynamic="true" mappingStyle="upper">
+			<statement>
+				DELETE FROM MIP_CATEGORY
+				WHERE CATEGORY_ID = :CATEGORY_ID
+			</statement>
+		</query>
+	</queries>
+</queryservice>

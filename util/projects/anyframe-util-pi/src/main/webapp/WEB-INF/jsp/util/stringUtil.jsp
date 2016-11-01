@@ -5,7 +5,7 @@
 
 <head>
 <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
-<title>Anyframe 5.5.0.RC1 Main</title>
+<title>Anyframe 5.5.1 Main</title>
 <link rel="stylesheet" type="text/css" href="<c:url value='/sample/css/layout.css'/>"/>
 <link rel="stylesheet" type="text/css" href="<c:url value='/sample/css/common.css'/>"/>
 <!-- jQuery component -->
@@ -22,7 +22,7 @@
     <div id="header">
     	<div class="toplogo"><h1><a href="<c:url value='/anyframe.jsp'/>"><img src="<c:url value='/sample/images/h1_toplogo.jpg'/>" alt="anyframe"/></a></h1></div>
 
-		<div class="location"><a href="<c:url value='/anyframe.jsp'/>">Home</a> &gt; <a href="<c:url value='/util/utilList.do'/>">Util 1.0.3.RC1</a></div>
+		<div class="location"><a href="<c:url value='/anyframe.jsp'/>">Home</a> &gt; <a href="<c:url value='/util/utilList.do'/>">Util 1.0.4</a></div>
     </div>
     <hr />
 <script type="text/javascript" src="<c:url value='/util-jquery/jquery/jquery-1.6.2.min.js'/>"></script>
@@ -58,18 +58,18 @@ $(document).ready(function() {
 				<dd>
 					<input type="text" id="str2" name="str2" size="30" value="Anyframe Java Test"/>
 					<input type="text" id="str21" name="str21" size="10" value="test"/>
-					<input type="button" id="convert22" name="convert22" value="check"/>
+					<input type="button" id="convert21" name="convert21" value="check"/>
 					<input type="text" id="countMatchesIgnoreCase" name="countMatchesIgnoreCase" size="5" disabled="disabled" />
 				</dd>
 				<dt>[getLength]</dt>
 				<dd>
-					<input type="text" id="str3" name="str3" size="30" value="ì ëíë ì"/>
+					<input type="text" id="str3" name="str3" size="30" value=""/>
 					<input type="button" id="convert12" name="convert12" value="check"/>
 					<input type="text" id="getLength" name="getLength" size="5" disabled="disabled" />
 				</dd>
 				<dt>[getByteLength]</dt>
 				<dd>
-					<input type="text" id="str4" name="str4" size="30" value="ì ëíë ì"/>
+					<input type="text" id="str4" name="str4" size="30" value="애니프레임"/>
 					<input type="button" id="convert13" name="convert13" value="check"/>
 					<input type="text" id="getByteLength" name="getByteLength" size="5" disabled="disabled" />
 				</dd>
@@ -77,7 +77,7 @@ $(document).ready(function() {
 				<dd>
 					<input type="text" id="str5" name="str5" size="30" value="Anyframe Java Test"/>
 					<input type="text" id="cutLength" name="cutLength" size="5" value="14"/>
-					<input type="button" id="convert23" name="convert23" value="check"/>
+					<input type="button" id="convert22" name="convert22" value="check"/>
 					<input type="text" id="left" name="left" size="30" disabled="disabled" />
 				</dd>
 				<dt>[leftPad]</dt>
@@ -100,7 +100,7 @@ $(document).ready(function() {
 				<dd>
 					<input type="text" id="str8" name="str8" size="30" value="Anyframe_java_test"/>
 					<input type="text" id="posChar" name="posChar" size="5" value="_"/>
-					<input type="button" id="convert24" name="convert24" value="convert" />
+					<input type="button" id="convert23" name="convert23" value="convert" />
 					<input type="text" id="convertToCamelCase" name="convertToCamelCase" size="30" disabled="disabled" />
 				</dd>
 				<dt>[convertToUnderScore]</dt>
@@ -111,15 +111,14 @@ $(document).ready(function() {
 				</dd>
 				<dt>[htmlEscape]</dt>
 				<dd>
-					<input type="text" id="str10" name="str10" size="50" value="<html>Anyframe Java Test<html>"/>
+					<input type="text" id="str10" name="str10" size="50" value="&lt;html&gt;Anyframe Java Test&lt;/html&gt;"/>
 					<input type="button" id="convert15" name="convert15" value="convert" />
 					<input type="text" id="htmlEscape" name="htmlEscape" size="50" disabled="disabled" />
 				</dd>
-				<dt>[htmlUnescape]
-				 <xmp>&lt;html&gt;Anyframe Java Test&lt;html&gt;</xmp>
+				<dt>[htmlUnescape]<br/>
+				 &amp;lt;html&amp;gt;Anyframe Java Test&amp;lt;/html&amp;gt;<br/>
 				    After copying the upper text, paste the below textbox. and then test.</dt>
 				<dd>
-				   
 					<input type="text" id="str11" name="str11" size="50" value=""/>
 					<input type="button" id="convert16" name="convert16" value="convert" />
 					<input type="text" id="htmlUnescape" name="htmlUnescape" size="50" disabled="disabled" />

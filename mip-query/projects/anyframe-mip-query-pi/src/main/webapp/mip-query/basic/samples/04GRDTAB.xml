@@ -1,0 +1,286 @@
+<?xml version="1.0" encoding="utf-8"?>
+<Window>
+	<Form BKColor="white" DomainID="title.user_list" Height="640" Id="frm04GRDTAB" Left="8" OnLoadCompleted="frm04GRDTAB_OnLoadCompleted" PidAttrib="7" Style="stlFrm" Top="8" Ver="1.0" Width="834" WorkArea="true">
+		<Datasets>
+			<Dataset DataSetType="Dataset" Id="dsService">
+				<Contents>
+					<colinfo id="SVC_ID" size="100" summ="default" type="STRING"/>
+					<colinfo id="QUERY_LIST" size="256" summ="default" type="STRING"/>
+					<colinfo id="SERVICE" size="100" summ="default" type="STRING"/>
+					<colinfo id="IN_DATASET_LIST" size="256" summ="default" type="STRING"/>
+					<colinfo id="OUT_DATASET_LIST" size="256" summ="default" type="STRING"/>
+					<colinfo id="CONTROLLER" size="512" summ="default" type="STRING"/>
+					<colinfo id="CALLBACK" size="100" summ="default" type="STRING"/>
+					<colinfo id="SYNC_YN" size="1" summ="default" type="STRING"/>
+					<record>
+						<CALLBACK></CALLBACK>
+						<CONTROLLER></CONTROLLER>
+						<IN_DATASET_LIST>querySet1=dsSearch</IN_DATASET_LIST>
+						<OUT_DATASET_LIST>dsGrdUser=querySet1</OUT_DATASET_LIST>
+						<QUERY_LIST>querySet1=findUserList</QUERY_LIST>
+						<SERVICE></SERVICE>
+						<SVC_ID>getListUser</SVC_ID>
+						<SYNC_YN></SYNC_YN>
+					</record>
+					<record>
+						<CALLBACK></CALLBACK>
+						<CONTROLLER></CONTROLLER>
+						<IN_DATASET_LIST>querySet1=dsGrdUser:U</IN_DATASET_LIST>
+						<OUT_DATASET_LIST></OUT_DATASET_LIST>
+						<QUERY_LIST>querySet1=createUser,updateUser,removeUser</QUERY_LIST>
+						<SERVICE></SERVICE>
+						<SVC_ID>saveAllUser</SVC_ID>
+						<SYNC_YN></SYNC_YN>
+					</record>
+					<record>
+						<CALLBACK></CALLBACK>
+						<CONTROLLER></CONTROLLER>
+						<IN_DATASET_LIST>querySet1=dsSearch</IN_DATASET_LIST>
+						<OUT_DATASET_LIST>dsCboDept=querySet1</OUT_DATASET_LIST>
+						<QUERY_LIST>querySet1=findDeptList</QUERY_LIST>
+						<SERVICE></SERVICE>
+						<SVC_ID>getListDept</SVC_ID>
+						<SYNC_YN></SYNC_YN>
+					</record>
+				</Contents>
+			</Dataset>
+			<Dataset DataSetType="Dataset" Id="dsSearch">
+				<Contents>
+					<colinfo id="SEARCH_CONDITION" size="100" type="STRING"/>
+					<colinfo id="SEARCH_KEYWORD" size="100" type="STRING"/>
+					<record>
+						<SEARCH_CONDITION></SEARCH_CONDITION>
+						<SEARCH_KEYWORD></SEARCH_KEYWORD>
+					</record>
+				</Contents>
+			</Dataset>
+			<Dataset DataSetType="Dataset" Id="dsGrdUser" UseClientLayout="1">
+				<Contents>
+					<colinfo id="_chk" size="1" summ="default" type="CHAR"/>
+					<colinfo id="USER_ID" size="256" summ="default" type="STRING"/>
+					<colinfo id="USER_NAME" MapValue="titleId=biz.user.name,required" size="256" summ="default" type="STRING"/>
+					<colinfo id="EN_NAME" size="256" summ="default" type="STRING"/>
+					<colinfo id="COMP_PHONE" size="256" summ="default" type="STRING"/>
+					<colinfo id="PHONE" size="256" summ="default" type="STRING"/>
+					<colinfo id="CELL_PHONE" size="256" summ="default" type="STRING"/>
+					<colinfo id="COMPANY" size="256" summ="default" type="STRING"/>
+					<colinfo id="DEPT_ID" size="256" summ="default" type="STRING"/>
+					<colinfo id="JOB_POSITION" size="256" summ="default" type="STRING"/>
+					<colinfo id="ASSIGNMENT" size="256" summ="default" type="STRING"/>
+					<colinfo id="OFFICER_YN" size="256" summ="default" type="CHAR"/>
+					<colinfo id="FAX" size="256" summ="default" type="STRING"/>
+					<colinfo id="EMAIL" size="256" summ="default" type="STRING"/>
+					<colinfo id="ZIP_CODE" size="256" summ="default" type="STRING"/>
+					<colinfo id="ADDRESS" size="256" summ="default" type="STRING"/>
+					<colinfo id="COMP_ZIP_CODE" size="256" summ="default" type="STRING"/>
+					<colinfo id="COMP_ADDRESS" size="256" summ="default" type="STRING"/>
+					<colinfo id="PASSWORD" MapValue="titleId=biz.user.password,required" size="256" summ="default" type="STRING"/>
+					<record>
+						<_chk></_chk>
+						<ADDRESS></ADDRESS>
+						<ASSIGNMENT></ASSIGNMENT>
+						<CELL_PHONE></CELL_PHONE>
+						<COMP_ADDRESS></COMP_ADDRESS>
+						<COMP_PHONE></COMP_PHONE>
+						<COMP_ZIP_CODE></COMP_ZIP_CODE>
+						<COMPANY></COMPANY>
+						<DEPT_ID></DEPT_ID>
+						<EMAIL></EMAIL>
+						<EN_NAME></EN_NAME>
+						<FAX></FAX>
+						<JOB_POSITION></JOB_POSITION>
+						<OFFICER_YN></OFFICER_YN>
+						<PASSWORD></PASSWORD>
+						<PHONE></PHONE>
+						<USER_ID></USER_ID>
+						<USER_NAME></USER_NAME>
+						<ZIP_CODE></ZIP_CODE>
+					</record>
+				</Contents>
+			</Dataset>
+			<Dataset DataSetType="Dataset" Id="dsCboDept">
+				<Contents>
+					<colinfo id="DEPT_ID" size="256" summ="default" type="STRING"/>
+					<colinfo id="DEPT_NAME" size="256" summ="default" type="STRING"/>
+					<colinfo id="DEPT_DESC" size="256" summ="default" type="STRING"/>
+				</Contents>
+			</Dataset>
+			<Dataset DataSetType="Dataset" Id="dsCboSearchCd">
+				<Contents>
+					<colinfo id="CODE" size="256" summ="default" type="STRING"/>
+					<colinfo id="DATA" size="256" summ="default" type="STRING"/>
+					<record>
+						<CODE>0</CODE>
+						<DATA></DATA>
+					</record>
+					<record>
+						<CODE>1</CODE>
+						<DATA></DATA>
+					</record>
+				</Contents>
+			</Dataset>
+		</Datasets>
+		<Grid AutoFit="TRUE" AutoFitEndLine="Hide" BindDataset="dsGrdUser" BkColor2="user10" BoldHead="true" Border="Flat" BorderColor="#d6d6d6" Bottom="406" ColSizing="TRUE" Editable="TRUE" Enable="true" EndLineColor="default" Font="돋움,9" HeadBorder="Flat" HeadHeight="23" Height="294" Id="grdUser" InputPanel="FALSE" Left="16" LineColor="default" MinWidth="100" OnHeadClick="grdUser_OnHeadClick" Right="830" Style="stlGrd" TabOrder="1" TabStop="true" Top="112" UseDBuff="true" UsePopupMenu="true" UseSelColor="true" Visible="true" VLineColor="default" WheelScrollRow="1" Width="814">
+			<contents>
+				<format id="Default">
+					<columns>
+						<col width="33"/>
+						<col width="150"/>
+						<col width="150"/>
+						<col width="210"/>
+						<col width="135"/>
+						<col width="135"/>
+					</columns>
+					<head>
+						<cell col="0" color="user11" display="checkbox" edit="checkbox" font="돋움,9,Bold" text="0"/>
+						<cell col="1" color="user11" display="text" domainid="biz.user.name" font="돋움,9,Bold"/>
+						<cell col="2" color="user11" display="text" domainid="biz.user.id" font="돋움,9,Bold"/>
+						<cell col="3" color="user11" display="text" domainid="biz.user.email" font="돋움,9,Bold"/>
+						<cell col="4" color="user11" display="text" domainid="biz.user.phone" font="돋움,9,Bold"/>
+						<cell col="5" color="user11" display="text" domainid="biz.user.cellphone" font="돋움,9,Bold"/>
+					</head>
+					<body>
+						<cell align="center" col="0" colid="_chk" display="checkbox" edit="checkbox"/>
+						<cell align="center" col="1" colid="user_name" display="text"/>
+						<cell col="2" colid="USER_ID" display="text"/>
+						<cell col="3" colid="email" display="text"/>
+						<cell col="4" colid="PHONE" display="text"/>
+						<cell col="5" colid="CELL_PHONE" display="text"/>
+					</body>
+				</format>
+			</contents>
+		</Grid>
+		<Button ButtonStyle="TRUE" DomainID="button.add" Height="19" Id="btnAddRow" ImageID="btn_add" Left="654" LeftMargin="13" OnClick="btnAddRow_OnClick" Style="stlBtn" TabOrder="3" Text="추가" Top="30" Width="56"></Button>
+		<Button ButtonStyle="TRUE" Cursor="HAND" DomainID="button.delete" Height="19" Id="btnDelRow" ImageID="btn_delete" Left="713" LeftMargin="13" OnClick="btnDelRow_OnClick" Style="stlBtn" TabOrder="4" Text="삭제" Top="30" Width="56"></Button>
+		<Button ButtonStyle="TRUE" Cursor="HAND" DomainID="button.save" Height="19" Id="btnSaveAll" ImageID="btn_save" Left="772" LeftMargin="13" OnClick="btnSaveAll_OnClick" Style="stlBtn" TabOrder="5" Text="저장" Top="30" Width="56"></Button>
+		<Image Align="Left" DomainID="title.user_list" Height="19" Id="imgTitle" ImageID="b_title_icon1" Left="14" LeftMargin="12" Style="stlTitle" TabOrder="2" Text="사용자&#32;목록" Top="24" VAlign="Top" Width="400"></Image>
+		<Div BKColor="user39" Border="Flat" BorderColor="user12" Height="43" Id="divSearch" Left="14" Style="stlDivSearch" TabOrder="6" Text="Div0" Top="53" Width="814">
+			<Contents>
+				<Edit BindDataset="dsSearch" BKColor="white" Border="Flat" Column="SEARCH_KEYWORD" Height="20" Id="edtSearchKw" ImeMode="keep,native" Left="223" OnKeyDown="edtSearchKw_OnKeyDown" Style="stlEdt" TabOrder="3" Top="11" Width="100"></Edit>
+				<Image Align="Left" DomainID="button.search_condition" Font="돋움체,9,Bold" Height="19" Id="imgSearch" ImageID="blet_search" Left="20" LeftMargin="18" OnClick="Div0_Image0_OnClick" Style="stlImg" TabOrder="1" TabStop="FALSE" Text="검색조건" Top="12" Width="80"></Image>
+				<Button ButtonStyle="TRUE" Cursor="HAND" Height="22" Id="btnSearch" ImageID="icon_search" Left="327" OnClick="divSearch_btnSearch_OnClick" Style="stlBtn" TabOrder="2" Top="12" Width="22"></Button>
+				<Combo BindDataset="dsSearch" BKColor="white" Border="Flat" CodeColumn="CODE" Column="SEARCH_CONDITION" DataColumn="DATA" Height="20" Id="cboSearchCd" ImeMode="keep,native" INDEX="0" InnerDataset="dscboSearchCd" Left="100" ResetIndex="FIRST" Search="FILTERED" Style="stlCbo" TabOrder="4" Top="10" Width="120">
+					<Contents>
+						<Record code="0" Data="이름"/>
+						<Record code="1" Data="전자우편주소"/>
+					</Contents>
+				</Combo>
+			</Contents>
+		</Div>
+		<Div Height="13" Id="divGrdStatus" Left="628" Style="stlLblGrp" TabOrder="7" TabStop="FALSE" Text="Div0" Top="99" Url="includes::GRDSTATUS.xml" UserData="GRD_STATUS=grdUser" Width="200">
+			<Contents></Contents>
+		</Div>
+		<Tab BKColor="user2" Border="Flat" Height="210" Id="tabUserDetail" Left="14" MouseOverColor="default" SelColor="user51" Style="stlTab" TabOrder="8" Top="413" Width="814">
+			<Contents>
+				<TabPage BorderColor="black" DomainID="biz.user.basis_info" Height="185" Id="tab1" ImageID="tab-T4" Left="2" TabOrder="18" Text="기본정보" Top="23" Width="810">
+					<Static Border="Flat" DomainID="biz.user" Font="돋움,9,Bold" Height="158" Id="stGrpUserInfo" Left="10" Style="stlLblGrp" TabOrder="17" Text="사용자" Top="14" Type="Groupbox" Width="384"></Static>
+					<Static Border="Flat" DomainID="biz.user.phone" Font="돋움,9,Bold" Height="75" Id="stGrpPhone" Left="412" Style="stlLblGrp" TabOrder="18" Text="전화" Top="97" Type="Groupbox" Width="384"></Static>
+					<Static Border="Flat" DomainID="biz.user.address" Font="돋움,9,Bold" Height="75" Id="stGrpAddress" Left="412" Style="stlLblGrp" TabOrder="14" Text="주" Top="14" Type="Groupbox" Width="384"></Static>
+					<Edit BindDataset="dsGrdUser" Border="Flat" CheckLength="Byte" Column="USER_NAME" Height="20" Id="edtUserName" Left="98" MaxLength="20" Style="stlEdt" TabOrder="1" Top="71" Width="280"></Edit>
+					<Edit BindDataset="dsGrdUser" Border="Flat" CheckLength="Byte" Column="EN_NAME" Height="20" Id="edtEnName" Left="98" MaxLength="20" Style="stlEdt" TabOrder="3" Top="133" Width="280"></Edit>
+					<Edit BindDataset="dsGrdUser" Border="Flat" CheckLength="Byte" Column="PHONE" Height="20" Id="edtPhone" Left="499" MaxLength="20" Style="stlEdt" TabOrder="6" Top="115" Width="280"></Edit>
+					<Edit BindDataset="dsGrdUser" Border="Flat" CheckLength="Byte" Column="CELL_PHONE" Height="20" Id="edtMobile" Left="499" MaxLength="20" Style="stlEdt" TabOrder="7" Top="140" Width="280"></Edit>
+					<Edit BindDataset="dsGrdUser" Border="Flat" Column="USER_ID" Enable="FALSE" Height="20" Id="edtUserId" ImeMode="none" Left="98" Style="stlEdt" TabOrder="11" Top="40" Width="280"></Edit>
+					<Image Align="Left" DomainID="biz.user.id" Font="돋움체,9,Bold" Height="20" Id="imgUserId" ImageID="blet_01" Left="14" LeftMargin="20" OnClick="Div0_Image0_OnClick" Style="stlImgManage" TabOrder="11" TabStop="FALSE" Text="ID" Top="40" Width="80"></Image>
+					<Image Align="Left" DomainID="biz.user.name" Font="돋움체,9,Bold" Height="20" Id="imgUserName" ImageID="blet_02" Left="14" LeftMargin="20" OnClick="Div0_Image0_OnClick" Style="stlImgManage" TabOrder="11" TabStop="FALSE" Text="이름" Top="71" Width="80"></Image>
+					<Image Align="Left" DomainID="biz.user.international_name" Font="돋움체,9,Bold" Height="20" Id="imgEnName" ImageID="blet_01" Left="14" LeftMargin="20" OnClick="Div0_Image0_OnClick" Style="stlImgManage" TabOrder="11" TabStop="FALSE" Text="영문이름" Top="133" Width="80"></Image>
+					<Image Align="Left" DomainID="biz.user.telephone" Font="돋움체,9,Bold" Height="20" Id="imgPhone" ImageID="blet_01" Left="416" LeftMargin="20" OnClick="Div0_Image0_OnClick" Style="stlImgManage" TabOrder="12" TabStop="FALSE" Text="자택전화" Top="115" Width="80"></Image>
+					<Image Align="Left" DomainID="biz.user.cellphone" Font="돋움체,9,Bold" Height="20" Id="imgMobile" ImageID="blet_01" Left="416" LeftMargin="20" OnClick="Div0_Image0_OnClick" Style="stlImgManage" TabOrder="13" TabStop="FALSE" Text="이동전화" Top="140" Width="80"></Image>
+					<MaskEdit BindDataset="dsGrdUser" Border="Flat" ClipMode="IncludeSpace" Column="ZIP_CODE" Cursor="IBEAM" Height="20" Id="mdtZipCode" Left="499" Mask="###-###" Style="stlMdt" TabOrder="4" Top="34" Type="STRING" Width="280"></MaskEdit>
+					<Edit BindDataset="dsGrdUser" Border="Flat" CheckLength="Byte" Column="ADDRESS" Height="20" Id="edtDetailAddress" ImeMode="none" Left="499" MaxLength="100" Style="stlEdt" TabOrder="5" Top="59" Width="280"></Edit>
+					<Image Align="Left" DomainID="biz.user.post_number" Font="돋움체,9,Bold" Height="20" Id="imgZipcode" ImageID="blet_01" Left="416" LeftMargin="20" OnClick="Div0_Image0_OnClick" Style="stlImgManage" TabOrder="15" TabStop="FALSE" Text="우편번호" Top="34" Width="80"></Image>
+					<Image Align="Left" DomainID="biz.user.detail_address" Font="돋움체,9,Bold" Height="20" Id="imgDetailAddr" ImageID="blet_01" Left="416" LeftMargin="20" OnClick="Div0_Image0_OnClick" Style="stlImgManage" TabOrder="16" TabStop="FALSE" Text="상세주소" Top="59" Width="80"></Image>
+					<Image Align="Left" DomainID="biz.user.password" Font="돋움체,9,Bold" Height="20" Id="imgPassword" ImageID="blet_02" Left="14" LeftMargin="20" OnClick="Div0_Image0_OnClick" Style="stlImgManage" TabOrder="19" TabStop="FALSE" Text="영문이름" Top="102" Width="80"></Image>
+					<Edit BindDataset="dsGrdUser" Border="Flat" CheckLength="Byte" Column="PASSWORD" Height="20" Id="edtPassword" Left="98" MaxLength="16" Password="TRUE" Style="stlEdt" TabOrder="2" Top="102" Width="280"></Edit>
+				</TabPage>
+				<TabPage BorderColor="black" DomainID="biz.user.addition_info" Height="185" Id="tab2" ImageID="tab-T4" Left="2" TabOrder="18" Text="추가정보" Top="23" Width="810">
+					<Static Border="Flat" DomainID="biz.user.place" Font="돋움,9,Bold" Height="158" Id="stGrpOffice" Left="10" Style="stlLblGrp" TabOrder="19" Text="소속" Top="6" Type="Groupbox" Width="384"></Static>
+					<Static Border="Flat" DomainID="biz.user.contact_address" Font="돋움,9,Bold" Height="75" Id="stGrpContact" Left="412" Style="stlLblGrp" TabOrder="18" Text="연락처" Top="89" Type="Groupbox" Width="384"></Static>
+					<Static Border="Flat" DomainID="biz.user.company_address" Font="돋움,9,Bold" Height="75" Id="stGrpOfficeAddr" Left="412" Style="stlLblGrp" TabOrder="17" Text="주소" Top="6" Type="Groupbox" Width="384"></Static>
+					<Edit BindDataset="dsGrdUser" Border="Flat" CheckLength="Byte" Column="COMPANY" Height="20" Id="edtCompanyName" Left="99" MaxLength="20" Style="stlEdt" TabOrder="1" Text="삼성SDS" Top="32" Width="280"></Edit>
+					<Edit BindDataset="dsGrdUser" Border="Flat" CheckLength="Byte" Column="ASSIGNMENT" Height="20" Id="edtAssignment" Left="99" MaxLength="20" Style="stlEdt" TabOrder="4" Text="제목" Top="125" Width="280"></Edit>
+					<Edit BindDataset="dsGrdUser" Border="Flat" CheckLength="Byte" Column="FAX" Height="20" Id="edtFax" Left="499" MaxLength="20" Style="stlEdt" TabOrder="7" Text="제목" Top="107" Width="280"></Edit>
+					<Edit BindDataset="dsGrdUser" Border="Flat" CheckLength="Byte" Column="EMAIL" Height="20" Id="edtEmail" Left="499" MaxLength="30" Style="stlEdt" TabOrder="8" Text="제목" Top="132" Width="280"></Edit>
+					<Edit BindDataset="dsGrdUser" Border="Flat" CheckLength="Byte" Column="COMP_ADDRESS" Height="20" Id="edtOfficeDetailAddress" Left="499" MaxLength="100" Style="stlEdt" TabOrder="6" Text="제목" Top="51" Width="280"></Edit>
+					<MaskEdit BindDataset="dsGrdUser" Border="Flat" ClipMode="IncludeSpace" Column="COMP_ZIP_CODE" Cursor="IBEAM" Height="20" Id="mdtOfficeZipcode" Left="499" Mask="###-###" Style="stlMdt" TabOrder="5" Top="26" Type="STRING" Width="280"></MaskEdit>
+					<Edit BindDataset="dsGrdUser" Border="Flat" CheckLength="Byte" Column="JOB_POSITION" Height="20" Id="edtPosition" Left="99" MaxLength="20" Style="stlEdt" TabOrder="3" Text="제목" Top="94" Width="280"></Edit>
+					<Image Align="Left" DomainID="biz.user.company" Font="돋움체,9,Bold" Height="20" Id="imgCompany" ImageID="blet_01" Left="14" LeftMargin="20" OnClick="Div0_Image0_OnClick" Style="stlImgManage" TabOrder="9" TabStop="FALSE" Text="회사" Top="32" Width="80"></Image>
+					<Image Align="Left" DomainID="biz.user.department" Font="돋움체,9,Bold" Height="20" Id="imgDept" ImageID="blet_02" Left="14" LeftMargin="20" OnClick="Div0_Image0_OnClick" Style="stlImgManage" TabOrder="10" TabStop="FALSE" Text="부서" Top="63" Width="80"></Image>
+					<Image Align="Left" DomainID="biz.user.position" Font="돋움체,9,Bold" Height="20" Id="imgPosition" ImageID="blet_01" Left="14" LeftMargin="20" OnClick="Div0_Image0_OnClick" Style="stlImgManage" TabOrder="11" TabStop="FALSE" Text="직급" Top="94" Width="80"></Image>
+					<Image Align="Left" DomainID="biz.user.assignment" Font="돋움체,9,Bold" Height="20" Id="imgAssignment" ImageID="blet_01" Left="14" LeftMargin="20" OnClick="Div0_Image0_OnClick" Style="stlImgManage" TabOrder="12" TabStop="FALSE" Text="담당업무" Top="125" Width="80"></Image>
+					<Image Align="Left" DomainID="biz.user.fax" Font="돋움체,9,Bold" Height="20" Id="imgFax" ImageID="blet_01" Left="416" LeftMargin="20" OnClick="Div0_Image0_OnClick" Style="stlImgManage" TabOrder="13" TabStop="FALSE" Text="팩스번호" Top="107" Width="80"></Image>
+					<Image Align="Left" DomainID="biz.user.detail_address" Font="돋움체,9,Bold" Height="20" Id="imgOfficeDetailAddr" ImageID="blet_01" Left="416" LeftMargin="20" OnClick="Div0_Image0_OnClick" Style="stlImgManage" TabOrder="16" TabStop="FALSE" Text="상세주소" Top="51" Width="80"></Image>
+					<Image Align="Left" DomainID="biz.user.post_number" Font="돋움체,9,Bold" Height="20" Id="imgOfficeZipcode" ImageID="blet_01" Left="416" LeftMargin="20" OnClick="Div0_Image0_OnClick" Style="stlImgManage" TabOrder="15" TabStop="FALSE" Text="우편번호" Top="26" Width="80"></Image>
+					<Image Align="Left" DomainID="biz.user.email" Font="돋움체,9,Bold" Height="20" Id="imgEmail" ImageID="blet_01" Left="416" LeftMargin="20" Style="stlImgManage" TabOrder="14" TabStop="FALSE" Text="전자우편" Top="132" Width="80"></Image>
+					<Combo BindDataset="dsGrdUser" Border="Flat" CodeColumn="DEPT_ID" Column="DEPT_ID" DataColumn="DEPT_NAME" Height="20" Id="cboDept" ImeMode="keep,native" InnerDataset="dsCboDept" Left="98" ResetIndex="FIRST" Search="FILTERED" Style="stlCbo" TabOrder="2" Top="63" Width="280"></Combo>
+				</TabPage>
+			</Contents>
+		</Tab>
+	</Form>
+	<Script><![CDATA[#include "javascript::common.js";
+
+//화면 로딩시 User List 출력
+function frm04GRDTAB_OnLoadCompleted(obj) {
+	gfnService("getListUser");
+	gfnService("getListDept");
+	
+	dsCboSearchCd.setColumn(0, "DATA", global.domain.biz.user.name);
+	dsCboSearchCd.setColumn(1, "DATA", global.domain.biz.user.id);
+	
+	divSearch.cboSearchCd.index = 0;
+	
+	//공통OnloadEvent call 예 - 아래와 같이 화면 로딩시에 공통적인 기능이 실행되어야 할 경우 정의해서 호출
+	gfnForm_OnLoadCompleted(obj);
+}
+
+//검색 버튼 클릭시 User List 출력
+function divSearch_btnSearch_OnClick(obj) {
+	gfnService("getListUser");
+}
+
+// 검색어 입력후 엔터키
+function edtSearchKw_OnKeyDown(obj, nChar, bShift, bCtrl, bAlt, LLParam, HLParam) {
+	if(bShift == 0 && bAlt == 0 && nChar == 13){
+		applyData(divSearch.edtSearchKw);
+		divSearch_btnSearch_OnClick(obj);
+	}
+}
+
+//추가 버튼 클릭시 Row 추가
+function btnAddRow_OnClick(obj) {
+	dsGrdUser.addRow();
+	tabUserDetail.tab2.cboDept.index = 0;
+	tabUserDetail.tab1.edtUserName.setFocus();
+}
+
+//삭제 버튼 클릭시 체크된 row 삭제
+function btnDelRow_OnClick(obj) {
+	gfnRemoveCheckedRows(dsGrdUser, "_chk");
+}
+
+//저장
+function btnSaveAll_OnClick(obj) {
+	if(gfnValidateDataset(dsGrdUser)) {
+		gfnService("saveAllUser");
+	}
+}
+
+//head 클릭시 checkbox일 경우 all check/all uncheck, 아닌 경우 정렬
+function grdUser_OnHeadClick(obj, nCell, nX, nY, nPivotIndex) {
+	gfnGrid_OnHeadClick(obj, nCell, nX, nY, nPivotIndex);
+}
+
+//callback 메소드 정의
+function fnCallback(strServiceId, strErrorCode, strErrorMsg) {
+	if ( strErrorCode == -1 ) {
+		gfnMsg(strErrorMsg, "ERR");
+		
+	} else {
+		if(strServiceId == "saveAllUser") {
+			gfnMsg("MSG_SAVE_SUCCESS");
+			divSearch_btnSearch_OnClick();
+		}
+	}
+}
+]]></Script>
+</Window>

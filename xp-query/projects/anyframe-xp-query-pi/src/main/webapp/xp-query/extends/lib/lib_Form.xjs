@@ -1,0 +1,20 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Script type="xscript4.0"><![CDATA[
+/********************************************************************************
+ * Function Name	: gfnAlertMsgBox											*
+ * Desc				: 공통 메세지에 정의된 메세지를 alert box로 보여줌		*
+ * Parameter		: msgId(공통 메세지에 정의된 messageId)					*
+ *					  param1, ...(공통 메세지에서 치환될 데이터)			*
+ * Return 			: String(치환된 메세지)									*
+ ********************************************************************************/
+function gfnAlertMsgBox(msgId, strMsgParam1, strMsgParam2, strMsgParam3, strMsgParam4, strMsgParam5, strMsgParam6) {
+	if (gfnIsNull(msgId)) {
+		application.alert("메시지 코드가 입력되지 않았습니다.");
+		return null;
+	}
+	var msg = gfnGetMessage(msgId, strMsgParam1, strMsgParam2, strMsgParam3, strMsgParam4, strMsgParam5, strMsgParam6);
+	application.alert(msg, '알림');
+	return msg;
+}
+
+]]></Script>

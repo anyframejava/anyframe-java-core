@@ -1,0 +1,19 @@
+	<section id="jquery_button_sec001">
+		<title>Button widget</title>
+		<para>jQuery UI에서 제공하는 버튼 위젯의 특징은 &lt;button&gt;태그를 그대로 활용한 다는 점으로 웹 표준을 그대로 준수하고 있다는 점이다.</para>
+		<programlisting><![CDATA[<div class="buttons">
+	<button id="${gridId}_btnAdd">Add</button>
+	<button id="${gridId}_btnEdit">Edit</button>
+	<button id="${gridId}_btnRemove">Remove</button>
+	<button id="${gridId}_btnRefresh">Refresh</button>
+</div>]]></programlisting>
+		<para>위의 버튼 tag들에 다음과 같이 간단한 코딩으로 위젯을 적용하는 것이 가능하다. 이벤트 핸들링 또한 위젯적용여부에 관계없이 핸들링 하고 있다.</para>
+		<programlisting><![CDATA[$("button", ".buttons").button(); // 위젯 적용
+	// 'Add' 버튼의 onclick 이벤트 핸들링
+	$(gridId + "_btnAdd").click(function() { 
+		dialogMode = "add";
+		AnyframeUpload.options.refId = '';
+		$("#dialog-form").dialog( "open" );
+	});]]></programlisting>
+
+	</section>

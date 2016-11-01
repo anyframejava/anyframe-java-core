@@ -33,7 +33,7 @@ public class Servlet24ELTilesInitializer extends AbstractTilesInitializer {
     
     private String[] definitions;
     
-    public void setDefinitions(String[] definitions) {
+    public void setDefinitions(String[] definitions) { 
         this.definitions = definitions;
         if (definitions != null) {
             String defs = StringUtils.arrayToCommaDelimitedString(definitions);
@@ -42,8 +42,7 @@ public class Servlet24ELTilesInitializer extends AbstractTilesInitializer {
      }
  
     protected AbstractTilesContainerFactory createContainerFactory(TilesApplicationContext context) { 
-            Servlet24ELTilesContainerFactory containerFactory=  new Servlet24ELTilesContainerFactory(definitions);
-            return containerFactory;
+            return  new Servlet24ELTilesContainerFactory(definitions);
     }
             
 }

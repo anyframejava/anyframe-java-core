@@ -38,7 +38,7 @@ import org.apache.tiles.locale.LocaleResolver;
  * @author Changje Kim
  */
 public class ELTilesContainerFactory extends BasicTilesContainerFactory {
-    private String[] definitions;
+    private final String[] definitions; 
 
     public ELTilesContainerFactory(String[] definitions) {
         this.definitions = definitions;

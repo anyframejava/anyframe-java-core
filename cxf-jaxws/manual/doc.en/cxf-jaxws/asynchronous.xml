@@ -1,0 +1,447 @@
+<chapter id="cxf_webservices_asynchronous">
+	<title>Asynchronous Invocation</title>
+	<para>
+		Along with general synchronous invocation, Apache CXF supports two types (Polling
+        approach, Callback approach) of asynchronous invocation defined in JAX-WS Spec.
+        In other words, calling Web Services in server side from client side can be done asynchronously.
+  	</para>
+
+  	<para>
+  		<emphasis role="bold">The characteristics of Polling approach</emphasis> are as follows.
+  	</para>
+
+  	<itemizedlist>
+    	<listitem>
+      		<para>
+      			Server) Add method (method name: target method name + "Async") in service interface.
+                In this case, define method whose return type is Response.
+      		</para>
+    	</listitem>
+
+    	<listitem>
+      		<para>
+      			Client) To call method existing remotely, call the specific method returning javax.xml.ws.Response object
+                without output parameter.
+      		</para>
+    	</listitem>
+
+    	<listitem>
+      		<para>
+      			Response object which extended javax.util.concurrency.Future interface is used to check whether the response message
+                arrived.
+      		</para>
+    	</listitem>
+	</itemizedlist>
+
+	<para>
+		<emphasis role="bold">The characteristics of Callback approach</emphasis> are as follows.
+	</para>
+
+	<itemizedlist>
+    	<listitem>
+      		<para>
+      			<![CDATA[Server) Add method (method name: target method name + "Async") in service interface.
+                In this case, define method whose return type is  Future<?> and input parameter is AsynchHandler.]]>
+      		</para>
+    	</listitem>
+
+    	<listitem>
+      		<para>
+      			Client) Need to implement AsyncHandler class.
+      		</para>
+    	</listitem>
+
+    	<listitem>
+      		<para>
+      			Client) To call the method existing remotely, call the method defined above, one of whose parameters
+                are in reference relation with callback object of javax.xml.ws.AsyncHandler type.
+      		</para>
+    	</listitem>
+
+    	<listitem>
+      		<para>
+      			As soon as response message arrives to client, Apache CXF runtime environment recalls AsyncHandler object
+                to transfer response message to response message contents.
+      		</para>
+    	</listitem>
+	</itemizedlist>
+
+  	<para>
+  		The following shows which task to be done on server and client side to use Asynchronous Method Invocation.
+        Let's look into an example for the two types (Polling approach and Callback approach) of asynchronous invocation.
+  	</para>
+
+  	<section id="cxf_webservices_asynchronous_serverconfiguration">
+    	<title>Server Configuration</title>
+
+    	<para>
+    		By using tool provided in Apache CXF, it supports asynchronous invocation of Web Services.
+            The following is an example of how asynchronous invocation is possible using tool.
+    	</para>
+
+    	<para>
+    		If tool is not yet prepared, download Apache CXF from <ulink url="http://cxf.apache.org/download.html">download page</ulink> 
+            and extract the file to use tool existing in bin folder under root folder.
+    	</para>
+
+    	<section id="cxf_webservices_asynchronous_serverconfiguration_sample">
+      		<title>Samples</title>
+
+      		<para>
+      			Create WSDL file by using java2ws Tool targeting interface class of Movie Service to expose to Web Service.
+                After creating WSDL, create java source codes which enable asynchronous invocation
+                (classes under org.anyframe.sample.cxf.jaxws.moviefinder.asynch.service.asynch_soap_http package
+                (SEI, WebServiceClient, complex type classes)) by using WSDL file and asynch_binding.xml file through wsdl2java Tool.
+                In this case there is no need to use java2ws Tool if you already have WSDL file.
+      		</para>
+
+      		<itemizedlist>
+        		<listitem>
+          			<para>
+          				Temporary Interface Class
+          			</para>
+
+          			<para>
+          				The following is a part of MovieServiceAsynch.java which developed interface class of Movie Service.
+                        As it implements Web Services using JAX-WS Frontend model, make sure to define @WebService Annotation
+                        in the top of interface class. Define findMovieListAll() as interface method and client calls this method asynchronously. 
+                        <emphasis role="bold">In fact, this interface is not used. It is developed to create WSDL file.</emphasis> 
+                        The one that is used is the interface class created from WSDL file.
+          				<programlisting language="java">@WebService(targetNamespace = "http://service.asynch.moviefinder.jaxws.cxf.sample.anyframe.org/asynch_soap_http")
+<![CDATA[public interface MovieServiceAsynch {
+
+    public List<Movie> findMovieListAll() throws Exception;
+
+}
+...]]></programlisting>
+					</para>
+        		</listitem>
+
+        		<listitem>
+	          		<para>
+	          			Creating WSDL file
+	          		</para>
+	
+	          		<para>
+	          			Create WSDL file based on interface class.
+                        In this case, create it using java2ws among tools provided in Apache CXF.
+                        Execute the following command on command prompt.
+                        The execution location is the root folder where the project exists.
+	          			<programlisting language="java"><![CDATA[command>]]><emphasis role="bold">java2ws</emphasis> - <emphasis
+	                    role="bold">wsdl</emphasis> - <emphasis role="bold">cp target/classes org.anyframe.sample.cxf.jaxws.moviefinder.asynch.service.MovieServiceAsynch</emphasis></programlisting>
+	                </para>
+	
+					<para>
+	          			The following is a part of the created WSDL file (MovieServiceAsynchService.wsdl). 
+                        After created, if you wish to, you can modify information such as soap:address location.
+	          			<programlisting language="xml"><![CDATA[<wsdl:definitions name="MovieServiceAsynchService" 
+    targetNamespace="http://service.asynch.moviefinder.jaxws.cxf.sample.anyframe.org/asynch_soap_http" 
+    ...
+    <wsdl:binding name="MovieServiceAsynchServiceSoapBinding" type="tns:MovieServiceAsynch">
+        <soap:binding style="document" transport="http://schemas.xmlsoap.org/soap/http"/>
+        <wsdl:operation name="findMovieListAll">
+            <soap:operation soapAction="" style="document"/>
+            <wsdl:input name="findMovieListAll">
+                <soap:body use="literal"/>
+            </wsdl:input>
+            <wsdl:output name="findMovieListAllResponse">
+                <soap:body use="literal"/>
+            </wsdl:output>
+        </wsdl:operation>
+    </wsdl:binding>
+    <wsdl:service name="MovieServiceAsynchService">
+        <wsdl:port name="MovieServiceAsynchPort" binding="tns:MovieServiceAsynchServiceSoapBinding">
+            <soap:address location="http://localhost:9002/Movie"/>
+        </wsdl:port>
+    </wsdl:service>
+</wsdl:definitions>
+...]]>
+</programlisting>
+					</para>
+	        	</listitem>
+	
+	        	<listitem>
+		          	<para>
+		          		Configuration
+		          	</para>
+		
+		          	<para>
+		          		To create java source code providing asynchronous function, asynch_binding.xml as well as WSDL file is needed.
+                        The following is a part of asynch_binding.xml. Here, note the wsdlLocation part.
+		          		<programlisting language="xml"><![CDATA[<bindings
+    xmlns:xsd="http://www.w3.org/2001/XMLSchema"
+    xmlns:wsdl="http://schemas.xmlsoap.org/wsdl/"]]>
+    <emphasis role="bold">wsdlLocation</emphasis>="<emphasis role="bold">MovieServiceAsynchService.wsdl</emphasis>"
+    <![CDATA[xmlns="http://java.sun.com/xml/ns/jaxws">
+    <bindings node="wsdl:definitions">
+        <enableAsyncMapping>]]><emphasis role="bold">true</emphasis><![CDATA[</enableAsyncMapping>
+    </bindings>
+</bindings>
+...]]></programlisting>
+					</para>
+				</listitem>
+	
+	        	<listitem>
+	          		<para>
+	          			Creating Java Code
+	          		</para>
+	
+	          		<para>
+	          			Using the WSDL file and asynch_binding.xml file, create java source code that provides asynchronous function. 
+                        In this case, create it using wsdl2java among the tools provided in Apache CXF. 
+                        Execute the following command on Command Prompt. 
+                        The execution location is the root folder of where the project exists. 
+	          			<programlisting language="java"><![CDATA[command>]]><emphasis role="bold">wsdl2java</emphasis> -<emphasis
+                role="bold">d src </emphasis>-<emphasis role="bold">b src/test/resources/jaxws/asynch/wsdl/asynch_binding.xml
+                    src/test/resources/jaxws/asynch/wsdl/MovieServiceAsynchService.wsdl</emphasis>
+</programlisting>
+					</para>
+	
+					<para>
+	          			All the java codes created through tool are located under org.anyframe.sample.cxf.jaxws.moviefinder.asynch.service.asynch_soap_http package. 
+                        Various java source codes are created such as MovieServiceAsynch.java (Interface class of MovieService), 
+                        MovieServiceAsynchService.java (WebService client class to access MovieService), and Movie.java (JavaBeans class). 
+                        The following is a part of MovieServiceAsynch.java which is a created interface class. This interface class is actually used. 
+                        Two findMovieListAllAsync() methods which are used in Polling approach and Callback approach are additionally added.
+	          			<programlisting language="java"><![CDATA[@WebService(targetNamespace = "http://service.asynch.moviefinder.jaxws.cxf.sample.anyframe.org/asynch_soap_http", 
+    name = "MovieServiceAsynchService")
+@XmlSeeAlso( {ObjectFactory.class })
+public interface MovieServiceAsynch {
+
+    @ResponseWrapper(localName = "findMovieListAllResponse", 
+      targetNamespace = "http://service.asynch.moviefinder.jaxws.cxf.sample.anyframe.org/asynch_soap_http", 
+      className = "org.anyframe.sample.cxf.jaxws.moviefinder.asynch.service.asynch_soap_http.FindMovieListAllResponse")
+    @RequestWrapper(localName = "findMovieListAll", 
+      targetNamespace = "http://service.asynch.moviefinder.jaxws.cxf.sample.anyframe.org/asynch_soap_http", 
+      className = "org.anyframe.sample.cxf.jaxws.moviefinder.asynch.service.asynch_soap_http.FindMovieListAll")
+    @WebResult(name = "return", targetNamespace = "")
+    @WebMethod
+    public java.util.List<org.anyframe.sample.cxf.jaxws.moviefinder.asynch.service.asynch_soap_http.Movie> 
+      findMovieListAll() throws Exception;
+
+    @ResponseWrapper(localName = "findMovieListAllResponse", 
+      targetNamespace = "http://service.asynch.moviefinder.jaxws.cxf.sample.anyframe.org/asynch_soap_http", 
+      className = "org.anyframe.sample.cxf.jaxws.moviefinder.asynch.service.asynch_soap_http.FindMovieListAllResponse")
+    @RequestWrapper(localName = "findMovieListAll", 
+      targetNamespace = "http://service.asynch.moviefinder.jaxws.cxf.sample.anyframe.org/asynch_soap_http", 
+      className = "org.anyframe.sample.cxf.jaxws.moviefinder.asynch.service.asynch_soap_http.FindMovieListAll")
+    ]]><emphasis role="bold"><![CDATA[@WebMethod(operationName = "findMovieListAll")
+    public Response<org.anyframe.sample.cxf.jaxws.moviefinder.asynch.service.asynch_soap_http.FindMovieListAllResponse> 
+      findMovieListAllAsync();]]></emphasis><![CDATA[
+
+    @ResponseWrapper(localName = "findMovieListAllResponse", 
+      targetNamespace = "http://service.asynch.moviefinder.jaxws.cxf.sample.anyframe.org/asynch_soap_http", 
+      className = "org.anyframe.sample.cxf.jaxws.moviefinder.asynch.service.asynch_soap_http.FindMovieListAllResponse")
+    @RequestWrapper(localName = "findMovieListAll", 
+      targetNamespace = "http://service.asynch.moviefinder.jaxws.cxf.sample.anyframe.org/asynch_soap_http", 
+      className = "org.anyframe.sample.cxf.jaxws.moviefinder.asynch.service.asynch_soap_http.FindMovieListAll")
+    ]]><emphasis role="bold"><![CDATA[@WebMethod(operationName = "findMovieListAll")
+    public Future<?> findMovieListAllAsync(
+      @WebParam(name = "asyncHandler", targetNamespace = "")
+      AsyncHandler<org.anyframe.sample.cxf.jaxws.moviefinder.asynch.service.asynch_soap_http.FindMovieListAllResponse> 
+          asyncHandler);]]></emphasis>
+...</programlisting>
+					</para>
+				</listitem>
+	
+		        <listitem>
+	          		<para>
+	          			Implementation Class
+	          		</para>
+	
+	          		<para>
+	          			As the class implementing interface class, create method with empty logic
+                        about two findMovieListAllAsync() methods. Not called in reality.
+                        The following is a part of MovieServiceImpl.java which implements MovieServiceAsynch, a Movie Service interface class.
+	          			<programlisting language="java"><![CDATA[@WebService(serviceName = "MovieServiceAsynchService", portName = "MovieServiceAsynchPort", ...
+public class MovieServiceImpl implements MovieServiceAsynch {
+    public List<Movie> findMovieListAll() throws Exception {
+        return this.movieDao.findMovieListAll();
+    }
+
+    public Response<FindMovieListAllResponse> findMovieListAllAsync() {
+        return null;
+        /* not called */
+    }
+
+    public Future<?> findMovieListAllAsync(
+            AsyncHandler<FindMovieListAllResponse> asyncHandler) {
+        return null;
+        /* not called */
+    }
+...]]></programlisting>
+					</para>
+				</listitem>
+	
+				<listitem>
+	          		<para>
+	          			Running server using Apache CXF JaxWsServerFactoryBean
+	          		</para>
+	
+	          		<para>
+	          			The following is an example code of running server which exposes server side service to Web Services.
+                        Define interface class, instance of implementation class, and address of Web Services as 
+                        property information of JaxWsServerFactoryBean. 
+	          			<programlisting language="java"><![CDATA[MovieServiceImpl implementor = new MovieServiceImpl();
+JaxWsServerFactoryBean svrFactory=new JaxWsServerFactoryBean();
+svrFactory.setServiceClass(MovieServiceAsynch.class);
+svrFactory.setAddress("http://localhost:9002/Movie");
+svrFactory.setServiceBean(implementor);     
+svrFactory.create();]]></programlisting>
+					</para>
+				</listitem>
+			</itemizedlist>
+		</section>
+	</section>
+
+	<section id="cxf_webservices_asynchronous_clientconfiguration">
+		<title>Client Configuration</title>
+
+		<para>
+			When calling server side Web Service from client, try asynchronous invocation.
+            In this case, access Web Service using MovieServiceAsynchService among the java codes created through the tools above.
+    	</para>
+
+		<section id="cxf_webservices_asynchronous_clientconfiguration_sample">
+      		<title>Samples</title>
+
+      		<para>
+      			The following is an example of asynchronous invocation of Movie Service exposed to Web Services.
+      		</para>
+
+      		<itemizedlist>
+        		<listitem>
+          			<para>
+          				Implementing AsyncHandler class when using Callback approach
+          			</para>
+
+          			<para>
+          				When using polling approach, no class needs to be additionally developed. 
+                        When using Callback approach, AsynchHandler class must be additionally implemented. 
+                        javax.xml.ws.AsyncHandler interface and handleReponse method should be implemented. 
+                        The following is a part of MovieAsyncHandler.java which implements AsyncHandler class. 
+          				<programlisting language="java"><![CDATA[public class MovieAsyncHandler implements AsyncHandler<FindMovieListAllResponse> {
+    
+    private FindMovieListAllResponse reply;
+
+    public void handleResponse(Response<FindMovieListAllResponse> response) {
+        try {
+            LOGGER.debug("The handleResponse method of MovieAsyncHandler is called.");
+            reply = response.get();
+        } catch (Exception ex) {
+            ex.printStackTrace();
+        }
+    }
+    
+    public List<Movie> getResponse() {
+        return reply.getReturn();
+    }
+    ...]]></programlisting>
+          			</para>
+        		</listitem>
+
+        		<listitem>
+          			<para>
+          				Test case
+          			</para>
+
+					<para>
+          				The following is a part of JaxWsAsynchTest.java which accesses Movie Service exposed to Web Services
+                        using java codes which were created through the above-mentioned codes and tools.
+                        Through MovieServiceAsynchService, a WebService client code created through tool,
+                        asynchronously call the method of Movie Service interface exposed to Web Services.
+                        In this case, access using WSDL file and Service Name.
+                        After getting Movie Service, call findMovieListAllAsync() method asynchronous of Movie Service
+                        and test if the calling is working properly.
+          				<programlisting language="java"><![CDATA[@RunWith(JUnit4.class)
+public class JaxWsAsynchTest extends ServerRunner {
+    
+    private static final QName SERVICE_NAME =
+        new QName("http://service.asynch.moviefinder.jaxws.cxf.sample.anyframe.org/asynch_soap_http",
+            "MovieServiceAsynchService");
+          				
+    /**
+     * [Flow #-2] Positive Case : The whole Movie list is searched in the type of List with  
+     * 							Callback approach out of Asynchronous method invocation ways. 
+     * @throws Exception
+     *         throws exception which is from service
+     */   
+    @Test
+    public void testFindMovieListAllPolling() throws Exception {
+
+        File wsdl = new File("src/test/resources/jaxws/asynch/wsdl/MovieServiceAsynchService.wsdl");
+
+        MovieServiceAsynchService client =
+            new MovieServiceAsynchService(wsdl.toURL(), SERVICE_NAME);
+        MovieServiceAsynch movieService = client.getMovieServiceAsynchPort();
+
+        // 1. find movie list all
+        Response<FindMovieListAllResponse> response =
+            movieService.findMovieListAllAsync();
+
+        // 2. wait for response after asynchronous method invocation
+        while (!response.isDone()) {
+            Thread.sleep(100);
+        }
+
+        // 3. check the movie list count
+        FindMovieListAllResponse reply = response.get();
+        Assert.assertEquals(2, reply.getReturn().size());
+    }
+
+    /**
+     * [Flow #-3] Positive Case : The whole Movie list is searched in the type of List with 
+     * 							Callback approach out of Asynchronous method  invocation ways. 
+     * @throws Exception
+     *         throws exception which is from service
+     */   
+    @Test
+    public void testFindMovieListAllCallback() throws Exception {
+
+        File wsdl = new File("src/test/resources/jaxws/asynch/wsdl/MovieServiceAsynchService.wsdl");
+
+        MovieServiceAsynchService client =
+            new MovieServiceAsynchService(wsdl.toURL(), SERVICE_NAME);
+        MovieServiceAsynch movieService = client.getMovieServiceAsynchPort();
+
+        // 1. find movie list all
+        MovieAsyncHandler asynchHandler = new MovieAsyncHandler();
+        Future<?> response = movieService.findMovieListAllAsync(asynchHandler);
+
+        // 2. wait for response after asynchronous method invocation
+        while (!response.isDone()) {
+            Thread.sleep(100);
+        }
+
+        // 3. check the movie list count
+        List<Movie> reply = asynchHandler.getResponse();
+        Assert.assertEquals(2, reply.size());
+    }          				
+...]]></programlisting>
+					</para>
+				</listitem>
+			</itemizedlist>
+		</section>
+	</section>
+  
+	<section id="cxf_webservices_asynchronous_resource">
+		<title>Resources</title>
+		<para>
+			<itemizedlist>
+				<listitem>
+					<para>
+						References
+					</para>
+					<itemizedlist>
+						<listitem>
+							<para>
+								<ulink url="http://cxf.apache.org/docs/developing-a-consumer.html">Developing a Consumer - Asynchronous Invocation Model</ulink></para></listitem>
+								<listitem><para><ulink url="http://today.java.net/pub/a/today/2006/09/19/asynchronous-jax-ws-web-services.html">Asynchronous Web Service Invocation with JAX-WS 2.0</ulink>
+							</para>
+						</listitem>
+					</itemizedlist>
+				</listitem>
+			</itemizedlist>
+		</para>
+	</section>
+</chapter>

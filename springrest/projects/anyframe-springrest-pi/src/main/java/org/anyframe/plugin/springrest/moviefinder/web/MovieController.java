@@ -79,7 +79,7 @@ public class MovieController {
 	 * returned as 200 OK to REST client as error.jsp was rendered as
 	 * defaultErrorView.
 	 * 
-	 * This sample supplemented this issue by {@link #handleException()} method.
+	 * This sample supplemented this issue by {@link handleException()} method.
 	 * 
 	 * @param pageIndex
 	 * @param model
@@ -120,7 +120,7 @@ public class MovieController {
 	public ResponseEntity<String> create(@RequestBody Movie movie)
 			throws Exception {
 
-		this.movieService.create(movie);
+		movieService.create(movie);
 
 		HttpHeaders responseHeaders = new HttpHeaders();
 		responseHeaders.set("Location",
@@ -149,7 +149,7 @@ public class MovieController {
 			return "springrest/moviefinder/movie/form";
 		}
 
-		this.movieService.create(movie);
+		movieService.create(movie);
 
 		return "redirect:/springrest/movies.html";
 	}
@@ -166,7 +166,7 @@ public class MovieController {
 	public String get(@PathVariable String movieId, Model model)
 			throws Exception {
 
-		Movie movie = this.movieService.get(movieId);
+		Movie movie = movieService.get(movieId);
 		List<org.anyframe.plugin.springrest.domain.Genre> genreList = genreService
 				.getList();
 
@@ -197,7 +197,7 @@ public class MovieController {
 			model.addAttribute(genreList);
 			return "springrest/moviefinder/movie/form";
 		}
-		this.movieService.update(updateMovie);
+		movieService.update(updateMovie);
 
 		return "redirect:/springrest/movies.html";
 	}
@@ -213,7 +213,7 @@ public class MovieController {
 	@RequestMapping(value = "/{movieId}", method = RequestMethod.PUT)
 	@ResponseBody
 	public void update(@RequestBody Movie updateMovie) throws Exception {
-		this.movieService.update(updateMovie);
+		movieService.update(updateMovie);
 	}
 
 	/**
@@ -228,7 +228,7 @@ public class MovieController {
 	public String remove(@PathVariable String movieId, Model model)
 			throws Exception {
 
-		this.movieService.remove(movieId);
+		movieService.remove(movieId);
 
 		Page page = movieFinder.getPagingList(new Movie(), 1);
 

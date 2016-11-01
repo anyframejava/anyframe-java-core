@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE queryservice PUBLIC "-//ANYFRAME//DTD QUERYSERVICE//EN"
+"http://www.anyframejava.org/dtd/anyframe-query-mapping-1.0.dtd">
+<queryservice>
+	<queries>
+		<query id="createMiPMaxfatchSizeQueryService" isDynamic="true">
+			<statement>
+				<![CDATA[
+				INSERT INTO TB_MIP_CUSTOMER 
+				(SSNO, NAME, ADDRESS)
+				 VALUES(:SSNO, :NAME, :ADDRESS)
+				]]>
+			</statement>
+		</query>
+		<query id="findCustomerWithDynamicMaxFetchSize" isDynamic="true" maxFetchSize="1">
+			<statement>
+				<![CDATA[
+				select * from TB_MIP_CUSTOMER where SSNO like :SSNO
+				]]>
+			</statement>
+		</query>
+		<query id="findCustomerWithDynamic" isDynamic="true">
+			<statement>
+				<![CDATA[
+				select * from TB_MIP_CUSTOMER where SSNO like :SSNO
+				]]>
+			</statement>
+		</query>
+	</queries>
+</queryservice>

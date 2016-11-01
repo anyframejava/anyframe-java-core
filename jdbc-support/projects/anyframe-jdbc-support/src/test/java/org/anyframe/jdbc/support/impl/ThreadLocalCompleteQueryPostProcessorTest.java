@@ -13,11 +13,11 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.io.ClassPathResource;
+import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.namedparam.NamedParameterJdbcTemplate;
-import org.springframework.jdbc.core.simple.SimpleJdbcTemplate;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
-import org.springframework.test.jdbc.SimpleJdbcTestUtils;
+import org.springframework.test.jdbc.JdbcTestUtils;
 
 @RunWith(SpringJUnit4ClassRunner.class)
 @ContextConfiguration(locations = { "classpath:spring/threadlocal/context-*.xml" })
@@ -28,14 +28,14 @@ public class ThreadLocalCompleteQueryPostProcessorTest {
 
 	@Before
 	public void onSetUp() {
-		// TODO : SimpleJdbcTemplate is deprecated
-		SimpleJdbcTestUtils.executeSqlScript(new SimpleJdbcTemplate(dataSource), new ClassPathResource("testdata.sql"),
-				true);
+		JdbcTestUtils.executeSqlScript(new JdbcTemplate(dataSource),
+				new ClassPathResource("testdata.sql"), true);
 	}
 
 	@Test
 	public void testCompleteQueryPostProcessor() {
-		NamedParameterJdbcTemplate jdbcTemplate = new NamedParameterJdbcTemplate(dataSource);
+		NamedParameterJdbcTemplate jdbcTemplate = new NamedParameterJdbcTemplate(
+				dataSource);
 
 		StringBuffer testSql = new StringBuffer();
 		testSql.append("SELECT LOGON_ID, NAME, PASSWORD FROM TB_USER \n");
@@ -50,7 +50,8 @@ public class ThreadLocalCompleteQueryPostProcessorTest {
 
 		// execute jdbc - cf.) in ThreadLocalCompleteQueryPostProcessor,
 		// executes query actually cause it does not throw Exception
-		Map<String, Object> resultMap = jdbcTemplate.queryForMap(testSql.toString(), paramMap);
+		Map<String, Object> resultMap = jdbcTemplate.queryForMap(testSql
+				.toString(), paramMap);
 		assertEquals("admin", resultMap.get("logon_id"));
 		assertEquals("adminpw", resultMap.get("password"));
 
