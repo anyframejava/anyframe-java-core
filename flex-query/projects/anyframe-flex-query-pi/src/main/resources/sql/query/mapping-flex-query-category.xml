@@ -1,0 +1,85 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<queryservice xmlns="http://www.anyframejava.org/schema/query/mapping" 
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" 
+	xsi:schemaLocation="http://www.anyframejava.org/schema/query/mapping http://www.anyframejava.org/schema/query/mapping/anyframe-query-mapping-1.0.xsd ">
+
+  <queries>
+	<query id="flex.createCategory">
+		<statement>
+			<!--flex-query-createCategory-START-->
+			INSERT INTO FLEX_CATEGORY ( 			
+				CATEGORY_ID, 
+				CATEGORY_DESC, 
+				CATEGORY_NAME, 
+				REG_DATE) 
+			VALUES ('CATEGORY-'|| NEXT VALUE FOR FLEX_CATEGORY_ID_SEQ, 
+				:vo.categoryDesc, 
+				:vo.categoryName, 
+				:vo.regDate)
+			<!--flex-query-createCategory-END-->
+		</statement>
+	</query>
+		
+	<query id="flex.updateCategory">
+		<statement>
+			UPDATE FLEX_CATEGORY
+			SET 
+				CATEGORY_DESC = :vo.categoryDesc, 
+				CATEGORY_NAME = :vo.categoryName, 
+				REG_DATE = :vo.regDate
+			WHERE
+				CATEGORY_ID = :vo.categoryId 
+		</statement>
+	</query>
+	
+	<query id="flex.removeCategory">
+		<statement>
+			DELETE FROM FLEX_CATEGORY 
+			WHERE 
+				CATEGORY_ID = :vo.categoryId
+		</statement>
+	</query>
+	
+	<query id="flex.findCategoryByPk">
+		<statement>
+			SELECT 
+				category.CATEGORY_ID, category.CATEGORY_DESC, category.CATEGORY_NAME, category.REG_DATE
+			FROM FLEX_CATEGORY category
+			WHERE 
+				category.CATEGORY_ID = :vo.categoryId
+		</statement>
+		<result class="org.anyframe.plugin.flex.query.domain.Category">		
+		</result>											
+	</query>
+
+	<query id="flex.findCategoryList" isDynamic="true">
+		<statement>
+			<!--flex-query-findCategoryList-START-->
+			SELECT 
+				category.CATEGORY_ID, category.CATEGORY_DESC, category.CATEGORY_NAME, category.REG_DATE 
+			FROM FLEX_CATEGORY category
+			<!--Velocity-Support-dynamicFindCategoryList-START-->
+			#if ($vo.searchCondition == "categoryDesc")
+				where coalesce(category.CATEGORY_DESC, ' ') like '%'|| :vo.searchKeyword ||'%'			
+			#elseif ($vo.searchCondition == "categoryName")
+				where category.CATEGORY_NAME like '%'|| :vo.searchKeyword ||'%'		
+			#end			
+				order by category.CATEGORY_ID DESC
+			<!--Velocity-Support-dynamicFindCategoryList-END-->
+			<!--flex-query-findCategoryList-END-->
+		</statement>
+		<result class="org.anyframe.plugin.flex.query.domain.Category">		
+		</result>				
+	</query>
+	<query id="flex.findCategoryForTreeList" isDynamic="true">
+		<statement>
+			SELECT 
+				category.CATEGORY_ID, category.CATEGORY_DESC, category.CATEGORY_NAME, category.REG_DATE, category.CATEGORY_NAME label
+			FROM FLEX_CATEGORY category
+			order by category.CATEGORY_ID DESC
+		</statement>
+		<result class="org.anyframe.plugin.flex.query.domain.Category">		
+		</result>				
+	</query>
+  </queries>
+</queryservice>

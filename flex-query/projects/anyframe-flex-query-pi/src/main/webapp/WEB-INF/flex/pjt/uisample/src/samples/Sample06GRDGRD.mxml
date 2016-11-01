@@ -1,0 +1,224 @@
+<?xml version="1.0" encoding="utf-8"?>
+<mx:Module xmlns:fx="http://ns.adobe.com/mxml/2009" 
+		   xmlns:s="library://ns.adobe.com/flex/spark" 
+		   xmlns:mx="library://ns.adobe.com/flex/mx" 
+		   xmlns:local="samples.board.*"
+		   width="100%" height="100%" 
+		   initialize="getCommunityList()" 
+		   layout="vertical"
+		   backgroundColor="#d8d8d8" 
+		   verticalScrollPolicy="off" 
+		   horizontalScrollPolicy="off">
+
+	<fx:Script>
+		<![CDATA[
+			import samples.event.BoardEvent;
+			import mx.controls.Alert;
+			import samples.domain.Community;
+			import mx.rpc.events.ResultEvent;
+			import samples.domain.SearchVO;
+			import mx.events.DataGridEvent;
+			import samples.domain.Board;
+			import samples.util.Util;
+			import mx.events.DataGridEventReason;
+			import mx.rpc.events.FaultEvent; 
+			import samples.sample06.Sample06Alert;
+			import mx.managers.PopUpManager; 
+			import mx.core.IFlexDisplayObject;
+			import samples.renderer.ResultHandler;
+			
+			private var deleteBoardList:ArrayCollection = new ArrayCollection();
+			private var selectedCommunityId:String = "";
+			
+			private function getCommunityList():void{
+				var searchVO:SearchVO = new SearchVO("Community");
+				searchVO.searchCondition = searchCondition.selectedItem.data;
+				searchVO.searchKeyword = searchKeyword.text;
+				communityService.getList(searchVO);
+			}
+			private function getCommunityListResultHandler(event:ResultEvent):void{
+				communityList = event.result as ArrayCollection;
+			}
+			private function masterGrdClick(community:Community):void{
+				if ( grdCommunity.selectedIndex != -1 ){
+					selectedCommunityId = community.communityId;
+					if ( isUpdate() ){
+						var boardDetailPopup:IFlexDisplayObject = PopUpManager.createPopUp(this as DisplayObject, Sample06Alert, true);
+						var popUp:Sample06Alert = boardDetailPopup as Sample06Alert;
+						popUp.addEventListener(BoardEvent.SAVE, save);
+						popUp.addEventListener(BoardEvent.CANCEL, cancel);
+						PopUpManager.centerPopUp(popUp);					
+					}else{
+						getBoardList();
+					}
+				}else{
+					boardList = null;
+				}
+			}
+			
+			private function isUpdate():Boolean{
+				for ( var i:int = 0 ; i < boardList.length ; i ++ ){
+		    		var board:Board = boardList.getItemAt(i) as Board;
+		    		if(board.status != 0 ){
+		    			return true;
+		    		}
+		    	}
+		    	return false;
+			}
+			private function getBoardListResultHandler(event:ResultEvent):void{
+				boardList = event.result as ArrayCollection;
+			}
+			
+			 private function addBoard():void{
+	            	var addBoard:Board = new Board();
+					addBoard.status = 1;
+					addBoard.communityId = selectedCommunityId;
+					addBoard.regDate = Util.getToday();
+					addBoard.regId = parentDocument.loginUser.userId;
+					grdBoard.dataProvider.addItem(addBoard);
+	            }
+	            
+	        private function updateBoard(event:DataGridEvent):void{
+				
+				if (event.reason == DataGridEventReason.CANCELLED){
+					return;
+	            }
+	            
+				var updateBoard:Board = grdBoard.itemEditorInstance.data as Board;
+				
+				var rowStatus:Number = updateBoard.status;
+				
+				if( rowStatus == 0 ){
+					updateBoard.status = 2;
+				}
+			}
+			
+			private function deleteBoard():void{
+				var len:int = grdBoard.dataProvider.length;
+	  			for ( var i:int=len-1; i>=0; i-- ){
+	  				var deleteBoard:Board = grdBoard.dataProvider.getItemAt(i);
+	  				if(deleteBoard.check){
+	  					var rowStatus:int = deleteBoard.status;
+	  					if (rowStatus != 1){
+							deleteBoard.status = 3;
+							deleteBoardList.addItem(deleteBoard)
+						}
+						grdBoard.dataProvider.removeItemAt(i);
+	  				}  				
+	  			}
+		    }
+		    private function save(event:BoardEvent):void{
+		    	saveBoard();
+		    }
+		    
+		    private function cancel(event:BoardEvent):void{
+		    	getBoardList();
+		    }
+		    
+		    private function saveBoard():void{
+		    	var saveBoardList:ArrayCollection = new ArrayCollection();
+		    	for ( var j:int = 0 ; j < deleteBoardList.length ; j ++ ){
+			    		saveBoardList.addItem(deleteBoardList.getItemAt(j));
+			    }
+		    	for ( var i:int = 0 ; i < boardList.length ; i ++ ){
+		    		var board:Board = boardList.getItemAt(i) as Board;
+		    		if(board.status != 0){
+		    			if( board.title == null || board.title == "" ){
+		    				Alert.show("Title을 입력하지 않은 Row가 있습니다.");
+		    				return;
+		    			}else{
+		    				saveBoardList.addItem(board);
+		    			}
+		    		}
+		    	}
+		    	boardService.saveAll(saveBoardList);
+		    }
+		    
+		    private function getBoardList():void{
+		    	var searchVO:SearchVO = new SearchVO("Board");
+				searchVO.searchCondition = "communityId";
+				searchVO.searchKeyword = selectedCommunityId;
+				boardService.getList(searchVO);
+		    }
+		    
+	     	private function saveAllResultHandler(event:ResultEvent):void{
+		    	mx.controls.Alert.show(ResultHandler.saveAllResultMessage(event));
+		    	deleteBoardList.removeAll();
+		    	getBoardList();
+		    }
+		]]>
+	</fx:Script>
+	
+	<fx:Declarations>
+		<!-- Place non-visual elements (e.g., services, value objects) here -->
+		<mx:ArrayCollection id="communityList"/>
+		
+		<mx:ArrayCollection id="boardList"/>
+		
+		<mx:ArrayCollection id="searchConditionValue">
+			<fx:Object label="커뮤니티 이름" data="communityName"/>
+			<fx:Object label="커뮤니티 설명" data="communityDesc"/>
+		</mx:ArrayCollection>
+		
+		<fx:Array id="communityColumnsInfo">
+			<mx:DataGridColumn dataField="communityName" headerStyleName="dataGridHeaderAlign" headerText="커뮤니티 이름"/>
+			<mx:DataGridColumn dataField="communityDesc" headerStyleName="dataGridHeaderAlign" headerText="커뮤니티 설명"/>
+			<mx:DataGridColumn dataField="categoryName" headerStyleName="dataGridHeaderAlign" headerText="카테고리"/>
+			<mx:DataGridColumn dataField="regId" headerStyleName="dataGridHeaderAlign" headerText="등록자"/>
+			<mx:DataGridColumn dataField="regDate" headerStyleName="dataGridHeaderAlign" headerText="등록일"/>
+		</fx:Array>
+		
+		<fx:Array id="boardColumnsInfo">
+			<mx:DataGridColumn width="50" textAlign="center" dataField="check" headerText="Check" editable="false">
+				<mx:itemRenderer>
+					<fx:Component>
+						<mx:VBox width="100%" horizontalAlign="center">
+							<mx:CheckBox id="chk" selected="{data.check}" change="data.check=chk.selected" />
+						</mx:VBox>
+					</fx:Component>
+				</mx:itemRenderer>
+			</mx:DataGridColumn>
+			<mx:DataGridColumn dataField="title" headerStyleName="dataGridHeaderAlign" headerText="제목"/>
+			<mx:DataGridColumn dataField="contents" headerStyleName="dataGridHeaderAlign" headerText="내용"/>
+			<mx:DataGridColumn dataField="regId" headerStyleName="dataGridHeaderAlign" headerText="등록자" editable="false"/>
+			<mx:DataGridColumn dataField="regDate" headerStyleName="dataGridHeaderAlign" headerText="등록일" itemEditor="samples.renderer.DateEditor"/>
+		</fx:Array>
+		
+		<mx:RemoteObject id="boardService" destination="boardService" showBusyCursor="true">
+			<mx:method name="getList" result="getBoardListResultHandler(event)" fault="ResultHandler.faultMessage(event)"/>
+			<mx:method name="saveAll" result="saveAllResultHandler(event)" fault="ResultHandler.faultMessage(event)"/>
+		</mx:RemoteObject>
+		
+		<mx:RemoteObject id="communityService" destination="communityService" showBusyCursor="true">
+			<mx:method name="getList" result="getCommunityListResultHandler(event)"/>
+		</mx:RemoteObject>
+	</fx:Declarations>
+	
+	<mx:Panel title="커뮤니티 목록" width="100%" height="100%" layout="vertical" verticalScrollPolicy="off" horizontalScrollPolicy="off"
+			  color="#FFFFFF" titleBackgroundSkin="@Embed('../assets/images/bg_title.png')" paddingLeft="5" paddingRight="5" paddingBottom="5" verticalGap="0">
+		<mx:HBox width="100%" horizontalGap="0" paddingBottom="5" paddingLeft="0" paddingRight="0"
+				 color="#000000" paddingTop="5" verticalAlign="middle">
+			<mx:HBox width="70%" horizontalAlign="left" verticalAlign="middle">
+				<mx:ComboBox id="searchCondition" width="129" dataProvider="{searchConditionValue}" fontWeight="bold"/>
+				<mx:TextInput id="searchKeyword" enter="getCommunityList()" width="179"/>
+				<mx:Button id="searchButton" label="검색" click="getCommunityList()"/>
+			</mx:HBox>
+			
+			<mx:HBox width="30%" horizontalAlign="right">
+				<mx:Button label="추가" click="addBoard()" icon="@Embed(source='../assets/images/icon_plus.png')" textAlign="left"/>
+				<mx:Button label="삭제" click="deleteBoard()" icon="@Embed(source='../assets/images/icon_delete.png')" textAlign="left"/>
+				<mx:Button label="저장" click="saveBoard()" icon="@Embed(source='../assets/images/icon_save.png')" textAlign="left"/>
+			</mx:HBox>
+		</mx:HBox>
+		<mx:VDividedBox width="100%" verticalScrollPolicy="off" horizontalScrollPolicy="off" color="#000000">
+			<mx:DataGrid id="grdCommunity" dataProvider="{communityList}" columns="{communityColumnsInfo}" width="100%" height="195" rowCount="5" rowHeight="22"
+						 verticalScrollPolicy="auto" horizontalScrollPolicy="off" editable="false" click="masterGrdClick(grdCommunity.selectedItem as Community)"
+						 verticalGridLines="true">
+			</mx:DataGrid> 
+			<mx:DataGrid id="grdBoard" dataProvider="{boardList}" columns="{boardColumnsInfo}" width="100%" height="195" rowCount="5"
+						 verticalScrollPolicy="auto" horizontalScrollPolicy="off" editable="true" itemEditEnd="updateBoard(event)"
+						 verticalGridLines="true">
+			</mx:DataGrid>
+		</mx:VDividedBox>
+	</mx:Panel>
+</mx:Module>

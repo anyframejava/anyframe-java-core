@@ -1,0 +1,266 @@
+<?xml version="1.0" encoding="utf-8"?>
+<mx:Module xmlns:fx="http://ns.adobe.com/mxml/2009" 
+		   xmlns:s="library://ns.adobe.com/flex/spark" 
+		   xmlns:mx="library://ns.adobe.com/flex/mx"
+		   layout="vertical" 
+		   width="100%" height="100%" 
+		   initialize="init()">
+	
+	<fx:Script>
+		<![CDATA[
+			import samples.sample07.Sample07Alert;
+			import mx.controls.Alert;
+			import mx.collections.ArrayCollection;
+			import mx.rpc.events.ResultEvent;
+			import samples.domain.SearchVO;
+			import samples.domain.User;
+			import mx.managers.PopUpManager;
+			import mx.core.IFlexDisplayObject;
+			import samples.sample07.Sample07Detail;
+			import samples.event.UserEvent;
+			import mx.rpc.events.FaultEvent;
+			import samples.renderer.ResultHandler;
+			
+			private var deleteUserList:ArrayCollection = new ArrayCollection();
+			[Bindable]
+			private var userList:ArrayCollection = new ArrayCollection();
+		
+			[Bindable]
+			private var deptTree:ArrayCollection = new ArrayCollection();
+			
+			[Bindable]
+			public var deptList:ArrayCollection = new ArrayCollection();
+
+			private function init():void{
+				deptService.getTree(new SearchVO("Dept"));
+				deptService.getList(new SearchVO("Dept"));
+			}
+			private function getDeptTreeResultHandler(event:ResultEvent):void{
+				deptTree = event.result as ArrayCollection;
+			}
+			
+			private function deptTreeClick():void{
+				if ( isUpdate() ){
+					var userAlertPopup:IFlexDisplayObject = PopUpManager.createPopUp(this as DisplayObject, Sample07Alert, true);
+					var popUp:Sample07Alert = userAlertPopup as Sample07Alert;
+					popUp.addEventListener(UserEvent.SAVE, save);
+					popUp.addEventListener(UserEvent.CANCEL, cancel);
+					PopUpManager.centerPopUp(popUp);			
+				}else{
+					getUserList();
+				}
+			}
+			
+			private function getUserList():void{
+				var searchVO:SearchVO = new SearchVO("User");
+				searchVO.searchCondition = "deptId"
+				searchVO.searchKeyword = trvDept.selectedItem.deptId;
+				userService.getList(searchVO);
+			}
+		
+			private function getUserListResultHandler(event:ResultEvent):void{
+				userList = event.result as ArrayCollection;
+				deleteUserList.removeAll();
+			}
+			
+			private function searchDept():void{
+				var searchDeptName:String = searchKeyword.text;
+				if ( searchDeptName == null || searchDeptName.length == 0 ){
+					mx.controls.Alert.show("검색 조건을 입력하세요");
+				}else{
+					var treeNodeCnt:int = trvDept.dataProvider.length;
+				
+				var treeList:ArrayCollection = trvDept.dataProvider as ArrayCollection;
+				
+				var nodeIndex:int = -1;
+				var flag:Boolean = false;
+				var parentIndex:int = -1;
+				var dept:Object = new Object();
+				var level:int = 0;
+				for ( var i:int = 0 ; i < treeList.length ; i ++ ){
+					nodeIndex = nodeIndex + 1;
+					parentIndex = parentIndex + 1;
+					dept = treeList.getItemAt(i);
+					var deptName:String = dept.deptName as String;
+					if ( searchDeptName == deptName ) { flag = true;  break; }
+					
+					var teamList:ArrayCollection = dept.children as ArrayCollection;
+					for ( var j:int = 0 ; j < teamList.length ; j ++ ){
+						nodeIndex = nodeIndex + 1;
+						dept = teamList.getItemAt(j) as Object;
+						deptName = dept.deptName as String;
+						if ( searchDeptName == deptName ) {flag = true; level = 1 ; break; }
+					}
+					if(flag){break;}
+				}
+				if(flag){
+					
+					if ( level == 0 ){
+						trvDept.selectedItem = dept;
+					}else{
+						trvDept.expandItem( trvDept.dataProvider[parentIndex] , true, false);
+						trvDept.selectedItem = dept;
+					}
+					deptTreeClick();
+				}else{
+					mx.controls.Alert.show("부서를 찾을 수 없습니다.");
+				}
+				}
+				
+			}
+			private function openPopUserDetail(user:User):void{
+				var userDetailPopup:IFlexDisplayObject = PopUpManager.createPopUp(this as DisplayObject, Sample07Detail, true);
+				var popUp:Sample07Detail = userDetailPopup as Sample07Detail;
+				popUp.addEventListener( UserEvent.UPDATE, updateUser );
+				popUp.tn.selectedIndex = 0;
+				popUp.deptList = deptList;
+				popUp.userInfo = user;
+				PopUpManager.centerPopUp(popUp);
+			}
+			
+			private function updateUser(event:UserEvent):void{
+				if ( event.user.status == 1 && event.user != grdUser.selectedItem as User ){
+					grdUser.dataProvider.addItem(event.user);
+					grdUser.selectedItem = event.user;
+				}else if( event.user == grdUser.selectedItem as User ){
+					grdUser.selectedItem = event.user;
+					var updateUser:User = grdUser.selectedItem as User;
+				
+					var rowStatus:Number = updateUser.status;
+				
+					if( rowStatus == 0 ){
+						updateUser.status = 2;
+					}
+				}
+			}
+			
+			private function getDeptListResultHandler(event:ResultEvent):void{
+				deptList = event.result as ArrayCollection;
+			}
+			
+			private function addUser():void{
+				if(trvDept.selectedItem != null) {
+	            	var addUser:User = new User();
+					addUser.status = 1;
+					addUser.deptId = trvDept.selectedItem.deptId;
+					addUser.deptName = trvDept.selectedItem.deptName;
+					openPopUserDetail(addUser);
+				}
+			}
+			
+			private function deleteUser():void{
+				if(grdUser.selectedIndex != -1){
+					var deleteUser:User = grdUser.selectedItem as User;
+					var rowStatus:int = deleteUser.status;
+					
+					if (rowStatus != 1){
+						deleteUser.status = 3;
+						deleteUserList.addItem(deleteUser)
+					}
+					grdUser.dataProvider.removeItemAt(grdUser.selectedIndex);
+				}
+		    }
+		    
+		    private function saveUser():void{
+		    	var saveUserList:ArrayCollection = new ArrayCollection();
+		 		for ( var j:int = 0 ; j < deleteUserList.length ; j ++ ){
+		    		saveUserList.addItem(deleteUserList.getItemAt(j));
+		    	}
+		    	for ( var i:int = 0 ; i < userList.length ; i ++ ){
+		    		var user:User = userList.getItemAt(i) as User;
+		    		if( user.status != 0 ){
+		    			if( user.userName == null || user.userName == "" ){
+							Alert.show( "이름을 입력하지 않은 Row가 있습니다. ");
+							return;
+		    			}else if ( user.password == null || user.password.length == 0 ){
+		    			 	Alert.show( user.userName + "의 Password를 입력하지 않았습니다.");
+							return;
+		    			}else if( user.deptId == null ){
+		    				Alert.show( user.userName + "의 부서를 선택하지 않았습니다.");
+							return;
+		    			}else{
+		    				saveUserList.addItem(user);
+		    			}
+		    		}
+		    	}
+		    	if ( saveUserList.length == 0 ){
+		    		mx.controls.Alert.show("변경된 데이터가 없습니다.");
+		    	}else{
+		    		userService.saveAll(saveUserList);
+		    	}
+		    }
+		    
+	     private function saveAllResultHandler(event:ResultEvent):void{
+	    	mx.controls.Alert.show(ResultHandler.saveAllResultMessage(event));
+	    	deleteUserList.removeAll();
+	    	getUserList();
+	    }
+	    
+	    private function isUpdate():Boolean{
+	    	if ( deleteUserList.length != 0 ){
+	    		return true;
+	    	}else{
+	    		for ( var i:int = 0 ; i < userList.length ; i ++ ){
+	    			var user:User = userList.getItemAt(i) as User;
+	    		
+	    			if(user.status != 0 ){
+	    				return true;
+	    			}
+	    		}
+	    	}
+	    	return false;
+		}
+		
+		 private function save(event:UserEvent):void{
+	    	saveUser();
+	    }
+	    
+	    private function cancel(event:UserEvent):void{
+	    	getUserList();
+	    }
+		]]>
+	</fx:Script>
+	
+	<fx:Declarations>
+		<!-- Place non-visual elements (e.g., services, value objects) here -->
+		<mx:RemoteObject id="deptService" destination="deptService" showBusyCursor="true">
+			<mx:method name="getTree" result="getDeptTreeResultHandler(event)" fault="ResultHandler.faultMessage(event)"/>
+			<mx:method name="getList" result="getDeptListResultHandler(event)" fault="ResultHandler.faultMessage(event)"/>
+		</mx:RemoteObject>
+		<mx:RemoteObject id="userService" destination="userService" showBusyCursor="true">
+			<mx:method name="getList" result="getUserListResultHandler(event)" fault="ResultHandler.faultMessage(event)"/>
+			<mx:method name="saveAll" result="saveAllResultHandler(event)" fault="ResultHandler.faultMessage(event)"/>
+		</mx:RemoteObject>
+		<fx:Array id="columnsInfo">
+			<mx:DataGridColumn dataField="userName" headerStyleName="dataGridHeaderAlign" headerText="이름"/>
+			<mx:DataGridColumn dataField="jobPosition" headerStyleName="dataGridHeaderAlign" headerText="직급"/>
+			<mx:DataGridColumn dataField="phone" headerStyleName="dataGridHeaderAlign" headerText="자택전화"/>
+			<mx:DataGridColumn dataField="cellPhone" headerStyleName="dataGridHeaderAlign" headerText="이동전화"/>
+		</fx:Array>
+	</fx:Declarations>
+	
+	<mx:Panel title="부서 목록" width="100%" height="100%" layout="vertical" verticalScrollPolicy="off" horizontalScrollPolicy="off"
+			  color="#FFFFFF" titleBackgroundSkin="@Embed('../assets/images/bg_title.png')" paddingLeft="5" paddingRight="5" paddingBottom="5" verticalGap="0">
+		<mx:HBox width="100%" horizontalGap="0" paddingBottom="5" paddingLeft="0" paddingRight="0" paddingTop="5" verticalAlign="middle" color="#000000" >
+			<mx:HBox width="70%" horizontalAlign="left" verticalAlign="middle">
+				<mx:Label text="부서명"/>
+				<mx:TextInput id="searchKeyword" imeMode="KOREAN" enter="searchDept()" width="179" height="19" borderColor="#abbdd2" borderStyle="solid" color="#333333"/>
+				<mx:Button id="searchButton" label="검색" click="searchDept()" toolTip="Search"/>
+			</mx:HBox>
+			<mx:HBox width="30%" horizontalAlign="right">
+				<mx:Button label="추가" click="addUser()" textAlign="left" icon="@Embed(source='../assets/images/icon_plus.png')"/>
+				<mx:Button label="삭제" click="deleteUser()" textAlign="left" icon="@Embed(source='../assets/images/icon_delete.png')"/>
+				<mx:Button label="저장" click="saveUser()" textAlign="left" icon="@Embed(source='../assets/images/icon_save.png')"/>
+			</mx:HBox>
+		</mx:HBox>
+		<mx:HBox width="100%" paddingBottom="5" paddingLeft="5" paddingRight="5" paddingTop="5" verticalAlign="top" horizontalAlign="left" color="#000000" >
+			<mx:Tree id="trvDept" dataProvider="{deptTree}" showRoot="true" width="150" height="390" labelField="deptName" verticalScrollPolicy="auto" 
+					 itemClick="deptTreeClick()" useRollOver="true" rollOverColor="#abbdd2" selectionColor="#9198a3"/>	
+			<mx:DataGrid id="grdUser" dataProvider="{userList}" columns="{columnsInfo}" width="620" height="390" rowCount="7"
+						 verticalScrollPolicy="auto" horizontalScrollPolicy="off" editable="false" doubleClickEnabled="true" 
+						 doubleClick="openPopUserDetail(grdUser.selectedItem as User)" borderColor="#a7a8ab" borderStyle="solid">
+			</mx:DataGrid>	
+		</mx:HBox>
+	</mx:Panel>
+	
+</mx:Module>

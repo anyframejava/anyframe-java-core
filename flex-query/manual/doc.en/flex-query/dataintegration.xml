@@ -1,0 +1,246 @@
+<chapter id="flex_query_dataintegraion">
+	<title>Flex Data Integration</title>
+	<section id="flex_query_dataintegraion_sec001">
+		<title>Flex Basic Data Integration</title>
+		<para>
+			There are two ways of data communications between Flex Client and Server: HTTPService and WebService.
+			These two ways of communications can be executed without LCDS or BlazeDS.			
+		</para>
+		<itemizedlist>
+			<listitem>
+				<para><emphasis role="bold">HTTPService</emphasis> : HTTPService transmits data t Server in  Get, Post method
+				and returns the result value in xml.
+				By simply updating existing Web Application and return data to xml, you can easily develop based on Flex UI.
+				Instead, in the case of xml, size grows bigger as data size increases, which brings about performance issue.				
+				 </para>
+			</listitem>
+			<listitem>
+				<para><emphasis role="bold">WebService</emphasis> : WebService method calls URL exposed to WebService
+				and gets the return value in SOAP. Like HTTPService, this method can have performance issue when data size increases.				
+				 </para>
+			</listitem>
+  		</itemizedlist>
+  		<section id="flex_query_dataintegraion_sec001_001">
+  		<title>HTTPService</title>
+  		<para>
+  			To use HTTPService at Flex MXML file, you can use <![CDATA[<mx:HTTPService>]]>.
+  			The following is a sample source for user authentication by using HTTPService.  			
+  		</para>
+  		<programlisting language="xml"><![CDATA[<mx:HTTPService id="categoryService" method="post" 
+    url="../categoryList.do" result="getCtegoryListResult(event)" useProxy="false">
+    <mx:request>
+        <search_condition>{searchCondition.text}</search_condition>
+        <search_keyword>{searchKeyword.text}</search_keyword>
+    </mx:request>
+</mx:HTTPService>
+...
+
+private function getCategoryList():void
+{
+    ...
+    categoryService.send();
+}]]></programlisting>
+	<para>
+		In the source above, when getCategoryList method is called, url defined in  HTTPService is called
+		and values in request are transfered in post method.
+		Result value is returned in xml and handled at getCategoryListResult method.
+		When using HTTPService without BlazeDS, you have to define useProxy value as false.		
+	</para>
+  		</section>
+  		<section id="flex_query_dataintegraion_sec001_002">
+  		<title>WebService</title>
+  		<para>
+  		The following is an example of calling WebService.  		
+  		</para>
+  		<programlisting language="xml"><![CDATA[<mx:WebService id="categoryService" 
+    wsdl="http://localhost:8080/anyframe.samples.ria.flex/getCategoryList.cfc?wsdl" 
+    result="getCategoryListResult(event)" useProxy="false">
+    <mx:operation name="getCategoryList">
+        <mx:request>
+            <search_condition>{searchCondition.text}</search_condition>
+        		<search_keyword>{searchKeyword.text}</search_keyword>
+        </mx:request>
+    </mx:operation>
+</mx:WebService>]]></programlisting>
+	<para>
+	If you execute categoryService.getCategoryList.send(), WebService is called using defined wsdl value
+	and the result handled at getCategoryListResult function.
+	</para>
+	<programlisting language="xml"><![CDATA[private function getCategoryListResult(event:ResultEvent):void{
+    grdCategory.dataProvider = event.result;
+}
+...
+<mx:DataGrid id="grdCategory.dataProvider" fontSize="14" width="800"/>]]></programlisting>
+  		</section>
+	</section>
+		<section id="flex_query_dataintegraion_sec002">
+		<title>Data Integration using BlazeDS</title>
+		<para>
+			When using BlazeDS, HTTPService, WebService in Proxy method and RemotingService, MessageService can be used
+			in addition to HTTPService, WebService.		
+		</para>
+		<itemizedlist>
+			<listitem>
+				<para><emphasis role="bold">HTTPProxyService</emphasis> : Similar to  HTTPService basically provided in Flex,
+				but this calls url based on Destination defined in BlazeDS configuration file without defining url directly to MXML.
+				It is advantageous in terms of security in that there is no need to modify MXML file when url to call is updated,
+				and the url is not exposed to MXML.				
+				 </para>
+			</listitem>
+			<listitem>
+				<para><emphasis role="bold">WebService(Proxy)</emphasis> : Like HTTPProxy, wsdl location is defined as Destination
+				in BlazeDS configuration file.				
+				 </para>
+			</listitem>
+			<listitem>
+				<para><emphasis role="bold">RemotingService</emphasis> : RemotingService is a way of calling Java object method
+registered at WAS, and gets return value as serialized object by using AMF channel.
+When using SpringBlazeDS Integration, Spring Bean method can be called at Flex Client.				
+				 </para>
+			</listitem>
+			<listitem>
+				<para><emphasis role="bold">MessageService</emphasis> : When Producer provides data,
+			  it is added at BlazeDS Application MessageService Queue and the messages are transfered to Consumer.				
+				 </para>
+			</listitem>
+  		</itemizedlist>
+  		<section id="flex_query_dataintegraion_sec002_001">
+  		<title>HTTPProxyService</title>
+  		<para>
+			Definition of HTTPService basically provided in Flex and MXML is similar.
+			However, define property value of useProxy as true and define destination property value instead of url.			
+  		</para>
+  		<programlisting language="xml"><![CDATA[<mx:HTTPService id="categoryService" 
+    destination="categoryService" result="getCtegoryListResult(event)" useProxy="true">
+    <mx:request>
+        <search_condition>{searchCondition.text}</search_condition>
+        <search_keyword>{searchKeyword.text}</search_keyword>
+	</mx:request>
+</mx:HTTPService>
+...
+
+private function getCategoryList():void
+{
+    ...
+    categoryService.send();
+}]]></programlisting>
+<para>
+	If you have defined MXML as above, define destination named categoryService to proxy-config.xml file, 
+	configuration file for HTTPProxyService among BlazeDS configuration files.	
+</para>
+<programlisting language="xml"><![CDATA[<destinaion id="categoryService">
+    <properties>
+        <url>anyframe.samples.ria.flex/getCategoryList.do</url>
+    </properties>
+</destination>]]></programlisting>
+  		</section>
+  		<section id="flex_query_dataintegraion_sec002_002">
+  		<title>RemotingService</title>
+  		<para>
+			To use RemotingService, add destination to BlazeDS configuration file(remoting-config.xml) as the following.		
+  		</para>
+  		<programlisting language="xml"><![CDATA[<service id="remoting-service" 
+    class="flex.messaging.services.RemotingService">
+
+    <adapters>
+        <adapter-definition id="java-object" class="flex.messaging.services.remoting.adapters.JavaAdapter" 
+        	default="true"/>
+    </adapters>
+
+    <default-channels>
+        <channel ref="my-amf"/>
+    </default-channels>
+	
+    <destination id="categoryService">
+        <properties>
+            <source>anyframe.sample.flex.category.CategoryService</source>
+        </properties>
+    </destination>
+	
+</service>]]></programlisting>
+<para>
+	MXML calls destination defined to RemotingService by using RemoteObject.	
+</para>
+<programlisting language="xml"><![CDATA[<mx:Script>
+    import mx.rpc.events.ResultEvent;
+		
+    private function getCategoryList():void{
+        var searchVO:FlexSearchVO = new FlexSearchVO();
+        categoryService.getCategoryList(searchVO);
+    }
+    private function getCategoryListResultHandler(event:ResultEvent):void{
+        grdCategory.dataProvider = event.result;	
+    }
+</mx:Script>
+<mx:RemoteObject id="categoryService" destination="categoryService">
+    <mx:method name="getCategoryList" result="getCategoryListResultHandler(event)"/>
+</mx:RemoteObject>
+<mx:DataGrid id="grdCategory"/>
+<mx:Button label="getCategoryList" click="getCategoryList()"/>
+]]></programlisting>
+<para>
+	The source code above is an example of calling getCategoryList method of destination
+	which was defined to remoting-config.xml by using RemoteObject.
+</para>
+<para>
+	When using Spring BlazeDS Integration, you can directly register the specific Bean directly by using annotation
+	such as @RemoteDestination instead of defining destination to remoting-config.xml.
+	For informatin on how to export Spring Bean, refer to  <link linkend="flex_query_configuration_sec002">Exporting Spring Beans for Flex Remoting</link>.
+</para>
+  		</section>
+	</section>
+	<section id="flex_query_dataintegraion_sec003">
+	<title>Domain object and ASObject Mapping</title>
+	<para>When ActionScript uses domains used in Server, it is needed to define mapping information
+	between Server Domain object and ASObject by using [RemoteClass] meta data.
+</para>
+	<programlisting language="java">
+Category.java
+
+package anyframe.samples.flex.domain;
+...
+public class Category {
+    private String categoryId;
+    private String categoryName;
+    private String categoryDesc;
+    private String regDate;
+    
+    ...
+    public String getCategoryId() {
+        return categoryId;
+    }
+    public void setCategoryId(String categoryId) {
+        this.categoryId = categoryId;
+    }
+    public String getCategoryName() {
+        return categoryName;
+    }
+    public void setCategoryName(String categoryName) {
+    this.categoryName = categoryName;
+    }
+    public String getCategoryDesc() {
+        return categoryDesc;
+...
+</programlisting>
+<programlisting language="java">
+Category.as
+
+package samples.domain
+{
+	[Bindable]
+	[RemoteClass(alias="anyframe.samples.flex.domain.Category")]
+	public class Category
+	{
+		public var categoryId:String;
+	    public var categoryName:String;
+	    public var categoryDesc:String;
+	    public var regDate:String;
+	}
+}</programlisting>
+<para>
+	When mapping Domain object with AS object by using [RemoteClass] meta data,
+	the value which Client returns by using Category.as is returned to Server as an object relevant to Category.java.
+	Conversely, when returning object relevant to Category.java at Server, object relevant to Category.as is returned at Client.
+</para>
+</section>
+</chapter>

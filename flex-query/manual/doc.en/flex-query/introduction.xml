@@ -1,0 +1,73 @@
+<chapter id="flex_query_introduction">
+	<title>Introduction</title>
+	<para>
+		Adobe Flex is RIA development solution which makes flash screen through defining MXML.
+		As compiled result is made in Flash file, if Flash Player is installed, it can be executed in any browser and
+		colorful and various screen can be provided like Flash screen.		
+	</para>
+	<para>
+		Although HTTPService basically provided in Flex alone enables the development of Web Application, 
+		but it has many limitations in that the data transmission is made in xml.
+		Using BlazeDS enables data transmission between Client and Server by using RemotingService, MessageService as well as HTTPService.		
+	</para>
+	<para>
+		Spring BlazeDS Integration provides functions that can simplify complex and difficult configurations
+		when developing  Flex Web Application using BlazeDS and Spring Framework.		
+	</para>
+	<section id="flex_query_introduction_sec001">
+		<title>Flex</title>
+		<section id="flex_query_introduction_sec001_001">
+		<title>How Flex Works</title>
+		<para>
+			Flex is basically composed of Action Script, MXML, Asset(CSS, Image)
+			and compiled SWF file is executed at Flash Player.			
+		</para>
+		<mediaobject>
+			<imageobject>
+				<imagedata fileref="../image/flex-query/flex_application.jpg"	align="center" />
+			</imageobject>
+		</mediaobject>
+		</section>
+		<section id="flex_query_introduction_sec001_002">
+		<title>MXML Compile and Flex Builder</title>
+		<para>
+			To compile MXML file, you can execute command  mxmlc.exe provided in Flex SDK as the following.			
+		</para>
+		<programlisting language="java">mxmlc -file -specs Main.mxml</programlisting>
+		<para>
+			Flex Builder 3 is IDE for Flex development and automatically compiles mxml file as mxmlc and compc compiler are included.
+			There are independent execution version and Eclipse Plugin version in Flex Builder 3.
+			independent execution version requires additionally Eclipse installation, but cannot use JDT(Java Development Tools).			
+		</para>
+		<para>
+			Flex Builder 3 provides functions that are needed for development such as debugging, auto complete, monitoring, etc. in addition to auto MXML compile
+			and also provides design view for better component design.			
+		</para>
+		</section>
+	</section>
+		<section id="flex_query_introduction_sec002">
+		<title>BlazeDS</title>
+		<para>
+			As HTTPService, data transmission method basically provided in Flex, transmits data in xml, 
+			there are some security issues as it is not suitable for mass-capacity data transmission and url information is created 
+			within the source code of MXML.
+			BlazeDS is an Opensource S/W provided in Adobe for data transmission between Client and Server.
+			BlazeDS is largely composed of the following.			
+		</para>
+		<itemizedlist>
+			<listitem>
+				<para><emphasis role="bold">Client</emphasis> : RemoteObject, HTTPService, WebService, Producer, Consumer
+				 </para>
+			</listitem>
+			<listitem>
+				<para><emphasis role="bold">Server</emphasis> : BlazeDS library, BlazeDS configuration file, MessageBrokerServlet
+				 </para>
+			</listitem>
+  		</itemizedlist>
+  		<para>
+  			 BlzeDS provides RPC(HTTPService, WebService, RemoteObject) Service, Messaging Service
+  			 in a data transmission method between Client and Server and.
+  			For more information in each service, refer to <link linkend="flex_query_dataintegraion_sec002">Data integration using BlazeDS</link>/.
+		</para>
+	</section>
+</chapter>

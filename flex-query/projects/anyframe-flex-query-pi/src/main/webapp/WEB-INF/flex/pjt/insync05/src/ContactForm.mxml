@@ -1,0 +1,128 @@
+<?xml version="1.0" encoding="utf-8"?>
+<mx:Canvas xmlns:fx="http://ns.adobe.com/mxml/2009" 
+		   xmlns:s="library://ns.adobe.com/flex/spark" 
+		   xmlns:mx="library://ns.adobe.com/flex/mx"
+		   xmlns:data="org.anyframe.flex.messaging.data.*"
+		   width="100%" height="100%"
+		   label="{contact['contactId']>0?contact['firstName']+' '+contact['lastName']:'New Contact'}">
+
+	<fx:Script>
+		<![CDATA[
+			import mx.controls.Alert;
+			import mx.rpc.events.FaultEvent;
+			import mx.rpc.events.ResultEvent;
+			
+			import org.anyframe.flex.messaging.data.DataRow;
+			
+			[Bindable] public var contact:DataRow;
+			
+			private function save():void
+			{
+				contact["firstName"] = firstName.text;
+				contact["lastName"] = lastName.text;
+				contact["email"] = email.text;
+				contact["phone"] = phone.text;
+				contact["address"] = address.text;
+				contact["city"] = city.text;
+				contact["state"] = state.text;
+				contact["zip"] = zip.text;
+				
+				if (contact['contactId'] == 0)
+				{
+					dataService.insertDataRow("createFlexQueryContact", contact, {}, create_resultHandler);
+				}
+				else
+				{
+					dataService.updateDataRow("updateFlexQueryContact", contact, {}, update_resultHandler);
+				}
+				
+			}
+			
+			private function update_resultHandler(event:ResultEvent):void
+			{
+				Alert.show("Contact " + contact['contactId'] + " updated successfully");
+			}
+			
+			private function create_resultHandler(event:ResultEvent):void
+			{
+				dataService.removeEventListener(ResultEvent.RESULT, create_resultHandler);
+				findItem();
+			}
+			
+			private function findItem():void{
+				dataService.getDataRow("findFlexQueryContactList", contact, {}, select_resultHandler);
+			}
+			
+			private function select_resultHandler(event:ResultEvent):void
+			{
+				var newCompany:DataRow = new DataRow(event.result);
+				contact["contactId"] = newCompany["contactId"];
+				this.label = contact["contactId"];
+			}
+			
+			private function deleteItem():void
+			{
+				if ( contact == null ) {
+					Alert.show( "Contact is null.");
+				}else{
+					dataService.removeDataRow("removeFlexQueryContact", contact, {}, remove_resultHandler);
+				}
+						
+			}
+			
+			private function remove_resultHandler(event:ResultEvent):void
+			{
+				contact = null;
+				parent.removeChild(this);
+			}
+			
+			protected function dataService_faultHandler(event:FaultEvent):void
+			{
+				Alert.show(event.message.toString());
+			}
+		]]>
+	</fx:Script>
+	
+	<fx:Declarations>
+		<!-- Place non-visual elements (e.g., services, value objects) here -->
+		<data:DataSet id="dsContact" dataSetName="dsContact" selectQueryId="findContactList" />
+		<data:DataService id="dataService" fault="dataService_faultHandler(event)"/>
+	</fx:Declarations>
+
+	<mx:Form>
+		<mx:FormItem label="Id">
+			<mx:TextInput text="{contact['contactId']}" enabled="false"/>
+		</mx:FormItem>
+		<mx:FormItem label="First Name">
+			<mx:TextInput id="firstName" text="{contact['firstName']}"/>
+		</mx:FormItem>
+		<mx:FormItem label="Last Name">
+			<mx:TextInput id="lastName" text="{contact['lastName']}"/>
+		</mx:FormItem>
+		<mx:FormItem label="Email">
+			<mx:TextInput id="email" text="{contact['email']}"/>
+		</mx:FormItem>
+		<mx:FormItem label="Phone">
+			<mx:TextInput id="phone" text="{contact['phone']}"/>
+		</mx:FormItem>
+		<mx:FormItem label="Address">
+			<mx:TextInput id="address" text="{contact['address']}"/>
+		</mx:FormItem>
+		<mx:FormItem label="City">
+			<mx:TextInput id="city" text="{contact['city']}"/>
+		</mx:FormItem>
+		<mx:FormItem label="State">
+			<mx:TextInput id="state" text="{contact['state']}"/>
+		</mx:FormItem>
+		<mx:FormItem label="Zip">
+			<mx:TextInput id="zip" text="{contact['zip']}"/>
+		</mx:FormItem>
+	</mx:Form>
+	
+	<mx:HBox left="8" bottom="8">
+		<mx:Button label="Close" click="parent.removeChild(this)"/>
+		<mx:Button label="Save" click="save()"/>
+		<mx:Button label="Delete" click="deleteItem()"/>
+	</mx:HBox>
+
+</mx:Canvas>

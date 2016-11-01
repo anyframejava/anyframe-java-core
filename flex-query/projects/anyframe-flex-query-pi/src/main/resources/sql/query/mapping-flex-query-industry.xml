@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<queryservice xmlns="http://www.anyframejava.org/schema/query/mapping" 
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" 
+	xsi:schemaLocation="http://www.anyframejava.org/schema/query/mapping http://www.anyframejava.org/schema/query/mapping/anyframe-query-mapping-1.0.xsd ">
+
+	<queries>
+		<query id="findFlexQueryIndustryList" mappingStyle="lower">
+			<statement>
+				SELECT * FROM FLEX_industry ORDER BY name
+			</statement>
+		</query>
+		<query id="findFlexQueryIndustryByName" mappingStyle="lower">
+			<statement>
+				<!--flex-query-findFlexQueryIndustryByName-START-->
+				SELECT * FROM FLEX_industry WHERE name like '%'|| :name ||'%'	
+				<!--flex-query-findFlexQueryIndustryByName-END-->
+			</statement>
+		</query>
+	</queries>
+</queryservice>
+
