@@ -1,0 +1,125 @@
+<chapter id="excel_download">
+	<title>Excel Download</title>
+	<para>
+		Excel Download is a function to make Excel files with the search result of QueryService using Apache POI.  
+		Anyframe excel plugin provides classes such as  ExcelController, ExcelInfoHandler and ExcelService to perform Excel Download.
+		Each class performs the following role.
+	</para>
+	<itemizedlist>
+      	<listitem>
+      		<para>
+      			<emphasis role="bold">ExcelService</emphasis>: Execute a certain Query using QueryService and return the result.
+      		</para>
+      	</listitem>
+      	<listitem>
+      		<para>
+      			<emphasis role="bold">ExcelInfoHandler</emphasis>: Read Excel Sheet Configuration XML files and generate the column information.
+      		</para>
+      	</listitem>
+      	<listitem>
+      		<para>
+      			<emphasis role="bold">ExcelController</emphasis>: Make Excel files with the data searched through ExcelService using HSSF.
+      		</para>
+      	</listitem>
+ 	 </itemizedlist>
+ 	 <section id="excel_download_jsp">
+ 	 	<title>Download JSP</title>
+ 	 	<para>The following is a sample screen provided by Anyframe excel plugin.</para>
+ 	 	<mediaobject>
+		 		<imageobject>
+          			<imagedata align="center"
+                     	fileref="../image/excel/excel_download_jsp.png" />
+        		</imageobject>
+        </mediaobject>
+        <para>When the Excel Down button at the bottom of the screen is clicked, query is executed using the query id assigned by jsp, and the result is downloaded in an Excel file.
+        	The following is the example of setting the parameter values necessary to perform Excel Download in a jsp file.</para>
+        <programlisting language="xml"><![CDATA[<form:form method="post" name="excelDownloadForm">
+    <input name="queryId" type="hidden" value="" />
+    <input name="title" type="hidden" value="" />
+    <input name="nowPlaying" type="hidden" value="Y" />
+    <input name="fileName" type="hidden" value="movie" />
+    <input name="columnInfoFile" type="hidden" value="movie" />
+</form:form>
+        ]]></programlisting>
+        <para>queryId, columnInfoFile and fileName are essential parameters to perform the Excel Download function.</para>
+        <itemizedlist>
+      	<listitem>
+      		<para>
+      			<emphasis role="bold">queryId</emphasis> : Query ID of the Query Mapping XML file to be executed using QueryService
+      		</para>
+      	</listitem>
+      	<listitem>
+      		<para>
+      			<emphasis role="bold">fileName</emphasis>: name of the Excel file to be downloaded
+      		</para>
+      	</listitem>
+      	<listitem>
+      		<para>
+      			<emphasis role="bold">columnInfoFile</emphasis> : name of the Excel Sheet Configuration XML file
+      		</para>
+      	</listitem>
+ 	 </itemizedlist>
+ 	 <para>Parameters such as title and nowPlaying are necessary parameters to execute Query (search conditions).</para>
+ 	 <para>The javascript executed when the Excel Download button is clicked is as follows.</para>
+ 	 <programlisting language="xml"><![CDATA[function fncExcelDownload() {
+    document.excelDownloadForm.queryId.value="excel.findMovieList";
+    document.excelDownloadForm.action="<c:url value='/excelDownload.do?method=excelDownload'/>";
+    document.excelDownloadForm.submit();	
+}]]></programlisting>
+	<para>The URL of Excel Download is /excelDownload.do?method=excelDownload. If the query with the Query ID excel.findMovieList is executed by clicking the Excel Down button,
+	and an Excel file was properly made with the result, the following result will be shown on the screen.</para>
+	<mediaobject>
+		 		<imageobject>
+          			<imagedata align="center"
+                     	fileref="../image/excel/excel_download_save.png" />
+        		</imageobject>
+        </mediaobject>
+        <para>The following is part of the downloaded Excel file.</para>
+        <mediaobject>
+		 		<imageobject>
+          			<imagedata align="center"
+                     	fileref="../image/excel/excel_download_file.png" />
+        		</imageobject>
+        </mediaobject>
+ 	 </section>
+ 	 <section id="excel_download_controller">
+ 	 	<title>excelDownload of ExcelController</title>
+ 	 	<para>excelDownload of ExcelController calls the download method of ExcelService and generates an Excel file with the result using HSSF.
+ 	 	The following is part of the source code of the ExcelController excelDownload method.</para>
+ 	 	<programlisting language="java"><![CDATA[@RequestMapping(params = "method=excelDownload")
+public void excelDownload(HttpServletRequest request, HttpServletResponse response) throws Exception {
+//...
+        List<Map<String, Object>> resultList = excelService.download(searchMap);
+		
+//...
+    	
+        HSSFWorkbook workbook = new HSSFWorkbook();
+        HSSFSheet sheet = workbook.createSheet(fileName);
+    	
+        OutputStream fileOut = null;
+        try {
+            fileOut = response.getOutputStream();
+            HSSFRow row;
+            HSSFCellStyle style = workbook.createCellStyle();
+            style.setAlignment(HSSFCellStyle.ALIGN_CENTER);
+    		
+            HSSFCell cell;
+    		
+            row = sheet.createRow(0);
+    		
+            List<ColumnInfo> columnInfoList = getColumnInfo(request, columnInfoFile);
+    		
+            int columnCount = columnInfoList.size();
+            String[] header = new String[columnCount];
+            int[] cellwidth = new int[columnCount];
+            String[] fieldName = new String[columnCount];
+            String[] columnType = new String[columnCount];
+            String[] mask = new String[columnCount];
+    		
+            ColumnInfo columnInfo = null;
+            short width = 265;
+//...
+    }
+}]]></programlisting>
+ 	 </section>
+</chapter>

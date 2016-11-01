@@ -1,0 +1,176 @@
+<chapter id="foundation_springmvc_exceptionhandling">
+	<title>Exception Handling</title>
+
+		<para>
+			Spring MVC provides ExceptionResolver for declarative exception handling. 
+			This can define exception page according to exception type. 
+			Also, message on exception that occurred using try~catch statement in controller level, can be shown again in input view. 
+ 		</para>
+
+	<section id="foundation_springmvc_exceptionhandling_specialerrorpage">
+    <title>Show error message by moving to specific error page</title>
+
+    	<para>
+    		Spring MVC provides HandlerExceptionResolvers for exception handling. 
+    		This can be moved to specific page when a specific exception occurs. 
+    		First, user exception is defined.
+    	</para>
+
+    	<programlisting language="java">public class UserException extends RuntimeException {
+    public UserException(){
+        super();
+    }
+    public UserException(String message){
+        super(message);
+    }
+}</programlisting>
+
+		<para>
+			This defined user exception can be thrown in controller level or service level. 
+    		The following is an example of throwing UserException.
+    	</para>
+
+	    <programlisting language="java">//Throw UserException when the entered usesrName is not "test".
+if(!a.equals("test"))
+    throw new UserException(new String(messageSource.getMessage("error.exception.user"
+                                , new String[]{}, Locale.getDefault())));</programlisting>
+
+	    <para>
+	    	When throwing exception, use messageSource to show message of "error.exception.user" key value defined in properties file. 
+    		To map page information to be forwarded after exception occurs, define HandlerExceptionResolvers as the following.
+    	</para>
+
+  		<programlisting language="xml"><![CDATA[<bean id="]]><emphasis role="bold">exceptionResolver</emphasis><![CDATA[" 
+        class="org.springframework.web.servlet.handler.SimpleMappingExceptionResolver">
+    <property name="]]><emphasis role="bold">exceptionMappings</emphasis><![CDATA[">
+        <props>
+            <prop key="sample.services.UserException">userError</prop>
+        </props>
+    </property>
+    <property name="exceptionAttribute" value="sampleException"/>
+    <property name="defaultErrorView" value="error"/>
+</bean>]]></programlisting>
+
+    	<para>
+    		When defined as above, userError view is found by viewResolver when sample.services.UserException occurs, 
+    		and error message is shown on that view. 
+    		The occurred exception is set to be returned to userError.jsp page as "sampleException". 
+    		When exceptionAttribute property is not used, the default value is "exception". 
+    		The defaultErrorView that is set lastly, is to show error message on error.jsp when an error other than exception mapped above occurs. 
+    		Error message occurred can be shown using simple expression language. 
+    	</para>
+
+    	<para>
+    		<programlisting language="xml"><![CDATA[<h3>${simpleException.message}</h3>]]></programlisting>
+    	</para>
+	</section>
+
+	<section id="foundation_springmvc_exceptionhandling_printerror">
+    <title>Show error message on error message</title>
+
+		<para>
+			When handling errors of UI class as above, 
+			the values entered by user can disappear. 
+			To resolve this problem, the error message should be shown on input form page 
+			and the value entered by user should be maintained. Controller should directly handle exception. 
+			An example of handling is as follows. 
+		</para>
+
+		<programlisting language="java">protected ModelAndView onSubmit(HttpServletRequest request,
+                                    HttpServletResponse response, Object command,
+                                        BindException exception) throws Exception {
+    ...
+    HelloVO vo = (HelloVO) command;
+    ...
+   <emphasis role="bold"> try{
+        helloworldService.getMessage(vo);
+        }catch (UserException e){
+            ModelAndView mav = new ModelAndView(getFormView());
+            mav.addObject("user",vo);
+            mav.addObject("userException",e);
+            request.setAttribute("userException",e);
+            return mav;
+        }</emphasis>
+    return new ModelAndView(getSuccessView(),"vo",vo);
+}
+protected Object formBackingObject(HttpServletRequest request)
+    throws Exception {
+	request.setAttribute("user",new sample.services.HelloVO());
+	return new HelloVO();
+}</programlisting>
+
+    	<para>
+    		If you see the code above, 
+    		when calling getMessage(), 
+    		this exception and data entered by user is returned using ModelAndView 
+    		after UserException is directly handled with try~catch. 
+    		The returned error message can be shown using jstl tag in JSP file.
+    	</para>
+
+    	<programlisting language="xml"><![CDATA[<c:if test="${not empty userException}">
+<h3><font color="red">Error : 
+<]]><emphasis role="bold">c:out value="${userException.message}"/</emphasis><![CDATA[><]]><emphasis
+        role="bold">/font</emphasis><![CDATA[></h3>
+</c:if>]]></programlisting>
+	</section>
+
+	<section id="springmvc_exceptionhandling_changelocale">
+	<title>Change locale using message key in presentation layer</title>
+
+    	<para>
+    		When BaseException occurs in Business Layer, 
+    		send messageKey to parameter to handle message according to the preferred locale after receiving messageKey from presentation layer.
+    	</para>
+
+		<section id="springmvc_exceptionhandling_changelocale_baseexception">
+		<title>Business Layer BaseException occurrence</title>
+
+      		<para>
+      			<programlisting language="java">public class UserService implements ApplicationContextAware{
+    
+    private static Log logger = LogFactory.getLog(UserService.class);
+    private MessageSource messageSource;
+    
+    public UserVO getUser(UserVO userVO) throws Exception{
+        logger.debug("\n=============== UserService is called ===============\n");
+        <emphasis role="bold">throw new BaseException(messageSource,"error.test.message"
+                    , new Object[]{}, "default message");</emphasis>
+        //return userVO;
+    }
+    public void setApplicationContext(ApplicationContext applicaionContext)
+            throws BeansException {
+       this.messageSource = applicaionContext;
+    }
+}</programlisting>
+			</para>
+
+      		<para>In the above, key value named "error.test.message" has been transferred to parameter.</para>
+		</section>
+
+		<section id="springmvc_exceptionhandling_changelocale_setlocale">
+		<title>Set as new locale in message key value obtained from presentation layer. 
+		</title>
+	
+			<para>
+				<programlisting language="java"> try {
+    // call business service
+
+    userVO = userService.getUser(userVO);
+    // setting view name
+    ModelAndView mav = new ModelAndView("/jsp/user/getUser.jsp");
+    mav.addObject(userVO);
+    // return a ModelAndView object.
+    return mav;
+} catch (BaseException e) {
+    //Extract message key from occurred BaseException through getMessageKey() method.
+    String messageKey = <emphasis role="bold">e.getMessageKey()</emphasis>;
+    System.out.println("\n messageKey ==========" + messageKey
+                    + "============\n");
+    //Has been set again as ENGLISH locale with the extracted messageKey.
+    throw new BaseException(messageSource.getMessage(<emphasis role="bold">messageKey</emphasis>,
+        new String[] {}, <emphasis role="bold">Locale.ENGLISH</emphasis>));
+}</programlisting>
+			</para>
+		</section>
+	</section>
+</chapter>

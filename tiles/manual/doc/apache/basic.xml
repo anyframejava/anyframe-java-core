@@ -1,0 +1,54 @@
+<chapter id="tiles_apachetiles_basic">
+	<title>화면 개발</title>
+	<para>
+		Tiles 기반의 페이지를 개발하기 위해서는 먼저 template을 생성해야 한다. Anyframe Tiles Plugin 설치로 
+		생성되게 되는 Anyframe Application은 다음과 같은 화면 Layout을 가진다. 
+	</para>
+	<mediaobject>
+		<imageobject>
+			<imagedata align="center" fileref="../image/tiles/springmvc_view_tiles_layout.jpg" />
+		</imageobject>
+		<textobject>
+			<phrase>Anyframe Tiles Plugin 설치로 생성되게 되는 화면 Layout</phrase>
+		</textobject>
+	</mediaobject>
+	<para>
+		위의 그림에서 보는바와 같이 화면 Layout은 top, left, body의 구성요소로 이루어져 있다.
+		이러한 화면 Layout을 정의하기 위해 해당 Layout을 정의한 template 파일을 생성한다.
+		attribute의 삽입에 대해서는 &lt;tiles:insertAttribute&gt; tag를 사용하고 이 tag의 사용을 위해 taglib 또한 정의되어야 한다.
+		다음은 해당 Layout을 정의하고 있는standard.jsp 파일의 일부이다. 
+	</para>
+	<programlisting language="java"><emphasis><![CDATA[<%@ taglib prefix="tiles" uri="http://tiles.apache.org/tags-tiles" %>]]></emphasis><![CDATA[
+<body>
+<table width="100%" height="100%" border="0" cellpadding="0" cellspacing="0">
+  <tr>
+  <!---- Left Menu ------>
+    <td width="177" height="100%" align="left" valign="top"  bgcolor="#eeeeee">
+    	<div id="left">
+    		]]><emphasis role="bold"><![CDATA[<tiles:insertAttribute name="left"/>]]></emphasis><![CDATA[
+    	</div>
+    </td>
+	<!---- Body ------>
+    <td width="100%" height="100%" align="left" valign="top" style="padding:0 20px 0 20px">   
+		<div id="body">
+        	]]><emphasis role="bold"><![CDATA[<tiles:insertAttribute name="body"/>]]></emphasis><![CDATA[
+        </div>	
+    </td>
+  </tr>
+</table>
+</body>]]></programlisting>
+	<para>위와 같이 template JSP 파일을 정의하고 해당 Definition을 정의한 xml 파일을 작성한다. 
+	다음 코드는 위의 template을 정의한 Definition 파일의 일부이다.</para>
+	<programlisting language="xml"><![CDATA[<?xml version="1.0" encoding="utf-8"?>
+<!DOCTYPE tiles-definitions PUBLIC
+"-//Apache Software Foundation//DTD Tiles Configuration 2.1//EN"
+"http://tiles.apache.org/dtds/tiles-config_2_1.dtd">
+]]><emphasis role="bold"><![CDATA[<tiles-definitions>
+     <definition name="tilesLayout" template="/sample/tiles/standard.jsp">
+        <put-attribute name="left" value="/sample/tiles/left.jsp" />
+        <put-attribute name="body" value="/sample/tiles/welcome.jsp" />
+    </definition>
+</tiles-definitions]]></emphasis></programlisting>
+	<para>위의 Tiles Definition 파일에서 볼 수 있듯이 "/sample/tiles/standard.jsp"을 template으로 가지며
+	"left", "body"의 attribute를 채울 요소들을 지정해 주고 있다.</para>
+</chapter>

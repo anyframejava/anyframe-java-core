@@ -1,0 +1,196 @@
+<chapter id="excel_upload">
+	<title>Excel Upload</title>
+	<para>
+		Excel Upload는 Excel Download와는 반대로 Excel파일의 데이터를 QueryService를 이용해 Database에 저장하는 기능이다. 
+	</para>
+ 	 <section id="excel_upload_jsp">
+ 	 	<title>Upload JSP</title>
+ 	 	<para>다음은 Anyframe excel plugin에서 샘플로 제공하고 있는 화면이다.</para>
+ 	 	<mediaobject>
+		 		<imageobject>
+          			<imagedata align="center"
+                     	fileref="../image/excel/excel_upload_jsp.png" />
+        		</imageobject>
+        		<textobject>
+        			<phrase>Anyframe excel plugin에서 샘플로 제공하고 있는 화면을 캡춰한 그림으로써, 영화 목록이 보여지고, 우측 하단에 찾아보기, Excel Up, Excel Down 버튼이 
+        			추가되어 있다.
+        			</phrase>
+        		</textobject>
+        </mediaobject>
+        <para>화면 하단의 파일 찾기 버튼을 누르면 아래와 같이 로컬에서 Excel파일을 선택 할 수 있다.</para>
+        <mediaobject>
+		 		<imageobject>
+          			<imagedata align="center"
+                     	fileref="../image/excel/excel_upload_select.png" />
+        		</imageobject>
+        		<textobject>
+        			<phrase>Anyframe excel plugin에서 샘플로 제공하고 있는 화면에서 우측 하단의 찾아보기 버튼을 클릭하면 나타나는 탐색기 창을 보여주는 그림이다.</phrase>
+        		</textobject>
+        </mediaobject>
+        <para>Excel 파일을 Upload 하기 위해서는 Download와 마찬가지로 jsp에서 서버로 전송해야할 변수 값들이 있다.
+        	아래는 Upload하기 위해 설정된 jsp파일 내의 변수들이다. Upload를 위해 사용되는 form tag의 enctype은 반드시  multipart/form-data이다.</para>
+        <programlisting language="xml"><![CDATA[<form:form method="post" name="excelUploadForm" enctype="multipart/form-data">
+    <input type="file" name="excelFile" width="0">
+    <input name="queryId" type="hidden" value="" />
+    <input name="columnInfoFile" type="hidden" value="movie" />
+    <input name="resultPage" type="hidden" value="redirect:/excelMovieFinder.do?method=list" />
+</form:form>
+        ]]></programlisting>
+        <itemizedlist>
+      	<listitem>
+      		<para>
+      			<emphasis role="bold">queryId</emphasis> : QueryService를 이용해 실행할 Query Mapping XML 파일의 Query ID이다.(필수)
+      		</para>
+      	</listitem>
+      	<listitem>
+      		<para>
+      			<emphasis role="bold">file</emphasis> : Upload할 Excel파일이다.(필수)
+      		</para>
+      	</listitem>
+      	<listitem>
+      		<para>
+      			<emphasis role="bold">columnInfoFile</emphasis> : Excel Sheet Configuration XML파일명이다.(필수)
+      		</para>
+      	</listitem>
+      	<listitem>
+      		<para>
+      			<emphasis role="bold">resultPage</emphasis> : Upload 후 이동할 페이지이다.(필수)
+      		</para>
+      	</listitem>
+      	<listitem>
+      		<para>
+      			<emphasis role="bold">startRow</emphasis> : Excel 파일의 데이터중 일부만 저장하고 싶을 때 시작 행번호이다.(선택)
+      		</para>
+      	</listitem>
+      		<listitem>
+      		<para>
+      			<emphasis role="bold">endRow</emphasis> : Excel 파일의 데이터중 일부만 저장하고 싶을 때 마지막 행번호이다.(선택) 
+      		</para>
+      	</listitem>
+ 	 </itemizedlist>
+ 	 <para>Excel Upload 버튼을 클릭했을 때 실행되는 javascript는 다음과 같다.</para>
+ 	 <programlisting language="xml"><![CDATA[function fncExcelUpload() {
+    document.excelUploadForm.queryId.value="excel.excelMovieInsert";
+
+    var filePath = document.excelUploadForm.excelFile.value;
+
+    if(filePath.indexOf('.xls') == -1){
+        alert("Excel 파일이 아닙니다.");
+    return;
+    }
+    document.excelUploadForm.action="<c:url value='/excelDownload.do?method=excelUpload'/>";
+    document.excelUploadForm.submit();	
+}]]></programlisting>
+	<para>Excel Upload의 URL은 /excelDownload.do?method=excelUpload이다. Excel 파일의 데이터를 DB에 저장하기 위해 실행되는 쿼리의 ID는 excel.excelMovieInsert이다.</para>
+	</section>
+ 	 <section id="excel_upload_controller">
+ 	 	<title>ExcelController의 excelUpload</title>
+ 	 	<para>ExcelController의excelUpload메소드 전송 된 Excel파일을 분석해 데이터를 HashMap형태로 만든 다음 ExcelService의 upload메소드를 호출해 DB에 데이터를 저장한다.
+ 	 	아래는 ExcelController excelUpload 메소드 소스코드의 일부이다.</para>
+ 	 	<programlisting language="java"><![CDATA[@RequestMapping(params = "method=excelUpload")
+public String excelUpload(HttpServletRequest request, @RequestParam(value = "excelFile", required = false) MultipartFile excelFile) throws Exception {
+		
+    Map<String, Object> paramMap = bindRequestToMap(request);
+		
+    int startRow = 1;
+//저장을 시작할 row값, 설정이 없을 경우 1부터 시작, 0은 Heder정보
+    if( paramMap.get("startRow") != null ){
+    startRow = Integer.parseInt(paramMap.get("startRow").toString());
+    }
+		
+    POIFSFileSystem fs = null;		
+    try{
+        fs = new POIFSFileSystem(excelFile.getInputStream());
+    }catch(Exception e){
+        e.printStackTrace();
+    }
+		
+    HSSFWorkbook workbook = new HSSFWorkbook(fs);
+    int sheetNum = workbook.getNumberOfSheets();
+		
+//시트는 한개로 제약
+    HSSFSheet sheet = workbook.getSheetAt(0);
+		
+//저장한 데이터의 마직막 줄, 설정이 없을 경우는 시트 전체의 Row
+    int endRow = 0;
+    if( paramMap.get("endRow") != null ){
+        endRow = (Integer)paramMap.get("endRow");
+    }else{
+        endRow = sheet.getLastRowNum();
+    }
+    int rowCount = endRow;
+		
+    String columnInfoFile = "";
+		
+//ColumnInfo파일에서 ColumnName과 FieldName값을 HashMap으로 추출
+    if( paramMap.get("columnInfoFile") == null ){
+        throw new Exception("fail to get column info xml file name");
+    }else{
+        columnInfoFile = paramMap.get("columnInfoFile").toString();
+    }
+		
+    List<ColumnInfo> columnInfoList = getColumnInfo(request, columnInfoFile);
+		
+    Map<String, String> fieldMap = new HashMap<String, String>();
+    Map<String, Boolean> requiredMap = new HashMap<String, Boolean>();
+    for ( int i = 0 ; i < columnInfoList.size() ; i ++ ){
+        ColumnInfo columnInfo = columnInfoList.get(i);
+        fieldMap.put(columnInfo.getColumnName(), columnInfo.getFieldName());
+        requiredMap.put(columnInfo.getColumnName(), columnInfo.isRequired());
+    }
+		
+    String[] header = null; 
+    String[] filedName = null;  
+    Boolean[] requiredField = null;
+		
+//컬럼 해더 정보 추출
+    HSSFRow row = sheet.getRow(0);
+    if( row != null ){
+        int headerCount = row.getPhysicalNumberOfCells();
+        header = new String[headerCount];
+        filedName= new String[headerCount];
+        requiredField = new Boolean[headerCount];
+			
+        for( int i = 0 ; i < headerCount ; i ++ ){
+            HSSFCell cell = row.getCell(i);
+            if (cell != null && cell.getCellType() != HSSFCell.CELL_TYPE_BLANK) {
+            header[i] = getCellValue(cell);
+            filedName[i] = fieldMap.get(header[i]);
+            requiredField[i] = requiredMap.get(header[i]);
+        }
+    }
+}
+		
+    List<ListOrderedMap> insertList = new ArrayList<ListOrderedMap>();
+    ListOrderedMap insertMap = null;
+		
+//컬럼 값 추출
+    for( int i = startRow ; i <= endRow ; i ++ ){
+        boolean isInsertRow = true;
+        row = sheet.getRow(i);
+        if( row != null ){
+            insertMap = new ListOrderedMap();
+            for( int j = 0 ; j < filedName.length ; j ++ ){
+                HSSFCell cell = row.getCell(j);
+                if( cell != null ){
+                    if( !requiredField[j] ){
+                        insertMap.put(filedName[j], getCellValue(cell));
+                    }else if( cell.getCellType() != HSSFCell.CELL_TYPE_BLANK ){
+                        insertMap.put(filedName[j], getCellValue(cell));
+                    }else{
+                        isInsertRow = false;
+                        break;
+                    }
+                }
+            }
+            if(isInsertRow){
+            insertList.add(insertMap);
+        }
+    }
+    }
+//ExcelService의 upload method호출
+    excelService.upload(paramMap, insertList);
+    return paramMap.get("resultPage").toString();
+}]]></programlisting>
+ 	 </section>
+</chapter>

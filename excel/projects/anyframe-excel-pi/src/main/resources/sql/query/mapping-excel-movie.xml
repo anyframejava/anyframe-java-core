@@ -1,0 +1,32 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<queryservice xmlns="http://www.anyframejava.org/schema/query/mapping" 
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" 
+	xsi:schemaLocation="http://www.anyframejava.org/schema/query/mapping http://www.anyframejava.org/schema/query/mapping/anyframe-query-mapping-1.0.xsd ">
+
+	<queries>
+		<query id="excel.findMovieList">
+			<statement>
+				SELECT 
+				movie.movie_id, movie.title, movie.director, movie.genre_name, 
+				movie.actors, movie.release_date, movie.ticket_price
+				FROM EXCEL_MOVIE movie				
+			</statement>
+		</query>		
+		<query id="excel.findMovieListForExcel">
+			<statement>
+				SELECT 
+				movie.movie_id, movie.title, movie.director, movie.genre_name, 
+				movie.actors, movie.release_date, movie.now_playing, movie.poster_file, 
+				movie.ticket_price
+				FROM EXCEL_MOVIE movie
+			</statement>
+		</query>		
+		<query id="excel.excelMovieInsert">
+			<statement>
+				INSERT INTO EXCEL_MOVIE (movie_id, title, director, genre_name, actors,  release_date, ticket_price, now_playing)
+				VALUES (:movieId, :title, :director, :genreName, :actors, :releaseDate, :ticketPrice, 'Y')
+			</statement>
+		</query>				
+	</queries>
+</queryservice>
+

@@ -1,0 +1,91 @@
+<chapter id="jdbcsupport_injectionandlogging_configuration">
+		<title>Configuration</title>
+
+
+		<section id="jdbcsupport_injectionandlogging_configuration_jdbcaspect">
+        	<title>JdbcAspect</title>
+
+        	<para>
+        		JdbcAspect implementing Spring’s MethodInterceptor is registered. During registration, injectionPatternPostProcessor and 
+        		completeQueryPostProcessor should be registered as dependency. 
+        		<programlisting language="xml"><![CDATA[<bean id="jdbcAspect" class="org.anyframe.jdbc.support.aspect.JdbcAspect">
+    <property name="injectionPatternPostProcessor" ref="injectionPatternPostProcessor" />
+    <property name="completeQueryPostProcessor" ref="completeQueryPostProcessor" />
+</bean>]]></programlisting>
+        	</para>
+        	
+        	<para>
+        		To process DataSource interrupt via APO, by selecting AOP pointcut expression, connect jdbcAspect registered as above.
+        		<programlisting language="xml"><![CDATA[<aop:config>
+    <aop:pointcut id="jdbcPointcut" expression="execution(* *..*DataSource.*(..))" />
+    <aop:advisor advice-ref="jdbcAspect" pointcut-ref="jdbcPointcut" />
+</aop:config>]]></programlisting>
+        	</para>
+		</section>
+
+
+
+		<section id="jdbcsupport_injectionandlogging_configuration_postprocessor">
+        	<title>injectionPatternPostProcessor 및 completeQueryPostProcessor 설정</title>
+
+			<para>
+        		Provided as default injectionPatternPostProcessor
+        		<programlisting language="xml"><![CDATA[<bean id="injectionPatternPostProcessor"
+	class="org.anyframe.jdbc.support.impl.DefaultInjectionPatternPostProcessor">
+    <property name="warningPatterns">
+        <list>
+            <value>-{2,}</value>				<!-- check sql comment pattern -->
+            <value>'?1'?\s*=\s*'?1'?</value>	<!-- check 1 = 1 pattern - ex. '1' = '1' , 1= 1, '1'='1' -->
+            <!-- etc .. your own patterns -->
+        </list>
+    </property>
+    <property name="replacePatterns">
+        <map>
+            <entry key=";" value="" />						<!-- delete query statement delimiter -->
+            <entry key="-{2,}" value="-" />					<!-- ex. sql comment (dash) changing - (one dash) -->
+            <entry key="(?:or|OR)\s+'?1'?\s*=\s*'?1'?" value="" />	<!-- ex. delete always true text pattern - or '1'='1' -->
+            <!-- etc .. your own patterns -->
+        </map>
+    </property>
+</bean>]]></programlisting>
+        	</para>
+        	
+			<para>
+        		Provided as default completeQueryPostProcessor
+        		<programlisting language="xml"><![CDATA[<bean id="completeQueryPostProcessor"
+	class="org.anyframe.jdbc.support.impl.DefaultCompleteQueryPostProcessor" />]]></programlisting>
+        	</para>
+        	
+        	<para>
+        		Setup of warningPatterns and replacePatterns as above is written as regular expressions. 
+				Without warningPatterns and replacePatterns, the relevant functionality can be skipped. 
+				( Setup of injectionPatternPostProcessor bean itself should not be uninstalled and property tag should be uninstalled. )
+        	</para>
+    
+    		<para>
+    			Security department within organization often come up with a security check list to see whether it is possible to defend 
+    			a certain pattern. Thereby, this request leads to jdbc-support implementation. 
+				Generally, regular expressions seem difficult to write. However, regular expression allows a strong pattern check function, 
+				leading to higher productivity. For more details of regular expression, click the reference link. 
+    		</para>
+
+      	</section>
+      	
+		<section id="jdbcsupport_injectionandlogging_configuration_logger">
+        	<title>log4j Configuration</title>
+
+			<para>
+        		As below is the log4j logger definition on injectionPatternPostProcessor and completeQueryPostProcessor provided as default. 
+        		<programlisting language="xml"><![CDATA[<logger name="org.anyframe.jdbc.support.CompleteQueryPostProcessor" additivity="false">
+    <level value="INFO" />
+    <appender-ref ref="console" />
+</logger>
+
+<logger name="org.anyframe.jdbc.support.InjectionPatternPostProcessor" additivity="false">
+    <level value="WARN" />
+    <appender-ref ref="console" />
+</logger>]]></programlisting>
+        	</para>
+        	
+      	</section>
+</chapter>

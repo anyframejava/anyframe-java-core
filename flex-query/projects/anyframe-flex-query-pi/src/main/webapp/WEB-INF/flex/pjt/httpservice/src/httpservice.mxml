@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="utf-8"?>
+<mx:Application xmlns:mx="http://www.adobe.com/2006/mxml" layout="vertical">
+	<mx:HTTPService id="httpService" method="GET" url="./../../catalog.do" useProxy="false">
+		<mx:request>
+			<method>getProduct</method>
+		</mx:request>
+	</mx:HTTPService>
+
+	<mx:DataGrid width="100%" height="100%" dataProvider="{httpService.lastResult.catalog.product}"/> 
+	
+	<mx:Button label="Get Data" click="httpService.send()"/>
+</mx:Application>

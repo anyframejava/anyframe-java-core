@@ -1,0 +1,35 @@
+<?xml version="1.0" encoding="utf-8"?>
+<mx:TitleWindow xmlns:mx="http://www.adobe.com/2006/mxml" layout="absolute" width="284" height="94" xmlns:brd="anyframe.samples.domain.*" showCloseButton="true" 
+	close="PopUpManager.removePopUp(this)">
+	<mx:Metadata>
+        [Event(name="userSave", type="DetailEvent")]
+        [Event(name="userCancel", type="DetailEvent")]
+    </mx:Metadata>
+    <mx:Script>
+    	<![CDATA[
+    	import samples.domain.User;
+    	import mx.managers.PopUpManager; 
+    	import samples.event.UserEvent;
+    	
+    	private function confirm():void
+		{
+			dispatchEvent(new UserEvent(UserEvent.SAVE, null ) );
+			PopUpManager.removePopUp(this);
+		}
+
+		private function cancel():void
+		{
+			dispatchEvent(new UserEvent(UserEvent.CANCEL, null) );
+			PopUpManager.removePopUp(this)			
+		}
+    	]]>
+    </mx:Script>
+    
+    <mx:Label text="변경된 데이터가 있습니다. 저장하시겠습니까?" x="33.5" y="30"/>
+	
+	<mx:ControlBar horizontalAlign="center">
+        <mx:Button label="예" click="confirm()"/>
+        <mx:Button label="아니오" click="cancel()"/>
+    </mx:ControlBar>
+    
+</mx:TitleWindow>

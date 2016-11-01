@@ -1,0 +1,47 @@
+<beans xmlns="http://www.springframework.org/schema/beans"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:p="http://www.springframework.org/schema/p"
+	xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-3.2.xsd">
+	
+	<!--i18n-messagesource-START-->
+	<bean name="messageSource" class="org.anyframe.spring.message.AggregatingMessageSource">
+		<property name="messageSources">
+        	<list>
+           		<ref bean="databaseMessageSource"/>
+           		<ref bean="fileMessageSource"/>
+        	</list>
+    	</property>
+	</bean>
+	
+	<bean id="databaseMessageSource"  class="org.anyframe.spring.message.DatabaseMessageSource">
+	    <property name="dataSource" ref="dataSource"/>
+	    <property name="messageTable">
+	        <props>
+	            <prop key="table">MESSAGE_SOURCE</prop>
+				<prop key="key.column">ID</prop>
+				<prop key="language.column">LANGUAGE</prop>
+				<prop key="country.column">COUNTRY</prop>
+	            <prop key="text.column">TEXT</prop>
+	        </props>
+	    </property>
+		<property name="cacheManager" ref="cacheManager"></property>
+	</bean>
+	<!--i18n-messagesource-END-->
+		
+	<bean id="fileMessageSource"
+		class="org.springframework.context.support.ReloadableResourceBundleMessageSource">
+		<property name="basenames">
+			<list>
+				<value>classpath:message/message-generation</value>
+				<value>classpath:message/message-moviefinder</value>
+				<value>classpath:message/message-converter</value>
+				<!--Add new configuration here-->
+			</list>
+		</property>
+		<property name="defaultEncoding">
+			<value>UTF-8</value>
+		</property>
+	</bean>
+	
+
+</beans> 

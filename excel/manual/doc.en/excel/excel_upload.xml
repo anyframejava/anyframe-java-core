@@ -1,0 +1,188 @@
+<chapter id="excel_upload">
+	<title>Excel Upload</title>
+	<para>
+		Excel Upload is a function to save the data of Excel files in Database using QueryService contrary to Excel Download. 
+	</para>
+ 	 <section id="excel_upload_jsp">
+ 	 	<title>Upload JSP</title>
+ 	 	<para>The following is the sample screen provided by Anyframe excel plugin.</para>
+ 	 	<mediaobject>
+		 		<imageobject>
+          			<imagedata align="center"
+                     	fileref="../image/excel/excel_upload_jsp.png" />
+        		</imageobject>
+        </mediaobject>
+        <para>If the file search button at the bottom of the screen is clicked, Excel files can be selected in Local as follows.</para>
+        <mediaobject>
+		 		<imageobject>
+          			<imagedata align="center"
+                     	fileref="../image/excel/excel_upload_select.png" />
+        		</imageobject>
+        </mediaobject>
+        <para>There are parameters to be transmitted from jsp to the server to upload Excel files as in Download.
+        	The following is the parameters within a jsp file set to upload. The enctype of the form tag used for upload is always multipart/form-data.</para>
+        <programlisting language="xml"><![CDATA[<form:form method="post" name="excelUploadForm" enctype="multipart/form-data">
+    <input type="file" name="excelFile" width="0">
+    <input name="queryId" type="hidden" value="" />
+    <input name="columnInfoFile" type="hidden" value="movie" />
+    <input name="resultPage" type="hidden" value="redirect:/excelMovieFinder.do?method=list" />
+</form:form>
+        ]]></programlisting>
+        <itemizedlist>
+      	<listitem>
+      		<para>
+      			<emphasis role="bold">queryId</emphasis>: Query ID of the Query Mapping XML file to be executed using QueryService (required)
+      		</para>
+      	</listitem>
+      	<listitem>
+      		<para>
+      			<emphasis role="bold">file</emphasis>: Excel files to upload (required)
+      		</para>
+      	</listitem>
+      	<listitem>
+      		<para>
+      			<emphasis role="bold">columnInfoFile</emphasis>: name of the Excel Sheet Configuration XML file (required)
+      		</para>
+      	</listitem>
+      	<listitem>
+      		<para>
+      			<emphasis role="bold">resultPage</emphasis>: page to move to after uploading(required)
+      		</para>
+      	</listitem>
+      	<listitem>
+      		<para>
+      			<emphasis role="bold">startRow</emphasis>: the first row number when only part of the Excel file data is to be saved (optional)
+      		</para>
+      	</listitem>
+      		<listitem>
+      		<para>
+      			<emphasis role="bold">endRow</emphasis>: the final row number when only part of the Excel file data is to be saved (optional) 
+      		</para>
+      	</listitem>
+ 	 </itemizedlist>
+ 	 <para>The javascript executed when the Excel Upload button is clicked is as follows.</para>
+ 	 <programlisting language="xml"><![CDATA[function fncExcelUpload() {
+    document.excelUploadForm.queryId.value="excel.excelMovieInsert";
+
+    var filePath = document.excelUploadForm.excelFile.value;
+
+    if(filePath.indexOf('.xls') == -1){
+        alert("Not an Excel file");
+    return;
+    }
+    document.excelUploadForm.action="<c:url value='/excelDownload.do?method=excelUpload'/>";
+    document.excelUploadForm.submit();	
+}]]></programlisting>
+	<para>The URL of Excel Upload is /excelDownload.do?method=excelUpload. The query ID executed to save Excel file data in DB is excel.excelMovieInsert.</para>
+	</section>
+ 	 <section id="excel_upload_controller">
+ 	 	<title>excelUpload of ExcelController</title>
+ 	 	<para>It analyzes the Excel file transmitted to the excelUpload method of ExcelController and turn the data into the HashMap type, and it save the data in DB by calling the upload method of ExcelService.
+ 	 	The following is part of the source code of the ExcelController excelUpload method.</para>
+ 	 	<programlisting language="java"><![CDATA[@RequestMapping(params = "method=excelUpload")
+public String excelUpload(HttpServletRequest request, @RequestParam(value = "excelFile", required = false) MultipartFile excelFile) throws Exception {
+		
+    Map<String, Object> paramMap = bindRequestToMap(request);
+		
+    int startRow = 1;
+//The row value to start saving. Start with 1 when it is not set. 0 is Header information.
+    if( paramMap.get("startRow") != null ){
+    startRow = Integer.parseInt(paramMap.get("startRow").toString());
+    }
+		
+    POIFSFileSystem fs = null;		
+    try{
+        fs = new POIFSFileSystem(excelFile.getInputStream());
+    }catch(Exception e){
+        e.printStackTrace();
+    }
+		
+    HSSFWorkbook workbook = new HSSFWorkbook(fs);
+    int sheetNum = workbook.getNumberOfSheets();
+		
+//The sheet is limited to one.
+    HSSFSheet sheet = workbook.getSheetAt(0);
+		
+//The end row of the saved data. When it is not set, the row of the whole sheet is used.
+    int endRow = 0;
+    if( paramMap.get("endRow") != null ){
+        endRow = (Integer)paramMap.get("endRow");
+    }else{
+        endRow = sheet.getLastRowNum();
+    }
+    int rowCount = endRow;
+		
+    String columnInfoFile = "";
+		
+//Extract ColumnName and FieldName from ColumnInfo file by HashMap.
+    if( paramMap.get("columnInfoFile") == null ){
+        throw new Exception("fail to get column info xml file name");
+    }else{
+        columnInfoFile = paramMap.get("columnInfoFile").toString();
+    }
+		
+    List<ColumnInfo> columnInfoList = getColumnInfo(request, columnInfoFile);
+		
+    Map<String, String> fieldMap = new HashMap<String, String>();
+    Map<String, Boolean> requiredMap = new HashMap<String, Boolean>();
+    for ( int i = 0 ; i < columnInfoList.size() ; i ++ ){
+        ColumnInfo columnInfo = columnInfoList.get(i);
+        fieldMap.put(columnInfo.getColumnName(), columnInfo.getFieldName());
+        requiredMap.put(columnInfo.getColumnName(), columnInfo.isRequired());
+    }
+		
+    String[] header = null; 
+    String[] filedName = null;  
+    Boolean[] requiredField = null;
+		
+//Extract column header information.
+    HSSFRow row = sheet.getRow(0);
+    if( row != null ){
+        int headerCount = row.getPhysicalNumberOfCells();
+        header = new String[headerCount];
+        filedName= new String[headerCount];
+        requiredField = new Boolean[headerCount];
+			
+        for( int i = 0 ; i < headerCount ; i ++ ){
+            HSSFCell cell = row.getCell(i);
+            if (cell != null && cell.getCellType() != HSSFCell.CELL_TYPE_BLANK) {
+            header[i] = getCellValue(cell);
+            filedName[i] = fieldMap.get(header[i]);
+            requiredField[i] = requiredMap.get(header[i]);
+        }
+    }
+}
+		
+    List<ListOrderedMap> insertList = new ArrayList<ListOrderedMap>();
+    ListOrderedMap insertMap = null;
+		
+//Extract the column value.
+    for( int i = startRow ; i <= endRow ; i ++ ){
+        boolean isInsertRow = true;
+        row = sheet.getRow(i);
+        if( row != null ){
+            insertMap = new ListOrderedMap();
+            for( int j = 0 ; j < filedName.length ; j ++ ){
+                HSSFCell cell = row.getCell(j);
+                if( cell != null ){
+                    if( !requiredField[j] ){
+                        insertMap.put(filedName[j], getCellValue(cell));
+                    }else if( cell.getCellType() != HSSFCell.CELL_TYPE_BLANK ){
+                        insertMap.put(filedName[j], getCellValue(cell));
+                    }else{
+                        isInsertRow = false;
+                        break;
+                    }
+                }
+            }
+            if(isInsertRow){
+            insertList.add(insertMap);
+        }
+    }
+    }
+//Call the upload method of ExcelService
+    excelService.upload(paramMap, insertList);
+    return paramMap.get("resultPage").toString();
+}]]></programlisting>
+ 	 </section>
+</chapter>

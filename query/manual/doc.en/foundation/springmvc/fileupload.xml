@@ -1,0 +1,118 @@
+<chapter id="foundation_springmvc_fileupload">
+	<title>File Upload</title>
+
+		<para>
+			Spring MVC는 파일 업로드 기능을 지원하기 위하여
+			<ulink url="http://commons.apache.org/fileupload/"> Commons 파일 업로드</ulink> 라이브러리를 지원한다.
+			commons 라이브러리를 사용하기 위해서는 commons-fileupload-x.x.jar 파일과 commons-io-x.x.jar파일이 필요하다. 
+			이는 Anyframe 배포 라이브러리에 포함되어 있다.
+			파일 업로드 기능을 구현하기 위해서는 먼저 빈 설정 파일에 다음과 같이 MultipartResolver를 정의해야한다.
+  		</para>
+		<programlisting language="xml"><![CDATA[<bean id="multipartResolver"
+    class="org.springframework.web.multipart.commons.]]><emphasis
+    role="bold">CommonsMultipartResolver</emphasis>"<![CDATA[>
+    <property name="maxUploadSize">
+        <value>10000000</value>
+    </property>
+</bean>]]></programlisting>
+
+  		<para>
+  			또한 해당 컨트롤러의 property로 파일의 업로드 위치를 지정해주고 컨트롤러에서 setter injection을
+  			통해 지정된 파일 업로드 위치를 불러올 수 있다. 사용예는 다음과 같다.
+  		</para>
+  		<programlisting language="xml"><![CDATA[<bean id="helloworldCommandController"
+    class="sample.web.controller.HelloworldCommandController">
+    <property name="destinationDir" value="C:/Temp/fileupload/temp" />
+    <property name="helloworldService" ref="helloworldService" />
+</bean>]]></programlisting>
+
+		<para>
+			파일 업로드를 위해 JSP파일의 입력 폼 타입을 file로 지정하고 form의 enctype을
+  			multipart/form-data로 지정한다.
+  		</para>
+
+  		<programlisting language="xml"><![CDATA[<body>
+    <form name="fileForm" action="file.do" method="post"]]> <emphasis
+      role="bold">enctype</emphasis>="<emphasis role="bold">multipart/form-data</emphasis>"<![CDATA[>
+    파일  : <input type="file" style="width:400" name="file"><br/>
+    <input type="submit" value="upload" />
+    </form>
+</body>]]></programlisting>
+
+  		<para>Spring MVC에서는 파일 업로드를 위해 MultipartFile이라는 객체 타입을 제공한다.</para>
+
+  		<programlisting language="java">private MultipartFile file;
+private Long size;
+private String name;
+private String filePath;</programlisting>
+
+  		<para>다음은 파일 업로드를 위해 Controller를 구현한 모습이다.</para>
+
+  		<programlisting language="java">public class HelloworldCommandController extends AbstractCommandController {
+    
+    private File <emphasis role="bold">destinationDir</emphasis>;
+    
+    /** 
+     * 파일업로드를 위한 빈 설정의 property로 지정해준 
+     * destinationDir setter injection
+     */
+     <emphasis role="bold">public void setDestinationDir(File destinationDir) {
+            this.destinationDir = destinationDir;</emphasis>
+        }
+    
+    ...중략...
+    
+    protected ModelAndView handle(HttpServletRequest request,
+            HttpServletResponse response, Object command, BindException exception)
+            throws Exception {
+        
+        //전달 받은 Request값을 MultipartHttpServletRequest로 바인딩 시킨다.
+       <emphasis role="bold"> MultipartHttpServletRequest multipartRequest
+                                             = (MultipartHttpServletRequest) request;</emphasis>
+        
+        //request의 "file"을 찾아 file객체에 세팅한다.
+        MultipartFile file = multipartRequest.getFile("file");
+        String fileName = file.getOriginalFilename();
+       <emphasis role="bold"> File destination = File.createTempFile("file", fileName, destinationDir);</emphasis>
+        
+        //파일카피
+       <emphasis role="bold"> FileCopyUtils.copy(file.getInputStream(), new FileOutputStream(destination));</emphasis>
+        
+        //새로운 파일 속성 세팅
+        HelloVO vo = (HelloVO) command;
+        vo.setFilePath(destination.getAbsolutePath());
+        vo.setName(file.getOriginalFilename());
+        vo.setSize(file.getSize());
+        vo.setFile(file);
+        helloworldService.getMessage1(vo);
+        return new ModelAndView("result", "message", vo);
+    }
+}</programlisting>
+
+		<para>
+			위와 같이 간단한 파일 업로드를 실행시켜 볼 수 있다. 위의 예제는 화면에서 입력 받은 객체를
+			MultipartFile타입으로 받았기 때문에 별다른 바인딩 작업이 필요하지않았다. 하지만 화면에서 입력받은 파일을
+  			String 타입으로 바인딩하려면 StringMultipartEditor, byte 타입의 배열로 바인딩 하려면 ByteArrayMultipartEditor를
+  			사용하여 Contoller에 다음과 같이 initBinder 메소드를 오버라이드하여 구현해 줄 수 있다.
+  		</para>
+
+  		<itemizedlist>
+    		<listitem>
+      			<para>StringMultipartEditor</para>
+      			<programlisting
+      			language="java">protected void initBinder(HttpServletRequest request, ServletRequestDataBinder binder)
+                    throws ServletException {
+    binder.registerCustomEditor(<emphasis role="bold">String.class, new StringMultipartFileEditor()</emphasis>);
+}</programlisting>
+    		</listitem>
+
+    		<listitem>
+      			<para>ByteArrayMultipartEditor</para>
+      			<programlisting
+      			language="java">protected void initBinder(HttpServletRequest request, ServletRequestDataBinder binder)
+                    throws ServletException {
+    binder.registerCustomEditor(<emphasis role="bold">byte[].class, new ByteArrayMultipartFileEditor()</emphasis>);
+}</programlisting>
+    		</listitem>
+  		</itemizedlist>
+</chapter>

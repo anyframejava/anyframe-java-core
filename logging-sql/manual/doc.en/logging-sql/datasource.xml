@@ -1,0 +1,330 @@
+<chapter id="loggingsql_sqllogging_datasource">
+				<title>Step 3. DataSource property definition</title>
+
+
+		<section id="loggingsql_sqllogging_datasource_jdbc">
+        	<title>When using JDBCDataSource</title>
+
+        	<itemizedlist>
+          		<listitem>
+            		<para>
+            			In the case of JDBC Driver which is basically supported,
+							when defining DataSource properties, driverClassName is defined as net.sf.log4jdbc.DriverSpy
+							and url is added with 'jdbc:log4' to the existing url.
+							The following is context-datasource.xml, a configuration file of general type datasource.						
+						<programlisting language="xml"><![CDATA[<bean id="]]><emphasis role="bold">commonDataSource</emphasis><![CDATA[" class="org.apache.commons.dbcp.BasicDataSource" destroy-method="close">
+    <property name="driverClassName" value="net.sf.log4jdbc.DriverSpy"/>
+    <property name="url" value="jdbc:log4jdbc:hsqldb:file:/./DATABASE/db/sampledb"/>
+    <property name="username" value="sa"/>
+</bean>]]></programlisting>
+					</para>
+
+            		<para>
+            			[References] Basic JDBC Driver list provided in DriverSpy is as the following.            		
+            			<programlisting>. oracle.jdbc.driver.OracleDriver 
+. com.sybase.jdbc2.jdbc.SybDriver
+. net.sourceforge.jtds.jdbc.Driver
+. com.microsoft.jdbc.sqlserver.SQLServerDriver
+. weblogic.jdbc.sqlserver.SQLServerDriver
+. com.informix.jdbc.IfxDriver
+. org.apache.derby.jdbc.ClientDriver
+. org.apache.derby.jdbc.EmbeddedDriver
+. com.mysql.jdbc.Driver
+. org.postgresql.Driver
+. org.hsqldb.jdbcDriver
+. org.h2.Driver</programlisting>
+					</para>
+          		</listitem>
+
+				<listitem>
+            		<para>
+            			<emphasis role="bold">When using JDBC Driver that is not basically supported.
+            			</emphasis>
+            		</para>
+
+            		<para>
+            			If not JDBC Driver basically supported in net.sf.log4jdbc.DriverSpy,
+						define the same basic definition way as mentioned before,
+						but additional setting is required for system setting.
+						When working on Eclipse, define <emphasis role="bold">log4jdbc.drivers</emphasis>
+							as a property key at Open Run Diaglog &gt; Arguments tab &gt; VM
+							arguments and actual DB driver class name as a property value.					
+            			<programlisting><emphasis role="bold">-Dlog4jdbc.drivers=com.ibm.db2.jcc.DB2Driver </emphasis></programlisting>
+                  	</para>
+          		</listitem>
+        	</itemizedlist>
+		</section>
+
+
+
+		<section id="loggingsql_sqllogging_datasource_jndi">
+        	<title>When using JNDIDataSource</title>
+
+        	<para>
+        		When using JNDIDataSource,
+				datasource to use in the relevant WAS must be defined .			
+        	</para>
+
+       		<itemizedlist>
+          		<listitem>
+            		<para>
+            			<emphasis role="bold">In the case of WebLogic</emphasis>
+            		</para>
+
+            		<orderedlist>
+              			<listitem>
+                			<para>
+                				<emphasis role="bold">Adding DataSource</emphasis>
+                			</para>
+
+                			<para>
+                				Define datasource to use in WebLogic.
+								in this case, as in defining JDBCDataSource,
+									<emphasis role="bold">define driverClassName as
+										net.sf.log4jdbc.DriverSpy and add 'jdbc:log4'
+										to the existing url.</emphasis>When defining url, refer to 
+										<emphasis role="bold">When using JDBCDataSource</emphasis>
+										in step 3.								
+                			</para>
+                
+                			<note>
+                				<title>References</title>
+                				<para>
+                						To add datasource using net.sf.log4jdbc.DriverSpy to WebLogic Server,
+									proper call must occur between WebLogic and log4jdbc.
+									Therefore, remember to copy log4jdbcX-*.jar, slf4j-api-*.jar, slf4j-log4j12-*.jar
+									to [Domain Server Home/lib] before executing WebLogic server.								
+								</para>				        
+							</note>
+
+                			<para>
+                						The following is the TestDataSource setting added to WebLogic 9.2 Server.                				
+                			</para>
+
+                			<mediaobject>
+                  				<imageobject>
+                    				<imagedata align="center"
+                               			fileref="../image/logging-sql/weblogic-datasource-jdbc3.jpg" />
+                  				</imageobject>
+                			</mediaobject>
+              			</listitem>
+
+              			<listitem>
+                			<para>
+                				<emphasis role="bold">DataSource property definition</emphasis>
+                			</para>
+
+                			<para>
+                				To use JNDIDataSource after defining JNDIDataSource,
+									refer to the following and define context-datasource-jndi.xml file.							
+                				<programlisting language="xml"><![CDATA[<bean id="commonDataSource" class="org.springframework.jndi.JndiObjectFactoryBean">
+    <property name="jndiName" value="TestDataSource" />
+    <property name="jndiTemplate" ref="jnditemplate" />
+</bean>
+<bean id="jnditemplate"
+        class="org.springframework.jndi.JndiTemplate">
+    <property name="environment">
+        <props>
+            <prop key="java.naming.factory.initial">
+                weblogic.jndi.WLInitialContextFactory
+            </prop>
+            <prop key="java.naming.provider.url">
+                t3://localhost:7001
+            </prop>
+        </props>
+    </property>
+</bean>]]></programlisting>
+                			</para>
+              			</listitem>
+            		</orderedlist>
+          		</listitem>
+
+          		<listitem>
+            		<para>
+            			<emphasis role="bold">In the case of JEUS</emphasis>
+            		</para>
+
+            		<orderedlist>
+              			<listitem>
+                			<para>
+                				<emphasis role="bold">Adding DataSource</emphasis>
+                			</para>
+
+                			<para>
+                				Add JNDIDataSource to use in JEUS.
+									The following is a part of JEUSMain.xml file of JEUS server
+									where JNDIDataSource is added.							
+                				<programlisting language="xml"><![CDATA[1. In the case of XA mode
+<resource>
+    <data-source>
+        <database>
+            <vendor>oracle</vendor>
+            <export-name>OracleDS</export-name>
+            <data-source-class-name>
+                 oracle.jdbc.xa.client.OracleXADataSource
+            </data-source-class-name>
+            <data-source-type>XADataSource</data-source-type>
+            <database-name>test2</database-name>
+            <data-source-name>
+                 oracle.jdbc.xa.client.OracleXADataSource
+            </data-source-name>
+            <port-number>1521</port-number>
+            <server-name>server.ip</server-name>
+            <user>anyframe</user>
+            <password>anyframe</password>
+            <driver-type>thin</driver-type>
+            <connection-pool>
+                <pooling>
+                    <min>2</min>
+                    <max>30</max>
+                    <step>4</step>
+                    <period>3600000</period>
+                </pooling>
+            </connection-pool>
+        </database>
+    </data-source>
+</resource>
+2. In the case of ConnectionPool mode
+<resource>
+    <data-source>
+        <database>
+            <vendor>oracle</vendor>
+            <export-name>OraclePoolDS</export-name>
+            <data-source-class-name>
+                 oracle.jdbc.pool.OracleConnectionPoolDataSource
+            </data-source-class-name>
+            <data-source-type>ConnectionPoolDataSource</data-source-type>
+            <database-name>test2</database-name>
+            <data-source-name>
+                 oracle.jdbc.pool.OracleConnectionPoolDataSource
+            </data-source-name>
+            <port-number>1521</port-number>
+            <server-name>server.ip</server-name>
+            <user>anyframe</user>
+            <password>anyframe</password>
+            <driver-type>thin</driver-type>
+            <connection-pool>
+                <pooling>
+                    <min>2</min>
+                    <max>30</max>
+                    <step>4</step>
+                    <period>3600000</period>
+                </pooling>
+                <check-query>select sysdate from dual</check-query>
+                <check-query-period>10000</check-query-period>
+            </connection-pool>
+        </database>
+    </data-source>
+</resource>]]></programlisting>
+                			</para>
+              			</listitem>
+
+              			<listitem>
+                			<para>
+                				<emphasis role="bold">DataSource Wrapper definition and compile
+                				</emphasis>
+                			</para>
+
+                			<para>
+                				If WAS is JEUS, as DB url cannot be defined when adding JNDIDataSource,
+									SQL logging through DriverSpy cannot be executed.
+									In this case, like the following AnyframeDataSourceSpy,
+									you can define and use specific DataSource Wrapper class.							
+                				<programlisting language="java">package net.sf.log4jdbc;
+
+import java.io.PrintWriter;
+import java.sql.Connection;
+import java.sql.SQLException;
+
+import javax.sql.DataSource;
+
+import net.sf.log4jdbc.ConnectionSpy;
+import net.sf.log4jdbc.SpyLogDelegator;
+import net.sf.log4jdbc.SpyLogFactory;
+import net.sf.log4jdbc.RdbmsSpecifics;
+
+public class AnyframeDataSourceSpy implements DataSource {
+
+    private DataSource dataSource = null;
+
+    static final SpyLogDelegator log = SpyLogFactory.getSpyLogDelegator();
+
+    static RdbmsSpecifics defaultRdbmsSpecifics = new RdbmsSpecifics();
+
+    public AnyframeDataSourceSpy() {
+    }
+    public Connection getConnection() throws SQLException {
+        return getWrappedConnection(dataSource.getConnection());
+    }
+    public Connection getConnection(String username, String password)
+            throws SQLException {
+        return getWrappedConnection(dataSource
+                .getConnection(username, password));
+    }
+    public PrintWriter getLogWriter() throws SQLException {
+        return dataSource.getLogWriter();
+    }
+    public int getLoginTimeout() throws SQLException {
+        return dataSource.getLoginTimeout();
+    }
+    public void setLogWriter(PrintWriter out) throws SQLException {
+        dataSource.setLogWriter(out);
+    }
+    public void setLoginTimeout(int seconds) throws SQLException {
+        dataSource.setLoginTimeout(seconds);
+    }
+    private Connection getWrappedConnection(Connection con) {
+        if (log.isJdbcLoggingEnabled())
+        {
+            ConnectionSpy cspy = new ConnectionSpy(con);
+            cspy.setRdbmsSpecifics(defaultRdbmsSpecifics);
+            return cspy;
+        }
+        else
+        {
+            return con;
+        }
+    }
+    public void setDataSource(DataSource dataSource) {
+
+        this.dataSource = dataSource;
+    }
+}</programlisting>
+                			</para>
+						</listitem>
+
+              			<listitem>
+                			<para>
+                				<emphasis role="bold">DataSource property definition</emphasis>
+                			</para>
+
+                			<para>
+								To execute the application datasource through above-mentioned datasource wrapper,
+									refer to the following and define context-datasource-wrapper.xml file.								
+               					<programlisting language="xml"><![CDATA[<bean id="realDataSource"
+        class="org.springframework.jndi.JndiObjectFactoryBean">
+    <property name="jndiName" value="OraclePoolDS" />
+    <property name="jndiTemplate" ref="jnditemplate" />
+</bean>
+<bean id="jnditemplate"
+        class="org.springframework.jndi.JndiTemplate">
+    <property name="environment">
+        <props>
+            <prop key="java.naming.factory.initial">
+                jeus.jndi.JNSContextFactory
+            </prop>
+            <prop key="java.naming.provider.url">server.ip:9736</prop>
+        </props>
+    </property>
+</bean> 
+
+<bean id="commonDataSource" class="]]><emphasis role="bold">net.sf.log4jdbc.AnyframeDataSourceSpy</emphasis><![CDATA[">
+    <property name="dataSource" ref="realDataSource"/>
+</bean>]]></programlisting>
+                			</para>
+              			</listitem>
+            		</orderedlist>
+          		</listitem>
+       	</itemizedlist>
+      	</section>
+</chapter>

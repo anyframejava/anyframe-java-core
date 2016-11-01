@@ -1,0 +1,634 @@
+<chapter id="foundation_springmvc_validation">
+	<title>Validation</title>
+	<para>
+		Spring에서는 사용자가 입력한 값에 대한 유효성을 체크하기 위해 Spring Validator 또는 JSR-303 Validator를 사용할 수 있도록 지원하고 있다.  
+	</para>
+	
+	<section id="foundation_springmvc_validation_validator">
+		<title>Spring Validator</title>
+		<para>
+	  		Spring MVC에서는 Spring Validator를 이용하여 입력 필드의 값에 대해 Validation Check를 수행하고 Errors 객체를 통해 에러 메시지를 출력해 줄 수 있도록 지원한다. 
+	  		또한 Errors 객체에 담겨진 에러 메시지는 jsp 페이지에서 form:errors 태그를 통해 출력될 수 있다.
+	  	</para>
+	  	<section id="foundation_springmvc_validation_validator_create">
+	    	<title>Validator 생성</title>	  	
+			<itemizedlist>
+     			<listitem>
+	       			<para>ValidatorUtils 사용</para>
+			        <para>
+			        	필수 입력 필드에 대해 Validation Check를 수행하고 에러 메시지를 출력할 수 있도록 지원한다. 이것은 ValidatorUtils를 사용하여 간단히 구현할 수 있다.
+			        	다음은 Validator 인터페이스를 구현한 UserValidator.java 클래스의 일부이다. 
+			        </para>
+		        	<programlisting language="java">public class <emphasis role="bold">UserValidator implements Validator</emphasis> {
+    public boolean supports(Class clazz) {
+        return UserVO.class.isAssignableFrom(clazz);
+    }
+			
+    public void validate(Object object, Errors errors) {
+        // validationUtils를 이용하여 입력값이 비었는지 체크
+        <emphasis role="bold">  ValidationUtils.rejectIfEmptyOrWhitespace</emphasis>(errors, "userName",
+            "required", new Object[] { "userName" }, "Enter your name");
+        ValidationUtils.rejectIfEmptyOrWhitespace(errors, "password",
+            "required", new Object[] { "password" }, "Enter your password");</programlisting>
+     			</listitem>
+     			<listitem>
+	       			<para>Errors 사용</para>
+	       			<para>
+	       				Validation Check 결과 발생된 Error를 Errors 객체를 사용하여 저장함으로써 해당 필드에 대해 정의된 에러 메시지를 출력할 수 있도록 지원하며 
+	       				그 예는 다음과 같다.
+	       			</para> 
+	       			<programlisting language="xml">public class UserValidator implements Validator {
+    public boolean supports(Class clazz) {
+        return HelloVO.class.isAssignableFrom(clazz);
+    }
+
+    public void validate(Object object, Errors errors) {
+        
+        HelloVO helloVO = (HelloVO) object;
+        if (helloVO.getPassword().length() <![CDATA[<]]> 6)
+            <emphasis role="bold">errors.rejectValue("password", "error.password.tooshort");</emphasis>
+
+        if (!helloVO.getPassword().equals(helloVO.getConfirmPassword()))
+            <emphasis role="bold">errors.rejectValue("confirmPassword", "error.confirm");</emphasis>
+    }
+}</programlisting>
+			        <para>
+				        Validation Error가 있는 경우 메시지 리소스 파일에 미리 정의된 error.password.tooshort, error.confirm 등의 메시지가 출력될 것이다. 
+	       			</para>
+	      		</listitem>
+    		</itemizedlist>
+  		</section>
+
+	  	<section id="foundation_springmvc_validation_validator_inject">
+	    	<title>Validator 활용</title>
+	    	<para>
+	    		생성한 Validator를 활용하기 위해서는 해당 Validator를 Inject하여 사용하거나 Controller 클래스 내에 @InitBinder 메소드를 정의하고 해당 메소드의 입력 인자로 
+	    		전달된 Binder에 해당 Validator를 셋팅하여 활용할 수 있다.
+	    	</para>
+  		</section>
+
+	  	<section id="foundation_springmvc_validation_validator_taglibrary">
+	    	<title><![CDATA[<form:errors>]]> 태그 사용</title>
+		    <para>
+		    	Validation Error를 JSP 페이지에서 쉽게 출력하기 위해 Spring MVC에서 제공하는 form 태그 중 <![CDATA[<form:errors>]]> 태그를 사용할 수 있다. 
+		    	이 태그를 사용하기 위해서는 다음과 같은 절차를 따르도록 한다.
+		    </para>
+    		<itemizedlist>
+      			<listitem>
+	        		<para>태그 라이브러리 등록</para>
+	        		<para>
+	        			Spring form 태그 라이브러리를 사용하기 위해서는 spring-form.tld 파일이 필요하며 이는 spring-webmvc-x.x.x.jar 파일에 포함되어 있다. 
+	        			이 form 태그를 사용하기 위해서는 JSP 페이지에 다음과 같이 taglib 정의가 추가되어야 한다. 
+	        		</para>
+	        		<programlisting language="xml"><![CDATA[<%@ taglib prefix="form" uri="http://www.springframework.org/tags/form" %>]]></programlisting>
+	      		</listitem>
+	      		<listitem>
+	        		<para><![CDATA[<form:form>]]> 태그 사용</para>	
+	       			<para>
+	       				form 태그를 사용하려면 commandName 속성을 지정해야 하는데 이 이름은 JSP 페이지에서 사용되는 commandName과 일치해야 하며 commandClass와 같은 타입의 
+	       				객체이어야 한다. commandName에 특정 이름을 부여하지 않으면 기본 값은 command로 셋팅된다. form 태그는 여러가지 폼 입력 태그들을 갖는다. 
+	       				그 중, Validation Error 표현을 위한 태그는 <![CDATA[<form:errors>]]>이며 이 태그는 속성으로 path를 가진다. path 값으로 "*" 값을 주게 되면 commandClass가  
+	       				가지는 모든 속성에 대한 Error 메시지를 출력하게 된다. 다음은 <![CDATA[<form:errors>]]> 태그가 정의되어 있는 getUser.jsp 파일의 일부이다. 
+					</para>
+	        		<programlisting language="xml"><![CDATA[<%@ taglib prefix="form" uri="http://www.springframework.org/tags/form"%>
+<tr>
+    <td> Name :</td>
+    <td><form:input path="userName" />(required)</td>
+    <td>]]><emphasis role="bold"><![CDATA[<form:errors path="userName" />]]></emphasis><![CDATA[</td>
+</tr>
+<tr>
+    <td>password :</td>
+    <td><form:password path="password" />(required, 6자이상입력)</td>
+    <td>]]><emphasis role="bold"><![CDATA[<form:errors path="password" />]]></emphasis><![CDATA[</td>
+</tr>]]></programlisting>
+      			</listitem>
+    		</itemizedlist>
+  		</section>	
+  	</section>	  
+
+	<section id="foundation_springmvc_validation_spring3">
+		<title>Spring 3 Validation</title>
+		<para>
+			Spring 3 이후부터는 Bean Validation에 대한 표준을 정의한 JSR-303 Spec.을 지원하고 있다. Validation은 선언적인 형태와 프로그램적인 형태로 구분할 수 있으며
+			Hibernate Validator와 같은 JSR-303 Spec.을 구현한 구현체를 연계하여 처리된다. 
+		</para>
+		<section id="foundation_springmvc_validation_spring3_jsr303basic">
+			<title>JSR-303 (Bean Validation) Basic</title>
+			<para>
+				JSR-303은 Bean Validation을 위한 표준을 정의하고 있으며 특정 어플리케이션을 구성하는 도메인 클래스에 대해 JSR-303 Annotation을 활용하여 Validation 
+				Constraints를 부여하게 되면 런타임시에 이를 기준으로 Validation Check가 이루어지게 된다. 
+				다음은 JSR-303 Spec.에서 제시한 Annotation 목록이다.
+			</para>
+	    	<informaltable>
+	    		<tgroup cols="3">
+	    			<colspec colname="col1" colnum="1" colwidth="1*" />
+			        <colspec colname="col2" colnum="2" colwidth="2*" />
+			        <colspec colname="col2" colnum="2" colwidth="7*" />
+		
+			        <thead>
+			        	<row>
+			            	<entry align="center">Annotation</entry>
+			            	<entry align="center">Supported Type</entry>
+			            	<entry align="center">Description</entry>
+			          	</row>
+			        </thead>
+		
+		 	        <tbody>
+						<row>
+							<entry>@AssertFalse</entry>
+							<entry>boolean, Boolean</entry>
+							<entry>해당 속성의 값이 false인지 체크한다.</entry>
+			          	</row>
+						<row>
+							<entry>@AssertTrue</entry>
+							<entry>boolean, Boolean</entry>
+							<entry>해당 속성의 값이 true인지 체크한다.</entry>
+			          	</row>	
+						<row>
+							<entry>@DecimalMax</entry>
+							<entry>BigDecimal, BigInteger, String, byte, short, int, long and primitive type에 대한 wrappers</entry>
+							<entry>해당 속성이 가질 수 있는 최대값을 체크한다.</entry>
+			          	</row>	
+						<row>
+							<entry>@DecimalMin</entry>
+							<entry>BigDecimal, BigInteger, String, byte, short, int, long and primitive type에 대한 wrappers</entry>
+							<entry>해당 속성이 가질 수 있는 최소값을 체크한다.</entry>
+			          	</row>	
+						<row>
+							<entry>@Digits</entry>
+							<entry>BigDecimal, BigInteger, String, byte, short, int, long and primitive type에 대한 wrappers</entry>
+							<entry>해당 속성이 가질 수 있는 정수부의 자리수와 소수부의 자리수를 체크한다.</entry>
+			          	</row>	
+						<row>
+							<entry>@Future</entry>
+							<entry>java.util.Date, java.util.Calendar</entry>
+							<entry>해당 속성의 값이 현재일 이후인지 체크한다.</entry>
+			          	</row>			          	
+						<row>
+							<entry>@Max</entry>
+							<entry>BigDecimal, BigInteger, String, byte, short, int, long and primitive type에 대한 wrappers</entry>
+							<entry>해당 속성이 가질 수 있는 최대 Length를 체크한다.</entry>
+			          	</row>	
+						<row>
+							<entry>@Min</entry>
+							<entry>BigDecimal, BigInteger, String, byte, short, int, long and primitive type에 대한 wrappers</entry>
+							<entry>해당 속성이 가질 수 있는 최소 Length를 체크한다.</entry>
+			          	</row>		
+			          	<row>
+							<entry>@NotNull</entry>
+							<entry>any type</entry>
+							<entry>해당 속성의 값이 Null이 아닌지 체크한다.</entry>
+			          	</row>
+			          	<row>
+							<entry>@Null</entry>
+							<entry>any type</entry>
+							<entry>해당 속성의 값이 Null인지 체크한다.</entry>
+			          	</row>
+			          	<row>
+							<entry>@Past</entry>
+							<entry>java.util.Date, java.util.Calendar</entry>
+							<entry>해당 속성의 값이 현재일 이전인지 체크한다.</entry>
+			          	</row>				          	
+			          	<row>
+							<entry>@Pattern</entry>
+							<entry>String</entry>
+							<entry>
+								해당 속성의 값이 정의된 Regular Expression에 부합하는지 체크한다. 
+								Regular Expression은 Java Regular Expression Convention(see java.util.regex.Pattern)에 맞게 정의해야 한다.
+							</entry>
+			          	</row>
+			          	<row>
+							<entry>@Size</entry>
+							<entry>String, Collection, Map and arrays</entry>
+							<entry>해당 속성이 가질 수 있는 최대, 최소 Length를 체크한다.</entry>
+			          	</row>
+			          	<row>
+							<entry>@Valid</entry>
+							<entry>any non primitive type</entry>
+							<entry>해당 객체에 대해 Validation Check가 이루어진다.</entry>
+			          	</row>		          				          				          				          				          			          			          	
+					</tbody>
+				</tgroup>
+			</informaltable>
+			이 외에도 JSR-303 구현체별로 Validation Constraint 정의를 위한 Custom Annotation을 추가로 제공하기도 한다. 
+			<para>
+				다음은 Foundation Plugin 설치로 추가된 도메인 클래스 ~/domain/Movie.java의 일부로써 앞서 언급한 JSR-303 Annotation을 활용하여 Validation Constraint를 
+				정의하고 있다. 예를 들어, title 속성은 Null 값을 가질 수 없으며 최소 1자리, 최대 50자리까지만 허용하며 runtime 속성값은 최대 180을 초과할 수 없고 정수부 3자리 
+				소수부는 0자리를 허용하고 있음을 알 수 있다.
+			</para>
+			<programlisting language="java">public class Movie implements Serializable {
+
+    private static final long serialVersionUID = 1L;
+	
+    private String movieId;
+
+    <emphasis role="bold">@NotNull
+    @Size(min = 1, max = 50)</emphasis>
+    private String title = "";
+	
+    <emphasis role="bold">@NotNull
+    @Size(min = 1, max = 50)</emphasis>
+    private String director;
+
+    private Genre genre;
+
+    <emphasis role="bold">@NotNull
+    @Size(min = 5, max = 100)</emphasis>
+    private String actors;
+
+    <emphasis role="bold">@DecimalMax(value = "180")
+    @Digits(integer=3, fraction=0)</emphasis>
+    private int runtime;
+
+    @DateTimeFormat(iso = ISO.DATE)
+    <emphasis role="bold">@Future</emphasis>
+    private Date releaseDate;
+
+    @NumberFormat(pattern = "#,###")
+    <emphasis role="bold">@Digits(integer=5, fraction=0)</emphasis>
+    private int ticketPrice;
+
+    private String posterFile;
+
+    private String nowPlaying = "Y";
+
+    // getter, setter ...
+}</programlisting>
+		</section>
+		<section id="foundation_springmvc_validation_spring3_jsr303optional">
+			<title>JSR-303 (Bean Validation) Optional</title>
+			<para>
+				JSR-303 Spec.을 준수하는 모든 Annotation은 Annotation별 속성 외에 payload, groups, message라는 속성을 공통적으로 가진다. 각 속성이 가지는 의미에 대해
+				살펴보도록 하자.  
+			</para>
+			<itemizedlist>
+				<listitem>
+					<para>
+						payload (Programmatic Validating의 경우 활용 가능) : 사용된 Validation Constraint와 관련된 메타 정보를 정의하는데 사용된다. 특정 Constraint에 대해 payload 속성의 값으로 심각도를 정의해두면 
+						Validation Error가 발생하였을 경우 심각도 정보를 추출할 수 있게 된다. 다음은 payload 정보가 추가 정의된 도메인 클래스의 일부로 title, director의 
+						Validaion Constraint에 대해 Severity라는 클래스의 Error와 Warning 클래스로써 payload 값을 부여하고 있음을 알 수 있다. 
+					</para>
+					<programlisting language="java">public class Movie implements Serializable {
+
+    private static final long serialVersionUID = 1L;
+
+    private String movieId;
+
+    @NotNull(<emphasis role="bold">payload = Severity.Error.class</emphasis>)
+    @Size(min = 1, max = 50, <emphasis role="bold">payload = Severity.Warning.class</emphasis>)
+    private String title = "";
+
+    @NotNull(<emphasis role="bold">payload = Severity.Error.class</emphasis>)
+    @Size(min = 1, max = 50, <emphasis role="bold">payload = Severity.Warning.class</emphasis>)
+    private String director;
+
+    // ...
+}</programlisting>
+					<para>
+						다음은 위에서 언급한 Severity 클래스의 모습이다. 내부에 Warning, Error라는 클래스 정의를 포함하고 있으며 이들 각각은 javax.validation.Payload를
+						상속받고 있음에 유의해야 한다.
+					</para>
+					<programlisting language="java">public class Severity {
+    public static interface <emphasis role="bold">Warning extends Payload</emphasis> {
+    };
+
+    public static interface <emphasis role="bold">Error extends Payload</emphasis> {
+    };
+}</programlisting>
+					<para>
+						위와 같이 코드가 구성된 경우 Validation Error를 담고 있는 ConstraintViolation 객체의 getConstraintDescriptor().getPayload() 메소드를 호출함으로써
+						Payload 정보를 추출할 수 있다.
+					</para>
+					<programlisting language="java">
+Set<![CDATA[<ConstraintViolation<Movie>>]]> constraintViolations = validator.validate(movie);
+System.out.println("the number of constraint violation is "	+ constraintViolations.size());
+
+Iterator<![CDATA[<ConstraintViolation<Movie>>]]> iterator = constraintViolations.iterator();
+
+while (iterator.hasNext()) {
+    ConstraintViolation<![CDATA[<Movie>]]> constraintViolation = iterator.next();
+    <emphasis role="bold">Set payloads = constraintViolation.getConstraintDescriptor().getPayload();</emphasis>		
+    // ...
+}</programlisting>
+					<para>
+						위에서 언급한 payload 샘플 코드는 본 섹션 내의 <link linkend="foundation_springmvc_validation_resources">다운로드 - anyframe.sample.validation.
+						payload</link>를 통해 다운로드받을 수 있다.
+					</para> 
+				</listitem>
+				<listitem>
+					<para>
+						groups (Programmatic Validating의 경우 활용 가능) : 사용된 Validation Constraint의 그룹 정보를 정의하는데 사용된다. 일부 Constraint에 대해 동일한 그룹을 부여하게 되면 특정 그룹에 
+						대해서만 Validation 작업을 수행할 수 있게 된다. 예를 들어, 특정 도메인 객체가 생성되는 시점의 Validation Check 대상 속성들과 해당 도메인 객체가 수정되는 
+						시점의 Validation Check 대상 속성들이 다를 수 있기 때문에 이들에 대해 그룹을 부여하고 그룹별로 Validation을 수행하고자 하는 경우 활용할 수 있다. 
+						다음은 groups 정보가 추가 정의된 도메인 클래스의 일부로 title, director, actors에 대해서는 Draft, Playing이라는 그룹을 부여하고 runtime, releaseDate,
+						ticketPrice에 대해서는 Playing이라는 그룹만 부여하고 있음을 알 수 있다. 
+					</para>
+					<programlisting language="java">public class Movie implements Serializable {
+    private static final long serialVersionUID = 1L;
+
+    private String movieId;
+
+    @NotNull(<emphasis role="bold">groups = { Draft.class, Playing.class }</emphasis>)
+    @Size(min = 1, max = 50, <emphasis role="bold">groups = { Draft.class, Playing.class }</emphasis>)
+    private String title = "";
+
+    @NotNull(<emphasis role="bold">groups = { Draft.class, Playing.class }</emphasis>)
+    @Size(min = 1, max = 50, <emphasis role="bold">groups = { Draft.class, Playing.class }</emphasis>)
+    private String director;
+
+    @NotNull(<emphasis role="bold">groups = { Draft.class, Playing.class }</emphasis>)
+    @Size(min = 5, max = 100, <emphasis role="bold">groups = { Draft.class, Playing.class }</emphasis>)
+    private String actors;
+
+    @DecimalMax(value = "180", <emphasis role="bold">groups = Playing.class</emphasis>)
+    @Digits(integer = 3, fraction = 0, <emphasis role="bold">groups = Playing.class</emphasis>)
+    private int runtime;
+
+    @Future(<emphasis role="bold">groups = Playing.class</emphasis>)
+    private Date releaseDate;
+
+    @Digits(integer = 5, fraction = 0, <emphasis role="bold">groups = Playing.class</emphasis>)
+    private int ticketPrice;
+	
+    // ...
+}</programlisting>
+					<para>
+						즉, 영화가 등록될 당시(Draft Group)에는 title, director, actors에 대해서만 Validation Check가 이루어지고 영화 상영이 결정된 이후(Playing 
+						Group)부터는 runtime, releaseDate, ticketPrice에 대해서도 추가적으로 Validation Check가 이루어질 수 있도록 하기 위함이다.
+					</para>
+					<para>
+						다음은 위에서 groups 정의시 활용한 Draft.java 클래스의 모습이다. group 클래스는 javax.validation.groups.Default 유형이어야 하며, group 클래스 사이에서 
+						계층 관계를 가질 수 있다. 그리고 하위 계층 그룹에 대해 Validation Check 요청이 있을 경우 상위 계층에 대한 Validation Check도 함께 이루어지게 된다.
+						groups 속성값이 정의되지 않은 경우 Default group으로 간주된다.
+					</para>		
+					<programlisting language="java">public interface <emphasis role="bold">Draft extends Default</emphasis> {
+}</programlisting>		
+					<para>
+						위와 같이 코드가 구성된 경우 Validator의 validate() 메소드 호출시 group 정보를 인자로 전달하면 해당 group에 속한 속성 정보에 대해서만 Validation Check가
+						수행된다.
+					</para>	
+					<programlisting language="java">
+Set<![CDATA[<ConstraintViolation<Movie>>]]> constraintViolations = <emphasis role="bold">validator.validate(movie, Draft.class)</emphasis>;
+System.out.println("the number of constraint violation is "	+ constraintViolations.size());
+
+Iterator<![CDATA[<ConstraintViolation<Movie>>]]> iterator = constraintViolations.iterator();
+
+while (iterator.hasNext()) {
+    ConstraintViolation<![CDATA[<Movie>]]> constraintViolation = iterator.next();	
+    // ...
+}</programlisting>
+					<para>
+						위에서 언급한 groups 샘플 코드는 본 섹션 내의 <link linkend="foundation_springmvc_validation_resources">다운로드 - anyframe.sample.validation.
+						groups</link>를 통해 다운로드받을 수 있다.
+					</para> 
+				</listitem>
+				<listitem>
+					<para>
+						message : Validation Error가 발생하였을 경우 표현되는 메시지를 정의하는데 사용된다. 기본적으로 사용중인 Validator를 포함하는 라이브러리 내에 포함된 메시지 
+						리소스 파일로부터 해당 Annotation의 {fully-qualified class name}.message에 해당하는 메시지 값을 추출하게 된다. 예를 들어, @NotNull Check시 에러가 
+						발생하면 <emphasis role="bold">javax.validation.constraints.NotNull.message</emphasis>에 해당하는 메시지가 표현될 것이다.
+						기본적으로 제공되는 메시지가 아닌 다른 메시지를 표현해주고 싶을 경우에는 message의 속성값으로 신규 메시지 key를 정의하면 된다. 그리고 클래스패스 상위에 해당 key와 
+						이에 대한 메시지를 포함하고 있는 메시지 리소스 파일을 정의한다.
+					</para>
+					<para>
+						메시지 리소스 파일에 대해서는 기본적으로 국제화가 지원되며, Hibernate Validator의 경우 기본적으로 영어,불어,독일어 형태의 메시지 리소스 번들을 제공하고 있는데
+						만일 다른 언어로 구성된 메시지 리소스 파일을 추가하고자 원한다면 클래스패스 내에 org/hibernate/validator/ValidationMessages_{locale}.properties 파일을 
+						추가하고 JSR-303 Annotation 각각에 대한 메시지를 정의하도록 한다.
+					</para>
+				</listitem>										
+			</itemizedlist>			
+		</section>
+		<section id="foundation_springmvc_validation_spring3_custom">
+			<title>Custom Constraints</title>
+			<para>
+				JSR-303에서 기본적으로 제공하는 Annotation만으로 특정 도메인 클래스의 속성값에 대한 Validation Check가 수행되기 어려운 경우 프로젝트에 적합한 Custom Constraints를
+				정의할 수 있다. Custom Constraints를 활용하기 위해서는 Custom Annotation과 Custom Validator 구현이 이루어져야 한다.
+				다음은 전화번호 속성에 대한 Validation Check를 위해 신규 정의한 Telephone.java 클래스의 일부이다.
+			</para>
+			<programlisting language="java"><emphasis role="bold">@Target( { ElementType.METHOD, ElementType.FIELD })
+@Retention(RetentionPolicy.RUNTIME)
+@Constraint(validatedBy = TelephoneValidator.class)
+@Size(min = 12, max = 13)
+public @interface Telephone</emphasis> {
+    String <emphasis role="bold">message() default "{anyframe.sample.validation.constraint.Telephone.message}"</emphasis>;
+
+    Class<![CDATA[<?>]]>[] groups() default {};
+
+    Class<![CDATA[<? extends Payload>]]>[] payload() default {};
+}</programlisting>	
+			<para>
+				위 코드에 의하면 @Telephone은 Method, Field에 대해 정의 가능하며 런타임시에 적용된다. 그리고 도메인 클래스 내에 @Telephone이 부여된 속성을 만나면 TelephoneValidator가
+				초기화되어 Validation Check를 수행할 것이다. 또한 @Size Annotation 정의가 추가되어 있어서 @Telephone은 기본적으로 Size에 대해서도 제약하게 된다.
+				@Telephone은 JSR-303 Spec.에서 정의한 기본 속성(message, groups, payload) 외에 추가 속성을 포함하고 있지는 않다.
+			</para>
+			<para>
+				message 속성의 경우 기본값을 anyframe.sample.validation.constraint.Telephone.message으로 정의하고 있으므로 @Telephone에 대한 Validation Check 관련
+				Error가 발생한 경우 클래스패스 최상위의 ValidationMessages.properties 파일로부터 anyframe.sample.validation.constraint.Telephone.message을 key로 하는
+				메시지가 출력될 것이다. 다음은 ValidationMessages.properties 파일의 내용이다.
+			</para>
+			<programlisting language="java"><emphasis role="bold">anyframe.sample.validation.constraint.Telephone.message</emphasis>=must match "0000-000(or 0000)-0000" (max 13)</programlisting>
+			<para>
+				다음은 @Telephone Annotation에 대해 Validation Check를 수행할 TelephoneValidator.java 파일의 일부이다. 
+				다음 코드에서와 같이 Custom Validator는 javax.validation.ConstraintValidator 인터페이스를 implements해야 하며 Validation Check 로직을 수행할 
+				isValid()라는 메소드를 구현해주어야 한다.
+			</para>
+			<programlisting language="java">public class <emphasis role="bold">TelephoneValidator implements ConstraintValidator<![CDATA[<Telephone, String>]]></emphasis> {
+    private java.util.regex.Pattern pattern = java.util.regex.Pattern
+        .compile("^[0-9]\\d{2}-(\\d{3}|\\d{4})-\\d{4}$");
+
+    public void initialize(Telephone annotation) {
+    }
+
+    <emphasis role="bold">public boolean isValid(String value, ConstraintValidatorContext context)</emphasis> {
+        if (value == null || value.length() == 0) {
+            return true;
+        }
+        Matcher m = pattern.matcher(value);
+        return m.matches();
+    }
+}</programlisting>
+			<para>
+				TelephoneValidator는 Regular Expression을 이용하여 전화번호에 대한 패턴을 정의해 두고 이 패턴과 동일하지 않을 경우 Validation Error를 발생하게 된다.
+			</para>
+			<para>
+				다음은 앞서 정의한 @Telephone 정의를 포함하고 있는 도메인 클래스 Movie.java 파일의 일부이다. 
+			</para>
+			<programlisting language="java">public class Movie implements Serializable {
+
+    private static final long serialVersionUID = 1L;
+    
+    private String movieId;
+
+    <emphasis role="bold">@Telephone</emphasis>
+    private String telephone;			
+
+    // ...
+}</programlisting>
+			<para>
+				위에서 언급한 Custom Constraint 샘플 코드는 본 섹션 내의 <link linkend="foundation_springmvc_validation_resources">다운로드 - anyframe.sample.validation.
+				custom</link>를 통해 다운로드받을 수 있다.
+			</para> 			
+		</section>
+		<section id="foundation_springmvc_validation_spring3_declarative">
+			<title>Declarative Validating</title>
+			<para>
+				Spring MVC 2.5 이전에서는 앞서 언급한 바와 같이 Spring Validator를 구현하고 이를 특정 Controller의 Validator로 직접 지정해 주어야만 Validation
+				Check가 이루어졌었다. 그러나 Spring 3 이후부터는 Controller 메소드의 입력 인자에 대해 @Valid라는 Annotation을 부여함으로써 해당 메소드 호출 전에 
+				자동적으로 Validation Check가 이루어질 수 있도록 지원한다.  
+				다음은 Foundation Plugin 설치로 추가된 ~/foundation/moviefinder/web/MovieController.java 클래스 내에 정의된 create() 메소드의 일부이다. 
+			</para>
+			<programlisting language="java">@RequestMapping(params = "method=create")
+public String create(..., <emphasis role="bold">@Valid Movie movie</emphasis>, BindingResult results, ...) throws Exception {
+
+    if (results.hasErrors()) {
+        return "foundationViewMovie";
+    }
+    
+    // ...
+}</programlisting>
+			<para>
+				위 메소드의 경우, 사용자의 입력값을 Movie 객체로 매핑할 때 Validation Check가 이루어지게 되고 결과값은 BindingResult 객체에 담겨지게 된다. 
+				따라서 입력 인자로 전달된 BindingResult 객체 내에 Validation Error가 존재하는 경우 입력 화면으로 되돌아가도록 로직을 구성하면 된다.
+			</para>
+			<para>
+				또한 Spring에서 제공하는 <![CDATA[<form:errors>]]>를 활용하면 Validation Error를 입력 화면에 표현해 줄 수 있게 된다.
+				다음은 Foundation Plugin 설치로 추가된 webapp/WEB-INF/jsp/foundation/moviefinder/movie/form.jsp 파일의 일부로 title, director 필드에
+				입력된 값이 유효하지 않을 경우 <![CDATA[<form:errors>]]>를 이용하여 표현해 줄 수 있도록 정의하고 있음을 알 수 있다.
+			</para>
+			<programlisting language="xml"><![CDATA[<tr>
+    <td width="150" class="ct_td"><spring:message code="movie.title" />&nbsp;*</td>
+    <td bgcolor="D6D6D6" width="1"></td>
+    <td class="ct_write01">
+        <form:input path="title" cssClass="ct_input_g" cssErrorClass="text medium error" size="40" maxlength="50" />
+        ]]><emphasis role="bold"><![CDATA[<form:errors path="title" cssClass="errors" />]]></emphasis><![CDATA[
+    </td>
+</tr>
+<tr>
+    <td height="1" colspan="3" bgcolor="D6D6D6"></td>
+</tr>
+<tr>
+    <td width="150" class="ct_td"><spring:message code="movie.director" />&nbsp;*</td>
+    <td bgcolor="D6D6D6" width="1"></td>
+    <td class="ct_write01">
+        <form:input path="director" cssClass="ct_input_g" cssErrorClass="text medium error" size="40" maxlength="50" />
+        ]]><emphasis role="bold"><![CDATA[<form:errors path="director" cssClass="errors" />]]></emphasis><![CDATA[
+    </td>
+</tr>]]></programlisting>
+			<para>
+				끝으로 선언적인 Validation Check를 위해서는 Validator 지정을 위한 속성 정의가 필요하다. Spring에서는 이를 위해 3가지 방법을 제공한다.
+				<itemizedlist>
+					<listitem>
+						<para>
+							Spring 3에서 새롭게 선보이는 mvc namespace를 활용하는 것으로 다음과 같이 정의된 경우 클래스패스로부터 Hibernate Validator와 같은 
+							JSR-303 Validator 구현체가 자동으로 검색되어 모든 @Controller에 적용된다.					
+						</para>
+						<programlisting language="xml"><![CDATA[<mvc:annotation-driven />]]></programlisting>							
+					</listitem>
+					<listitem>
+						<para>
+							Spring 3에서 새롭게 선보이는 mvc namespace를 활용하되 특정 Validator를 지정하는 것으로 지정된 Validator가 모든 @Controller에 적용된다.
+						</para>
+						<programlisting language="xml"><![CDATA[<mvc:annotation-driven validator="..."/>]]></programlisting>
+					</listitem>
+					<listitem>
+						<para>
+							Controller 클래스 내에 @InitBinder 메소드를 정의하고 해당 메소드의 입력 인자로 전달된 Binder에 특정 Validator를 셋팅하는 것으로, 이 경우 
+							셋팅된 Validator가 특정 Controller에만 적용된다.
+						</para>
+						<programlisting language="java">@Controller
+public class MovieController {
+
+    @InitBinder
+    protected void initBinder(WebDataBinder binder) {
+        binder.setValidator(new CustomValidator());
+    }
+    
+    // ...
+}</programlisting>
+					</listitem>
+				</itemizedlist>
+			</para>
+		</section>
+		<section id="foundation_springmvc_validation_spring3_programmatic">
+			<title>Programmatic Validating</title>
+			<para>
+				 Spring에서는 Validation Check가 필요한 경우에 Hibernate Validator와 같은 JSR-303 Validator 구현체를 실행시킬 수 있도록 하기 위해 LocalValidatorFactoryBean 
+				 클래스를 제공한다. LocalValidatorFactoryBean은 클래스패스 내에 JSR-303 구현체와 관련된 라이브러리를 검색하여 Validator를 자동으로 검색해주는 역할을 수행한다.
+				 따라서 LocalValidatorFactoryBean을 Bean으로 정의하고 특정 클래스에서 이 Bean을 참조하여 Validation Check를 수행하면 된다.
+			</para>
+			<programlisting language="xml"><![CDATA[<bean id="validator" class="org.springframework.validation.beanvalidation.LocalValidatorFactoryBean" />]]></programlisting>
+			<programlisting language="java">@Service
+public class MovieServiceImpl implements MovieService {
+    /**Inject a reference to javax.validation.Validator if you prefer to work with the JSR-303 API directly.
+     * Inject a reference to org.springframework.validation.Validator if your bean requires the Spring Validation API
+     */
+    <emphasis role="bold">@Inject
+    private Validator validator;</emphasis>
+
+    public void create(Movie movie){
+        validator.validate(movie);
+        // ...
+    }
+}</programlisting>
+		</section>
+	</section>	
+  	<section id="foundation_springmvc_validation_resources">
+  		<title>Resources</title>
+		<para>
+			<itemizedlist>
+				<listitem>
+					<para>다운로드</para>
+					<para>
+						다음에서 sample 코드를 포함하고 있는 Eclipse 프로젝트 파일을 다운받은 후, 압축을 해제한다.
+					</para>
+					<itemizedlist>
+						<listitem>
+							<para>Maven 기반 실행</para>
+							<para>
+								Command 창에서 압축 해제 폴더로 이동한 후, mvn compile exec:java -Dexec.mainClass=...이라는 명령어를 실행시켜 결과를 확인한다.
+								각 Eclipse 프로젝트 내에 포함된 Main 클래스의 JavaDoc을 참고하도록 한다.
+							</para>
+						</listitem>
+						<listitem>
+							<para>Eclipse 기반 실행</para>
+							<para>
+								Eclipse에서 압축 해제 프로젝트를 import한 후, src/main/java 폴더 하위의 Main.java를 선택하고 마우스 오른쪽 버튼 클릭하여 컨텍스트 메뉴에서 
+								Run As > Java Application을 클릭한다. 	그리고 실행 결과를 확인한다.
+							</para>
+						</listitem>									
+					</itemizedlist>						
+					<table>
+						<title>Download List</title>
+						<tgroup cols="2">
+							<colspec colnum="1" colname="col1" colwidth="4*"/>
+							<colspec colnum="2" colname="col2" colwidth="6*"/>
+							<thead>
+								<row>
+									<entry align="center">Name</entry>
+									<entry align="center">Download</entry>
+								</row>
+							</thead>
+							<tbody>										
+								<row>
+									<entry align="center">anyframe.sample.validation.payload.zip</entry>
+									<entry align="center"><ulink url="http://dev.anyframejava.org/docs/anyframe/plugin/foundation/4.6.1/reference/sample/anyframe.sample.validation.payload.zip">Download</ulink>
+									</entry>
+								</row>
+								<row>
+									<entry align="center">anyframe.sample.validation.groups.zip</entry>
+									<entry align="center"><ulink url="http://dev.anyframejava.org/docs/anyframe/plugin/foundation/4.6.1/reference/sample/anyframe.sample.validation.groups.zip">Download</ulink>
+									</entry>
+								</row>	
+								<row>
+									<entry align="center">anyframe.sample.validation.custom.zip</entry>
+									<entry align="center"><ulink url="http://dev.anyframejava.org/docs/anyframe/plugin/foundation/4.6.1/reference/sample/anyframe.sample.validation.custom.zip">Download</ulink>
+									</entry>
+								</row>																
+							</tbody>
+						</tgroup>
+					</table> 
+				</listitem>
+			</itemizedlist>
+		</para>
+	</section>	
+</chapter>

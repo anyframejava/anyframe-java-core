@@ -1,0 +1,185 @@
+<?xml version="1.0" encoding="utf-8"?>
+<mx:Module xmlns:mx="http://www.adobe.com/2006/mxml" layout="absolute" xmlns:local="anyframe.common.*" 
+	xmlns:zet="http://www.openzet.org/2009/mxml" width="686" height="381" x="245" y="22" initialize="init()" 
+	verticalScrollPolicy="off" horizontalScrollPolicy="off">
+	<mx:Script>
+		<![CDATA[
+			import samples.renderer.ResultHandler;
+			import mx.rpc.events.FaultEvent;
+			import samples.util.Util;
+			import samples.domain.Category;
+			import samples.renderer.Calender;
+			import mx.controls.Alert;
+			import samples.domain.SearchVO;
+			import mx.rpc.events.ResultEvent;
+			import org.anyframe.pagination.Page;
+			import org.openzet.controls.PagingLinkBar;
+			import org.openzet.events.PagingEvent;
+			import mx.formatters.DateFormatter;
+			import mx.events.ListEvent;
+			import mx.events.DataGridEvent; 
+			import mx.controls.DataGrid;
+			import mx.controls.DateChooser;
+			import mx.managers.PopUpManager;  
+			import samples.renderer.Calender;	
+			import mx.events.DataGridEventReason;
+			
+			private var currentSelectColumnName:String;
+			private var preUpdateCellValue:String;
+			private var keyword:String = "";
+			private var condition:String = "";
+			
+			[Bindable]
+			private var page:Page;
+			
+			[Bindable] 
+			private var categoryList:ArrayCollection;
+			
+			private var deleteCategoryList:ArrayCollection = new ArrayCollection();
+			
+			private function init():void{
+				getCategoryList(1);
+			}
+			private function getCategoryList(currentPage:int, pageClick:Boolean = false ):void{
+				var searchVO:SearchVO = new SearchVO();
+				if ( pageClick ){
+					searchVO.searchCondition = condition;
+					searchVO.searchKeyword = keyword;
+				}else{
+					keyword = searchKeyword.text;
+					condition = searchCondition.selectedItem.data;
+					searchVO.searchKeyword = keyword;
+					searchVO.searchCondition = condition;
+				}
+				searchVO.tableName = "Category";
+				searchVO.pageIndex = currentPage;
+				categoryService.getPagingList(searchVO);
+			}
+			
+			private function getPagingListResultHandler(event:ResultEvent):void {
+				page = event.result as Page;
+				plb.totalCount = page.totalCount;
+				plb.fetchSize = page.pagesize;
+				plb.numPages = page.pageunit;
+				plb.currentPage = page.currentPage;
+				
+				categoryList = page.objects as ArrayCollection;
+				
+				setPageStatus(page);
+			}
+			
+			private function setPageStatus(page:Page):void{
+				pageStatus.text = "Page : " + page.currentPage +"/" + page.maxPage;
+			} 
+			
+			 private function pageClickHandler(event:PagingEvent) : void
+            {
+                var pageClick:Boolean = true;
+                getCategoryList(event.newPage, pageClick);
+            }
+            
+           	private function addCategory():void{
+				var addCategory:Category = new Category();
+				addCategory.status = 1;
+				addCategory.regDate = Util.getToday();
+				grdCategory.dataProvider.addItem(addCategory);
+			}
+			
+			private function updateCategory(event:DataGridEvent):void{
+				
+				if (event.reason == DataGridEventReason.CANCELLED){
+					return;
+                }
+                
+				var updateCategory:Category = grdCategory.itemEditorInstance.data as Category;
+				
+				var rowStatus:Number = updateCategory.status;
+				
+				if( rowStatus == 0 ){
+					updateCategory.status = 2;
+				}
+			}
+			
+			private function deleteCategory():void{
+				if(grdCategory.selectedIndex != -1){
+					var deleteCategory:Category = grdCategory.selectedItem as Category;
+					var rowStatus:int = deleteCategory.status;
+					
+					if (rowStatus != 1){
+						deleteCategory.status = 3;
+						deleteCategoryList.addItem(deleteCategory)
+					}
+					grdCategory.dataProvider.removeItemAt(grdCategory.selectedIndex);
+				}else{
+					Alert.show("삭제할 Row를 선택해 주세요");
+				}
+		    }
+		    
+		    private function saveCategory():void{
+		    	var saveCategoryList:ArrayCollection = new ArrayCollection();
+		    	for ( var j:int = 0 ; j < deleteCategoryList.length ; j ++ ){
+		    		saveCategoryList.addItem(deleteCategoryList.getItemAt(j));
+		    	}
+		    	for ( var i:int = 0 ; i < categoryList.length ; i ++ ){
+		    		var category:Category = categoryList.getItemAt(i) as Category;
+		    		if(category.status != 0){
+		    			if ( category.categoryName == null || category.categoryName.length == 0 ){
+		    				Alert.show("카테고리 이름은 필수 항목입니다.\n 확인하고 다시 저장하세요");
+		    				return;
+		    			}
+		    			saveCategoryList.addItem(category);
+		    		}
+		    	}
+		    	if ( saveCategoryList.length == 0 ){
+		    		Alert.show("저장할 데이터가 없습니다.");
+		    	}else{
+		    		categoryService.saveAll(saveCategoryList);
+		    	}
+		    }
+		    
+		    private function saveAllResultHandler(event:ResultEvent):void{
+		    	mx.controls.Alert.show(ResultHandler.saveAllResultMessage(event));
+		    	deleteCategoryList.removeAll();
+		    	getCategoryList(1);
+		    }
+		]]>
+	</mx:Script>
+	<mx:ArrayCollection id="searchConditionValue">
+		<mx:Object label="카테고리 설명" data="categoryDesc"/>
+		<mx:Object label="카테고리 이름" data="categoryName"/>
+	</mx:ArrayCollection> 
+	
+	<mx:Array id="columnsInfo">
+		<mx:DataGridColumn dataField="categoryName" headerStyleName="dataGridHeaderAlign" headerText="카테고리 이름" editable="true"/>
+		<mx:DataGridColumn dataField="categoryDesc" headerStyleName="dataGridHeaderAlign" headerText="카테고리 설명" editable="true"/>	
+		<mx:DataGridColumn dataField="regDate" headerStyleName="dataGridHeaderAlign" headerText="등록일" editable="true" itemEditor="samples.renderer.DateEditor">
+		</mx:DataGridColumn>
+	</mx:Array>
+	
+	<mx:RemoteObject id="categoryService" destination="categoryService" showBusyCursor="true">
+		<mx:method name="getPagingList" result="getPagingListResultHandler(event)" fault="ResultHandler.faultMessage(event)"/>
+		<mx:method name="saveAll" result="saveAllResultHandler(event)" fault="ResultHandler.faultMessage(event)"/>
+	</mx:RemoteObject>
+	 
+	<mx:Panel title="     카테고리 목록 " width="686" height="383" x="0" y="-2" layout="absolute" styleName="panelContents" 
+		verticalScrollPolicy="off" horizontalScrollPolicy="off">
+		<mx:ComboBox x="1" y="34"  id="searchCondition" width="125" dataProvider="{searchConditionValue}"/>
+		<mx:TextInput x="134" y="35"  id="searchKeyword" enter="getCategoryList(1)" imeMode="KOREAN" width="179" height="19"/>
+		<mx:Button x="315" y="30" styleName="buttonSearch" click="getCategoryList(1)"/>
+		<mx:Button label="추가" x="502" y="32" icon="@Embed(source='../assets/images/icon_plus.png')" textAlign="left" click="addCategory()"/>
+		<mx:Button label="삭제"  x="562" y="32" icon="@Embed(source='../assets/images/icon_delete.png')" textAlign="left" click="deleteCategory()"/>
+		<mx:Button label="저장" x="621" y="32" icon="@Embed(source='../assets/images/icon_save.png')" textAlign="left" click="saveCategory()"/>
+		<mx:Label id="pageStatus" x="607" y="62" width="69"/>	
+		
+		<mx:DataGrid id="grdCategory" rowCount="8" columns="{columnsInfo}" dataProvider="{categoryList}"
+						verticalScrollPolicy="on" horizontalScrollPolicy="off" x="0" y="90" width="666" 
+						borderColor="#a7a8ab" borderThickness="1" borderStyle="solid" backgroundColor="#ececec" height="223"
+						itemEditEnd="updateCategory(event)" editable="true" fontFamily="YW_DOTUM">
+				<mx:headerBackgroundSkin>@Embed(source='../assets/images/bg_gridHeader.png')</mx:headerBackgroundSkin>
+		</mx:DataGrid>
+		<zet:PagingLinkBar
+            id="plb"
+            pageClick="pageClickHandler(event);"  width="100%" horizontalAlign="center"
+            styleName="PagingLinkBar" fontFamily="Arial" y="321"/>  
+	</mx:Panel>	
+</mx:Module>

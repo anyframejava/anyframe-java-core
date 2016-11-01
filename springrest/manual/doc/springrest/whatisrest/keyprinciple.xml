@@ -1,0 +1,162 @@
+<chapter id="springrest_whatisrest_keyprinciple">
+
+	<title>Key Principles of REST</title>
+	
+	<para>
+		REST는 네트워크 아키텍처 원칙의 모음이다. 
+		여기서 네트워크 아키텍처 원칙이란 Resource를 정의하고 Resource에 대한 ID(URI)를 지정하는 방법에 대한 개괄을 말한다.
+		간단한 의미로는, 도메인 지향 데이터를 HTTP위에서 전송하기 위한 아주 간단한 인터페이스를 설명한 것이라고 할 수 있다. 
+		REST의 핵심 원칙는 아래와 같이 5가지 정도로 요약할 수 있다. (출처 : http://www.infoq.com/articles/rest-introduction)
+	</para>
+	
+	<section id="giveid">
+		<title>Give every "thing" an ID</title>
+		<para>
+			위에서 설명했듯이 모든 Resource에는 URI라고 하는 유일한 ID를 부여한다.
+			클라이언트는 URI를 이용해서 수많은 Resource를 식별하므로 
+			이 URI 설계를 위한 다음과 같은 Design Rule이
+			<ulink url="http://oreilly.com/catalog/9780596529260">RESTful Web Services</ulink>라는 책에서 소개되고 있다.
+			이는 많은 사람들이 그동안 RESTful 아키텍처를 적용하면서 축적된 경험을 바탕으로 만들어진 URI 설계 가이드이다.
+			
+			<itemizedlist>
+				<listitem>
+					<para>URI는 직관적으로 Resource를 인식할 수 있는 단어들로 구성할 것</para>
+					<para>'/movies', '/products' 등과 같이 직관적으로 어떤 정보를 제공하는지 알 수 있도록 URI를 구성할 것을 가이드하고 있다.</para>
+				</listitem>
+				<listitem>
+					<para>URI는 계층구조로 구성할 것</para>
+					<para>'/hotels/hayatt/bookings/20101128'와 같이 URI path가 계층적인 구조를 가지도록 구성하는 것이 좋다.</para>
+				</listitem>
+				<listitem>
+					<para>URI의 상위 path는 하위 path의 집합을 의미하는 단어로 구성할 것</para>
+					<para>'/hotels/hayatt/bookings/20101128'와 같이 'hotels'는 'hayatt'의 집합이므로 '/hotels' 만으로도 호텔목록이라는 정보를 제공할 수 있는 유효한 URI가 된다.</para>
+				</listitem>
+			</itemizedlist>
+		</para>
+		<para>
+			이 외에도 여러가지 가이드들이 존재하지만 특징적인 것들만 나열하였다.
+		</para>
+		<para>
+			위와 같은 가이드에 맞춰 URI를 만들면 '/hotels/hilton', '/hotels/hayatt' 처럼 비슷한 패턴의 URI가 많이 생성된다.
+			이런 URI를 쉽게 관리할 수 있도록 URI를 추상화할 수 있도록 도와주는 것이 URI Template이다. 
+			<emphasis role="bold">URI Template</emphasis>은 '/movies/{movieId}'와 같이 <emphasis role="bold">하나 이상의 변수를 포함하고 있는 URI 형식의 문자열</emphasis>이다.
+			URI Template에 대한 자세한 내용은 <ulink url="http://tools.ietf.org/html/draft-gregorio-uritemplate-04">proposed RFC</ulink>를 참조하기 바란다.
+		</para>
+	</section>
+		
+	<section id="link">
+		<title>Link things together</title>
+		<para>
+			하나의 Resource는 여러 개의 다른 Resource 정보를 포함할 수 있다. 
+			아래 예에서 보는 것 처럼 Order는 Product와 Customer를 포함하고 있어서
+			Order정보 조회 요청에 대한 응답으로 전달된 Representation에 Product와 Customer에 대한 link가 포함되어있다.
+			Representation이 다른 Resource에 대한 URI를 link로 포함하기 때문에
+			필요에 따라 클라이언트가 추가적인 정보를 조회할 수 있다.
+			이 개념은 'HATEOAS(Hypermedia As The Engine Of Application State)라는' 용어로도 많이  표현된다.
+		</para>
+		<programlisting language="xml"><![CDATA[<order self='http://example.com/customers/1234' >
+    <amount>23</amount>
+    <product ref='http://example.com/products/4554' />
+    <customer ref='http://example.com/customers/1234' />
+</order>]]></programlisting>
+		<para>
+			클라이언트는 'Order'라는 Resource에 대한 Representation을 전달받았고, 
+			필요에 따라 'Product'나 'Customer'의 정보를 다시 요청하면 된다.
+			즉, 서버에서는 또 다른 State로 전환할 수 있는 Resource의 link를 전달하기만 하고, 전환되어야 할 State의 순서를 지정하지는 않는다.
+		</para>
+		
+	</section>
+		
+	<section id="usemethods">
+		<title>Use standard methods</title>
+		
+		<para>
+			Resource에 대한 CRUD 조작을 위해서 HTTP에서 제공하는 standard method를 사용할 것을 권장한다.
+			클라이언트가 서버의 Movie를 삭제하기 위해서 기존에는 '/movies.do?id=MV-00001&amp;method=delete'와 같은 방식으로 요청했다면,
+			REST에서는 '/movies/MV-00001'라는 URI와 HTTP의 DELETE method의 조합으로 요청할 수 있다.
+			<para>
+				일반적으로 대부분의 브라우저에서는 GET, POST만 지원하기 때문에
+				REST 구현을 위한 Spring이나 Apache CXF같은 프레임워크들에서는 모든 HTTP method를 지원하기 위한 방안을 제공하고 있다.
+			</para>
+			<mediaobject>
+				<imageobject>
+					<imagedata align="center" fileref="../image/springrest/httpmethodtable.png" />					
+				</imageobject>
+				<textobject>
+					<phrase>모든 HTTP method를 지원하기 위한 방안</phrase>
+				</textobject>
+			</mediaobject>
+			<para>
+				HTTP에서 제공하는 Method에 대한 자세한 내용은 <ulink url="http://www.w3.org/Protocols/rfc2616/rfc2616-sec9.html">HTTP/1.1 RFC</ulink>에 정의되어 있다.
+			</para>
+		</para>
+		
+		<para>
+			예를 들어, 상품 주문을 관리하는 어플리케이션에서 RESTful 웹 서비스를 제공한다고 할 때, 
+			URI와 HTTP method의 조합은 아래의 그림처럼 정리할 수 있다.
+		</para>
+		
+		<mediaobject>
+			<imageobject>
+				<imagedata align="center" fileref="../image/springrest/httpmethod.png" />				
+			</imageobject>
+			<textobject>
+				<phrase>URI와 HTTP method의 조합</phrase>
+			</textobject>
+		</mediaobject>
+		
+	</section>
+		
+	<section id="multiplerepresentations">
+		<title>Resources with multiple representations</title>
+		<para>
+			HTTP 기반의 REST에서 클라이언트는 자신이 처리할 수 있는 Format으로 Representation을 달라고 서버에게 요청할 수 있다.
+			Request message의 <emphasis role="bold">Accept header</emphasis>에 클라이언트가 처리할 수 있는 Format을 명시하여 서버로 요청을 보내면 된다.
+			예를 들어, 아래의 HTTP Request는 <emphasis role="bold">"'MV-00005'라는 ID를 가진 영화의 상세 정보를 XML 형태로 줘"</emphasis>라는 의미가 된다.
+		</para>
+		<mediaobject>
+			<imageobject>
+				<imagedata align="center" fileref="../image/springrest/httprequestmessage.png" />				
+			</imageobject>
+			<textobject>
+				<phrase>MV-00005라는 ID를 가지는 영화 상세 정보를 GET 방식으로 요청</phrase>
+			</textobject>
+		</mediaobject>
+		
+		<para>
+			위의 요청을 받은 서버는 응답으로 다음과 같은 Response Message를 전달할 것이다.
+		</para>
+		<mediaobject>
+			<imageobject>
+				<imagedata align="center" fileref="../image/springrest/httpresponsemessage.png" />				
+			</imageobject>
+			<textobject>
+				<phrase>서버에서 보내온 Response Message</phrase>
+			</textobject>
+		</mediaobject>
+		<para>
+			Accept header에 다른 Format을 명시하면 서버는 다른 형태의 응답을 전달할 것이다.
+		</para>
+		
+		<para>
+			이와 같이 하나의 Resource는 여러개의 Representation을 가질 수 있다.
+			이를 <emphasis role="bold"><ulink url="http://www.w3.org/Protocols/rfc2616/rfc2616-sec12.html#sec12">Content Negotiation</ulink></emphasis>이라고 한다.
+		</para>
+	
+		<para>
+			여기서 한 가지 문제점은 일반적인 브라우저에서는 Accept Header 값을 고정하여 전송하기 때문에, 
+			Accept Header 값을 기반으로 한 Content Negotiation이 불가능하다는 것이다.
+			그래서 이에 대한 대안으로 <emphasis role="bold">URL path에 확장자를 붙여, 확장자를 통해 클라이언트가 원하는 Representation을 표시하는 방법</emphasis>을 사용한다.
+			예를 들어, '/myapp/movies.pdf' 라는 요청이 들어오면 서버는 영화목록을 찾아서 PDF View로 클라이언트에게 전달하는 것이다.
+		</para>
+		
+	</section>
+	
+	<section>
+		<title>Communicate statelessly</title>
+		<para>
+			REST에서 서버는 클라이언트로 부터 들어오는 각 요청에 대한 상태를 저장하지 않도록 권장한다. 요청이 처리되기 위해서 필요한 모든 정보는 반드시 요청에 포함하도록 해야한다.
+			서버는 클라이언트 관련 정보를 저장할 필요가 없으므로 클라이언트의 수의 증가에도 시스템이 유연하게 대응할 수 있다.
+		</para>
+	</section>
+</chapter>

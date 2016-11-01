@@ -1,0 +1,55 @@
+<?xml version="1.0" encoding="ISO-8859-1" standalone="no"?><!DOCTYPE log4j:configuration SYSTEM "log4j.dtd">
+<log4j:configuration xmlns:log4j="http://jakarta.apache.org/log4j/" debug="false">
+    
+    <appender name="console" class="org.apache.log4j.ConsoleAppender">
+        <layout class="org.apache.log4j.PatternLayout">
+            <param name="ConversionPattern" value="[%-5p] %d{yyyy-MM-dd HH:mm:ss} %c %n%m%n" />
+        </layout>   
+    </appender>
+    
+	<logger name="org.anyframe.plugin" additivity="false">	
+        <level value="INFO"/>
+        <appender-ref ref="mongodb"/>
+        <appender-ref ref="console"/>
+    </logger>
+    
+     <!--  for mvc exception logging -->
+	<logger name="controller.logs" additivity="false">
+		<level value="WARN" />
+		<appender-ref ref="console" />
+	</logger>
+    
+	<!--Add new configuration here-->
+    <!--logmanager-configuration-START-->
+    <!-- mongodb appender -->
+    <appender class="org.anyframe.logmanager.log4j.MongoDbAppender" name="mongodb">
+    	<param name="hostname" value="localhost"/>
+    	<param name="port" value="27017"/>
+    	<param name="userName" value=""/>
+    	<param name="password" value=""/>
+    	<param name="databaseName" value="logs"/>
+    	<param name="collectionName" value="moviefinderlogs"/>
+    </appender>
+    
+    <appender class="org.apache.log4j.RollingFileAppender" name="logmanagerfile">
+        <param name="Append" value="true"/>
+        <param name="MaxFileSize" value="10240KB"/>
+        <param name="MaxBackupIndex" value="10"/>
+        <param name="ImmediateFlush" value="true"/>
+        <param name="File" value="C:/logmanager/logs/common.log"/>
+        <layout class="org.anyframe.logmanager.log4j.PatternLayout">
+            <param name="ColumnDelimiter" value="29"/>
+            <param name="RowDelimiter" value="31"/>
+            <param name="ConversionPattern" value="[%-5p] [%d] [%X{clientIp}/%X{serverId}:%X{appName}] [%X{userId}/%X{userName}] [%c.%M()(:%L;%t)]: %n%m%n"/>
+            <param name="JsonPattern" value="level:%1,clientIp:%3,serverId:%4,appName:%5,userId:%6,userName:%7,className:%8,methodName:%9,lineNumber:%.10,thread:%.11,message:%.12"/>
+            <param name="TimestampIndex" value="2"/>
+            <param name="TimestampDatePattern" value="yyyy-MM-dd HH:mm:ss,SSS"/>
+        </layout>
+    </appender>
+    <!--logmanager-configuration-END-->
+        
+    <root>
+    	<level value="DEBUG"/>
+    	<appender-ref ref="console"/>
+    </root>
+</log4j:configuration>

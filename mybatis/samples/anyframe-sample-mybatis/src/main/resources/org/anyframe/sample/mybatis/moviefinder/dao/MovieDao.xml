@@ -1,0 +1,61 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" 
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="org.anyframe.sample.mybatis.moviefinder.dao.MovieDao">
+
+	<cache />
+	
+	<resultMap id="movieResult" type="Movie">
+		<id property="movieId" column="movie_id" />
+		<result property="title" column="title" />
+		<result property="director" column="director" />
+		<result property="releaseDate" column="release_date" javaType="java.sql.Date" />
+		<result property="ticketPrice" column="ticket_price" />
+		<result property="actors" column="actors" />
+		<result property="runtime" column="runtime" />
+		<result property="nowPlaying" column="now_playing" />		
+		<result property="posterFile" column="poster_file" />
+		<association property="genre" resultMap="org.anyframe.sample.mybatis.moviefinder.dao.GenreDao.genreResult"/>		
+	</resultMap>
+	
+	<insert id="createMovie" parameterType="Movie">
+		INSERT INTO MOVIE
+		(movie_id, title, director, genre_id, actors, runtime, release_date,
+		ticket_price, now_playing, poster_file)
+		VALUES (#{movieId}, #{title},
+		#{director}, #{genre.genreId}, #{actors}, #{runtime}, #{releaseDate},
+		#{ticketPrice}, #{nowPlaying}, #{posterFile})
+	</insert>
+	
+	<update id="updateMovie" parameterType="Movie">
+		UPDATE MOVIE SET
+		title = #{title}, director = #{director}, genre_id = #{genre.genreId},
+		actors = #{actors}, runtime = #{runtime}, release_date = #{releaseDate},
+		ticket_price = #{ticketPrice}, now_playing = #{nowPlaying}
+		WHERE movie_id = #{movieId}
+	</update>
+	
+	<delete id="removeMovie" parameterType="string">
+		DELETE FROM MOVIE WHERE movie_id = #{value}
+	</delete>	
+	
+	<select id="getMovie" parameterType="string" resultMap="movieResult">
+		SELECT movie.movie_id, movie.title, movie.director, movie.genre_id, genre.name, movie.release_date,
+		movie.ticket_price, movie.actors, movie.runtime, movie.now_playing, movie.poster_file
+		FROM MOVIE movie, GENRE genre
+		WHERE movie.genre_id = genre.genre_id AND movie_id = #{value}
+	</select>
+	
+	<select id="getMovieList" parameterType="Movie" resultMap="movieResult">
+		SELECT movie.movie_id, movie.title, movie.director, movie.genre_id, genre.name, 
+		movie.release_date, movie.ticket_price, movie.actors, movie.runtime, movie.now_playing, movie.poster_file 
+		FROM MOVIE movie, GENRE genre
+		WHERE movie.genre_id = genre.genre_id		
+		<if test="title != null">
+			AND title like #{title}
+		</if>
+		AND movie.now_playing = #{nowPlaying}
+	</select>
+	
+</mapper>

@@ -1,0 +1,465 @@
+<chapter id="foundation_springmvc_configuration">
+	<title>Configuration</title>
+	<para>
+		First, let's look into the settings that need to be defined to develop web application based on Spring MVC. 
+		One is web.xml file to register DispatcherServlet that plays Front Controller role, 
+		and the other is [servlet-name]-servlet.xml (e.g., action-servlet.xml) to define Spring MVC components. 
+	</para>
+
+	<section id="foundation_springmvc_configuration_webxml">
+		<title>Define web.xml</title>
+		<para>
+			J2EE web application should have a web.xml deployment descriptor under the WEB-INF directory. 
+			To develop web application using Spring MVC, register DispatcherServlet in web.xml file, 
+			and define the location of the XML configuration file in which Spring MVC web application components are defined.  
+    	</para>
+
+		<section id="foundation_springmvc_configuration_webxml_dispatcherservlet">
+			<title>Register DispatcherServlet</title>
+			<para>
+				The following is the defining of DispatcherServlet in web.xml.
+				<programlisting language="xml"><![CDATA[<servlet>
+    <servlet-name>]]><emphasis role="bold">action</emphasis><![CDATA[</servlet-name>
+    <servlet-class>]]><emphasis role="bold">org.springframework.web.servlet.DispatcherServlet</emphasis><![CDATA[</servlet-class>
+    <load-on-startup>1</load-on-startup>
+</servlet>
+<servlet-mapping>
+    <servlet-name>]]><emphasis role="bold">action</emphasis><![CDATA[</servlet-name>
+    <url-pattern>]]><emphasis role="bold">*.do</emphasis><![CDATA[</url-pattern>
+</servlet-mapping>]]></programlisting>
+			</para>
+
+			<para>
+				When defined as above, the servlet name becomes 'action'. 
+				DispatchserServlet loads '[servlet-name]-servlet.xml' file as WebApplicationContext as default, 
+				so WebApplicationContext will be composed by finding 'action-servlet.xml' file from WEB-INF folder under Web Contents Root folder. 
+			</para>
+
+			<para>Due to the above servlet mapping setting, all requests of URL which the extension is ".do" will be handled by DispatcherServlet.</para>
+		</section>
+
+		<section id="foundation_springmvc_configuration_webxml_contextconfiglocation">
+			<title>Register Spring MVC configuration file location</title>
+			<para>
+				As mentioned above, DispatcherServlet basically loads [servlet-name]-servlet.xml file in WEB-INF folder under Web Contents Root folder 
+				to compose WebApplicationContext. 
+				To define this as a random file in a random location, or a multi file, use <![CDATA[<init-param> under <servlet>]]> 
+				to define an initialization parameter named contextConfigLocations.
+				<programlisting language="xml"><![CDATA[<init-param>
+    <param-name>]]><emphasis role="bold">contextConfigLocation</emphasis><![CDATA[</param-name>
+    <param-value>/config/springmvc/common-servlet.xml, /config/springmvc/user-servlet.xml</param-value>
+</init-param>]]></programlisting>
+			</para>
+		</section>
+	</section>
+	
+	<section id="foundation_springmvc_configuration_actionservletxml">
+    	<title>Define action-servlet.xml</title>
+    	<para>
+    		In Spring MVC framework, each DispatcherServlet has a unique WebApplicationContext, 
+    		and each WebApplicationContext can inherit all bean information defined in WebApplicationContext. 
+    		As such, WebApplicationContext can have a hierarchy which can be shown as the following figure in Spring reference document. 
+    	</para>
+	    <mediaobject>
+	      <imageobject>
+	        <imagedata align="center" fileref="../image/foundation/springmvc/mvc-context.jpg" />
+	      </imageobject>
+	    </mediaobject>
+	    <para>
+	    	WebApplicationContext is adding a number of functions needed for web application to extend ApplicationContext. 
+	    	It is a type of Spring IoC container. 
+	    	Several beans that compose web application are registered and managed through WebApplicationContext. 
+	    	If necessary, WebApplicationContext can be looked up through RequestContextUtils class. 
+	    	Spring MVC DispatcherServlet uses special beans as the below table to handle request and return appropriate view. 
+	    	These beans can be set in WebApplicationContext like regular beans. 
+	    	
+	    </para>
+	    <informaltable>
+	      <tgroup cols="2">
+	        <thead>
+	          <row>
+	            <entry align="center">Bean type</entry>
+	            <entry align="center">Description</entry>
+	          </row>
+	        </thead>
+	        <tbody>
+	          <row>
+	            <entry>Controllers</entry>
+	            <entry>Controllers that handle requests</entry>
+	          </row>
+	          <row>
+	            <entry>Handler mappings</entry>
+	            <entry>Handles the matching of requested URL and Controller to handle related URL</entry>
+	          </row>
+	          <row>
+	            <entry>View resolvers</entry>
+	            <entry>Defines view using view name</entry>
+	          </row>
+	          <row>
+	            <entry>Locale resolver</entry>
+	            <entry>Finds out user locale to support internationalization (i18n)</entry>
+	          </row>
+	          <row>
+	            <entry>Theme resolver</entry>
+	            <entry>Defines theme used by web application</entry>
+	          </row>
+	          <row>
+	            <entry>Multipart file resolver</entry>
+	            <entry>Handles file uploaded from HTML form</entry>
+	          </row>
+	          <row>
+	            <entry>Exception resolver</entry>
+	            <entry>Maps views that fit specific exceptions and each exception</entry>
+	          </row>
+	        </tbody>
+	      </tgroup>
+	    </informaltable>
+    	<para>The beans above can be defined in action-servlet.xml.</para>
+    	<para>
+			When web.xml is set, the special beans explained above should be defined in action-servlet.xml. 
+			This chapter will only explain how to define Handler Mapping and View Resolver among the elements above. 
+			And other elements (<link linkend="foundation_springmvc_controller">Controller</link> , <link linkend="foundation_springmvc_internationalization">Locale Resolver</link> , 
+			<link linkend="foundation_springmvc_fileupload">Multipart File Resolver </link>, <link linkend="foundation_springmvc_exceptionhandling">Exception Resolver</link>) 
+			will be described in each page.
+		</para>
+    	
+   		<section id="foundation_springmvc_configuration_actionservletxml_handlermapping">
+   			<title>Handler Mapping</title>
+			<para>
+				 When a request comes from DispatcherServlet which is a front controller, 
+				 you can find out which Controller to use for handling the request through Handler Mapping. 
+				 Spring MVC provides various Handler Mappings. Here, and we will look into a few of them. 
+			</para>
+   			<itemizedlist>
+   				<listitem>
+   					<para>DefaultAnnotationHandlerMapping</para>
+   					<para>
+   						DefaultAnnotationHandlerMapping is a HandlerMapping Implementation class that maps controller implemented based on @RequestMapping annotation and requested URL 
+   						which has been introduced from Spring 2.5 onwards. 
+   						The user does not need to define clearly, but can clearly define in action-servlet.xml 
+   						when changing default properties that have DefaultAnnotationHandlerMapping. 
+   						The following are properties of DefaultAnnotationHandlerMapping that the user can change.
+   						
+   					</para>
+   					<para>
+   						<informaltable>
+   							<tgroup cols="2">
+   								<thead>
+   									<row>
+   										<entry align="center">Property</entry>
+   										<entry align="center">Description</entry>
+   									</row>
+   								</thead>
+   								<tbody>
+   									<row>
+   										<entry>interceptors</entry>
+   										<entry>List of interceptors to be used</entry>
+   									</row>
+   									<row>
+   										<entry>defaultHandler</entry>
+   										<entry>Controller to be used as default when you cannot find controller to handle request</entry>
+   									</row>
+   									<row>
+   										<entry>order</entry>
+   										<entry>Runs in order based on the value that is defined in order property when using various handler mappings</entry>
+   									</row>
+   									<row>
+										<entry>alwaysUseFullPath</entry>
+										<entry>
+										    When this property is true, find Controller to handle request with entire URL path under servlet context, 
+											and when the default value is false, find Controller to handle request with path under URL path that is mapped with DispatcherServlet. 
+											For instance, DispatcherServlet is currently mapped with '/rest/*'. 
+											If this property value is set to true, entire '/rest/welcome.jsp' is used, and if it is false, only 'welcome.jsp' is used. 
+										</entry>
+									</row> 
+								</tbody>
+							</tgroup>
+						</informaltable>
+					</para>
+					<para>
+						The following is an example of defining DefaultAnnotationHandlerMapping by overriding interceptor properties. 
+						<programlisting language="xml"><![CDATA[<beans>
+    <bean class="org.springframework.web.servlet.mvc.annotation.DefaultAnnotationHandlerMapping">
+        <property name="]]><emphasis role="bold">interceptors</emphasis><![CDATA[">
+            <bean class="loginInterceptor"/>
+        </property>
+    </bean>
+<beans>]]></programlisting>
+   					</para>
+				</listitem>
+   				<listitem>
+   					<para>BeanNameUrlHandlerMapping</para>
+   					<para>
+   						BeanNameUrlHandlerMapping compares the requested URL and the defined controller bean name to map controller that handles request. 
+   						The following is a part of action-servlet.xml file that defines BeanNameUrlHandlerMapping.
+   						<programlisting language="xml"><![CDATA[
+<bean class="]]><emphasis role="bold">org.springframework.web.servlet.handler.BeanNameUrlHandlerMapping</emphasis><![CDATA[" />]]></programlisting>
+   							<programlisting language="xml"><![CDATA[
+<bean name="/login.do" class="anyframe.sample.springmvc.web.controller.basic.LoginController"></bean>]]></programlisting>
+					</para>
+					<para>When action-servlet.xml is defined as above, 
+					anyframe.sample.springmvc.web.controller.basic.LoginController does the handling in case of "/login.do" request. </para>
+				</listitem>
+				<listitem>
+					<para>SimpleUrlHandlerMapping</para>
+					<para>
+						SimpleUrlHandleMapping enables mapping information between request URL and controller to handle request to be managed in one repository. 
+						User defines Controller as general bean, 
+						and defines the ID of request URL and controller bean to handle request in mappings property. 
+						The following shows the above BeanNameUrlHandlerMapping example using SimpleUrlHandlerMapping.						
+						<programlisting language="xml"><![CDATA[
+<bean id="simpleUrlHandlerMapping" class="org.springframework.web.servlet.handler.]]><emphasis role="bold">SimpleUrlHandlerMapping</emphasis><![CDATA[">
+    <property name="]]><emphasis role="bold">mappings</emphasis><![CDATA[">
+        <value>]]><emphasis role="bold">/login.do = loginController</emphasis><![CDATA[</value>
+    </property>
+</bean>
+<bean id="]]><emphasis role="bold">loginController</emphasis><![CDATA[" class="anyframe.sample.springmvc.web.controller.basic.LoginController"></bean>]]></programlisting>
+					</para>
+					<para>Also, when using SimplerUrlHandlerMapping, mapping information can be managed in a special file other than bean configuration file. 
+						<programlisting language="xml"><![CDATA[<bean id="simpleUrlHandlerMapping" class="org.springframework.web.servlet.handler.SimpleUrlHandlerMapping">
+    <property name="]]><emphasis role="bold">mappings</emphasis><![CDATA[">
+        <bean class="]]><emphasis role="bold">org.springframework.beans.factory.config.PropertiesFactoryBean</emphasis><![CDATA[">
+            <property name="]]><emphasis role="bold">location</emphasis><![CDATA[">
+                <value>]]><emphasis role="bold">/mapping.properties</emphasis><![CDATA[</value>
+            </property>
+        </bean>
+    </property></bean>]]></programlisting>
+					</para>
+					<para>The following are the contents of mapping.properties file defined above. 
+						<programlisting language="xml">/login.do = loginController</programlisting>
+					</para>
+				</listitem>
+				<listitem>
+					<para>Intercepting requests</para>
+					<para>
+						Interceptor can be defined in handler mapping, 
+						and the defined interceptor is applied to the request handled with handler mapping. 
+						This interceptor intercepts request so it can add a specific task before request comes in, after it comes in, and after it is completed. 
+						Interceptor class is created by inheriting org.springframework.web.servlet.HandlerInterceptorAdapter class, 
+						and can implement preHandle(), postHandle(), and 
+						afterCompletion() method to add handling logic according to each period. 
+					</para>
+					<para>
+						The following is a part of LoginInterceptor.java file.
+						<programlisting language="java">public class LoginInterceptor extends <emphasis role="bold">HandlerInterceptorAdapter</emphasis> {
+    @Override
+    public boolean <emphasis role="bold">preHandle</emphasis>(HttpServletRequest request, HttpServletResponse response, Object handler) throws Exception {
+        if(request.getSession().getAttribute("userId") != null)
+            return true;
+        else {
+            response.sendRedirect("login.jsp");
+            return false;
+        }
+    }
+}</programlisting>
+			            In the above example, logic is executed before overriding of preHandle() and receiving of request. 
+			            When userId value exists in session, true is returned, and then Controller handles request. 
+			            If the userId does not exist, login.jsp page is shown. 
+					</para>
+					<para>The following is a part of user-servlet.xml file that has set interceptor in bean configuration file. 
+						<programlisting language="xml"><![CDATA[<bean id="simpleUrlHandlerMapping" class="org.springframework.web.servlet.handler.SimpleUrlHandlerMapping">
+    <property name="mappings">
+        <value>/userForm.do = userController</value>
+    </property>
+    <]]><emphasis role="bold">property name="interceptors" ref="loginInterceptor"</emphasis><![CDATA[/>
+    <!-- When serveral handler mappings are defined, priority can be set by defining order. 
+         The smaller the number, the higher the priority. -->
+    <property name="order">
+        <value>1</value>
+    </property>
+</bean>
+
+<bean id="]]><emphasis role="bold">loginInterceptor</emphasis><![CDATA[" class="anyframe.sample.springmvc.web.interceptor.LoginInterceptor" />]]></programlisting>
+						Set Interceptor class as bean as above, and refer to the related bean in handler mapping to apply interceptor. 
+					</para>
+          		</listitem>
+			</itemizedlist>
+		</section>
+		
+		<section id="foundation_springmvc_configuration_actionservletxml_viewresolver">
+			<title>View Resolver</title>
+			<para>
+				All MVC Framework provides ways to save view to return to after handling request. 
+				Spring MVC provides View Resolver to show model data without being dependent on specific view technology. 
+				As explained above, controller handles request and then transfers ModelAndView to DispatcherServlet. 
+				In this case, ModelAndView includes view name, and View Resolver finds the real view with this name. 			
+			</para>
+			<para>
+				<ulink url="http://static.springsource.org/spring/docs/3.0.x/javadoc-api/org/springframework/web/servlet/ViewResolver.html">ViewResolver</ulink> and 
+				<ulink url="http://static.springsource.org/spring/docs/3.0.x/javadoc-api/org/springframework/web/servlet/View.html">View</ulink> 
+				are the most important interfaces related to view handling in Spring MVC. 
+				ViewResolver maps view name and real view. Spring MVC provides the following View Resolvers.
+          	</para>
+          	<para>
+          		<informaltable>
+          			<tgroup cols="2">
+          				<thead>
+          					<row>
+          						<entry align="center">ViewResolver</entry>
+          						<entry align="center">Description</entry>
+          					</row>
+          				</thead>
+          				<tbody>
+          					<row>
+          						<entry>AbstractCachingViewResolver</entry>
+          						<entry>Provides view caching function</entry>
+          					</row>
+          					<row>
+          						<entry>XmlViewResolver</entry>
+          						<entry>Decided based on the XML file setting contents when defining view. (Use /WEB-INF/view.xml as basic configuration file.)</entry>
+          					</row>
+          					<row>
+          						<entry>ResourceBundleViewResolver</entry>
+          						<entry>Decided based on resource file setting contents when defining view. (Use views.properties as basic resource file.)</entry>
+          					</row>
+          					<row>
+          						<entry>UrlBasedViewResolver</entry>
+          						<entry>When defining view, does not use specific mapping information, and uses URL as view name. 
+          						(Used when using view name and real view resource in the same way.)</entry>
+          					</row>
+          					<row>
+			                	<entry>InternalResourceViewResolver</entry>
+			                	<entry>Inherited UrlBasedViewResolver, and uses InternalResourceView(Servlet, JSP).</entry>
+			                </row>
+			                <row>
+			                	<entry>VelocityViewResolver/FreeMarkerViewResolver</entry>
+			                	<entry>Inherited UrlBasedViewResolver, and each uses VelocityView and FreeMarkerView.</entry>
+			                </row>
+			                <row>
+			                	<entry>ContentNegotiatingViewResolver</entry>
+			                	<entry>Judges view based on file name of request URL or accepter header value of HTTP Request. 
+			                	For more information, refer to 
+			                	<ulink url="http://dev.anyframejava.org/docs/anyframe/plugin/springrest/1.0.2/reference/htmlsingle/springrest.html#springrest_restsupport_contentnegotiation">SpringREST Plugin >> Content Negotiation</ulink>.
+			                	
+			                	</entry>
+			                </row>
+						</tbody>
+					</tgroup>
+				</informaltable>
+			</para>
+					
+			<para>View Resolver should be chosen as the above according to the view technology to be used.</para>
+			<itemizedlist>
+          		<listitem>
+          			<para>Example of ViewResolver setting in case of using JSP as view technology.
+          				<programlisting language="xml"><![CDATA[<bean id="viewResolver" class="]]><emphasis role="bold">org.springframework.web.servlet.view.UrlBasedViewResolver</emphasis><![CDATA[">
+    <property name="prefix" value="/WEB-INF/jsp/"/>
+    <property name="suffix" value=".jsp"/>
+</bean>]]></programlisting>
+					</para>
+					<para>
+						You can define prefix and suffix property in UrlBasedViewResolver. 
+						If the name of view transferred to controller is 'index' and prefix is defined as "/jsp/", and suffix defined as ".jsp", 
+						this ViewResolver finds a view named "/jsp/index.jsp".
+					</para>
+				</listitem>
+						
+				<listitem>
+					<para>Example of ViewResolver setting when using JSTL</para>
+					<para>In case of simple JSP, UrlBasedViewResolver uses InternalResourceView, 
+					but when using JSTL, you should clearly define to use JstlView through viewClass. 
+						<programlisting language="xml"><![CDATA[<bean id="jstlViewResolver" class="org.springframework.web.servlet.view.UrlBasedViewResolver">
+    <!-- view class for jstl -->
+    <property name="]]><emphasis role="bold">viewClass</emphasis><![CDATA[" value="]]><emphasis role="bold">org.springframework.web.servlet.view.JstlView</emphasis><![CDATA[" />
+    <property name="order" value="1" />
+</bean>]]></programlisting>
+					</para>
+				</listitem>
+			</itemizedlist>
+		</section>
+		<section id="foundation_springmvc_configuration_actionservletxml_configsimplification">
+			<title>Configuration Simplification</title>
+			<para>
+				Spring 3 started to provide <ulink url="http://static.springsource.org/schema/mvc/spring-mvc.xsd">mvn</ulink> name space 
+				for simple Spring MVC data setting including AnnotationMethodHandlerAdapter registration that is needed to handle controller based on annotation. 
+				The following are the three tags provided in mvc name space.
+			</para>
+			<itemizedlist>
+				<listitem>
+					<para><emphasis role="bold">mvc:annotation-driven</emphasis></para>
+					<para>
+						This tag registers DefaultAnnotationHandlerMapping and AnnotationMethodHandlerAdapter 
+						that returns HTTP request to controller that is implemented based on annotation 
+						along with the following default settings. 
+					</para>
+					<orderedlist>
+						<listitem>
+							<para>
+								Register ConversionService instance created by org.springframework.format.support.FormattingConversionServiceFactoryBean 
+								to use Type ConversionService of Spring 3. 
+								When converting ConversionService, use <emphasis role="bold">conversion-service</emphasis> for setting. 
+							</para>
+						</listitem>
+						<listitem>
+							<para>
+								Support formatting in number type that uses @NumberFormat
+							</para>
+						</listitem>
+						<listitem>
+							<para>
+								Support formatting of Date and Calendar Joda Time type field that uses @DateTimeForm. 
+								(When Joda Time library currently exists in classpath)
+							</para>
+						</listitem>
+						<listitem>
+							<para>
+							    Support declarative validation that uses @Valid in controller that is implemented based on annotation. 
+								(When JSR-303 implementation like Hibernate Validator exists in classpath)
+							</para>
+						</listitem>
+						<listitem>
+							<para>Support Read/Write of XML (When JAXB library currently exists in classpath)
+							</para>
+						</listitem>
+						<listitem>
+							<para>
+								Support Read/Write of JSON object (When <ulink url="http://jackson.codehaus.org/">Jackson</ulink> currently exists in classpath)
+							</para>
+						</listitem>
+					</orderedlist>
+					<programlisting language="xml"><![CDATA[<mvc:annotation-driven conversion-service="conversionService" />
+    
+<bean id="conversionService" class="org.springframework.format.support.FormattingConversionServiceFactoryBean">
+    <property name="converters">
+        <list>
+            <bean class="anyframe.sample.moviefinder.StringToFilmRatingConverter" />
+            <bean class="anyframe.sample.moviefinder.FilmRatingToStringConverter" />
+        </list>
+    </property>
+</bean>]]></programlisting>
+				</listitem>
+				
+				<listitem>
+					<para><emphasis role="bold">mvc:interceptors</emphasis></para>
+					<para>
+						Up to Spring 2.x, 
+						interceptor to be applied using interceptor property should be added when defining each HandlerMapping Bean 
+						in order to apply interceptor for the purpose of executing specific function before handling request. 
+						However, from Spring 3 onwards, <![CDATA[<mvc:interceptors>]]> can be used to simply apply interceptor to HandlerMapping. 
+					</para>
+					<para>
+						The following is an example of applying LocaleChangeInterceptor in all URL.
+						<programlisting language="xml"><![CDATA[<mvc:interceptors>
+    <bean class="org.springframework.web.servlet.i18n.LocaleChangeInterceptor" />
+</mvc:interceptors>]]></programlisting>
+						The following can be set to apply interceptor only to specific URL.
+						<programlisting language="xml"><![CDATA[<mvc:interceptors>
+    <mvc:interceptor>
+        <mapping path="/admin/*"/>
+        <bean class="anyframe.example.LoginInterceptor" />
+    </mvc:interceptor>
+</mvc:interceptors>]]></programlisting>
+					</para>
+				</listitem>
+				<listitem>
+					<para><emphasis role="bold">mvc:view-controller</emphasis></para>
+					<para>
+						Before Spring 3, URL that was directly forwarded by view without controller was defined as bean using ParameterizableViewController. 
+						However, this tag simplifies the setting as below. 
+						<programlisting language="xml"><![CDATA[<mvc:view-controller path="/" view-name="welcome"/>]]></programlisting>
+					</para>
+				</listitem>
+			</itemizedlist>
+		</section>
+	</section>
+</chapter>

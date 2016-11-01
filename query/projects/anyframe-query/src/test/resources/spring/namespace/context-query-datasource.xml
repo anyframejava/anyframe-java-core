@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:query="http://www.anyframejava.org/schema/query"
+	xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-2.5.xsd
+	http://www.anyframejava.org/schema/query http://www.anyframejava.org/schema/query/anyframe-query-1.0.xsd">
+
+	<query:auto-config dbType="oracle" dataSource-ref="anotherDataSource"/>
+
+    <bean id="anotherDataSource" class="org.apache.commons.dbcp.BasicDataSource" destroy-method="close">
+        <property name="driverClassName" value="oracle.jdbc.driver.OracleDriver"/>
+        <property name="url" value="jdbc:oracle:thin:@server.ip:1521:xe"/>
+        <property name="username" value="another"/>
+        <property name="password" value="another"/>
+    </bean> 
+</beans>	

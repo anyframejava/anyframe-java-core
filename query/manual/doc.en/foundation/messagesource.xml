@@ -1,0 +1,31 @@
+<chapter id="foundation_messagesource">
+	<title>Configuration</title>
+	<para>
+		The following is a part of context-message.xml file which defines messageSource
+		newly added by Foundation Plugin installation.
+	</para>
+	<programlisting language="xml"><![CDATA[<bean id="messageSource" class="]]><emphasis role="bold"><![CDATA[anyframe.common.context.support.EncodingResourceBundleMessageSource]]></emphasis><![CDATA[">
+    <property name="basenames">
+        <list>
+            <value>message/message-moviefinder</value>
+            <value>message/message-converter</value>
+            <value>anyframe/core/ria/mip/messages/mip</value>
+            <value>anyframe/core/hibernate/messages/hibernate</value>
+            <value>anyframe/core/idgen/messages/idgeneration</value>
+            <value>anyframe/core/properties/messages/properties</value>
+            <value>anyframe/core/query/messages/query</value>
+            <value>anyframe/core/query/ria/messages/riaquery</value>
+            <value>anyframe/web/springmvc/messages/springmvc</value>
+            <value>anyframe/iam/security</value>
+        </list>
+    </property>
+    ]]><emphasis role="bold"><![CDATA[<property name="defaultEncoding">
+        <value>UTF-8</value>
+    </property>]]></emphasis><![CDATA[
+</bean>]]></programlisting>
+	<para>
+		Define encoding by defining EncodingResourceBundleMessageSource as messageSource bean as above
+		and using defaultEncoding property.
+		If no definition is set, it well be set as "UTF-8".		
+	</para>
+</chapter>

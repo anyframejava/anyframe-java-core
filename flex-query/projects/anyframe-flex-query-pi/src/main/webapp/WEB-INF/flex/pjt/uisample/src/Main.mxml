@@ -1,0 +1,129 @@
+<?xml version="1.0"?>
+<mx:Application xmlns:mx="http://www.adobe.com/2006/mxml"  
+	xmlns:login="samples.login.*" xmlns:samples="samples.*"
+	layout="absolute" width="1024" height="610" initialize="initApp()" 
+	backgroundImage="@Embed(source='assets/images/bg_full.png')" horizontalScrollPolicy="off" verticalScrollPolicy="off" 
+	x="0" y="0" autoLayout="true" includeInLayout="false" creationComplete="init()">
+<mx:Script>
+	<![CDATA[
+		import mx.controls.Alert;
+		import mx.events.ItemClickEvent;
+		import mx.events.ListEvent;
+		import mx.rpc.remoting.mxml.RemoteObject;
+	    import mx.rpc.events.ResultEvent;
+	    import samples.domain.User;
+	    import mx.events.StyleEvent;
+
+	    public var visitHistory:SharedObject;
+	    
+		public var loginUser:User; 
+		 
+		public var loginId:String;  
+		
+		private function initApp() : void{
+				application.visible = false;
+				login.logout();
+				visitHistory = SharedObject.getLocal("userInfo");
+				loginUser = new User();
+				if (visitHistory.data.visitCheck == 1){
+					loginView.userId.text = visitHistory.data.userId;
+					loginView.saveId.selected = true;
+				}
+				currentState = "logoutMode";
+		}		
+      
+         public function init():void
+         {
+               var styleLoder:IEventDispatcher = StyleManager.loadStyleDeclarations("./assets/css/Sample.swf");
+               styleLoder.addEventListener(StyleEvent.COMPLETE, showApp);
+         }
+   
+         private function showApp(event:StyleEvent):void
+         {
+               application.visible = true; 
+         }
+
+		private function treeItemClick(event:ListEvent):void{
+			if ( loginUser.userId == null || loginUser.userId == ""){
+				mx.controls.Alert.show("로그인 해주세요");
+			}else{
+				viewstack.selectedIndex = leftTree.selectedItem.@index;
+			}
+		}
+		
+		private function applyEffect(event:Event):void{
+			rotateEffect.originX = event.currentTarget.width/2;
+			rotateEffect.originY = event.currentTarget.height/2;
+			rotateEffect.play();
+		}
+		
+	]]>
+</mx:Script>
+<mx:XML xmlns="" id="treeData">
+<ROOT>
+	<item label="SAMPLES" isBranch="true">
+		<item label="SAMPLE01" index="1"/>
+		<item label="SAMPLE02" index="2"/>
+		<item label="SAMPLE03" index="3"/>
+		<item label="SAMPLE04" index="4"/>
+		<item label="SAMPLE05" index="5"/>
+		<item label="SAMPLE06" index="6"/>
+		<item label="SAMPLE07" index="7"/>
+		<item label="SAMPLE08" index="8"/>
+	</item>
+</ROOT>
+</mx:XML>
+<mx:states>
+	<mx:State name="logoutMode">
+		<mx:SetProperty target="{loginView}" name="visible" value="true"/>
+		<mx:SetProperty target="{login}" name="visible" value="false"/>
+		<mx:SetProperty target="{login}" name="includeInLayout" value="false"/>
+	</mx:State>
+	<mx:State name="loginMode">
+		<mx:SetProperty target="{loginView}" name="visible" value="false"/>
+		<mx:SetProperty target="{loginView}" name="includeInLayout" value="false"/>
+		<mx:SetProperty target="{login}" name="visible" value="true"/>
+	</mx:State>
+</mx:states>
+<mx:Canvas width="948" height="80" color="#000000"/>
+<mx:Canvas width="948" height="450" styleName="panelMain" horizontalScrollPolicy="off" verticalScrollPolicy="off" y="80" x="40" textIndent="5">
+<!-- login -->
+	<login:LoginView id="loginView"/>
+	<login:Login id="login" y="21"/>	
+<!-- login -->
+<!-- Tree -->
+<mx:Canvas width="217" height="270" x="14" y="128" styleName="canvasTree">
+<mx:Tree id="leftTree" dataProvider="{treeData}" showRoot="false" labelField="@label" width="192" height="234" change="treeItemClick(event)" verticalScrollPolicy="off" x="12" y="15"  styleName="panelTree" useRollOver="true" rollOverColor="#abbdd2" selectionColor="#9198a3"/>
+</mx:Canvas>
+<!-- Tree --> 
+	<mx:ViewStack  x="245" y="22" id="viewstack" width="686" height="383" creationPolicy="auto" change="applyEffect(event)">
+			
+			<mx:Canvas id="ViewHome"  x="0" y="0" width="686" height="383">
+				<mx:Image verticalAlign="middle" horizontalAlign="center" source="assets/images/bg_mainimg2.png" width="686" height="383" y="-10" x="0"/>				
+			</mx:Canvas>
+			 
+	   		<samples:Sample01GRD id="Sample01GRD" showEffect="WipeDown" hideEffect="WipeUp" />
+	
+	   		<samples:Sample02GRDFRM id="Sample02GRDFRM" showEffect="WipeDown" hideEffect="WipeUp" />
+	   		
+	   		<samples:Sample03GRDPOP id="Sample03GRDPOP" showEffect="WipeDown" hideEffect="WipeUp" />
+	   		
+	   		<samples:Sample04GRDTAB id="Sample04GRDTAB" showEffect="WipeDown" hideEffect="WipeUp" />
+	   		
+	   		<samples:Sample05GRDGRD id="Sample05GRDGRD" showEffect="WipeDown" hideEffect="WipeUp" />
+	
+			<samples:Sample06GRDGRD id="Sample06GRDGRD" showEffect="WipeDown" hideEffect="WipeUp" />
+			
+			<samples:Sample07TRVGRD id="Sample07TRVGRD" showEffect="WipeDown" hideEffect="WipeUp" />
+			
+			<samples:Sample08TRVFRM id="Sample08TRVFRM" showEffect="WipeDown" hideEffect="WipeUp" />
+	  	</mx:ViewStack>
+	<mx:Text x="1" y="434" text="Copyright ⓒ 2010  www.anyframejava.org - Site maintained by SAMSUNG SDS       " color="#acacac"/>
+	<mx:Text x="536" y="427" text="Introduction  |  Projects  |  Downloads  |  Forum | Sitemap" color="#666666" width="343"/>
+<!-- main --> 
+</mx:Canvas>
+<mx:Canvas width="948" height="80" color="#000000">
+	<mx:Image x="44" y="21" source="assets/images/logo.png"/>
+</mx:Canvas>
+<mx:Rotate id="rotateEffect" target="{viewstack}"/>
+</mx:Application>

@@ -1,0 +1,111 @@
+<chapter id="mybatis_usage">
+	<title>Usage</title>
+	<section id="mybatis_usage_sqlsession">
+    	<title>SqlSession</title>
+    	<para>
+			MyBatis에서는 SqlSessionFactory 클래스를 가지고 SqlSession을 생성한다. 생성된 session은 SQL 문을 실행, commit, rollback, 그리고 session close 역할을 한다.
+			그러나 MyBatis-Spring은 SqlSessionFactory 클래스를 직접 사용할 필요가 없다. Spring Bean에서 thread safe SqlSession을 inject 할 수 있기 때문이다. 또한 commit, rollback, 
+			그리고 session close 모두 Spring transaction 설정을 통해 관리 된다. 
+		</para>
+		
+	    <section id="mybatis_usage_sqlsession_sqlsessiontemplate">
+    		<title>SqlSessionTemplate</title>
+	    	<para>
+				SqlSessionTemplate 클래스는 MyBatis-Spring의 핵심 기능이며 MyBatis SqlSessions 관리 및 MyBatis SQL method 호출을 담당한다.
+				SqlSessionTemplate 클래스는 SqlSessionFactory를 생성자의 인자로 받을수 있다.
+	    	</para>
+	    	
+			<programlisting language="xml"><![CDATA[<bean id="sqlSession" class="org.mybatis.spring.SqlSessionTemplate">
+    <constructor-arg index="0" ref="sqlSessionFactory" />
+</bean>]]></programlisting>
+
+			<para>
+				위에서 정의한 bean은 DAO 클래스에서 inject 해서 사용 할 수 있다.
+			</para>
+			
+			<programlisting language="java">public class MovieDao {
+    @Inject
+    @Named("sqlSession")
+    public SqlSession sqlSession;
+    
+    public Movie getMovie(String movieId) {
+        return (Movie)sqlSession.selectOne("Movie.getMovie", movieId);
+    }
+}</programlisting>
+		</section>
+		
+		<section id="mybatis_usage_sqlsession_sqlsessiondaosupport">
+    		<title>SqlSessionDaoSupport</title>
+	    	<para>
+				SqlSessionDaoSupport 클래스는 SqlSession을 제공하는 abstract support class 이다. getSqlSession() 메소드를 호출하여 SqlSessionTemplate을 사용 할 수 있으며 
+				MyBatis SQL method를 아래와 같이 호출 할 수 있다.
+	    	</para>
+	    	<programlisting language="java">public class MovieDao extends SqlSessionDaoSupport {
+    public Movie getMovie(String movieId) {
+        return (Movie)getSqlSession().selectOne("Movie.getMovie", movieId);
+    }
+}</programlisting>
+		</section>
+	</section>
+	
+	<section id="mybatis_usage_mappers">
+    	<title>Injecting Mappers</title>
+	    <para>
+			SqlSessionDaoSupport 혹은 SqlSessionTemplate 클래스를 활용항  DAO를 작성하는 방법이외에도  MyBatis-Spring에서 제공하는 proxy factory인 MapperFactoryBean를 이용할 수 도 있다.
+			MapperFactoryBean 클래스는 service bean에서 data mapper interface(dao interface)를 inject 할 수 있도록 해준다. mapper interface(dao interface)를 이용하여 Dao를 호출 할 경우
+			Dao에 대한 구현체를 만들지 않아도 된다.
+	    </para>
+	    
+	    <section id="mybatis_usage_mappers_mapperfactorybean">
+    		<title>MapperFactoryBean</title>
+	    	<para>
+				Data Mapper(Dao Interface)를 Spring Bean으로 등록 하는 방법은 아래와 같다.
+	    	</para>
+	    	
+	    	<programlisting language="xml"><![CDATA[<bean id="movieMapper" class="org.mybatis.spring.mapper.MapperFactoryBean">
+    <property name="mapperInterface" value="org.anyframe.sample.mybatis.moviefinder.dao.MovieDao" />
+    <property name="sqlSessionFactory" ref="sqlSessionFactory" />
+</bean>]]></programlisting>
+
+			<para>
+				MovieDao(MovieMapper)에 대한 proxy 객체를 생성하고 해당 어플리케이션에서는 proxy 객체를 inject 해서 사용한다. 
+				proxy 객체는 런타임 시에 생성이 되므로 Mapper(Dao)는 반드시 Interface로 작성되어야 하고 구현체는 필요하지 않다.
+				Spring Bean에서 mapper(dao)를 inject 해서 사용하는 방법은 다음과 같다.
+			</para>
+
+			<programlisting language="java">@Service("mybatisMovieService")
+public class MovieServiceImpl implements MovieService {
+
+    @Inject
+    @Named("movieDao")
+    private MovieDao movieDao;
+    
+    public Movie get(String movieId) throws Exception {
+        return movieDao.getMovie(movieId);
+    }
+}</programlisting>
+
+			<programlisting language="java">public interface MovieDao {
+    Movie getMovie(String movieId);
+    ...
+}</programlisting>
+
+		</section>
+		
+		<section id="mybatis_usage_mappers_mapperscannerconfigurer">
+    		<title>MapperScannerConfigurer</title>
+	    	<para>
+				Mapper(Dao)를 Spring XML 설정 파일에 등록 하는 대신 MapperScannerConfigurer 클래스를 사용하여 classpath내에 있는 mapper(dao) interface를 자동으로 등록 할 수 있다.
+				MapperScannerConfigurer에 대한 설정은 다음과 같다.
+	    	</para>
+	    	
+	    	<programlisting language="xml"><![CDATA[<bean class="org.mybatis.spring.mapper.MapperScannerConfigurer">
+    <property name="basePackage" value="org.anyframe.sample.mybatis.moviefinder.dao" />    
+</bean>]]></programlisting>
+
+			<para>
+				위와 같이 설정 할 경우 지정된 basePackage 하위에 존재 하는 Mapper(Dao) Interface를 검색하여 등록 한다.				
+			</para>
+		</section>
+	</section>	
+</chapter>

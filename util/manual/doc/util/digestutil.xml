@@ -1,0 +1,62 @@
+<chapter id="util_digestutil">
+	<title>DigestUtil의 활용</title>
+	<para>
+		해당하는 문자열에 대해서 characterset 또는 base64 등 기능을 사용해 인코딩/디코딩 하는 기능을 제공한다.
+	</para>
+	<para>다음은 DigestUtil이 가지고 있는 메소드에 대한 설명이다.</para>
+	<informaltable>
+		<caption>DigestUtil 메소드</caption>
+		<tgroup cols="4">
+			<colspec colnum="1" colname="col1" colwidth="2*" />
+			<colspec colnum="2" colname="col2" colwidth="3*" />
+			<colspec colnum="3" colname="col3" colwidth="4*" />
+			<colspec colnum="4" colname="col4" colwidth="1*" />
+			<thead>
+				<row>
+					<entry align="center">Method</entry>
+					<entry align="center">Description</entry>
+					<entry align="center">Example</entry>
+					<entry align="center">Remarks</entry>
+				</row>
+			</thead>
+			<tbody>
+				<row>
+					<entry><emphasis role="bold">encodeCharset</emphasis>(String str, String charsetName)</entry>
+					<entry></entry>
+					<entry></entry>
+					<entry><emphasis role="bold">deprecated</emphasis> since core 1.5.0 <para>convertStringCharset(String str, String charset) 사용</para></entry>
+				</row>
+				<row>
+					<entry><emphasis role="bold">decodeCharset</emphasis>(String str, String charsetName)</entry>
+					<entry></entry>
+					<entry></entry>
+					<entry><emphasis role="bold">deprecated</emphasis> since core 1.5.0 <para>convertStringCharset(String str, String charset) 사용</para></entry>
+				</row>
+				<row>
+					<entry><emphasis role="bold">encodeBase64</emphasis>(String str)</entry>
+					<entry>base64 기준으로 인코딩</entry>
+					<entry>DigestUtil.encodeBase64("Anyframe Java Test")=QW55ZnJhbWUgSmF2YSBUZXN0</entry>
+					<entry></entry>
+				</row>
+				<row>
+					<entry><emphasis role="bold">decodeBase64</emphasis>(String str)</entry>
+					<entry>base64 기준으로 디코딩</entry>
+					<entry>DigestUtil.encodeBase64("QW55ZnJhbWUgSmF2YSBUZXN0")=Anyframe Java Test</entry>
+					<entry></entry>
+				</row>
+				<row>
+					<entry><emphasis role="bold">encodePassword</emphasis>(String password, String algorithm)</entry>
+					<entry>해당하는 알고리즘에 맞게 문자열 변환</entry>
+					<entry>DigestUtil.encodePassword("test1234", "SHA")=9bc34549d565d9505b287de0cd20ac77be1d3f2c</entry>
+					<entry></entry>
+				</row>
+				<row>
+					<entry><emphasis role="bold">convertStringCharset</emphasis>(String str, String charset)</entry>
+					<entry>입력받은 문자열의 character set을 변환하여 반환</entry>
+					<entry>DigestUtil.convertStringCharset("Anyframe Java Test", "US-ASCII")</entry>
+					<entry>since core 1.5.0</entry>
+				</row>
+			</tbody>
+		</tgroup>
+	</informaltable>
+</chapter>

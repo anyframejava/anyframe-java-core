@@ -1,0 +1,82 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<configuration scan="true" scanPeriod="60 seconds">
+
+	<property file="src/test/resources/logback-db.properties" />
+
+<!--	<statusListener class="ch.qos.logback.core.status.OnConsoleStatusListener" />-->
+
+	<statusListener class="org.anyframe.logback.statuslistener.OnErrorStatusListener" />
+
+	<appender name="DB" class="ch.qos.logback.classic.db.DBAppender">
+		<connectionSource
+			class="ch.qos.logback.core.db.DriverManagerConnectionSource">
+			<driverClass>${driver}</driverClass>
+			<url>${url}</url>
+			<user>${username}</user>
+			<password>${password}</password>
+		</connectionSource>
+		<encoder>
+			<pattern>%-5level - %msg %n</pattern>
+		</encoder>
+	</appender>
+	
+	<logger name="DB" level="DEBUG" additivity="false">
+		<appender-ref ref="DB" />
+	</logger>
+	
+	<appender name="DATASOURCE-DB" class="ch.qos.logback.classic.db.DBAppender">
+		<connectionSource class="ch.qos.logback.core.db.DataSourceConnectionSource">
+			<dataSource class="org.apache.commons.dbcp.BasicDataSource">
+				<driverClassName>${driver}</driverClassName>
+				<url>${url}</url>
+				<username>${username}</username>
+				<password>${password}</password>
+			</dataSource>
+		</connectionSource>
+	</appender>
+
+	<logger name="datasourceDB" level="DEBUG" additivity="false">
+		<appender-ref ref="DATASOURCE-DB" />
+	</logger>
+
+	<!-- this appender using custom dbNameResolver -->
+	<appender name="CUSTOM-DB" class="ch.qos.logback.classic.db.DBAppender">
+		<connectionSource
+			class="ch.qos.logback.core.db.DriverManagerConnectionSource">
+			<driverClass>${driver}</driverClass>
+			<url>${url}</url>
+			<user>${username}</user>
+			<password>${password}</password>
+		</connectionSource>
+
+		<dbNameResolver class="org.anyframe.logback.appender.db.MyDBNameResolver" />
+	</appender>
+
+	<logger name="customDB" level="DEBUG" additivity="false">
+		<appender-ref ref="CUSTOM-DB" />
+	</logger>
+
+	<appender name="ASYNC" class="ch.qos.logback.classic.AsyncAppender">
+		<appender-ref ref="DB" />
+		<!--To use AsyncAppender with DBAppender, the includeCallerData attribute must be set to true.
+		    Because DBAppender internally uses callerData which contains stackTrace information. 
+		    Until 1.07, the problem didn't not fixed.  -->
+		<includeCallerData>true</includeCallerData>
+	</appender>
+
+	<logger name="asyncDB" level="DEBUG" additivity="false">
+		<appender-ref ref="ASYNC" />
+	</logger>
+
+	<appender name="console" class="ch.qos.logback.core.ConsoleAppender">
+		<encoder>
+			<pattern>[%-5level] %d{yyyy-MM-dd HH:mm:ss} %logger %n%msg%n
+			</pattern>
+		</encoder>
+	</appender>
+
+	<root level="DEBUG">
+		<appender-ref ref="console" />
+	</root>
+
+</configuration>

@@ -1,0 +1,69 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<queryservice xmlns="http://www.anyframejava.org/schema/query/mapping" 
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" 
+	xsi:schemaLocation="http://www.anyframejava.org/schema/query/mapping http://www.anyframejava.org/schema/query/mapping/anyframe-query-mapping-1.0.xsd ">
+
+  <queries>
+	<query id="createPostComment">
+		<statement>
+		<![CDATA[
+			INSERT INTO POST_COMMENT ( 			
+				COMMENT_ID, 
+				COMMENT_CONTENT, 
+				CREATE_DTTM, 
+				CREATE_ID, 
+				UPDATE_DTTM, 
+				UPDATE_ID,
+				POST_ID) 
+			VALUES (:vo.commentId, 
+				:vo.commentContent, 
+				:vo.createDttm, 
+				:vo.createId, 
+				:vo.updateDttm,
+				:vo.updateId,
+				:vo.postId)
+		]]>
+		</statement>
+	</query>
+		
+	<query id="updatePostComment">
+		<statement>
+		<![CDATA[
+			UPDATE POST_COMMENT
+			SET 
+				COMMENT_CONTENT = :vo.commentContent, 
+				UPDATE_DTTM = :vo.updateDttm, 
+				UPDATE_ID = :vo.updateId
+			WHERE
+				COMMENT_ID = :vo.commentId 
+		]]>
+		</statement>
+	</query>
+	
+	<query id="removePostComment">
+		<statement>
+		<![CDATA[
+			DELETE FROM POST_COMMENT 
+			WHERE 
+				COMMENT_ID = :vo.commentId
+		]]>
+		</statement>
+	</query>
+	
+	<query id="findPostCommentList" isDynamic="true">
+		<statement>
+		<![CDATA[
+			SELECT 
+				postComment.COMMENT_ID, postComment.COMMENT_CONTENT, postComment.CREATE_DTTM, postComment.CREATE_ID, postComment.POST_ID, postComment.UPDATE_DTTM, postComment.UPDATE_ID 
+			FROM POST_COMMENT postComment
+			WHERE 		
+					postComment.POST_ID = :postId
+			order by							
+					postComment.CREATE_DTTM
+		]]>
+		</statement>
+		<result class="${packageName}.comment.domain.PostComment">		
+		</result>				
+	</query>
+  </queries>
+</queryservice>
