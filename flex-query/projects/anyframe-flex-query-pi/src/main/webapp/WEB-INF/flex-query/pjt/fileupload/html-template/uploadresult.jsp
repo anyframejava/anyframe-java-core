@@ -1,1 +1,0 @@
-<%@ page contentType="text/html; charset=euc-kr" %><%@ page import="${package}.domain.Attached" %><%Attached attached = (Attached)request.getAttribute("attached");%><%=attached.getId()%>

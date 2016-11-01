@@ -150,7 +150,8 @@ public class DefaultDynamicSqlParameterSource extends MapSqlParameterSource
 		return strArray;
 	}
 
-	private final Map<String, Integer> sqlTypes = new HashMap<String, Integer>();
+// {jira:AF-376|anyframe jira2}
+//		private final Map<String, Integer> sqlTypes = new HashMap<String, Integer>();
 
 	/**
 	 * Register a SQL type for the given parameter.
@@ -161,7 +162,9 @@ public class DefaultDynamicSqlParameterSource extends MapSqlParameterSource
 	 *            the SQL type of the parameter
 	 */
 	public void addSqlType(String paramName, int sqlType) {
-		this.sqlTypes.put(paramName, new Integer(sqlType));
+// {jira:AF-376|anyframe jira2}
+//		this.sqlTypes.put(paramName, new Integer(sqlType));
+		registerSqlType(paramName, new Integer(sqlType));
 	}
 
 	/**
@@ -173,7 +176,14 @@ public class DefaultDynamicSqlParameterSource extends MapSqlParameterSource
 	 *         not registered
 	 */
 	public int getSqlType(String paramName) {
-		Integer sqlType = this.sqlTypes.get(paramName);
+// {jira:AF-376|anyframe jira2}
+//		Integer sqlType = this.sqlTypes.get(paramName);
+//		if (sqlType != null) {
+//			return sqlType.intValue();
+//		} else {
+//			return SqlTypeValue.TYPE_UNKNOWN;
+//		}
+		Integer sqlType = super.getSqlType(paramName);
 		if (sqlType != null) {
 			return sqlType.intValue();
 		} else {
