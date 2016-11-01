@@ -1,5 +1,5 @@
 /*
- * Copyright 2008-2011 the original author or authors.
+ * Copyright 2008-2012 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -18,10 +18,11 @@ package org.anyframe.plugin.flex.query.moviefinder.service.impl;
 import java.util.List;
 
 import javax.inject.Inject;
+import javax.inject.Named;
 
 import org.anyframe.plugin.flex.query.domain.Movie;
 import org.anyframe.query.QueryService;
-import org.anyframe.query.dao.AbstractDao;
+import org.anyframe.query.dao.QueryServiceDaoSupport;
 import org.springframework.stereotype.Repository;
 
 /**
@@ -30,35 +31,37 @@ import org.springframework.stereotype.Repository;
  * @author Jonghoon Kim
  */
 @Repository("flexQueryMovieDao")
-public class MovieDao extends AbstractDao {
+public class MovieDao extends QueryServiceDaoSupport {
 
 	@Inject
+	@Named("queryService")
 	public void setQueryService(QueryService queryService) {
 		super.setQueryService(queryService);
 	}
 
 	public void create(Movie movie) throws Exception {
 		movie.setMovieId("MV-" + System.currentTimeMillis());
-		create("FlexQueryMovie", movie);
+		create("createFlexQueryMovie", movie);
 	}
 
 	public void remove(String movieId) throws Exception {
 		Movie movie = new Movie();
 		movie.setMovieId(movieId);
-		remove("FlexQueryMovie", movie);
+		remove("removeFlexQueryMovie", movie);
 	}
 
 	public void update(Movie movie) throws Exception {
-		update("FlexQueryMovie", movie);
+		update("updateFlexQueryMovie", movie);
 	}
 
 	public Movie get(String movieId) throws Exception {
 		Movie movie = new Movie();
 		movie.setMovieId(movieId);
-		return (Movie) findByPk("FlexQueryMovie", movie);
+		return (Movie) findByPk("findFlexQueryMovieByPk", movie);
 	}
 
-	public List getList(Movie movie) throws Exception {
-		return (List) this.findList("FlexQueryMovie", movie);
+	@SuppressWarnings("unchecked")
+	public List<Movie> getList(Movie movie) throws Exception {
+		return (List) this.findList("findFlexQueryMovieList", movie);
 	}
 }

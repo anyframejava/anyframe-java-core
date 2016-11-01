@@ -1,5 +1,5 @@
 /*
- * Copyright 2008-2011 the original author or authors.
+ * Copyright 2008-2012 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -39,7 +39,7 @@ public class MovieFinderImpl implements MovieFinder {
 	@Named("flexQueryMovieDao")
 	private MovieDao movieDao;
 
-	public List getList(Movie movie) throws Exception {
-		return this.movieDao.getList(movie);
+	public List<Movie> getList(Movie movie) throws Exception {
+		return (List<Movie>)this.movieDao.getList(movie);
 	}
 }

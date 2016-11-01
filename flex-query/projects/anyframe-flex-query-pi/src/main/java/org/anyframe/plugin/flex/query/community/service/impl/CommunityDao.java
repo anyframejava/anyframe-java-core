@@ -1,5 +1,5 @@
 /*
- * Copyright 2002-2009 the original author or authors.
+ * Copyright 2002-2012 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -26,20 +26,16 @@ import org.anyframe.pagination.Page;
 import org.anyframe.plugin.flex.query.domain.Community;
 import org.anyframe.plugin.flex.query.domain.SearchVO;
 import org.anyframe.query.QueryService;
-import org.anyframe.query.dao.AbstractDao;
+import org.anyframe.query.dao.QueryServiceDaoSupport;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Repository;
 
 @Repository("communityDao")
-public class CommunityDao extends AbstractDao{
+public class CommunityDao extends QueryServiceDaoSupport{
 	
 	@Inject
 	public void setQueryService(QueryService queryService) {
 		super.setQueryService(queryService);
-		super.setCreateId("flex.create");
-		super.setUpdateId("flex.update");
-		super.setRemoveId("flex.remove");
-		super.setFindPrefix("flex.find");
 	}
 	
 	
@@ -50,26 +46,27 @@ public class CommunityDao extends AbstractDao{
 	int pageUnit;
 
 	public int create(Community community) throws Exception {
-		return create("Community", community);
+		return create("flex.createCommunity", community);
 	}
 
+	@SuppressWarnings("unchecked")
 	public List getList(SearchVO searchVO) throws Exception {
         
-        return (List) this.findList(searchVO.getTableName(), searchVO);
+        return (List) this.findList("flex.findCommunityList", searchVO);
 	}
 
 	public Page getPagingList(SearchVO searchVO) throws Exception {
 		int pageIndex = searchVO.getPageIndex();
 
-		return this.findListWithPaging(searchVO.getTableName(), searchVO,
+		return this.findListWithPaging("flex.findCommunityList", searchVO,
 				pageIndex, pageSize, pageUnit);
 	}
 
 	public int remove(Community community) throws Exception {
-		return remove("Community", community);
+		return remove("flex.removeCommunity", community);
 	}
 
-	public Map saveAll(ArrayList arrayList) throws Exception {
+	public Map<String, Integer> saveAll(ArrayList<Community> arrayList) throws Exception {
 		Map<String, Integer> resultCount = new HashMap<String, Integer>();
 		
 		int createRowCount = 0;
@@ -93,6 +90,6 @@ public class CommunityDao extends AbstractDao{
 	}
 
 	public int update(Community community) throws Exception {
-		return update("Community", community);
+		return update("flex.updateCommunity", community);
 	}
 }

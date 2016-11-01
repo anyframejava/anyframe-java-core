@@ -31,6 +31,16 @@
 				WHERE movie_id = :vo.movieId
 			</statement>
 		</query>
+		
+		<query id="findFlexQueryMovieByPk">
+			<statement>
+				SELECT movie.movie_id, movie.title, movie.director, genre.genre_id as genre_id, genre.name as genre_name, movie.actors, movie.release_date, movie.now_playing, movie.runtime, movie.ticket_price, movie.file_ref_id
+				FROM FLEX_MOVIE movie, FLEX_GENRE genre
+				WHERE movie.genre_id = genre.genre_id
+				  AND movie.movie_id = :vo.movieId 
+			</statement>
+			<result class="org.anyframe.plugin.flex.query.domain.Movie"/>
+		</query>
 
 		<query id="findFlexQueryMovieList">
 			<statement>

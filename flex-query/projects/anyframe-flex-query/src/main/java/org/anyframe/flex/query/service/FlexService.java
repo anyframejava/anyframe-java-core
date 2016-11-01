@@ -1,5 +1,5 @@
 /*
- * Copyright 2002-2009 the original author or authors.
+ * Copyright 2002-2012 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -40,6 +40,7 @@ public interface FlexService {
 	 * @throws Exception
 	 *		if there is any problem executing the query
      */ 
+	@SuppressWarnings("unchecked")
 	public List<DataSet> findList(List<DataSet> dataSetList, Map param) throws Exception ;
 
 	/**
@@ -52,6 +53,7 @@ public interface FlexService {
 	 * @throws Exception
 	 *		if there is any problem executing the query
      */ 
+	@SuppressWarnings("unchecked")
 	public List<DataSet> findPagingList(List<DataSet> dataSetList, Map param) throws Exception ;
 	
 	/**
@@ -63,6 +65,7 @@ public interface FlexService {
 	 * @throws Exception
 	 *		if there is any problem executing the query
      */   
+	@SuppressWarnings("unchecked")
 	public Map saveAll(List<DataSet> dataSetList, Map param) throws Exception ;
 	
 	/**
@@ -74,6 +77,7 @@ public interface FlexService {
 	 * @throws Exception
 	 *		if there is any problem executing the query
 	 */
+	@SuppressWarnings("unchecked")
 	public Map updateRows(List<DataSet> dataSetList, Map param) throws Exception ;
 	
 	/**
@@ -85,6 +89,7 @@ public interface FlexService {
 	 * @throws Exception
 	 *		if there is any problem executing the query
 	 */	
+	@SuppressWarnings("unchecked")
 	public Map removeRows(List<DataSet> dataSetList, Map param) throws Exception;
 	
 	/**
@@ -96,6 +101,7 @@ public interface FlexService {
 	 * @throws Exception
 	 *		if there is any problem executing the query
 	 */
+	@SuppressWarnings("unchecked")
 	public Map insertRows(List<DataSet> dataSetList, Map param) throws Exception;
 	
 	/**
@@ -108,6 +114,7 @@ public interface FlexService {
 	 * @throws Exception
 	 *		if there is any problem executing the query
 	 */
+	@SuppressWarnings("unchecked")
 	public Map doService(List<DataSet> dataSetList, Map param) throws Exception;
 	
 	/**
@@ -122,6 +129,7 @@ public interface FlexService {
 	 *		if there is any problem executing the
 	 *		query
      */  
+	@SuppressWarnings("unchecked")
 	public Map find(String queryId, DataRow dataRow, Map param )throws Exception;
 	
 	/**
@@ -135,7 +143,8 @@ public interface FlexService {
 	 * @throws Exception
 	 *		if there is any problem executing the
 	 *		query
-     */     
+     */   
+	@SuppressWarnings("unchecked")
 	public Map create(String queryId, DataRow dataRow, Map param )throws Exception;
 	
 	/**
@@ -149,7 +158,8 @@ public interface FlexService {
 	 * @throws Exception
 	 *		if there is any problem executing the
 	 *		query
-     */    
+     */  
+	@SuppressWarnings("unchecked")
 	public Map update(String queryId, DataRow dataRow, Map param )throws Exception;
 	
 	/**
@@ -163,6 +173,7 @@ public interface FlexService {
 	 * @throws Exception
 	 *		if there is any problem executing the
 	 *		query
-     */     
+     */   
+	@SuppressWarnings("unchecked")
 	public Map remove(String queryId, DataRow dataRow, Map param )throws Exception;
 }

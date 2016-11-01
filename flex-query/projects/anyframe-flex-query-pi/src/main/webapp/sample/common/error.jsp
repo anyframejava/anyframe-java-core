@@ -3,7 +3,6 @@
 <%@ include file="top.jsp"%>
 	</div>
     <hr />
-    
     <div id="container">
     	<div class="cont_top">
         	<h2>Fail Message</h2>
@@ -13,14 +12,14 @@
     			<c:if test="${not empty exception.message}">
 		        	<c:choose>
 						<c:when test="${exception.message == 'Occurred Error'}">
-							<spring:message code='${exception.cause.message}'/> 
+							${exception.cause.message}
 						</c:when>
 						<c:otherwise>
-							<spring:message code='${exception.message}'/> 
+							${exception.message} 
 						</c:otherwise>
 					</c:choose>
 				</c:if>
-				<c:if test="${empty exception.message}">Occurred Error</c:if>
+				<c:if test="${empty exception.message}"><spring:message code='error.common'/></c:if>
 			</p>
         </div>
 	</div>

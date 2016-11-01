@@ -1,19 +1,35 @@
+/*
+ * Copyright 2008-2012 the original author or authors.
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *      http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
 package org.anyframe.plugin.interceptor;
 
 import java.io.File;
 import java.io.FileInputStream;
 
 import org.apache.commons.collections.ExtendedProperties;
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
 import org.apache.tools.ant.Project;
 import org.apache.tools.ant.Target;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import flex.ant.MxmlcTask;
 
 public class FlexPluginInterceptor {
 
-	protected final Log log = LogFactory.getLog(getClass());
+	protected final Logger log = LoggerFactory.getLogger(getClass());
+	
 	
 	public void postInstall(String baseDir, File pluginJarFile)
 			throws Exception {
@@ -30,8 +46,8 @@ public class FlexPluginInterceptor {
 			contextRoot  = (String)anyframeProperty.getProperty("project.name");
 			
 			String appRoot = baseDir + "/src/main/webapp";
-			String fdkHome = appRoot + "/WEB-INF/flex/fdk";
-			String serviceName = appRoot + "/WEB-INF/flex/services-config.xml";
+			String fdkHome = appRoot + "/WEB-INF/flex-query/fdk";
+			String serviceName = appRoot + "/WEB-INF/flex-query/services-config.xml";
 			
 			String[] arrFlexSrc = { "chat" , "collaboration", "companymgr", "fileupload", "httpservice", "insync01", 
 					"insync02", "insync03", "insync04", "insync05", "insync06", "jmspush", "moviefinder", "uisample" };
@@ -49,9 +65,9 @@ public class FlexPluginInterceptor {
 			for( int i = 0 ; i < arrFlexSrc.length ; i ++ ){
 				MxmlcTask mxmlcTask = new MxmlcTask();
 				
-				flexSrc = appRoot + "/WEB-INF/flex/pjt/" + arrFlexSrc[i] + "/src";
+				flexSrc = appRoot + "/WEB-INF/flex-query/pjt/" + arrFlexSrc[i] + "/src";
 				mainFileName = flexSrc + "/" + arrMainFileName[i];
-				swfFileName = appRoot + "/flex/"+ arrFlexSrc[i] + "/" + arrSwfFileName[i];
+				swfFileName = appRoot + "/flex-query/"+ arrFlexSrc[i] + "/" + arrSwfFileName[i];
 				
 				Project project = new Project();
 				project.setBasedir(".");
@@ -76,8 +92,7 @@ public class FlexPluginInterceptor {
 		}catch(Exception e){
 			e.printStackTrace();
 			log
-			.warn("Error occurred in postInstall FlexPluginInterceptor. The reason is a '"
-					+ e.getMessage() + "'.");
+			.warn("Error occurred in postInstall FlexPluginInterceptor. The reason is a '{}'.", new Object[]{e.getMessage()});
 		}
 	}
 }

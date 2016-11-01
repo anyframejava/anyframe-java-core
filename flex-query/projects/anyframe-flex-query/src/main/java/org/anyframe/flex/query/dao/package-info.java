@@ -1,5 +1,5 @@
 /*
- * Copyright 2002-2009 the original author or authors.
+ * Copyright 2002-2012 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 /**
- * This interface help to use org.anyframe.query.QueryService more easy. 
+ * This interface help to use org.anyframe.flex.query.dao more easy. 
  * this interface is including method to select, insert, update, delete, and save 
  * to database using DataSet
  * 

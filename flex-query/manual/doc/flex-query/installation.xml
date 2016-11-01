@@ -156,7 +156,7 @@
 	xmlns:flex="http://www.springframework.org/schema/flex"
 	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
 	xsi:schemaLocation="http://www.springframework.org/schema/beans 
-	http://www.springframework.org/schema/beans/spring-beans-3.0.xsd
+	http://www.springframework.org/schema/beans/spring-beans-3.1.xsd
 	http://www.springframework.org/schema/flex 
 	http://www.springframework.org/schema/flex/spring-flex-1.5.xsd">
 	
@@ -210,15 +210,15 @@ public class GenreServiceImpl implements GenreService {
 		로 WYSIWYG Editor, mxml의 자동컴파일, 디버깅등 의 다양한 기능을 제공한다. 본 문서에서는 Flex Builder를 이용해 개발하는 방법에 대해서만 설명한다.  
 		</para>
 		<para>
-		<ulink url="http://www.adobe.com/cfusion/entitlement/index.cfm?e=flex3email">Adobe Flex Builder 4.5 Download</ulink>에서 60일동안 사용가능한
+		<ulink url="http://www.adobe.com/cfusion/entitlement/index.cfm?e=flex3email">Adobe Flex Builder 3 Download</ulink>에서 60일동안 사용가능한
 		Trial버전을 다운 받을 수 있다.
 		</para>
 		<para>
-		Flex Builder 4.5를 처음 실행 하게 되면 아래와 같은 화면을 볼 수 있다. 
+		Flex Builder 3를 처음 실행 하게 되면 아래와 같은 화면을 볼 수 있다. 
 		</para>
 		<mediaobject>
 		<imageobject>
-			<imagedata fileref="../image/flex-query/flex_builder.png" align="center" />
+			<imagedata fileref="../image/flex-query/flex_builder.jpg" align="center" />
 		</imageobject>
 		</mediaobject>
 		<para>
@@ -226,7 +226,7 @@ public class GenreServiceImpl implements GenreService {
 		</para>
 		<mediaobject>
 		<imageobject>
-			<imagedata fileref="../image/flex-query/flex_new_project.png" align="center" />
+			<imagedata fileref="../image/flex-query/flex_new_project.jpg" align="center" />
 		</imageobject>
 		</mediaobject>
 		<para>
@@ -238,7 +238,7 @@ public class GenreServiceImpl implements GenreService {
 		</para>
 		<mediaobject>
 		<imageobject>
-			<imagedata fileref="../image/flex-query/flex_create_project.png" align="center" />
+			<imagedata fileref="../image/flex-query/flex_create_project.jpg" align="center" />
 		</imageobject>
 		</mediaobject>
 		<para>
@@ -253,7 +253,7 @@ public class GenreServiceImpl implements GenreService {
 		</para>
 		<mediaobject>
 		<imageobject>
-			<imagedata fileref="../image/flex-query/flex_server_configuration.png" align="center" />
+			<imagedata fileref="../image/flex-query/flex_server_configuration.jpg" align="center" />
 		</imageobject>
 		</mediaobject>
 		<para>
@@ -262,7 +262,7 @@ public class GenreServiceImpl implements GenreService {
 		</para>
 		<mediaobject>
 		<imageobject>
-			<imagedata fileref="../image/flex-query/flex_build_path.png" align="center" />
+			<imagedata fileref="../image/flex-query/flex_build_path.jpg" align="center" />
 		</imageobject>
 		</mediaobject>
 		<para>
@@ -270,7 +270,7 @@ public class GenreServiceImpl implements GenreService {
 		</para>
 		<mediaobject>
 		<imageobject>
-			<imagedata fileref="../image/flex-query/flex_new_project_complete.png" align="center" />
+			<imagedata fileref="../image/flex-query/flex_new_project_complete.jpg" align="center" />
 		</imageobject>
 		</mediaobject>
 		<para>
@@ -279,7 +279,7 @@ public class GenreServiceImpl implements GenreService {
 		</para>
 		<mediaobject>
 		<imageobject>
-			<imagedata fileref="../image/flex-query/flex_compile.png" align="center" />
+			<imagedata fileref="../image/flex-query/flex_compile.jpg" align="center" />
 		</imageobject>
 		</mediaobject>
 		<para>
@@ -288,7 +288,7 @@ public class GenreServiceImpl implements GenreService {
 		</para>
 		<mediaobject>
 		<imageobject>
-			<imagedata fileref="../image/flex-query/flex_main_html.png" align="center" />
+			<imagedata fileref="../image/flex-query/flex_main_html.jpg" align="center" />
 		</imageobject>
 		</mediaobject>
 	</section>
@@ -306,10 +306,8 @@ public class GenreServiceImpl implements GenreService {
 			아래는 genreService getList메소드를 호출한 결과를 DataGrid에 바인딩하는 예이다.
 		</para>
 		<programlisting language="xml"><![CDATA[<?xml version="1.0" encoding="utf-8"?>
-<s:Application xmlns:mx="library://ns.adobe.com/flex/mx" layout="vertical" 
-			xmlns:fx="http://ns.adobe.com/mxml/2009"
-			initialize="getList()">
-    <fx:Script>
+<mx:Application xmlns:mx="http://www.adobe.com/2006/mxml" layout="vertical" initialize="getList()">
+    <mx:Script>
             import mx.rpc.events.ResultEvent;
             import mx.collections.ArrayCollection;
 			
@@ -323,18 +321,18 @@ public class GenreServiceImpl implements GenreService {
             private function resultHandler(event:ResultEvent):void{
                 genreList = event.result as ArrayCollection;
             } 
-    </fx:Script>
+    </mx:Script>
 	
     <mx:RemoteObject id="remotingService" destination="genreService">
         <mx:method name="getList" result="resultHandler(event)"/>		
     </mx:RemoteObject>
-	<mx:Array id="columnsInfo">
+   <mx:Array id="columnsInfo">
 		<mx:DataGridColumn dataField="genreId" headerText="GENRE ID" editable="true"/>
 		<mx:DataGridColumn dataField="name" headerText="NAME" editable="true"/>	
 	</mx:Array>
 	
 	<mx:DataGrid id="grdGenre" dataProvider="{genreList}" columns="{columnsInfo}"/>
-</s:Application>]]></programlisting>
+</mx:Application>]]></programlisting>
 		<para>
 			위와 같이 작성 한 후 main.html을 호출 하면 다음과 같은 화면을 볼 수 있다.
 		</para>

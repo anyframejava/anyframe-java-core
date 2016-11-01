@@ -1,5 +1,5 @@
 /*
- * Copyright 2002-2009 the original author or authors.
+ * Copyright 2002-2012 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -23,9 +23,8 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
-public class DataSet extends ArrayList 
- 	implements Externalizable 
-{
+@SuppressWarnings("unchecked")
+public class DataSet extends ArrayList implements Externalizable {
 	public String dataSetName = "";
 	public String selectQueryId = "";
 	public String insertQueryId = "";
@@ -38,48 +37,46 @@ public class DataSet extends ArrayList
 	public int maxPage;
 	public int beginUnitPage;
 	public int endUnitPage;
-	
-	public DataSet()
-    {
-    }
-	
-	public DataSet(List ar) {		
-		for(int i=0; i < ar.size(); i++) {
-			if( ar.get(i) instanceof Map) {
-				DataRow dr = new DataRow((Map)ar.get(i));
+
+	public DataSet() {
+	}
+
+	public DataSet(List ar) {
+		for (int i = 0; i < ar.size(); i++) {
+			if (ar.get(i) instanceof Map) {
+				DataRow dr = new DataRow((Map) ar.get(i));
 				this.add(dr);
 			}
 		}
 	}
-	
-	public void readExternal(ObjectInput in) throws IOException,
-			ClassNotFoundException {
 
-		this.dataSetName = (String)in.readObject();
+	public void readExternal(ObjectInput in) throws IOException, ClassNotFoundException {
 
-		this.selectQueryId = (String)in.readObject();
-		this.insertQueryId = (String)in.readObject();
-		this.updateQueryId = (String)in.readObject();
-		this.deleteQueryId = (String)in.readObject();
-		this.currentPage = (Integer)in.readObject();
-		this.totalCount = (Integer)in.readObject();
-		this.pageunit = (Integer)in.readObject();
-		this.pagesize = (Integer)in.readObject();
-		this.maxPage = (Integer)in.readObject();
-		this.beginUnitPage = (Integer)in.readObject();
-		this.endUnitPage = (Integer)in.readObject();
-		
+		this.dataSetName = (String) in.readObject();
+
+		this.selectQueryId = (String) in.readObject();
+		this.insertQueryId = (String) in.readObject();
+		this.updateQueryId = (String) in.readObject();
+		this.deleteQueryId = (String) in.readObject();
+		this.currentPage = (Integer) in.readObject();
+		this.totalCount = (Integer) in.readObject();
+		this.pageunit = (Integer) in.readObject();
+		this.pagesize = (Integer) in.readObject();
+		this.maxPage = (Integer) in.readObject();
+		this.beginUnitPage = (Integer) in.readObject();
+		this.endUnitPage = (Integer) in.readObject();
+
 		Object value = in.readObject();
-		if(value instanceof List) {
-	    	addAll((List)value);
+		if (value instanceof List) {
+			addAll((List) value);
 		}
 	}
 
 	public void writeExternal(ObjectOutput out) throws IOException {
-		
+
 		out.writeObject(this.dataSetName);
-		
-		out.writeObject(this.selectQueryId);	
+
+		out.writeObject(this.selectQueryId);
 		out.writeObject(this.insertQueryId);
 		out.writeObject(this.updateQueryId);
 		out.writeObject(this.deleteQueryId);
@@ -90,8 +87,8 @@ public class DataSet extends ArrayList
 		out.writeObject(this.maxPage);
 		out.writeObject(this.beginUnitPage);
 		out.writeObject(this.endUnitPage);
-		
-		List value =  new ArrayList();		
+
+		List value = new ArrayList();
 		value.addAll(this.subList(0, this.size()));
 		out.writeObject(value);
 	}

@@ -1,5 +1,5 @@
 /*
- * Copyright 2002-2009 the original author or authors.
+ * Copyright 2002-2012 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -33,9 +33,9 @@ import org.anyframe.query.QueryServiceException;
  * this interface is including method to select, insert, update, delete, and save 
  * to database using DataSet.
  * @author Jonghoon, Kim
- * @author Youngmin Jo
  *
  */
+@SuppressWarnings("unchecked")
 public class FlexDao{
 
 	private QueryService queryService;
@@ -271,7 +271,7 @@ public class FlexDao{
 	 */
 	public int batchExecute(String queryId, DataSet dataSet, Map param) throws QueryServiceException{
 		int dsSize = dataSet.size();
-		List list = new ArrayList(); 
+		List<Object> list = new ArrayList<Object>(); 
 		
 		for(int count = 0 ; count < dsSize ; count++){
 			DataRow dr = (DataRow) dataSet.get(count);

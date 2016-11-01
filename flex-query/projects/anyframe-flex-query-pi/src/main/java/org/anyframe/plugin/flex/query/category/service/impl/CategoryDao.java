@@ -1,5 +1,5 @@
 /*
- * Copyright 2002-2009 the original author or authors.
+ * Copyright 2002-2012 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -27,22 +27,18 @@ import org.anyframe.plugin.flex.query.domain.Category;
 import org.anyframe.plugin.flex.query.domain.Community;
 import org.anyframe.plugin.flex.query.domain.SearchVO;
 import org.anyframe.query.QueryService;
-import org.anyframe.query.dao.AbstractDao;
+import org.anyframe.query.dao.QueryServiceDaoSupport;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Repository;
 
 
 
 @Repository("categoryDao")
-public class CategoryDao extends AbstractDao {
+public class CategoryDao extends QueryServiceDaoSupport {
 	
 	@Inject
 	public void setQueryService(QueryService queryService) {
 		super.setQueryService(queryService);
-		super.setCreateId("flex.create");
-		super.setUpdateId("flex.update");
-		super.setRemoveId("flex.remove");
-		super.setFindPrefix("flex.find");
 	}
 	
 	
@@ -53,26 +49,27 @@ public class CategoryDao extends AbstractDao {
 	int pageUnit;
 
 	public int create(Category category) throws Exception {
-		return create("Category", category);
+		return create("flex.createCategory", category);
 	}
 
+	@SuppressWarnings("unchecked")
 	public List getList(SearchVO searchVO) throws Exception {
         
-        return (List) this.findList(searchVO.getTableName(), searchVO);
+        return (List) this.findList("flex.findCategoryList", searchVO);
 	}
 
 	public Page getPagingList(SearchVO searchVO) throws Exception {
 		int pageIndex = searchVO.getPageIndex();
 
-		return this.findListWithPaging(searchVO.getTableName(), searchVO,
+		return this.findListWithPaging("flex.findCategoryList", searchVO,
 				pageIndex, pageSize, pageUnit);
 	}
 
 	public int remove(Category category) throws Exception {
-		return remove("Category", category);
+		return remove("flex.removeCategory", category);
 	}
 
-	public Map saveAll(ArrayList arrayList) throws Exception {
+	public Map<String, Integer> saveAll(ArrayList<Category> arrayList) throws Exception {
 		Map<String, Integer> resultCount = new HashMap<String, Integer>();
 		
 		int createRowCount = 0;
@@ -96,15 +93,16 @@ public class CategoryDao extends AbstractDao {
 	}
 
 	public int update(Category category) throws Exception {
-		return update("Category", category);
+		return update("flex.updateCategory", category);
 	}
 	
+	@SuppressWarnings("unchecked")
 	public List<Category> getTree(SearchVO searchVO) throws Exception{
-		List<Category> categoryList = (List<Category>) this.findList("CategoryForTree", new Object[]{});
+		List<Category> categoryList = (List<Category>) this.findList("flex.findCategoryForTreeList", new Object[]{});
 		for ( int i = 0 ; i < categoryList.size() ; i ++){
 			Category category = categoryList.get(i);
 			searchVO.setSearchKeyword(category.getCategoryId());
-			List<Community> communityList = (List<Community>) this.findList("CommunityForTree", searchVO);
+			List<Community> communityList = (List<Community>) this.findList("flex.findCommunityForTreeList", searchVO);
 			category.setChildren(communityList);
 		}
 		return categoryList; 

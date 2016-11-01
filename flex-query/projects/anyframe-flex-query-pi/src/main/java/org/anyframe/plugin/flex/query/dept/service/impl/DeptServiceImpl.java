@@ -1,5 +1,5 @@
 /*
- * Copyright 2008-2011 the original author or authors.
+ * Copyright 2008-2012 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -40,6 +40,7 @@ public class DeptServiceImpl implements DeptService {
 	@Named("deptDao")
 	private DeptDao deptDao;
 
+	@SuppressWarnings("unchecked")
 	public List<Dept> getTree(SearchVO searchVO) throws Exception {
 		
 		searchVO.setSearchCondition("Group");
@@ -71,11 +72,11 @@ public class DeptServiceImpl implements DeptService {
 		return deptDao.remove(dept);
 	}
 
-	public Map saveAll(ArrayList arrayList) throws Exception {
+	public Map<String, Integer> saveAll(ArrayList<Dept> arrayList) throws Exception {
 		return deptDao.saveAll(arrayList);
 	}
 	
-	public List getList(SearchVO searchVO) throws Exception{
+	public List<Dept> getList(SearchVO searchVO) throws Exception{
 		return deptDao.getList(searchVO);
 	}
 }

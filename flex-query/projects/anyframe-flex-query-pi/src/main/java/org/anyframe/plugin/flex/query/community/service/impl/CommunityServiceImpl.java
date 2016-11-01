@@ -1,5 +1,5 @@
 /*
- * Copyright 2002-2009 the original author or authors.
+ * Copyright 2002-2012 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -55,11 +55,12 @@ public class CommunityServiceImpl implements CommunityService{
 		return communityDao.remove(community);
 	}
 
-	public Map saveAll(ArrayList arrayList) throws Exception {
+	public Map<String, Integer> saveAll(ArrayList<Community> arrayList) throws Exception {
 		return communityDao.saveAll(arrayList);
 	}
 
-	public List getList(SearchVO searchVO) throws Exception {
+	@SuppressWarnings("unchecked")
+	public List<Community> getList(SearchVO searchVO) throws Exception {
 		return communityDao.getList(searchVO);
 	}
 

@@ -1,13 +1,16 @@
 <beans xmlns="http://www.springframework.org/schema/beans"
 	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-	xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-3.0.xsd">
+	xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-3.1.xsd">
 	<bean id="messageSource"
 		class="org.springframework.context.support.ReloadableResourceBundleMessageSource">
 		<property name="basenames">
 			<list>
 				<value>classpath:message/message-generation</value>
 				<value>classpath:message/message-moviefinder</value>
-				<value>classpath:message/message-converter</value>
+				<!--Add new configuration here-->
+				<!--flex-query-configuration-START-->
+				<value>classpath:message/message-flex</value>
+				<!--flex-query-configuration-END-->
 			</list>
 		</property>
 		<property name="defaultEncoding">

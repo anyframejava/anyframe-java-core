@@ -2,17 +2,19 @@
 <plugin name="flex-query" description="Flex-Query Plugin consists of BlazeDS installation for communicating Flex Client and Server, and libraries and configuration file for integrating Spring to BlazeDS.">
 	<groupId>org.anyframe.plugin</groupId>
 	<artifactId>anyframe-flex-query-pi</artifactId>
-	<version>1.2.0</version>
+	<version>1.2.1</version>
 	<dependent-plugins>
 		<dependent-plugin name="query" version="2.0.0&gt;*" />
 		<dependent-plugin name="fileupload" version="2.0.0&gt;*" />
 	</dependent-plugins>
 	<resources>
 		<resource dir="src/main/java" filtered="true" packaged="true">
-			<include name="**/*.java" />
+			<include name="**/flex/query/**/*.java" />
 		</resource>
 		<resource dir="src/main/resources" filtered="true" packaged="false">
 			<include name="**/*.xml" />
+			<exclude name="**/spring/context-transaction.xml" />
+			<exclude name="**/spring/context-message.xml" />
 		</resource>
 		<resource dir="src/test/java" filtered="true" packaged="true">
 			<include name="**/*.java" />
@@ -20,12 +22,12 @@
 		<resource dir="src/test/resources" filtered="true" packaged="false">
 			<include name="**/*.xml" />
 		</resource>
-		<resource dir="src/main/webapp/flex" filtered="false"
+		<resource dir="src/main/webapp/flex-query" filtered="false"
 			packaged="false">
 			<exclude name="**/**/*.swf" />
 			<include name="**/**/*.*" />
 		</resource>
-		<resource dir="src/main/webapp/flex/uisample/assets" filtered="false"
+		<resource dir="src/main/webapp/flex-query/uisample/assets" filtered="false"
 				packaged="false">
 				<include name="**/**/*.*" />
 		</resource>		
@@ -33,12 +35,12 @@
 			packaged="false">
 			<include name="**/*.jsp" />
 		</resource>
-		<resource dir="src/main/webapp/WEB-INF/flex/pjt" filtered="true"
+		<resource dir="src/main/webapp/WEB-INF/flex-query/pjt" filtered="true"
 			packaged="false">
 			<include name="**/src/**/*.mxml" />
 			<include name="**/src/**/*.as" />
 		</resource>
-		<resource dir="src/main/webapp/WEB-INF/flex" filtered="false"
+		<resource dir="src/main/webapp/WEB-INF/flex-query" filtered="false"
 			packaged="false">
 			<exclude name="**/src/**/*.mxml" />
 			<exclude name="**/src/**/*.as" />
@@ -50,25 +52,26 @@
 	<build>
 		<filesets>
 			<fileset dir="src/main/java" filtered="true" packaged="true">
-				<include name="**/org/anyframe/plugin/flex/query/**/*.java" />
+				<include name="**/flex/query/**/*.java" />
+				<include name="org/anyframe/plugin/common/aspect/LoggingAspect.java" />
 			</fileset>
 			<fileset dir="src/main/resources" filtered="true" packaged="false">
-				<include name="**/spring/*flex*.xml" />
+				<include name="**/spring/flex.xml" />
+				<include name="**/spring/*flex-query*.xml" />
 				<include name="**/spring/context-transaction.xml" />
-				<include name="**/spring/context-jms.xml" />
-				<include name="**/spring/context-scheduling-trigger.xml" />
+				<include name="**/spring/context-message.xml" />
 				<include name="**/sql/**/*-flex-query-*.xml" />
 			</fileset>
 			<fileset dir="src/main/webapp" filtered="false" packaged="false">
 				<include name="**/*.jsp" />
 				<include name="**/*.html" />
 			</fileset>
-			<fileset dir="src/main/webapp/flex" filtered="false"
+			<fileset dir="src/main/webapp/flex-query" filtered="false"
 				packaged="false">
 				<exclude name="**/**/*.swf" />
 				<include name="**/**/*.*" />
 			</fileset>
-			<fileset dir="src/main/webapp/flex/uisample/assets" filtered="false"
+			<fileset dir="src/main/webapp/flex-query/uisample/assets" filtered="false"
 				packaged="false">
 				<include name="**/**/*.*" />
 			</fileset>
@@ -76,16 +79,16 @@
 				packaged="false">
 				<include name="**/web.xml" />
 			</fileset>
-			<fileset dir="src/main/webapp/WEB-INF/flex/fdk" filtered="false"
+			<fileset dir="src/main/webapp/WEB-INF/flex-query/fdk" filtered="false"
 				packaged="false">
 				<include name="**/**/*.*" />
 			</fileset>
-			<fileset dir="src/main/webapp/WEB-INF/flex/pjt" filtered="true"
+			<fileset dir="src/main/webapp/WEB-INF/flex-query/pjt" filtered="true"
 				packaged="false">
 				<include name="**/src/**/*.mxml" />
 				<include name="**/src/**/*.as" />
 			</fileset>
-			<fileset dir="src/main/webapp/WEB-INF/flex" filtered="false"
+			<fileset dir="src/main/webapp/WEB-INF/flex-query" filtered="false"
 				packaged="false">
 				<exclude name="**/src/**/*.mxml" />
 				<exclude name="**/src/**/*.as" />
@@ -106,10 +109,25 @@
 				<version>3.2</version>
 			</dependency>
 			<dependency>
-				<groupId>commons-logging</groupId>
-				<artifactId>commons-logging</artifactId>
-				<version>1.1.1</version>
+				<groupId>org.slf4j</groupId>
+				<artifactId>slf4j-api</artifactId>
+				<version>1.6.4</version>
 			</dependency>
+			<dependency>
+				<groupId>org.slf4j</groupId>
+				<artifactId>slf4j-log4j12</artifactId>
+				<version>1.6.4</version>
+			</dependency>
+			<dependency>
+				<groupId>org.slf4j</groupId>
+				<artifactId>jcl-over-slf4j</artifactId>
+				<version>1.6.4</version>
+			</dependency>
+	        <dependency>
+	            <groupId>log4j</groupId>
+	            <artifactId>log4j</artifactId>
+	            <version>1.2.15</version>
+	        </dependency>
 			<dependency>
 				<groupId>ant</groupId>
 				<artifactId>ant</artifactId>

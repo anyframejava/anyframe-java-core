@@ -1,5 +1,5 @@
 /*
- * Copyright 2008-2011 the original author or authors.
+ * Copyright 2008-2012 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -17,10 +17,11 @@ package org.anyframe.plugin.flex.query.moviefinder.service.impl;
 import java.util.List;
 
 import javax.inject.Inject;
+import javax.inject.Named;
 
 import org.anyframe.plugin.flex.query.domain.Genre;
 import org.anyframe.query.QueryService;
-import org.anyframe.query.dao.AbstractDao;
+import org.anyframe.query.dao.QueryServiceDaoSupport;
 import org.springframework.stereotype.Repository;
 
 /**
@@ -29,16 +30,17 @@ import org.springframework.stereotype.Repository;
  * @author Jonghoon Kim
  */
 @Repository("flexQueryGenreDao")
-public class GenreDao extends AbstractDao {
+public class GenreDao extends QueryServiceDaoSupport {
 
 	@Inject
+	@Named("queryService")
 	public void setQueryService(QueryService queryService) {
 		super.setQueryService(queryService);
 	}
 
 	@SuppressWarnings("unchecked")
 	public List<Genre> getList() throws Exception {
-		return (List<Genre>) this.findList("FlexQueryGenre", new Object[] {});
+		return (List<Genre>) this.findList("findFlexQueryGenreList", new Object[] {});
 	}
 
 }
