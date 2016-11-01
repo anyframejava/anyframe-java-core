@@ -1,5 +1,5 @@
 /*
- * Copyright 2002-2008 the original author or authors.
+ * Copyright 2002-2012 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -17,27 +17,33 @@ package org.anyframe.query.impl.jdbc.generator;
 
 import java.sql.Types;
 
-
 /**
  * MSSQL implements of PagingSQLGenerator
  * 
- * @author Youngmin Jo
+ * @author SoYon Lim
+ * @author JongHoon Kim
  */
 public class MSSQLPagingSQLGenerator extends AbstractPagingSQLGenerator {
+
+	private static final int SEPARATOR_LENGTH = 6;
+
 	public String getPaginationSQL(String originalSql, Object[] originalArgs,
 			int[] originalArgTypes, int pageIndex, int pageSize) {
-		int topNum = pageIndex * pageSize;	
-		
-		originalSql = "SELECT top " + topNum + originalSql.substring(6, originalSql.length());
-		
+		int topNum = pageIndex * pageSize;
+
+		originalSql = originalSql.trim();
+
+		originalSql = "SELECT top " + topNum
+				+ originalSql.substring(SEPARATOR_LENGTH, originalSql.length());
+
 		StringBuffer sql = new StringBuffer(" SELECT * FROM( ");
 		sql.append("SELECT ORIGIN_SQL.*, ROW_NUMBER() ");
 		sql.append("OVER(ORDER BY (select 0)) AS rownum ");
 		sql.append("FROM (");
 		sql.append(originalSql);
 		sql.append(" )ORIGIN_SQL \n" + ")INNER_TABLE \n"
-				+ "WHERE INNER_TABLE.rownum between ? and ?");		
-		
+				+ "WHERE INNER_TABLE.rownum BETWEEN ? AND ?");
+
 		return sql.toString();
 	}
 
@@ -77,7 +83,11 @@ public class MSSQLPagingSQLGenerator extends AbstractPagingSQLGenerator {
 	 * @return generated SQL
 	 */
 	public String getCountSQL(String originalSql) {
-		originalSql = "SELECT top 100 percent " + originalSql.substring(6, originalSql.length());
+
+		originalSql = originalSql.trim();
+
+		originalSql = "SELECT top 100 percent "
+				+ originalSql.substring(SEPARATOR_LENGTH, originalSql.length());
 		StringBuffer sql = new StringBuffer("SELECT count(*) FROM ( ");
 		sql.append(originalSql);
 		sql.append(" )INNER_TABLE ");
