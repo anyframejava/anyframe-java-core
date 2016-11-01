@@ -1,5 +1,5 @@
 /*
- * Copyright 2008-2011 the original author or authors.
+ * Copyright 2008-2012 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -18,7 +18,6 @@ package org.anyframe.plugin.ibatis2.moviefinder.service;
 import java.util.List;
 
 import org.anyframe.plugin.ibatis2.domain.Genre;
-
 
 /**
  * This GenreService class is an Interface class to provide genre list

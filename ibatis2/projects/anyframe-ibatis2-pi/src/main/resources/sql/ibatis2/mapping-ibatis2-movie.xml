@@ -11,7 +11,7 @@
 		<result property="title" column="title" />
 		<result property="director" column="director" />
 		<result property="genre" resultMap="Genre.genreResult" />
-		<result property="releaseDate" column="release_date" />
+		<result property="releaseDate" column="release_date" javaType="java.sql.Date" />
 		<result property="ticketPrice" column="ticket_price" />
 		<result property="actors" column="actors" />
 		<result property="runtime" column="runtime" />
@@ -22,10 +22,10 @@
 	<insert id="insertMovie" parameterClass="Movie">
 		INSERT INTO MOVIE
 		(movie_id, title, director, genre_id, actors, runtime, release_date,
-		ticket_price, now_playing, poster_file)
+		ticket_price, now_playing)
 		VALUES (#movieId#, #title#,
 		#director#, #genre.genreId#, #actors#, #runtime#, #releaseDate#,
-		#ticketPrice#, #nowPlaying#, #posterFile#)
+		#ticketPrice#, #nowPlaying#)
      </insert>
 	
 	<update id="updateMovie" parameterClass="Movie">

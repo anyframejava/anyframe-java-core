@@ -1,5 +1,5 @@
 /*
- * Copyright 2008-2011 the original author or authors.
+ * Copyright 2008-2012 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -66,9 +66,8 @@ public class MovieController {
 	}
 
 	@RequestMapping(params = "method=create")
-	public String create(
-			@Valid Movie movie, BindingResult results, SessionStatus status,
-			HttpSession session) throws Exception {
+	public String create(@Valid Movie movie, BindingResult results,
+			SessionStatus status, HttpSession session) throws Exception {
 
 		if (results.hasErrors())
 			return "ibatis2/moviefinder/movie/form";

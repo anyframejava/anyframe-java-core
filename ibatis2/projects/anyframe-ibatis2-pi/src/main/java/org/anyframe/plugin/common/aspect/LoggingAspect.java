@@ -1,5 +1,5 @@
 /*
- * Copyright 2008-2011 the original author or authors.
+ * Copyright 2008-2012 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -15,12 +15,11 @@
  */
 package org.anyframe.plugin.common.aspect;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
 import org.aspectj.lang.JoinPoint;
 import org.aspectj.lang.annotation.Aspect;
 import org.aspectj.lang.annotation.Before;
-import org.aspectj.lang.annotation.Pointcut;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
 
 /**
@@ -33,11 +32,9 @@ import org.springframework.stereotype.Service;
 @Service
 public class LoggingAspect {
 
-	@Pointcut("execution(* org.anyframe.plugin..*Impl.*(..)) || execution(* org.anyframe.mip.query..*MiPServiceImpl.*(..))")
-	public void serviceMethod() {
-	}
-
-	@Before("serviceMethod()")
+	@Before("execution(* org.anyframe.plugin..*Impl.*(..)) "
+			//Add new configuration here
+			)
 	public void beforeLogging(JoinPoint thisJoinPoint) {
 		Class<? extends Object> clazz = thisJoinPoint.getTarget().getClass();
 		String methodName = thisJoinPoint.getSignature().getName();
@@ -58,19 +55,10 @@ public class LoggingAspect {
 		if (i == 0) {
 			argValueBuf.append("No arguments\n");
 		}
-
-		StringBuilder messageBuf = new StringBuilder();
-		messageBuf.append("before executing " + methodName + "("
-				+ argBuf.toString() + ") method");
-		messageBuf
-				.append("\n-------------------------------------------------------------------------------\n");
-		messageBuf.append(argValueBuf.toString());
-		messageBuf
-				.append("-------------------------------------------------------------------------------");
-
-		Log logger = LogFactory.getLog(clazz);
-		if (logger.isDebugEnabled()) {
-			logger.debug(messageBuf.toString());
-		}
+		
+		Logger logger = LoggerFactory.getLogger(clazz);
+		logger.debug(
+				"before executing {} ({}) method \n-------------------------------------------------------------------------------\n {} -------------------------------------------------------------------------------",
+				new Object[]{methodName, argBuf.toString(), argValueBuf.toString()});
 	}
 }
