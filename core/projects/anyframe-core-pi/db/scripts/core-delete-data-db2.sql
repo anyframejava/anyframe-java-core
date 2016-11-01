@@ -1,4 +1,0 @@
-DROP TABLE MOVIE;
-DROP TABLE GENRE;
-
-commit;
