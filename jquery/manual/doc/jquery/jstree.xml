@@ -1,0 +1,300 @@
+<chapter id="jquery_jstree">
+	<title>jstree</title>
+	<para>
+		jstree는 계층적으로 조직된 데이타를 tree 형태로 보여주기 위해 제공되는 jQuery 기반의 오픈소스 UI 컴포넌트이다.
+	</para>
+	<para>
+		jsTree is a javascript based, cross browser tree component. It is packaged as a jQuery plugin(<ulink url="http://www.jstree.com">http://www.jstree.com</ulink>)
+	</para> 
+	<section id="jquery_jstree_sec001">
+		<title>jsTree의 활용</title>
+		<para>jstree는 0.9.9a 이후 1.0-rc3로 업그레이드 되면서 일부 api 및 사용법이 변경되었다. 여기서는 1.0-rc3 버전을 기준으로 설명한다.</para>
+		<para>jstree는 크게 html, json, xml 방식의 data loading 방식을 제공하며, 여기서는 html 방식을 제공한다. html은 JSTL을 사용하여 다음과 같이 표시 할 수 있다.</para>
+		<programlisting><![CDATA[<!-- start of tree -->
+<div id="tree">
+	<span>listNode</span>
+	<ul>
+	<li id="ROOT" rel="root">
+		<a href='#'>ROOT</a>
+			<c:set var="prevDepth" value="-1"/>
+			<c:forEach var="node" items="${treeList}">
+				<c:if test="${node.depth > prevDepth}">
+				<ul>
+				</c:if>
+				<c:if test="${prevDepth > node.depth}">
+					<c:forEach begin="${node.depth}" end="${prevDepth - 1}" step="1">
+					</ul></li>
+					</c:forEach>
+				</c:if>
+				<li id="${node.nodeId}" parentId="${node.parentId}" depth="${node.depth}" rel="${node.type}">
+					<a href='#'>${node.nodeName}</a>
+				<c:if test="${node.hasChild == 0}">
+				</li>
+				</c:if>
+				<c:set var="prevDepth" value="${node.depth}"/>
+			</c:forEach>
+		</li>
+    </ul>
+</div>
+<!-- end of tree -->]]></programlisting>
+		<para>위와 같은 html 트리 관련 jQuery 구현코드는 아래와 같다.</para>
+		<programlisting><![CDATA[// tree definition
+$(document).ready(function() {
+
+	$('#${treeId}').jstree({
+   		'plugins' : ["themes","html_data","ui","crrm","search","types","hotkeys","contextmenu"], //,"dnd"  ,"html_data" , 'checkbox', "cookies", 
+   		'themes' : {
+   			'theme' : 'default',
+   			'dots' : false,
+   			'icons' : true
+		},
+		'contextmenu' : {
+			'items' : createContextMenu
+		},
+		'search' : {
+			'case_insensitive' : true
+		},
+		'types' : {
+			'valid_children' : ["root"],
+			'types' : {
+				'CA' : {},
+				'CO' : {// change icon for community
+					'icon' : {'image' : '<c:url value="/sample/images/tree_types/leaficons.png"/>'}
+				}
+			}
+		},
+		'core' : {
+			'initially_open' : ['ROOT'],
+			'animation' : 0
+		}
+	}).bind("select_node.jstree", function (e, data) { // event handling for node select
+		logger.log('select_node:' + data.rslt.obj.attr("id"));
+		if(data.rslt.obj.attr('id') == 'ROOT') { // Root is selected
+			logger.log('root Selected');
+			_currentNodeType = 'ROOT';
+			_currentNodeId = 'ROOT';
+			$tabs.tabs('select', '#tabs-0');
+		}else if(data.rslt.obj.attr('rel') == 'CA') { // Category is selected
+			logger.log('category Selected');
+			_currentNodeType = data.rslt.obj.attr('rel');
+			_currentNodeId = data.rslt.obj.attr('id');
+			// commuity list load
+			$.get("<c:url value='/jqueryCategory.do?method=get'/>", {'categoryId' : data.rslt.obj.attr('id')}, function(r) {
+				addTab(r.category.categoryName, data.rslt.obj.attr('id'));
+			});
+		}else if(data.rslt.obj.attr('rel') == 'CO'){ // Community is selected
+			logger.log('community Selected');
+			_currentNodeType = data.rslt.obj.attr('rel');
+			_currentNodeId = data.rslt.obj.attr('id');
+			// community's board list load
+			$.get("<c:url value='/jqueryCommunity.do?method=get'/>", {'communityId' : data.rslt.obj.attr('id')}, function(r) {
+				addTab(r.community.communityName, data.rslt.obj.attr('id'));
+			});
+		}
+		$('#community').val(data.rslt.obj.attr('id'));		
+	}).bind("remove.jstree", function(e, data) { // event handling for node delete
+		data.rslt.obj.each(function() {
+			if($(data.rslt.obj).attr("rel") == 'CO') { // for community
+				logger.log('community removed:' + $(data.rslt.obj).attr("id"));
+				$.ajax({
+					async : false,
+					type : 'POST',
+					url : '<c:url value="/jqueryCommunity.do?method=remove"/>',
+					data : {
+						"communityId" : $(data.rslt.obj).attr("id")
+					},
+					success : function(r) {
+						logger.log('111');
+						data.inst.refresh();
+						logger.log('222');
+						$tabs.tabs('remove', '#tabs-' + $(data.rslt.obj).attr("id"));
+						logger.log('333');
+						$("#community option[value='" + $(data.rslt.obj).attr("id") + "']").remove();
+						logger.log('444');
+					},
+					error : function() {
+						$.jstree.rollback(data.rlbk);
+					}
+				});
+			}else if($(data.rslt.obj).attr("rel") == 'CA'){ // for category
+				$.ajax({
+					async : false,
+					type : 'POST',
+					url : '<c:url value="/jqueryCategory.do?method=remove"/>',
+					data : {
+						"categoryId" : $(data.rslt.obj).attr("id")
+					},
+					success : function(r) {
+						data.inst.refresh();
+						$tabs.tabs('remove', '#tabs-' + $(data.rslt.obj).attr("id"));
+					},
+					error : function() {
+						$.jstree.rollback(data.rlbk);
+					}
+				});
+			}
+		});
+	});
+
+	// tree search event handler for button click case
+	$('#treeSearch').click(function(e) {
+		$('#${treeId}').jstree('search', $('#searchKeyword').val());
+	});
+
+	// tree search event handler for enter key down case
+	$('#searchKeyword').keydown(function(e) {
+		if(e.keyCode == '13') {
+			$('#${treeId}').jstree('search', $('#searchKeyword').val());
+			return false;
+		}
+	});
+
+});]]></programlisting>
+		<para>트리의 노드 타입에 따른 컨텍스트 메뉴 구성은 다음과 같이 구현한다.</para>
+		<programlisting><![CDATA[/**
+ * context menu generate for tree
+ */
+function createContextMenu(node) {
+
+	var default_object = {
+		'create' : {},
+		'edit' : {},
+		'remove' : {}
+	};
+	if(node.attr('id') == 'ROOT') {
+		default_object = {
+			create : {
+				label : '<spring:message code="category.context.add" />',
+				action : function(obj) {
+					logger.log('create category : ' + obj.attr('id'));
+					openCategoryForm(obj, 'create');
+				}
+			},
+			edit : false,
+			remove : false
+		};
+	}else if(node.attr('rel') == 'CA') {
+		default_object = {
+			create : {
+				label : '<spring:message code="community.context.add" />',
+				action : function(obj) {
+					logger.log('create community : ' + obj.attr('id'));
+					openCommunityForm(obj, 'create');
+				}
+			},
+			edit : {
+				label : '<spring:message code="category.context.edit" />',
+				action : function(obj) {
+					logger.log('edit category : ' + obj.attr('id'));
+					openCategoryForm(obj, 'edit');
+				}
+			},
+			remove : {
+				label : '<spring:message code="category.context.delete" />',
+				_disabled : node.children('ul').length > 0 ? true : false,
+				action : function(obj) {
+					logger.log('remove category : ' + obj.attr('id'));
+					if(this.is_selected(obj)) { 
+						this.remove(); 
+					} else { 
+						this.remove(obj); 
+					} 
+				}
+			}
+		};
+	}else if(node.attr('rel') == 'CO') {
+		default_object = {
+			create : false,
+			edit : {
+				label : '<spring:message code="community.context.edit" />',
+				action : function(obj) {
+					logger.log('edit community : ' + obj.attr('id'));
+					openCommunityForm(obj, 'edit');
+				}
+			},
+			remove : {
+				label : '<spring:message code="community.context.delete" />',
+				action : function(obj) {
+					logger.log('remove community : ' + obj.attr('id'));
+					if(this.is_selected(obj)) { 
+						logger.log('try remove 1: ' + obj.attr('id'));
+						this.remove(); 
+					} else { 
+						logger.log('try remove 2: ' + obj.attr('id'));
+						this.remove(obj); 
+					} 
+				}
+			}
+		};
+	}
+	return default_object;
+}]]></programlisting>
+		<para>트리 검색 기능 구현은 다음과 같이 한다.</para>
+		<programlisting><![CDATA[// tree definition
+$(document).ready(function() {
+
+	// tree search event handler for button click case
+	$('#treeSearch').click(function(e) {
+		$('#${treeId}').jstree('search', $('#searchKeyword').val());
+	});
+
+	// tree search event handler for enter key down case
+	$('#searchKeyword').keydown(function(e) {
+		if(e.keyCode == '13') {
+			$('#${treeId}').jstree('search', $('#searchKeyword').val());
+			return false;
+		}
+	});
+});]]></programlisting>
+		<note>
+			<title>※ Tree 유틸을 사용한 데이타의 정렬</title>
+			<para>트리 형식으로 표시할 데이타를 표시 순서대로 정렬하기 위해서, Tree와 TreeNode 유틸클래스를 활용하여 정렬하는 것이 가능하다.(DB 에서 가져온 1차 데이타는 depth와 display order 순으로 정렬되어 있어야 함.)</para>
+			<para>다음은 카테고리와 커뮤니티의 데이타를 각각 가져와서 tree 형태로 정렬시킨 CommunityServiceImpl 클래스의 getTreeList() 메소드의 구현 코드이다.</para>
+			<programlisting><![CDATA[public List<Map<String, String>> getTreeList() throws Exception {
+	List<Map<String, String>> trees = new ArrayList<Map<String, String>>();
+	List<Community> communities = (List<Community>) communityDao.getList(new Community());
+	List<Category> categories = (List<Category>) categoryDao.getList(new Category());
+	Tree tree = null;
+	if (categories != null) {
+		tree = new Tree();
+		int cL = categories.size();
+		for (int i = 0; i < cL; i++) {
+			Category ca = (Category) categories.get(i);
+			Map<String, String> item = new HashMap<String, String>();
+			item.put("nodeId", ca.getCategoryId());
+			item.put("parentId", "ROOT");
+			item.put("depth", "0");
+			item.put("displayOrder", Integer.toString(i));
+			item.put("nodeName", ca.getCategoryName());
+			item.put("type", "CA");
+			tree.add(ca.getCategoryId(), "ROOT", item);
+		}
+
+		if (communities != null) {
+			int ccL = communities.size();
+			for (int i = 0; i < ccL; i++) {
+				Community co = (Community) communities.get(i);
+				Map<String, String> item = new HashMap<String, String>();
+				item.put("nodeId", co.getCommunityId());
+				item.put("parentId", co.getCategoryId());
+				item.put("depth", "1");
+				item.put("displayOrder", "0");
+				item.put("nodeName", co.getCommunityName());
+				item.put("type", "CO");
+				tree.add(co.getCommunityId(), co.getCategoryId(), item);
+			}
+		}
+
+		trees = (List<Map<String, String>>) tree.getList();
+	}
+	return trees;
+}]]></programlisting>
+		</note>
+		<para>다음은 jstree를 이용하여 Tree를 출력한 화면이다.</para>
+		<mediaobject>
+			<imageobject>
+				<imagedata fileref="../image/jquery/jstree001.jpg"	align="center" />
+			</imageobject>
+		</mediaobject>
+	</section>
+</chapter>

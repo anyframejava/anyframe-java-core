@@ -1,0 +1,1436 @@
+<chapter id="cxf_webservices_overview">
+	<title>Overview</title>
+	<section id = "cxf_webservices_overview_concept">
+    	<title>Web Services Concept</title>
+
+		<section id = "cxf_webservices_overview_concept_architecture">
+      		<title>Architecture</title>
+
+      		<para>
+      			Web Service is a technology that is implemented according to an architecture model composed of three roles 
+      		   (Service Provider, Service Broker, Service Consumer).
+      		</para>
+
+      		<mediaobject>
+        		<imageobject>
+          			<imagedata align="center"
+						fileref="../image/cxf/webservicearch.jpg" />
+        		</imageobject>
+      		</mediaobject>
+
+      		<itemizedlist>
+        		<listitem>
+          			<para>
+          				<emphasis role="bold">The three roles of Web Service</emphasis>
+          			</para>
+
+					<informaltable>
+            			<tgroup cols="2">
+              				<colspec colname="col1" colnum="1" colwidth="3*" />
+
+              				<colspec colname="col2" colnum="2" colwidth="7*" />
+
+              				<thead>
+                				<row>
+                  					<entry align="center">Role</entry>
+
+                  						<entry align="center">Description</entry>
+                				</row>
+              				</thead>
+
+							<tbody>
+                				<row>
+                  					<entry>Service Provider</entry>
+
+                  					<entry>Provides service that implements a certain service spec.</entry>
+                				</row>
+
+                				<row>
+                  					<entry>Service Broker (Service Registry)</entry>
+
+                  					<entry>
+                  						Connects service that Service Provider provides with Service Consumer through 
+                  						service registration and search, save, and management. 
+                  					</entry>
+                				</row>
+
+								<row>
+                  					<entry>Service Consumer (Service Requester)</entry>
+
+                  					<entry>
+                  						Finds a specific service through Service Broker, 
+                  						and requests the related service from Service Provider.
+                  					</entry>
+                				</row>
+              				</tbody>
+            			</tgroup>
+					</informaltable>
+				</listitem>
+
+				<listitem>
+          			<para><emphasis role="bold">Web Service Scenario</emphasis></para>
+
+          			<informaltable>
+            			<tgroup cols="3">
+              				<colspec colname="col1" colnum="1" colwidth="1*" />
+
+              				<colspec colname="col2" colnum="2" colwidth="3*" />
+
+              				<colspec colname="col3" colnum="3" colwidth="6*" />
+
+              				<thead>
+	                			<row>
+	                  				<entry align="center">Procedure</entry>
+	
+	                  				<entry align="center">Role</entry>
+	
+	                  				<entry align="center">Description</entry>
+	                			</row>
+	              			</thead>
+
+	              			<tbody>
+	                			<row>
+	                  				<entry align="center">1</entry>
+	
+	                  				<entry>Service Provider</entry>
+	
+	                  				<entry>
+	                  					Create a WSDL file containing your business information, service information to be provided, 
+	                  					and how to use this information.
+	                  				</entry>
+	                			</row>
+	
+	                			<row>
+	                  				<entry align="center">2</entry>
+	
+	                  				<entry>Service Provider</entry>
+	
+	                  				<entry>
+	                  					Register your service WSDL in UDDI registry. 
+	                  					A specific ID based on UUID will be provided for registered services. 
+	                  				</entry>
+	                			</row>
+	
+	                			<row>
+	                  				<entry align="center">3</entry>
+	
+	                  				<entry>Service Consumer</entry>
+	
+	                  				<entry>
+	                  					Searches services from UDDI registry through various search terms
+	                 					such as classification and identification systems. 
+	                 					When the related service is found, the WSDL file of the service is received.
+	                 			    </entry>
+	                			</row>
+	
+	                			<row>
+	                  				<entry align="center">4</entry>
+	
+	                  				<entry>Service Consumer</entry>
+	
+	                  				<entry>
+	       		           				Provided with service connecting with Service Provider using WSDL information. 
+	                 		 			Execution results are received in XML format using SOAP.
+	                 		 		</entry>
+	                			</row>
+	              			</tbody>
+	            		</tgroup>
+	          		</informaltable>
+				</listitem>
+
+        		<listitem>
+          			<para>
+          				<emphasis role="bold">Three basic description factors of Web Services</emphasis>
+          			</para>
+
+          			<informaltable>
+            			<tgroup cols="2">
+              				<colspec colname="col1" colnum="1" colwidth="2*" />
+
+              				<colspec colname="col2" colnum="2" colwidth="8*" />
+
+              				<thead>
+                				<row>
+                  					<entry align="center">Description factors </entry>
+
+                  					<entry align="center">Description</entry>
+                				</row>
+              				</thead>
+
+              				<tbody>
+                				<row>
+                  					<entry align="center"><emphasis role="bold">WSDL</emphasis></entry>
+
+                  					<entry>Language that expresses and describes Web Services (service expression)</entry>
+                				</row>
+
+                				<row>
+                  					<entry align="center"><emphasis role="bold">SOAP</emphasis></entry>
+
+                  					<entry>
+                  						Message protocol used in Web Service that is universal and scalable (data communication protocol)
+                  					</entry>
+                				</row>
+
+                				<row>
+                  					<entry align="center"><emphasis role="bold">UDDI</emphasis></entry>
+
+                  					<entry>Web Service registry to search services (service registration, search)</entry>
+                				</row>
+              				</tbody>
+            			</tgroup>
+          			</informaltable>
+        		</listitem>
+			</itemizedlist>
+		</section>
+
+		<section id = "cxf_webservices_overview_concept_soap">
+			<title>SOAP (Simple Object Access Protocol)</title>
+
+      		<para>
+      			SOAP(Simple Object Access Protocol) is a protocol that uses HTTP, HTTPS, SMTP, etc. to exchange <emphasis role="bold">XML-based SOAP 
+      			message</emphasis> on computer network. It is a <emphasis role="bold">basic means of message transmission in Web Service</emphasis>. 
+      			A structure that consists of envelope/header/body, transport, and a interaction neutrality concept have been introduced in XML-RPC and WDDX.
+      		</para>
+
+      		<itemizedlist>
+        		<listitem>
+          			<para><emphasis role="bold">SOAP Message Structure</emphasis></para>
+
+          			<para>
+          				SOAP message has Envelope as route factor, and has SOAP Header and Body as sub-factors. 
+          				SOAP message structure is based on XML and is designed in a pattern that combines Header and Body. 
+          				The contents of messages to be transmitted are stated in Body (mandatory). (Header is optional.)
+          			</para>
+
+          			<mediaobject>
+            			<imageobject>
+              				<imagedata align="center"
+								fileref="../image/cxf/soap.jpg" />
+            			</imageobject>
+          			</mediaobject>
+        		</listitem>
+
+				<listitem>
+          			<para><emphasis role="bold">The Characteristics of SOAP</emphasis></para>
+
+ 					<informaltable>
+            			<tgroup cols="2">
+              				<colspec colname="col1" colnum="1" colwidth="2*" />
+
+              				<colspec colname="col2" colnum="2" colwidth="8*" />
+
+              				<thead>
+                				<row>
+                  					<entry align="center">Merits</entry>
+
+                  					<entry align="center">Description</entry>
+                				</row>
+              				</thead>
+
+              				<tbody>
+                				<row>
+                  					<entry align="center">1</entry>
+
+                  					<entry>
+                  						SOAP generally runs based on HTTP, 
+                  						so communication is easy without being blocked by proxy or firewall like HTTP.
+                  					</entry>
+                				</row>
+
+                				<row>
+                  					<entry align="center">2</entry>
+
+                  					<entry>
+                  						SOAP can use transmission protocols other that HTTP which is standard protocol.
+                  					</entry>
+                				</row>
+
+                				<row>
+                  					<entry align="center">3</entry>
+
+                  					<entry>Independent of platform or programming language.</entry>
+                				</row>
+
+                				<row>
+                  					<entry align="center">4</entry>
+
+                  					<entry>
+                  						Simple, can be extended, and supports SOAP XML message that integrates attachments 
+										(using multipart MIME structure).
+									</entry>
+                				</row>
+              				</tbody>
+            			</tgroup>
+					</informaltable>
+			
+					<para></para>
+          			<informaltable>
+            			<tgroup cols="2">
+              				<colspec colname="col1" colnum="1" colwidth="2*" />
+
+              				<colspec colname="col2" colnum="2" colwidth="8*" />
+
+              				<thead>
+                				<row>
+                  					<entry align="center">Demerits</entry>
+	
+                  					<entry align="center">Description</entry>
+                				</row>
+              				</thead>
+
+              				<tbody>
+                				<row>
+                  					<entry align="center">1</entry>
+
+                  					<entry>
+                  						Slow compared to middleware technology such as CORBA because it is composed in XML format tag. 
+                 						(In large part, this problem has been solved 
+                 						due to the rapid development of network speed and performance optimization.)
+                 					</entry>
+                				</row>
+              				</tbody>
+            			</tgroup>
+          			</informaltable>
+				</listitem>
+			</itemizedlist>
+		</section>
+
+    	<section id = "cxf_webservices_overview_concept_wsdl">
+			<title>WSDL (Web Services Description Language)</title>
+
+      		<para>
+      			WSDL(Web Services Description Language) is makeup language based on XML 
+      			for describing information on services that are provided through Web Service. 
+      		</para>
+
+      		<para>
+      			In other words, it is a Web Service description language that is provided in XML format 
+      			and describes where the service is located, what you can do with the service, and how you can execute the service. 
+      		</para>
+
+      		<itemizedlist>
+				<listitem>
+          			<para><emphasis role="bold">WSDL Document Structure</emphasis></para>
+
+          			<para>
+          				With root as <![CDATA[<definitions></definitions>]]>, 
+          				it is divided into abstract definition (types/message/portType) and specific definition(binding/service). 
+                        By describing abstract definition and specific definition separately, 
+                        abstract definition of service can be reused when implementing different services.
+          			</para>
+
+          			<mediaobject>
+            			<imageobject>
+              				<imagedata align="center"
+								fileref="../image/cxf/wsdl2.jpg" />
+            			</imageobject>
+          			</mediaobject>
+        		</listitem>
+
+        		<listitem>
+          			<para><emphasis role="bold">WSDL Document Structure Details</emphasis></para>
+
+          			<para>
+          				Descriptions of WSDL include Web Service name and URI information, how to encode SOAP message, 
+         				protocol information for SOAP transmission, and interface information on using Web Services. 
+         				WSDL consists of the following. 
+         			</para>
+
+          			<mediaobject>
+            			<imageobject>
+              				<imagedata align="center"
+								fileref="../image/cxf/wsdl.jpg" />
+						</imageobject>
+					</mediaobject>
+
+          			<para>
+          				Descriptions for detailed WSDL factors are as follows.
+          			</para>
+
+					<informaltable>
+            			<tgroup cols="2">
+              				<colspec colname="col1" colnum="1" colwidth="2*" />
+
+              				<colspec colname="col2" colnum="2" colwidth="8*" />
+
+              				<thead>
+                				<row>
+                  					<entry align="center">Factors</entry>
+
+                  					<entry align="center">Description</entry>
+                				</row>
+              				</thead>
+
+              				<tbody>
+                				<row>
+                  					<entry><![CDATA[<service>]]></entry>
+
+                  					<entry>
+                  						Defines the physical location of Endpoint (application implemented as Web Service) 
+                  						and describes the port address for each binding.
+                  					</entry>
+                				</row>
+
+                				<row>
+                  					<entry><![CDATA[<port>]]></entry>
+
+                  					<entry>
+                  						Defines binding information and address location. 
+                  						(Changed to <![CDATA[<endpoint>]]> in WSDL 2.0.)
+                  					</entry>
+                				</row>
+
+                				<row>
+                  					<entry><![CDATA[<binding>]]></entry>
+
+                  					<entry>
+                  						Defines portType and network protocol mapping information. 
+                 					    In other words, defines which communication protocol to use for communication.
+                 					</entry>
+                				</row>
+
+                				<row>
+                  					<entry><![CDATA[<portType>]]></entry>
+
+                  					<entry>
+                  						Defines methods of interface. 
+                  						Interface (Changed from WSDL 2.0 to <![CDATA[<interface>]]>.)
+                  					</entry>
+                				</row>
+
+                				<row>
+                  					<entry><![CDATA[<operation>]]></entry>
+
+                  					<entry>
+                  						Defines Request/Response message used in method.
+                  					</entry>
+                				</row>
+
+                				<row>
+                  					<entry><![CDATA[<message>]]></entry>
+
+                  					<entry>
+                  						Defines message that service uses. Declares message argument and return value. 
+                  						(In WSDL 2.0, XML schema type is used through <![CDATA[<types>]]> for description.)
+                  					</entry>
+                				</row>
+
+                				<row>
+                  					<entry><![CDATA[<types>]]></entry>
+
+                  					<entry>Defines data type used in document.</entry>
+                				</row>
+              				</tbody>
+            			</tgroup>
+          			</informaltable>
+        		</listitem>
+      		</itemizedlist>
+    	</section>
+
+    	<section id = "cxf_webservices_overview_concept_standard">
+			<title>Technical standards</title>
+
+			<para>
+				Web Service provided basic technical standards centered on SOAP, WSDL, and UDDI, 
+      			and provides various extension standards for security, transaction handling, and credibility to enhance the quality of service. 
+      		</para>
+
+      		<mediaobject>
+        		<imageobject>
+          			<imagedata align="center"
+						fileref="../image/cxf/wsstandard.jpg" />
+				</imageobject>
+			</mediaobject>
+
+      		<itemizedlist>
+        		<listitem>
+          			<para><emphasis role="bold">Security </emphasis></para>
+
+					<informaltable>
+            			<tgroup cols="2">
+              				<colspec colname="col1" colnum="1" colwidth="3*" />
+
+              				<colspec colname="col2" colnum="2" colwidth="7*" />
+
+              				<thead>
+                				<row>
+                  					<entry align="center">Standards</entry>
+
+                  					<entry align="center">Description</entry>
+                				</row>
+              				</thead>
+
+              				<tbody>
+                				<row>
+                  					<entry>WS-Security</entry>
+
+                  					<entry>
+                  						Makes SOAP message extension mechanism rules to reinforce Integrity and Confidentiality, Authentication, etc. 
+                  						Includes WS-Policy, WS-Trust, WS-SecureConversation, WS-Federation, and WS-Authorization.
+                  					</entry>
+                				</row>
+
+                				<row>
+                  					<entry>WS-Trust</entry>
+
+                  					<entry>
+                  						Standard for trust model that sets the maintenance and termination of trust relationship 
+                 						for interactive Web Service to operate safely.
+                 					</entry>
+                				</row>
+
+                				<row>
+                  					<entry>WS-SecureConversation</entry>
+
+                  					<entry>
+                  						Management standards for security context that indicate how security is managed when exchanging messages.
+                  					</entry>
+                				</row>
+							</tbody>
+						</tgroup>
+					</informaltable>
+				</listitem>
+
+				<listitem>
+          			<para><emphasis role="bold">Transaction</emphasis></para>
+
+          			<informaltable>
+            			<tgroup cols="2">
+              				<colspec colname="col1" colnum="1" colwidth="3*" />
+
+              				<colspec colname="col2" colnum="2" colwidth="7*" />
+
+              				<thead>
+                				<row>
+                  					<entry align="center">Standards</entry>
+
+                  					<entry align="center">Description</entry>
+                				</row>
+              				</thead>
+
+              				<tbody>
+                				<row>
+                  					<entry>WS-Coordination</entry>
+
+                  					<entry>
+                  						Standards (Coordination Framework) for mechanisms that create and manage, adjust, and complete activities 
+                  						so that various Web Services that are distributed can participate in transaction. 
+                  					</entry>
+                				</row>
+
+                				<row>
+                  					<entry>WS-Transaction</entry>
+
+                  					<entry>Standards (Coordination Protocols) for Atomic or Business transaction protocols.</entry>
+                				</row>
+              				</tbody>
+						</tgroup>
+					</informaltable>
+				</listitem>
+
+				<listitem>
+          			<para><emphasis role="bold">Reliable Messaging </emphasis></para>
+
+          			<informaltable>
+            			<tgroup cols="2">
+              				<colspec colname="col1" colnum="1" colwidth="3*" />
+
+              				<colspec colname="col2" colnum="2" colwidth="7*" />
+
+              				<thead>
+              	  				<row>
+                  					<entry align="center">Standard</entry>
+
+                  					<entry align="center">Description</entry>
+                				</row>
+              				</thead>
+
+              				<tbody>
+                				<row>
+                  					<entry>WS-ReliableMessaging</entry>
+
+                  					<entry>
+                  						Standard that defines ACK (acknowledge) message, etc. that is exchanged among scattered Web Services 
+                  						to secure messaging trust assuring that messages arrive at destination.
+                  					</entry>
+                				</row>
+
+                				<row>
+                  					<entry>WS-Addressing</entry>
+
+                  					<entry>Standard which provides mechanisms that transfer messages among Web Services.</entry>
+                				</row>
+              				</tbody>
+            			</tgroup>
+          			</informaltable>
+				</listitem>
+			</itemizedlist>
+		</section>
+	</section>
+
+	<section id = "cxf_webservices_overview_realization">
+    	<title>Implementation Technology</title>
+
+    	<para>
+    		In java API that provides ways to develop Web Services with Java, there are JAX-RPC and JAX-WS. 
+    		Other implementation technologies are also required.
+    	</para>
+
+    	<section id = "cxf_webservices_overview_realization_comp">
+      		<title>JAX-RPC vs. JAX-WS</title>
+
+      		<para>
+      			JAX-WS 2.0 is a following version of JAX-RPC 1.1. 
+      			It is a standard java API that is used when implementing Web Services.
+      		</para>
+
+      		<para>
+      			* JAX-WS : Java API for XML-Based Web Services
+      		</para>
+
+      		<para>
+      			* JAX-RPC : Java API for XML-Based RPC(Remote Procedure call)
+      		</para>
+
+      		<itemizedlist>
+        		<listitem>
+          			<para>
+          				<emphasis role="bold">Table Comparing JAX-RPC and JAX-WS</emphasis>
+          			</para>
+
+          			<para>
+          				When JAX-RPC 2.0, the following version of JAX-RPC 1.1, was introduced, 
+          				WS which is message-oriented Web Service was used instead of RPC, so the name became JAX-WS 2.0.
+          			</para>
+
+          			<informaltable>
+            			<tgroup cols="3">
+             	 			<colspec colname="col1" colnum="1" colwidth="2*" />
+
+              				<colspec colname="col2" colnum="2" colwidth="4*" />
+
+              				<colspec colname="col3" colnum="3" colwidth="4*" />
+
+              				<thead>
+                				<row>
+                  					<entry/>
+
+                  					<entry align="center">JAX-RPC 1.1</entry>
+
+                  					<entry align="center">JAX-WS 2.0</entry>
+                				</row>
+              				</thead>
+
+              				<tbody>
+                				<row>
+                  					<entry>
+                    					<emphasis role="bold">Java Environment</emphasis>
+                  					</entry>
+
+                  					<entry>Web Services API used in JDK 1.4/J2EE 1.4 environment</entry>
+
+                  					<entry>
+                  						Web Services API used in Web Services API environment (loading).
+                  					</entry>
+                				</row>
+
+                				<row>
+                  					<entry>
+                    					<emphasis role="bold">SOAP</emphasis>
+                  					</entry>
+
+                  					<entry>SOAP 1.1</entry>
+
+                  					<entry>SOAP 1.1, SOAP 1.2</entry>
+                				</row>
+
+                				<row>
+                  					<entry>
+                    					<emphasis role="bold">XML/HTTP</emphasis>
+                  					</entry>
+
+                  					<entry>Does not support HTTP binding (only supports SOAP binding)</entry>
+
+                  					<entry>Supports HTTP binding (transmits XML through HTTP without SOAP)</entry>
+                				</row>
+
+                				<row>
+                  					<entry>
+                    					<emphasis role="bold">WS-I Basic Profile</emphasis>
+                  					</entry>
+
+                  					<entry>WS-I Basic Profile 1.0</entry>
+
+                  					<entry>WS-I Basic Profile 1.1</entry>
+                				</row>
+
+                				<row>
+                  					<entry>
+                    					<emphasis role="bold">Data Mapping Model</emphasis>
+                  					</entry>
+
+                  					<entry>
+                  						Has specific data mapping model. (Covers 90% of schema type.) 
+                  						Those that are not covered are mapped as javax.xml.soap.SOAPElement.
+                  					</entry>
+
+                  					<entry>JAXB (maps all XML schema 100%)</entry>
+                				</row>
+
+                				<row>
+                  					<entry>
+                    					<emphasis role="bold">Interface Mapping Model</emphasis>
+                  					</entry>
+
+                  					<entry>Not supported</entry>
+
+                  					<entry>Use Java 5.0 function or introduce asynchronous function</entry>
+                				</row>
+
+                				<row>
+                  					<entry>
+                    					<emphasis role="bold">Dynamic Programming Model</emphasis>
+                  					</entry>
+
+                  					<entry>Not supported</entry>
+
+                  					<entry>Introduce message-oriented or dynamic asynchronous function</entry>
+                				</row>
+
+                				<row>
+                  					<entry>
+                    					<emphasis role="bold">MTOM</emphasis>
+                  					</entry>
+
+                  					<entry>Not supported</entry>
+
+                  					<entry>Add support for MTOM that is new Attachment spec. through JAXB.</entry>
+                				</row>
+
+                				<row>
+                  					<entry>
+                    					<emphasis role="bold">Handler Model</emphasis>
+                  					</entry>
+
+                  					<entry>Based on SAAJ 1.2</entry>
+
+                  					<entry>Based on SAAJ 1.3</entry>
+                				</row>
+              				</tbody>
+            			</tgroup>
+          			</informaltable>
+        		</listitem>
+
+        		<listitem>
+          			<para>
+          				<emphasis role="bold">When JAX-RPC 1.1 should be used</emphasis>
+          			</para>
+
+					<informaltable>
+            			<tgroup cols="2">
+              				<colspec colname="col1" colnum="1" colwidth="2*" />
+
+              				<colspec colname="col2" colnum="2" colwidth="8*" />
+
+              				<thead>
+                				<row>
+                  					<entry align="center">Case</entry>
+
+                  					<entry align="center">Description</entry>
+                				</row>
+              				</thead>
+
+              				<tbody>
+                				<row>
+                  					<entry align="center">1</entry>
+
+                  					<entry>When JDK 1.4 should be used continuously</entry>
+                				</row>
+
+                				<row>
+                  					<entry align="center">2</entry>
+
+                  					<entry>
+                  						When SOAP encoding message or RPC/encoded style WSDL should be sent
+                  					</entry>
+                				</row>
+              				</tbody>
+           	 			</tgroup>
+ 					</informaltable>
+				</listitem>
+
+				<listitem>
+          			<para>
+          				<emphasis role="bold">When using JAX-WS 2.0</emphasis>
+          			</para>
+
+					<para>
+						Layered Programming Model is provided. 
+						The parent class enables easy development using Annotation, 
+						and the child class enables detailed adjustments based on API.
+					</para>
+
+          			<informaltable>
+            			<tgroup cols="2">
+              				<colspec colname="col1" colnum="1" colwidth="2*" />
+
+              				<colspec colname="col2" colnum="2" colwidth="8*" />
+
+              				<thead>
+                				<row>
+                  					<entry align="center">Case</entry>
+
+                  					<entry align="center">Description</entry>
+                				</row>
+              				</thead>
+
+              				<tbody>
+                				<row>
+                  					<entry align="center">1</entry>
+
+                  					<entry>When new message-oriented API should be used</entry>
+                				</row>
+
+                				<row>
+                  					<entry align="center">2</entry>
+
+                  					<entry>When attached data should be used with MTOM</entry>
+                				</row>
+
+                				<row>
+                  					<entry align="center">3</entry>
+
+                  					<entry>For better support of XML schema through JAXB</entry>
+                				</row>
+
+                				<row>
+                  					<entry align="center">4</entry>
+
+                  					<entry>When using asynchronous programming model on Web Service client</entry>
+                				</row>
+
+               	 				<row>
+                  					<entry align="center">5</entry>
+
+                  					<entry>When there should be client and service that handles SOAP 1.2 message</entry>
+                				</row>
+
+                				<row>
+                  					<entry align="center">6</entry>
+
+                  					<entry>When you wish to use only XML/HTTP binding without SOAP in Web Service</entry>
+                				</row>
+              				</tbody>
+            			</tgroup>
+          			</informaltable>
+				</listitem>
+
+				<listitem>
+          			<para><emphasis role="bold">The Demerits of JAX-RPC</emphasis></para>
+
+          			<para>The previous JAX-RPC version has the following demerits.</para>
+
+          			<informaltable>
+            			<tgroup cols="2">
+              				<colspec colname="col1" colnum="1" colwidth="2*" />
+
+              				<colspec colname="col2" colnum="2" colwidth="8*" />
+
+              				<thead>
+                				<row>
+                  					<entry align="center">Demerits</entry>
+
+                  					<entry align="center">Description</entry>
+                				</row>
+              				</thead>
+
+              				<tbody>
+                				<row>
+                  					<entry align="center">1</entry>
+
+                  					<entry>Supports limited XML Schema.</entry>
+                				</row>
+
+                				<row>
+                  					<entry align="center">2</entry>
+
+                  					<entry>Lacks mapping support between Java and WSDL.</entry>
+                				</row>
+
+                				<row>
+                  					<entry align="center">3</entry>
+
+                  					<entry>Low application portability.</entry>
+                				</row>
+
+                				<row>
+                  					<entry align="center">4</entry>
+
+                  					<entry>Large Runtime size.</entry>
+                				</row>
+
+                				<row>
+                  					<entry align="center">5</entry>
+
+                  					<entry>Development is complicated.</entry>
+                				</row>
+              				</tbody>
+            			</tgroup>
+          			</informaltable>
+        		</listitem>
+      		</itemizedlist>
+		</section>
+
+		<section id = "cxf_webservices_overview_realization_xml">
+      		<title>XML Schema</title>
+
+      		<para>
+      			Is a language that indicate the file that defines the structure and contents of XML files. 
+      			Defines document structure like DTD and provides all rules for grammar, vocabulary, structure, data type, etc.
+      		</para>
+
+      		<para>
+      			* XML Schema Definition (XSD) : XML Schema language for developing XML Schema
+      		</para>
+
+      		<itemizedlist>
+        		<listitem>
+          			<para><emphasis role="bold">XML Schema vs. DTD</emphasis></para>
+
+          			<para>
+          				XML Schema was introduced to solve the problems of DTD. 
+          				XML Schema has higher expression skills, is a new structure definition language that provides precise data structure, 
+          				and uses XML Schema as Web Services. 
+          			</para>
+
+					<informaltable>
+            			<tgroup cols="2">
+              				<thead>
+                				<row>
+                  					<entry align="center">XML Schema</entry>
+
+                  					<entry align="center">DTD</entry>
+                				</row>
+              				</thead>
+
+              				<tbody>
+                				<row>
+                  					<entry>Develop as XML grammar</entry>
+
+                  					<entry>Not XML grammar (uses EBNF grammar)</entry>
+                				</row>
+
+                				<row>
+                  					<entry>Supports namespace</entry>
+
+                  					<entry>Does not support namespace</entry>
+                				</row>
+
+                				<row>
+                  					<entry>Supports various data types, can extend data type</entry>
+
+                  					<entry>Limited data type</entry>
+                				</row>
+
+                				<row>
+                  					<entry>Supports object-oriented concept such as inheritance</entry>
+
+                  					<entry>Does not have object-oriented concept</entry>
+                				</row>
+
+                				<row>
+                  					<entry>Open contents model</entry>
+
+                  					<entry>Closed contents model</entry>
+                				</row>
+              				</tbody>
+            			</tgroup>
+ 					</informaltable>
+				</listitem>
+
+				<listitem>
+          			<para>
+          				<emphasis role="bold">XML Schema element definition</emphasis>
+          			</para>
+
+                    <programlisting language="xml"><![CDATA[<element name="element name"  type="data type" ref=""  form=""  
+        minOccurs="" maxOccurs=""  default=""  fixed="" > ]]></programlisting>
+
+          			<para>The descriptions for each property is as follows.</para>
+
+          			<informaltable>
+            			<tgroup cols="2">
+              				<colspec colname="col1" colnum="1" colwidth="2*" />
+
+              				<colspec colname="col2" colnum="2" colwidth="8*" />
+
+              				<thead>
+                				<row>
+                  					<entry align="center">Property</entry>
+
+                  					<entry align="center">Description</entry>
+                				</row>
+              				</thead>
+
+              				<tbody>
+                				<row>
+                  					<entry>name</entry>
+
+                  					<entry>element name</entry>
+                				</row>
+
+                				<row>
+                  					<entry>type</entry>
+
+                  					<entry>element data type</entry>
+                				</row>
+
+                				<row>
+                  					<entry>ref</entry>
+
+                  					<entry>Use to refer to entire element declaration</entry>
+                				</row>
+
+                				<row>
+                  					<entry>minOccurs</entry>
+
+                  					<entry>Minimum number of element occurrences, default is 1</entry>
+                				</row>
+
+                				<row>
+                  					<entry>maxOccurs</entry>
+
+                  					<entry>Maximum number of element occurrences, default is 1</entry>
+                				</row>
+
+                				<row>
+                  					<entry>default</entry>
+
+                  					<entry>Default appointed when element value is not defined</entry>
+                				</row>
+
+                				<row>
+                  					<entry>fixed</entry>
+
+                  					<entry>Fixed value to put in element</entry>
+                				</row>
+              				</tbody>
+            			</tgroup>
+          			</informaltable>
+        		</listitem>
+
+				<listitem>
+          			<para>
+          				<emphasis role="bold">XML Schema attribute definition</emphasis>
+          			</para>
+
+                    <programlisting language="xml"><![CDATA[<attribute name="" type="" ref="" form="" use="" default="" fixed="">]]></programlisting>
+
+          			<para>
+          				Descriptions for each property are as follows.
+          			</para>
+
+          			<informaltable>
+            			<tgroup cols="2">
+              				<colspec colname="col1" colnum="1" colwidth="2*" />
+
+              				<colspec colname="col2" colnum="2" colwidth="8*" />
+
+              				<thead>
+                				<row>
+                  					<entry align="center">Property</entry>
+
+                  					<entry align="center">Description</entry>
+                				</row>
+              				</thead>
+
+              				<tbody>
+                				<row>
+                  					<entry>name</entry>
+
+                  					<entry>attribute name</entry>
+                				</row>
+
+                				<row>
+                  					<entry>type</entry>
+
+                  					<entry>attribute data type</entry>
+               	 				</row>
+
+                				<row>
+                  					<entry>ref</entry>
+
+                  					<entry>Used to refer to entire attribute declaration</entry>
+                				</row>
+
+                				<row>
+                  					<entry>form</entry>
+
+                  					<entry>Whether it is limited name (qualified/unqualified)</entry>
+                				</row>
+
+                				<row>
+                  					<entry>use</entry>
+
+                  					<entry>Condition of use (optional/prohibited/required)</entry>
+                				</row>
+
+                				<row>
+                  					<entry>default</entry>
+
+                  					<entry>Default for when attribute value is not defined</entry>
+                				</row>
+
+                				<row>
+                  					<entry>fixed</entry>
+
+                  					<entry>Fixed value to put in attribute</entry>
+                				</row>
+              				</tbody>
+            			</tgroup>
+					</informaltable>
+				</listitem>
+			</itemizedlist>
+		</section>
+
+		<section id = "cxf_webservices_overview_realization_other">
+			<title>Other implementation descriptions</title>
+
+      		<itemizedlist>
+        		<listitem>
+          			<para>
+          				<emphasis role="bold">JAXB(Java Architecture for XML Binding)</emphasis>
+          			</para>
+
+          			<para>
+          				Java API for binding XML schema and Java class has two functions. 
+          				They are functions that unmarshall XML to java object. This is opposite to marshalling java object to XML. 
+          				For more information, go to <ulink url="http://java.sun.com/developer/technicalArticles/WebServices/jaxb/">Here</ulink>
+          			</para>
+        		</listitem>
+
+        		<listitem>
+          			<para>
+          				<emphasis role="bold">MTOM(Message Transmission Optimization Mechanism) </emphasis>
+          			</para>
+
+          			<para>
+          				Mechanism that reduces message size by transmitting a large binary attachment file with SOAP message to raw byte. 
+         				Optimizes message transmission for XML including binary data. 
+         				For more information, refer to <ulink url="http://www.w3.org/TR/soap12-mtom/">Here</ulink>.
+         			</para>
+        		</listitem>
+
+        		<listitem>
+          			<para>
+          				<emphasis role="bold">SAAJ (SOAP with Attachments API for Java)</emphasis>
+          			</para>
+
+          			<para>
+          				Java API that provides a way to create SOAP message, attach file, and transmit. 
+          				For more information, refer to <ulink url="http://java.sun.com/webservices/saaj/docs.html">Here</ulink>.
+          			</para>
+        		</listitem>
+      		</itemizedlist>
+		</section>
+	</section>
+
+	<section id = "cxf_webservices_overview_framework">
+    	<title>Web Services Framework</title>
+
+    	<para>
+    		Frequently used Web Service open source framework includes Apache CXF, Apache Axis/Axis2, and Spring Web Services. 
+    		Among various frameworks, Web Service framework that fits the purpose of use is selected. 
+    		Anyframe has chosen Apache CXF. 
+    	</para>
+
+    	<section id = "cxf_webservices_overview_framework_type">
+      		<title>Web Services Framework type</title>
+
+      		<para>
+      			Web Service implementation style largely consists of Contract-Last and Contract-First. 
+      			Contract-Last style is implementation type that automatically creates WSDL after first developing Java source code (also called Code-First), 
+      			and Contract-First style is development type that develops Java source code after WSDL file.
+      		</para>
+
+      		<para>
+      			There are many types of Web Service Open Source Frameworks. The following is four of the most frequently used.
+      		</para>
+
+      		<itemizedlist>
+        		<listitem>
+          			<para><emphasis role="bold">Apache CXF</emphasis></para>
+
+          			<para>
+          				Supports both Contract-First style and Contract-Last style. 
+          				For more information, refer to <ulink url="http://cxf.apache.org/"> http://cxf.apache.org/</ulink>.
+          			</para>
+        		</listitem>
+
+        		<listitem>
+          			<para><emphasis role="bold">Apache Axis </emphasis></para>
+
+          			<para>
+          				The procedures for developing Web Service with the previous version of Axis 2 is complicated. 
+          				For more information, refer to <ulink url="http://ws.apache.org/axis/">
+          				http://ws.apache.org/axis/</ulink>.
+          			</para>
+        		</listitem>
+
+        		<listitem>
+          			<para><emphasis role="bold">Apache Axis 2</emphasis></para>
+
+          			<para>
+          				The structure of Apache Axis upgrade version has been changed. It is similar to Apache CXF functionally. 
+          				For more information, refer to <ulink url="http://ws.apache.org/axis2/">http://ws.apache.org/axis2/</ulink>.
+          			</para>
+        		</listitem>
+
+        		<listitem>
+          			<para>
+          				<emphasis role="bold">Spring Web Services</emphasis>
+          			</para>
+
+          			<para>
+          				Supports only Contract-First style Web Service development. 
+          				For more information, refer to <ulink url="http://static.springsource.org/spring-ws/site/">http://static.springsource.org/spring-ws/site/</ulink>.
+          			</para>
+        		</listitem>
+      		</itemizedlist>
+    	</section>
+
+		<section id = "cxf_webservices_overview_framework_apachecxf">
+      		<title>The Characteristics of Apache CXF</title>
+
+      		<para>
+      			Apache CXF was chosen among various Web Service Frameworks because of the following characteristics.
+      		</para>
+
+      		<informaltable>
+        		<tgroup cols="2">
+          			<colspec colname="col1" colnum="1" colwidth="3*" />
+
+          			<colspec colname="col2" colnum="2" colwidth="7*" />
+
+          			<thead>
+            			<row>
+              				<entry align="center">Characteristic</entry>
+
+              				<entry align="center">Description</entry>
+            			</row>
+          			</thead>
+
+          			<tbody>
+            			<row>
+              				<entry>Supports JAX-WS</entry>
+
+              				<entry>CXF implements JAX-WS API, so Web Service is easily implemented.</entry>
+            			</row>
+
+            			<row>
+              				<entry>Spring Integration</entry>
+
+              				<entry>
+              					CXF supports Spring 2.X onwards, 
+              					and makes it easy to integrate endpoint setting or client injection, etc. with Spring.
+              				</entry>
+            			</row>
+
+            			<row>
+              				<entry>Aegis Databinding</entry>
+
+              				<entry>
+              					CXF supports both JAXB and Aegis Databinding. 
+              					Unlike JAXB, it does not need to be used in Annotation way, 
+              					and using various data type including List/Map/Date is easy. 
+              					Anyframe recommends using standard JAXB Databinding, 
+              					so details on Aegis Databinding are not stated in the manual.
+              				</entry>
+            			</row>
+
+            			<row>
+              				<entry>RESTful services</entry>
+
+              				<entry>
+              				Makes RESTful service implementation easier with Annotation setting. 
+              				For more information on developing RESTful services using Apache CXF, 
+              				refer to Anyframe CXF-JAXRS Plugin.
+              				</entry>
+            			</row>
+
+            			<row>
+              				<entry>WS-* Support</entry>
+
+              				<entry>
+              					CXF supports various Web Service spec (WS-Addressing, WS-Policy, WS-ReliableMessaging, WS-Security).
+              				</entry>
+            			</row>
+
+            			<row>
+              				<entry>Apache Licensed</entry>
+
+              				<entry>Free to use for apache license.</entry>
+            			</row>
+
+            			<row>
+              				<entry>Created by Celtix and X-Fire project</entry>
+
+              				<entry>Improvements have been made to strengthen functions and enhance usability.</entry>
+           	 			</row>
+
+            			<row>
+              				<entry>Supports Web Service standard</entry>
+
+              				<entry>
+              					SOAP, the Basic Profile, WSDL, WS-Addressing, WS-Policy, WS-ReliableMessaging, WS-Security
+              				</entry>
+            			</row>
+
+            			<row>
+              				<entry>Provide Frontend Model</entry>
+
+              				<entry>Provides JAX-WS Frontend and Simple Frontend. 
+					    	Anyframe recommends JAX-WS Frontend model that uses JAX-WS which is standard API 
+					    	so the manual does not state details of Simple Frontend.</entry>
+            			</row>
+
+            			<row>
+              				<entry>Usability</entry>
+
+              				<entry>Can implement service by simply using API. Provides Tool (ANT Task, etc.).</entry>
+            			</row>
+
+            			<row>
+              				<entry>Supports binary and previous protocol</entry>
+
+              				<entry>
+              					Provides XML/non-XML type binding (JSON, CORBA), 
+              					provides pluggable architecture that can support several transmission protocols.
+              				</entry>
+            			</row>
+
+            			<row>
+              				<entry>Asynchronous call function</entry>
+
+              				<entry>Asynchronous calling is possible (provides Asynchronous Invocation Model).</entry>
+            			</row>
+
+            			<row>
+              				<entry>Supports JDK 1.5 onwards</entry>
+
+              				<entry>Supports JDK 1.5 onwards for various reasons including Annotation function.</entry>
+            			</row>
+          			</tbody>
+        		</tgroup>
+      		</informaltable>
+    	</section>
+	</section>
+
+  	<section id = "cxf_webservices_overview_tools">
+    	<title>Tools </title>
+
+    	<para>
+    		Provides various Tools in Apache CXF to make it easier to develop during Web Service implementation. 
+    		Eclipse Plugin and Maven Plugin tools other than the Tools mentioned below are also provided. 
+    		Download Binary distribution from <ulink url="http://cxf.apache.org/download.html">Download Page</ulink> and extract file, 
+    		and you will see Tool in bin folder under route folder. 
+    		For more information refer to <ulink url="http://cwiki.apache.org/CXF20DOC/tools.html">Here</ulink>.
+    	</para>
+
+    	<informaltable>
+      		<tgroup cols="2">
+      			<colspec colname="col1" colnum="1" colwidth="3*" />
+
+          		<colspec colname="col2" colnum="2" colwidth="7*" />
+        		<thead>
+          			<row>
+            			<entry align="center">tool</entry>
+
+            			<entry align="center">Description</entry>
+          			</row>
+        		</thead>
+
+        		<tbody>
+          			<row>
+            			<entry>Ant Tasks</entry>
+
+            			<entry>Provides ant task for wsdl2java and java2ws.</entry>
+          			</row>
+
+          			<row>
+            			<entry>Java to WS</entry>
+
+            			<entry>
+            				Creates WSDL document, wrapper bean class, 
+            				and server/client side source code from SEI class and related type class. (CXF 2.1)
+            			</entry>
+          			</row>
+
+          			<row>
+            			<entry>Java to WSDL</entry>
+
+            			<entry>
+            				Creates WSDL document from SEI class and related type classes. (CXF 2.0.x)
+            			</entry>
+          			</row>
+
+          			<row>
+            			<entry>Maven Integration and Plugin</entry>
+
+            			<entry>
+            				Provides Maven Plugin so that Maven can be used as build tool with Maven Repository that deploys related library.
+            			</entry>
+          			</row>
+
+          			<row>
+            			<entry>XSD to WSDL</entry>
+
+            			<entry>Creates WSDL document through XSD (Schema file)</entry>
+          			</row>
+
+          			<row>
+            			<entry>WSDL to Java</entry>
+
+            			<entry>
+            				Creates ANT-based XML file that can build Java source code and application 
+            				developed with annotation needed for service implementation from WSDL document.
+            			</entry>
+          			</row>
+
+          			<row>
+            			<entry>WSDL to Service</entry>
+
+            			<entry>
+            				Creates new WSDL document that has HTTP or JMS service definition from WSDL document.
+            			</entry>
+          			</row>
+
+          			<row>
+            			<entry>WSDL to SOAP</entry>
+
+            			<entry>
+            				Creates new WSDL document that has SOAP binding information from WSDL document.
+            			</entry>
+          			</row>
+
+          			<row>
+            			<entry>WSDL to XML</entry>
+
+            			<entry>
+            				Creates new WSDL document that has XML binding information from WSDL document.
+            			</entry>
+          			</row>
+
+          			<row>
+            			<entry>WSDLValidator</entry>
+
+            			<entry>
+            				Checks if WSDL document or WSDL URL is well-formed document, and developed properly based on Schema.
+            			</entry>
+          			</row>
+       	 		</tbody>
+      		</tgroup>
+    	</informaltable>
+  	</section>
+</chapter>

@@ -1,0 +1,107 @@
+<chapter id="excel_sheet_config">
+	<title>Excel Sheet Configuration XML</title>
+	<para>
+		Excel Sheet Configuration XML is a file that defines the configuration necessary to upload and download Excel files.
+	</para>
+	<para>
+		To define the Sheet Style of Excel files, the Excel Sheet Configuration XML file should be written.
+		Excel Sheet Configuration XML files define the mapping of DB columns and the header of Excel files, column width, column data type and mask. 
+	</para>
+	<section id="excel_sheet_config_desc">
+		<title>Location of Excel Sheet Configuration XML</title>
+		<para>Excel Sheet Configuration XML is located under the src/main/resources/excel/ folder as follows.</para>
+		<mediaobject>
+        	<imageobject>
+        			<imagedata align="center"
+                   		fileref="../image/excel/sheet_config.png" />
+        	</imageobject>
+       	</mediaobject>
+	</section>
+	<section id="excel_sheet_config_composition">
+	<title>Composition of Excel Sheet Configuration XML</title>
+	<para>
+		The root tag of Excel Sheet Configuration XML is &lt;COLUMNS&gt;, which has multiple &lt;COLUMN&gt;s as sub-tags.
+		The following is an example of Excel Sheet Configuration XML.
+	</para> 
+	<programlisting language="xml"><![CDATA[<?xml version="1.0" encoding="UTF-8"?>
+<COLUMNS>
+    <COLUMN>
+        <COLUMN_NAME>ID</COLUMN_NAME>
+        <FIELD_NAME>movieId</FIELD_NAME>
+        <COLUMN_WIDTH>20</COLUMN_WIDTH>
+        <REQUIRED>true</REQUIRED>
+        </COLUMN>
+    <COLUMN>
+        <COLUMN_NAME>Genre</COLUMN_NAME>
+        <FIELD_NAME>genreName</FIELD_NAME>
+        <COLUMN_WIDTH>20</COLUMN_WIDTH>
+    </COLUMN>
+    <COLUMN>
+        <COLUMN_NAME>Title</COLUMN_NAME>
+        <FIELD_NAME>title</FIELD_NAME>
+        <COLUMN_WIDTH>50</COLUMN_WIDTH>
+    </COLUMN>
+    <COLUMN>
+        <COLUMN_NAME>Director</COLUMN_NAME>
+        <FIELD_NAME>director</FIELD_NAME>
+        <COLUMN_WIDTH>10</COLUMN_WIDTH>
+    </COLUMN>
+    <COLUMN>
+        <COLUMN_NAME>Actors</COLUMN_NAME>
+        <FIELD_NAME>actors</FIELD_NAME>
+        <COLUMN_WIDTH>10</COLUMN_WIDTH>
+    </COLUMN>
+    <COLUMN>
+        <COLUMN_NAME>Ticket price</COLUMN_NAME>
+        <FIELD_NAME>ticketPrice</FIELD_NAME>
+        <COLUMN_WIDTH>10</COLUMN_WIDTH>
+    </COLUMN>
+    <COLUMN>
+        <COLUMN_NAME>Release date</COLUMN_NAME>
+        <FIELD_NAME>releaseDate</FIELD_NAME>
+        <COLUMN_WIDTH>10</COLUMN_WIDTH>
+        <COLUMN_TYPE>Date</COLUMN_TYPE>
+        <MASK>yyyy-MM-dd</MASK>
+    </COLUMN>
+</COLUMNS>]]></programlisting>
+		</section>
+		<section id="excel_sheet_config_attribute">
+		<title>Properties of Excel Sheet Configuration XML</title>
+		<para>The properties of Excel Sheet Configuration XML columns are as follows.</para>
+		<informaltable>
+			<tgroup cols="2">
+				<colspec colnum="1" colname="col1" colwidth="3*" />
+				<colspec colnum="2" colname="col2" colwidth="7*" />
+				<thead>
+					<row>
+						<entry align="center">Attribute</entry>
+						<entry align="center">Description</entry>
+					</row>
+				</thead>
+
+				<tbody>
+					<row>
+						<entry align="left">COLUMN_NAME</entry>
+						<entry align="left">header name to be shown in Excel files</entry>
+					</row>
+					<row>
+						<entry align="left">FIELD_NAME</entry>
+						<entry align="left">field name of Database (according to the mappingStyle value of Query Mapping XML)</entry>
+					</row>
+					<row>
+						<entry align="left">COLUMN_WIDTH</entry>
+						<entry align="left">column width to be shown in Excel files</entry>
+					</row>
+					<row>
+						<entry align="left">COLUMN_TYPE</entry>
+						<entry align="left">column type (Default: String)</entry>
+					</row>
+					<row>
+						<entry align="left">REQUIRED</entry>
+						<entry align="left">true when the field is not null</entry>
+					</row>
+				</tbody>
+			</tgroup>
+		</informaltable>
+		</section>
+</chapter>

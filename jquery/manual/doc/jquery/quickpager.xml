@@ -1,0 +1,51 @@
+<chapter id="jquery_quickpager">
+	<title>Quickpager</title>
+	<para>
+		jqgrid는 기본적으로 Paging 처리를 위한 Pager를 제공하고 있다. Anyframe에서는 pagenavigator와 유사한 Pager 출력을 위해 quickpager를 확장하여 사용하고 있다. quickpager를 사용하기 위해서는 리스트 Script내의 loadComplete 함수 안에 paging 정보를 셋팅 해주고 search 버튼을 클릭하는 이벤트를 발생 시키도록 한다.
+	</para> 
+	<section id="jquery_quickpager_sec001">
+		<title>jqgrid와 quickpager 연동</title>
+		<para>관련 jQuery 코드는 다음과 같다.</para>
+		<programlisting><![CDATA[jQuery("#grid").jqGrid({
+...중략...
+	loadComplete : function(xhr) {
+		$(paginationId).quickPager( {
+		pageSize: "10",
+		pageUnit: "10",
+		pageIndexId: 'grid_' + id + "_pageIndex",
+		searchButtonId: 'grid_' + id + "_btnSearch", 
+		currentPage: $(gridId).getGridParam("page"),
+		totalCount: $(gridId).getGridParam("records"),
+		searchUrl: "#"
+		});
+	},
+...중략...
+});
+
+$(gridId + "_btnSearch").click(function() {
+	$(gridId).setGridParam({
+		page: $(gridId + "_pageIndex").val(),
+		postData: {
+			searchKeyword:$(gridId + "_searchKeyword").val(), 
+			searchCondition:$(gridId + "_searchCondition").val()
+		}
+	});
+	$(gridId).setGridParam({url:"<c:url value='/jqueryBoard.do?method=list'/>"}).trigger("reloadGrid");
+});]]></programlisting>
+		<para>위와 같이 Script 코드가 작성 되면 pagenavigator 출력 부분에 아래와 같이 div 영역을 표시해준다.</para>
+		<programlisting><![CDATA[<div id="${gridId}_boardNav">
+	<div id="${gridId}_pagination" class="pagination"></div>
+</div>]]></programlisting>
+		<para>위와 같이 정의한 quickpager는 아래와 같은 pagenavigator를 출력하게 된다</para>
+		
+		<note>
+			<title>jqgrid에서 제공하는 pager</title>
+			<para>jqgrid에서도 paging 처리를 위한 간편한 pager를 제공한다. 구현 방법은 아래와 같다. </para>
+			<programlisting language="java"><![CDATA[//jqgrid 속성 설정 내에 정의
+pager : jQuery('#pager')
+
+<!-- JSP 내의 pager 출력 부분에 정의 -->
+<div id="pager" class="scroll" style="text-align: center;"></div>]]></programlisting>
+		</note>
+	</section>
+</chapter>

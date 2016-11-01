@@ -1,0 +1,32 @@
+			    <!--jquery-findMovieTitle-START-->
+				SELECT title
+				FROM JQUERY_MOVIE
+				WHERE title like :keyword + '%'
+				<!--jquery-findMovieTitle-END-->
+				<!--jquery-findJqueryMovieList-START-->
+				SELECT movie.movie_id, movie.title, movie.director, genre.name, movie.actors, movie.release_date, movie.ticket_price, movie.now_playing
+				FROM JQUERY_MOVIE movie, JQUERY_GENRE genre
+				WHERE movie.genre_id = genre.genre_id 
+				AND title like '%' + :vo.searchKeyword + '%'
+				AND movie.now_playing = :vo.nowPlayingCondition
+				<!--Velocity-Support-findJqueryMovieList-START-->
+					#if($vo.sidx &amp;&amp; !$vo.sidx.equals(""))ORDER BY
+					#if($vo.sidx == "genre.name")
+						genre.name
+					#elseif($vo.sidx == "title")
+						movie.title
+					#elseif($vo.sidx == "director")
+						movie.director
+					#elseif($vo.sidx == "actors")
+						movie.actors
+					#elseif($vo.sidx == "releaseDate")
+						movie.release_date
+					#end
+					#if($vo.sord == "desc" || $vo.sord == "")
+						DESC
+					#else
+						ASC
+					#end
+				#end
+				<!--Velocity-Support-findJqueryMovieList-END-->
+				<!--jquery-findJqueryMovieList-END-->
