@@ -35,11 +35,13 @@ import com.ibatis.sqlmap.client.SqlMapClient;
 @Repository("ibatis2MovieDao")
 public class MovieDao extends SqlMapClientDaoSupport {
 
+	//Velocity-Support-contextProperties-START
 	@Value("#{contextProperties['pageSize'] ?: 10}")
 	int pageSize;
 
 	@Value("#{contextProperties['pageUnit'] ?: 10}")
 	int pageUnit;
+	//Velocity-Support-contextProperties-END
 
 	@Inject
 	public void setSuperSqlMapClient(SqlMapClient sqlMapClient) {
@@ -48,20 +50,20 @@ public class MovieDao extends SqlMapClientDaoSupport {
 
 	public void create(Movie movie) {
 		movie.setMovieId("MV-" + System.currentTimeMillis());
-		getSqlMapClientTemplate().insert("insertMovie", movie);
+		super.getSqlMapClientTemplate().insert("insertMovie", movie);
 	}
 
 	public void update(Movie movie) {
-		getSqlMapClientTemplate().update("updateMovie", movie);
+		super.getSqlMapClientTemplate().update("updateMovie", movie);
 	}
 
 	public void remove(String movieId) {
-		getSqlMapClientTemplate().delete("deleteMovie", movieId);
+		super.getSqlMapClientTemplate().delete("deleteMovie", movieId);
 	}
 
 	public Movie get(String movieId) {
-		return (Movie) getSqlMapClientTemplate().queryForObject("getMovie",
-				movieId);
+		return (Movie) super.getSqlMapClientTemplate().queryForObject(
+				"getMovie", movieId);
 	}
 
 	@SuppressWarnings("unchecked")
@@ -70,11 +72,11 @@ public class MovieDao extends SqlMapClientDaoSupport {
 		searchArgs.setTitle("%" + movie.getTitle() + "%");
 		searchArgs.setNowPlaying(movie.getNowPlaying());
 
-		List<Movie> list = getSqlMapClientTemplate().queryForList(
+		List<Movie> list = super.getSqlMapClientTemplate().queryForList(
 				"getMovieList", searchArgs, pageSize * (pageIndex - 1),
 				pageSize);
-		int rowCount = (Integer) getSqlMapClientTemplate().queryForObject(
-				"getMovieListCnt", searchArgs);
+		int rowCount = (Integer) super.getSqlMapClientTemplate()
+				.queryForObject("getMovieListCnt", searchArgs);
 
 		return new Page(list, pageIndex, rowCount, pageUnit, pageSize);
 	}
