@@ -4,7 +4,7 @@
 
 <head>
 <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
-<title>Anyframe 5.5.0 Main</title>
+<title>Anyframe 5.5.0.RC1 Main</title>
 <link rel="stylesheet" type="text/css" href="<c:url value='/sample/css/layout.css'/>"/>
 <link rel="stylesheet" type="text/css" href="<c:url value='/sample/css/common.css'/>"/>
 </head>

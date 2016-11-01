@@ -56,7 +56,7 @@ public class MovieController {
 
 	@ModelAttribute("genreList")
 	public Collection<Genre> populateGenreList() throws Exception {
-		return genreService.getList();
+		return this.genreService.getList();
 	}
 
 	@RequestMapping(params = "method=createView")
@@ -73,7 +73,7 @@ public class MovieController {
 		if (results.hasErrors())
 			return "logback/moviefinder/movie/form";
 
-		movieService.create(movie);
+		this.movieService.create(movie);
 		status.setComplete();
 
 		return "redirect:/logbackMovieFinder.do?method=list";
@@ -82,7 +82,7 @@ public class MovieController {
 	@RequestMapping(params = "method=get")
 	public String get(@RequestParam("movieId") String movieId, Model model)
 			throws Exception {
-		Movie movie = movieService.get(movieId);
+		Movie movie = this.movieService.get(movieId);
 		if (movie == null) {
 			throw new Exception("Resource not found " + movieId);
 		}
@@ -95,10 +95,10 @@ public class MovieController {
 	public String update(@Valid Movie movie, BindingResult results,
 			SessionStatus status) throws Exception {
 		if (results.hasErrors()) {
-			return "logback/moviefinder/movie/form";
+			return "login/moviefinder/movie/form";
 		}
 
-		movieService.update(movie);
+		this.movieService.update(movie);
 		status.setComplete();
 
 		return "redirect:/logbackMovieFinder.do?method=list";
@@ -107,7 +107,7 @@ public class MovieController {
 	@RequestMapping(params = "method=remove")
 	public String remove(@RequestParam("movieId") String movieId)
 			throws Exception {
-		movieService.remove(movieId);
+		this.movieService.remove(movieId);
 		return "redirect:/logbackMovieFinder.do?method=list";
 	}
 }

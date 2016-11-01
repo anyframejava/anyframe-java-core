@@ -37,7 +37,7 @@
     </appender>]]></programlisting>
 	    
 	    <para>다음은 위에서 정의한 ConsoleAppender를 활용하여 출력한 로그메시지의 일부이다.  </para>
-	    <programlisting language="java"><![CDATA[    215  [main] INFO  consoleLogger - console Appender Test 
+	    <programlisting language="xml"><![CDATA[    215  [main] INFO  consoleLogger - console Appender Test 
     220  [main] DEBUG consoleLogger - this is a debug log message]]></programlisting> 
 		</section>
 		
@@ -47,7 +47,6 @@
 			<para>FileAppender의 주요속성들은 다음과 같다.</para>
 			
 			<informaltable>
-				<caption>FileAppender의 주요속성</caption>
 				<tgroup cols="4">
 					<colspec colnum="1" colname="col1" colwidth="1*" />
 					<colspec colnum="2" colname="col2" colwidth="6*" />
@@ -99,7 +98,6 @@
 			<para> RollingFileAppender은 기본적으로 FileAppender의 모든 속성들을 가지고 있고 RollingAppender의 추가적인 속성들은 다음과 같다.  </para>
 			
 			<informaltable>
-				<caption>RollingAppender의 추가적인 속성</caption>
 				<tgroup cols="4">
 					<colspec colnum="1" colname="col1" colwidth="2*" />
 					<colspec colnum="2" colname="col2" colwidth="4*" />
@@ -178,7 +176,6 @@
 			<para>AsyncAppender의 주요 속성은 다음과 같다.</para>
 			
 			<informaltable>
-				<caption>AsyncAppender의 주요 속성</caption>
 				<tgroup cols="4">
 					<colspec colnum="1" colname="col1" colwidth="2*" />
 					<colspec colnum="2" colname="col2" colwidth="4*" />
@@ -243,7 +240,6 @@
 				<title>LOGGING_EVENT 테이블</title>
 				<para>LOGGING_EVENT 테이블은 로그메시지, timestamp 등 일반적인 로그 이벤트 정보를 저장하는 역할을 하는 테이블이다. 테이블의 각 컬럼은 다음과 같다.</para>
 				<informaltable>
-				<caption>LOGGING_EVENT 테이블 컬럼</caption>
 				<tgroup cols="3">
 					<colspec colnum="1" colname="col1" colwidth="2*" />
 					<colspec colnum="2" colname="col2" colwidth="1*" />
@@ -317,7 +313,6 @@
 				<title>LOGGING_EVENT_PROPERTY 테이블</title>
 				<para>LOGGING_EVENT_PROPERTY 테이블은 로깅 이벤트가 발생했을 때 컨텍스트에 저장된 프로퍼티 정보와 MDC에 저장된 정보를 저장하는 용도로 사용되는 테이블이다. 테이블의 각 컬럼은 다음과 같다. </para>
 				<informaltable>
-					<caption>LOGGING_EVENT_PROPERTY 테이블 컬럼</caption>
 					<tgroup cols="3">
 					<colspec colnum="1" colname="col1" colwidth="2*" />
 					<colspec colnum="2" colname="col2" colwidth="1*" />
@@ -356,7 +351,6 @@
 				<para>LOGGING_EXCEPTION 테이블은 로깅이벤트가 발생했을 때, 로그메시지와 함께 파라미터로 Exception 객체를 넘겨주는 경우 Exception 정보를 이용하여 stackTrace 정보를 저장하는 테이블이다. 테이블의 각 컬럼은 다음과 같다.</para> 
 			
 				<informaltable>
-					<caption>LOGGING_EXCEPTION 테이블 컬럼</caption>
 					<tgroup cols="3">
 						<colspec colnum="1" colname="col1" colwidth="2*" />
 						<colspec colnum="2" colname="col2" colwidth="1*" />
@@ -391,7 +385,6 @@
 				 
 			<para>DBAppender의 주요 속성은 다음과 같다.</para>
 			<informaltable>
-				<caption>DBAppender의 주요 속성</caption>
 				<tgroup cols="4">
 					<colspec colnum="1" colname="col1" colwidth="2*" />
 					<colspec colnum="2" colname="col2" colwidth="4*" />
@@ -578,7 +571,6 @@
 			<para>SMTPAppender의 주요속성은 다음과 같다. </para>
 			
 			<informaltable>
-				<caption>SMTPAppender의 주요 속성</caption>
 				<tgroup cols="4">
 					<colspec colnum="1" colname="col1" colwidth="2*" />
 					<colspec colnum="2" colname="col2" colwidth="4*" />
@@ -800,10 +792,10 @@
     logger.error("the second message : " + ip1);]]></programlisting>
     
     <para>해당 샘플코드를 실행하여 메일이 정상적으로 전송되면 두 건의 메일이 전송되고, 두 건의 메일내용이 각각  다른 MDC의 값에 분류된 내용이 전송이 된다. 다음은 해당 예제를 이용하여 전송된 메일 중 두번째 버퍼의 내용에 의해 전송된 메일 본문이다.  </para>
-	    <programlisting language="java"><![CDATA[    2012-10-04 15:13:03,971 WARN  discriminatorSMTP - the first message : 255.255.255.255
+	    <programlisting language="xml"><![CDATA[    2012-10-04 15:13:03,971 WARN  discriminatorSMTP - the first message : 255.255.255.255
     2012-10-04 15:13:03,971 ERROR discriminatorSMTP - the second message : 255.255.255.255]]></programlisting> 
     <para>다음은 해당 예제를 이용하여 전송된 메일 중 첫번째 버퍼의 내용에 의해 전송된 메일 본문이다.  </para>
-	    <programlisting language="java"><![CDATA[    2012-10-04 15:13:03,970 WARN  discriminatorSMTP - the first message : 127.0.0.1
+	    <programlisting language="xml"><![CDATA[    2012-10-04 15:13:03,970 WARN  discriminatorSMTP - the first message : 127.0.0.1
     2012-10-04 15:13:03,971 ERROR discriminatorSMTP - the second message : 127.0.0.1]]></programlisting> 
 	</section>
 		
@@ -813,7 +805,6 @@
 			SyslogAppender는 Syslog 프로토콜로 로그정보를 전송하는 역할을 하므로 SocketAppender 와 유사하게 별도의 Layout은 설정하지 않고 메시지는 포맷을 처리하기 위해서 suffixPattern을 사용한다. </para>
 			<para>SyslogAppender의 주요 속성은 다음과 같다.</para>
 			<informaltable>
-				<caption>SyslogAppender의 주요 속성</caption>
 				<tgroup cols="4">
 					<colspec colnum="1" colname="col1" colwidth="2*" />
 					<colspec colnum="2" colname="col2" colwidth="4*" />
@@ -930,7 +921,6 @@
 		
 		<para>Logger의 주요 속성은 다음과 같다.</para>
 		<informaltable>
-			<caption>Logger의 주요 속성</caption>
 				<tgroup cols="4">
 					<colspec colnum="1" colname="col1" colwidth="1*" />
 					<colspec colnum="2" colname="col2" colwidth="6*" />

@@ -30,7 +30,7 @@ import org.springframework.stereotype.Repository;
 public class GenreDao extends SqlSessionDaoSupport {
 
 	public List<Genre> getList() {
-		return super.getSqlSession().selectList("Genre.getGenreList");
+		return getSqlSession().selectList("Genre.getGenreList");
 	}
 
 }

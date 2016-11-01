@@ -32,29 +32,27 @@ import org.springframework.stereotype.Repository;
 @Repository("mybatisMovieDao")
 public class MovieDao extends SqlSessionDaoSupport {
 
-	//Velocity-Support-contextProperties-START
 	@Value("#{contextProperties['pageSize'] ?: 10}")
 	int pageSize;
 
 	@Value("#{contextProperties['pageUnit'] ?: 10}")
 	int pageUnit;
-	//Velocity-Support-contextProperties-END
 
 	public void create(Movie movie) {
 		movie.setMovieId("MV-" + System.currentTimeMillis());
-		super.getSqlSession().insert("Movie.insertMovie", movie);
+		getSqlSession().insert("Movie.insertMovie", movie);
 	}
 
 	public void update(Movie movie) {
-		super.getSqlSession().update("Movie.updateMovie", movie);
+		getSqlSession().update("Movie.updateMovie", movie);
 	}
 
 	public void remove(String movieId) {
-		super.getSqlSession().delete("Movie.deleteMovie", movieId);
+		getSqlSession().delete("Movie.deleteMovie", movieId);
 	}
 
 	public Movie get(String movieId) {
-		return super.getSqlSession().selectOne("Movie.getMovie", movieId);
+		return (Movie) getSqlSession().selectOne("Movie.getMovie", movieId);
 	}
 
 	public Page getPagingList(Movie movie, int pageIndex) {
@@ -62,11 +60,11 @@ public class MovieDao extends SqlSessionDaoSupport {
 		searchArgs.setTitle("%" + movie.getTitle() + "%");
 		searchArgs.setNowPlaying(movie.getNowPlaying());
 
-		List<Movie> list = super.getSqlSession().selectList(
-				"Movie.getMovieList", searchArgs,
-				new RowBounds(pageSize * (pageIndex - 1), pageSize));
+		List<Movie> list = getSqlSession()
+				.selectList("Movie.getMovieList", searchArgs,
+						new RowBounds(pageSize * (pageIndex - 1), pageSize));
 
-		int rowCount = (Integer) super.getSqlSession().selectOne(
+		int rowCount = (Integer) getSqlSession().selectOne(
 				"Movie.getMovieListCnt", searchArgs);
 
 		return new Page(list, pageIndex, rowCount, pageUnit, pageSize);

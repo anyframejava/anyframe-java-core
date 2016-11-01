@@ -60,7 +60,6 @@ public class Movie implements Serializable {
 	private Date releaseDate;
 
 	@NumberFormat(pattern = "#,###")
-	@DecimalMin(value = "1")
 	@Digits(integer = 4, fraction = 0)
 	private Float ticketPrice;
 
