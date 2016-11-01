@@ -1,0 +1,129 @@
+<?xml version="1.0" encoding="utf-8"?>
+<mx:Module xmlns:fx="http://ns.adobe.com/mxml/2009" 
+		   xmlns:s="library://ns.adobe.com/flex/spark" 
+		   xmlns:mx="library://ns.adobe.com/flex/mx" 
+		   width="100%"	height="100%"
+		   layout="vertical"
+		   initialize="init()" 
+		   backgroundColor="#d8d8d8" 
+		   verticalScrollPolicy="off" 
+		   horizontalScrollPolicy="off">
+	
+	<fx:Script>
+		<![CDATA[
+			import samples.renderer.ResultHandler;
+			import samples.domain.Community;
+			import mx.controls.Alert;
+			import samples.event.CommunityEvent;
+			import samples.domain.SearchVO;
+			import mx.rpc.events.ResultEvent;
+			import mx.collections.ArrayCollection;
+			import mx.collections.ItemResponder;
+			import mx.rpc.AsyncToken;
+			
+			private const COMPUTER:String = "CATEGORY-0001";
+			private const CAR:String = "CATEGORY-0002";
+			
+			private var updateCommunityList:ArrayCollection = new ArrayCollection();
+			
+			private function init():void{
+				var computerSearchVO:SearchVO = new SearchVO("Community");
+				computerSearchVO.searchCondition = "categoryId";
+				computerSearchVO.searchKeyword = this.COMPUTER;
+				
+				var responder : ItemResponder = new ItemResponder(getCommunityListByComputerResultHandler, null); 
+            	var token : AsyncToken = communityService.getList(computerSearchVO);
+            	token.addResponder(responder);
+            	
+				var carSearchVO:SearchVO = new SearchVO("Community");
+				carSearchVO.searchCondition = "categoryId";
+				carSearchVO.searchKeyword = this.CAR;
+				
+				responder = new ItemResponder(getCommunityListByCarResultHandler, null); 
+            	token = communityService.getList(carSearchVO);
+            	token.addResponder(responder);
+			}
+			
+			private function getCommunityListByComputerResultHandler(event:ResultEvent,  token:AsyncToken):void{
+				computerList = event.result as ArrayCollection;
+			}
+			
+			private function getCommunityListByCarResultHandler(event:ResultEvent,  token:AsyncToken):void{
+				carList = event.result as ArrayCollection;
+			}
+			
+			private function toRight():void{
+				if ( grdComputer.selectedIndex != -1 ){
+					var community:Community = grdComputer.selectedItem as Community;
+					grdComputer.dataProvider.removeItemAt(grdComputer.selectedIndex);
+					community.status = 2;
+					community.categoryId = this.CAR;
+					grdCar.dataProvider.addItem(community);
+					updateCommunityList.addItem(community);
+				} 
+				
+			}
+			
+			private function toLeft():void{
+				if ( grdCar.selectedIndex != -1 ){
+					var community:Community = grdCar.selectedItem as Community;
+					grdCar.dataProvider.removeItemAt(grdCar.selectedIndex);
+					community.status = 2;
+					community.categoryId = this.COMPUTER;
+					grdComputer.dataProvider.addItem(community);
+					updateCommunityList.addItem(community);
+				} 
+			}
+			private function update():void{
+				var responder : ItemResponder = new ItemResponder(updateResultHandler, null); 
+            	var token : AsyncToken = communityService.saveAll(updateCommunityList);
+            	token.addResponder(responder);
+			}
+			
+			private function updateResultHandler(event:ResultEvent, token:AsyncToken):void{
+				init();
+			}
+		]]>
+	</fx:Script>
+	
+	<fx:Declarations>
+		<!-- Place non-visual elements (e.g., services, value objects) here -->
+		<mx:ArrayCollection id="computerList"/>
+		
+		<mx:ArrayCollection id="carList"/>
+		
+		<mx:RemoteObject id="communityService" destination="communityService" showBusyCursor="true">
+			<mx:method name="getList" fault="ResultHandler.faultMessage(event)"/>
+			<mx:method name="saveAll" fault="ResultHandler.faultMessage(event)"/>
+		</mx:RemoteObject>
+	</fx:Declarations>
+	
+	<mx:Panel title="카테고리 이동" width="100%" height="100%" layout="vertical" verticalScrollPolicy="off" horizontalScrollPolicy="off"
+			  color="#FFFFFF" titleBackgroundSkin="@Embed('../assets/images/bg_title.png')">
+		<mx:HBox width="100%" horizontalAlign="right" paddingTop="5" paddingRight="5" paddingBottom="5" color="#000000">
+			<mx:Button label="조회" id="getDataButton" click="init()"/>
+			<mx:Button label="저장" id="updateButton" click="update()" icon="@Embed(source='../assets/images/icon_save.png')"/>	
+		</mx:HBox>
+		<mx:HBox width="100%" horizontalAlign="center" verticalAlign="middle" color="#000000">
+			<mx:DataGrid width="345" height="390" id="grdComputer" dataProvider="{computerList}" verticalScrollPolicy="auto" horizontalScrollPolicy="off" editable="false" 
+						 rowHeight="22" allowMultipleSelection="false" borderStyle="solid" borderColor="#a7a8ab">
+				<mx:headerBackgroundSkin>@Embed(source='../assets/images/bg_gridHeader.png')</mx:headerBackgroundSkin>
+				<mx:columns>
+					<mx:DataGridColumn dataField="communityName" headerStyleName="dataGridHeaderAlign" headerText="컴퓨터"/>
+				</mx:columns>
+			</mx:DataGrid>
+			<mx:VBox>
+				<mx:Button label="&gt;&gt;" width="35" height="18" id="moveToRight" click="toRight()"/>
+				<mx:Button label="&lt;&lt;" width="35" height="18" id="moveToLeft" click="toLeft()"/>	
+			</mx:VBox>
+			<mx:DataGrid width="345" height="390" id="grdCar" dataProvider="{carList}" verticalScrollPolicy="auto" horizontalScrollPolicy="off" editable="false"
+						 rowHeight="22" borderStyle="solid" borderColor="#a7a8ab">
+				<mx:headerBackgroundSkin>@Embed(source='../assets/images/bg_gridHeader.png')</mx:headerBackgroundSkin>
+				<mx:columns>
+					<mx:DataGridColumn dataField="communityName" headerStyleName="dataGridHeaderAlign" headerText="자동차"/>
+				</mx:columns>
+			</mx:DataGrid>
+		</mx:HBox>
+		
+	</mx:Panel>
+</mx:Module>

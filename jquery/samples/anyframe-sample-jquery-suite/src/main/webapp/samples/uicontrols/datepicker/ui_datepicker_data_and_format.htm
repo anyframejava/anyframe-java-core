@@ -1,0 +1,112 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN"
+"http://www.w3.org/TR/html4/loose.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+
+<!-- Start of head-->
+<head>
+<meta http-equiv="content-type" content="text/html; charset=UTF-8" />
+<title>Datepicker : Data and Format</title>
+<!-- TODO: 타이틀 작성 -->
+
+<!-- include required common files  ----------------------------------------------------->
+<script type="text/javascript" src="../../../common/exlibs/jquery-1.9.0.js" ></script>
+<script type="text/javascript" src="../../../common/exlibs/highlighter/scripts/shCore.js" ></script>
+<script type="text/javascript" src="../../../common/exlibs/highlighter/scripts/shBrushJScript.js" ></script>
+<script type="text/javascript" src="../../../common/js/template_common.js" ></script>
+
+<!--  stylesheet  -->
+<link type="text/css" rel="stylesheet" href="../../../common/exlibs/highlighter/styles/shCore.css"/>
+<link type="text/css" rel="stylesheet" href="../../../common/exlibs/highlighter/styles/shCoreDefault.css"/>
+<link type="text/css" rel="stylesheet" href="../../../common/css/style.css"/>
+
+
+<!-- scripts to support sample page  ----------------------------------------------------->
+<script type="text/javascript">
+
+$(function() {
+	JTemplate.load("ui_datepicker_data_and_format_src.htm");		
+	JTemplate.loadDemo2("ui_datepicker_data_and_format_src.htm", {height:'300px'});
+});  
+
+</script>
+
+</head>
+<!-- End of head -->
+
+<!-- Start of body -->
+<body >
+
+
+<!-- HEADER BAR -------------------------------------------------------------->
+<div class="content-title">Component - Datepicker</div>
+
+<!-- START OF PAGE ... -------------------------------------------------------->
+<div id="page">
+	<p class="header-title">Datepicker 날짜단위 및 형식 변경</p>
+	<p class="header-desc">: Datepicker 에 의해서 선택된 날짜가 표기되는 방식에 대해  날짜단위, 형식의 변경의 예를 보여준다.</p>
+
+<!-- DEMO ----------------------------------------------------------------------->
+	<div class="demo">
+		<h3 >Demo</h3>
+			<div id="visualExample"></div>
+	</div>
+
+<!-- DEMO DESCRIPTION----------------------------------------------------->
+	<div class="desc">
+		<h3>Demo Description</h3>
+		<hr>
+		
+		<p class="desc-title">Datepicker 표기방식</p>
+		<p class="desc-overall">  
+		: datepicker로 선택한 날짜를 보여줄 때, 나타내는 표기방식을 각 단위,형식 변경을 통해 바꾸어 볼 수 있다.
+		</p>
+		<ul class ="desc-hypl">
+			<li><span>단위 변경</span> : 년, 월, 일 에 해당하는 날짜의 단위를 특정 문자구분단위 혹은 한자단위로 변경할 수 있다.</li>
+			<li><span>형식 변경</span> : 날짜의 숫자값 자체를 형식을 다르게하여 변경할 수 있다.</li>
+		</ul>
+	</div>
+			
+<!-- CODE------------------------------------------------------------------------>
+	<div class="code">
+		<h3>Code Source </h3>
+		<pre id="codeExample" class="brush: js"></pre>
+	</div>
+
+<!-- CODE DESCRIPTION------------------------------------------------------>
+	<div class="desc">
+		<h3>Code Description </h3>
+		<hr>
+		
+		<p class="desc-title">날짜선택</p>
+		<span class="code-line">#60 ~ #69 </span>
+		<p class="desc-overall">  
+		: Datepicker에서 선택하는 순간 이루어질 동작들은 onSelect 옵션을 통해 다음과 같은 과정을 통해 함수를 작성할 수 있다.
+		</p>
+		<ul class ="desc-ul">
+			<li><span>date parameter</span> 
+			: date는 "월/일/년도" 와 같은 정보를 넘겨주며, string 값이다.
+			따라서 이 값을 substr()과 같은 함수를 사용하여 각 년도, 월, 일의 값을 얻을 수 있다.</li>
+			<li><span>getDate</span>
+			: 자바스크립트의 일반적인 Date 오브젝트를 얻은 후, getMonth(), getFullYear(), getDate()로 각 년도, 월, 일의 단위숫자값을 얻을 수 있다.</li>
+			<li><span></span> 
+			: 본 예제에서는 이와 같은 방식을 사용했으며, prop() 메소드로 각 입력창의 value값으로 이렇게 얻은 단위숫자값을 설정했다.</li>
+		</ul>
+	</div>
+<!-- RELATED LINKS ----------------------------------------------------------->
+	<div class="related">
+		<h3>Related Links</h3>
+		<hr>
+		 <ul class="desc-hypl">
+           	<li>
+           		<span>Datepicker API</span>
+           		<a href = "http://api.jqueryui.com/datepicker/"></a>
+           	</li>	
+		</ul>
+	</div>
+
+</div>
+<!-- END OF PAGE------------------------------------------------------------->
+</body>
+<!-- End of body-->
+
+</html>

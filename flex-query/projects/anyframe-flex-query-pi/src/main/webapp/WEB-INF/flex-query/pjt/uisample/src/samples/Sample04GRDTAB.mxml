@@ -1,0 +1,284 @@
+<?xml version="1.0" encoding="utf-8"?>
+<mx:Module xmlns:fx="http://ns.adobe.com/mxml/2009" 
+		   xmlns:s="library://ns.adobe.com/flex/spark" 
+		   xmlns:mx="library://ns.adobe.com/flex/mx"
+		   xmlns:domain="samples.domain.*"
+		   width="100%" height="100%" 
+		   layout="vertical"
+		   initialize="init()" 
+		   backgroundColor="#d8d8d8" 
+		   verticalScrollPolicy="off" 
+		   horizontalScrollPolicy="off">
+	<fx:Script>
+		<![CDATA[
+		import mx.events.CollectionEvent;
+		import mx.controls.Alert;
+		import samples.domain.User;
+		import mx.events.DataGridEvent;
+		import mx.rpc.events.ResultEvent;
+		import mx.events.ListEvent;
+		import samples.domain.SearchVO;
+		import mx.rpc.events.FaultEvent;
+		import samples.renderer.ResultHandler;
+		
+		[Bindable]
+		private var userList:ArrayCollection = new ArrayCollection();
+		
+		private var deleteUserList:ArrayCollection = new ArrayCollection();
+			
+		private function init():void{
+			userInfo = new User();
+			deptService.getList(new SearchVO("Dept"));
+			getUserList();
+		}
+		private function getUserList():void{
+				var searchVO:SearchVO = new SearchVO("User");
+				searchVO.searchCondition = searchCondition.selectedItem.data;
+				searchVO.searchKeyword = searchKeyword.text;
+				userService.getList(searchVO);
+		}
+		
+		private function getUserListResultHandler(event:ResultEvent):void{
+			userList = event.result as ArrayCollection;
+		}
+		
+		private function getDeptListResultHandler(event:ResultEvent):void{
+			deptList = event.result as ArrayCollection;
+		}
+		
+		private function getUserDetail(selectedUser:User):void{
+			userInfo = selectedUser;
+		}
+		
+		private function addUser():void{
+			var addUser:User = new User();
+			addUser.status = 1;
+			grdUser.dataProvider.addItem(addUser);
+			grdUser.selectedItem = addUser;
+			getUserDetail(addUser);
+		}
+		
+		private function deleteUser():void{
+			var chkUserList:ArrayCollection = new ArrayCollection();
+			for ( var i:int = 0 ; i < userList.length ; i ++ ){
+				var chkUser:User = userList.getItemAt(i) as User;
+				if(chkUser.check){
+					chkUserList.addItem(chkUser);
+				}
+			}
+			if ( chkUserList.length == 0 ){ 
+				Alert.show("선택 된 Row가 없습니다.");
+			}else{
+				for ( var j:int = 0 ; j < chkUserList.length ; j ++ ){
+					var deleteUser:User = chkUserList.getItemAt(j) as User;
+					if( deleteUser.status != 1 ){
+						deleteUser.status = 3;
+						deleteUserList.addItem(deleteUser);
+					}
+					grdUser.dataProvider.removeItemAt(userList.getItemIndex(deleteUser));
+				}
+			}
+		}
+		
+		private function updateUser():void{
+			if( userInfo.status == 0 ){
+				userInfo.status = 2;
+			} 
+		}
+		
+		 private function saveUser():void{
+		 		var saveUserList:ArrayCollection = new ArrayCollection();
+		 		for ( var j:int = 0 ; j < deleteUserList.length ; j ++ ){
+		    		saveUserList.addItem(deleteUserList.getItemAt(j));
+		    	}
+		    	for ( var i:int = 0 ; i < userList.length ; i ++ ){
+		    		var user:User = userList.getItemAt(i) as User;
+		    		if( user.status != 0 ){
+		    			if( user.userName == null || user.userName == "" ){
+							Alert.show( "이름을 입력하지 않은 Row가 있습니다. ");
+							return;
+		    			}else if ( user.password == null || user.password.length == 0 ){
+		    			 	Alert.show( user.userName + "의 Password를 입력하지 않았습니다.");
+							return;
+		    			}else if( user.deptId == null ){
+		    				Alert.show( user.userName + "의 부서를 선택하지 않았습니다.");
+							return;
+		    			}else{
+		    				saveUserList.addItem(user);
+		    			}
+		    		}
+		    	}
+		    	if ( saveUserList.length == 0 ){
+		    		mx.controls.Alert.show("변경된 데이터가 없습니다.");
+		    	}else{
+		    		userService.saveAll(saveUserList);
+		    	}
+		    }
+		    
+		     private function saveAllResultHandler(event:ResultEvent):void{
+		    	mx.controls.Alert.show(ResultHandler.saveAllResultMessage(event));
+		    	deleteUserList.removeAll();
+		    	getUserList();
+		    }
+		    
+		    private function saveAllFaultHandler(event:FaultEvent):void{
+		   		 mx.controls.Alert.show("저장에 실패 했습니다.");
+		    }
+		    
+		]]>
+	</fx:Script>
+	
+	<fx:Declarations>
+		<!-- Place non-visual elements (e.g., services, value objects) here -->
+		<domain:User id="userInfo"
+					 userId="{formUserId.text}"	
+					 userName="{formUserName.text}"
+					 password="{formPassword.text}"
+					 enName="{formEnName.text}"
+					 zipCode="{formZipCode.text}"
+					 address="{formAddress.text}"
+					 phone="{formPhone.text}"
+					 cellPhone="{formCellPhone.text}"
+					 company="{formCompany.text}"
+					 deptId="{comboDept.selectedItem.deptId}"
+					 email="{formEmail.text}"
+					 />
+		
+		<mx:ArrayCollection id="deptList"/>
+		
+		<mx:ArrayCollection id="searchConditionValue">
+			<fx:Object label="이름" data="userName"/>
+			<fx:Object label="ID" data="userId"/>
+		</mx:ArrayCollection> 
+		
+		<fx:Array id="columnsInfo">
+			<mx:DataGridColumn width="19" textAlign="center" dataField="check" editable="false" sortable="false" headerRenderer="samples.renderer.CheckBoxHeaderRenderer" headerStyleName="dataGridHeaderCenter">
+				<mx:itemRenderer>
+					<fx:Component>
+						<mx:Canvas width="100%">
+							<mx:CheckBox id="chk" selected="{data.check}" change="data.check=chk.selected" horizontalCenter="0" width="100%"/>
+						</mx:Canvas>
+					</fx:Component>
+				</mx:itemRenderer>
+			</mx:DataGridColumn>
+			<mx:DataGridColumn headerText="성명" dataField="userName"/>
+			<mx:DataGridColumn headerText="아이디" dataField="userId"/>
+			<mx:DataGridColumn headerText="전자우편" dataField="email" width="184"/>
+			<mx:DataGridColumn headerText="전화" dataField="phone"/>
+			<mx:DataGridColumn headerText="이동전화" dataField="cellPhone"/>
+		</fx:Array>
+		
+		<mx:RemoteObject id="userService" destination="userService" showBusyCursor="true">
+			<mx:method name="getList" result="getUserListResultHandler(event)" fault="ResultHandler.faultMessage(event)"/>
+			<mx:method name="saveAll" result="saveAllResultHandler(event)"/>
+		</mx:RemoteObject>
+		
+		<mx:RemoteObject id="deptService" destination="deptService" showBusyCursor="true">
+			<mx:method name="getList" result="getDeptListResultHandler(event)" fault="ResultHandler.faultMessage(event)"/>
+		</mx:RemoteObject>
+		
+		<mx:Validator id="val_userName"  source="{formUserName}"  property="text" requiredFieldError="이름을 입력하세요"/>
+		<mx:Validator id="val_pwd" source="{formPassword}" property="text" requiredFieldError="패스워드를 입력하세요"/>
+		
+	</fx:Declarations>
+	
+	<mx:Panel title="사용자 목록" width="100%" height="100%" layout="vertical" verticalScrollPolicy="off" horizontalScrollPolicy="off"
+			  color="#FFFFFF" titleBackgroundSkin="@Embed('../assets/images/bg_title.png')" paddingLeft="5" paddingRight="5" paddingBottom="5" verticalGap="5">
+		<mx:HBox width="100%" horizontalGap="0" paddingBottom="5" paddingLeft="0" paddingRight="0"
+				 color="#000000" paddingTop="5" verticalAlign="middle">
+			<mx:HBox width="70%" horizontalAlign="left" verticalAlign="middle">
+				<mx:ComboBox id="searchCondition" width="119" dataProvider="{searchConditionValue}" rowCount="2" fontWeight="bold"/>
+				<mx:TextInput id="searchKeyword" height="19" width="179" borderColor="#abbdd2" borderStyle="solid" enter="getUserList()" color="#333333"/>
+				<mx:Button id="searchButton" label="검색" toolTip="Search" click="getUserList()"/>
+			</mx:HBox>
+			<mx:HBox width="30%" horizontalAlign="right">
+				<mx:Button label="추가" icon="@Embed(source='../assets/images/icon_plus.png')" textAlign="left" click="addUser()"/>
+				<mx:Button label="삭제" icon="@Embed(source='../assets/images/icon_delete.png')" textAlign="left" click="deleteUser()"/>
+				<mx:Button label="저장" icon="@Embed(source='../assets/images/icon_save.png')" textAlign="left" click="saveUser()"/>
+			</mx:HBox>
+		</mx:HBox>
+		<mx:DataGrid id="grdUser" width="100%" height="235"
+					 click="getUserDetail(grdUser.selectedItem as User)" columns="{columnsInfo}"
+					 dataProvider="{userList}" doubleClickEnabled="true" editable="false">
+		</mx:DataGrid>
+		<mx:TabNavigator id="tn" width="100%" height="150" color="#000000" >
+			<mx:HBox id="standardTab" label="기본정보" width="100%" height="100%" backgroundAlpha="0" x="0">
+				
+				<mx:Form width="50%" paddingBottom="10" paddingLeft="10" paddingRight="10"
+						 paddingTop="10" verticalGap="3">
+					<mx:FormItem label="ID">
+						<mx:TextInput id="formUserId" text="{userInfo.userId}" height="19" editable="false"/>
+					</mx:FormItem>
+					<mx:FormItem label="이름">
+						<mx:TextInput id="formUserName" height="19" change="updateUser()" maxChars="10" text="{userInfo.userName}"/>	
+					</mx:FormItem>
+					
+					<mx:FormItem label="PW">
+						<mx:TextInput height="19" id="formPassword" text="{userInfo.password}" maxChars="12" change="updateUser()" />
+					</mx:FormItem>
+					
+					<mx:FormItem label="영문이름">
+						<mx:TextInput height="19" id="formEnName" text="{userInfo.enName}" maxChars="20" imeMode="ALPHANUMERIC_HALF" change="updateUser()"/>	
+					</mx:FormItem>
+				</mx:Form>
+				<mx:Form width="50%" paddingBottom="10" paddingLeft="10" paddingRight="10" paddingTop="10" verticalGap="3">
+					<mx:FormItem label="우편번호">
+						<mx:TextInput height="19" id="formZipCode" text="{userInfo.zipCode}" change="updateUser()"/>	
+					</mx:FormItem>
+					
+					<mx:FormItem label="상세주소">
+						<mx:TextInput height="19" id="formAddress" text="{userInfo.address}" change="updateUser()"/>	
+					</mx:FormItem>
+					
+					<mx:FormItem label="자택전화">
+						<mx:TextInput height="19" id="formCellPhone" text="{userInfo.cellPhone}" change="updateUser()"/>	
+					</mx:FormItem>
+					
+					<mx:FormItem label="이동전화">
+						<mx:TextInput height="19" id="formPhone" text="{userInfo.phone}" change="updateUser()"/>	
+					</mx:FormItem>
+				</mx:Form>
+				
+			</mx:HBox>
+			
+			<mx:HBox id="extTab" label="추가정보" width="100%" height="100%" backgroundAlpha="0" x="0">
+				<mx:Form width="50%" paddingBottom="10" paddingLeft="10" paddingRight="10" paddingTop="10" verticalGap="3">
+					<mx:FormItem label="회사">
+						<mx:TextInput id="formCompany" text="{userInfo.company}" height="19" change="updateUser()"/>	
+					</mx:FormItem>
+					
+					<mx:FormItem label="부서">
+						<mx:ComboBox height="19" id="comboDept" text="{userInfo.deptName}" editable="false" dataProvider="{deptList}" labelField="deptName" 
+									 change="updateUser()"/>	
+					</mx:FormItem>
+					
+					<mx:FormItem label="직급">
+						<mx:TextInput height="19" id="formJobPosition" text="{userInfo.jobPosition}" change="updateUser()"/>	
+					</mx:FormItem>
+					
+					<mx:FormItem label="담당업무">
+						<mx:TextInput height="19" id="formAssignment" text="{userInfo.assignment}" change="updateUser()"/>	
+					</mx:FormItem>
+				</mx:Form>
+				<mx:Form width="50%" paddingBottom="10" paddingLeft="10" paddingRight="10" paddingTop="10" verticalGap="3">
+					<mx:FormItem label="우편번호">
+						<mx:TextInput height="19" id="formCompZipCode" text="{userInfo.compZipCode}" change="updateUser()"/>	
+					</mx:FormItem>
+					
+					<mx:FormItem label="상세주소">
+						<mx:TextInput height="19" id="formCompAddress" text="{userInfo.compAddress}" change="updateUser()"/>	
+					</mx:FormItem>
+					
+					<mx:FormItem label="팩스번호">
+						<mx:TextInput height="19" text="{userInfo.fax}" change="updateUser()"/>	
+					</mx:FormItem>
+					
+					<mx:FormItem label="전자우편">
+						<mx:TextInput height="19" id="formEmail" text="{userInfo.email}" change="updateUser()"/>	
+					</mx:FormItem>
+				</mx:Form>
+			</mx:HBox>
+		</mx:TabNavigator>
+	</mx:Panel>
+	
+</mx:Module>

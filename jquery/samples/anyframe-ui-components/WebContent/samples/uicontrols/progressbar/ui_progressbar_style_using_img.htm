@@ -1,0 +1,160 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN"
+"http://www.w3.org/TR/html4/loose.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+
+<head>
+<meta http-equiv="content-type" content="text/html; charset=UTF-8" />
+<title>Progressbar : Image Style</title>
+
+<!-- FILES INCLUDED.. ----------------------------------------------------->
+<script type="text/javascript" src="../../../common/exlibs/jquery-1.9.0.js"></script>
+
+<script type="text/javascript" src="../../../common/exlibs/highlighter/scripts/shCore.js"></script>
+<script type="text/javascript" src="../../../common/exlibs/highlighter/scripts/shBrushJScript.js"></script>
+
+<script type="text/javascript" src="../../../common/js/template_common.js"></script>
+
+<!--  STYLESHEET  -->
+<link type="text/css" rel="stylesheet"
+	href="../../../common/exlibs/highlighter/styles/shCore.css" />
+<link type="text/css" rel="stylesheet" 	href="../../../common/exlibs/highlighter/styles/shCoreDefault.css" />
+<link type="text/css" rel="stylesheet" 	href="../../../common/css/style.css" />
+
+<!-- SCRIPT  ----------------------------------------------------->
+<script type="text/javascript">
+
+$(function() {
+	JTemplate.load("ui_progressbar_style_using_img_src.htm");					
+	JTemplate.loadDemo2("ui_progressbar_style_using_img_src.htm", {height:"400px"});				
+});  
+
+</script>
+
+</head>
+
+<!-- CONTENTS BODY -------------------------------------------------------------->
+<body >
+
+<!-- HEADER BAR -------------------------------------------------------------->
+<div class="content-title">Component - Progressbar</div>
+
+<!-- START OF PAGE ... -------------------------------------------------------->
+<div id="page">
+		<p class="header-title">다양한 형태의 이미지를 이용한 Progressbar</p>
+		<p class="header-desc">: progressbar 의 형태를 customizing 할 수 있는 방법을 제공한다.</p>
+
+<!-- DEMO ----------------------------------------------------------------------->
+			<div class="demo">
+				<h3 >Demo</h3>
+				<div id="visualExample"></div>
+			</div>
+
+<!-- DEMO DESCRIPTION----------------------------------------------------->
+		<div class="desc">
+			<h3>Demo Description</h3>
+			<hr>
+			<p class = "desc-title">형태의 다양화</p>
+			<p class ="desc-overall">
+				: 일반적인 네모박스형태의 progressbar와 달리 다양한 형태로 진행상태를 알려주는 bar를 확인해 볼 수 있다.<br>
+			</p>
+			<ul class ="desc-hypl">
+				<li><span>square shape type </span>: 단순 직사각형의 진행바에 25% 진행시마다 그 위치에 정사각형 도형을 두어 그 정도가 강조하여 보여준다.</li>
+				<li><span>circle shape type </span>: 단순 직사각형의 진행바에 25% 진행시마다 그 위치에 원을 두어 그 정도를 강조하여 보여준다.</li>
+			</ul>
+			
+			<p class = "desc-title">진행값의 현재상태 다양화</p>
+			<p class ="desc-overall">
+				: progressbar를 둘러싸는 border line 형태를 없애고, value 값이 누적되어 채워지는 형태가 아닌, 현재상태의 위치를 강조하여 보여줄 수 있다.<br>
+			</p>
+			<ul class ="desc-hypl">
+				<li><span>circle point type </span>: 원의 도형이 현재상태를 가리키며 진행정도를 보여준다.</li>
+				<li><span>car point type </span>: 차형태의 아이콘이 현재상태를 가리키며 진행정도를 보여준다.</li>
+		</ul>
+
+		</div>
+
+
+<!-- CODE------------------------------------------------------------------------>
+			<div class="code">
+				<h3>Code Source </h3>
+				<pre id="codeExample" class="brush: js"></pre>
+			</div>
+
+<!-- CODE DESCRIPTION------------------------------------------------------>
+			<div class="desc">
+				<h3>Code Description </h3>
+				<hr>
+				<p class="desc-title">Bar 이미지 바꾸기</p>
+				<p class = "desc-overall">
+				바의 외부과 내부 value값의 div에 각 기존 border를 없애고, 배경이미지로 customizing할 이미지를 넣는다.   
+				</p>
+				
+				<ul class="desc-hypl">
+					<li><span>외부 스타일</span>
+						<ul class="sub-desc-hypl">
+							<li>border : none</li>
+							<li>height : 이미지의 높이값</li>
+							<li>background : 바의 윤곽선이 나타나는 이미지 소스 경로 및 no-repeat 지정</li>
+						</ul>
+					</li>
+					<li><span>내부 스타일</span>
+						<ul class="sub-desc-hypl">
+							<li>border : none</li>
+							<li>margin : 0 (외부 윤곽선 이미지와 내부 이미지가 sync가 맞도록 설정하기 위함)</li>
+							<li>background : 바의 내부 색이 채워진 이미지 소스 경로 및 no-repeat 지정</li>
+						</ul>
+					</li>
+				</ul>
+				
+				<p class="desc-title">Bar의 현재포인트 이미지 설정</p>
+				<p class = "desc-overall">
+				바의 외부 border 일부와 내부값의 div에 존재하는 모든 배경을 없애고, 내부적으로 새로운 div을 생성, 추가하여 이미지를 삽입한다.
+				</p>
+				
+				<ul class="desc-hypl">
+					<li><span>외부 스타일</span>
+						<ul class="sub-desc-hypl">
+							<li>border-width : (아래밑줄만 존재하도록 보더 너비 값을 준다.)</li>
+						</ul>
+					</li>
+					<li><span>내부 스타일</span>
+						<ul class="sub-desc-hypl">
+							<li>border : none</li>
+							<li>background : none</li>
+							<li>text-align : right(바가 움직일 때 항상 가장 오른쪽에 있도록 하기위함)</li>
+						</ul>
+					</li>
+					<li><span>현재포이트 이미지 추가</span>
+						<ul class="sub-desc-hypl">
+							<li>append() 메소드를 통해 div, img 태그를 삽입하여 이미지를 설정해 준다.</li>
+						</ul>
+					</li>
+				</ul>
+
+			</div>
+				 
+		
+<!-- RELATED LINKS ----------------------------------------------------------->
+		<div class="related">
+			<h3>Related Links</h3>
+			<hr>
+			<ul class ="desc-hypl">
+				<li>
+					<span>Progressbar API</span>
+					<a href="http://api.jqueryui.com/progressbar/"></a>
+				</li>			
+				<li>
+					<span>CSS</span>
+					<a href="http://api.jquery.com/css/"></a>
+				</li>
+				<li>
+					<span>append</span>
+					<a href="http://api.jquery.com/append/"></a>
+				</li>
+			</ul>
+		</div>
+
+</div>
+<!-- END OF PAGE------------------------------------------------------------->
+</body>
+</html>

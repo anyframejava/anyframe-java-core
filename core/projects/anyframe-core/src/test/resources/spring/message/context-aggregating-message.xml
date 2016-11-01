@@ -1,0 +1,52 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:p="http://www.springframework.org/schema/p" 
+	xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-4.0.xsd">
+	
+	<!-- configuring the cache storage -->
+	<bean id="cacheManager" class="org.springframework.cache.ehcache.EhCacheCacheManager"
+		  p:cache-manager-ref="ehcache" />
+	
+	<!-- Ehcache-based Cache -->
+	<bean id="ehcache" class="org.springframework.cache.ehcache.EhCacheManagerFactoryBean"
+		  p:config-location="classpath:spring/message/ehcache-aggregation.xml" />
+	
+	<bean name="messageSource" class="org.anyframe.spring.message.AggregatingMessageSource">
+		<property name="messageSources">
+			<list>
+				<ref bean="databaseMessageSource"/>
+				<ref bean="fileMessageSource"/>
+			</list>
+		</property>
+	</bean>
+	
+	<bean name="fileMessageSource" class="org.springframework.context.support.ResourceBundleMessageSource">
+		<property name="useCodeAsDefaultMessage">
+			<value>false</value>
+		</property>
+		<property name="basenames">
+			<list>
+				<value>anyframe-message</value>	
+			</list>
+		</property>
+	</bean>	 	
+	
+	<bean name="databaseMessageSource" class="org.anyframe.spring.message.DatabaseMessageSource">
+		<property name="dataSource" ref="dataSource"/>
+		<property name="messageTable">
+			<props>
+				<prop key="table">TEST_MESSAGE_SOURCE</prop>
+			</props>
+		</property>
+		<property name="cacheManager" ref="cacheManager" />
+	</bean>		
+	
+    <bean id="dataSource" class="org.apache.commons.dbcp.BasicDataSource" destroy-method="close">
+        <property name="driverClassName" value="oracle.jdbc.driver.OracleDriver"/>
+        <property name="url" value="jdbc:oracle:thin:@server.ip:1521:xe"/>
+        <property name="username" value="athena"/>
+        <property name="password" value="athena"/>
+    </bean>
+    
+</beans>

@@ -1,0 +1,54 @@
+<chapter id="springrest_whatisrest_architecture">
+
+	<title>REST 아키텍처</title>
+	
+	<para>
+		REST 아키텍처는 다음과 같은 요소들로 구성된다.
+	</para>
+	
+	<itemizedlist>
+	
+		<listitem>
+			<para><emphasis role="bold">Resource</emphasis></para>
+			<para>
+				REST에서 가장 중요한 개념은 바로 유일한 ID를 가지는 Resource가 서버에 존재하고, 
+				클라이언트는 각 Resource의 상태를 조작하기 위해 요청을 보낸다는 것이다. 
+				일반적으로 Resource는 Movie, Student, Product 등과 같은 명사형의 단어이고,
+				HTTP에서 이러한 <emphasis role="bold">Resource를 구별하기 위한 ID는 '/moviefinder/movies/MV-00001'와 같은 URI이다.</emphasis>
+			</para>
+		</listitem>
+		
+		<listitem>
+			<para><emphasis role="bold">Method</emphasis></para>
+			<para>
+				GET, DELETE 등과 같이 Resource를 조작할 수 있는 동사형의 단어를 Method라고 한다.
+				<emphasis role="bold">클라이언트는 URI를 이용해서 Resource를 지정하고 해당 Resource를 조작하기 위해서 Method를 사용</emphasis>한다.
+				HTTP에서는 GET, POST, PUT, DELETE 등의 Method를 제공한다.
+			</para>
+		</listitem>
+		
+		<listitem>
+			<para><emphasis role="bold">Representation of Resource</emphasis></para>
+			<para>
+				 클라이언트가 서버로 요청을 보냈을 때, 서버가 응답으로 보내주는 <emphasis role="bold">Resource의 상태를 Representation</emphasis>이라고 한다.
+				 REST에서 하나의 Resource는 여러 형태의 Representation으로 나타내어 질 수 있다. 
+				 이를 <emphasis role="bold">Content Negotiation</emphasis>이라고 하는데, 뒤에서 자세히 설명할 것이다.
+			</para>
+		</listitem>
+		
+	</itemizedlist>
+	
+	<para>
+		위의 구성 요소들을 바탕으로 REST 아키텍처에서 클라이언트가 
+		'http://example.com/movies/MV00004'라는 URI를 가진 Movie Resource를 조회하는 과정을 그림으로 표현하면 다음과 같다.
+		<mediaobject>
+			<imageobject>
+				<imagedata align="center" fileref="../image/springrest/architecture.png" />				
+			</imageobject>
+			<textobject>
+				<phrase>REST 아키텍처에서 클라이언트가 http://example.com/movies/MV00004 라는 URI를 가진 Movie Resource를 조회하는 과정</phrase>
+			</textobject>
+		</mediaobject>
+	</para>
+	
+</chapter>

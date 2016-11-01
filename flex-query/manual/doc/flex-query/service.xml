@@ -1,0 +1,368 @@
+<chapter id="flex_query_service">
+	<title>FlexService</title>
+	<para>
+		FlexService는 Flex를 사용하여 Web Application을 개발 할 때 DataSet
+		기반의 Service 인터페이스/구현 클래스, Dao
+		인터페이스/구현클래스 등 기본 CRUD 메소드 기능이 모두 구현된 클래스를
+		직접 이용하거나 상속받아서 사용할 수 있는 기능을 제공하고 있다.	
+	</para>
+
+	<para>FlexService를 이용하여 개발 시 다음과 같은 특징을 갖는다.</para>
+
+	<itemizedlist>
+		<listitem>
+			<para>DataSet는 여러개의 DataRow로 구성되어 있고 DataRow는 ObjectProxy객체를 상속 받아 구현 되어 있으므로 Flex UI에서 데이터 값이 변경었을 때
+			별도의 이벤트 처리를 해주지 않아도 된다.</para>
+		</listitem>
+		<listitem>
+			<para>개발자가 Business Layer, Data Access Layer 코드를 작성하지 않고 FlexService에서 제공하는
+				Service 클래스와 Dao 클래스들을 그대로 재사용하여 기본 CRUD 기능을 구현할 수 있다.
+			</para>
+		</listitem>
+		<listitem>
+			<para>기본 CRUD 외의 부가 기능이 필요한 경우 FlexService에서 제공하는 클래스를 상속받아서
+				부가 기능에 대해서만 추가 기능을 구현할 수 있다.</para>
+		</listitem>
+	</itemizedlist>
+
+	<para>다음은 FlexService 사용 방법이다.</para>
+
+	<itemizedlist>
+		<listitem>
+			<para>DataSet 설정</para>
+		</listitem>
+		<listitem>
+			<para>DataService 설정</para>
+		</listitem>
+		<listitem>
+			<para>Service 클래스 생성</para>
+		</listitem>
+		<listitem>
+			<para>Dao 클래스 생성</para>
+		</listitem>
+	</itemizedlist>
+
+	<section id="tech_riaflex_sec001">
+		<title>DataSet</title>
+		<para>
+			FlexService는 DataSet을 이용한다.
+		</para>
+		<section id="tech_riaflex_sec001_sec001">
+			<title>DataSet</title>
+			<para>
+				DataSet은 여러개의 DataRow로 구성되어 있고 고유의 id와 DataSet name, 그리고 Query실행에 필요한 id를 갖고 있다.
+				DataRow는 ObjectProxy객체를 상속 받는다. 각 DataRow는 ROWTYPE를 갖고 있어 데이터가 변경 또는 삭제 되었을 경우 이벤트가 발생해 ROWTYPE값이
+				변경된다.
+			</para>
+			<para>
+				<programlisting language="xml"><![CDATA[<data:DataSet id="dsMain" dataSetName="mainDataSet"
+selectQueryId="findMovieList"
+insertQueryId="insertMovie"
+updateQueryId="updateMovie"
+deleteQueryId="deleteMovie"
+useChangeInfo="true"/>]]></programlisting>
+			</para>
+		</section>
+	</section>
+	
+	<section id="tech_riaflex_sec001_sec002">
+			<title>DataService</title>
+			<para>
+				DataService는 RemoteObject를 상속받아 구현 되었다. default Destination은 flexService이고 사용자가 임의로 세팅 할 수 있다.
+				사용방법은 RemoteObject와 같지만 서버측에 전달하는 객체는 DataSet Array다.
+			</para>
+			<para>
+				DataService의 선언 방법은 다음과 같다.
+			</para>
+			<para>
+				<programlisting language="xml"><![CDATA[<data:DataService id="dataService" fault="dataService_faultHandler(event)"/>]]></programlisting>
+			</para>
+			<para>
+				아래는 DataSet과 DataService를 이용해 조회하는 쿼리를 실행하는 예이다.
+			</para>
+			<para>
+				<programlisting language="java"><![CDATA[protected function search():void{
+    var searchParam:Object = new Object;
+    searchParam["firstName"] = searchStr.text;
+    dataService.getList( ['dsContact'], searchParam );
+}]]></programlisting>
+			</para>
+		</section>
+
+	<section id="tech_riaflex_sec002">
+		<title>Service 클래스 생성</title>
+		<para>
+			Service 클래스의 경우 FlexService에서 제공하는 기본 CRUD 메소드 이외의 기능을 제공하는
+			경우나 기본
+			CRUD 메소드를 확장하여
+			사용해야 하는 경우 Service 구현 클래스를 생성하여 사용하도록 하고 기본 CRUD
+			메소드를 그대로 사용하는 경우
+			Service 구현 클래스를 생성하지 않는다.
+		</para>
+		<section id="tech_riaflex_sec002_sec001">
+			<title>FlexService</title>
+
+			<para>
+				서비스 인터페이스는 FlexService를 사용한다. FlexService에는 신규 생성, 수정, 목록 조회, 삭제에 관한 메소드가
+				선언되어 있고 수정,삭제,신규생성을 한번에 처리하는  메소드도 선언되어 있다.
+				<programlisting language="java"><![CDATA[public interface FlexService {
+	
+    public List<DataSet> findList(List<DataSet> dataSetList, Map<String, Object> param) throws Exception ;
+	
+    public Map<String, Map<String,Integer>> saveAll(List<DataSet> dataSetList, Map<String, Object> param) throws Exception ;
+	
+    public Map<String, Object> find(String queryId, DataRow dataRow, Map<String, Object> param) throws Exception;
+	
+    public Map<String, Integer> create(String queryId, DataRow dataRow, Map<String, Object> param) throws Exception;
+	
+    public Map<String, Integer> update(String queryId, DataRow dataRow, Map<String, Object> param) throws Exception;
+	
+    public Map<String, Integer> remove(String queryId, DataRow dataRow, Map<String, Object> param) throws Exception;
+}]]></programlisting>
+			</para>
+		</section>
+
+		<section id="tech_riaflex_sec002_sec002">
+			<title>FlexServiceImpl</title>
+
+			<para>
+				서비스 구현 클래스는 FlexServiceImpl를 사용하며 다음과 같은 구조로 되어 있다.
+				<programlisting language="java"><![CDATA[public class FlexServiceImpl implements FlexService{
+
+    private FlexDao flexDao;
+	
+    public List findList(List dataSetList, Map param) throws Exception{
+        for(int i=0; i < dataSetList.size() ; i++){
+            DataSet ds = (DataSet)dataSetList.get(i);
+
+            String queryId = ds.selectQueryId;
+
+            ds.addAll(flexDao.getList(queryId, param));
+        }
+        return dataSetList;
+    }
+	
+    public Map saveAll(List dataSetList, Map param) throws Exception {
+		
+        Map<String, Object> result = new LinkedHashMap<String, Object>();
+		
+        for(int i=0; i<dataSetList.size(); i++) {
+			
+            DataSet ds = (DataSet)dataSetList.get(i);
+			
+            for(int cnt=0; cnt<ds.size(); cnt++) {
+                DataRow dr = (DataRow)ds.get(cnt); 
+				
+                if(dr.ROWTYPE.equals("D")) {
+                    String queryId = ds.deleteQueryId;
+                    int deleteCnt = flexDao.delete(queryId, dr, param);
+                    if(result.containsKey(queryId)) {
+                        deleteCnt += result.get(queryId).intValue();
+                    }
+                    result.put(queryId, deleteCnt);
+                }
+            }
+			
+            for(int cnt=0; cnt<ds.size(); cnt++) {
+                DataRow dr = (DataRow)ds.get(cnt); 
+                if(dr.ROWTYPE.equals("I")) {
+                    String queryId = ds.insertQueryId;
+                    Object generatedKey = flexDao.create(queryId, dr, param);
+                    int insertCnt = 1;
+                    if(result.containsKey(queryId)) {
+	                    insertCnt += ((Integer)result.get(queryId)).intValue();
+                    }
+                    result.put(queryId, insertCnt);
+			
+                    if(generatedKey != null) {
+                    if(result.containsKey("generatedKeys")) {
+                        List generatedKeys = (List) result.get("generatedKeys");
+                        generatedKeys.add(generatedKey);
+                    } else {
+                        List<Object> generatedKeys = new ArrayList<Object>();
+                        generatedKeys.add(generatedKey);
+                        result.put("generatedKeys", generatedKeys);
+                    }
+                }
+			
+                }else if(dr.ROWTYPE.equals("U")) {
+                    String queryId = ds.updateQueryId;
+                    int updateCnt = flexDao.update(queryId, dr, param);
+                    if(result.containsKey(queryId)) {
+	                updateCnt += ((Integer)result.get(queryId)).intValue();
+                }
+                result.put(queryId, updateCnt);
+                }
+            }
+        }
+        return result;
+	}
+	
+..중략
+}]]></programlisting>
+			</para>
+		</section>
+	</section>
+	<section id="tech_riaflex_sec003">
+	<title>RemotingService</title>
+	<section id="tech_riaflex_sec003_sec001">
+	<title>Page 조회</title>
+	<para>다음은 BlazeDS의 RemotingService를 이용해 BoardService의 getList메소드를  호출하는 예이다.</para>
+	<programlisting language="xml">&lt;mx:Script&gt;
+&lt;![CDATA[
+...중략
+private function getBoardList(currentPage:int, pageClick:Boolean = false):void {
+				
+	var searchVO:SearchVO = new SearchVO("Board");
+	if ( pageClick ){
+		searchVO.searchCondition = condition;
+		searchVO.searchKeyword = keyword;
+	}else{
+		keyword = searchKeyword.text;
+		condition = searchCondition.selectedItem.data;
+		searchVO.searchKeyword = keyword;
+		searchVO.searchCondition = condition;
+	}
+	searchVO.pageIndex = currentPage;
+	boardService.getPagingList(searchVO);
+}
+private function getBoardListResultHandler(event:ResultEvent):void {
+				
+	page = event.result as Page;
+	plb.totalCount = page.totalCount;
+	plb.fetchSize = page.pagesize;
+	plb.numPages = page.pageunit;
+	plb.currentPage = page.currentPage;
+	
+	boardList = page.objects as ArrayCollection;
+	
+	setPageStatus(page);
+}
+...중략
+]]&gt;
+&lt;/mx:Script&gt;
+<![CDATA[
+<mx:RemoteObject id="boardService" destination="boardService" showBusyCursor="true">
+    <mx:method name="getPagingList" result="getBoardListResultHandler(event)" fault="ResultHandler.faultMessage(event)"/>
+    <mx:method name="saveAll" result="saveAllResultHandler(event)" fault="ResultHandler.faultMessage(event)"/>
+</mx:RemoteObject>]]></programlisting>
+	<para>boardService.getPagingList(searchVO)가 실행되면 
+	destination으로 등록된 boardService getPagingList메소드가 호출되고 id가 findBoardList인 query가 실행되어
+	결과 값은 Page객체로 리턴된다.</para>
+	
+	<para>다음은 Anyframe의 Page클래스와 매핑되는 Page.as클래스이다.</para>
+	<programlisting language="xml"><![CDATA[package org.anyframe.pagination
+{
+    import mx.collections.ArrayCollection;
+	
+    [RemoteClass(alias="org.anyframe.pagination.Page")]
+    public class Page
+	{
+		
+    public var objects:ArrayCollection;
+
+    public var currentPage:int;
+
+    public var totalCount:int;
+
+    public var pageunit:int;
+
+    public var pagesize:int;
+
+    public var maxPage:int;
+
+    public var beginUnitPage:int;
+
+    public var endUnitPage:int;
+	}
+}]]></programlisting>
+</section>
+<section id="tech_riaflex_sec003_sec002">
+<title>saveAll메소드</title>
+<para>BoardService saveAll메소드는 Flex의 DataGrid를 이용해 
+Data를 추가, 삭제, 수정 한 후 한번의 Service호출로 화면에서 작업했던 Data를 DB에 반영할 때 사용한다.</para>
+<para>DataGrid에서 수정, 삭제, 추가 이벤트가 발생할 경우 Board객체의 status값을 변경한다.</para>
+<programlisting language="java">
+//DataGrid의 Row가 추가 됐을 때 실행되는 메소드
+private function addBoard():void{
+    var addBoard:Board = new Board();
+	addBoard.status = 1;
+	addBoard.regDate = Util.getToday();
+	addBoard.regId = parentDocument.loginUser.userId;
+	grdBoard.dataProvider.addItem(addBoard);
+}
+//DataGird의 Row가 수정 됐을 때 실행되는 메소드
+private function updateBoard(event:DataGridEvent):void{
+    if (event.reason == DataGridEventReason.CANCELLED){
+        return;
+    }
+            
+    var updateBoard:Board = grdBoard.itemEditorInstance.data as Board;
+
+    var rowStatus:Number = updateBoard.status;
+
+    if( rowStatus == 0 ){
+	    updateBoard.status = 2;
+    }
+}
+//DataGrid의 Row가 삭제 되었을 때 실행되는 메소드
+//삭제된 ASObject를 deleteBoardList에 임시로 저장한다.
+private function deleteBoard():void{
+    if(grdBoard.selectedIndex != -1){
+        var deleteBoard:Board = grdBoard.selectedItem as Board;
+        var rowStatus:int = deleteBoard.status;
+
+        if (rowStatus != 1){
+            deleteBoard.status = 3;
+            deleteBoardList.addItem(deleteBoard)
+        }
+        grdBoard.dataProvider.removeItemAt(grdBoard.selectedIndex);
+    }
+}</programlisting>
+<para>다음은 boardService의 saveAll메소드를 호출한 후 결과를 처리하는 ActionScript이다.</para>
+<programlisting language="java"><![CDATA[//DataGrid에서 Binding Data중 status값이
+// 0이 아닌 것과 deleteBoardList에 저장 된 DataGrid에서 삭제된 Data를
+// saveBoardList에 추가해 BoardList의 saveAll메소드를 호출한다. 
+private function saveBoard():void{
+    var saveBoardList:ArrayCollection = new ArrayCollection();
+    for ( var j:int = 0 ; j < deleteBoardList.length ; j ++ ){
+        saveBoardList.addItem(deleteBoardList.getItemAt(j));
+    }
+    for ( var i:int = 0 ; i < boardList.length ; i ++ ){
+        var board:Board = boardList.getItemAt(i) as Board;
+        if(board.status != 0){
+            if(board.communityId == null){
+                Alert.show( "글 " + board.title + "의 커뮤니티를 선택 하지 않았습니다.");
+                return;
+            }else if(board.title == null) {
+            Alert.show( "Title을 입력하지 않은 글이 있습니다.");
+            }else{
+            saveBoardList.addItem(board);
+            }
+        }
+    }
+    if ( saveBoardList.length == 0 ){
+        Alert.show( "변경된 데이터가 없습니다." );
+    }else{
+    boardService.saveAll(saveBoardList);
+    }
+}
+// saveAll메소드의 호출 결과는 추가, 수정, 삭제된 Row수가 담긴 Map형태이다.
+// saveAllResultHandler에서는 saveAll메소드의 실행결과를 Alert창을 통해 보여준다.
+private function saveAllResultHandler(event:ResultEvent):void{
+    var resultArray:Array = ["INSERT", "UPDATE", "DELETE"];
+			
+    var message:String = "";
+    for ( var i:int = 0 ; i < 3 ; i ++ ){
+        var count:int = event.result[resultArray[i]];
+        message = message + count + " Row가 " + resultArray[i] + "\n";
+    }
+    message = message + "되었습니다.";
+
+    mx.controls.Alert.show(message);
+    deleteBoardList.removeAll();
+    getBoardList(1);
+}]]></programlisting>
+</section>
+</section>
+</chapter>

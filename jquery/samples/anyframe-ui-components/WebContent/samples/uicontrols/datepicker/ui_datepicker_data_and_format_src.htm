@@ -1,0 +1,133 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN"
+"http://www.w3.org/TR/html4/loose.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+
+<head>
+<meta http-equiv="content-type" content="text/html; charset=UTF-8" />
+<title>[AnyFrame UI Datepicker] Date and  Sample</title>
+<link href="../../../common/css/smoothness/jquery-ui-1.10.0.custom.css"	rel="stylesheet">
+<script src="../../../common/exlibs/jquery-1.9.0.js"></script>
+<script src="../../../common/exlibs/jquery-ui-1.10.0.custom.js"></script>
+
+<link type="text/css" rel="stylesheet" href="sub_css/data_and_format.css">
+<link type="text/css" rel="stylesheet" href="../../../common/css/style.css"/>
+
+<script type="text/javascript">
+
+	var datepickerDataFormatView = {
+				
+						
+			_setUnit : function(yearUnit, monthUnit, dayUnit){
+				$("#yearUnit").text(yearUnit);
+				$("#monthUnit").text(monthUnit);
+				$("#dayUnit").text(dayUnit);
+			},
+
+	
+			setUnit : function(optionValue){
+				
+				switch(optionValue)
+				{
+				case "korean":
+					this._setUnit("년", "월", "일");
+				  break;
+				case "english":
+					this._setUnit("Y", "M", "D");
+				  break;
+				case "chinese":
+					this._setUnit("年", "月", "日");
+					  break;
+				case "symbol1":
+					this._setUnit("/", "/", "");
+					  break;
+				case "symbol2":
+					this._setUnit("-", "-", "");
+					  break;
+				case "symbol3":
+					this._setUnit(",", ",", "");
+					  break;
+				default:
+					this._setUnit("-", "-", "");
+				};
+			}
+	};
+
+	$(document).ready(function() {
+
+		$("#datepickerFormat").datepicker();
+		
+		$("#datepickerUnit").datepicker({
+					 onSelect: function(date, inst) {
+					 var date = $(this).datepicker("getDate");
+					 var month = date.getMonth()+1;
+					 var year = date.getFullYear();
+					 var day = date.getDate();
+					 
+					 $("#year").attr("value", year);
+					 $("#month").attr("value", month);
+					 $("#day").attr("value", day);
+		    	}
+				});
+
+			    $( "#dateFormat" ).change(function() {	  	
+			      		$("#datepickerFormat" ).datepicker( "option", "dateFormat", $( this ).val() );
+			    });
+			    
+			    $( "#unit" ).change(function() {	  	
+			    	var value = $(this).val();
+			    	datepickerDataFormatView.setUnit(value);
+		    });
+			    
+	});
+</script>
+</head>
+<body>
+
+	<div class="title">날짜 단위 변경</div>
+
+	<div>
+		<div class="text-area">Date Unit :</div>
+		<div class="select-area">
+			<select id="unit" name="날짜단위 선택">
+				<option value="korean">년, 월, 일</option>
+				<option value="english">Y, M, D</option>
+				<option value="chinese">年, 月, 日</option>
+				<option value="symbol1">/, /</option>
+				<option value="symbol2">-, -</option>
+				<option value="symbol3">, , ,</option>
+			</select>
+		</div>
+
+		<div class="input-area">
+			Date : 
+			<input type="text" id="datepickerUnit" size="33" />
+			/ 3 seperate input section : 
+			<input type="text" id="year" size="5" /><span id="yearUnit">년</span> 
+			<input id="month" type="text" size="5" /> <span id="monthUnit" >월</span>
+			<input id="day" type="text" size="5" /><span id="dayUnit">일</span>
+		</div>
+	</div>
+
+	<div class="title">날짜 형식 변경</div>
+
+	<div>
+		<div class="text-area">Date Format :</div>
+		<div class="select-area">
+			<select id="dateFormat">
+				<option value="yy, mm, dd">YYYY, MM, DD</option>
+				<option value="y, m, d">YY, M, D</option>
+				<option value="yy, M, dd">YYYY, month short name, DD</option>
+				<option value="yy, MM, dd">YYYY, month full name, DD</option>
+				<option value="yy, mm, dd, D">YYYY, MM, DD, day short name</option>
+				<option value="yy, mm, dd, DD">YYYY, MM, DD, day full name</option>
+			</select>
+		</div>
+
+		<div class="input-area">
+			Date : <input type="text" id="datepickerFormat" size="33" />
+		</div>
+	</div>
+
+</body>
+</html>
+

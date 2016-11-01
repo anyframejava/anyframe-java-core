@@ -1,0 +1,124 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN"
+"http://www.w3.org/TR/html4/loose.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+ 
+ <!-- Start of head-->
+<head>
+<meta http-equiv="content-type" content="text/html; charset=UTF-8" />
+<title>Menu 동적구성 </title>
+
+
+<!-- include required common files  ----------------------------------------------------->
+<script type="text/javascript" src="../../../common/exlibs/jquery-1.9.0.js" ></script>
+
+<script type="text/javascript" src="../../../common/exlibs/highlighter/scripts/shCore.js" ></script>
+<script type="text/javascript" src="../../../common/exlibs/highlighter/scripts/shBrushJScript.js" ></script>
+
+<script type="text/javascript" src="../../../common/js/template_common.js" ></script>
+
+<!--  stylesheet  -->
+<link type="text/css" rel="stylesheet" href="../../../common/exlibs/highlighter/styles/shCore.css"/>
+<link type="text/css" rel="stylesheet" href="../../../common/exlibs/highlighter/styles/shCoreDefault.css"/>
+ <link rel="stylesheet" type="text/css" href="../../../common/css/style.css" /> <!---->
+
+
+
+<!-- scripts to support sample page  ----------------------------------------------------->
+<script type="text/javascript">
+
+$(function() {
+	$("#common").load("../../../common/basicinfo.htm");												//common : basic informations
+})
+
+
+$(function() {
+	JTemplate.load("layout_menu_dynamic_build_src.htm");					//{TODO} source url 수정
+	JTemplate.loadDemo("layout_menu_dynamic_build_src.htm");			//{TODO} source url 수정, show visaul demo sample
+}); 
+	
+</script> 
+</head>
+<!-- End of head -->
+
+<!-- Start of body -->
+<body>
+ 
+<!-- HEADER BAR -------------------------------------------------------------->
+	<div class="content-title">Layout - Menu</div>
+
+
+<!-- START OF PAGE ... -------------------------------------------------------->
+	<div id="page">
+		<p class="header-title">동적구성</p>
+		<p class="header-desc">: 메뉴를 동적으로 구성하는 방식의 예와 하위 메뉴의 존재 여부를 알수 있는 아이콘을 변경하는 예를 보여준다.</p>
+ 
+<!-- DEMO ----------------------------------------------------------------------->
+		<div class="demo">
+			<h3>Demo</h3>
+	       	<div id ="visualExample"></div>
+		</div>
+        
+<!-- DEMO DESCRIPTION----------------------------------------------------->	
+		<div class="desc">
+			<h3>Demo Description</h3>
+			<hr>
+			
+			<ul class="desc-ul">
+				<li><span>메뉴 재구성 Type1</span>: 실제로 display 를  none 으로 구현 및 설정한 element tree 를 이용한 방법. 데이타는 이미 로딩되어 있음.</li>
+				<li><span>메뉴 재구성 Type2</span>: 동적으로 모든 메뉴 데이타를 추가 및 수정하는 방법. 해당 html 부분을 재 구성함.</li>
+				<li><span>아이콘 변경</span>: SubMenu 의 유무를 구분하는 아이콘에 대해서 3가지 형태로 구현한다. 아이콘이 없는 형태가 있으며, 계속 실행 시 아이콘이 변경되는 것을 볼 수 있다.</li>
+			</ul>
+		</div>
+		        
+<!-- CODE------------------------------------------------------------------------>
+		<div class="code">
+			<h3>Code Source</h3>
+			<pre id="codeExample" class="brush: js"></pre>
+        </div>
+        
+        
+<!-- CODE DESCRIPTION------------------------------------------------------>
+		<div class="desc">
+		    <h3>Code Description</h3>
+		    <hr>
+		    
+		    <p class="desc-title">동적구성 방식</p>
+		    <span class="code-line">#58 ~ #59,</span><span class="code-line">#75 ~ #76</span>
+		    <p class="desc-overall">
+			"$(element).html() or "$(element).html(newhtml)" 함수를 사용하여 해당 element 의 하위의 html 문자열을 Get/Set 한다. <br>
+			그리고, 메뉴 변경  후에는 "$(element).menu('refresh');" refresh 메소드를 호출해야 한다.
+		    </p>
+		    
+		    <p class="desc-title">아이콘 변경</p>
+		    <span class="code-line">#83 ~ #84</span>
+		    <p class="desc-overall">
+			icon GET: $(element).menu('option', 'icons') <br>
+			icon SET: $(element).menu('option', 'icons', {submenu : icon정보} )<br>
+			본 예제에서는 Framework 이 들고 있는 아이콘 정보를 이용하였다. 아래 Framework Icon 링크 참조.
+		    </p>
+		</div>
+        
+
+<!-- RELATED LINKS ----------------------------------------------------------->
+        <div class="related">
+            <h3>Related Links</h3>
+            <hr>
+            <ul class="desc-hypl">
+            	<li>
+            		<span>Menu API</span>
+            		<a href="http://api.jqueryui.com/menu/"></a>
+            	</li>
+            	<li>
+            		<span>Framework Icon</span>
+            		<a href="http://jqueryui.com/themeroller/"></a>
+            	</li>
+            </ul>          
+      	</div>
+      	      
+	</div>      
+<!-- End of Page-->
+
+</body>
+<!-- End of body-->
+
+</html>

@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:aop="http://www.springframework.org/schema/aop"
+	xmlns:tx="http://www.springframework.org/schema/tx"
+	xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-4.0.xsd
+					    http://www.springframework.org/schema/aop http://www.springframework.org/schema/aop/spring-aop-4.0.xsd
+					    http://www.springframework.org/schema/tx http://www.springframework.org/schema/tx/spring-tx-4.0.xsd">
+			  
+	<bean id="MovieServiceWithXML" class="org.anyframe.sample.transaction.moviefinder.service.impl.MovieServiceImpl"/>
+	     
+	<!-- transaction management -->
+	<tx:advice id="txAdvice" transaction-manager="transactionManager">
+		<tx:attributes>
+			<tx:method name="*" no-rollback-for="org.anyframe.sample.exception.MovieException"/>
+		</tx:attributes>
+	</tx:advice>
+	
+	<aop:config>
+		<aop:pointcut id="movieServiceOperations" expression="execution(* org.anyframe.sample.transaction.moviefinder.service.impl.MovieServiceImpl.*(..))"/>
+		<aop:advisor advice-ref="txAdvice" pointcut-ref="movieServiceOperations"/>
+	</aop:config>
+</beans>

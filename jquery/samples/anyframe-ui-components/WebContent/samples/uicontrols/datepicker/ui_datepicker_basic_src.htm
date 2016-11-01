@@ -1,0 +1,113 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN"
+"http://www.w3.org/TR/html4/loose.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+
+<head>
+<meta http-equiv="content-type" content="text/html; charset=UTF-8" />
+<title>[AnyFrame UI Button] Basic Sample</title>
+<link href="../../../common/css/smoothness/jquery-ui-1.10.0.custom.css"	rel="stylesheet">
+<script src="../../../common/exlibs/jquery-1.9.0.js"></script>
+<script src="../../../common/exlibs/jquery-ui-1.10.0.custom.js"></script>
+
+<link type="text/css" rel="stylesheet" href="../../../common/css/style.css"/>
+<link type="text/css" rel="stylesheet" href="sub_css/basic.css">
+
+<script type="text/javascript">
+
+	
+	var datepickerBasicView = {
+			
+		setShowOtherMonths : function(targetSelector) {
+			$("#showOtherMonths").click(function() {
+						if ($(this).is(":checked") == true) {
+							targetSelector.datepicker("option", "showOtherMonths", true);
+						} else {
+							targetSelector.datepicker("option", "showOtherMonths", false);
+						}
+					});
+		},
+
+		setSelectOtherMonths : function(targetSelector) {
+			$("#selectOtherMonths").click(function() {
+						if ($(this).is(":checked") == true) {
+							targetSelector.datepicker("option", "selectOtherMonths", true);
+						} else {
+							targetSelector.datepicker("option", "selectOtherMonths", false);
+						}
+					});
+		},
+
+		setShowWeek : function(targetSelector) {
+			$("#showWeek").click(function() {
+				if ($(this).is(":checked") == true) {
+					targetSelector.datepicker("option", "showWeek", true);
+				} else {
+					targetSelector.datepicker("option", "showWeek", false);
+				}
+			});
+		},
+
+		setDropDownMonth : function(targetSelector) {
+			$("#dropDownMonth").click(function() {
+				if ($(this).is(":checked") == true) {
+					targetSelector.datepicker("option", "changeMonth", true);
+				} else {
+					targetSelector.datepicker("option", "changeMonth", false);
+				}
+			});
+		},
+
+		setDropDownYear : function(targetSelector) {
+			$("#dropDownYear").click(function() {
+				if ($(this).is(":checked") == true) {
+					targetSelector.datepicker("option", "changeYear", true);
+				} else {
+					targetSelector.datepicker("option", "changeYear", false);
+				}
+			});
+		},
+
+		setShowButtonPanel : function(targetSelector) {
+			$("#showButtonPanel").click(function() {
+						if ($(this).is(":checked") == true) {
+							targetSelector.datepicker("option","showButtonPanel", true);
+						} else {
+							targetSelector.datepicker("option",
+									"showButtonPanel", false);
+						}
+					});
+		}
+
+	};
+
+	$(document).ready(function() {
+
+		$("#datepicker").datepicker();
+
+		datepickerBasicView.setShowOtherMonths($("#datepicker"));
+		datepickerBasicView.setSelectOtherMonths($("#datepicker"));
+		datepickerBasicView.setShowWeek($("#datepicker"));
+		datepickerBasicView.setShowButtonPanel($("#datepicker"));
+		datepickerBasicView.setDropDownMonth($("#datepicker"));
+		datepickerBasicView.setDropDownYear($("#datepicker"));
+
+	});
+</script>
+</head>
+<body>
+<div class="title">Datepicker 주요 옵션</div>
+<ul  class="input-area">
+		<li><input type="checkbox"  id="showOtherMonths" /><label for="showOtherMonths">other months</label></li>
+		<li><input type="checkbox"  id="selectOtherMonths" /><label for="selectOtherMonths">selectable other months</label></li>
+		<li><input type="checkbox"  id="showWeek" /><label for="showWeek">show week</label></li>
+		<li><input type="checkbox"  id="showButtonPanel" /><label for="showButtonPanel">button panel</label></li>
+		<li><input type="checkbox"  id="dropDownMonth" /><label for="dropDownMonth">dropdown month</label></li>
+		<li><input type="checkbox"  id="dropDownYear" /><label for="dropDownYear">dropdown year</label></li>
+</ul>
+
+<div class= "display-area">
+		<div id="datepicker"></div>
+</div>
+
+</body>
+</html>

@@ -1,0 +1,121 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN"
+"http://www.w3.org/TR/html4/loose.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+
+<head>
+<meta http-equiv="content-type" content="text/html; charset=UTF-8" />
+<title>[AnyFrame UI Accordion] Horizontal Sample</title>
+<link href="../../../common/css/smoothness/jquery-ui-1.10.0.custom.css" rel="stylesheet">
+<script src="../../../common/exlibs/jquery-1.9.0.js"></script>
+<script src="../../../common/exlibs/jquery-ui-1.10.0.custom.js"></script>
+  
+<link type="text/css" rel="stylesheet" href="../../../common/css/style.css" />
+<link type="text/css" rel="stylesheet" href="sub_css/sortable.css">
+
+<style type="text/css">
+
+	.accordion-unit {
+		zoom: 1;
+	}
+	
+</style>
+  
+<script type="text/javascript">
+
+	var ENV = {
+		ID_ACCORDION : "#accordion"
+	};
+
+	var mainView = {
+
+		setSortable : function(target){
+			
+			$(target).accordion({
+				collapsible : true,
+				header : "> div > h3"
+			}).sortable({
+				axis : "y",
+				handle : "h3",
+				stop : function(event, ui) {
+					ui.item.children("h3").triggerHandler("focusout");
+				}
+			});	
+		}
+	};
+
+	$(document).ready(function() {			
+		mainView.setSortable(ENV.ID_ACCORDION);
+	});
+	
+</script>
+	
+</head>
+
+<body>
+	<div class= "title" >순서변경 가능</div>
+	<div class="text-area">
+	: 각 아코디언 섹션을 마우스로 drag&drop하여 바꿀 수 있다.
+	</div>
+	<div class="display-area">
+		<div id="accordion">
+			
+			<div class="accordion-unit">
+			<h3>Section 1</h3>
+			<div>
+				<p>
+					Accordion : Convert a pair of headers and content panels into an accordion.
+				</p>
+				<div align="center">
+					<img src="sub_css/images/accordion-cabinet.jpg" alt="Accordion Cabinet" align="middle" width="200px" height="140px">
+				</div>
+			</div>
+			</div>
+
+			<div class="accordion-unit">
+			<h3>Section 2</h3>
+			<div>
+				<p>
+					Accordions support arbitrary markup, but each content panel must always be the next sibling after its associated header. 
+					See the header option for information on how to use custom markup structures. The panels can be activated programmatically 
+					by setting the active option.
+				</p>
+			</div>
+			</div>
+			
+
+			<div class="accordion-unit">
+			<h3>Section 3</h3>
+			<div>
+				<p>
+					This widget requires some functional CSS, otherwise it won't work. 
+					If you build a custom theme, use the widget's specific CSS file as a starting point.
+				</p>
+				<ul>
+					<li>header theme</li>
+					<li>panel theme</li>
+					<li>others</li>
+				</ul>
+			</div>
+			</div>
+			
+			<div class="accordion-unit">
+			<h3>Section 4</h3>
+			<div>
+				<p>
+					Header :Selector for the header element, applied via .find() on the main accordion element. 
+					Content panels must be the sibling immedately after their associated headers.
+				</p>
+				<p>
+					Active<br> 
+					Boolean: Setting active to false will collapse all panels. This requires the collapsible option to be true. 
+					Integer: The zero-based index of the panel that is active (open). 
+					A negative value selects panels going backward from the last panel.
+				</p>
+			</div>
+			</div>
+			
+		</div>
+	</div>
+
+</body>
+</html>

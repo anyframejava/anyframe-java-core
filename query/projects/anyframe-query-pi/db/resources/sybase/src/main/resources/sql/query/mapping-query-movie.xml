@@ -1,0 +1,7 @@
+				<!--query-findMovieList-START-->
+				SELECT movie.movie_id, movie.title, movie.director, genre.name, movie.actors, movie.release_date, movie.now_playing, movie.poster_file, movie.ticket_price
+				FROM MOVIE movie, GENRE genre
+				WHERE movie.genre_id = genre.genre_id 
+				AND title like '%' || :vo.title || '%'
+				AND movie.now_playing = :vo.nowPlaying
+				<!--query-findMovieList-END-->

@@ -1,0 +1,104 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN"
+"http://www.w3.org/TR/html4/loose.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+
+<head>
+<meta http-equiv="content-type" content="text/html; charset=UTF-8" />
+<title>[Progressbar] Dialog Sample</title>
+<link href="../../../common/css/smoothness/jquery-ui-1.10.0.custom.css"	rel="stylesheet">
+<script src="../../../common/exlibs/jquery-1.9.0.js"></script>
+<script src="../../../common/exlibs/jquery-ui-1.10.0.custom.js"></script>
+
+<link type="text/css" rel="stylesheet" href="../../../common/css/style.css"/>
+<link type="text/css" rel="stylesheet" href="sub_css/dialog.css">
+
+<script type="text/javascript">
+
+	var ENV = {
+		ID_PROGRESSBAR : "#progressbar",
+		ID_DIALOG : "#dialog",
+		ID_START : "#startBtn",
+		ID_TARGET_LABEL : "#progressbarLabel",
+		ID_RESULT : "#stateResult"
+	};
+
+	var mainView = {
+			
+		_jqoProgress : null,
+		_progress_pos : 0,
+			
+		init : function() {			
+			
+			$(ENV.ID_PROGRESSBAR).progressbar();			
+		},
+		
+		runOpen : function() {
+
+			$(ENV.ID_DIALOG).prev().remove();
+			$(ENV.ID_DIALOG).css("width", "auto");
+			$(ENV.ID_DIALOG).parent().css("border", "none");
+			
+			this.runProgress();
+		},
+		
+		runProgress : function() {
+			
+			var owner = this,
+				changeTimerId = null;
+			
+			function changeVal() {
+				
+				$(ENV.ID_PROGRESSBAR).progressbar("option", "value", ++(owner._progress_pos) );
+				$(ENV.ID_TARGET_LABEL).text(owner._progress_pos+ "%");
+			
+				if (owner._progress_pos == 100) {
+					clearTimeout( changeTimerId );
+					owner._progress_pos = 0;
+					
+					$(ENV.ID_RESULT).text("complete!");					
+					$(ENV.ID_DIALOG).dialog("close");
+				}
+			}
+			
+			changeTimerId = setInterval(changeVal, 50);
+		}			
+	}
+
+	$(document).ready( function() {
+		
+		$(ENV.ID_START).button()
+					   .on('click', function() {
+						   $(ENV.ID_DIALOG).dialog("open");
+					   });
+	
+		$(ENV.ID_DIALOG).dialog({
+			autoOpen : false,
+			modal : false,
+			height : 70,
+			width : 510,
+			resizable : false,
+			open : function(evt, ui) {
+				mainView.runOpen();
+			}
+		});
+		
+		mainView.init();
+			
+	});
+	
+</script>
+</head>
+<body>
+	<div class="title">Dialog로 Progressbar 동작</div>
+	<div class="button-div">
+		<button id="startBtn" type="button">start</button>
+	</div>
+ 	<div id="dialog" style="padding:0;">
+ 		<div id="progressbar" class="progressbar-in-dialog">
+			<div id="progressbarLabel" class="progressbar-label"></div>
+		</div>
+	</div> 
+ 	<div class="text-area">진행상황 : </div>
+ 	<div id="stateResult" class="input-area">없음</div>
+</body>
+</html>

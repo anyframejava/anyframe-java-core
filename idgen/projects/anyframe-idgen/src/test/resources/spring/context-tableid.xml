@@ -1,0 +1,129 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:config="http://www.anyframejava.org/schema/service"
+	xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-3.2.xsd
+	http://www.anyframejava.org/schema/service http://www.anyframejava.org/schema/service/anyframe-core-service-2.0.xsd">
+	<bean name="Ids-TestNonExistingTableName" class="org.anyframe.idgen.impl.TableIdGenServiceImpl" destroy-method="destroy">
+		<property name="dataSource" ref="util_datasource"/>
+		<property name="blockSize" value="1"/>
+		<property name="table" value="idstest"/>
+		<property name="key" value="does-not-exist"/>		
+	</bean>
+	
+	<bean name="Ids-TestSimpleRequestIdsSize1" class="org.anyframe.idgen.impl.TableIdGenServiceImpl" destroy-method="destroy">
+		<property name="dataSource" ref="util_datasource"/>
+		<property name="blockSize" value="1"/>
+		<property name="table" value="idstest"/>
+		<property name="key" value="test"/>		
+	</bean>
+	<bean name="Ids-TestSimpleRequestIdsSize10" class="org.anyframe.idgen.impl.TableIdGenServiceImpl" destroy-method="destroy">
+		<property name="dataSource" ref="util_datasource"/>
+		<property name="blockSize" value="10"/>
+		<property name="table" value="idstest"/>
+		<property name="key" value="test"/>
+	</bean>
+	<bean name="Ids-TestSimpleRequestIdsSize100" class="org.anyframe.idgen.impl.TableIdGenServiceImpl" destroy-method="destroy">
+		<property name="dataSource" ref="util_datasource"/>
+		<property name="blockSize" value="100"/>
+		<property name="table" value="idstest"/>
+		<property name="key" value="test"/>			
+	</bean>		
+	
+	<bean name="Ids-TestBigDecimalRequestIdsSize10" class="org.anyframe.idgen.impl.TableIdGenServiceImpl" destroy-method="destroy">
+		<property name="dataSource" ref="util_datasource"/>
+		<property name="useBigDecimals" value="true"/>
+		<property name="blockSize" value="10"/>
+		<property name="table" value="idstest"/>
+		<property name="key" value="test"/>			
+	</bean>
+	<bean name="Ids-TestMaxByteIds" class="org.anyframe.idgen.impl.TableIdGenServiceImpl" destroy-method="destroy">
+		<property name="dataSource" ref="util_datasource"/>
+		<property name="blockSize" value="10"/>
+		<property name="table" value="idstest"/>
+		<property name="key" value="test"/>			
+	</bean>
+	<bean name="Ids-TestMaxShortIds" class="org.anyframe.idgen.impl.TableIdGenServiceImpl" destroy-method="destroy">
+		<property name="dataSource" ref="util_datasource"/>
+		<property name="blockSize" value="10"/>
+		<property name="table" value="idstest"/>
+		<property name="key" value="test"/>			
+	</bean>
+	<bean name="Ids-TestMaxIntegerIds" class="org.anyframe.idgen.impl.TableIdGenServiceImpl" destroy-method="destroy">
+		<property name="dataSource" ref="util_datasource"/>
+		<property name="blockSize" value="10"/>
+		<property name="table" value="idstest"/>
+		<property name="key" value="test"/>				
+	</bean>		
+	<bean name="Ids-TestMaxLongIds" class="org.anyframe.idgen.impl.TableIdGenServiceImpl" destroy-method="destroy">
+		<property name="dataSource" ref="util_datasource"/>
+		<property name="blockSize" value="10"/>
+		<property name="table" value="idstest"/>
+		<property name="key" value="test"/>				
+	</bean>		
+	<bean name="Ids-TestNotDefinedTableInfo" class="org.anyframe.idgen.impl.TableIdGenServiceImpl" destroy-method="destroy">
+		<property name="dataSource" ref="util_datasource"/>
+		<property name="blockSize" value="1"/>
+	</bean>		
+	
+	<bean name="Ids-TestWithGenerationStrategy" class="org.anyframe.idgen.impl.TableIdGenServiceImpl" destroy-method="destroy">
+		<property name="dataSource" ref="util_datasource"/>
+		<property name="strategy" ref="mixPrefix"/>
+		<property name="blockSize" value="1"/>
+		<property name="table" value="idstest"/>
+		<property name="key" value="test"/>				
+	</bean>
+	
+	<bean name="Ids-TestWithoutTableKey" class="org.anyframe.idgen.impl.TableIdGenServiceImpl" destroy-method="destroy">
+		<property name="dataSource" ref="util_datasource"/>
+		<property name="strategy" ref="timestamp"/>
+		<property name="blockSize" value="1"/>
+		<property name="table" value="idstest"/>		
+	</bean>	
+	
+	<bean name="Ids-TestWithPatternedTimestampStrategy" class="org.anyframe.idgen.impl.TableIdGenServiceImpl" destroy-method="destroy">
+		<property name="dataSource" ref="util_datasource"/>
+		<property name="strategy" ref="timestampWithPattern"/>
+		<property name="blockSize" value="1"/>
+		<property name="table" value="idstest"/>	
+	</bean>				
+	
+	<bean name="mixPrefix" class="org.anyframe.idgen.impl.strategy.MixPrefixStrategy">
+		<property name="prefix" value="TEST-"/>
+		<property name="maxCiphers" value="5"/>
+		<property name="paddingChar" value="*"/>
+	</bean>
+	
+	<bean name="timestamp" class="org.anyframe.idgen.impl.strategy.TimestampStrategy">
+		<property name="prefix" value="true"/>
+		<property name="maxCiphers" value="5"/>
+		<property name="paddingChar" value="0"/>
+	</bean>	
+	
+	<bean name="timestampWithPattern" class="org.anyframe.idgen.impl.strategy.TimestampStrategy">
+		<property name="prefix" value="true"/>
+		<property name="pattern" value="yyyy-MM-dd HH"/>
+		<property name="separator" value="-"/>
+		<property name="maxCiphers" value="5"/>
+		<property name="paddingChar" value="*"/>
+	</bean>
+	
+	<bean name="Ids-TestCustomColumn" class="org.anyframe.idgen.impl.TableIdGenServiceImpl" destroy-method="destroy">
+		<property name="dataSource" ref="util_datasource"/>
+		<property name="blockSize" value="1"/>
+		<property name="table" value="MY_IDS"/>
+		<property name="key" value="test"/>
+		<property name="keyColumn" value="MY_KEY"/>
+		<property name="nextValueColumn" value="MY_ID"/>				
+	</bean>
+	
+	<bean name="Ids-TestNonExistingCustomColumn" class="org.anyframe.idgen.impl.TableIdGenServiceImpl" destroy-method="destroy">
+		<property name="dataSource" ref="util_datasource"/>
+		<property name="blockSize" value="1"/>
+		<property name="table" value="MY_IDS"/>
+		<property name="key" value="test"/>
+		<property name="keyColumn" value="NON_EXISTING_COLUMN"/>
+		<property name="nextValueColumn" value="MY_ID"/>				
+	</bean>
+	
+</beans>	

@@ -1,0 +1,106 @@
+<chapter id="core_springmvc_springintegration">
+	<title>Spring Integration</title>
+
+	<para>
+		Anyframe is composed based on Spring MVC, 
+  		so it can be easily connected with other modules of Spring framework. 
+  		When developing general web application, you can handle request using Business Logic of Business Layer. 
+  		In this case, you can use the following ways to connect Business Layer. 
+  	</para>
+
+	<section id="core_springmvc_springintegration_register">
+    <title>Registering listener and defining Spring setting file list location</title>
+
+	    <para>
+	    	Spring MVC loads WebApplicationContext using DispatcherServlet. 
+	    	In this case, Business service beans are called from Presentation Layer 
+	    	by defining Spring configuration file with contextConfigLocation 
+	    	after registering service beans of Business Layer to be used in Presentation layer in ContextLoaderListener. 
+	    	The following is a part of web.xml file as an example of setting.
+	    </para>
+	
+	    <para>
+			<programlisting language="xml"><![CDATA[<context-param>
+    <param-name>contextConfigLocation</param-name>
+    <param-value>
+        classpath:/spring/context-*.xml
+    </param-value>
+</context-param>
+<!-- Register listener -->
+<listener>
+    <listener-class>]]>
+        <emphasis role="bold">org.springframework.web.context.ContextLoaderListener</emphasis>
+    <![CDATA[</listener-class>
+</listener>]]></programlisting>
+		</para>
+	</section>
+
+	<section id="core_springmvc_springintegration_call">
+    <title>Call Business Service through Dependency Injection</title>
+
+    	<para>
+    		If Listener is registered and the location of Spring configuration file is defined, 
+    	    Dependency Injection can be used to call Business Service like calling general service. 
+    	    First, define service dependency to be used in the related controller bean definition like the following user-servlet.xml file. 
+    	</para>
+
+    	<programlisting
+    	language="xml"><![CDATA[<bean name="/coreGenre.do" class="org.anyframe.plugin.core.moviefinder.web.MovieController">
+    ]]><emphasis role="bold"><![CDATA[<property name="movieService" ref="coreMovieService"/>]]></emphasis><![CDATA[
+</bean>	]]></programlisting>
+
+    	<para>
+    		After defining dependency, 
+    		Business Service can be used through Dependency Injection in Controller class. 
+    		The following is a part of UserController.java file that calls Business Service through Setter Injection. 
+    		<programlisting language="java">public class MovieController{
+    <emphasis role="bold">private MovieService movieService;
+
+    public void MovieService(MovieService movieService) {
+        this.movieService = movieService;
+    }</emphasis>
+    
+     /**
+     * get a movie detail.
+     * @param request
+     * @param response
+     * @return 
+     * @throws Exception
+     */
+    public ModelAndView get(HttpServletRequest request,
+            HttpServletResponse response) throws Exception {
+ 		
+       String movieId = request.getParameter("movieId");
+
+        if (!StringUtils.isBlank(movieId)) {
+            Movie gettedMovie = movieService.get(movieId);        	
+            request.setAttribute("movie", gettedMovie);        	
+        }
+        
+        return new ModelAndView(this.getSuccess_get());
+    }  
+}</programlisting>
+			For more information on Spring IoC container Dependency Injection, refer to 
+		    this  manual Spring >> IoC(Inversion of Control) >> <link linkend="core_spring_ioc_dependencies">Dependencies</link>.
+		</para>
+	</section>
+	
+	<section id="core_springmvc_springintegration_resources">
+		<title>Resources</title>
+		<para>
+			<itemizedlist>
+				<listitem>
+					<para>References</para>
+					<itemizedlist>
+						<listitem>
+							<para>
+								<ulink url="http://static.springsource.org/spring/docs/3.0.x/spring-framework-reference/html/mvc.html">
+								Spring 2.5 reference manual - Web MVC framework</ulink>
+							</para>
+						</listitem>
+					</itemizedlist>
+				</listitem>
+			</itemizedlist>
+		</para>
+	</section>	
+</chapter>

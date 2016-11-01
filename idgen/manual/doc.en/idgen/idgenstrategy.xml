@@ -1,0 +1,92 @@
+<chapter id="idgen_idgenstrategy">
+	<title>How to use a Generation Strategy</title>
+
+		<para>
+			When TableIdGenService is used, generation strategy can be used when the unique id is generated, 
+			and <link linkend="idgen_idgenstrategy_mixprefix">MixPrefixStrategy</link>, which combines the defined Prefix with the sequence, 
+			and <link linkend="idgen_idgenstrategy_timestamp">TimestampStrategy</link>, which combines the current time in the defined format and the sequence, are provided. (from 1.0.1)
+			The generation strategy should be defined to be referenced through TableIdGenService as below.	
+    	</para>
+
+	    <itemizedlist>
+    		<listitem>
+        		<para>
+        			<emphasis role="bold">Refer to strategy by dependency injection</emphasis>
+        			<programlisting language="xml"><![CDATA[<bean name="idGenerationService"
+    class="anyframe.core.idgen.impl.TableIdGenerationService"
+    destroy-method="destroy">
+    <property name="dataSource" ref="dataSource" />
+    <property name="strategy" ref="mixPrefixProduct" />
+    <config:configuration block-size="1" table="ids" key-table="PRODUCT" />
+</bean>
+
+<bean name="mixPrefixProduct" class="anyframe.core.idgen.impl.strategy.MixPrefix">
+    <property name="prefix" value="PRODUCT-" />
+    <property name="maxCiphers" value="5" />
+    <property name="paddingChar" value="0" />
+</bean>]]></programlisting>
+				</para>
+      		</listitem>
+    	</itemizedlist>
+
+	<section id="idgen_idgenstrategy_mixprefix">
+			<title>MixPrefixStrategy</title>
+
+			<para>
+				Anyframe's TableIdGenService provides the generation strategy named org.anyframe.idgen.impl.strategy.MixPrefixStrategy. 
+				MixPrefixStrategy is one type of id generation strategies, 
+				and combines the sequence retrieved by executing TableIdGenService and the prefix when generating id.
+				For example, when the prefix is 'TEST-', the sequence delivered through TableIdGenService '12', paddingChar '0', and maxCiphers 5, 
+				the id value delivered becomes 'TEST-00012' by combining the prexfix and the sequence. 
+				If the maxCiphers are 5 and the sequence is '12', the sequence will be in five digits, 
+				and the blank spaces will be filled with the strings defined with paddingChar, and thus it will become '00012'.
+      			<programlisting language="xml"><![CDATA[<bean ]]><emphasis
+      		role="bold">name="mixPrefix" class="org.anyframe.idgen.impl.strategy.MixPrefixStrategy"</emphasis><![CDATA[>
+    <property name="prefix" value="TEST-"/>
+    <property name="maxCiphers" value="5"/>
+    <property name="paddingChar" value="0"/>
+</bean>]]></programlisting>
+			</para>
+    	</section>
+    	
+    	<section id="idgen_idgenstrategy_timestamp">
+    		<title>TimestampStrategy (from 1.0.1)</title>
+    		<para>
+				Anyframe's TableIdGenService provides the generation strategy named org.anyframe.idgen.impl.strategy.TimestampStrategy. 
+				TimestampStrategy is one type of id generation strategies, 
+				and combines the sequence retrieved by executing TableIdGenService and the current time generated in the javax.text.SimpleDateFormat pattern 
+				when generating id.
+				For example, if the pattern is 'yyyy-MM-dd', the sequence delivered by TableIdGenService '12', separator '-', paddingChar '0', and maxCiphers 5, 
+				the delivered id value will be '2011-05-24-00012' combining the current time and the sequence. 
+				If maxCiphers are 5, and the sequence is '12', the sequence will be in five digits, 
+				and the blank spaces will be filled with the string defined with paddingChar and thus become '00012'.     		
+				Also, the separator serves as the delimiter that separates the current time and the sequence. 
+				When the pattern and the separator have not been entered, the new id is combined, applying the values such as 'yyyyMMdd' and '' as the default.
+      			<programlisting language="xml"><![CDATA[<bean ]]><emphasis
+      		role="bold">name="mixPrefix" class="org.anyframe.idgen.impl.strategy.TimestampStrategy"</emphasis><![CDATA[>
+    <property name="pattern" value="yyyy-MM-dd"/>
+    <property name="separator" value="-"/>  		
+    <property name="maxCiphers" value="5"/>
+    <property name="paddingChar" value="0"/>
+</bean>]]></programlisting>				
+    		</para>
+    	</section>
+
+    <section id="idgen_idgenstrategy_implement">
+	<title>How to implement Id Generation Strategy </title>
+
+		<para>
+			To develop strategy, you must implement
+				anyframe.core.idgen.IdGenerationStrategy.
+				And makeId(String originalId) method resturns id which applied strategy.
+				The following is an implementing makeId method within MixPrefix class.			
+      		<programlisting language="java">public class MixPrefix <emphasis
+            role="bold">implements IdGenerationStrategy</emphasis>{
+    <emphasis role="bold">public String makeId(String originalId) {</emphasis>
+
+        return prefix + StringUtil.fillString(originalId, paddingChar, maxCiphers);
+    }
+}</programlisting>
+		</para>
+    </section>
+</chapter>

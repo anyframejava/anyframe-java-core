@@ -1,0 +1,122 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
+<html>
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+<title>Insert title here</title>
+<script type="text/javascript" src="../common/exlibs/jquery-1.9.0.js"></script>
+
+<!--  stylesheet  -->
+<link type="text/css" rel="stylesheet" href="../common/css/suite.css"/>
+
+<script>
+	
+	var frameglobal = parent.frameglobal;
+	
+	var ENV = {
+			ID_BOX_CONTAINER_TITLE : "#box-container-title",
+			ID_BOX_CONTAINER : "#box-container"
+	};
+
+	function updateframe()
+	{
+		mainView.setBoxContainer( frameglobal.getSelectedCategory(), frameglobal.getSelectedSampleSet() );	
+	}
+	
+	var mainView = {
+			
+			_SampleDS : parent.SampleDS,
+			
+			init : function()
+			{
+				if (this._SampleDS !== undefined && this._SampleDS.loaded !== undefined && this._SampleDS.loaded)
+					mainView.setBoxContainer( frameglobal.getSelectedCategory(), frameglobal.getSelectedSampleSet() );
+			},
+			
+			setBoxContainer : function(selCatName, selSSName)
+			{
+				var selCatArry = [],
+					rhtml = "";
+				
+				selCatName = $.trim(selCatName);
+								
+				if (selCatName == "") {
+					$(ENV.ID_BOX_CONTAINER_TITLE).text("ALL");
+					selCatArry = this._SampleDS.getCategory();
+				}
+				else {
+					$(ENV.ID_BOX_CONTAINER_TITLE).text(selCatName);
+					selCatArry.push( selCatName );
+				}
+				
+				for (var cx = 0, clen = selCatArry.length; cx < clen; cx++)
+				{
+					var catone = selCatArry[cx];
+					var selSSArry = this._SampleDS.getSampleSetArry( catone );					
+					
+					for (var sx = 0, slen = selSSArry.length; sx < slen; sx++)
+					{
+						var selSSone = selSSArry[sx];
+						
+						rhtml += this._makeBoxItem( selSSone, this._SampleDS.getSampleSetDesc(catone, selSSone), catone );
+					}
+				}
+				
+				rhtml = $.trim(rhtml);
+				if (rhtml !== "")
+				{
+					$(ENV.ID_BOX_CONTAINER).html( rhtml );
+					
+					$(ENV.ID_BOX_CONTAINER).children().mouseup(function(evt) {
+						mainView.selectBox(evt);
+					});
+				}
+				
+			},
+			
+			_makeBoxItem : function(sampleSetName, sampleSetDesc, catName)
+			{
+				var rhtml = "";
+				
+				rhtml += "<div class='preview-box'>\n";
+				rhtml += "<p class='title' catname='" + catName + "'>" + sampleSetName + "</p>\n";
+				//rhtml += "<img class='desc' src="+ sampleSetDesc +"/>\n";
+				rhtml += "<p class='desc'>" + sampleSetDesc + "</p>\n";
+				rhtml += "</div>\n";
+				
+				return rhtml;
+			},
+			
+			
+			selectBox : function(evt)
+			{
+				var selSSElm = $(evt.target).parent().children("p.title"),
+				    selSSName = selSSElm.text(),
+				    selCatName = selSSElm.attr('catname');
+				
+				frameglobal.setSelectedCategory( selCatName );
+				frameglobal.setSelectedSampleSet( selSSName );
+				
+				frameglobal.updateframe( frameglobal.targetname.FRAME_NAV );
+			}
+	};
+	
+	$(document).ready(function() {
+		
+		mainView.init();
+	});
+	
+</script>
+</head>
+<body>
+<!--  CONTENTS 부분 ---------------------------------------------- -->
+
+	<div>
+	
+		<div id="box-container-title" class="content-title"></div>
+		<div id="box-container" class="content-in">
+				
+		</div>
+		
+	</div>		
+</body>
+</html>

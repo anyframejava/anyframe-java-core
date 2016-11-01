@@ -1,0 +1,243 @@
+<chapter id="hibernate_hibernate_nativesql">
+	<title>Native SQL</title>
+
+	<para>
+		Hibernate에서는 기본적으로 CRUD 작업을 할 때 Hibernate 기본 API를 사용하거나 Criteria를
+    	사용하여 수행한다. 그러나 특정 DBMS에서 제공하는 기능을 사용할 수 있도록 하기 위해 Hibernate은 Native SQL
+    	사용을 지원한다.
+    </para>
+
+	<section id="hibernate_hibernate_nativesql_instruction">
+		<title>기본적인 사용 방법</title>
+
+		<para>
+				session.createSQLQuery() 메소드를 이용하여 Native SQL을 실행할 수 있다.
+		</para>
+
+		<section id="hibernate_hibernate_nativesql_instruction_basic">
+			<title>Case 1. Basic</title>
+
+			<para>
+				하나의 테이블을 대상으로 Native SQL을 이용한 조회 작업을 수행할 수 있다. 
+                <programlisting language="java"><![CDATA[hqlBuf = new StringBuilder();
+hqlBuf.append("SELECT * ");
+hqlBuf.append("FROM COUNTRY ");
+hqlBuf.append("WHERE COUNTRY_NAME like :condition ");
+hqlBuf.append("ORDER BY COUNTRY_NAME");
+
+SQLQuery query = session.createSQLQuery(hqlBuf.toString());]]>
+<emphasis role="bold"><![CDATA[query.addEntity(Country.class);]]></emphasis>
+<![CDATA[query.setParameter("condition", "%%");
+List countryList = query.list();]]></programlisting>
+			</para>
+
+    		<para>
+        		session.createSQLQuery()를 사용하여 정의된 SQL문을 실행한다. 또한, 조회 결과값을 특정 Persistence 객체로 전달
+        		받고자 하는 경우 SQLQuery.addEntity()를 통해 특정 타입의 객체를 정의하여 사용한다.
+   			</para>
+		</section>
+
+		<section id="hibernate_hibernate_nativesql_instruction_join">
+        	<title>Case 2. Join</title>
+
+        	<para>
+        		Relation 관계에 놓여 있는 두개의 테이블을 대상으로 Native SQL(Inner Join)을 이용한 조회 작업을 수행할 수 있다. 
+                <programlisting language="java"><![CDATA[hqlBuf.append("SELECT movie.* ");
+hqlBuf.append("FROM MOVIE movie ");
+hqlBuf.append("]]><emphasis role="bold">join</emphasis><![CDATA[ MOVIE_CATEGORY moviecategory on movie.MOVIE_ID 
+        = moviecategory.MOVIE_ID ");
+hqlBuf.append("]]><emphasis role="bold">join</emphasis><![CDATA[ CATEGORY category on moviecategory.CATEGORY_ID 
+        = category.CATEGORY_ID ");
+hqlBuf.append("WHERE category.CATEGORY_NAME = ?");
+SQLQuery query = session.createSQLQuery(hqlBuf.toString());]]>
+<emphasis role="bold"><![CDATA[query.addEntity(Movie.class);]]></emphasis>
+<![CDATA[query.setParameter(0, "Romantic");
+List movieList = query.list(); ]]></programlisting>
+			</para>
+
+        	<para>
+        		위의 코드와 같이 join 키워드를 사용하여 Inner Join을 수행할 수 있다.
+       	 	</para>
+
+        	<para>
+        		또한, Relation 관계에 놓여 있는 두개의 테이블을 대상으로 Native SQL(Right Outer Join)을 이용한 조회 작업을 수행할 수 
+        		있다. 작성 방법은 아래와 같다. 
+                <programlisting language="java"><![CDATA[hqlBuf.append("SELECT distinct category.* ");
+hqlBuf.append("FROM MOVIE movie ");
+hqlBuf.append("]]><emphasis role="bold">right join</emphasis> <![CDATA[MOVIE_CATEGORY moviecategory on 
+        movie.MOVIE_ID=moviecategory.MOVIE_ID ");
+hqlBuf.append("]]><emphasis role="bold">right join</emphasis> <![CDATA[CATEGORY category on 
+        moviecategory.CATEGORY_ID=category.CATEGORY_ID ");
+hqlBuf.append("ORDER BY category.CATEGORY_NAME ASC ");
+SQLQuery query = session.createSQLQuery(hqlBuf.toString());]]>
+<emphasis role="bold">query.addEntity(Category.class);</emphasis> 
+List categoryList = query.list();        </programlisting>
+			</para>
+
+        	<para>
+        		또한 Join하여 조회한 결과를 각각의 Join된 객체의 값으로 select 하기 위해서는 addJoin 메소드를 사용한다. 
+                <programlisting language="java"><![CDATA[hqlBuf.append("SELECT distinct ]]><emphasis
+              role="bold"><![CDATA[movie.*, country.*]]></emphasis> ");
+<![CDATA[hqlBuf.append("FROM MOVIE movie, COUNTRY country ");
+hqlBuf.append("WHERE movie.COUNTRY_CODE = country.COUNTRY_CODE ");
+hqlBuf.append("AND country.COUNTRY_ID = :condition1 ");
+hqlBuf.append("AND movie.TITLE like :condition2 ");
+
+SQLQuery query = session.createSQLQuery(hqlBuf.toString());]]>
+<emphasis role="bold"><![CDATA[query.addEntity("movie", Movie.class);]]></emphasis>
+<emphasis role="bold"><![CDATA[query.addJoin("country", "movie.country");]]></emphasis>
+<![CDATA[query.setParameter("condition1", "KR");
+query.setParameter("condition2", "%%");
+List movieList = query.list(); ]]></programlisting>
+			</para>
+
+        	<para>
+        		Movie와 Country 정보를 한꺼번에 조회하기 위해 위 Select문의 Movie 객체의 alias와 같은 'movie'를 이용하여 Movie 
+        		클래스를 addEntity()의 입력 인자로 정의한 다음 Join 대상이 되는 Country 또한 addJoin() 메소드에 정의해주어야 한다. 
+        		위의 코드에서는 Country 객체의 alias인 'country'와 이 객체의 값인 movie.country를 입력 인자로 지정해주었다. 
+        		(movie.country의 movie는 addEntity() 메소드를 통해 정의된 Entity의 Key 값이다.) 이때 리턴되는 List는 Object
+        		Array 배열이 되며 Object Array에는 아래와 같이 movie와 country가 차례대로 저장되게 된다.
+                <programlisting language="java"><![CDATA[language="java">Object[] results1 = (Object[]) movieList.get(0);
+Movie movie1 = (Movie)results1[0];
+Country country1 = (Country)results1[1];]]></programlisting>
+			</para>
+		</section>
+
+		<section id="hibernate_hibernate_nativesql_instruction_condition">
+			<title>Case 3. 검색 조건 명시</title>
+
+        	<para>
+        		두 개의 테이블을 대상으로 검색 조건을 별도 명시한 Native SQL을 이용하여 조회 작업을 수행할 수 있다.
+                <programlisting language="java"><![CDATA[hqlBuf.append("SELECT distinct movie.* ");
+hqlBuf.append("FROM MOVIE movie, COUNTRY country ");
+hqlBuf.append("WHERE movie.COUNTRY_CODE = country.COUNTRY_CODE ");
+hqlBuf.append("AND]]> <emphasis role="bold"><![CDATA[country.COUNTRY_ID = :condition1]]></emphasis> ");
+<![CDATA[hqlBuf.append("AND]]> <emphasis role="bold"><![CDATA[movie.TITLE like :condition2]]></emphasis> ");
+
+<![CDATA[SQLQuery query = session.createSQLQuery(hqlBuf.toString());]]>
+<emphasis role="bold"><![CDATA[query.addEntity(Movie.class); ]]></emphasis>
+<emphasis role="bold"><![CDATA[query.setParameter("condition1", "KR");]]></emphasis>
+<emphasis role="bold"><![CDATA[query.setParameter("condition2", "%%");]]></emphasis>
+<![CDATA[List movieList = query.list();]]></programlisting>
+			</para>
+
+        	<para>
+        		":"(Named Parameter 형태)으로 조건을 명시할 수 있으며 해당 조건의 값은 setParameter()를 통해 셋팅해 줄 수 있다. 위에서 
+        		설명한 기본적인 Native SQL 사용 코드는 HibernateNativeSQL.java 에서 확인할 수 있다.
+        	</para>
+		</section>
+	</section>
+
+    <section id="hibernate_hibernate_nativesql_xml">
+		<title>XML에 Native SQL 정의하여 사용</title>
+
+      	<para>
+      		Native SQL을 별도 Hibernate Mapping XML 파일 내에 정의하고 정의된 Native SQL문의 name을 입력하여 실행시킬 수 있다. 
+      		이는 Native SQL이 변경될 경우 소스 코드 변경없이 XML문에 정의된 HQL을 변경함으로써 재컴파일이 불필요하며 Native SQL문만
+      		을 따로 관리할 수 있도록 한다. org.hibernate.Session의 getNamedQuery() 메소드를 사용하면 Native SQL문의 name으로 정의
+      		된 Native SQL을 수행한다.
+            <programlisting language="java">Query query = <emphasis role="bold"><![CDATA[session.getNamedQuery("nativeFindCountryList");]]></emphasis>
+<emphasis role="bold"><![CDATA[query.setParameter("condition", "%%");]]></emphasis>
+<![CDATA[List countryList = query.list();]]></programlisting></para>
+
+      	<para>
+      		다음은 Native SQL이 정의되어 있는 Country.hbm.xml 의 일부이다. 
+            <programlisting language="xml"> <emphasis role="bold"><![CDATA[<]]><![CDATA[sql-query name="nativeFindCountryList"]]></emphasis><![CDATA[>
+    <return alias="country" class="org.anyframe.sample.model.bidirection.Country"/>]]>
+    <![CDATA[SELECT * 
+    FROM COUNTRY country
+    WHERE country.COUNTRY_NAME like :condition 
+    ORDER BY country.COUNTRY_NAME
+
+</sql-query>]]></programlisting>
+		</para>
+
+      	<para> 
+      		Native SQL 작성을 위해 해당 XML에는 <![CDATA[<sql-query>]]>태그를 사용하여 작성한다. 위에서 설명한 테스트 코드는 
+      		HibernateNamedNativeSQL.java 에서 확인할 수 있다.
+      	</para>
+	</section>
+
+    <section id="hibernate_hibernate_nativesql_pagination">
+		<title>Pagination</title>
+
+      	<para>
+      		Pagination은 한 페이지에 보여줘야 할 조회 목록에 제한을 둠으로써 DB 또는 어플리케이션 메모리의 부하를 감소시키고자 하는데 
+      		목적이 있다. Native SQL 수행시 페이징 처리된 조회 결과를 얻기 위한 방법에 대해 알아보도록 한다. 특정 테이블을 대상으로
+      		(예에서는 MOVIE 테이블) Native SQL을 이용한 조회 작업을 수행한다. 이때, 조회를 시작해야 하는 Row의 Number
+      		(FirstResult)와 조회 목록의 개수(MaxResult)를 정의함으로써, 페이징 처리가 가능해진다. 
+            <programlisting language="java"><![CDATA[hqlBuf.append("SELECT * ");
+hqlBuf.append("FROM MOVIE ");
+SQLQuery query = session.createSQLQuery(hqlBuf.toString());
+query.addEntity(Movie.class);]]>
+<emphasis role="bold"><![CDATA[query.setFirstResult(1);]]></emphasis>
+<emphasis role="bold"><![CDATA[query.setMaxResults(2);]]></emphasis>
+<![CDATA[List movieList = query.list();]]></programlisting>
+		</para>
+
+      	<para>
+      		위와 같이 정의할 경우 Hibernate Configuration 파일에 정의된 hibernate.dialect 속성에 따라 각각의 DB에 맞게 변경된 
+      		SQL이 수행한다. 이는 Pagination을 할 때 모든 데이터를 읽은 후 해당 페이지에 속한 데이터 갯수를 결과값으로 전달하는 것이 
+      		아니라 조회해야할 데이터 즉, 해당 페이지에 속한 갯수만큼의 데이터만 읽어오게 된다. 다음은 hibernate.dialect를 HSQL DB
+      		로 정의하였을 때 페이징 처리가 되어 수행된 쿼리문이다.
+            <programlisting>SELECT <emphasis role="bold">limit 1 2</emphasis><![CDATA[ * FROM MOVIE]]></programlisting>
+		</para>
+
+      	<para>
+      		위의 코드에서 정의한 것처럼 첫번째로 조회해야 할 항목의 번호를 1, 조회 항목의 전체 개수를 2로 정의하였으므로
+     	 	Hibernate에서는 HSQL DB의 특성에 맞게 'limit 1 2'가 추가된 SQL을 실행하여 페이징 처리를 수행하였다.
+      		위의 코드는 HibernateNativeSQLPaging.java 에서 확인할 수 있다.
+      	</para>
+	</section>
+
+    <section id="hibernate_hibernate_nativesql_callable">
+		<title>Callable Statement</title>
+
+      	<para>
+      		Hibernate를 이용하여 DB에 기 등록된 Procedure 또는 Function을 실행시킬 수 있다.
+      	</para>
+
+		<section id="hibernate_hibernate_nativesql_callable_procedure">
+        	<title>Case 1. XML에 정의한 Procedure 호출</title>
+
+        	<para>
+        		Mapping XML 파일에 정의한 Procedure를 호출하여 결과값을 확인할 수 있다.
+                <programlisting language="java">Query query = <emphasis role="bold"><![CDATA[session.getNamedQuery("callFindCategoryList"]]></emphasis>);
+<![CDATA[query.setParameter("condition", "%%");
+List categoryList = query.list();]]></programlisting>
+			</para>
+
+        	<para>
+        		위 코드에서는 session.getNameQuery()를 호출하여 Mapping XML에 정의된 'callFindCategoryList'라는 이름의 query를 
+        		찾는다. 다음은 'callFindCategoryList'가 정의되어 있는 Category.hbm.xml 파일의 일부이다. 
+                <programlisting language="xml"><![CDATA[<sql-query name="callFindCategoryList" callable="true">
+    <return alias="category" class="org.anyframe.sample.model.bidirection.Category"/>	
+        {]]> <emphasis role="bold"><![CDATA[call FIND_CATEGORY_LIST (?, :condition)]]></emphasis> }
+<![CDATA[</sql-query>]]></programlisting>
+			</para>
+
+        	<para>
+        		위의 코드에서는 해당 DB에 기 정의되어있는 FIND_CATEGORY_LIST 라는 Procedure를 호출하게 된다.
+        	</para>
+		</section>
+
+      	<section id="hibernate_hibernate_nativesql_callable_function">
+        	<title>Case 2. Function을 이용한 HQL 실행</title>
+
+        	<para>
+        		해당 DB에 생성한 Function을 이용하여 HQL을 실행하고 결과를 확인할 수 있다.
+                <programlisting language="java"><![CDATA[hqlBuf.append("FROM Movie movie ");
+hqlBuf.append("WHERE movie.releaseDate >]]> <emphasis role="bold"><![CDATA[FIND_MOVIE(:condition)]]></emphasis>");
+<![CDATA[Query query = session.createQuery(hqlBuf.toString());
+query.setParameter("condition", "MV-00002");
+List movieList = query.list();]]></programlisting>
+			</para>
+
+        	<para>
+        		위 코드에서는 'FIND_MOVIE'라는 Function의 호출 결과를 이용하여 HQL을 수행하고 있다. 보다 자세한 코드는 
+        		HibernateProcedure.java 에서 확인한다.
+        	</para>
+		</section>
+	</section>
+</chapter>
+	

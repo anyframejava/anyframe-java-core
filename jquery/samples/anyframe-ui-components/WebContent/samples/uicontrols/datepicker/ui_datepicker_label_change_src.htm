@@ -1,0 +1,166 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN"
+"http://www.w3.org/TR/html4/loose.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+
+<head>
+<meta http-equiv="content-type" content="text/html; charset=UTF-8" />
+<title>[AnyFrame UI Datepicker] Date and  Sample</title>
+<link href="../../../common/css/smoothness/jquery-ui-1.10.0.custom.css"	rel="stylesheet">
+<script src="../../../common/exlibs/jquery-1.9.0.js"></script>
+<script src="../../../common/exlibs/jquery-ui-1.10.0.custom.js"></script>
+
+
+<link type="text/css" rel="stylesheet" href="../../../common/css/style.css"/>
+<link type="text/css" rel="stylesheet" href="sub_css/label_change.css">
+
+<script type="text/javascript">
+
+	var datepickerLabelChangeView = {
+			
+		init : function()
+		{
+			// load & save each language resource
+			$.datepicker.regional['kr'] = {
+	                closeText: '닫기',
+	                prevText: '이전',
+	                nextText: '다음',
+	                currentText: '오늘',
+	                monthNames: ['1월','2월','3월','4월','5월','6월',
+	                             			'7월','8월','9월','10월','11월','12월'],
+	                monthNamesShort: ['1.','2','3','4','5','6',
+	                                  				'7','8','9','10','11','12'],
+					dayNames: ['일요일','월요일','화요일','수요일','목요일','금요일','토요일'],
+					dayNamesShort: ['일','월','화','수','목','금','토'],
+					dayNamesMin: ['일','월','화','수','목','금','토'],
+					weekHeader: '주',
+					dateFormat: 'yy/mm/dd',
+					firstDay: 0,
+					isRTL: false,
+					showMonthAfterYear: false, 
+					yearSuffix: '년'
+			};
+			
+			$.datepicker.regional['ch'] = {
+	                closeText: '关闭',
+	                prevText: '<上月',
+	                nextText: '下月>',
+	                currentText: '今天',
+	                monthNames: ['一月','二月','三月','四月','五月','六月',
+	                '七月','八月','九月','十月','十一月','十二月'],
+	                monthNamesShort: ['一','二','三','四','五','六',
+	                '七','八','九','十','十一','十二'],
+	                dayNames: ['星期日','星期一','星期二','星期三','星期四','星期五','星期六'],
+	                dayNamesShort: ['周日','周一','周二','周三','周四','周五','周六'],
+	                dayNamesMin: ['日','一','二','三','四','五','六'],
+	                weekHeader: '周',
+	                dateFormat: 'yy-mm-dd',
+	                firstDay: 1,
+	                isRTL: false,
+	                showMonthAfterYear: true,
+	                yearSuffix: '年'
+	        };
+		},
+
+							
+		setLanguage : function(target, definedLang){
+				$(target).datepicker("option", $.datepicker.regional[definedLang]);
+		},
+		
+		setChangedText : function(option, changeInputId){
+			$("#diffDatepicker").datepicker ("option", option, $(changeInputId).val());
+		}
+		
+	};
+
+	$(document).ready(function() {
+		
+		datepickerLabelChangeView.init();
+
+	
+		$.datepicker.setDefaults( $.datepicker.regional[ "" ] );
+		$("#langDatepicker, #diffDatepicker").datepicker({
+													      showButtonPanel : true,
+													      showWeek : true
+													      });
+		
+	    $( "#labelDiff" ).change(function() {
+	    	datepickerLabelChangeView.setLanguage("#langDatepicker", $(this).val());
+	    });
+	    
+	    $("#apply").button().click(function(){
+	    	datepickerLabelChangeView.setChangedText("currentText", "#currentText");
+	    	datepickerLabelChangeView.setChangedText("prevText", "#prevText");
+	    	datepickerLabelChangeView.setChangedText("nextText", "#nextText");
+	    	datepickerLabelChangeView.setChangedText("closeText", "#closeText");
+	    	datepickerLabelChangeView.setChangedText("weekHeader", "#weekHeader");
+	    });
+	    
+	});
+</script>
+</head>
+
+<body>
+
+	<div class="title">Datepicker 라벨 언어 변경</div>
+
+	<div>
+		<div class="text-area">언어 선택 :</div>
+		<div class="input-area">
+			<select id="labelDiff">
+				<option value="">english(default)</option>
+				<option value="kr">한국어</option>
+				<option value="ch">中國語</option>
+			</select>
+		</div>
+
+		<div class="text-area">Date :</div>
+		<div class="input-area">
+			<input id="langDatepicker" type="text" />
+		</div>
+	</div>
+
+	<div class="title">Datepicker 라벨 일부 변경</div>
+
+	<div>
+		<div class="text-area">current :</div>
+		<div class="input-area">
+			<input id="currentText" type="text" />
+		</div>
+
+		<div class="text-area">Date :</div>
+		<div class="input-area">
+			<input id="diffDatepicker" type="text" />
+		</div>
+
+		<br>
+		<div class="text-area">previous :</div>
+		<div class="input-area">
+			<input id="prevText" type="text" />
+		</div>
+
+		<br>
+		<div class="text-area">next :</div>
+		<div class="input-area">
+			<input id="nextText" type="text" />
+		</div>
+
+		<br>
+		<div class="text-area">close :</div>
+		<div class="input-area">
+			<input id="closeText" type="text" />
+		</div>
+
+		<br>
+		<div class="text-area">week header :</div>
+		<div class="input-area">
+			<input id="weekHeaderText" type="text" />
+		</div>
+
+		<br>
+		<div class="button-div">
+			<input id="apply" type="submit" value="apply" />
+		</div>
+	</div>
+
+</body>
+</html>

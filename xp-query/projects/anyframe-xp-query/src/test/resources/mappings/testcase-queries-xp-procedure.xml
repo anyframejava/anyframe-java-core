@@ -1,0 +1,72 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<queryservice xmlns="http://www.anyframejava.org/schema/query/mapping" 
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" 
+	xsi:schemaLocation="http://www.anyframejava.org/schema/query/mapping http://www.anyframejava.org/schema/query/mapping/anyframe-query-mapping-1.0.xsd ">
+
+	<queries>
+		<query id="callFunction" isDynamic="false">
+			<statement>{ ? = call FUNC_RETURN_NUM(?)}</statement>
+			<param type="NUMERIC" binding="OUT" name="outVal" />
+			<param type="NUMERIC" binding="IN" name="inVal" />
+		</query>
+
+		<query id="callProcedure" isDynamic="false">
+			<statement>{call PROC_TOCHAR (?,?)}</statement>			
+			<param type="VARCHAR" binding="OUT" name="outVal" />			
+			<param type="VARCHAR" binding="IN" name="inVal" />			
+		</query>	
+
+		<query id="callProcedureTwo" isDynamic="false">
+			<statement>{call PROC_TWO_PARAM (?,?,?)}</statement>			
+			<param type="VARCHAR" binding="OUT" name="outVal1" />
+			<param type="VARCHAR" binding="OUT" name="outVal2" />					
+			<param type="VARCHAR" binding="IN" name="inVal" />			
+		</query>
+		
+		<query id="callPackage" isDynamic="false" mappingStyle="none">
+			<statement>{call PKG_REFCURSOR_TEST.PROC_RECORD_SET(?, ?)}</statement>
+			<param type="VARCHAR" binding="IN" name="inVal" />
+			<param type="CURSOR" binding="OUT" name="outVal" />
+		</query>	
+		
+		<query id="callPackageWithNullValue" isDynamic="false" mappingStyle="none">
+			<statement>{call PKG_SYSREFCURSOR_TEST.PROC_RECORD_SET_WITH_NULL(?)}</statement>
+			<param type="CURSOR" binding="OUT" name="outVal" />
+		</query>
+
+        <query id="callSelectOne" mappingStyle="upper">
+            <statement><![CDATA[
+                        {call SELECT_ONE(?,?)}
+                        ]]>
+            </statement>
+            <param type="VARCHAR" binding="IN" name="inVal" />
+            <param type="VARCHAR" binding="OUT" name="outVal" />
+        </query>
+
+        <query id="callSelectOneWithoutIn" mappingStyle="upper">
+            <statement><![CDATA[
+                        {call SELECT_ONE_WITHOUT_IN(?)}
+                        ]]>
+            </statement>
+            <param type="VARCHAR" binding="OUT" name="outVal" />
+        </query>
+
+        <query id="callSelectCursor" mappingStyle="upper">
+            <statement><![CDATA[
+                            {call SELECT_CURSOR(?)}
+                            ]]>
+            </statement>
+            <param type="CURSOR" binding="OUT" name="outVal" />
+        </query>
+
+        <query id="callSelectOneWithMultipleInput" mappingStyle="upper">
+            <statement><![CDATA[
+                        {call SELECT_ONE_WITH_MULTIPLE_INPUT(?, ?, ?)}
+                        ]]>
+            </statement>
+            <param type="VARCHAR" binding="IN" name="inVal1" />
+            <param type="VARCHAR" binding="IN" name="inVal2" />
+            <param type="CURSOR" binding="OUT" name="outVal" />
+        </query>
+	</queries>
+</queryservice>

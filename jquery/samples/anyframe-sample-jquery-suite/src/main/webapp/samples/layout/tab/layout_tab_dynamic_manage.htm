@@ -1,0 +1,122 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN"
+"http://www.w3.org/TR/html4/loose.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+ 
+ <!-- Start of head-->
+<head>
+<meta http-equiv="content-type" content="text/html; charset=UTF-8" />
+<title>Tab 동적구성 및 Drag</title>
+
+
+<!-- include required common files  ----------------------------------------------------->
+<script type="text/javascript" src="../../../common/exlibs/jquery-1.9.0.js" ></script>
+
+<script type="text/javascript" src="../../../common/exlibs/highlighter/scripts/shCore.js" ></script>
+<script type="text/javascript" src="../../../common/exlibs/highlighter/scripts/shBrushJScript.js" ></script>
+
+<script type="text/javascript" src="../../../common/js/template_common.js" ></script>
+
+<!--  stylesheet  -->
+<link type="text/css" rel="stylesheet" href="../../../common/exlibs/highlighter/styles/shCore.css"/>
+<link type="text/css" rel="stylesheet" href="../../../common/exlibs/highlighter/styles/shCoreDefault.css"/>
+ <link rel="stylesheet" type="text/css" href="../../../common/css/style.css" media="screen" /> <!---->
+
+
+
+<!-- scripts to support sample page  ----------------------------------------------------->
+<script type="text/javascript">
+
+$(function() {
+	$("#common").load("../../../common/basicinfo.htm");												//common : basic informations	
+})
+
+
+$(function() {
+	JTemplate.load("layout_tab_dynamic_manage_src.htm");					//{TODO} source url 수정
+	JTemplate.loadDemo("layout_tab_dynamic_manage_src.htm");			//{TODO} source url 수정, show visaul demo sample
+}); 
+	
+</script> 
+</head>
+<!-- End of head -->
+
+<!-- Start of body -->
+<body>
+
+<!-- HEADER BAR -------------------------------------------------------------->
+	<div class="content-title">Layout - Tab</div>
+
+
+<!-- START OF PAGE ... -------------------------------------------------------->
+	<div id="page">
+		<p class="header-title">동적구성 및 Drag</p>
+		<p class="header-desc">: 동적으로 TAB 을 구성하고, TAB 버튼을 Drag 하여 위치를 변경할 수 있는 예를 보여준다.</p>
+ 
+<!-- DEMO ----------------------------------------------------------------------->
+		<div class="demo">
+			<h3 >Demo</h3>
+	       	<div id ="visualExample"></div>
+		</div>
+        
+<!-- DEMO DESCRIPTION----------------------------------------------------->	
+		<div class="desc">
+			<h3>Demo Description</h3>
+			<hr>
+			<p class="desc-overall">
+			탭(TAB)추가 버튼을 실행할 때 마다, 정해진 텍스트 값으로 신규 탭을 구성하며, 각 TAB 버튼에 있는 x 아이콘을 누르면 해당 탭을 삭제하게 된다. <br>
+			TAB이동 체크박스가 선택되어 있을 때는, 생성된 탭 의 위치를 변경할 수 있다. 		
+			</p>
+		</div>
+		        
+<!-- CODE------------------------------------------------------------------------>
+		<div class="code">
+			<h3>Code Source</h3>
+			<pre id="codeExample" class="brush: js"></pre>
+        </div>
+        
+<!-- CODE DESCRIPTION------------------------------------------------------>
+		<div class="desc">
+		    <h3>Code Description</h3>
+		    <hr>
+		    
+		    <span class="code-line">#62,</span><span class="code-line">#68</span>
+		    <p class="desc-overall">
+		    TAB의 구성이 변경되면, $(element).tabs('refresh') 메소드를 호출해야 한다.
+		    </p>
+		    
+		    <span class="code-line">#101 ~ #112</span>
+		    <p class="desc-overall">
+		    TAB이동은 Sortable API 를 이용하여 구현되었다.<br>
+			사용하지 않을 때에는 'destroy' 메소드를 호출해야 완전히 제거된다.
+		    </p>
+		    
+		    <ul class="desc-hypl">
+		    	<li><span>axis</span> : 이 값은 X축 또는 Y축으로 이동을 제한시킬때 사용된다. 본 예에서는 X축 방향으로만 이동되도록 하였다.</li>
+				<li><span>stop</span> : dragging 이 끝날때 발생되는 이벤트이다. 본 예제에서는 dragging 후, 다시 구성된 tab 정보를 반영하도록 'refresh' 메소드를 호출하였다.
+		    </ul>
+		    
+		</div>        
+
+<!-- RELATED LINKS ----------------------------------------------------------->
+        <div class="related">
+            <h3>Related Links</h3>
+            <hr>
+            <ul class="desc-hypl">
+            	<li>
+            		<span>TAB API</span>
+            		<a href="http://api.jqueryui.com/tabs/"></a>
+            	</li>
+            	<li>
+            		<span>Sortable API</span>
+            		<a href="http://api.jqueryui.com/sortable/"></a>
+            	</li>
+            </ul>          
+      	</div>
+      	      
+	</div>      
+<!-- End of Page-->
+
+</body>
+<!-- End of body-->
+
+</html>

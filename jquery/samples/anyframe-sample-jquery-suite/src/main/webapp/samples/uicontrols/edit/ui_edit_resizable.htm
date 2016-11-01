@@ -1,0 +1,135 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN"
+"http://www.w3.org/TR/html4/loose.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+ 
+ <!-- Start of head-->
+<head>
+<meta http-equiv="content-type" content="text/html; charset=UTF-8" />
+<title>title : unit sample template </title> <!-- TODO: 타이틀 작성 -->
+
+
+<!-- include required common files  ----------------------------------------------------->
+<script type="text/javascript" src="../../../common/exlibs/jquery-1.9.0.js" ></script>
+
+<script type="text/javascript" src="../../../common/exlibs/highlighter/scripts/shCore.js" ></script>
+<script type="text/javascript" src="../../../common/exlibs/highlighter/scripts/shBrushJScript.js" ></script>
+
+<script type="text/javascript" src="../../../common/js/template_common.js" ></script>
+
+<!--  stylesheet  -->
+<link type="text/css" rel="stylesheet" href="../../../common/exlibs/highlighter/styles/shCore.css"/>
+<link type="text/css" rel="stylesheet" href="../../../common/exlibs/highlighter/styles/shCoreDefault.css"/>
+<link type="text/css" rel="stylesheet" href="../../../common/css/style.css"/>
+
+<!-- scripts to support sample page  ----------------------------------------------------->
+<script type="text/javascript">
+
+$(function() {
+	JTemplate.load("ui_edit_resizable_src.htm");				
+	JTemplate.loadDemo2("ui_edit_resizable_src.htm");			
+});  
+
+</script>
+ 
+</head>
+<!-- End of head -->
+
+<!-- Start of body -->
+ <body >
+ 
+<!-- HEADER BAR -------------------------------------------------------------->
+<div class="content-title">Component - Edit</div>
+ 
+ <!-- START OF PAGE ... -------------------------------------------------------->
+<div id="page">
+	<p class = "header-title">Edit 사이즈 조절</p>
+	<p class="header-desc">:Edit가능한 입력창의 크기를 조절하는 기능을 보여주는 예이다. </p>
+<!-- DEMO ----------------------------------------------------------------------->
+	<div class="demo">
+		<h3 >Demo</h3>
+		<div id="visualExample"></div>
+	</div>
+
+
+<!-- DEMO DESCRIPTION----------------------------------------------------->
+	<div class="desc">
+		<h3>Demo Description </h3>
+		<hr>
+		
+		<p class="desc-title">입력창 내부 형태</p>
+		<p class="desc-overall">  
+		:  입력창의 사이즈를 동적으로 혹은 사용자 임의에 맞게 바꿀 수 있음을 보여주는 예시로,  input 태그와 textarea 태그의 사이즈를 조절해 볼 수 있다. 
+		</p>
+		
+	</div>
+
+<!-- CODE------------------------------------------------------------------------>
+	<div class="code">
+		<h3>Code Source </h3>
+		<pre id="codeExample" class="brush: js"></pre>
+	</div>
+	
+	
+<!-- CODE DESCRIPTION------------------------------------------------------>
+	<div class="desc">
+		<h3>Code Description </h3>
+		<hr>
+		
+		<p class="desc-title">Resizable</p>
+		<span class="code-line">#28 - #35 </span>
+		<p class="desc-overall">
+		: 하나의 위젯형태로 이루어진 컴포넌트처럼 $( ".selector" ).resizable() 과 같은 방식으로 어떤 요소의 사이즈를 마우스를 이용하여 변경해 볼 수 있다. <br>
+		또한 변경가능한 옵션관련 주요사항은 다음과 같다.
+		</p>
+		<ul class="desc-ul" >
+			<li>
+				<span>방향설정</span>
+				 handles 옵션: 사이즈의 조절을 할 방향을 설정한다. 가능한 값은  { n, e, s, w, ne, se, sw, nw } 이며, north, south, east, west 의 약자로 쓰였다.
+			</li>
+			<li>
+				<span>최대/최소너비 및 높이</span>
+				 minWidth, minHeight, maxWidth, maxHeight 옵션 : 사이즈 변경가능한 최소 또는 최대 너비/높이값의 조건을 숫자로 지정해 줄 수 있다.
+			</li>
+			<li>
+				<span>조절시 가이드라인</span>
+				 helper 옵션 : 사이즈조절을 위해 마우스로 드래그할 때, 아웃라인이 보여지도록 한다. 아웃라인의 스타일을 지정해 놓은 클래스명을 지정해 주면 된다.
+			</li>
+			<li>
+				 <span></span> 본 예제에서는 .resizable-helper 클래스를 정의하여 적용시키도록 하였다.<span class="code-line">#15 - #17</span>
+			<li>
+				<span>사이즈조절 동작</span>
+				 resize 이벤트 (resize(event, ui)): 사이즈를 조절하는 동안 여러가지 ui 요소들을 조작할 수 있는 이벤트함수이다. 
+			</li>
+			<li>
+				 <span></span>resizable이 가지고 있는 element, helper, size, position 등을 조작 가능<br>
+			</li>
+		</ul>
+	
+		<p class="desc-title">Resizable 위젯 구조</p>
+		<p class="desc-overall">
+		: $(selector).resizable() 과 같이 사이즈조절가능한 형태로 구현하면, 브라우저에서는 실제 자동으로 해당 태그를 div 태그로 한번 더 감싸지는 형태로 형성된다.<br>		
+		: 상위에싸여진 div 태그에 적용되는 클래스는  .ui-wrapper 이며, 여러가지 css 속성을 가지고 있다. <br>
+		: 본 예제에서는 사이즈 조절표시를 input창 또는 textarea창 내부에 두기위하여 감싸진 상위 클래스의 padding-bottom을 0으로 재변경해 두었다.
+		<span class="code-line">#37</span><br>
+		(default로 적용되는  padding-bottom 값은 16px)
+		</p>
+			
+	</div>
+
+<!-- RELATED LINKS ----------------------------------------------------------->
+	<div class="related">
+		<h3>Related Links</h3>
+		<hr>
+		 <ul class="desc-hypl">
+           	<li>
+           		<span>Resizable</span>
+           		<a href = "http://api.jqueryui.com/resizable/"></a>
+           	</li>      	
+		</ul>
+	</div>
+
+</div>
+
+</body>
+<!-- End of body-->
+</html>

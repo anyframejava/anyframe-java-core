@@ -1,0 +1,122 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN"
+"http://www.w3.org/TR/html4/loose.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+
+<head>
+<meta http-equiv="content-type" content="text/html; charset=UTF-8" />
+<title>Chart : Label</title>
+
+<!-- FILES INCLUDED.. ----------------------------------------------------->
+<script type="text/javascript" src="../../../common/exlibs/jquery-1.9.0.js"></script>
+<script type="text/javascript" src="../../../common/exlibs/highlighter/scripts/shCore.js"></script>
+<script type="text/javascript" src="../../../common/exlibs/highlighter/scripts/shBrushJScript.js"></script>
+<script type="text/javascript" src="../../../common/js/template_common.js"></script>
+
+<!--  STYLESHEET  -->
+<link type="text/css" rel="stylesheet" href="../../../common/exlibs/highlighter/styles/shCore.css" />
+<link type="text/css" rel="stylesheet" 	href="../../../common/exlibs/highlighter/styles/shCoreDefault.css" />
+<link type="text/css" rel="stylesheet" 	href="../../../common/css/style.css" />
+
+<!-- SCRIPT  ----------------------------------------------------->
+<script type="text/javascript">
+
+$(function() {
+	JTemplate.load("ui_chart_tick_src.htm");
+	JTemplate.loadDemo2("ui_chart_tick_src.htm", {height:"700px", width:"90%"});
+});  
+
+</script>
+
+</head>
+
+<!-- CONTENTS BODY -------------------------------------------------------------->
+<body >
+
+<!-- HEADER BAR -------------------------------------------------------------->
+<div class="content-title">Chart - Chart</div>
+
+<!-- START OF PAGE ... -------------------------------------------------------->
+<div id="page">
+		<p class="header-title">Chart 눈금/그리드 조절</p>
+		<p class="header-desc">: 차트의 눈금과 그리드에 관한 설정에 관해 조작하는 예이다.</p>
+
+<!-- DEMO ----------------------------------------------------------------------->
+			<div class="demo">
+				<h3 >Demo</h3>
+				<div id="visualExample"></div>
+			</div>
+
+<!-- DEMO DESCRIPTION----------------------------------------------------->
+		<div class="desc">
+			<h3>Demo Description</h3>
+			<hr>
+			<p class = "desc-title">배경 그리드</p>
+			<p class ="desc-overall">
+				: 차트 뒷배경으로 존재하는 그리드에 대해, 가로, 세로 그리드 선을  show/hide 할 수 있다.<br>
+			</p>
+			
+			<p class = "desc-title">눈금 조절</p>
+			<p class ="desc-overall">
+				: x, y축의 최소, 최대값, 눈금 간격을 지정할 수 있으며, 본 예에서는 y축에 대한 최소, 최대값과 눈금간격에 대해서 조작가능하도록 구현하였다.<br>
+			</p>
+			<ul class ="desc-hypl">
+				<li><span>최소/최대값</span>: 입력창에 숫자값을 입력하고 적용시키면, 그 값을 기준으로 하여 차트가 보여진다.</li>
+				<li><span>눈금간격</span>: 슬라이더가 움직임에 따라 그 간격이 조절된다.(슬라이더의 최소값은 1, 최대값은 20)</li>
+			</ul>
+			
+		</div>
+
+<!-- CODE------------------------------------------------------------------------>
+			<div class="code">
+				<h3>Code Source </h3>
+				<pre id="codeExample" class="brush: js"></pre>
+			</div>
+
+<!-- CODE DESCRIPTION------------------------------------------------------>
+			<div class="desc">
+				<h3>Code Description </h3>
+				<hr>
+				<p class="desc-title">배경 그리드</p>
+				<p class = "desc-overall">
+				:  초기설정으로 x축과 y축의 옵션에서 showGridline 을 true로 미리설정 후, 동적으로 바꾸어야 할 경우 setGrid 함수에서와 같이
+				 target.options.axes.xaxis.tickOptions.showGridline 옵션을  value(x, y, xy 또는  both) 의 값으로 재설정한 후, replot함수로 다시 차트를 그려주도록 한다.
+				</p>
+				
+				<p class="desc-title">눈금 최소/최대값</p>
+				<p class = "desc-overall">
+				: target.options.axes.yaxis.min 또는 .max 옵션을 사용자 입력창으로 받은 값으로 재설정한 후 replot으로 다시 차트를 그려준다.
+				</p>
+				
+				<p class="desc-title">눈금 간격</p>
+				<p class = "desc-overall">
+				: target.options.axes.yaxis.tickInterval 옵션을 슬라이더 움직임에 따라 1- 20의 value 값을 받아 눈금간격이 재설정되도록 한다.
+				</p>
+				
+			</div>
+		
+		
+
+<!-- RELATED LINKS ----------------------------------------------------------->
+	<div class="related">
+		<h3>Related Links</h3>
+		<hr>
+		 <ul class="desc-hypl">
+           	<li>
+           		<span>jqplot API</span>
+           		<a href = "http://www.jqplot.com/docs/files/jqplot-core-js.html"></a>
+           	</li>
+           	<li>
+           		<span>눈금설정 관련 API</span>
+           		<a href = "http://www.jqplot.com/docs/files/jqplot-axisTickRenderer-js.html"></a>
+           	</li>
+           	<li>
+           		<span>기본 축설정 관련 API</span>
+           		<a href = "http://www.jqplot.com/docs/files/jqplot-core-js.html#Axis"></a>
+           	</li>             	
+		</ul>
+	</div>
+	
+</div>
+<!-- END OF PAGE------------------------------------------------------------->
+</body>
+</html>

@@ -1,0 +1,426 @@
+<chapter id="utilsystem_usecase">
+	<title>Utilities Samples</title>
+	<para>The screens provided by Util System Plugin is as follows.</para>
+	<informaltable>
+		<tgroup cols="2">
+			<colspec colnum="1" colname="col1" colwidth="3*" />
+			<colspec colnum="2" colname="col2" colwidth="7*" />
+			<thead>
+				<row>
+					<entry align="center">Name</entry>
+					<entry align="center">Description</entry>
+				</row>
+			</thead>
+			<tbody>
+				<row>
+					<entry>System Utility Test List</entry>
+					<entry>Provides information on system related properties such as OS, Java JVM, CPU, and memory information in the portlet type.</entry>
+				</row>
+				<row>
+					<entry>Network Utility Test List</entry>
+					<entry>Provides information on network status, and IP, MAC address and PortScan information in the portlet type.</entry>
+				</row>
+				<row>
+					<entry>SystemUsageInfo Test List</entry>
+					<entry>Provides information on CPU usage volume and the process list in the portlet type.</entry>
+				</row>
+				<row>
+					<entry>SystemUsageChart Test List</entry>
+					<entry>Shows CPU, memory and disk usage volume in the chart type. </entry>
+				</row>
+			</tbody>
+		</tgroup>
+	</informaltable>
+	
+	<section id="utilsystem_usecase_architecture">
+		<title> Architecture</title>
+		<para> The following diagram is Util System Demo Architecture.</para>
+		<mediaobject>
+	      <imageobject>
+	        <imagedata align="center" fileref="../image/util-system/util-system-PluginArchitecture.jpg" />
+	      </imageobject>
+	    </mediaobject>
+        <para>
+       		To constitute Web Application of util-system, simpleweb-jquery and chart plugin are installed in advance.
+        </para>
+	    <itemizedlist>
+     		<listitem><para>System information is gathered using the libraries of util-system. </para></listitem>
+     		<listitem><para>Information is shown in the jQuery UI Portlet type included in simpleweb-jquery.</para></listitem>
+     		<listitem><para>A screen easy to see intuitively is provided using charts/graphs of FusionChart Free included in chart.</para></listitem>
+	   	</itemizedlist>
+	</section>	
+
+	<section id="utilsystem_usecase_implementation">
+		<title> Screen Composition</title>
+		<para> It provides a screen of system and network related information using portlets and charts that are easy to see intuitively.</para>
+		<para>
+			The following is a sample source for using portlet.
+			<itemizedlist>
+	      		<listitem>
+	        		<para>The following is part of systemInfoUtilTest.jsp for constructing the portlet screen. </para>
+	        		<para>
+	        			<programlisting language="xml"><![CDATA[<div class="portlet">
+    <div class="portlet-header">OsInfo</div>
+    <div class="portlet-content" id="osInfo"></div>
+</div>]]></programlisting>
+        		</para>
+      			</listitem>
+      			<listitem>
+	        		<para>
+	        			The following is part of JavaScript of systemInfoUtilTest.jsp for searching portlet data.
+	        			The javascript source field is callback function that will be executed when Portlet Header is clicked, and the jQuery 
+	        			Ajax call is generalized into a search function and reused, returning the success callback function as a parameter.
+	        			As can be seen below, the result data of json is shown dynamically in html elements (ul-li) using the simpleAutoProperties 
+	        			function in common in relevant portlet fields (div). 
+	        		</para>
+	        		<para>
+	        			<programlisting language="java">if($(this).parent().text() == "OsInfo") {
+    search("OsInfo", function(data){
+        var osInfo = simpleAutoProperties(data.result);
+        $("#osInfo").html(osInfo);
+    }
+);</programlisting>
+        			</para>
+      			</listitem>
+      			<listitem>
+	        		<para>
+	        			The following is part of UtilSystemController.java for handling portlet data.
+	        			By calling SystemInfoUtil, which is a Util-System function (Use Sigar internally), the resulting object (OsInfo Value Object) 
+	        			is put in the Model as a key named result.
+	        			When it is returned to jsonView, VO is converted to a Json object and is returned to the client.
+	        		</para>
+	        		<para>
+	        			<programlisting language="java">@RequestMapping("/utilSystem/getOsInfo.do")
+public String getOsInfo(ModelMap map) {
+    map.addAttribute("result", SystemInfoUtil.getSystemInfo());
+    return "jsonView";
+}</programlisting>
+        			</para>
+      			</listitem>
+    		</itemizedlist>
+		</para>
+
+		<section id="utilsystem_usecase_implementation_systemutil">
+			<title>System Utility Test List</title>
+			<para>
+				<mediaobject>
+			      <imageobject>
+			        <imagedata align="center" fileref="../image/util-system/util-system-SystemUtility.jpg" />
+			      </imageobject>
+			    </mediaobject>
+			</para>
+			<para>
+				When the refresh button at the top is clicked, the individual portlet header click event on the whole screen is triggered and each function is rechecked.
+				Since the portlet type UI is provided, each portlet header can be dragged &amp; dropped, easily moving the position, 
+				and by clicking the refresh icon or the fold/unfold icon in Header, data re-search and screen display can be controlled.
+			</para>
+			<informaltable>
+				<tgroup cols="2">
+					<colspec colnum="1" colname="col1" colwidth="3*" />
+					<colspec colnum="2" colname="col2" colwidth="7*" />
+					<thead>
+						<row>
+							<entry align="center">Portlet</entry>
+							<entry align="center">Description</entry>
+						</row>
+					</thead>
+					<tbody>
+						<row>
+							<entry><emphasis role="bold">OsInfo</emphasis></entry>
+							<entry>OS information</entry>
+						</row>
+						<row>
+							<entry><emphasis role="bold">JavaInfo</emphasis></entry>
+							<entry>Java JVM information</entry>
+						</row>
+						<row>
+							<entry><emphasis role="bold">NativeInfo</emphasis></entry>
+							<entry>Sigar related information</entry>
+						</row>
+						<row>
+							<entry><emphasis role="bold">CpuInfo</emphasis></entry>
+							<entry>CPU information</entry>
+						</row>
+						<row>
+							<entry><emphasis role="bold">MemoryInfo</emphasis></entry>
+							<entry>Memory information (unit: KB)</entry>
+						</row>
+						<row>
+							<entry><emphasis role="bold">UptimeInfo</emphasis></entry>
+							<entry>Uptime information (system initialization and running time)</entry>
+						</row>
+						<row>
+							<entry><emphasis role="bold">ClientInfo</emphasis></entry>
+							<entry>Client information (Retrieve from Request Header)</entry>
+						</row>
+						<row>
+							<entry><emphasis role="bold">ProcessStatInfo</emphasis></entry>
+							<entry>Process status information</entry>
+						</row>
+						<row>
+							<entry><emphasis role="bold">UlimitInfo</emphasis></entry>
+							<entry>Ulimit information</entry>
+						</row>
+						<row>
+							<entry><emphasis role="bold">FileSystemInfo</emphasis></entry>
+							<entry>File System information</entry>
+						</row>
+					</tbody>
+				</tgroup>
+			</informaltable>
+		</section>
+
+		<section id="utilsystem_usecase_implementation_network">
+			<title>Network Utility Test List</title>
+			<informaltable>
+				<tgroup cols="2">
+					<colspec colnum="1" colname="col1" colwidth="3*" />
+					<colspec colnum="2" colname="col2" colwidth="7*" />
+					<thead>
+						<row>
+							<entry align="center">Portlet</entry>
+							<entry align="center">Description</entry>
+						</row>
+					</thead>
+					<tbody>
+						<row>
+							<entry><emphasis role="bold">NetworkInfoList</emphasis></entry>
+							<entry>Network list information - MAC address, host name, IP address, subnet, gateway, DNS</entry>
+						</row>
+						<row>
+							<entry><emphasis role="bold">MyIPInfo</emphasis></entry>
+							<entry>Local network information</entry>
+						</row>
+						<row>
+							<entry><emphasis role="bold">MyIPList</emphasis></entry>
+							<entry>My IP list</entry>
+						</row>
+						<row>
+							<entry><emphasis role="bold">MyMacAddressList</emphasis></entry>
+							<entry>My MAC address list</entry>
+						</row>
+						<row>
+							<entry><emphasis role="bold">Ping</emphasis></entry>
+							<entry>Network status information of the relevant address (Drive-based InetAddress.isReachable() is not a perfect implementation of ICMP ping and sometimes does not work depending on the firewall environment.)</entry>
+						</row>
+						<row>
+							<entry><emphasis role="bold">Route</emphasis></entry>
+							<entry>Route information</entry>
+						</row>
+						<row>
+							<entry><emphasis role="bold">PortScan</emphasis></entry>
+							<entry>Port scan information (Note that the execution can take longer depending on the network environment when Sigar executes netstat!)</entry>
+						</row>
+					</tbody>
+				</tgroup>
+			</informaltable>
+			<para>
+				The PortScan function is executed only when the refresh icon (The icon shape is different from the basic refresh icon!) of the relevant portlet is clicked.
+				Note that some of the IP information on the captured screen above was edited for security.
+			</para>
+		</section>
+
+		<section id="utilsystem_usecase_implementation_systemusage">
+			<title>SystemUsageInfo Test List</title>
+			<para>
+				<mediaobject>
+			      <imageobject>
+			        <imagedata align="center" fileref="../image/util-system/util-system-SystemUsageInfo.jpg" />
+			      </imageobject>
+			    </mediaobject>
+			</para>
+			<informaltable>
+				<tgroup cols="2">
+					<colspec colnum="1" colname="col1" colwidth="3*" />
+					<colspec colnum="2" colname="col2" colwidth="7*" />
+					<thead>
+						<row>
+							<entry align="center">Portlet</entry>
+							<entry align="center">Description</entry>
+						</row>
+					</thead>
+					<tbody>
+						<row>
+							<entry><emphasis role="bold">CpuPerc</emphasis></entry>
+							<entry>CPU usage percentage</entry>
+						</row>
+						<row>
+							<entry><emphasis role="bold">CpuPercList</emphasis></entry>
+							<entry>CPU usage percentage of individual CPUs</entry>
+						</row>
+						<row>
+							<entry><emphasis role="bold">DiskUsage</emphasis></entry>
+							<entry>Disk usage volume</entry>
+						</row>
+						<row>
+							<entry><emphasis role="bold">ProcessInfo</emphasis></entry>
+							<entry>Detailed information of individual processes (status/cpu/memory/execution file of process)</entry>
+						</row>
+						<row>
+							<entry><emphasis role="bold">ProcessList</emphasis></entry>
+							<entry>Process list</entry>
+						</row>
+					</tbody>
+				</tgroup>
+			</informaltable>
+		</section>
+
+		<section id="utilsystem_usecase_implementation_systemusagechart">
+			<title>SystemUsageChart Test List</title>
+			<para>
+				<mediaobject>
+			      <imageobject>
+			        <imagedata align="center" fileref="../image/util-system/util-system-SystemUsageChart.jpg" />
+			      </imageobject>
+			    </mediaobject>
+			</para>
+			<para>
+				The code for implementing graphs is as follows.
+				<itemizedlist>
+		      		<listitem>
+		        		<para role="introduction_title"><emphasis role="bold">Controller Implementation</emphasis></para>
+		        		<para>
+		        			The following is part of the UtilSystemController.java source code. It is an example of first setting data in the Jaxb Model class to convert to Pie2d chart data xml and then converting to XML using marshallingView
+		        		  	to draw a Pie2d chart of FusionChart Free.	        		   
+		        			<programlisting language="java"><![CDATA[@RequestMapping("/utilSystem/getMemoryUsageChart.do")
+public String getMemoryUsageChart(ModelMap map) throws Exception {
+    SigarAccessor.gatherMemoryInfo();
+    MemoryInfo memoryInfo = SigarAccessor.getSysInfo().getMemoryInfo();
+
+    Pie2dGraph pie2d = new Pie2dGraph();
+    pie2d.setCaption("Memory Usage");
+    pie2d.setDecimalPrecision(0);
+    pie2d.setShowPercentageValues(1);
+    pie2d.setShowNames(1);
+    pie2d.setNumberSuffix("MB");
+    pie2d.setShowValues(1);
+    pie2d.setShowPercentageInLabel(0);
+    pie2d.setPieYScale(45);
+    pie2d.setPieBorderAlpha(100);
+    pie2d.setPieRadius(100);
+    pie2d.setAnimation(0);
+    pie2d.setShadowXShift(4);
+    pie2d.setShadowAlpha(40);
+    pie2d.setPieFillAlpha(95);
+    pie2d.setPieBorderColor("FFFFFF");
+    pie2d.setFormatNumberScale(0);
+    pie2d.setFormatNumber(1);
+    pie2d.setThousandSeparator(",");
+
+    Pie2dSet set1 = new Pie2dSet();
+    set1.setValue((double) memoryInfo.getMemFree() / 1024.0);
+    set1.setName("Free");
+    set1.setColor("AFD8F8");
+    Pie2dSet set2 = new Pie2dSet();
+    set2.setValue((double) memoryInfo.getMemUsed() / 1024.0);
+    set2.setName("Used");
+    set2.setColor("F6BD0F");
+    set2.setIsSliced(1);
+
+    List<Pie2dSet> sets = new ArrayList<Pie2dSet>();
+    sets.add(set1);
+    sets.add(set2);
+
+    pie2d.setSet(sets);
+
+    map.addAttribute(pie2d);
+    return "utilMarshallingView";
+}]]></programlisting>
+	        			</para>
+	      			</listitem>
+		      		<listitem>
+		        		<para role="introduction_title"><emphasis role="bold">Screen Display</emphasis></para>
+		        		<para>
+							The code for implementing the graph is as follows. The following is part of the systemUsageChartTest.jsp source code.
+							Using the FusionChart Free for jQuery plugin (jquery.fusionchart.js), it easily integrates charts into web pages by designating 
+							various options in the fields to insert charts (div).
+							<programlisting language="java"><![CDATA[if($(this).parent().text() == "CpuPercChart") {
+    $('#cpuPercChart').insertFusionCharts({
+        swfPath: "<c:url value='/chart/javascript/fusionchart-free/charts/'/>",
+        type: "Pie2D",
+        data: "<c:url value='/utilSystem/getCpuPercChart.do'/>",
+        dataFormat: "URIData",
+        width: "370",
+        height: "270",
+        wMode: "opaque"
+    });
+} else if($(this).parent().text() == "MemoryUsageChart") {
+    $('#memoryUsageChart').insertFusionCharts({
+        swfPath: "<c:url value='/chart/javascript/fusionchart-free/charts/'/>",
+        type: "Pie2D",
+        data: "<c:url value='/utilSystem/getMemoryUsageChart.do'/>",
+        dataFormat: "URIData",
+        width: "450",
+        height: "270",
+        wMode: "opaque"
+    });
+} else if($(this).parent().text() == "DiskUsageChart") {
+    $('#diskUsageChart').insertFusionCharts({
+        swfPath: "<c:url value='/chart/javascript/fusionchart-free/charts/'/>",
+        type: "StackedBar2D",
+        data: "<c:url value='/utilSystem/getDiskUsageChart.do'/>",
+        dataFormat: "URIData",
+        width: "450",
+        height: "350",
+        wMode: "opaque"
+    });
+} else if($(this).parent().text() == "ProcessMemoryUsageChart") {
+    $('#processMemoryUsageChart').insertFusionCharts({
+        swfPath: "<c:url value='/chart/javascript/fusionchart-free/charts/'/>",
+        type: "Pie2D",
+        data: "<c:url value='/utilSystem/getProcessMemoryUsageChart.do'/>",
+        dataFormat: "URIData",
+        width: "370",
+        height: "270",
+        wMode: "opaque"
+    });
+} else if($(this).parent().text() == "ProcessCpuUsageChart") {
+    $('#processCpuUsageChart').insertFusionCharts({
+        swfPath: "<c:url value='/chart/javascript/fusionchart-free/charts/'/>",
+        type: "Pie2D",
+        data: "<c:url value='/utilSystem/getProcessCpuUsageChart.do'/>",
+        dataFormat: "URIData",
+        width: "370",
+        height: "270",
+        wMode: "opaque"
+    });
+}]]></programlisting>
+						</para>
+	      			</listitem>
+	    		</itemizedlist>
+			</para>
+
+			<para>
+				In the case of DiskUsageChart, the extended bar graph can be seen when the button on the rightmost side is clicked. The function utilized the Modal Dialog box function of jQuery UI.
+				<mediaobject>
+			      <imageobject>
+			        <imagedata align="center" fileref="../image/util-system/util-system-DiskUsageChart.jpg" />
+			      </imageobject>
+			    </mediaobject>
+			    <para>
+			    	The example of executing extended graphs is as follows.
+			    	<programlisting language="java"><![CDATA[$(".portlet-header .ui-icon-newwin").click(function() {
+     if($(this).parent().text() == "DiskUsageChart") {
+
+        $("#dialog-modal").dialog({
+            width: 1024,
+            height: 768,
+            zindex: 100,
+            modal: true
+        });
+
+        $('#diskUsageChartModal').insertFusionCharts({
+            swfPath: "<c:url value='/chart/javascript/fusionchart-free/charts/'/>",
+            type: "StackedBar2D",
+            data: "<c:url value='/utilSystem/getDiskUsageChart.do'/>",
+            dataFormat: "URIData",
+            width: "1000",
+            height: "700"
+        });
+    }
+});]]></programlisting>
+		    	</para>
+			</para>
+		</section>
+	</section>
+</chapter>

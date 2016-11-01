@@ -1,0 +1,149 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN"
+"http://www.w3.org/TR/html4/loose.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+ 
+ <!-- Start of head-->
+<head>
+<meta http-equiv="content-type" content="text/html; charset=UTF-8" />
+<title>EDIT : 기본기능 </title> <!-- TODO: 타이틀 작성 -->
+
+
+<!-- include required common files  ----------------------------------------------------->
+<script type="text/javascript" src="../../../common/exlibs/jquery-1.9.0.js" ></script>
+<script type="text/javascript" src="../../../common/exlibs/highlighter/scripts/shCore.js" ></script>
+<script type="text/javascript" src="../../../common/exlibs/highlighter/scripts/shBrushJScript.js" ></script>
+<script type="text/javascript" src="../../../common/js/template_common.js" ></script>
+
+<!--  stylesheet  -->
+<link type="text/css" rel="stylesheet" href="../../../common/exlibs/highlighter/styles/shCore.css"/>
+<link type="text/css" rel="stylesheet" href="../../../common/exlibs/highlighter/styles/shCoreDefault.css"/>
+<link type="text/css" rel="stylesheet" href="../../../common/css/style.css"/>
+
+<!-- scripts to support sample page  ----------------------------------------------------->
+<script type="text/javascript">
+
+$(function() {
+	JTemplate.load("ui_edit_basic_src.htm");
+	JTemplate.loadDemo2("ui_edit_basic_src.htm", {height:'400px'});			
+});  
+
+</script>
+ 
+</head>
+<!-- End of head -->
+
+<!-- Start of body -->
+ <body >
+ 
+ <!-- HEADER BAR -------------------------------------------------------------->
+<div class="content-title">Component - Edit</div>
+ 
+ <!-- START OF PAGE ... -------------------------------------------------------->
+<div id="page">
+	<p class = "header-title">Edit 기본기능</p>
+	<p class="header-desc">: Edit 가능한 input text field의 기본적인 기능으로, 여러가지 내부 형태, focus되는 상태 등에 관한 컨트롤을 보여주는 예이다. </p>
+<!-- DEMO ----------------------------------------------------------------------->
+	<div class="demo">
+		<h3 >Demo</h3>
+		<div id="visualExample"></div>
+	</div>
+
+
+<!-- DEMO DESCRIPTION----------------------------------------------------->
+	<div class="desc">
+		<h3>Demo Description </h3>
+		<hr>
+		
+		<p class="desc-title">입력창 내부 형태</p>
+		<p class="desc-overall">  
+		: 입력창(input text field)으로 쓰이는 여러가지 유형과 내부형태에 관해 조작하는 예를 보여준다.
+		</p>
+		<ul class ="desc-hypl">
+			<li><span>입력창 type</span> : 4가지의 type을 선택하여 각 다른 목적과 형태로 쓰이는 입력창의 유형을 선택하여 확인할 수 있다.</li>
+			<li><span>입력창 가이드 텍스트</span> : 사용자가 입력창에 포커스했을 때 가이드 텍스트가 사라지도록 하며, 가이드텍스트를 변경할 수 있다.</li>
+			<li><span>입력창 내부 스타일</span> : 텍스트색, 배경색, 테두리색, 테두리타입과 관련한 스타일을 다르게 지정할 수 있다.</li>
+		</ul>
+		
+	</div>
+
+<!-- CODE------------------------------------------------------------------------>
+	<div class="code">
+		<h3>Code Source </h3>
+		<pre id="codeExample" class="brush: js"></pre>
+	</div>
+	
+	
+<!-- CODE DESCRIPTION------------------------------------------------------>
+	<div class="desc">
+		<h3>Code Description </h3>
+		<hr>
+		<p class="desc-title">입력창 Type</p>
+		<span class="code-line">#57 - #66 </span>
+		<span class="code-line">#120 - #123 </span>
+		<p class="desc-overall">
+		:  input 태그의 타입으로 총 30개(2013년, html5 tag포함)가 있다. <br>
+		그 중 주로 text  edit 형태의 입력창으로 쓰이는 타입으로 text, password, hidden 그리고 textarea 태그가 있다. <br>
+		hidden의 타입으로 설정하면, 입력창이 나오지 않으나 실제 value를 가지고 동작할 수 있다. 
+		</p>
+		
+		<p class="desc-title">Focus in/out</p>
+		<span class="code-line">#68 - #78 </span>
+		<p class="desc-overall">
+		: 입력창에 커서를 두고 클릭하여 텍스트로 편집가능한 상태를 focus된 상태라고 볼 수 있다. <br>
+		<ul class="desc-hypl" >
+			<li>
+				<span>focusin</span>
+				focus 되었을 때(focus in) guide text가 없어지도록 하는 등의 동작을 구현하기 위해서는 foucusin()의 함수를 사용할 수 있다.
+			</li>
+			<li>
+				<span>focusout</span>
+				또한 focus out되었을 때 guide text가 다시 생성되도록 하는 등의 동작을 구현하기 위해서는 focusout()의 함수를 사용할 수 있다.
+			</li>
+			<li>	
+				<span>focusin 선택자</span>
+				focus된 상태인 요소들을 선택하기 위해서 간단하게 $(':focus') 또는 $('*:focus') 와 같은 방식을 사용할 수 있다.
+  			</li>
+  		</ul>
+	
+		<p class="desc-title">가이드 텍스트</p>
+		<span class="code-line">#98 - #100 </span>
+		<p class="desc-overall">
+		: input의 value에 값을 주어 입력 focus  전의 텍스트를 설정할 수 있다.
+		초기화 후에 다른 텍스트로 바꿔야 하는 경우, 태그 내 value 속성값을 바꾸어주거나 text 메소드로 재설정하여 지정해줄 수도 있다.<br>
+		본 예제에서는 attr() 메소드로 input 태그 내 "value" attribute 을 바꾸는 방식으로 구현하였다.		
+		</p>
+		
+		<p class="desc-title">입력창 스타일 변경</p>
+		<span class="code-line">#80 - #83 </span>
+		<p class="desc-overall">
+		: 입력창의 텍스트색, 배경색, 테두리색, 테두리 스타일 과 같은 경우, 모두  .css() 의 함수를 사용하여 재설정할 수 있다.
+		</p>
+	</div>
+
+<!-- RELATED LINKS ----------------------------------------------------------->
+	<div class="related">
+		<h3>Related Links</h3>
+		<hr>
+		 <ul class="desc-hypl">
+           	<li>
+           		<span>Input Type Spec.</span>
+           		<a href = "http://www.w3schools.com/tags/tag_input.asp"></a>
+           	</li>
+           	<li>
+           		<span>Autocomplete API</span>
+           		<a href = "http://api.jqueryui.com/autocomplete/"></a>
+           	</li> 
+           	<li>
+           		<span>focus</span>
+           		<a href = "http://api.jquery.com/focus/"></a>
+           	</li>         	
+		</ul>
+	</div>
+
+
+</div>
+	<!-- End of Page-->
+
+</body>
+<!-- End of body-->
+</html>

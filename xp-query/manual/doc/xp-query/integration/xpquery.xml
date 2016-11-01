@@ -1,0 +1,204 @@
+<chapter id="xp_query_integration_xpquery">
+	<title>XPQueryService</title>
+	<para>
+		<![CDATA[프리젠테이션 레이어 개발 시 Ria 제품인 XPLATFORM 또는 MiPlatform 등을 기반으로 할 경우 각 제품은 사용자
+		입력 사항을 제품 고유의 데이터 형태에 저장하여 전달한다. 따라서 Query 서비스를 이용하여 DB 데이터를 처리하기
+		위해서는 "제품 고유의 데이터 전달 형태 <-> Map 또는 VO 간의 변환"을 위한 추가 작업이 필요하며, 이로 인해 대량의
+		데이터를 다루는 경우 성능 저하가 발생할 가능성이 크다. Query 서비스에서는 기본 QueryService를 확장하여,
+		특정 Ria제품에 최적화된 형태의 구현체를 제공함으로써 개발 편의성과 응답 속도 향상을 도모하고자 한다.
+		다음에서는 XPLATFORM에 최적화된 XPQueryService 사용 방법에 대해서 살펴보도록 한다.]]> 
+	</para>
+	
+	<section id="xp_query_integration_xpquery_xpqueryservice">
+		<title>XPQueryService 활용</title>
+
+		<para>
+			XPQueryService는 XPLATFORM 고유의 데이터 전달 형태로부터 사용자가 입력한 데이터를 추출하여 해당 DB에 반영하는 
+			역할을 수행한다. XPLATFORM 기반으로 프리젠테이션 레이어를 개발하는 경우, 
+			XPQueryService를 통해 XPLATFORM 고유의 데이터 전달 형태인 	com.tobesoft.xplatform.data.DataSet, 
+			com.tobesoft.xplatform.data.VariableList를 Map, VO 형태로의 변환 없이 그대로 이용할 수 있게 된다.
+		</para>
+			
+		<important>
+			<title>Pagination시 유의 사항</title>
+			<para>
+				PagingJdbcTemplate 속성 정의시에는 반드시 DBMS에 적합한 PagingSQLGenerator를 셋팅해 주어야 한다.
+				적절한 PagingSQLGenerator가 존재하지 않는 경우에는 QueryService에서 제공하는 org.anyframe.query.impl.jdbc.generator.DefaultPagingSQLGenerator를
+				사용할 수 있으나, DefaultPagingSQLGenerator를 이용하여 findXXX() 메소드를 실행하면 QueryService 내부적으로
+				조건에 해당하는 모든 데이터를 fetch한 이후 ResultSet Cursor의 위치를 이동시키는 방식으로 특정 페이지에 속한 데이터를
+				걸러낸다. 이 때 ResultSet Cursor를 움직이는 로직에서 상당한 시간이 소요되어 다량의 데이터 조회시 성능에 심각한 영향을 
+				끼칠 수 있다. 따라서, DefaultPagingSQLGenerator 사용은 권장하지 않는다.
+			</para>
+		</important>			
+
+		<section id="xp_query_integration_xpquery_xpqueryservice_attribute">
+			<title>XPQueryService 속성 정의 파일</title>
+
+			<para>
+				다음은 XPQueryService를 정의한 context-xp-query.xml 파일의 일부이다. XPQueryService는 내부적으로 
+				RiaQueryService를 통해 데이터 접근 처리를 수행하므로 RiaQueryService에 대한 참조 관계 설정이 필요하다.
+				<programlisting language="xml"><![CDATA[<bean id="xpQueryService" class="org.anyframe.xp.query.impl.XPQueryServiceImpl">
+	<property name="namedParamJdbcTemplate" ref="xpPagingNamedParamJdbcTemplate"/>
+	<!--xp-query-lobHandler-START-->
+	<property name="lobHandler" ref="lobHandler"/>
+	<!--xp-query-lobHandler-END-->
+	<property name="sqlRepository" ref="xpSqlLoader"/>
+	<lookup-method name="getRowCallbackHandler" bean="xpRowCallbackHandler"/>
+	<lookup-method name="getCallableStatementCallbackHandler" bean="xpCallableStatementCallbackHandler"/>
+	<lookup-method name="getPrintWriterRowCallbackHandler" bean="xpPrintWriterRowCallbackHandler"/>
+</bean>
+
+<bean id="xpCallableStatementCallbackHandler" class="org.anyframe.xp.query.impl.jdbc.mapper.XPCallableStatementCallbackHandler" scope="prototype"/>
+
+<bean id="xpRowCallbackHandler" class="org.anyframe.xp.query.impl.jdbc.mapper.XPDataSetCallbackHandler" scope="prototype"/>
+
+<bean id="xpPrintWriterRowCallbackHandler" class="org.anyframe.xp.query.impl.jdbc.mapper.XPPrintWriterCallbackHandler" scope="prototype"/>
+    
+   <bean id="xpJdbcTemplate" class="org.anyframe.query.impl.jdbc.PagingJdbcTemplate">
+    <property name="dataSource" ref="dataSource"/>
+    <property name="exceptionTranslator" ref="exceptionTranslator"/>
+    <!--xp-query-pagingSQLGenerator-START-->
+  	    <property name="paginationSQLGetter" ref="hsqldbPagingSQLGenerator"/>
+    <!--xp-query-pagingSQLGenerator-END-->
+   </bean>
+   
+   <bean id="xpPagingNamedParamJdbcTemplate" class="org.anyframe.query.impl.jdbc.PagingNamedParamJdbcTemplate">
+   	<constructor-arg ref="xpJdbcTemplate"/>
+   </bean> 
+
+<bean name="xpSqlLoader" class="org.anyframe.query.impl.config.loader.MappingXMLLoader">
+	<property name="mappingFiles">
+		<value>classpath:/sql/xp-query/mapping-*.xml</value>
+	</property>
+	<property name="nullchecks">
+		<map>
+			<entry key="VARCHAR" value="" />
+		</map>
+	</property>
+	<property name="skipError" value="true" />
+</bean>]]></programlisting>
+			</para>
+		</section>
+
+		<section id="xp_query_integration_xpquery_xpqueryservice_xml">
+			<title>Mapping XML</title>
+
+			<para>
+				다음은 앞서 정의한 XPQueryService에서 사용할 쿼리문을 정의한 mapping-xp-query-movie.xml 
+				파일의 일부로, Named Parameter를 이용한 쿼리문들을 포함하고 있다.
+				<programlisting language="xml"><![CDATA[
+<query id="createXPMovie" isDynamic="true" mappingStyle="upper">
+	<statement>
+		INSERT INTO 
+		MOVIE (MOVIE_ID, TITLE, DIRECTOR, GENRE_ID, ACTORS, RUNTIME, RELEASE_DATE, TICKET_PRICE, NOW_PLAYING, POSTER_FILE)
+		VALUES (:MOVIE_ID, :TITLE, :DIRECTOR, :GENRE_ID, :ACTORS, :RUNTIME, :RELEASE_DATE, :TICKET_PRICE, :NOW_PLAYING, :POSTER_FILE)
+	</statement>
+</query>
+
+...중략...
+
+<query id="findXPMovieList" isDynamic="true" mappingStyle="upper">
+	<statement>
+		<!--xp-query-findXPMovieList-START-->
+		SELECT 
+			MOVIE_ID, TITLE, DIRECTOR, GENRE_ID, ACTORS, RUNTIME, RELEASE_DATE, TICKET_PRICE, NOW_PLAYING, POSTER_FILE
+		FROM MOVIE
+		WHERE 		
+			TITLE like '%' || :SEARCH_TITLE || '%'
+			AND	NOW_PLAYING = :SEARCH_NOW_PLAYING 
+		ORDER BY RELEASE_DATE DESC
+		<!--xp-query-findXPMovieList-END-->
+	</statement>
+</query>]]></programlisting>
+			</para>
+		</section>
+
+		<section id="xp_query_integration_mipquery_xpqueryservice_testcode">
+			<title>Test Code</title>
+
+			<para>
+				다음에서는 XPQueryService를 이용하여 앞서 언급한 매핑 XML 파일에 정의된 INSERT, SELECT, UPDATE, DELETE 쿼리문을 
+				실행하는 테스트 코드의 일부이다.
+				<programlisting language="java"><![CDATA[/**
+ * [Flow #-1] Positive Case : 미리 세팅되어 있는 Database의 값을 XPQueryService의 update
+ * method를 호출해 값을 수정하는 TestCase다. 수정될 값이 세팅되어 있는 DataSet를 XPQueryService
+ * update()의 argument로 직접 사용해 Database의 값이 제대로 수정 됐는지 검증한다.
+ * 
+ * @throws Exception
+ */
+@Test
+public void testUpdateDataSet() {
+	insertDataSet();
+
+	Map<String, String> queryMap = new HashMap<String, String>();
+	queryMap.put(XPQueryService.QUERY_UPDATE, "updateXPQueryService");
+	int resultUpdate = xpQueryService.update(queryMap, makeUpdateDataSet());
+	Assert.assertEquals(1, resultUpdate);
+
+	DataSet resultDataSet = findDataSet("bbnydory00");
+
+	assertDataSet(resultDataSet, "bbnydory00", "2012-12-01", 12345678,
+			1234.5678, "Anyframe XPQueryService Test. - UPDATE");
+}
+
+...중략...
+
+/**
+ * [Flow #-3] Positive Case : query가 실행 되기 전 비즈니스 로직의 있을 경우 ActionComman클래스의
+ * 해당메소드를 구현해서 Query실행 전, 후 ActionCommand의 메소드가 정상적으로 호출 되는지 Query 실행이 정상적으로
+ * 동작하는지 검증한다.
+ * 
+ * @throws Exception
+ */
+@Test
+public void testProcessAllDataSetWithActionCommand() {
+	insertDataSet();
+
+	Map<String, String> queryMap = new HashMap<String, String>();
+	queryMap.put(XPQueryService.QUERY_INSERT, "createXPQueryService");
+	queryMap.put(XPQueryService.QUERY_UPDATE, "updateXPQueryService");
+	queryMap.put(XPQueryService.QUERY_DELETE, "deleteXPQueryService");
+	int resultUpdate = xpQueryService.update(queryMap, makeAllDataSet(),
+			new XPActionCommand() {
+
+				public void postDelete(DataSet record, int currentRow) {
+				}
+
+				public void postInsert(DataSet record, int currentRow) {
+				}
+
+				public void postUpdate(DataSet record, int currentRow) {
+				}
+
+				public void preDelete(DataSet record, int currentRow) {
+				}
+
+				public void preInsert(DataSet record, int currentRow) {
+					record.set(currentRow, "TEST_VARCHAR2",
+							"Anyframe preUpdate");
+				}
+
+				public void preUpdate(DataSet record, int currentRow) {
+				}
+			});
+	Assert.assertEquals("Fail to process all with ActionCommand.", 3,
+			resultUpdate);
+
+	DataSet resultDataSet = findDataSet("bbnydory88");
+
+	assertDataSet(resultDataSet, "bbnydory88", "2012-12-01", 12345678,
+			1234.5678, "Anyframe preUpdate");
+}]]></programlisting>
+			</para>
+
+			<para>
+				위 소스 코드 중 testProcessAllDataSetWithActionCommand() 메소드에서는 ActionCommand를 이용하여 
+				DB에 데이터를 입력하기 전에 특정 칼럼의 값을 변경하고 있다. 이와 같이 XPQueryService는 
+				org.anyframe.xp.query.XPActionCommand 를 구현한 별도 ActionCommand를 인자로 함께 전달하는 경우 
+				입력 데이터를 DB에 반영하기 전/후에 대한 공통 처리를 수행할 수 있도록 지원한다. 예를 들어 입력받은 개별 Row를 DB에 
+				신규 등록하기 전에 신규 식별자 값이 셋팅되어야 한다면, Loop을 돌면서 각 Row를 추출한 뒤 식별자를 셋팅하는 별도 로직없이 
+				preInsert() 로직 내에 식별자 생성 구문이 추가된 ActionCommand 객체만 전달하면 되는 것이다.
+			</para>
+		</section>
+	</section>
+</chapter>

@@ -1,0 +1,205 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<FDL version="1.4">
+  <TypeDefinition url="..\default_typedef.xml"/>
+  <Form id="frmSAMPLE014" classname="SAMPLE014" inheritanceid="" position="absolute 0 0 765 540" titletext="GridTotalSum" onload="SAMPLE014_onload" style="background:#f2f2efff;">
+    <Layouts>
+      <Layout>
+        <Grid id="grdBoard" taborder="5" binddataset="dsGrdUser" useinputpanel="false" cellsizingtype="col" onheadclick="divGrd_grdBoard_onheadclick" position="absolute 0 40 765 540" formats="&lt;Formats&gt;&#10;  &lt;Format id=&quot;default&quot;&gt;&#10;    &lt;Columns&gt;&#10;      &lt;Col size=&quot;80&quot;/&gt;&#10;      &lt;Col size=&quot;80&quot;/&gt;&#10;      &lt;Col size=&quot;80&quot;/&gt;&#10;      &lt;Col size=&quot;80&quot;/&gt;&#10;      &lt;Col size=&quot;80&quot;/&gt;&#10;      &lt;Col size=&quot;80&quot;/&gt;&#10;      &lt;Col size=&quot;80&quot;/&gt;&#10;      &lt;Col size=&quot;80&quot;/&gt;&#10;      &lt;Col size=&quot;80&quot;/&gt;&#10;    &lt;/Columns&gt;&#10;    &lt;Rows&gt;&#10;      &lt;Row band=&quot;head&quot; size=&quot;24&quot;/&gt;&#10;      &lt;Row band=&quot;body&quot; size=&quot;24&quot;/&gt;&#10;    &lt;/Rows&gt;&#10;    &lt;Band id=&quot;head&quot;&gt;&#10;      &lt;Cell col=&quot;0&quot; disptype=&quot;normal&quot; text=&quot;USER_ID&quot;/&gt;&#10;      &lt;Cell col=&quot;1&quot; disptype=&quot;normal&quot; text=&quot;USER_NAME&quot;/&gt;&#10;      &lt;Cell col=&quot;2&quot; disptype=&quot;normal&quot; text=&quot;COMPANY&quot;/&gt;&#10;      &lt;Cell col=&quot;3&quot; disptype=&quot;normal&quot; text=&quot;DEPT_ID&quot;/&gt;&#10;      &lt;Cell col=&quot;4&quot; disptype=&quot;normal&quot; text=&quot;JOB_POSITION&quot;/&gt;&#10;      &lt;Cell col=&quot;5&quot; disptype=&quot;normal&quot; text=&quot;ASSIGNMENT&quot;/&gt;&#10;      &lt;Cell col=&quot;6&quot; disptype=&quot;normal&quot; text=&quot;EMAIL&quot;/&gt;&#10;      &lt;Cell col=&quot;7&quot; disptype=&quot;normal&quot; text=&quot;FIRST_HALF_VOLUNTEER_WORK&quot;/&gt;&#10;      &lt;Cell col=&quot;8&quot; disptype=&quot;normal&quot; text=&quot;SECOND_HALF_VOLUNTEER_WORK&quot;/&gt;&#10;    &lt;/Band&gt;&#10;    &lt;Band id=&quot;body&quot;&gt;&#10;      &lt;Cell col=&quot;0&quot; disptype=&quot;normal&quot; text=&quot;bind:USER_ID&quot;/&gt;&#10;      &lt;Cell col=&quot;1&quot; disptype=&quot;normal&quot; text=&quot;bind:USER_NAME&quot;/&gt;&#10;      &lt;Cell col=&quot;2&quot; disptype=&quot;normal&quot; text=&quot;bind:COMPANY&quot;/&gt;&#10;      &lt;Cell col=&quot;3&quot; disptype=&quot;normal&quot; text=&quot;bind:DEPT_ID&quot;/&gt;&#10;      &lt;Cell col=&quot;4&quot; disptype=&quot;normal&quot; text=&quot;bind:JOB_POSITION&quot;/&gt;&#10;      &lt;Cell col=&quot;5&quot; disptype=&quot;normal&quot; text=&quot;bind:ASSIGNMENT&quot;/&gt;&#10;      &lt;Cell col=&quot;6&quot; disptype=&quot;normal&quot; text=&quot;bind:EMAIL&quot;/&gt;&#10;      &lt;Cell col=&quot;7&quot; disptype=&quot;normal&quot; text=&quot;bind:FIRST_HALF_VOLUNTEER_WORK&quot;/&gt;&#10;      &lt;Cell col=&quot;8&quot; disptype=&quot;normal&quot; text=&quot;bind:SECOND_HALF_VOLUNTEER_WORK&quot;/&gt;&#10;    &lt;/Band&gt;&#10;  &lt;/Format&gt;&#10;&lt;/Formats&gt;&#10;" onrbuttonup="grdBoard_onrbuttonup" autofittype="col" anchor="all">
+          <Formats>
+            <Format id="default">
+              <Columns>
+                <Column size="131"/>
+                <Column size="131"/>
+                <Column size="131"/>
+                <Column size="101"/>
+                <Column size="86"/>
+                <Column size="86"/>
+                <Column size="86"/>
+              </Columns>
+              <Rows>
+                <Row size="24" band="head"/>
+                <Row size="24"/>
+                <Row size="24" band="summ"/>
+                <Row size="24" band="summ"/>
+              </Rows>
+              <Band id="head">
+                <Cell text="global.domain.company"/>
+                <Cell col="1" text="global.domain.department"/>
+                <Cell col="2" text="global.domain.username"/>
+                <Cell col="3" text="global.domain.position"/>
+                <Cell col="4" text="global.domain.firsthalfvolunteer"/>
+                <Cell col="5" text="global.domain.secondhalfvolunteer"/>
+                <Cell col="6" text="global.domain.sum"/>
+              </Band>
+              <Band id="body">
+                <Cell text="bind:COMPANY" suppress="1"/>
+                <Cell col="1" displaytype="combo" text="bind:DEPT_ID" suppress="2" combodataset="dsCboDept" combocodecol="DEPT_ID" combodatacol="DEPT_NAME"/>
+                <Cell col="2" text="bind:USER_NAME"/>
+                <Cell col="3" text="bind:JOB_POSITION"/>
+                <Cell col="4" style="align:right;" text="bind:FIRST_HALF_VOLUNTEER_WORK"/>
+                <Cell col="5" style="align:right;" text="bind:SECOND_HALF_VOLUNTEER_WORK"/>
+                <Cell col="6" style="align:right;padding:0 1 0 0;" expr="expr:parseInt(FIRST_HALF_VOLUNTEER_WORK) + parseInt(SECOND_HALF_VOLUNTEER_WORK)"/>
+              </Band>
+              <Band id="summary">
+                <Cell colspan="4">
+                  <Cell/>
+                  <Cell col="1" text="누계"/>
+                  <Cell col="2"/>
+                  <Cell col="3"/>
+                </Cell>
+                <Cell col="4" style="align:right;" expr="expr:getSum(&quot;parseInt(FIRST_HALF_VOLUNTEER_WORK)&quot;)"/>
+                <Cell col="5" style="align:right;" expr="expr:getSum(&quot;parseInt(SECOND_HALF_VOLUNTEER_WORK)&quot;)"/>
+                <Cell col="6" style="align:right;padding:0 1 0 0;" expr="expr:getSum(&quot;parseInt(FIRST_HALF_VOLUNTEER_WORK)&quot;) + getSum(&quot;parseInt(SECOND_HALF_VOLUNTEER_WORK)&quot;)"/>
+                <Cell row="1" colspan="4">
+                  <Cell/>
+                  <Cell col="1" text="평균"/>
+                  <Cell col="2"/>
+                  <Cell col="3"/>
+                </Cell>
+                <Cell row="1" col="4" style="align:right;" expr="expr:Math.round(getSum(&quot;parseInt(FIRST_HALF_VOLUNTEER_WORK)&quot;) / rowcount , 1)"/>
+                <Cell row="1" col="5" style="align:right;" expr="expr:Math.round(getSum(&quot;parseInt(SECOND_HALF_VOLUNTEER_WORK)&quot;) / rowcount , 1)"/>
+                <Cell row="1" col="6" style="align:right;padding:0 1 0 0;" expr="expr:Math.round((getSum(&quot;parseInt(FIRST_HALF_VOLUNTEER_WORK)&quot;) + getSum(&quot;parseInt(SECOND_HALF_VOLUNTEER_WORK)&quot;)) / rowcount, 1)"/>
+              </Band>
+            </Format>
+          </Formats>
+        </Grid>
+        <PopupMenu id="popupMenuGrd" position="absolute 24 80 172 137"/>
+        <Div id="Div00" taborder="6" text="Div00" position="absolute 0 0 765 40">
+          <Layouts>
+            <Layout>
+              <Static id="stTitle" text="global.domain.volunteerwork" position="absolute 18 10 219 32"/>
+            </Layout>
+          </Layouts>
+        </Div>
+        <Static id="Static00" position="absolute 2 10 16 32" style="background:URL('image::bullet_WF_Lev1.png') left middle; " text=""/>
+      </Layout>
+    </Layouts>
+    <Objects>
+      <Dataset id="dsService" firefirstcount="0" firenextcount="0" useclientlayout="false" updatecontrol="true" enableevent="true" loadkeymode="keep" loadfiltermode="keep" reversesubsum="false">
+        <ColumnInfo>
+          <Column id="SVC_ID" type="STRING" size="100"/>
+          <Column id="QUERY_LIST" type="STRING" size="256"/>
+          <Column id="SERVICE" type="STRING" size="100"/>
+          <Column id="IN_DATASET_LIST" type="STRING" size="256"/>
+          <Column id="OUT_DATASET_LIST" type="STRING" size="256"/>
+          <Column id="CONTROLLER" type="STRING" size="512"/>
+          <Column id="CALLBACK" type="STRING" size="100"/>
+          <Column id="SYNC_YN" type="STRING" size="1"/>
+        </ColumnInfo>
+        <Rows>
+          <Row>
+            <Col id="SVC_ID">getListUser</Col>
+            <Col id="QUERY_LIST">querySet1=findXPUserWorkingYear</Col>
+            <Col id="OUT_DATASET_LIST">dsGrdUser=querySet1</Col>
+            <Col id="SERVICE"/>
+            <Col id="IN_DATASET_LIST"/>
+            <Col id="CONTROLLER"/>
+            <Col id="CALLBACK"/>
+            <Col id="SYNC_YN"/>
+          </Row>
+          <Row>
+            <Col id="SVC_ID">getListDept</Col>
+            <Col id="QUERY_LIST">querySet1=findXPDeptList</Col>
+            <Col id="SERVICE"/>
+            <Col id="IN_DATASET_LIST">querySet1=dsSearch</Col>
+            <Col id="OUT_DATASET_LIST">dsCboDept=querySet1</Col>
+            <Col id="CONTROLLER"/>
+            <Col id="CALLBACK"/>
+            <Col id="SYNC_YN"/>
+          </Row>
+        </Rows>
+      </Dataset>
+      <Dataset id="dsGrdUser" firefirstcount="0" firenextcount="0" useclientlayout="false" updatecontrol="true" enableevent="true" loadkeymode="keep" loadfiltermode="keep" reversesubsum="false">
+        <ColumnInfo>
+          <Column id="USER_ID" type="STRING" size="256"/>
+          <Column id="USER_NAME" type="STRING" size="256"/>
+          <Column id="COMPANY" type="STRING" size="256"/>
+          <Column id="DEPT_ID" type="STRING" size="256"/>
+          <Column id="JOB_POSITION" type="STRING" size="256"/>
+          <Column id="FIRST_HALF_VOLUNTEER_WORK" type="INT" size="5"/>
+          <Column id="SECOND_HALF_VOLUNTEER_WORK" type="INT" size="5"/>
+        </ColumnInfo>
+      </Dataset>
+      <Dataset id="dsCboDept" firefirstcount="0" firenextcount="0" useclientlayout="false" updatecontrol="true" enableevent="true" loadkeymode="keep" loadfiltermode="keep" reversesubsum="false">
+        <ColumnInfo>
+          <Column id="DEPT_ID" type="STRING" size="256"/>
+          <Column id="DEPT_NAME" type="STRING" size="256"/>
+          <Column id="DEPT_DESC" type="STRING" size="256"/>
+        </ColumnInfo>
+      </Dataset>
+    </Objects>
+    <Script type="xscript4.0"><![CDATA[include "lib::commonScript.xjs";
+var objFocusedGrd;
+
+// Form onload 이벤트
+function SAMPLE014_onload(obj:Form, e:LoadEventInfo)
+{
+	// 데이터 송신
+	gfnService("getListUser");
+	gfnService("getListDept");
+	
+	// 각 컴포넌트 타이틀 국제화 처리
+	gfnSetTitle();
+		
+	// 팝업 메뉴 초기화
+	popupMenuGrd.innerdataset = gdsPopupMenu;
+	popupMenuGrd.captioncolumn = "CAPTION";
+	popupMenuGrd.idcolumn = "ID";
+	popupMenuGrd.levelcolumn = "LEVEL";
+	
+	popupMenuGrd.onmenuclick.addHandler(fnPopupMenu_onmenuclick);
+}
+
+// 팝업 메뉴 클릭 이벤트 처리
+function fnPopupMenu_onmenuclick(obj:PopupMenu, e:MenuClickEventInfo){
+	switch(e.id){
+		case "find":
+			fnFindForm();
+			break;
+		case "excelexport":
+			fnExcelExport();
+			break;
+		default:
+			break;
+	}
+}
+
+// "검색" 메뉴 클릭
+function fnFindForm(){
+	popupMenuGrd.closePopup();
+	var resultForm = gfnShowModal("includes::GRDFIND.xfdl", {objGrd:objFocusedGrd}, "global.domain.popupmenu.find", 525, 300);
+}
+
+// "엑셀 다운로드" 메뉴 클릭
+function fnExcelExport(){
+	popupMenuGrd.closePopup();
+	var resultForm = gfnConfirm(gfnGetMessage("global.domain.popup.excelsave"), "OSC");
+	
+	if(resultForm == "S"){
+		gfnExportSaveAsExcel(objFocusedGrd);
+	} else if(resultForm == "Y"){
+		gfnExportExcelEx(objFocusedGrd);
+	}
+}
+
+// 그리드 우클릭 이벤트 처리
+function grdBoard_onrbuttonup(obj:Grid, e:GridMouseEventInfo)
+{
+	nSelectedCol = e.col;
+	nSelectedRow = e.row;
+	objFocusedGrd = obj;
+	var nGridX = system.cursorx;
+	var nGridY = system.cursory;
+	popupMenuGrd.trackPopup(nGridX, nGridY);
+}
+
+// gfnService 처리 후 callback 처리
+function fnCallback(strServiceId, strErrorCode, strErrorMsg){
+	if(strErrorCode == -1){
+		gfnAlertMsg(strErrorMsg, "ERR");
+	} else {
+	
+	}
+}]]></Script>
+  </Form>
+</FDL>

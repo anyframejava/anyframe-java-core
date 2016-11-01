@@ -1,0 +1,358 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<!-- 1 파일업로드 개요-->
+<chapter id="fileupload_overview">
+		<title>파일 업로드 개요</title>
+		<para>
+				제공하는 파일업로드 plugin은 크게 서버측의 로직을 구현한 java 라이브러리와 화면측의 UI와 관련로직을 구현한 javascript 라이브러리로 구성되어 있다.
+				본 chapter 에서는 파일업로드의 전반적인 설명을 위해서 컴포넌트를 사용하기 위한 기본설정, 화면 UI 흐름과 사용법, 서버측의 기능, 구성 라이브러리에 대한 설명을 하고자 한다.
+		</para>
+		
+<!-- 1 파일업로드 개요 >> 1.1 파일업로드의 기본설정-->
+		<section id="fileupload_intro_setting">
+				<title>파일업로드 기본설정</title>
+				<para>
+						위의 introduction에서와 같이 플러그인을 설치한 후, 추가적인 기본사항을 설정하고 확인하기 위해서 다음의 과정이 필요하다.
+				</para>
+				<section id="fileupload_intro_setting_coreservlet">
+						<title>Spring anyframe:annotation-driven 설정</title>
+						<para>
+								: 내부적으로 form 전송을 동적으로 비동기 호출한다. 이 때, 연속적으로 호출되어야 하는  form 전송 및 ajax 호출이 수행되지 않는 문제가 있다.
+								따라서, core-servlet.xml 파일에서 다음과 같은 설정으로 수정해주어야 한다.
+								(파일 경로 :  /anyframe-fileupload-pi/src/main/resources/spring/core-servlet.xml )
+								<programlisting language="xml"><![CDATA[
+<anyframe:annotation-driven synchronizeOnSession="false" />]]>
+								</programlisting>
+								이와같이 anyframe annotation 설정부분을 synchronizeOnSession 값을 false로 바꾸어주면 form 전송 및 ajax 호출이 정상적으로 수행될 것이다.
+						</para>
+				</section>
+
+				<section id="fileupload_intro_setting_properties">
+						<title>fileupload properties 설정</title>
+						<para>
+								: 본 파일업로드는 disk에 파일을 저장하는 방식을 구현하였으며, 관련하여 구동전에 몇가지 환경정보를 설정하여야 한다. 반드시 입력되어야 할 정보로는
+								  임시 저장위치 및 실제 저장위치가 있고, 그 외 업로드 될 화일의 한계 크기를 fileupload.properties 파일에 정의할 수 있다.
+								<programlisting language="xml"><![CDATA[
+#Common
+common.temp.path=C:/Temp
+common.file.maxsize=-1
+
+#Local Disk
+disk.path=C:/Temp]]>
+								</programlisting>
+								각 설정 내용은 다음과 같다.
+								<itemizedlist>
+										<listitem>
+												<para>common.temp.path : 파일이 streaming 되어 임시로 저장될 위치를 설정한다.</para>
+										</listitem>
+										<listitem>
+												<para>common.file.maxsize : 업로드할 파일의 최대사이즈를 설정한다. (Byte 단위) 단, 브라우저별 제약사항이 존재한다.
+												<link linkend="fileupload_reference" endterm="fileupload_ref_size_limit">참조 3.1</link></para>
+										</listitem>
+										<listitem>
+												<para>disk.path : 파일의 실제 저장될 로컬 경로를 설정한다.</para>
+										</listitem>
+							</itemizedlist>
+					</para>
+				</section>
+				
+				<para>
+						<note>
+										<title>CommonsMultipartResolver 관련 주의사항</title>
+										<para>
+												: 본 파일업로드를 다른 플러그인과 함께 사용할 경우, multipartResolver와 관련된 문제가 있다.
+												따라서, 다음의 경로에 선언되어 있는 multipartResolver를 지워줘야만 정상적으로 파일첨부 기능을 사용할 수 있다.
+										</para>
+										<para>
+												: src/main/resources/spring/jquery-servlet.xml 
+												or 
+												  src/main/resources/spring/xp-query-servlet.xml
+										</para>
+										<para>
+												삭제 혹은 주석처리해야할 부분의 코드는 아래와 같다.
+										</para>
+										<programlisting language="xml"><![CDATA[
+<!-- 삭제 혹은 주석처리 부분 -->
+<!--
+<bean id="multipartResolver" 
+	  class="org.springframework.web.multipart.commons.CommonsMultipartResolver">
+	  <property name="maxUploadSize">
+	  		<value>10000000</value>
+	  </property>
+</bean>
+-->]]>
+										</programlisting>
+						</note>
+				</para>
+		</section>
+		
+		
+		
+<!-- 1 파일업로드 개요 >> 1.2 파일업로드의 화면 UI Flow-->
+		<section id="fileupload_intro_ui">
+				<title>파일업로드 화면 UI Flow</title>
+				<para>
+						: 기본 UI, 파일 리스트 UI, 파일업로드 UI 의 각 업로드 과정에 따라 어떤 화면 요소들과 기능이 존재하는지 알려준다.
+				</para>
+				<orderedlist numeration="arabic">
+						<listitem>
+						  기본 UI
+								 <para>
+								 		: 제공하는 기본 UI 요소와 기능, 실제 화면예시는 다음과 같다.
+										<itemizedlist>
+												<listitem>
+														<para>Add : 업로드하고자 하는 파일을 add 버튼으로 추가한다. 여러개 선택하여 추가가 가능하며, 추가된 파일은 리스트에 파일명으로 추가된다.</para>
+												</listitem>
+												<listitem>
+														<para>Upload : 한개 혹은 여러개 추가된 파일들에 대해 업로드를 시작한다.</para>
+												</listitem>
+												<listitem>
+														<para>Reset : 추가된 리스트들을 모두 취소하고자 할 때, Reset 버튼을 실행한다.</para>
+												</listitem>
+										</itemizedlist>
+										<mediaobject>
+											<imageobject>
+													<imagedata align="center" fileref="../image/fileupload/fileupload_flow_01.png" width="1200px"/>
+											</imageobject>
+										</mediaobject>										
+								</para>
+								<para>
+										위와 같은 UI 요소가 생성되기 위해서는 jquery, jquery ui 라이브러리가 필요하며, 이를 토대로 jsp 파일 내에 스크립트로 구현되어 있다.
+										(관련된 jsp파일 내 url 설정 및 함수호출 부분은 <link linkend="fileupload_develop">chapter #2</link>를 참조한다.)								
+								</para>
+						</listitem>
+						
+						<listitem>
+							파일 리스트 UI
+								<para>
+										: add 버튼으로 파일을 한개 또는 여러개 추가할 수 있으며, 파일이 추가될 때 나오는 리스트 정보들과 실제 화면예시는 다음과 같다.
+										<itemizedlist>
+												<listitem>
+														<para>Icon : 파일의 확장자명에 따라 총 7개의 아이콘과 default 아이콘이 존재하며, 사용맥락에 따라 추가적인 이미지도 사용가능하다. </para>
+												</listitem>
+												<listitem>
+														<para>File Name : 선택된 파일의 정보를 (filename).(extension) 과 같은 형식으로 보여준다 .</para>
+												</listitem>
+												<listitem>
+														<para>Progressbar : 업로드 진행과 동시에 진행 정도를 보여주며, 실제 업로드 된 크기와 진행률을 UI 적으로 표현한다. </para>
+												</listitem>
+												<listitem>
+														<para>File Size : 처음 파일 추가시 전체사이즈가 나오며, 진행상태에 따라 사이즈 값과 단위가 변화한다. </para>
+												</listitem>
+												<listitem>
+														<para>Remove Icon : 업로드 시작 이전에 개별 리스트의 삭제가 가능하며, 이 삭제 버튼의 실행을 통해 동작하게 된다.</para>
+												</listitem>
+												<listitem>
+														<para>Tooltip : 긴 파일명의 경우, 파일명에 마우스 오버시 tooltip의 형태로 보여준다.</para>
+												</listitem>
+										</itemizedlist>
+										<mediaobject>
+												<imageobject>
+														<imagedata align="center" fileref="../image/fileupload/fileupload_flow_02.png" width="1200px"/>
+												</imageobject>
+										</mediaobject>										
+								</para>
+								<para>
+									파일 리스트로 나오는 모든 요소들은 jquery를 이용하여 모두 동적으로 HTML 구문이 생성되어 보여지는 것이므로, 위 정보들의 수정/추가/삭제가 필요하면 javascript의 구문을 직접 수정해야 한다.
+								</para>
+						</listitem>
+						
+						<listitem>
+							파일 업로드 UI
+								<para>
+										: Upload버튼을 실행하여 추가된 파일들을 실제 서버로 업로드 한다.
+										<itemizedlist>
+												<listitem>
+														<para>파일 리스트 : 완료된 파일 리스트들에 대해서 비 활성화 되도록 처리하여 리스트삭제 등이 동작되지 않도록 한다. </para>
+												</listitem>
+												<listitem>
+														<para>완료 : 전체 파일리스트의 업로드가 완료되면 파일 전송에 성공하였다는 메시지를 업로드 버튼 옆에 표시한다. </para>
+												</listitem>
+												<listitem>
+														<para>미완료 : 파일업로드 도중 사이즈 등의 이유로 미완료 되었을 경우, 미완료된 해당 리스트에 대해 경고문과 함께 삭제링크가 나온다. 리스트를 삭제후 나머지리스트는 다시 진행가능하다.</para>
+												</listitem>
+										</itemizedlist>
+										<mediaobject>
+												<imageobject>
+														<imagedata align="center" fileref="../image/fileupload/fileupload_flow_03.png" width="1200px"/>
+												</imageobject>
+										</mediaobject>
+								</para>
+						</listitem>
+					</orderedlist>
+		</section>
+		
+<!-- 1 파일업로드 개요 >> 1.3 파일업로드의 기능-->
+		<section id="fileupload_intro_feature_server">
+				<title>파일업로드 기능</title>
+				<para>
+						파일업로드 구현 시, 업로드 목표 위치에 대한 종류를 명시하여 처리하도록 구현되었다. 현재는 disk 타입만 존재하나 향후 이 부분을 확장하면 remote, db 등의 target 으로 확장가능하게 구현될 수 있다.
+				</para>
+				<para>
+						기본적인 동작과정은 client-side에서 ajax로 호출 시 parameter로써, "utype" 값을 명시하면, java library(FileUploadAgent)에서 이 값을 받아 향후 업로드 되는 파일을 목표에 맞게 처리하는 형태로 이루어 진다.
+						(단, 현재는 "disk" 형태만 지원)
+				</para>
+				<itemizedlist>
+						<listitem>
+								<para>
+										client-side 부분 : jQuery ajax의 option 중, data 부분에 다음과 같이 전송될 파라미터 값인 utype을 입력한다.(jquery.fileupload.js 에서 구현)
+										<programlisting language="javascript"><![CDATA[
+data: {"utype": "disk"}]]>
+								</programlisting>								
+										여기서 "disk"부분을 다른 저장형태로 바꾸어 값을 줄 수 있다. ("remote", "db" 와 같은 다른 방식으로 확장가능. 단, sever-side에서 처리부분이 구현되어 있어야한다.)
+								</para>
+						</listitem>
+								<listitem>
+								<para>
+										server-side 부분 : utype값에 따라 다르게 처리가능하도록 다음의 부분을 추가 구현할 수 있다.(FileUploadAgent.java 에서 구현)
+										<programlisting language="java"><![CDATA[
+if ("disk".equals(utype.toLowerCase())) {
+			iFu = new FileUploadLocalDisk();
+}
+else if ("remote".equals(utype.toLowerCase())) {
+			//TODO: (추가 구현 로직..)  
+}]]>
+								</programlisting>								
+										즉, utype의 값에 따라 저장대상유형을 비교하여 분기 처리한다.
+								</para>
+						</listitem>
+			</itemizedlist>
+		</section>
+
+<!-- 1 파일업로드 개요 >> 1.4 Javascript Libraries-->
+		<section id="fileupload_intro_javascript_lib">
+				<title>Javascript Libarary</title>
+				<para>
+						파일업로드 생성 및 사용에 필요한 필수 javascript 라이브러리는 총 4개이며, 추가적으로 스타일 정의를 위한 css파일 2개, 실제 사용을 위해 필요한 JSP 파일 1개가 필요하다.
+				</para>
+				<para>
+						4개의 javascript 라이브러리는 각  jquery, jquery ui, form plugin, fileupload plugin 으로 구성되어 있으며, 이들간의 의존관계가 존재한다.
+						다음은 해당 의존관계를 보여주는 다이어그램이다.
+				</para>
+				<mediaobject>
+						<imageobject>
+								<imagedata align="center" fileref="../image/fileupload/fileupload_js_library_diagram.jpg" width="480px" />
+						</imageobject>
+				</mediaobject>
+				<para>
+						jquery ui와 form plugin은 jquery core 라이브러리에 dependency가 존재하며, fileuplad plugin은 jquery, jquery ui, form plugin 모두에 dependency가 존재한다.
+				</para>
+				<para>
+						javascript 라이브러리를 포함, 각 관련 파일들의 상세내용은 다음의 표를 참조한다.
+				</para>
+				
+				<informaltable>
+						<caption>javascript libraries and related  other files for fileupload</caption>
+						<tgroup cols="2">
+								<colspec colnum="1" colname="col1" colwidth="4*" />
+								<colspec colnum="2" colname="col2" colwidth="6*" />
+								<thead>
+										<row>
+													<entry align="center">파일명</entry>
+													<entry align="center">설명</entry>
+										</row>
+								</thead>
+								<tbody>
+										<row>
+												<entry align="right">jquery-1.9.0.js</entry>
+												<entry>jquery core 함수들이 존재하는 라이브러리로 파일업로드의 전반적인 UI 및 기능을 구현하는데 사용된 JS 파일</entry>
+										</row>
+										<row>
+												<entry align="right">jquery-ui-1.10.0.custom.js</entry>
+												<entry>jquery ui core 함수들이 존재하며, 파일업로드 UI 내부의 button, progressbar, tooltip 의 ui를 구현하는데 사용된 JS 파일</entry>
+										</row>
+										<row>
+												<entry align="right">jquery.form.js</entry>
+												<entry>form 형식의 ajax 통신관련된 부분을 지원하는 jquery plugin 형태의 JS 파일
+											</entry>
+										</row>
+										<row>
+												<entry align="right">jquery.fileupload.js</entry>
+												<entry>파일업로드의 화면단의 여러기능을 구현하여 지원하는 JS 파일</entry>
+										</row>
+										<row>
+												<entry align="right">jquery_ui_style.css</entry>
+												<entry>파일업로드에서 쓰이는 공통적인 ui style을 재정의한 CSS 파일</entry>
+										</row>
+										<row>
+												<entry align="right">fileuploader_style.css</entry>
+												<entry>파일업로드 UI 스타일을 정의한 CSS 파일</entry>
+										</row>
+										<row>
+												<entry align="right">form.jsp</entry>
+												<entry>파일업로드의 UI를 생성하여 사용하는 JSP 파일</entry>
+										</row>
+							</tbody>
+						</tgroup>
+				</informaltable>
+		</section>
+
+<!-- 1 파일업로드 개요 >> 1.5 Java Libraries-->
+		<section id="fileupload_intro_java_lib">
+				<title>Java Libarary</title>
+				<para>
+						파일업로드 생성 및 사용에 필요한 필수 java 라이브러리는 총 7개이다.
+				</para>
+				<para>
+						Spring MVC와의 연결을 구현한 JFileUploadController와 서버측 기능을 구현한 FileUploadAgent, FileUploadException, FileuploadConfig, FileMeta, FileUpload와 
+						실제 local disk로의 저장기능을 구현한 FileUploadLocalDisk 으로 구성되어 있으며, 각 클래스간의 연결관계는 다음과 같다.
+				</para>
+				<mediaobject>
+						<imageobject>
+								<imagedata align="center" fileref="../image/fileupload/fileupload_class_diagram.jpg" width="800px"/>
+						</imageobject>
+				</mediaobject>
+				<para>
+						메인 클래스인 FileUploadAgent 를 중심으로, 파일의 메타정보를 표현하는 FileMeta, 기본 설정정보를 처리하는 FileUploadConfig 등을 호출한다.
+						실제 파일업로드를 위해서는 FileUpload 라는 인터페이스를 각 타겟에 맞게 구현하도록 설계되었다.
+				</para>
+				<para>
+						각 java 라이브러리 파일들의 개별 상세내용은 다음과 같다.
+				</para>
+	
+				<informaltable>
+						<caption>Java library files for fileupload</caption>
+						<tgroup cols="2">
+								<colspec colnum="1" colname="col1" colwidth="4*" />
+								<colspec colnum="2" colname="col2" colwidth="6*" />
+								<thead>
+										<row>
+												<entry align="center">파일명</entry>
+												<entry align="center">설명</entry>
+										</row>
+								</thead>
+								<tbody>
+										<row>
+												<entry align="right">FileUploadAgent.java</entry>
+												<entry>파일 업로드 기능을 처리하는 메인 클래스. 파일 HttpRequest 객체로부터 파일 메타정보를 얻어 값을 설정, 초기화, 저장.</entry>
+										</row>
+										<row>
+												<entry align="right">FileUploadAgentException.java</entry>
+												<entry>파일 업로드 시 나타나는 오류를 처리하는 Exception 클래스</entry>
+										</row>
+										<row>
+												<entry align="right">FileUploadConfig.java</entry>
+												<entry>파일 업로드가 처리되기 위한 기본적인 환경정보를 처리하는 클래스</entry>
+										</row>
+										<row>
+												<entry align="right">FileMeta.java</entry>
+												<entry>파일 사이즈, 파일명 등의 메타정보 표현하는 클래스 </entry>
+										</row>
+										<row>
+												<entry align="right">JFileUploadController.java</entry>
+												<entry>파일업로드를 위해 FileUploadAgent 에 입력 정보를 넘겨주는 역할을 하는 Controller 클래스 </entry>
+										</row>
+										<row>
+												<entry align="right">FileUpload.java</entry>
+												<entry>파일업로드 기능에서 생성, 초기화, 저장, 진행상태 등의 공통 메소드 인터페이스를 갖는 추상 클래스</entry>
+										</row>
+										<row>
+												<entry align="right">FileUploadLocalDisk.java</entry>
+												<entry>디스크 저장방식에 맞게 FileUpload 인터페이스를 구현한 클래스(설정, 초기화, 저장, 진행상태)</entry>
+										</row>
+								</tbody>
+						</tgroup>
+				</informaltable>
+		</section>
+		
+</chapter>

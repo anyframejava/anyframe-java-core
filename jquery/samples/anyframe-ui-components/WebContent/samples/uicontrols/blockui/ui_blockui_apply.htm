@@ -1,0 +1,157 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN"
+        "http://www.w3.org/TR/html4/loose.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+
+<head>
+    <meta http-equiv="content-type" content="text/html; charset=UTF-8"/>
+    <title>BlockUI : Application</title>
+
+    <!-- FILES INCLUDED.. ----------------------------------------------------->
+    <script type="text/javascript" src="../../../common/exlibs/jquery-1.9.0.js"></script>
+
+    <script type="text/javascript" src="../../../common/exlibs/highlighter/scripts/shCore.js"></script>
+    <script type="text/javascript" src="../../../common/exlibs/highlighter/scripts/shBrushJScript.js"></script>
+
+    <script type="text/javascript" src="../../../common/js/template_common.js"></script>
+
+    <!--  STYLESHEET  -->
+    <link type="text/css" rel="stylesheet"
+          href="../../../common/exlibs/highlighter/styles/shCore.css"/>
+    <link type="text/css" rel="stylesheet" href="../../../common/exlibs/highlighter/styles/shCoreDefault.css"/>
+    <link type="text/css" rel="stylesheet" href="../../../common/css/style.css"/>
+
+    <!-- SCRIPT  ----------------------------------------------------->
+    <script type="text/javascript">
+
+        $(function () {
+            JTemplate.load("ui_blockui_apply_src.htm");
+            JTemplate.loadDemo2("ui_blockui_apply_src.htm", {height: "400px"});
+        });
+
+    </script>
+    <style>
+        .desc li span {
+            width: 80px;
+        }
+    </style>
+</head>
+
+<!-- CONTENTS BODY -------------------------------------------------------------->
+<body>
+
+<!-- HEADER BAR -------------------------------------------------------------->
+<div class="content-title">Component - BlockUI</div>
+
+<!-- START OF PAGE ... -------------------------------------------------------->
+<div id="page">
+    <p class="header-title">BlockUI 응용</p>
+
+    <p class="header-desc">: BlockUI Components 를 활용해서 메시지 처리를 할 수 있다.</p>
+
+    <!-- DEMO ----------------------------------------------------------------------->
+    <div class="demo">
+        <h3>Demo</h3>
+
+        <div id="visualExample"></div>
+    </div>
+
+    <!-- DEMO DESCRIPTION----------------------------------------------------->
+    <div class="desc">
+        <h3>Demo Description</h3>
+        <hr>
+
+        <p class="desc-title">Growl Type</p>
+
+        <p class="desc-overall">
+            : 알림창으로써 사용가능하다.<br>
+        </p>
+        <ul class="desc-hypl">
+            <li><span>Growl Type </span>: 설정된 이미지와 문구를 Growl 형식으로 출력한다.</li>
+        </ul>
+
+    </div>
+
+
+    <!-- CODE------------------------------------------------------------------------>
+    <div class="code">
+        <h3>Code Source </h3>
+        <pre id="codeExample" class="brush: js"></pre>
+    </div>
+
+    <!-- CODE DESCRIPTION------------------------------------------------------>
+    <div class="desc">
+        <h3>Code Description </h3>
+        <hr>
+            <p class="desc-title">응용 기능</p>
+
+            <p class="desc-overall">
+                : BlockUI 을 다양한 방법으로 활용할 수 있다.
+            </p>
+
+            <span class="code-line">#55</span>
+            <li><span>$.growlUI()</span>
+                : Growl 형식의 BlockUI 를 출력한다. blockUI 라이브러리 기본제공 기능이다. 파라미터로 내용입력이 가능하다.
+            </li>
+            <div class="code-block">
+                <pre>
+해당 기능은 아래와 같이 풀어서 구현할 수 있다.
+//CSS
+div.growlUI { background: url(images/check48.png) no-repeat 10px 10px }
+div.growlUI h1, div.growlUI h2 { color: white; padding: 5px 5px 5px 75px; text-align: left }
+div.growlUI h2 { font-size: medium }
+
+//Script
+$.blockUI({
+    message: $('div.growlUI'),
+    fadeIn: 700,
+    fadeOut: 700,
+    timeout: 2000,
+    showOverlay: false,
+    centerY: false,
+    css: {
+        width: '350px',
+        top: '10px',
+        left: '',
+        right: '10px',
+        border: 'none',
+        padding: '5px',
+        backgroundColor: '#000',
+        '-webkit-border-radius': '10px',
+        '-moz-border-radius': '10px',
+        opacity: .6,
+        color: '#fff'
+    }
+});
+
+//HTML
+&lt;div class="growlUI" style="display:none"&gt;
+    &lt;h1&gt;Growl Notification&lt;/h1&gt;
+    &lt;h2&gt;Have a nice day!&lt;/h2&gt;
+&lt;/div&gt;
+                </pre>
+            </div>
+        </ul>
+
+    </div>
+
+
+    <!-- RELATED LINKS ----------------------------------------------------------->
+    <div class="related">
+        <h3>Related Links</h3>
+        <hr>
+        <ul class="desc-hypl">
+            <li>
+                <span>BlockUI default</span>
+                <a href="http://www.malsup.com/jquery/block/"></a>
+            </li>
+            <li>
+                <span>BlockUI Options</span>
+                <a href="http://www.malsup.com/jquery/block/#options"></a>
+            </li>
+        </ul>
+    </div>
+
+</div>
+<!-- END OF PAGE------------------------------------------------------------->
+</body>
+</html>

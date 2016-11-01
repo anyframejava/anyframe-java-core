@@ -1,0 +1,18 @@
+<configuration>
+	
+	<property file="src/test/resources/logback-socket.properties" />
+
+	<appender name="socket" class="ch.qos.logback.classic.net.SocketAppender">
+		<includeCallerData>true</includeCallerData>
+		<port>${serverPort}</port>
+		<remoteHost>${remoteHost}</remoteHost>
+	</appender>
+	
+	<logger name="socket" level="INFO" additivity="false">
+		<appender-ref ref="socket" />
+	</logger>
+	
+	<root level="DEBUG">
+		<appender-ref ref="socket" />
+	</root>
+</configuration>

@@ -1,0 +1,162 @@
+<chapter id="utilsystem_sigaraccessor">
+	<title>SigarAccessor</title>
+	<para>
+		Sigar 에서 제공하는 JNI 연동 기능을 사용하기 위해서는 Sigar Library Path 를 잡아줘야 한다.
+		SigarAccessor 에서는 기본으로 JVM working directory 기준으로 sigar-bin/lib 폴더에 대해서 library path 를 잡아주고 있다.
+		따라서 기본 경로가 바라보는 위치에 플러그인 샘플에 포함하고 있는 JNI native library 묶음인 sigar-bin/lib 를 copy 해 놓으면 기동에 문제가 없다.
+		(기본 working directory 는 WAS 별/build Tool 별로 상이하다.)
+		Sigar Library Path 는 JVM 기동 옵션이나 플랫폼 별 library path 설정을 통해 특정 프로젝트에 맞게 변경 가능하다.
+		(Windows 인 경우 path 만 잡아도 가능, Linux/Solaris 인 경우 LD_LIBRARY_PATH, AIX 인 경우 LIBPATH 설정 등, java.library.path 시스템 변수에 직접 설정/append 하는 것도 가능)
+		Spring Container 기동 time 에 System.setProperty("java.library.path", 기존path + sigarLibPath) 형태로 재설정 하는 것도 가능하며
+		관련 샘플은 util-system plugin의 UtilSystemController 의 @PostConstruct 로 지정한 initSigar() 메서드를 참조하라.
+	</para>
+
+	<section id="utilsystem_sigaraccessor_sysinfo">
+		<title>System 정보 gathering</title>
+		<para>
+			SigarAccessor 에서는 기본적으로 system 관련 정보들을 수집해서  가지고 있다. 내부적으로 SysInfo 라는 VO 객체를 넘겨준다.
+			해당 정보를 이용하고자 하면 SysInfo 안에 있는 아래 명시된 VO 객체를 꺼내서 사용하면 된다.
+		</para>
+		<informaltable>
+		<caption>SysInfo 에 정의된 VO 객체</caption>
+		<tgroup cols="4">
+			<colspec colnum="1" colname="col1" colwidth="1*" />
+			<colspec colnum="2" colname="col2" colwidth="3*" />
+			<colspec colnum="3" colname="col3" colwidth="5*" />
+			<colspec colnum="3" colname="col3" colwidth="1*" />
+			<thead>
+				<row>
+					<entry align="center">정보 수집 Method</entry>
+					<entry align="center">Description</entry>
+					<entry align="center">VO</entry>
+					<entry align="center">실시간정보수집 필요여부</entry>
+				</row>
+			</thead>
+			<tbody>
+				<row>
+					<entry><emphasis role="bold">gatherVersionInfo()</emphasis></entry>
+					<entry>Sigar 및 OS, Java 버젼 정보 수집</entry>
+					<entry>NativeInfo, OsInfo, JavaInfo</entry>
+					<entry>No</entry>
+				</row>
+				<row>
+					<entry><emphasis role="bold">gatherUptimeInfo()</emphasis></entry>
+					<entry>Uptime 정보 - 시스템 부팅 시간 및 현재까지 실행 시간</entry>
+					<entry>UptimeInfo</entry>
+					<entry>Yes</entry>
+				</row>
+				<row>
+					<entry><emphasis role="bold">gatherCpuInfo()</emphasis></entry>
+					<entry>CPU 정보 - 벤더, 모델, Mhz, CPU 갯수, Core 갯수, Core 당 소켓수...등</entry>
+					<entry>CpuInfo</entry>
+					<entry>No</entry>
+				</row>
+				<row>
+					<entry><emphasis role="bold">gatherMemoryInfo()</emphasis></entry>
+					<entry>시스템의 메모리 정보-전체메모리, 할당된메모리, 유휴메모리...등</entry>
+					<entry>MemoryInfo</entry>
+					<entry>Yes</entry>
+				</row>
+				<row>
+					<entry><emphasis role="bold">gatherFileSystemInfo()</emphasis></entry>
+					<entry>File System 기준 정보-전체파일시스템에 대한  디렉토리명, 파일명...등</entry>
+					<entry>FileSystemInfo</entry>
+					<entry>No</entry>
+				</row>
+				<row>
+					<entry><emphasis role="bold">gatherFileSystemUsageMap()</emphasis></entry>
+					<entry>전체 File System 에 대한 유효정보 -전체 디스크 사이즈, 사용중인 디스크사이즈, 사용가능한 디스크 사이즈...등</entry>
+					<entry>FileSystemUsageInfo</entry>
+					<entry>Yes</entry>
+				</row>
+				<row>
+					<entry><emphasis role="bold">gatherProcessStatInfo()</emphasis></entry>
+					<entry>system process stats 정보</entry>
+					<entry>ProcessStatInfo</entry>
+					<entry>Yes</entry>
+				</row>
+				<row>
+					<entry><emphasis role="bold">gatherProcessInfo()</emphasis></entry>
+					<entry>프로세스 전체 정보 - CPU 정보, 실행정보, 상태정보, 시간정보...등</entry>
+					<entry>
+				    	<para>ProcessInfo</para>
+				        <para>ProcessCpuInfo, ProcessExeInfo, ProcessStateInfo, ProcessMemoryInfo</para>
+				    </entry>
+					<entry>Yes</entry>
+				</row>
+				<row>
+					<entry><emphasis role="bold">gatherNetworkInfoMap()</emphasis></entry>
+					<entry>네트워크 목록 정보 -  ip, mac,network mask...등</entry>
+					<entry>NetworkInfo</entry>
+					<entry>No</entry>
+				</row>
+				<row>
+					<entry><emphasis role="bold">gatherNetworkInfo()</emphasis></entry>
+					<entry>로컬 네트워크 정보 -  ip, mac,network mask...등</entry>
+					<entry>NetworkInfo</entry>
+					<entry>No</entry>
+				</row>
+				<row>
+					<entry><emphasis role="bold">gatherUlimitInfo()</emphasis></entry>
+					<entry>ulimit 정보 -  데이터, 파일, 시간, 코어덤프, 메모리...등</entry>
+					<entry>UlimitInfo</entry>
+					<entry>Yes</entry>
+				</row>
+			</tbody>
+		</tgroup>
+	</informaltable>
+	</section>
+
+	<section id="utilsystem_sigar_sigaraccessor_directrun">
+		<title>directRun 을 사용한 Sigar 접근 </title>
+		<para>
+			시스템 구동 시  설정한 SigarAccessor 의 기본 Shell 을 사용하여 Sigar API의 registered Commands 로 등록된 명령어를
+		          바로 실행하여 결과를  console 에서 확인할 수 있다.
+		</para>
+		<para>
+			registeredCmd 의 예 : df,du,ls,iostat,free,pargs,penv,pfile,pmodules,pinfo,cpuinfo,ifconfig,uptime,ps,pidof,kill,
+			netstat,netinfo,nfsstat,route,version,mps,sysinfo,time,ulimit,who, [Windows 인 경우 service,fversion]
+			<programlisting language="java">SigarAccessor.directRun("<emphasis role="bold">df</emphasis>", new String[] {});
+SigarAccessor.directRun("<emphasis role="bold">du</emphasis>", new String[] { "." });
+SigarAccessor.directRun("<emphasis role="bold">ls</emphasis>", new String[] { "." });
+SigarAccessor.directRun("<emphasis role="bold">iostat</emphasis>", new String[] {});
+SigarAccessor.directRun("<emphasis role="bold">free</emphasis>", new String[] {});
+SigarAccessor.directRun("<emphasis role="bold">pargs</emphasis>", new String[] {});
+SigarAccessor.directRun("<emphasis role="bold">penv</emphasis>", new String[] {});
+SigarAccessor.directRun("<emphasis role="bold">pfile</emphasis>", new String[] {});
+SigarAccessor.directRun("<emphasis role="bold">pmodules</emphasis>", new String[] {});
+SigarAccessor.directRun("<emphasis role="bold">pinfo</emphasis>", new String[] {});
+SigarAccessor.directRun("<emphasis role="bold">cpuinfo</emphasis>", new String[] {});
+SigarAccessor.directRun("<emphasis role="bold">ifconfig</emphasis>", new String[] {});
+SigarAccessor.directRun("<emphasis role="bold">uptime</emphasis>", new String[] {});
+SigarAccessor.directRun("<emphasis role="bold">ps</emphasis>", new String[] {});
+String topPid = sigarCmdTest.getTopPid();
+
+SigarAccessor.directRun("<emphasis role="bold">pidof</emphasis>", new String[] { topPid });
+SigarAccessor.directRun("<emphasis role="bold">kill</emphasis>", new String[] { topPid });
+
+SigarAccessor.directRun("<emphasis role="bold">netstat</emphasis>", new String[] {});
+SigarAccessor.directRun("<emphasis role="bold">netinfo</emphasis>", new String[] {});
+SigarAccessor.directRun("<emphasis role="bold">nfsstat</emphasis>", new String[] {});
+SigarAccessor.directRun("<emphasis role="bold">route</emphasis>", new String[] {});
+SigarAccessor.directRun("<emphasis role="bold">version</emphasis>", new String[] {});
+
+// PTQL
+SigarAccessor.directRun("<emphasis role="bold">mps</emphasis>", new String[] { "State.Name.eq=java" });
+
+SigarAccessor.directRun("<emphasis role="bold">sysinfo</emphasis>", new String[] {});
+SigarAccessor.directRun("<emphasis role="bold">time</emphasis>", new String[] { "ps" });
+SigarAccessor.directRun("<emphasis role="bold">ulimit</emphasis>", new String[] {});
+SigarAccessor.directRun("<emphasis role="bold">who</emphasis>", new String[] {});
+if (SigarLoader.IS_WIN32) {
+	SigarAccessor.directRun("<emphasis role="bold">service</emphasis>", new String[] { "Alerter", "state" });
+	SigarAccessor.directRun("<emphasis role="bold">fversion</emphasis>", new String[] { "C:\\WINDOWS\\winhelp.exe" });
+}</programlisting>
+		</para>
+		<para>df 를 실행한 결과는 아래와 같다.</para>
+		<programlisting language="java">Filesystem    Size Used Avail Use% Mounted on      Type
+C:\             117G  30G   87G  26%     C:\         NTFS/local
+D:\             349G  40G  308G  12%     D:\         NTFS/local
+E:\             0    0     0     -       E:\         cdrom/cdrom</programlisting>
+	</section>
+</chapter>

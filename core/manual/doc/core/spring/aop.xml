@@ -1,0 +1,2397 @@
+<chapter id="core_spring_aop">
+	<title>AOP(Aspect Oriented Programming)</title>
+	<para>
+		다음 내용은 ZDNet Korea의 제휴 매체인 마이크로소프트웨어에 게재된 내용 에서 발췌함. 관점지향
+		프로그래밍(Aspect Oriented Programming, 이하 AOP)은 지금까지의 프로그래밍 기술 변화의 흐름에
+		 다른 차원의 관점을 제시함으로써 새로운 프로그래밍 패러다임을 이끌어내고 있다고 볼 수 있다.
+		AOP의 필요성을 이해하는데 기초가 되는 개념은 Separation of Concerns로, 다음과 같이 거의 모든 프로그래밍 패러다임은
+		 바로 이 Separation of Concerns 과정을 통해 문제 영역을 독립적인 모듈로 분해한다.
+	</para>
+
+	<itemizedlist>
+		<listitem>
+			<para>절차적 프로그래밍 : 분리된 관심을 프로시저로 구성</para>
+		</listitem>
+
+		<listitem>
+			<para>객체지향 프로그래밍(Object Oriented Programming, 이하 OOP) : 분리된 관심을 클래스로 작성</para>
+		</listitem>
+	</itemizedlist>
+
+	<para>
+		<emphasis role="bold">AOP 필요성</emphasis>
+	</para>
+
+	<para>
+		AOP는 OOP를 적용한다고 할지라도 결코 쉽게 분리된 모듈로 작성하기 힘든 요구사항이 실제 어플리케이션 설계와
+		개발에서 자주 발견된다는 문제 제기에서 출발한다. AOP에서는 이를 Crosscutting Concerns(횡단 관심)라고 한다.
+		 또한 해당 시스템의 핵심 가치와 목적이 그대로 드러난 관심 영역을 Core Concerns(핵심 관심)라고 부른다.
+		 이 Core Concerns는 기존의 객체지향 분석/설계(OOAD)를 통해 쉽게 모듈화와 추상화가 가능하지만
+		Crosscutting Concerns은 객체지향의 기본 원칙을 지키면서 이를 분리해서 모듈화하는 것이 매우 어렵다.
+	</para>
+
+	<para>
+		예를 들어, 은행 업무를 처리하는 시스템을 생각해보면 Core Concerns는 예금입출금, 계좌간이체, 이자계산,
+		대출처리 등으로 구분할 수 있다. 이는 전체 어플리케이션의 핵심 요구 사항과 기능들을 구분해서 모듈화할 수 있고 OOP에서라면
+		클래스와 컴포넌트 형태로 구성이 가능하다. 하지만 현실은 그렇지 못하다. 실제로 개발되어 돌아가는 각 모듈에는 해당 업무를
+		처리하기	위한 로직만 존재해서는 불완전할 수밖에 없다. 일단 각 업무를 처리하는 클래스와 구현된 메소드에는 향후 시스템을 분석하거나 추적을
+		위해 로그를 작성해야 하며, 인증받은 사용자가 접근하는지를 체크하고 권한 여부를 따지는 보안 기능이 필요하다. 또한 내부에서
+		사용하는	Persistence 처리를 위해 Transaction을 시작하고, 또 필요에 따라서 그것을 Commit 또는 Rollback하는
+		부분도 추가되어야 한다. 예외 상황이나 문제가 발생했을 때는 그것을 기록에 남기는 부분도 있어야 하고, 필요하면 관리자에게 이메일을
+		발송해야 한다.
+	</para>
+
+	<para>
+		이러한 부가적인 기능들은 독립적인 클래스로 구현될 수 있지만, 그렇게 구현된 기능들을 호출하고 사용하는 코드들이 핵심
+		모듈	안의 필요한 영역에 모두 포함될 수밖에 없다. 로깅, 인증, 권한체크, DB 연동, 트랜잭션, 락킹, 에러처리 등의 기능을 아무리
+		뛰어난 OOP 기술을 이용해 모듈로 구성하고 추상화를 통해 최대한 독립시킨다고 해도 핵심 모듈의 모든 클래스와 메소드 속에 이와 연동되는
+		부분이 매우 깊이 그리고 상당한 양을 갖으면서 자리 잡게 된다.
+	</para>
+
+	<mediaobject>
+		<imageobject>
+			<imagedata align="center"
+				fileref="../image/core/spring/cross_concerns.jpg" />
+		</imageobject>
+		<textobject>
+			<phrase>AOP의 주요 개념인 Core Concerns와 Crosscutting Concerns를 이해하기 쉽게 나타낸 그림이다.
+			Core Concerns는 계좌이체, 입출금, 이자계산 등과 같이 어플리케이션을 통해 제공되어야 하는 핵심 요구사항을 의미하며,
+			Crosscutting Concerns는 로깅, 인증, 권한체크, DB 연동 등과 같이 핵심 모듈의 모든 클래스와 메소드 속에 연동되어져 실행되어야 하는 기능을 의미한다.</phrase>
+		</textobject>
+	</mediaobject>
+
+	<para>
+		실제로 모듈화가 잘 된 어플리케이션 클래스를 보더라도 핵심 기능을 위한 코드보다 부가적인 기능과 처리를 위한 부분의
+		양이 더 많아지게 되는데 만약 다른 종류의 로깅 플랫폼을 사용해 로그 처리하는 클래스와 메소드가 달라지고 로그 메시지가 변경되어야 한다면
+		개발자들은 모든 클래스 안에 있는 로그 관련 코드를 일일이 다 수정해 주는 수밖에 없다. 그러다가 만약 중요한 클래스에서 한두
+		군데 로그	기록 코드가 빠졌고 이로 인해 결과를 확인하는데 문제가 생겼다면 이를 다시 확인하고 찾아내는 일만 해도 엄청난 작업이 아닐 수
+		없을	것이다. 이렇게 작성된 어플리케이션은 몇 가지 심각한 문제를 가지고 있다.
+	</para>
+
+	<itemizedlist>
+		<listitem>
+			<para>
+				<emphasis role="bold">중복되는 코드</emphasis>
+				: 복사-붙이기에 의해 만들어진 여러 모듈에서 중복되는 코드의 문제점은 이미 잘 알려져 있다. 
+				하지만 AOP를 사용하지 않은 대부분의 어플리케이션에서는 어떠한 추상화와 리팩토링을 통해서도 반복되는
+				 코드를 피하기가 어렵다.
+			</para>
+		</listitem>
+
+		<listitem>
+			<para>
+				<emphasis role="bold">지저분한 코드</emphasis>
+				: Crosscutting Concerns과
+				관련된 코드들이 핵심 기능 코드 사이 사이에 끼어들어가 있기 때문에 코드가 지저분해지고 
+				이에 따라 가독성이 떨어지며 개발자들의 실수나 버그를 유발하고 후에 코드를 유지보수하는데 큰 어려움을 준다.
+			</para>
+		</listitem>
+
+		<listitem>
+			<para>
+				<emphasis role="bold">생산성의 저하</emphasis>
+				: 어플리케이션 개발자들이 자주 등장하는 Crosscutting Concerns을 구현한 코드를 함께
+				작성해야 하기 때문에 개발의 집중력을 떨어뜨리고 결과적으로 전체 생산성의 저하를 가져온다.
+				또 모듈별로 개발자들을 구분하고 분산시키는 것에 한계가 있다.
+			</para>
+		</listitem>
+
+		<listitem>
+			<para>
+				<emphasis role="bold">재활용성의 저하</emphasis>
+				: OOP의 장점인 재활용성이 매우 떨어진다.
+			</para>
+		</listitem>
+
+		<listitem>
+			<para>
+				<emphasis role="bold">변화의 어려움</emphasis>
+				: 새로운 요구사항으로 인해 전체적으로 많은 부분에 영향을 미치는 경우 쉽게 새로운 요구사항을
+				 적용하기 힘들게 된다. 또 새로운 관심 영역의 등장이나 이의 적용을 매우 어렵게 한다.
+			</para>
+		</listitem>
+	</itemizedlist>
+
+	<para>
+		<emphasis role="bold">대표적인 AOP 툴</emphasis>
+	</para>
+
+	<para>AOP는 OOP의 확장에 가깝기 때문에 전용 언어나 독립된 개발 툴을 가지고 있지 않고 대신 기존의 OOP를 확장한
+		언어 확장(languageextension) 또는 툴이나 프레임워크 형태로 사용할 수 있게 되어 있다.
+		대표적으로 AOP 구현의 시초가 된 Eclipse 프로젝트의 AspectJ를 들 수 있다. AspectJ는 초기에 제록스
+		PARC 연구소에서 개발되었다가 2002년에 이클립스 프로젝트에 기증되었고, 현재 IBM의 전폭적인 지원을 받으면서
+		 개발되어 사용되고 있다. 그리고 BEA가 중심이 되어 개발하고 있는 AspectWerkz가 있다. 
+		AspectWerkz는 AspectJ와 달리 자바 언어 자체를 확장하지 않고 기존의 자바 언어만으로 AOP의 사용이 가능하도록 되어 있다.
+		그리고 의존성 삽입(Dependency Injection, 이하 DI) 기반의 프레임워크로 유명한 SpringAOP가 있다.
+		 가장 최근에 등장한 AOP로는 JBossAOP도 있다. SpringAOP와 함께 대표적인 인터셉터체인 방식의 AOP로 꼽힌다.
+	</para>
+
+	<informaltable>
+	    <caption>대표적인 AOP 툴 비교</caption>
+		<tgroup cols="5">
+			<thead>
+				<row>
+					<entry />
+
+					<entry align="center">AspectJ</entry>
+
+					<entry align="center">AspectWerkz</entry>
+
+					<entry align="center">JBossAOP</entry>
+
+					<entry align="center">SpringAOP</entry>
+				</row>
+			</thead>
+
+			<tbody>
+				<row>
+					<entry align="center">출시</entry>
+
+					<entry align="center">2001</entry>
+
+					<entry align="center">2002</entry>
+
+					<entry align="center">2004</entry>
+
+					<entry align="center">2004</entry>
+				</row>
+
+				<row>
+					<entry align="center">버전 </entry>
+
+					<entry align="center">1.2.1</entry>
+
+					<entry align="center">2.0</entry>
+
+					<entry align="center">1.3.0</entry>
+
+					<entry align="center">1.2.5</entry>
+				</row>
+
+				<row>
+					<entry align="center">Aspect 선언</entry>
+
+					<entry>전용코드</entry>
+
+					<entry>XML, Annotation</entry>
+
+					<entry>XML, Annotation</entry>
+
+					<entry>XML</entry>
+				</row>
+
+				<row>
+					<entry align="center">Advice</entry>
+
+					<entry align="center">전용코드</entry>
+
+					<entry align="center">자바 메소드</entry>
+
+					<entry align="center">자바 메소드</entry>
+
+					<entry align="center">자바 메소드</entry>
+				</row>
+
+				<row>
+					<entry align="center">JoinPoint</entry>
+
+					<entry>메소드, 생성자, Advice, Field Access, 인스턴스</entry>
+
+					<entry>메소드, 생성자, Advice, Field Access, 인스턴스</entry>
+
+					<entry>메소드, 생성자, Advice, Field Access, 인스턴스</entry>
+
+					<entry>메소드</entry>
+				</row>
+
+				<row>
+					<entry align="center">Pointcut 매칭 </entry>
+
+					<entry>Signature, WildCard, Annotation</entry>
+
+					<entry>Signature, WildCard, Annotation</entry>
+
+					<entry>Signature, WildCard, Annotation</entry>
+
+					<entry>정규식</entry>
+				</row>
+
+				<row>
+					<entry align="center">Weaving</entry>
+
+					<entry>컴파일 및 로딩 타임, 바이트 코드 생성</entry>
+
+					<entry>컴파일 및 로딩 타임, 바이트 코드 생성</entry>
+
+					<entry>런타임 인터셉션 및 Proxy</entry>
+
+					<entry>런타임 인터셉션 및 Proxy</entry>
+				</row>
+
+				<row>
+					<entry align="center">IDE 지원</entry>
+
+					<entry>Eclipse, JDeveloper, JBuilder, NetBeans</entry>
+
+					<entry>Eclipse, NetBeans</entry>
+
+					<entry>Eclipse</entry>
+
+					<entry />
+				</row>
+			</tbody>
+		</tgroup>
+	</informaltable>
+
+	<itemizedlist>
+		<listitem>
+			<para>
+				<emphasis role="bold">AspectJ</emphasis>
+			</para>
+
+			<para>
+				AspectJ의 가장 큰 특징은 다른 AOP 툴과는 달리 자바 언어를 확장해서 만들어진 구조라는 것이다. 마치 새로운 AOP 언어를
+				 사용하듯이 aspect라는 키워드를 이용해 Aspect나 Pointcut, Advice를 만들 수 있다.
+				따라서 일반 자바 컴파일러로는 컴파일이 불가능하고 특별한 AOP 컴파일러를 사용해야 한다. 하지만 이렇게 만들어진 
+				바이너리는 표준 JVM에서 동작 가능한 구조로 되어있기 때문에 특별한 클래스 로더의 지원 없이도 실행 가능하다. AspectJ는 가장
+				오래되고	가장 많이 사용되는 AOP 툴이다. 동시에 가장 풍부한 기능을 가지고 있고 확장성이 뛰어나기 때문에 가장 이상적인
+				AOP 툴로 꼽히고 있다. 하지만 자바 언어를 확장했기 때문에 새로운 문법과 언어를 이해할 필요가 있고 프로젝트 빌드시 특별한
+				컴파일러를 사용해야 하는 불편함이 있다. Weaving이 컴파일시에 일어나기 때문에 Pointcut에 의해 선택된 모든 클래스들은
+				Aspect가 바뀔 때마다 모두 다시 컴파일이 되어야 한다.
+			</para>
+		</listitem>
+
+		<listitem>
+			<para>
+				<emphasis role="bold">AspectWerkz</emphasis>
+			</para>
+
+			<para>
+				AspectWerkz는 AspectJ와는 달리 자바 언어를 확장하지 않는다. 따라서 표준 자바 클래스를 이용해서
+				AOP를 구현해 낼 수 있다. 일반 클래스와 메소드를 이용해 쉽게 구현이 가능한 Advice와 달리 복잡한 문법이 필요한
+				Pointcut은 별도의 XML 파일을 이용해 설정할 수 있도록 되어 있다. 자바 클래스와 XML 설정 파일의 접근법에
+				익숙한 개발자들에게는 매우 편리한 접근 방식이라고 볼 수 있다. 최근에는 JDK5의 지원에 따라 Annotation을
+				이용할 수 있어 더욱 편리해졌다. Weaving은 특별한 클래스 로더를 이용한 로딩타임 바이트코드 생성을 이용한다.
+				AspectJ 못지않은 다양한 JoinPoint와 AOP기능을 지원하고 있으며 편리한 개발을 위한 IDE 플러그인이
+				개발되어 있다.
+			</para>
+		</listitem>
+
+		<listitem>
+			<para>
+				<emphasis role="bold">JBossAOP</emphasis>
+			</para>
+
+			<para>
+				JBossAOP는 기본적으로 컨테이너에서 동작하지만 컨테이너와 상관없는 독립된 자바 프로그램에서도 사용할 수
+				있다. 하지만 주 용도는 JBoss 서버와 앞으로 나올 EJB3 컨테이너 등에 AOP를 적용하는 데에 사용되어지는 것이다.
+				AspectWerkz와 마찬가지로 Advice는 표준 자바 코드로 작성하고 Pointcut과 다른 설정은 XML 파일이나
+				JDK5의 Annotation으로 작성할 수 있다. 아직까지는 JBoss 사용자의 일부에서만 사용되고 있으나 향후
+				EJB3를 중심으로 한 POJO 기반의 엔터프라이즈 미들웨어 프레임워크가 개발되어짐에 따라 점차로 사용률이
+				올라갈 것으로 기대된다.
+			</para>
+		</listitem>
+
+		<listitem>
+			<para>
+				<emphasis role="bold">SpringAOP</emphasis>
+			</para>
+
+			<para>
+				SpringAOP는 Spring Framework의 핵심기능 중의 한가지로 Spring의 Dependency Injection(이후 DI)
+				컨네이너에서 동작하는 엔터프라이즈 서비스에서 주로 사용된다. SpringAOP는 다른 AOP와 달리
+				기존 클래스의 바이트코드를 수정하지 않는다. 대신 JDK의 Dynamic Proxy나 CGLIB을 사용해서 Proxy 방식으로 AOP의
+				기능을 수행한다. 이 때문에 다른 AOP의 기능과 비교해서 매우 제한적인 부분만을 지원한다.
+				하지만 SpringAOP의 구현 목적은 엔터프라이즈 어플리케이션에서 주로 사용되는 핵심적인 기능에 AOP의 장점을
+				살려 이를 Spring 내에서 사용하는 것이기 때문에 다른 AOP와 같은 AOP의 복잡한 전체 기능을 굳이 다 필요로
+				하지 않는다. 프록시 기반의 SpringAOP는 SpringIoC/DI와 매우 긴밀하게 연동이 된다. 따라서 SpringAOP를
+				사용하는 방법은 Spring 내에 ProxyBean을 설정해서 쉽게 사용할 수 있다. JDK의 표준 기능만을 사용하기 때문에
+				특별한 빌드 과정이 필요없고	클래스 로더를 변경한다거나 하는 번거로운 작업이 없다.
+				대신 JoinPoint의 종류가 메소드 기반으로 제한되나 대부분의 엔터프라이즈 어플리케이션에서 필요로 하는
+				주요 AOP 기능들은 메소드 호출을 기반으로 충분히 처리가 가능하기 때문에 SpringAOP는 그 제한된 AOP 기능에도
+				불구하고 현장에서 가장 빠른 속도로 적용되어 사용되는 AOP 솔루션 중의 하나이다. SpringAOP는 Advice와
+				Pointcut을 모두 표준 자바 클래스로 작성할 수 있다. 필요에 따라서 Pointcut은 설정 파일 내에서
+				Pointcut FactoryBean을 이용해서 정규식으로 표현이 가능하다. SpringAOP의 최대 단점은 복잡한 Proxy
+				설정 구조이다. Spring Bean을 정의한 파일에서 Proxy를 정의한 부분의 다른 XML기반의 AOP에 비해서도 복잡한
+				편인데 이 경우 SpringAOP가 지원하는 AutoProxyingCreatorBean 등을 이용하면 설정 코드를 매우
+				단순하게	작성하는 것이 가능하다.
+			</para>
+			<note>
+				<title>[참고] SpringAOP의 Proxy 기법</title>
+				<para>
+					SpringAOP에서 제공하는 두 가지 Proxy 기법을 사용할 때 아래의 내용을 참고한다.
+					<itemizedlist>
+						<listitem>
+							<para>
+								1. Proxy Target class가 Interface를 구현한 class인 경우 JDK Dynamic Proxy를 이용하여
+								객체를 Proxy 시킨다. Target class의 Interface가 존재하지 않는 경우, CGLIB을 이용하여
+								객체를 Proxy 시킨다.
+							</para>
+						</listitem>
+						<listitem>
+							<para>
+								2. proxyTargetClass 옵션을 true로 하는 경우 CGLIB 기반의 proxy 객체가 생성된다.
+								proxyTargetClass 옵션이 false인 경우(default - false)라도 Target class의 Interface가 존재 하지 않는 경우에는
+								CGLIB 기반의 Proxy 객체가 생성된다.  
+							</para>
+						</listitem>
+						<listitem>
+							<para>
+								3. CGLIB을 이용하여 Proxy 객체를 생성하는 경우 Default Constructor가 필요하다.
+								(Spring 4.0 이상 버전에서는 Default Constructor가 없어도 Proxy 객체를 생성 할 수 있다.)
+							</para>
+						</listitem>
+					</itemizedlist>
+				</para>
+			</note>
+		</listitem>
+	</itemizedlist>
+
+
+	<section id="core_spring_aop_components">
+		<title>AOP 구성 요소</title>
+
+		<para>AOP에는 새로운 용어가 많이 등장한다. 이 중에서 특히 AOP를 이용해서 개발하는데 필요한 다음의 주요 구성
+			요소들에	대해 정확한 이해가 필요하다.
+		</para>
+
+
+		<section id="core_spring_aop_components_jointpoint">
+			<title>JointPoint</title>
+
+			<para>
+				Crosscutting Concerns 모듈이 삽입되어 동작할 수 있는 실행 가능한 특정 위치를 말한다. 예를
+				들어 메소드가 호출되는 부분 또는 리턴되는 시점이 하나의 JoinPoint가 될 수 있다. 또 필드를 액세스하는 부분,
+				인스턴스가 만들어지는 지점, 예외가 던져지는 시점, 등이 대표적인 JoinPoint가 될 수 있다.
+				각각의 JoinPoint들은 그 전후로 Crosscutting Concerns의 기능이 AOP에 의해 자동으로 추가되어져서 
+				동작할 수 있는 후보지가 되는 것이다.
+			</para>
+		</section>
+
+		<section id="core_spring_aop_components_pointcut">
+			<title>Pointcut</title>
+
+			<para>
+				Pointcut은 어느 JoinPoint를 사용할 것인지를 결정하는 선택 기능을 말한다. AOP가 항상 모든
+				모듈의 모든 JoinPoint를 사용할 것이 아니기 때문에 필요에 따라 사용해야 할 모듈의 특정 JoinPoint를 지정할
+				필요가 있다. 일종의 JoinPoint 선정 룰과 같은 개념으로 다음과 같은 Pattern Matching 방법들을 이용하여
+				룰을 정의할 수 있다.
+			</para>
+
+
+			<section id="core_spring_aop_components_pointcut_patternmatching">
+				<title>Pattern Matching Examples</title>
+
+				<orderedlist>
+					<listitem>
+						<para>
+							<emphasis role="bold">Basics</emphasis>
+						</para>
+
+						<itemizedlist>
+							<listitem>
+								<para>
+									<emphasis role="bold">set*(..) </emphasis>
+									: set으로 시작하는 모든 메소드명
+								</para>
+							</listitem>
+
+							<listitem>
+								<para>
+									*
+									<emphasis role="bold">main(..)</emphasis>
+									: return
+									type이 any type이고, 0개 이상의 any type parameter를 가진 main 메소드
+								</para>
+							</listitem>
+						</itemizedlist>
+					</listitem>
+
+					<listitem>
+						<para>
+							<emphasis role="bold">Matching Type</emphasis>
+						</para>
+
+						<itemizedlist>
+							<listitem>
+								<para>
+									<emphasis role="bold">java.io.</emphasis>
+									* : java.io 패키지 내에 속한 모든 요소
+								</para>
+							</listitem>
+
+							<listitem>
+								<para>
+									<emphasis role="bold">org.myco.myapp..</emphasis>
+									* :	org.myco.myapp 패키지 또는 서브 패키지 내에 속한 모든 요소
+								</para>
+							</listitem>
+
+							<listitem>
+								<para>
+									<emphasis role="bold">Number+</emphasis>
+									: Number 또는 Number의 서브 type으로 Integer, Float, Double ..등이 이에 해당
+								</para>
+							</listitem>
+
+							<listitem>
+								<para>
+									<emphasis role="bold">!(Number+)</emphasis>
+									: Number 또는 Number의 서브 type이 아닌 모든 type
+								</para>
+							</listitem>
+
+							<listitem>
+								<para>
+									<emphasis role="bold"><![CDATA[org.xyz.myapp..* &&
+									!Serializable+ ]]></emphasis> : org.xyz.myapp 패키지 또는 서브 패키지 내에
+									존재하면서 Serializable type이 아닌 모든 요소
+								</para>
+							</listitem>
+
+							<listitem>
+								<para>
+									<emphasis role="bold">int || Integer</emphasis>
+									: int 또는 Integer type
+								</para>
+							</listitem>
+						</itemizedlist>
+					</listitem>
+
+					<listitem>
+						<para>
+							<emphasis role="bold">Matching Modifiers</emphasis>
+						</para>
+
+						<itemizedlist>
+							<listitem>
+								<para>
+									<emphasis role="bold">public static void
+										main(..)</emphasis>
+									: 0개 이상의 any type parameter를 가진 public static void main 메소드
+								</para>
+							</listitem>
+
+							<listitem>
+								<para>
+									<emphasis role="bold">!private</emphasis>
+									* *
+									<emphasis role="bold">(..)</emphasis>
+									: return type이 any type이고, 0개 이상의 any type parameter를 가진 모든 
+									메소드중 modifier가 private이 아닌	메소드
+								</para>
+							</listitem>
+
+							<listitem>
+								<para>
+									*
+									<emphasis role="bold">main(..) </emphasis>
+									: modifier를 별도로 명시하지 않은 경우, default modifier가 아닌 
+									any modifier 의미
+								</para>
+							</listitem>
+						</itemizedlist>
+					</listitem>
+
+					<listitem>
+						<para>
+							<emphasis role="bold">Matching Parameter</emphasis>
+						</para>
+
+						<itemizedlist>
+							<listitem>
+								<para>
+									*
+									<emphasis role="bold">main(*)</emphasis>
+									: return type이 any type이고, 1개의 any type parameter를 가진 main 메소드
+								</para>
+							</listitem>
+
+							<listitem>
+								<para>
+									*
+									<emphasis role="bold">main(*,..)</emphasis>
+									: return type이 any type이고, 최소 1개의 any type parameter를 가진 main
+									메소드
+								</para>
+							</listitem>
+
+							<listitem>
+								<para>
+									*
+									<emphasis role="bold">main(*,..,String,*)</emphasis>
+									: return type이 any type이고, 최소 3개의 any type parameter를 가지며 끝에서
+									두번째 parameter type이 String인 main 메소드
+								</para>
+							</listitem>
+						</itemizedlist>
+					</listitem>
+
+					<listitem>
+						<para>
+							<emphasis role="bold">Matching Constructor</emphasis>
+						</para>
+
+						<itemizedlist>
+							<listitem>
+								<para>
+									<emphasis role="bold">new(..)</emphasis>
+									: 0개 이상의 any type parameter를 가진 constructor
+								</para>
+							</listitem>
+
+							<listitem>
+								<para>
+									<emphasis role="bold">Account.new(..)</emphasis>
+									: 0개 이상의 any type parameter를 가진 Account 클래스의 constructor
+								</para>
+							</listitem>
+						</itemizedlist>
+					</listitem>
+				</orderedlist>
+
+				<para>AspectJ는 Pointcut을 명시할 수 있는 다양한 Pointcut Designator(지시자)를
+					제공한다.
+					이제부터 앞서 정의한 Pattern Matching 방법을 이용하여, 본격적으로 Pointcut Designator별
+					Pointcut 정의 방법에 대해 살펴보기로 하자.</para>
+			</section>
+
+			<section id="core_spring_aop_components_pointcut_designators">
+				<title>Pointcut Designators</title>
+
+				<orderedlist>
+					<listitem>
+						<para>
+							<emphasis role="bold">execution 또는 call</emphasis>
+						</para>
+						<para>특정 메소드나 생성자 실행을 위한 JoinPoint를 정의하는 것으로, JoinPoint의 특정 method
+							name, parameter types, return type, declared exceptions, declaring
+							type, modifiers에 대한 matching이 가능하며, 단, return type pattern, method
+							name pattern, parameter list pattern은 필수적으로 정의해야 한다. 다음은
+							execution, call을 이용한 pointcut 정의 예이다.</para>
+
+						<itemizedlist>
+							<listitem>
+								<para>
+									<emphasis role="bold">execution(* main(..))</emphasis>
+									: return type이 any type이고, 0개 이상의 any type parameter를 가진 main
+									메소드 실행시
+								</para>
+							</listitem>
+
+							<listitem>
+								<para>
+									<emphasis role="bold">call(Account.new(..))</emphasis>
+									: any type parameter를 가진 Account 클래스의 constructor 호출시
+								</para>
+							</listitem>
+						</itemizedlist>
+					</listitem>
+
+					<listitem>
+						<para>
+							<emphasis role="bold">get 또는 set</emphasis>
+						</para>
+
+						<para>특정 Field에 접근하거나 특정 Field 수정을 위한 JoinPoint를 정의한다.</para>
+
+						<itemizedlist>
+							<listitem>
+								<para>
+									<emphasis role="bold">get(Collection +
+										org.xyz.myapp..*.*) </emphasis>
+									: Collection type의 org.xyz.myapp 패키지에 속한 any field에 대한 getter 호출시
+								</para>
+							</listitem>
+
+							<listitem>
+								<para>
+									<emphasis role="bold">set(!private *
+										Account+.*)</emphasis> : Account type의 non-private field에 대한 setter 호출시
+								</para>
+							</listitem>
+						</itemizedlist>
+					</listitem>
+
+					<listitem>
+						<para>
+							<emphasis role="bold">handler</emphasis>
+						</para>
+
+						<para>Exception 핸들링을 위한 JoinPoint를 정의한다.</para>
+
+						<itemizedlist>
+							<listitem>
+								<para>
+									<emphasis role="bold">handler(DataAccessException)</emphasis>
+									: matches
+									cach(DataAccessException){...} and doesn't match
+									catch(RuntimeException)
+								</para>
+							</listitem>
+
+							<listitem>
+								<para>
+									<emphasis role="bold">handler(RuntimeException+)
+        			       	 </emphasis>
+									: matches both
+								</para>
+							</listitem>
+						</itemizedlist>
+					</listitem>
+
+					<listitem>
+						<para>
+							<emphasis role="bold">within</emphasis>
+						</para>
+						<para><![CDATA[특정 유형에 속하는 JoinPoint를 정의하며, 주로&&, ||, ! 등과 함께 조합된
+							형태로 사용된다.]]></para>
+
+						<itemizedlist>
+							<listitem>
+								<para>
+									<emphasis role="bold">within(*)</emphasis>
+									: matches any JoinPoint
+								</para>
+							</listitem>
+
+							<listitem>
+								<para>
+									<emphasis role="bold">within(org.xyz.myapp..*)</emphasis>
+									: org.xyz.myapp 패키지 내에 속하는 모든 요소
+								</para>
+							</listitem>
+
+							<listitem>
+								<para>
+									<emphasis role="bold">within(IInterface+)</emphasis>
+									: IInterface type의 모든 요소
+								</para>
+							</listitem>
+						</itemizedlist>
+					</listitem>
+
+					<listitem>
+						<para>
+							<emphasis role="bold">withincode</emphasis>
+						</para>
+						<para>해당되는 메소드 또는 constructor 내에 정의된 코드를 위한 JoinPoint를 정의한다.</para>
+
+						<itemizedlist>
+							<listitem>
+								<para>withincode(!void get*()) : return type이 void가 아니고 메소드명이
+									get으로 시작하며 parameter가 없는 메소드 내의 코드</para>
+							</listitem>
+						</itemizedlist>
+					</listitem>
+
+					<listitem>
+						<para>
+							<emphasis role="bold">args</emphasis>
+						</para>
+						<para>입력값의 개수, type 등에 대한 JoinPoint를 정의한다.</para>
+
+						<itemizedlist>
+							<listitem>
+								<para>
+									<emphasis role="bold"><![CDATA[call(* transfer(..)) &&
+										args(DepositAccount,CheckingAccount,*)]]></emphasis>
+									: 메소드명이 transfer이고, 입력 인자가 2개 이상이며, 1,2번째 입력 인자의 type이
+									DepositAccount,CheckingAccount인 메소드 호출시
+								</para>
+							</listitem>
+						</itemizedlist>
+					</listitem>
+
+					<listitem>
+						<para>
+							<emphasis role="bold">this</emphasis>
+						</para>
+						<para>JoinPoint를 가진 object의 type을 정의한다. (Runtime type)</para>
+						<itemizedlist>
+							<listitem>
+								<para>
+									<emphasis role="bold">this(Account)</emphasis>
+									: 인터페이스	Account를 구현한 클래스(Proxy)의 모든 JoinPoint
+								</para>
+							</listitem>
+						</itemizedlist>
+					</listitem>
+
+					<listitem>
+						<para>
+							<emphasis role="bold">target</emphasis>
+						</para>
+						<para>JoinPoint를 가진 target object의 type을 정의한다. (Runtime type)
+						</para>
+
+						<itemizedlist>
+							<listitem>
+								<para>
+									<emphasis role="bold"><![CDATA[call(* *(..)) &&	target(Account)]]></emphasis>
+									: Account 클래스 내의 모든 메소드 호출시
+								</para>
+							</listitem>
+						</itemizedlist>
+					</listitem>
+				</orderedlist>
+
+				<para>
+					Spring은 메소드 호출 부분에 대한 AOP만을 지원하므로, 위에 정의한 다양한 Pointcut
+					Designator 중 execution, within, target, this, args만이 사용 가능하다.
+        			</para>
+			</section>
+		</section>
+		
+		<section id="core_spring_aop_components_advice">
+      	<title>Advice</title>
+
+      		<para>
+	      		Advice는 각 JoinPoint에 삽입되어져 동작할 수 있는 코드로 동작 시점은 pointcut에
+	      		Matching되는 JoinPoint 실행 전후이며 <emphasis role="bold">before, after, after
+	      		returning, after throwing, around </emphasis>중에서 선택 가능하다.
+      		</para>
+
+      	<informaltable>
+      	<caption>Advice 종류</caption>
+        <tgroup cols="2">
+        <colspec colnum="1" colname="col1" colwidth="2*" />
+			<colspec colnum="2" colname="col2" colwidth="8*" />
+			<tbody>
+				<row>
+					<entry align="center">Before</entry>
+					<entry>Before Advice는 Matching된 JoinPoint 전에 동작하는 Advice이다.</entry>
+				</row>
+		
+				<row>
+					<entry align="center">After</entry>
+		
+					<entry>
+						After Advice는 동작 시점에 따라 after (finally), after returning, after throwing 으로 구분할 수 있다.
+						<itemizedlist>
+							<listitem>
+								<para>after returning : Matching된 JoinPoint가 성공적으로 return된
+									후에 동작하는 Advice이다.</para>
+							</listitem>
+		
+							<listitem>
+								<para>after throwing : Exception이 발생하여 Matching된
+									JoinPoint가 종료된 후에 동작하는 Advice이다.</para>
+							</listitem>
+		
+							<listitem>
+								<para>after (finally) : Matching된 JoinPoint 종료 후에 동작하는
+									Advice이며 잘 사용되지는 않는다.</para>
+							</listitem>
+						</itemizedlist>
+					</entry>
+				</row>
+
+            	<row>
+              		<entry align="center">Around</entry>
+
+		            <entry>
+		            	가장 강력한 Advice로 Matching된 JoinPoint 전, 후에 동작하며 JoinPoint
+             			실행 시점을 결정할 수 있다. 또한 다른 Advice와는 달리 입력값, target object, return 값
+              			등에 대한 변경이 가능하다.
+              		</entry>
+            	</row>
+          	</tbody>
+        </tgroup>
+     	</informaltable>
+
+    	<para>
+    	 	<![CDATA[동작 시점별 Advice 정의 방법에 대해서는 매뉴얼 >> Spring >> AOP 하위의 ]]><link
+      		linkend="core_spring_aop_annotation">Annotation based AOP</link> , <link
+      		linkend="core_spring_aop_xmlbasedaop">XML based AOP</link> , <link
+      		linkend="core_spring_aop_aspectj">AspectJ based AOP</link> 를 참고하도록 한다.
+      	</para>
+    	</section>
+    	
+    	<section id="core_spring_aop_components_weaving">
+      	<title>Weaving 또는 CrossCutting</title>
+
+      	<para>
+      		AOP가 Core Concerns 모듈의 코드를 직접 건드리지 않고 필요한 기능이 작동하도록 하는 데는 Weaving
+      		또는 CrossCutting이라고 불리는 특수한 작업이 필요하다. Core Concerns 모듈이 자신이 필요한
+      		Crosscutting Concerns 모듈을 찾아 사용하는 대신에 AOP에서는 Weaving 작업을 통해 Core
+      		Concerns 모듈의 사이 사이에 필요한 Crosscutting Concerns 코드가 동작하도록 엮어지게 만든다. 이를 통해
+      		AOP는 기존의 OOP로 작성된 코드들을 수정하지 않고도 필요한 Crosscutting Concerns 기능을 효과적으로 적용해
+      		낼 수 있다.
+      	</para>
+
+      	<mediaobject>
+        	<imageobject>
+         		<imagedata align="center" fileref="../image/core/spring/weaving.jpg" />
+        	</imageobject>
+        	<textobject>
+ 				<phrase>AOP의 Weaving을 표현한 그림으로써 AOP에서는 Weaving 작업을 통해 Core
+      			Concerns 모듈의 사이 사이에 필요한 Crosscutting Concerns 코드가 동작하도록 엮어지게 만들어 줌을 설명한다.
+      			즉, Weaving을 통해 계좌이체 기능과 보안, 로깅 기능을 잘 엮어서 핵심 기능이 정상적으로 동작하도록 지원해 줌을 나타내고 있다.</phrase>
+ 			</textobject>
+      	</mediaobject>
+
+      	<para>
+      		Weaving은 기존의 자바 언어와 컴파일러에서는 쉽게 구현할 수 있는 방법이 아니었으며 본격적인 AOP 기술이 등장한
+      		것은 1990년대 후반 제록스 PARC 연구소에서 그레거 킥제일(Gregor Kiczales)에 의해 AspectJ가
+      		개발되면서라고 볼 수 있다.
+      	</para>
+
+      	<para>Weaving을 처리하는 방법은 다음과 같이 3가지가 존재한다.</para>
+
+      	<informaltable>
+      	<caption>Weaving 방식</caption>
+		<tgroup cols="2">
+		<colspec colnum="1" colname="col1" colwidth="3*" />
+		<colspec colnum="2" colname="col2" colwidth="7*" />
+		<thead>
+			<row>
+				<entry align="center">Weaving 방식</entry>
+
+				<entry align="center">설명</entry>
+			</row>
+		</thead>
+
+		<tbody>
+			<row>
+				<entry>
+					<emphasis role="bold">Compiletime Weaving</emphasis>
+				</entry>
+
+				<entry>
+					별도 컴파일러를 통해 Core Concerns 모듈의 사이 사이에 Aspect 형태로 만들어진
+					Crosscutting Concerns 코드들이 삽입되어 Aspect가 적용된 최종 바이너리가 만들어지는 방식이다.
+					(ex. AspectJ, ...)
+				</entry>
+			</row>
+
+			<row>
+				<entry>
+					<emphasis role="bold">Loadingtime Weaving</emphasis>
+				</entry>
+
+				<entry>
+					별도의 Agent를 이용하여 JVM이 클래스를 로딩할 때 해당 클래스의 바이너리 정보를 변경한다. 즉,
+					Agent가 Crosscutting Concerns 코드가 삽입된 바이너리 코드를 제공함으로써 AOP를 지원하게
+					된다. (ex. AspectWerkz, ...)
+				</entry>
+			</row>
+
+			<row>
+				<entry>
+					<emphasis role="bold">Runtime Weaving</emphasis>
+				</entry>
+
+				<entry>소스 코드나 바이너리 파일의 변경없이 Proxy를 이용하여 AOP를 지원하는 방식이다. Proxy를
+					통해 Core Concerns를 구현한 객체에 접근하게 되는데, Proxy는 Core Concerns 실행 전후에
+					Cross Concerns를 실행한다. 따라서 Proxy 기반의 Runtime Weaving의 경우 메소드
+					호출시에만 AOP를 적용할 수 있다는 제한점이 있다. (ex. Spring AOP, ...)</entry>
+			</row>
+		</tbody>
+		</tgroup>
+		</informaltable>
+    	</section>
+    	
+    	<section id="core_spring_aop_components_aspect">
+      	<title>Aspect</title>
+
+      		<para>
+      			Aspect는 어디에서(Pointcut) 무엇을 할 것인지(Advice)를 합쳐놓은 것을 말한다. AspectJ와 같은
+      			자바 언어를 확장한 AOP에서는 마치 자바의 클래스처럼 Aspect를 코드로 작성할 수 있다. 다음은 모든 클래스의 main
+      			메소드 실행(pointcut main()) 후에 "Hello from AspectJ"라는 문자열을 남기는 (after
+      			returning advice) Aspect HelloFromAspectJ의 일부이다.
+      		</para>
+
+            <programlisting language="java">public aspect HelloFromAspectJ{
+    // define pointcut
+    pointcut main(): execution(public static void main(String[]));
+    // define advice
+    after() returning : main() {
+        System.out.println("Hello from AspectJ!");
+    }
+}</programlisting>
+
+      		<para>
+      			<![CDATA[Aspect 정의에 대한 자세한 설명은 매뉴얼 >> Spring >>]]> AOP 하위의 <link
+      			linkend="core_spring_aop_annotation">Annotation based AOP</link> , <link
+      			linkend="core_spring_aop_xmlbasedaop">XML based AOP</link> , <link
+      			linkend="core_spring_aop_aspectj">AspectJ based AOP</link> 를 참고하도록 한다.
+      		</para>
+    	</section>
+	</section>
+	
+	<section id="core_spring_aop_annotation">
+    <title>Annotation based AOP</title>
+
+    	<para>
+    		다음에서는 AOP 대표적인 툴 중 @AspectJ(Annotation)을 이용하여 Aspect를 정의하고 테스트하는 방법에
+    		대해서 다루고자 한다. @AspectJ(Annotation)은 AspectJ 5 버전에 추가된 Annotation이며, Spring
+    		2.0 에서부터 이러한 Annotation에 대한 처리가 가능하므로, Spring 기반일 경우 별도의 Compiler나 Weaver
+    		없이 @AspectJ(Annotation) 기반의 AOP 적용이 가능하다. 또한 Annotation을 이용하여 Aspect를 정의할
+    		경우 별도 XML 파일에 대한 정의가 불필요하므로, Aspect 적용이 보다 간결해짐을 알 수 있을 것이다. (단,
+    		Annotation은 JAVA 5 이상에서만 정의 가능함에 유의하도록 한다.)
+    	</para>
+    	
+    	<section id="core_spring_aop_annotation_configuration">
+      	<title>Configuration</title>
+
+      		<para>
+      			@AspectJ(Annotation)이 적용된 클래스들을 로딩하여 해당 클래스에 정의된 Pointcut, Advice를
+      			실행하기 위해서는 Spring 속성 정의 XML 파일에 다음과 같이 추가해주어야 한다. 
+      			<programlisting language="xml"><![CDATA[<aop:aspectj-autoproxy/>]]></programlisting>
+      		</para>
+    	</section>
+    	
+    	<section id="core_spring_aop_annotation_apsect">
+      	<title>@Aspect 정의</title>
+
+      		<para>
+      			@Aspect를 이용하여 특정 클래스가 Aspect임을 나타낸다. 다음 LoggingAspect
+      			에서는 @Aspect를 이용하여 해당 클래스가 Aspect임을 나타내고 있다. 
+      			<programlisting language="java"><emphasis role="bold">@Aspect</emphasis>
+public class LoggingAspect {
+      //...
+}</programlisting>
+     		</para>
+    	</section>
+    	
+    	<section id="core_spring_aop_annotation_pointcut">
+      	<title>@Pointcut 정의</title>
+
+      		<para>
+      			@Pointcut을 이용하여 해당 Aspect를 적용할 부분을 정의한다. (Pointcut 정의시에는
+      			<link linkend="core_spring_aop_components_pointcut"> Pointcut Designator와 Pattern
+      			Matching 활용 방법</link> 을 참고한다.) 다음은 PrintStringUsingAnnotation 의 Pointcut
+      			정의 부분이다. @Pointcut을 "execution(* org.anyframe.sample..*Impl.*(..))"와 같이 정의하고, 해당 Pointcut에
+      			대해 식별자로써 serviceMethod라는 메소드명을 부여하였다. 이것은 클래스명이 Impl로 끝나는 모든
+      			메소드의 실행 부분이 Aspect을 적용할 Pointcut임을 의미한다. 해당 Pointcut은 serviceMethod()라는
+      			이름으로 이용 가능하다.
+				<programlisting language="java"><emphasis role="bold">@Pointcut</emphasis>("execution(* org.anyframe.sample..*Impl.*(..))")
+public void serviceMethod(){}
+
+@Before(<emphasis role="bold">"serviceMethod()</emphasis>")>
+public void beforeLogging(JoinPoint thisJoinPoint) {
+...</programlisting>	
+      		</para>
+      		<para>
+      			또는 @Pointcut을 생략하고  @Before, @AfterReturning, @AfterThrowing, @After의 속성으로 바로 Pointcut을 정의할 수 있다.
+      			축약된 표현의 장점은 별도의 메소드 정의(serviceMethod()와 같은)를 하지 않아도 된다는 것이며 이에 대한 예제는 다음절에서 자세히 살펴보도록 하겠다.
+      		</para>
+    	</section>
+    	
+    	<section id="core_spring_aop_annotation_advice">
+      	<title>@Advice 정의</title>
+
+      		<para>다음에서는 Annotation을 이용하여 동작 시점별 Advice를 정의하는 방법에 대해 살펴보기로 한다.</para>
+
+      		<section id="core_spring_aop_annotation_advice_before">
+        	<title>Before Advice</title>
+
+        		<para>
+        			@Before를 이용하여 Before Advice를 정의한다. 다음은 Before Advice 정의 부분이다. Before Advice인
+        			beforeLogging()는 앞서 정의한 serviceMethod()라는 Pointcut 전에 "Logging Aspect : executed "라는 
+        			문자열과 해당 Pointcut을 가진 메소드명 클래스명을 출력하는 역할을 수행한다. 
+				<programlisting language="java"><emphasis role="bold"><![CDATA[@Before("serviceMethod()")]]></emphasis><![CDATA[
+public void beforeLogging(JoinPoint thisJoinPoint) {
+    Class<? extends Object> clazz = thisJoinPoint.getTarget().getClass();
+    String methodName = thisJoinPoint.getSignature().getName();
+    Object[] arguments = thisJoinPoint.getArgs();
+
+    StringBuilder argBuf = new StringBuilder();
+    StringBuilder argValueBuf = new StringBuilder();
+    int i = 0;
+    for (Object argument : arguments) {
+        String argClassName = argument.getClass().getSimpleName();
+        if (i > 0) {
+            argBuf.append(", ");
+        }
+        argBuf.append(argClassName + " arg" + ++i);
+        argValueBuf.append(".arg" + i + " : " + argument.toString() + "\n");
+    }
+
+    if (i == 0) {
+        argValueBuf.append("No arguments\n");
+    }
+
+    StringBuilder messageBuf = new StringBuilder();
+    messageBuf.append("before executing {} ({}) method");
+    messageBuf.append("\n-------------------------------------------------------------------------------\n");
+    messageBuf.append(" {} -------------------------------------------------------------------------------");
+
+    Logger logger = LoggerFactory.getLogger(clazz);
+    logger.debug(
+            messageBuf.toString(),
+            new Object[]{methodName, argBuf.toString(), argValueBuf.toString()});
+}]]></programlisting>
+         		</para>
+        		<para>
+        			beforeLogging()는 1개의 입력 인자(JoinPoint)를 가지고 있는데 Target
+        			클래스명, 메소드명 등과 같은 Target 정보를 포함하고 있다. Target 정보가 불필요한 Advice인 경우에는
+        			JoinPoint라는 입력 인자를 선언하지 않아도 된다.</para>
+        		<para>
+        			또는 @Pointcut 태그를 생략하고 다음과 같이 @Before 태그내의 속성을 이용하여 축약형으로 정의할 수도 있다. 
+        			이 경우 serviceMethod()와 같이 @Pointcut 태그를 지정하기 위해 사용했던 메소드 정의는 생략된다. 
+				<programlisting language="java"><emphasis role="bold"><![CDATA[@Before("execution(* org.anyframe.sample..*Impl.*(..))")]]></emphasis><![CDATA[
+public void beforeLogging(JoinPoint thisJoinPoint) {
+...
+}]]></programlisting>
+         		</para>
+        			
+      		</section>
+      
+      		<section id="core_spring_aop_annotation_advice_afterreturning">
+        	<title>AfterReturning Advice</title>
+
+        		<para>
+        			@AfterReturning을 이용하여 AfterReturning Advice를 정의한다. 다음은
+         			AfterReturning Advice 정의 부분으로 해당 Pointcut 실행 결과를 retVal이라는 변수에 담도록 정의하고 있다.
+         			AfterReturning Advice인 afterReturningExecuteGetMethod()는 앞서 정의한 Pointcut 후에 , "AfterReturning
+        			Advice of PrintStringUsingAnnotation"라는 문자열과 해당 Pointcut을 가진 클래스명,
+        			메소드명을 출력하는 역할을 수행한다. <programlisting language="java">@<emphasis
+              		role="bold">AfterReturning(pointcut = "execution(* org.anyframe.sample..*Impl.*(..))", returning = "retVal")</emphasis>
+public void afterReturningExecuteGetMethod(JoinPoint thisJoinPoint, Object <emphasis role="bold">retVal</emphasis>) {
+    Class targetClass = thisJoinPoint.getTarget().getClass();
+    Signature signature = thisJoinPoint.getSignature();
+    String opName = signature.getName();
+   
+    System.out.println("AfterReturning Advice of PrintStringUsingAnnotation");
+    System.out.println("***" + targetClass + "." + opName + "()" + "***");
+}</programlisting>
+          		</para>
+
+		        <para>
+		        	afterReturningExecuteGetMethod()는 2개의 입력 인자(JoinPoint, Object)를
+        			가지고 있는데 첫번째 인자는 Target 클래스명, 메소드명 등과 같은 Target 정보를 포함하고 있으며, 두번째 인자는
+        			해당 Pointcut의 실행 결과이다. AfterReturning Advice에서 특정 Pointcut 실행 결과를 참조해야
+        			한다면, Advice 정의시 returning의 값을 정의하고 해당하는 메소드의 입력 인자명을 동일하게 정의해주도록 한다. 각
+        			입력 인자는 AfterReturning Advice 정의시 필요에 따라 선택 정의할 수 있다.
+        		</para>
+      		</section>
+
+      		<section id="core_spring_aop_annotation_advice_afterthrowing">
+        	<title>AfterThrowing Advice</title>
+
+        	<para>
+        		@AfterThrowing을 이용하여 AfterThrowing Advice를 정의한다. 다음은 transfer의 AfterThrowing Advice 정의 부분으로
+        		 해당 Pointcut 실행시 발생한 Exception 객체를 exception이라는 변수에 담도록 정의하고 있다. AfterThrowing
+        		Advice는 정의한 Pointcut에서 Exception이 발생한 후에 Exception을 핸들링하고 Exception의 종류에 따라
+        		Exception meesage를 출력하게된다.
+        		<programlisting language="java"><emphasis 
+        		role="bold">@AfterThrowing(pointcut = "execution(* org.anyframe.sample..*Impl.*(..))", throwing = "exception")</emphasis>
+public void transfer(JoinPoint thisJoinPoint, Exception exception) throws MovieFinderException {
+    Object target = thisJoinPoint.getTarget();
+    while (target instanceof Advised) {
+    try {
+        target = ((Advised) target).getTargetSource().getTarget();
+    } catch (Exception e) {
+        LogFactory.getLogger(this.getClass()).error("Fail to get target object
+                    from JointPoint.", e);
+        break;
+        }
+    }
+	
+    String className = target.getClass().getSimpleName().toLowerCase();
+    String opName = (thisJoinPoint.getSignature().getName()).toLowerCase();
+    Log logger = LogFactory.getLogger(target.getClass());
+
+    if (exception instanceof MovieFinderException) {
+        MovieFinderException empEx = (MovieFinderException) exception;
+        logger.error(empEx.getMessage(), empEx);
+        throw empEx;
+    }
+    
+    try {
+        logger.error(messageSource.getMessage("error." + className + "."
+                + opName, new String[] {}, Locale.getDefault()), exception);
+    } catch (Exception e) {
+        logger.error(messageSource.getMessage("error.common",
+                new String[] {}, Locale.getDefault()), exception);
+        throw new MovieFinderException(messageSource, "error.common");
+    }
+    throw new MovieFinderException(messageSource, "error." + className
+                + "." + opName);
+}</programlisting>
+       		</para>
+
+        	<para>
+        		transfer()는 2개의 입력 인자(JoinPoint, Exception)를 가지고 있는데 첫번째 인자는 Target 클래스명,
+        		 메소드명 등과 같은 Target 정보를 포함하고 있으며, 두번째 인자는 Pointcut 실행시 발생한 Exception 객체이다.
+        		AfterThrowing Advice에서 특정 Pointcut 실행시 발생한 Exception을 참조해야 한다면, Advice 정의시 throwing의 값을 정의하고
+        		해당하는 메소드의 입력 인자명을 동일하게 정의해주도록 한다. 각 입력 인자는 AfterThrowing Advice 정의시
+        		필요에 따라 선택 정의할 수 있다.
+        	</para>
+      		</section>
+
+      		<section id="core_spring_aop_annotation_advice_after(finally)">
+        	<title>After(finally) Advice</title>
+
+        		<para>
+        			@After를 이용하여 After(finally) Advice를 정의한다. 다음은
+        			PrintStringUsingAnnotation 의 After(finally) Advice 정의 부분이다.
+        			After(finally) Advice인 afterExecuteGetMethod()는 get 메소드들을 정의한 
+        			Pointcut 후에 "After(finally) Advice of PrintStringUsingAnnotation"라는
+        			문자열과 해당 Pointcut을 가진 클래스명, 메소드명을 출력하는 역할을 수행한다.
+        			<programlisting language="java">@<emphasis role="bold">After("execution(* org.anyframe.sample..*Impl.get*(..))")</emphasis>
+public void afterExecuteGetMethod(JoinPoint thisJoinPoint) {
+    Class targetClass = thisJoinPoint.getTarget().getClass();
+    Signature signature = thisJoinPoint.getSignature();
+    String opName = signature.getName();
+    
+    System.out.println("After(finally) Advice of PrintStringUsingAnnotation");
+    System.out.println("***" + targetClass + "." + opName + "()" + "***");
+}</programlisting>
+           		</para>
+
+        		<para>
+        			afterExecuteGetMethod()는 1개의 입력 인자(JoinPoint)를 가지고 있는데 Target
+        			클래스명, 메소드명 등과 같은 Target 정보를 포함하고 있다. Target 정보가 불필요한 Advice인 경우에는
+        			JoinPoint라는 입력 인자를 선언하지 않아도 된다.
+        		</para>
+      		</section>
+
+      		<section id="core_spring_aop_annotation_advice_around">
+        	<title>Around Advice</title>
+
+        		<para>
+        			@Around를 이용하여 Around Advice를 정의한다. 다음은
+        			PrintStringAroundUsingAnnotation 의 Around Advice 정의 부분이다. Around
+        			Advice인 aroundExecuteUpdateMethod()는 update 메소드를 정의한 Pointcut 후에
+        			"Around Advice of PrintStringUsingAnnotation"라는 문자열과 해당 Pointcut을 가진
+        			클래스명, 메소드명을 출력하는 역할을 수행한다.
+        			<programlisting language="java">@<emphasis role="bold">Around("execution(* org.anyframe.sample..*Impl.update*(..))")</emphasis>
+public Object aroundExecuteUpdateMethod(ProceedingJoinPoint thisJoinPoint) throws Throwable {
+    Class targetClass = thisJoinPoint.getTarget().getClass();
+    Signature signature = thisJoinPoint.getSignature();
+    String opName = signature.getName();
+    
+    System.out.println("Around Advice of PrintStringUsingAnnotation");
+    System.out.println("***" + targetClass + "." + opName + "()" + "***");
+   
+    // before logic
+    Object retVal = thisJoinPoint.proceed();
+    // after logic
+    
+    return retVal;
+}</programlisting>
+           		</para>
+
+        		<para>
+        			aroundExecuteUpdateMethod()는 1개의 입력 인자(ProceedingJoinPoint)를 가지고
+        			있는데 proceed()라는 메소드 호출을 통해 대상 Pointcut을 실행할 수 있으며, Target 클래스명, 메소드명
+        			등과 같은 Target 정보도 포함하고 있다. 즉, Pointcut 전, 후 처리가 가능하며, Pointcut 실행 시점을
+        			결정할 수 있다. 또한 다른 Advice와는 달리 입력값, target, return 값 등에 대해 변경이 가능하다.
+        			Target 정보가 불필요한 Advice인 경우에는 ProceedingJoinPoint라는 입력 인자를 선언하지 않아도  된다.
+        		</para>
+      		</section>
+    	</section>
+    	
+    	<section id="core_spring_aop_annotation_runaspect">
+      	<title>Aspect 실행</title>
+
+       		<para>
+       			이제 테스트코드 Main.java를 이용하여 앞서 언급한 Aspect들이  정상적으로 동작하는지 확인해 보도록 하자.
+       			다음은 테스트코드 Main.java 의  main()메소드로 실제 movie에 대한 CRUD 로직을 수행함으로써 Befor Advice로 정의된
+       			LoggingAspect가 제대로  수행되는지 확인할 수 있다.
+				<programlisting language="java">public static void main(String[] args) throws Exception {
+    Main main = new Main();
+    // 1. initialize context
+    main.setup();
+    // 2. test
+    main.manageMovie();
+    // 3. close context
+    main.teardown();
+}
+
+public void manageMovie() throws Exception {
+    // 1. lookup aopMovieFinder, aopMovieService
+    MovieFinder movieFinder = (MovieFinder) context.getBean("aopMovieFinder");
+    MovieService movieService = (MovieService) context.getBean("aopMovieService");
+
+    // 2. create a new movie
+    Movie movie = getMovie();
+    movieService.create(movie);
+	
+    // 3. get movie list
+    Page movies = movieFinder.getPagingList(movie, 1);
+
+    // 4. update movie
+    movie.setTitle("Mission Impossible");
+    movieService.update(movie);
+	
+    // 5. get movie 
+    Movie result = movieService.get(movie.getMovieId());
+	
+    // 6. remove movie 
+    movieService.remove(movie.getMovieId());
+}
+
+private Movie getMovie() throws Exception {
+    Genre genre = new Genre();
+    genre.setGenreId("GR-03");
+
+    Movie movie = new Movie();
+    movie.setMovieId("MV-99999");
+    movie.setTitle("Shrek (2001)");
+    movie.setActors("Shrek");
+    movie.setDirector("Andrew Adamson");
+    movie.setGenre(genre);
+    movie.setReleaseDate(new Date());
+    movie.setRuntime(new Long(90));
+    movie.setTicketPrice(new Float(8000));
+    movie.setNowPlaying("N");
+
+    return movie;
+}</programlisting>
+			</para>
+
+      		<para>
+      			첫번째 로직 movieService.create(movie); 실행시 Before Advice로 정의된 LoggingAspect 클래스가 적용되며, 콘솔창에
+      			다음과 같은 실행 결과를 포함하게 된다. 
+				<programlisting language="java">before executing create(Movie arg1) method
+-------------------------------------------------------------------------------
+.arg1 : [actors=Shrek, director=Andrew Adamson, movieId=MV-99999, nowPlaying=N, 
+posterFile=null, releaseDate=Mon Apr 18 13:40:42 KST 2011, runtime=90, ticketPrice=8000.0, 
+title=Shrek (2001), genreId=GR-03]
+-------------------------------------------------------------------------------</programlisting>
+			</para>
+
+      		<para>
+      			두번째 로직movieFinder.getPagingList(movie, 1); 실행시 Before Advice로 정의된 LoggingAspect 클래스가 적용되며, 콘솔창에
+      			다음과 같은 실행 결과를 포함하게 된다. 
+				<programlisting language="java">before executing getPagingList(Movie arg1, Integer arg2) method
+-------------------------------------------------------------------------------
+.arg1 : [actors=Shrek, director=Andrew Adamson, movieId=MV-99999, nowPlaying=N, 
+posterFile=null, releaseDate=Mon Apr 18 13:40:42 KST 2011, runtime=90, ticketPrice=8000.0, 
+title=Shrek (2001), genreId=GR-03]
+.arg2 : 1
+-------------------------------------------------------------------------------</programlisting>
+			</para>
+    	</section>	
+	</section>
+	
+	<section id="core_spring_aop_xmlbasedaop">
+    <title>XML based AOP</title>
+
+    	<para>
+    		다음에서는 AOP 대표적인 툴 중 Spring AOP를 이용하여 XML 스키마 기반에서 Aspect를 정의하고 테스트하는
+    		방법에 대해서 다루고자 한다. Spring 2.x 버전부터 AOP 설정을 위한 aop namespace, XML 스키마가
+    		추가되었다.
+    	</para>
+    	
+    	<section id="core_spring_aop_xmlbasedaop_aspect">
+      	<title>Aspect 정의</title>
+
+      		<para>
+  	    		<![CDATA[<aop:config>]]>의 하위 태그인 <![CDATA[<aop:aspect>]]>를 이용하여 Aspect을 정의한다.
+	   	   		다음 context-aspect.xml 에서는 aop namespace를 이용하여 Aspect을 정의하고  있다.
+				<programlisting language="xml"><![CDATA[<beans xmlns="http://www.springframework.org/schema/beans"
+    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+    xmlns:aop="http://www.springframework.org/schema/aop"
+    xsi:schemaLocation="http://www.springframework.org/schema/beans
+    http://www.springframework.org/schema/beans/spring-beans-3.1.xsd
+    http://www.springframework.org/schema/aop
+    http://www.springframework.org/schema/aop/spring-aop-3.1.xsd">
+
+    <bean id="methodLoggingAspect" class="org.anyframe.sample.aop.common.aspect.LoggingAspect" />
+    <bean id="exceptionTransfer" class="org.anyframe.sample.aop.common.aspect.ExceptionTransfer">
+        <property name="messageSource" ref="messageSource"/>
+    </bean>
+</beans>]]></programlisting>
+			</para>
+
+      		<para>
+      			<![CDATA[Advice를 정의한 클래스를 Bean으로 정의해 두고, 해당 Bean을 <aop:config>내의
+      			<aop:aspect> 에서 참조하는 형태로 Aspect을 정의할 수 있다.]]>
+      		</para>
+    	</section>
+    	
+    	<section id="core_spring_aop_xmlbasedaop_pointcut">
+      	<title>Pointcut 정의</title>
+
+  		    <para><![CDATA[<aop:pointcut>]]> 내의 expression의 값에 Pointcut Designator와
+     			Pattern Matching을 이용하여 pointcut을 정의한다. 그리고 id의 값에 식별자를 부여한다. (Pointcut
+      			정의시에는 <link linkend="core_spring_aop_components_pointcut">Pointcut Designator와
+      			Pattern Matching 활용 방법</link> 을 참고한다.) 
+		<programlisting language="xml"><![CDATA[<aop:pointcut id="serviceMethod" expression="execution(* org.anyframe.sample..*Impl.*(..))" />]]></programlisting>
+			</para>
+      		<para>이것은 클래스명이 Impl로 끝나는 모든 메소드의 실행 부분이 Aspect을 적용할
+      			Pointcut임을 의미한다. 해당 Pointcut은 serviceMethod라는 이름으로 이용 가능하다.
+      		</para>
+      	</section>
+      	
+      	<section id="core_spring_aop_xmlbasedaop_advice">
+      	<title>Advice 정의 및 구현</title>
+
+      		<para>다음에서는 XML 기반에서 동작 시점별로 Advice 정의 및 구현 방법에 대해 살펴보기로 한다.</para>
+
+			<section id="core_spring_aop_xmlbasedaop_advice_before">
+     	   	<title>Before Advice</title>
+
+				<para><![CDATA[<aop:before>]]>를 이용하여 Before Advice를 정의한다. 다음은
+        			context-aspect.xml 의 Before Advice 정의 부분이다. 앞서 정의한
+        			serviceMethod pointcut을 참조하고 있으며, 해당 pointcut 전에 methodLoggingAspect라는
+        			Bean의 beforeLogging() 메소드를 호출해야 함을 명시하고 있다. 
+        			<programlisting language="xml"><![CDATA[<aop:before method="beforeLogging" pointcut-ref="serviceMethod"/>]]></programlisting>
+        		</para>
+
+     		   	<para>
+     		   		다음은 Before Advice를 구현하고 있는 LoggingAspect 클래스의 일부이다. Before	Advice 역할을 수행하는
+     		   		beforeLogging()는 앞서 정의한 serviceMethod Pointcut 전에 해당 Pointcut을 가진 클래스명, 메소드명을 출력하는 역할을 수행한다. 
+   					<programlisting language="java"><![CDATA[public class LoggingAspect {
+    public void ]]><emphasis role="bold"><![CDATA[beforeLogging]]></emphasis><![CDATA[(JoinPoint thisJoinPoint) {
+        Class<? extends Object> clazz = thisJoinPoint.getTarget().getClass();
+        String methodName = thisJoinPoint.getSignature().getName();
+        Object[] arguments = thisJoinPoint.getArgs();
+
+        StringBuilder argBuf = new StringBuilder();
+        StringBuilder argValueBuf = new StringBuilder();
+        int i = 0;
+        for (Object argument : arguments) {
+            String argClassName = argument.getClass().getSimpleName();
+            if (i > 0) {
+                argBuf.append(", ");
+            }
+            argBuf.append(argClassName + " arg" + ++i);
+            argValueBuf.append(".arg" + i + " : " + argument.toString() + "\n");
+        }
+
+        if (i == 0) {
+            argValueBuf.append("No arguments\n");
+        }
+
+        StringBuilder messageBuf = new StringBuilder();
+        messageBuf.append("before executing {} ({}) method");
+        messageBuf.append("\n-------------------------------------------------------------------------------\n");
+        messageBuf.append(" {} -------------------------------------------------------------------------------");
+
+        Logger logger = LoggerFactory.getLogger(clazz);
+        logger.debug(
+                messageBuf.toString(),
+                new Object[]{methodName, argBuf.toString(), argValueBuf.toString()});
+    }
+}]]></programlisting>
+				</para>
+
+        		<para>
+        			beforeLogging()는 1개의 입력 인자(JoinPoint)를 가지고 있는데 Target 클래스명, 메소드명 등과 같은
+        			Target 정보를 포함하고 있다. Target 정보가 불필요한 Advice인 경우에는 JoinPoint라는 입력 인자를
+        			선언하지 않아도 된다.
+        		</para>
+      		</section>
+      		
+      		<section id="core_spring_aop_xmlbasedaop_advice_afterreturning">
+        		<title>AfterReturning Advice</title>
+
+        		<para>
+        			<![CDATA[<aop:after-returning>]]>을 이용하여 AfterReturning Advice를 정의한다.
+        			다음은 context-aspect.xml 의 AfterReturning Advice 정의 부분이다. 앞서
+        			정의한 serviceMethod라는 pointcut을 참조하고 있으며, 해당 pointcut 후에
+        			printStringAspect라는 Bean의 afterReturningExecuteGetMethod() 메소드를 호출해야
+       				 함을 명시하고 있다. 또한 해당 Pointcut 실행 결과를 retVal이라는 변수에 담도록 하고 있다.
+        			<programlisting
+        			language="xml"><emphasis role="bold"><![CDATA[<aop:after-returning]]></emphasis> method="afterReturningExecuteGetMethod" returning="retVal" 
+     pointcut-ref="serviceMethod" /></programlisting>
+     			</para>
+
+        		<para>
+        			다음은 AfterReturning Advice를 구현하고 있는 PrintStringUsingXML 클래스의
+        			일부이다. AfterReturning Advice 역할을 수행하는 afterReturningExecuteGetMethod()는
+        			앞서 정의한 Pointcut 후에 , "AfterReturning Advice of PrintStringUsingXML"라는
+        			문자열과 해당 Pointcut을 가진 클래스명, 메소드명을 출력하는 역할을 수행한다. <programlisting
+        			language="java">public class PrintStringUsingXML {
+	// ...
+	
+    public void <emphasis role="bold">afterReturningExecuteGetMethod(JoinPoint thisJoinPoint, Object retVal)</emphasis> {
+        Class targetClass = thisJoinPoint.getTarget().getClass();
+        Signature signature = thisJoinPoint.getSignature();
+        String opName = signature.getName();
+	
+        System.out.println("AfterReturning Advice of PrintStringUsingXML");
+        System.out.println("***" + targetClass + "." + opName + "()" + "***");
+    }
+	
+    // ...
+}</programlisting>
+				</para>
+
+        		<para>
+        			afterReturningExecuteGetMethod()는 2개의 입력 인자(JoinPoint, Object)를
+        			가지고 있는데 첫번째 인자는 Target 클래스명, 메소드명 등과 같은 Target 정보를 포함하고 있으며,
+        			두번째 인자는 해당 Pointcut의 실행 결과이다. AfterReturning Advice에서 특정 Pointcut 실행 결과를
+        			참조해야 한다면, XML에 해당 Advice 정의시 returning의 값을 정의하고 해당하는 메소드의 입력 인자명을
+        			동일하게 정의해주도록 한다. 각 입력 인자는 AfterReturning Advice 정의시 필요에 따라 선택 정의할 수 있다.
+        		</para>
+      		</section>
+      		
+      		<section id="core_spring_aop_xmlbasedaop_advice_afterthrowing">
+        	<title>AfterThrowing Advice</title>
+
+        		<para>
+        			<![CDATA[<aop:throwing>을 이용하여 AfterThrowing Advice를 정의한다. 다음은
+        			context-aspect.xml 의 AfterThrowing Advice 정의 부분이다. 앞서 정의한
+        			serviceMethod라는 pointcut을 참조하고 있으며, 해당 pointcut 후에 exceptionTransfer
+        			Bean의 tranfer() 메소드를 호출해야 함을 명시하고 있다. 또한 해당 Pointcut 실행시 발생한
+        			Exception을 exception이라는 변수로 해당 Advice의 입력 인자명과 동일해야 한다. ]]>
+        			<programlisting language="xml"><![CDATA[<aop:after-throwing throwing="exception" pointcut-ref="serviceMethod" method="transfer" />]]></programlisting>
+        		</para>
+
+        		<para>
+        			다음은 AfterThrowing Advice를 구현하고 있는 ExceptionTransfer 클래스의 일부이다.
+        			AfterThrowing Advice 역할을 수행하는 transfer()는 앞서 정의한 Pointcut에서 Exception이
+        			발생한 후에 에러메시지를 출력하는 역할을 수행한다.
+        			<programlisting language="java">public class ExceptionTransfer {
+
+    private MessageSource messageSource;
+
+    public void setMessageSource(MessageSource messageSource) {
+        this.messageSource = messageSource;
+    }	
+
+    public void transfer(JoinPoint thisJoinPoint, Exception exception) throws MovieFinderException {
+        Object target = thisJoinPoint.getTarget();
+        while (target instanceof Advised) {
+            try {
+                target = ((Advised) target).getTargetSource().getTarget();
+            } catch (Exception e) {
+                LogFactory.getLogger(this.getClass()).error(
+                    "Fail to get target object from JointPoint.", e);
+                break;
+            }
+        }
+
+        String className = target.getClass().getSimpleName().toLowerCase();
+        String opName = (thisJoinPoint.getSignature().getName()).toLowerCase();
+        Log logger = LogFactory.getLogger(target.getClass());
+
+        if (exception instanceof MovieFinderException) {
+            MovieFinderException empEx = (MovieFinderException) exception;
+            logger.error(empEx.getMessage(), empEx);
+            throw empEx;
+        }
+                
+        try {
+            logger.error(messageSource.getMessage("error." + className + "."
+                    + opName, new String[] {}, Locale.getDefault()), exception);
+        } catch (Exception e) {
+            logger.error(messageSource.getMessage("error.common",
+                    new String[] {}, Locale.getDefault()), exception);
+            throw new MovieFinderException(messageSource, "error.common");
+        }
+        throw new MovieFinderException(messageSource, "error." + className
+                    + "." + opName);
+    }
+}</programlisting>
+				</para>
+
+        		<para>
+        			transfer()는 2개의 입력 인자(JoinPoint, Exception)를 가지고 있는데 첫번째 인자는 Target 클래스명,
+        			메소드명 등과 같은 Target 정보를 포함하고 있으며, 두번째 인자는 Pointcut 실행시 발생한 Exception
+        			객체이다. AfterThrowing Advice에서 특정 Pointcut 실행시 발생한 Exception을 참조해야 한다면,
+        			XML에 해당 Advice 정의시 throwing의 값을 정의하고 해당하는 메소드의 입력 인자명을 동일하게
+        			정의해주도록 한다. 각 입력 인자는 AfterThrowing Advice 정의시 필요에 따라 선택 정의할 수 있다.
+        		</para>
+    		</section>
+    		
+    		<section id="core_spring_aop_xmlbasedaop_advice_after(finally)">
+        	<title>After(finally) Advice</title>
+
+        		<para>
+        		<![CDATA[<aop:after>를 이용하여 After(finally) Advice를 정의한다. 다음은
+        		context-aspect.xml 의 After(finally) Advice 정의 부분이다. 앞서 정의한 getMethods라는
+        		pointcut을 참조하고 있으며, 해당 pointcut 후에 printStringAspect라는 Bean의 afterExecuteGetMethod()
+        		메소드를 호출해야 함을 명시하고 있다.]]>
+        		<programlisting language="xml"><emphasis role="bold"><![CDATA[<aop:after]]></emphasis> method="afterExecuteGetMethod" pointcut-ref="getMethods"></programlisting>
+        		</para>
+
+        		<para>
+        			다음은 After(finally) Advice를 구현하고 있는 PrintStringUsingXML 클래스의 일부이다.
+        			After(finally) Advice 역할을 수행하는 afterExecuteGetMethod()는 앞서 정의한 getMethods()라는
+        			Pointcut 후에 "After(finally) Advice of PrintStringUsingXML"라는 문자열과 해당 Pointcut을
+        			가진 클래스명, 메소드명을 출력하는 역할을 수행한다.
+        			<programlisting language="java">public class PrintStringUsingXML {
+	// ...
+	
+    public void afterExecuteGetMethod(JoinPoint thisJoinPoint) {
+        Class targetClass = thisJoinPoint.getTarget().getClass();
+        Signature signature = thisJoinPoint.getSignature();
+        String opName = signature.getName();
+
+        System.out.println("After(finally) Advice of PrintStringUsingXML");
+        System.out.println("***" + targetClass + "." + opName + "()" + "***");
+    }
+	
+    // ...
+}</programlisting>
+				</para>
+
+      			<para>
+      				afterExecuteGetMethod()는 1개의 입력 인자(JoinPoint)를 가지고 있는데 Target
+        			클래스명, 메소드명 등과 같은 Target 정보를 포함하고 있다. Target 정보가 불필요한 Advice인 경우에는
+        			JoinPoint라는 입력 인자를 선언하지 않아도 된다.
+        		</para>
+  		    </section>
+  		    
+  		    <section id="core_spring_aop_xmlbasedaop_advice_around">
+        	<title>Around Advice</title>
+
+        		<para>
+        			<![CDATA[<aop:around>를 이용하여 Around Advice를 정의한다. 다음은
+        			context-aspect.xml 의 Around Advice 정의 부분이다.
+        			updateMethods라는 pointcut을 참조하고 있으며, 해당 pointcut 후에 printStringAspect라는
+        			Bean의 aroundExecuteGetMethod() 메소드를 호출해야 함을 명시하고 있다.]]>
+        			<programlisting language="xml"><emphasis
+        			role="bold"><![CDATA[<aop:around]]></emphasis><![CDATA[ method="aroundExecuteUpdateMethod" pointcut-ref="updateMethods">]]></programlisting>
+        		</para>
+
+        		<para>
+        			다음은 Around Advice를 구현하고 있는 PrintStringUsingXML 클래스의 일부이다. Around
+        			Advice 역할을 수행하는 aroundExecuteUpdateMethod()는 updateMethods()라는
+        			Pointcut 후에 "Around Advice of PrintStringUsingXML"라는 문자열과 해당 Pointcut을
+        			가진 클래스명, 메소드명을 출력하는 역할을 수행한다.
+        			<programlisting language="java">public class PrintStringUsingXML {
+    // ...
+	
+    public Object <emphasis role="bold">aroundExecuteUpdateMethod(ProceedingJoinPoint thisJoinPoint)</emphasis>
+            <emphasis role="bold">throws Throwable</emphasis> {
+        Class targetClass = thisJoinPoint.getTarget().getClass();
+        Signature signature = thisJoinPoint.getSignature();
+        String opName = signature.getName();
+
+        System.out.println("Around Advice of PrintStringUsingXML");
+        System.out.println("***" + targetClass + "." + opName + "()" + "***");
+        // before logic
+        Object retVal = thisJoinPoint.proceed();
+        // after logic
+        return retVal;
+    }
+	
+    // ...
+}</programlisting></para>
+
+        		<para>
+        			aroundExecuteUpdateMethod()는 1개의 입력 인자(ProceedingJoinPoint)를 가지고
+        			있는데 proceed()라는 메소드 호출을 통해 대상 Pointcut을 실행할 수 있으며, Target 클래스명, 메소드명
+        			등과 같은 Target 정보도 포함하고 있다. 즉, Pointcut 전, 후 처리가 가능하며, Pointcut 실행 시점을
+        			결정할 수 있다. 또한 다른 Advice와는 달리 입력값, target, return 값 등에 대해 변경이 가능하다.
+        			Target 정보가 불필요한 Advice인 경우에는 ProceedingJoinPoint라는 입력 인자를 선언하지 않아도 된다.
+        		</para>
+      		</section>
+      	</section>
+  	</section>
+  	
+  	<section id="core_spring_aop_aspectj">
+    <title>AspectJ based AOP</title>
+
+    	<para>
+    		다음에서는 AOP 대표적인 툴 중 AspectJ를 이용하여 Aspect를 정의하고 테스트하는 방법에 대해서 다루고자 한다.
+    	</para>
+    	
+    	<section id="core_spring_aop_aspectj_beforestart">
+      	<title>시작하기 전에</title>
+
+      		<para>AspectJ를 이용하기 위해서는 다음과 같은 사항에 대해 확인이 필요하다.</para>
+
+      		<orderedlist>
+        		<listitem>
+          			<para>
+          				AJDT(AspectJ Development Tool) 설치 Eclipse 플러그인 AJDT는 Aspect
+          				파일을 생성하고 컴파일하기 위한 개발툴이다. 사용중인 Eclipse 내에 플러그인 AJDT(AspectJ
+          				Development Tool)가 설치되어 있지 않다면, AJDT(AspectJ Development Tool)를 다운로드
+          				하여 사용중인 Eclipse 내에 설치하는 것이 좋다. 만약, AJDT를 이용하지 않고 Aspect를 컴파일하고자
+          				한다면, aspectjtools-1.5.4.jar 내에 정의된 Ant task "iajc"을 이용하도록 한다. 다음은 샘플
+          				build.xml 파일의 compile target의 내용이다.
+          			</para>
+
+          	<programlisting language="xml"><![CDATA[<target name="compile" depends="init">
+    <taskdef resource="org/aspectj/tools/ant/taskdefs/aspectjTaskdefs.properties">
+        <classpath>
+            <pathelement location="${lib.dir}/aspectjtools-1.5.4.jar" />
+        </classpath>
+    </taskdef>]]>
+
+   <emphasis role="bold"><![CDATA[<iajc]]></emphasis><![CDATA[ verbose="true" destdir="${output.dir}" debug="on" source="1.5"
+             showweaveinfo="true" xnoinline="true">
+    <sourceroots>
+        <pathelement location="src/main/java" />
+    </sourceroots>
+    <classpath>
+        <pathelement location="${lib.dir}/aspectjrt-1.5.4.jar" />
+        <pathelement location="${lib.dir}/slf4j-api-1.6.4.jar" />
+        <pathelement location="${lib.dir}/slf4j-log4j12-1.6.4.jar" />
+    </classpath>]]>
+   <emphasis role="bold"><![CDATA[</iajc>]]></emphasis>
+<![CDATA[</target>]]></programlisting>
+        </listitem>
+
+        <listitem>
+        	 		<para>
+        	 			<![CDATA[Convert to AspectJ Project 특정 프로젝트가 확장자 aj를 가진 Aspect 파일을 인식할
+          				수 있도록 하기 위해서는 해당 프로젝트에 대한 context menu AspectJ Tools > Convert to
+          				AspectJ Project를 선택하여 해당 프로젝트에 대해 AspectJ 프로젝트의 성격을 부여해 주어야 한다.]]>
+          			</para>
+
+          			<mediaobject>
+            			<imageobject>
+            	  			<imagedata align="center" fileref="../image/core/spring/convert_aop_project.JPG" />
+            			</imageobject>
+            			<textobject>
+            				<phrase>Eclipse Context 메뉴를 표현해주는 그림으로써 Context 메뉴를 보여주고 있다.
+            				Context 메뉴에서 AspectJ Tools를 선택하면 하위에 Convert to AspectJ Project라는 메뉴가 나타남을 보여주고 있다.
+            				</phrase>
+            			</textobject>
+          			</mediaobject>
+        		</listitem>
+      		</orderedlist>
+    	</section>
+    	
+    	<section id="foudation_spring_aop_aspectj_aspect">
+      	<title>Aspect 정의</title>
+
+      		<para>
+      			확장자가 aj인 파일을 생성하고, aspect을 이용하여 Aspect 클래스를 정의한다. 다음
+      			LoggingAspect에서는 aspect를 이용하여 해당 클래스가 Aspect임을 나타내고 있다.
+      		</para>
+
+      <programlisting language="java">public <emphasis role="bold">aspect LoggingAspect</emphasis> {
+    // ...
+}</programlisting>
+    	</section>
+    	
+    	<section id="core_spring_aop_aspectj_pointcut">
+      	<title>Pointcut 정의</title>
+
+      		<para>
+      			pointcut을 이용하여 해당 Aspect를 적용할 부분을 정의한다. (Pointcut 정의시에는 <link
+      			linkend="core_spring_aop_components_pointcut">Pointcut Designator와 Pattern
+	      		Matching 활용 방법</link> 을 참고한다.) 다음은 LoggingAspect 의 Pointcut 정의 부분이다.
+	      		pointcut을 "execution(execution(* org.anyframe.sample..*Impl.*(..)))"와 같이 정의하고, 해당 Pointcut에
+	     		 대해 식별자로써 serviceMethod()라는 메소드명을 부여하였다. 이것은 클래스명이 GenericService로 끝나는
+	      		모든 메소드의 실행 부분이 Aspect을 적용할 Pointcut임을 의미한다. 해당 Pointcut은 serviceMethod()라는
+	      		이름으로 이용 가능하다.
+	      		<programlisting language="java"><emphasis
+      			role="bold">pointcut serviceMethod():</emphasis> execution(* org.anyframe.sample..*Impl.*(..));</programlisting>
+      		</para>
+    	</section>
+    	
+    	<section id="core_spring_aop_aspectj_advice">
+   		<title>Advice 정의</title>
+    	
+    		<para>다음에서는 AspectJ 기반에서 동작 시점별 Advice를 정의하는 방법에 대해 살펴보기로 한다.</para>
+    	
+    		<section id="core_spring_aop_aspectj_advice_before">
+        	<title>Before Advice</title>
+
+        		<para>
+        			before()를 이용하여 Before Advice를 정의한다. 다음은 PrintStringUsingAspctJ 의
+        			Before Advice 정의 부분이다. Before Advice는 앞서 정의한 getMethods()라는 Pointcut
+        			전에 "Before Advice of PrintStringUsingAspctJ"라는 문자열과 해당 Pointcut을 가진
+        			클래스명, 메소드명을 출력하는 역할을 수행한다. <programlisting language="java"><emphasis
+              		role="bold">before() : getMethods()</emphasis>{
+    Class targetClass = thisJoinPoint.getTarget().getClass();
+    Signature signature = thisJoinPoint.getSignature();
+    String opName = signature.getName();
+
+    System.out.println("Before Advice of PrintStringUsingAspctJ");
+    System.out.println("***" + targetClass + "." + opName + "()" + "***");		
+}</programlisting>
+				</para>
+
+        		<para>
+        			위에서 제시한 Before Advice는 내부에 정의된 JoinPoint 유형의 thisJoinPoint라는 객체를
+        			이용하여, Target 클래스명, 메소드명 등과 같은 Target 정보를 추출하고 있다.
+        		</para>
+      		</section>
+      		
+      		<section id="core_spring_aop_aspectj_advice_afterreturning">
+        	<title>AfterReturning Advice</title>
+
+        		<para>
+        			after() returning()을 이용하여 AfterReturning Advice를 정의한다. 다음은 PrintStringUsingAspctJ
+        			의 AfterReturning Advice 정의 부분으로 해당 Pointcut 실행 결과를 retVal이라는 변수에 담도록 정의하고
+        			 있다. AfterReturning Advice는 앞서 정의한 Pointcut 후에 ,
+        			 "AfterReturning Advice of PrintStringUsingAspctJ"라는 문자열과 해당 Pointcut을 가진 클래스명,
+        			 메소드명을 출력하는 역할을 수행한다. <programlisting
+        			language="java"><emphasis role="bold">after() returning(UserVO retVal) : getMethods()
+</emphasis> {
+    Class targetClass = thisJoinPoint.getTarget().getClass();
+    Signature signature = thisJoinPoint.getSignature();
+    String opName = signature.getName();
+
+    System.out.println("AfterReturning Advice of PrintStringUsingAspctJ");
+    System.out.println("***" + targetClass + "." + opName + "()" + "***");
+}</programlisting>
+				</para>
+
+        		<para>
+        			위에서 제시한 AfterReturning Advice는 내부 정의된 JoinPoint 유형의 thisJoinPoint라는
+        			 객체를 이용하여, Target 클래스명, 메소드명 등과 같은 Target 정보를 추출하고 있다. 또한,
+        			1개의 입력 인자(UserVO)를 가지고 있는데 이는 해당 Pointcut의 실행 결과이다. AfterReturning
+        			Advice에서 특정 Pointcut 실행 결과를 참조해야 한다면, Advice 정의시 returning에 해당하는 객체를
+        			정의하고 메소드 로직 내에서 이를 활용하면 된다. 입력 인자는 AfterReturning Advice 정의시 필요에 따라
+        			선택 정의할 수 있다.
+        		</para>
+      		</section>
+      		
+      		<section id="core_spring_aop_aspectj_advice_afterthrowing">
+        	<title>AfterThrowing Advice</title>
+
+        		<para>
+        			after() throwing()을 이용하여 AfterThrowing Advice를 정의한다. 다음은 PrintStringUsingAspctJ의
+        			AfterThrowing Advice 정의 부분으로 해당 Pointcut 실행시  발생한 Exception 객체를
+        			exception이라는 변수에 담도록 정의하고 있다. AfterThrowing Advice는 앞서 정의한 Pointcut에서
+        			Exception이 발생한 후에 , "AfterThrowing Advice of PrintStringUsingAspctJ"라는 문자열과
+        			해당 Pointcut을 가진 클래스명, 메소드명을 출력하는 역할을 수행한다.
+        		</para>
+
+        		<para>
+        		<programlisting language="java"><emphasis
+        		role="bold">after() throwing(Exception exception) : getMethods()</emphasis> {
+    Class targetClass = thisJoinPoint.getTarget().getClass();
+    Signature signature = thisJoinPoint.getSignature();
+    String opName = signature.getName();
+
+    System.out.println("AfterThrowing Advice of PrintStringUsingAspctJ");
+    System.out.println("***" + targetClass + "." + opName + "()" + "***");
+}</programlisting>
+					위에서 제시한 AfterThrowing Advice는 내부 정의된 JoinPoint 유형의 thisJoinPoint라는 객체를 이용하여,
+					Target 클래스명, 메소드명 등과 같은 Target 정보를 추출하고 있다.
+        			또한, 1개의 입력 인자(Exception)를 가지고 있는데 이것은 Pointcut 실행시 발생한 Exception 객체이다.
+        			AfterThrowing Advice에서 특정 Pointcut 실행시 발생한 Exception을 참조해야 한다면, Advice
+        			정의시 throwing에 해당하는 객체를 메소드 로직 내에서 이를 활용하면 된다. 입력 인자는 AfterThrowing
+        			Advice 정의시 필요에 따라 선택 정의할 수 있다.
+        		</para>
+      		</section>
+      		
+      		<section id="core_spring_aop_aspectj_advice_after(finally)">
+        	<title>After(finally) Advice</title>
+
+        		<para>
+        			after()를 이용하여 After(finally) Advice를 정의한다. 다음은 PrintStringUsingAspctJ 의
+        			After(finally) Advice 정의 부분이다. After(finally) Advice는 앞서 정의한 getMethods()라는
+        			Pointcut 후에 "After(finally) Advice of PrintStringUsingAspctJ"라는 문자열과 해당 Pointcut을
+        			가진 클래스명, 메소드명을 출력하는 역할을 수행한다.
+        			<programlisting language="java"><emphasis role="bold">after() : getMethods()</emphasis> {
+    Class targetClass = thisJoinPoint.getTarget().getClass();
+    Signature signature = thisJoinPoint.getSignature();
+    String opName = signature.getName();
+
+    System.out.println("After(finally) Advice of PrintStringUsingAspctJ");
+    System.out.println("***" + targetClass + "." + opName + "()" + "***");		
+}</programlisting>
+				</para>
+
+ 		       	<para>
+ 		       		위에서 제시한 After(finally) Advice는 내부에 정의된 JoinPoint 유형의 thisJoinPoint라는 객체를 이용하여,
+ 		       		Target 클래스명, 메소드명 등과 같은 Target 정보를 추출하고 있다.
+ 		       	</para>
+      		</section>
+      
+      		<section id="core_spring_aop_aspectj_advice_around">
+      		<title>Around Advice</title>
+
+				<para>
+        			around()를 이용하여 Around Advice를 정의한다. 다음은 PrintStringAroundUsingAspctJ 의
+        			Around Advice 정의 부분으로 다른 Advice와 다르게 Return Type 정의가 추가되어 있음을 알 수 있다.
+        			Around Advice는 updateMethods()라는 Pointcut 후에 "Around Advice of PrintStringUsingAnnotation"라는
+        			문자열과 해당 Pointcut을 가진 클래스명, 메소드명을 출력하는 역할을 수행한다.
+        			<programlisting language="java"><emphasis role="bold">Object around() : updateMethods()</emphasis> {
+    Class targetClass = thisJoinPoint.getTarget().getClass();
+    Signature signature = thisJoinPoint.getSignature();
+    String opName = signature.getName();
+
+    System.out.println("Around Advice of PrintStringUsingAspctJ");
+    System.out.println("***" + targetClass + "." + opName + "()" + "***");
+    // before logic
+    <emphasis role="bold">Object retVal = proceed();</emphasis>
+    // after logic
+    return retVal;		
+}</programlisting>
+				</para>
+
+				<para>
+					위에서 제시한 Around Advice는 내부에 정의된 JoinPoint 유형의 thisJoinPoint라는 객체를
+        			이용하여, Target 클래스명, 메소드명 등과 같은 Target 정보를 추출하고 있다. 또한 Around Advice 내에서
+        			proceed()라는 메소드 호출을 통해 대상 Pointcut을 실행할 수 있어, Pointcut 전, 후 처리가 가능하며,
+        			Pointcut 실행 시점을 결정할 수 있게 된다. 또한 다른 Advice와는 달리 입력값, target, return 값
+        			등에 대해 변경이 가능하다.
+        		</para>
+      		</section>
+ 		</section>	
+  	</section>
+  	
+  	<section id="core_spring_aop_examples">
+    <title>AOP Examples</title>
+
+    	<para>
+    		다양한 부분에 Aspect을 적용할 수 있다. 이 페이지를 통하여 각 적용 예를 살펴보고, 적용 방법을 상세히 소개하고자
+    		한다. 상세한 내용을 알고자 한다면, 아래 나열된 각 항목에 대한 링크를 참고하도록 한다.
+    	</para>
+    	
+    	<section id="core_spring_aop_examples_logging">
+      	<title>AOP Example - Logging</title>
+
+	      	<para>
+	      		개발된 어플리케이션 테스트시 오류가 발생한 경우, 해당하는 메소드 로직 내에 입력값 확인을 위해 DEBUG 레벨의
+	      		로그를 추가하거나, System.out.println() 구문을 추가하게 되는데 이로 인해 핵심 비즈니스 로직과 섞이게 되어 코드
+	      		복잡도가 증가한다. 따라서 특정 메소드 호출시 전달하는 입력값 확인을 위한 별도 Aspect을 정의하여 활용하면 관련된 메소드
+	      		내에 입력값 확인을 위한 로직들을 제외시킬 수 있게 된다. 다음에서는 AOP의 대표적인 툴 중 @AspectJ(Annotation)를 이용하여
+	      		Logging Aspect를 생성하고 테스트해 보도록 할 것이다. Logging Aspect 적용 대상은 GenericService 이며,
+	      		모든 메소드 실행 전에 해당 메소드를 실행하기 위해 입력된 인자들의 값을 로그로 남기는 역할을 수행하게 될 것이다.
+	      	</para>
+	      	
+	      	<section id="core_spring_aop_examples_logging_configuration">
+        	<title>Configuration</title>
+
+        		<para>
+        			@AspectJ(Annotation)이 적용된 클래스들을 로딩하여 해당 클래스에 정의된 Pointcut, Advice를 실행하기 위해서는
+        			Spring 속성 정의 XML 파일에 다음과 같이 추가해주어야 한다.
+        			<programlisting language="xml"><![CDATA[<aop:aspectj-autoproxy/>]]></programlisting>
+        		</para>
+        		<para>
+        			log 출력을 위하여 log4j.xml 의 설정 내용을 확인하고 적절히 수정해 주어야 한다. 이번 예제에서는 org.anyframe.sample 패키지를 기준으로 로그를 출력할 예정이므로, 다음과 같이 DEBUG 레벨의 로거를 설정하여 준다. 
+        			<programlisting language="xml"><![CDATA[<logger name="org.anyframe.sample" additivity="false">	
+    <level value="DEBUG"/>
+    <appender-ref ref="console"/>
+</logger>]]></programlisting>
+        		</para>
+      		</section>
+      		
+      		<section id="core_spring_aop_examples_logging_aspect">
+        	<title>Aspect 정의</title>
+
+        		<para>
+        			다음과 같이 Annotation과 함께 구성된 LoggingAspect라는 Aspect 클래스를 생성한다. LoggingAspect라는
+        			GenericService로 끝나는 클래스의 모든 메소드 실행 전에 해당 메소드 정보와 입력 인자값을 로그로 남기는 역할을 수행한다.
+        			<programlisting language="java"><![CDATA[@Aspect
+@Service
+public class LoggingAspect {
+
+    @Before("execution(* org.anyframe.sample..*Impl.*(..))")
+    public void beforeLogging(JoinPoint thisJoinPoint) {
+        Class<? extends Object> clazz = thisJoinPoint.getTarget().getClass();
+        String methodName = thisJoinPoint.getSignature().getName();
+        Object[] arguments = thisJoinPoint.getArgs();
+
+        StringBuilder argBuf = new StringBuilder();
+        StringBuilder argValueBuf = new StringBuilder();
+        int i = 0;
+        for (Object argument : arguments) {
+            String argClassName = argument.getClass().getSimpleName();
+            if (i > 0) {
+                argBuf.append(", ");
+            }
+            argBuf.append(argClassName + " arg" + ++i);
+            argValueBuf.append(".arg" + i + " : " + argument.toString() + "\n");
+        }
+
+        if (i == 0) {
+            argValueBuf.append("No arguments\n");
+        }
+
+        StringBuilder messageBuf = new StringBuilder();
+        messageBuf.append("before executing {} ({}) method");
+        messageBuf.append("\n-------------------------------------------------------------------------------\n");
+        messageBuf.append(" {} -------------------------------------------------------------------------------");
+
+        Log logger = LogFactory.getLogger(clazz);
+        logger.debug(
+            messageBuf.toString(), 
+            new Object[]{methodName, argBuf.toString(), argValueBuf.toString()});
+    }
+}]]></programlisting></para>
+
+        		<para>
+        			beforeLogging() 메소드에서는 JoinPoint라는 객체를 이용하여, 해당 메소드 정보와 입력 인자값을 Target
+        			클래스의 로를 통해 로그를 남기고 있음을 알 수 있다.
+        		</para>
+      		</section>
+      		
+      		<section id="core_spring_aop_examples_logging_runaspect">
+        	<title>Aspect 실행</title>
+
+				<para>
+					movieService, movieFinder를 호출하여, Movie CRUD 로직으로 구성된 Main.java 클래스를 실행시키면
+					Logging Aspect가 적용되어, 콘솔창을 통해 다음과 같은 형태의 로그를 볼 수 있다.
+        			<programlisting
+        			language="java">[DEBUG] 2011-04-18 13:40:42 org.anyframe.sample.aop.moviefinder.service.impl.MovieServiceImpl 
+before executing create(Movie arg1) method
+-------------------------------------------------------------------------------
+.arg1 : [actors=Shrek, director=Andrew Adamson, movieId=MV-99999, nowPlaying=N, 
+posterFile=null, releaseDate=Mon Apr 18 13:40:42 KST 2011, runtime=90, ticketPrice=8000.0, 
+title=Shrek (2001), genreId=GR-03]
+-------------------------------------------------------------------------------
+============ MovieDao : call create()==========
+
+[DEBUG] 2011-04-18 13:40:42 org.anyframe.sample.aop.moviefinder.service.impl.MovieFinderImpl 
+before executing getPagingList(Movie arg1, Integer arg2) method
+-------------------------------------------------------------------------------
+.arg1 : [actors=Shrek, director=Andrew Adamson, movieId=MV-99999, nowPlaying=N, 
+posterFile=null, releaseDate=Mon Apr 18 13:40:42 KST 2011, runtime=90, ticketPrice=8000.0, 
+title=Shrek (2001), genreId=GR-03]
+.arg2 : 1
+-------------------------------------------------------------------------------
+============ MovieDao : call getPagingList()==========
+
+[DEBUG] 2011-04-18 13:40:42 org.anyframe.sample.aop.moviefinder.service.impl.MovieServiceImpl 
+before executing update(Movie arg1) method
+-------------------------------------------------------------------------------
+.arg1 : [actors=Shrek, director=Andrew Adamson, movieId=MV-99999, nowPlaying=N, 
+posterFile=null, releaseDate=Mon Apr 18 13:40:42 KST 2011, runtime=90, ticketPrice=8000.0, 
+title=Mission Impossible, genreId=GR-03]
+-------------------------------------------------------------------------------
+============ MovieDao : call update()==========
+
+[DEBUG] 2011-04-18 13:40:42 org.anyframe.sample.aop.moviefinder.service.impl.MovieServiceImpl 
+before executing get(String arg1) method
+-------------------------------------------------------------------------------
+.arg1 : MV-99999
+-------------------------------------------------------------------------------
+============ MovieDao : call update()==========
+
+[DEBUG] 2011-04-18 13:40:42 org.anyframe.sample.aop.moviefinder.service.impl.MovieServiceImpl 
+before executing remove(String arg1) method
+-------------------------------------------------------------------------------
+.arg1 : MV-99999
+-------------------------------------------------------------------------------
+============ MovieDao : call remove()==========</programlisting></para>
+     	 	</section>
+		</section>
+		
+		<section id="core_spring_aop_examples_exceptiontransfer">
+      	<title>AOP Example - Exception Transfer</title>
+
+      		<para>
+      			특정 비즈니스 로직 수행시 발생할 수 있는 Exception에 대한 로그 및 메시지 처리를 수행하기 위해 핵심 비즈니스
+      			로직외에 Exception 처리 로직이 추가되어야 한다. 때문에 핵심 비즈니스 로직외에 매 로직마다 반복되는 try ~ catch
+      			블럭으로 인해 코드가 복잡해진다. 만일 별도 Aspect을 통해 공통적으로 Exception들을 처리하게 하고, 각 비즈니스
+      			로직에서 try ~ catch 블럭을 제거할 수 있다면 코드가 훨씬 간단해지고, 궁극적으로 개발자는 비즈니스 로직에만 집중할 수
+				있는 기반이 마련될 수 있을 것이다. 다음에서는 AOP 대표적인 툴 중 Spring AOP를 이용하여 XML 스키마 기반에서
+      			ExceptionTransfer를 위한 Aspect를 생성하고 테스트해 보도록 할 것이다. ExceptionTransfer Aspect 적용 대상은
+      			GenericService로 끝나는 클래스의 모든 메소드 실행시 Exception이 발생한 경우 이를 처리하기 위한 역할을 수행하게 될 것이다.
+      		</para>
+      		
+      		<section id="core_spring_aop_examples_exceptiontransfer_aspect">
+        	<title>Aspect 정의</title>
+
+        		<para>
+        			Spring 속성 정의 XML(context-xml.xml ) 파일 내에 Aspect 클래스를 Bean으로 정의한 후,
+        			해당 Aspect에 대한 Pointcut과 Advice를 정의한다.
+       				<programlisting language="xml"><![CDATA[<aop:config>
+    <aop:pointcut id="serviceMethod" expression="execution(execution(* org.anyframe.sample..*Impl.*(..))" />
+    <aop:aspect ref="exceptionTransfer" order="1"> 
+        <aop:after-throwing throwing="exception" pointcut-ref="serviceMethod" method="transfer" />					
+    </aop:aspect>
+</aop:config>]]></programlisting></para>
+
+        		<para>
+        			ExceptionTransfer는 Impl로 끝나는 클래스의 모든 메소드 실행시  발생한
+        			Exception에 대해 처리하는 역할을 수행한다.
+        		</para>
+      		</section>
+      		
+      		<section id="core_spring_aop_examples_exceptiontransfer_advice">
+        	<title>Advice 구현</title>
+
+  		    	<para>
+  		    		다음과 같이 ExceptionTransfer 라는 Aspect 클래스를 생성한다.
+  		    		<programlisting language="java">public class ExceptionTransfer {
+    private MessageSource messageSource;
+
+    public void setMessageSource(MessageSource messageSource) {
+        this.messageSource = messageSource;
+    }	
+
+    public void transfer(JoinPoint thisJoinPoint, Exception exception)
+            throws MovieFinderException {
+        Object target = thisJoinPoint.getTarget();
+        while (target instanceof Advised) {
+            try {
+                target = ((Advised) target).getTargetSource().getTarget();
+            } catch (Exception e) {
+                LogFactory.getLogger(this.getClass()).error(
+                        "Fail to get target object from JointPoint.", e);
+                break;
+            }
+        }
+
+        String className = target.getClass().getSimpleName().toLowerCase();
+        String opName = (thisJoinPoint.getSignature().getName()).toLowerCase();
+        Log logger = LogFactory.getLogger(target.getClass());
+
+        if (exception instanceof MovieFinderException) {
+            MovieFinderException empEx = (MovieFinderException) exception;
+            logger.error(empEx.getMessage(), empEx);
+            throw empEx;
+        }
+                               
+        try {
+            logger.error(messageSource.getMessage("error." + className + "."
+                    + opName, new String[] {}, Locale.getDefault()), exception);
+        } catch (Exception e) {
+            logger.error(messageSource.getMessage("error.common",
+                    new String[] {}, Locale.getDefault()), exception);
+            throw new MovieFinderException(messageSource, "error.common");
+        }
+        throw new MovieFinderException(messageSource, "error." + className
+                    + "." + opName);
+    }
+}</programlisting></para>
+
+        		<para>
+        			transfer() 메소드에서는 발생한 Exception 객체의 유형을 MovieFinderException, 기타로 구분하고
+        			Exception이 발생한 Target 클래스와 메소드명을 조합한 message key를 이용하여 해당하는 메시지를 얻어낸다.
+        			그런 후에 이 메시지를 이용하여 ERROR 레벨의 로그를 남긴 후에 MovieFinderException으로 전환하여 throw한다.
+        		</para>
+      		</section>
+		</section>
+		
+		
+		<section id="core_spring_aop_examples_profiler">
+      	<title>AOP Example - Profiler</title>
+
+      		<para>
+      			별도 성능 측정 툴없이도 Aspect을 통해 응답 속도가 중요시 되는 일부 메소드에 대해 개발 시점에 미리 메소드
+      			수행에 걸리는 시간을 측정해 볼 수 있다. 따라서 개발시에 성능 저하의 요인이 되는 지점을 미리 파악하고 대처해 볼 수 있을
+      			것이다.
+      		</para>
+      		<para>
+      			다음에서는 AOP의 대표적인 툴 중 @AspectJ(Annotation)를 이용하여 SimpleProfiler Aspect를 생성하고
+      			테스트해 보도록 할 것이다. SimpleProfiler Aspect 적용 대상은 UserService이며, 특정 메소드(add*) 실행에
+      			소요되는 시간을 측정하고, 이를 콘솔에 남기는 역할을 수행하게 될 것이다.
+      		</para>
+      		
+      		<section id="core_spring_aop_examples_profiler_configuration">
+        	<title>Configuration</title>
+
+        		<para>
+        			@AspectJ(Annotation)이 적용된 클래스들을 로딩하여 해당 클래스에 정의된 Pointcut,
+        			Advice를 실행하기 위해서는 Spring 속성 정의 XML 파일에 다음과 같이 추가해주어야 한다.
+        			<programlisting language="xml"><![CDATA[<aop:aspectj-autoproxy/>]]></programlisting>
+        		</para>
+      		</section>
+      
+      		<section id="core_spring_aop_examples_profiler_aspect">
+      		<title>Aspect 정의</title>
+
+				<para>
+					다음과 같이 Annotation과 함께 구성된 SimpleProfiler 라는 Aspect 클래스를 생성한다.
+		        	SimpleProfiler는 org.anyframe.sample 패키지 내에 속한 모든 클래스 중 클래스명이 Impl로 끝나는 모든 클래스 내의
+		        	메소드명이 create로 시작하는 메소드를 대상으로 한다. 그리고 해당 메소드의 실행 전후에 Spring에서 제공하는 StopWatch를
+		        	이용하여 메소드 실행에 소요되는 시간을 측정하고, 이를 콘솔에 남기는 역할을 수행하게 될 것이다.
+		        	<programlisting language="java">@<emphasis role="bold">Aspect</emphasis>
+public class SimpleProfiler {
+    @<emphasis role="bold">Around("execution(* org.anyframe.sample.aop.movidfinder.service..*Impl.create*(..))")</emphasis>
+    public Object profile(ProceedingJoinPoint thisJoinPoint) throws Throwable {
+        String className = thisJoinPoint.getSignature().getDeclaringTypeName();
+        StopWatch stopWatch = new StopWatch("Profiling for [" + className + "]");
+        try {
+            stopWatch.start(thisJoinPoint.toShortString());
+            return thisJoinPoint.proceed();
+        } finally {
+            stopWatch.stop();
+            System.out.println(stopWatch.shortSummary());
+        }
+    }
+}</programlisting></para>
+		    </section>
+		      
+		    <section id="core_spring_aop_examples_profiler_runaspect">
+			<title>Aspect 실행</title>
+
+       		<para>
+       			UserService를 호출하여, 구현 로직에서 1000 milliseconds 동안 멈추도록 로직이 추가되어 있는, 신규 User 정보 등록 기능을
+       			호출하는 SimpleProfilerAspectTest 클래스를 실행시키면 SimpleProfiler Aspect가 적용되어, 콘솔창을 통해 다음과 같은
+       			형태의 로그를 볼 수 있다.
+        		<programlisting language="java">StopWatch 'Profiling for [org.anyframe.sample.aop.moviefinder.service.impl.MovieServiceImpl]'
+: running time (millis) = 1016</programlisting>
+			</para>
+      		</section>
+		</section>
+		
+		<section id="core_spring_aop_examples_designlevelassertion">
+      	<title>AOP Example - Design Level Assertions</title>
+
+      		<para>
+      			개발 표준이라 함은 각종 명명 표준 및 해당 프로젝트에서 기 검증한 소프트웨어 아키텍처 스타일에 맞춰 개발 작업을
+      			수행할 수 있도록 가이드한다. 따라서, 개발자들이 개발 초기에 겪게 되는 혼선을 줄이고 비즈니스 로직에만 집중할 수 있도록 하며,
+      			동일한 표준을 준수한 코드에 대해서는 유지보수 및 변경이 용이하다. 대부분의 프로젝트에서는 어플리케이션을 본격적으로
+      			개발하기에 앞서 상당한 시간을 들여 해당 프로젝트에 적합한 개발 표준을 별도 문서로 정의하고 개발자들이 이를 준수하여
+      			개발 작업을 수행할 것을 권장하나, 제대로 지켜지지 않고 있으며 이에 대한 검증 또한 한계가 있는게 사실이다.
+      		</para>
+
+      		<para>
+      			만일 코드 컴파일시에 개발 표준을 적용할 수 있다면, 코딩시에 손쉽게 표준에 부적합한 코드를 인식하고 수정할 수 있게
+      			될 것이다. 이를 위해 본 문서에서는 Design Rule을 declare error/warning 문으로 구성된 Aspect로
+      			정의하고, 부적합 사항을 찾아 수정하는 방법에 대해 알아보기로 하자.
+      		</para>
+
+      		<para>
+      			먼저, declare error/warning 문은 다음과 같이 정의하며, Pointcut Expression에 해당하는 JoinPoint가 있을 경우
+      			정의된 메시지를 보여준다.
+      			<programlisting language="java">@DeclareWarning ("Pointcut Expressions")
+static final String varialableName = "msg...";
+</programlisting>
+			</para>
+
+ 		    <para>다음은 Anyframe 기반 어플리케이션 개발시 가장 흔하게 볼 수 있는 일부 소프트웨어 아키텍처 그림이다.</para>
+
+		    <mediaobject>
+		      <imageobject>
+		        <imagedata align="center" fileref="../image/core/spring/sw_architecture.jpg" />
+		      </imageobject>
+		      <textobject>
+			  	<phrase>Anyframe 기반 어플리케이션 개발시 가장 흔하게 볼 수 있는 일부 소프트웨어 아키텍처 그림으로써 JSP, Action, Interface, Implementation, DAO 순서로 
+			  	흐름 관계를 표현하고 있다.</phrase>
+			  </textobject>	
+		    </mediaobject>
+
+      		<para>
+      			해당 어플리케이션의 패키지는 com.sds.emp로 시작하며, 프리젠테이션 레이어는 com.sds.emp.서브모듈명.web,
+      			비즈니스 레이어는 com.sds.emp.서브모듈명.service 내에 위치한다라고 가정하자.
+      		</para>
+
+      		<para>
+      			정의 가능한 Design Rule은 크게 <link
+      			linkend="core_spring_aop_examples_designlevelassertion_interaction">Interaction Rule</link> ,
+      			<link linkend="core_spring_aop_examples_designlevelassertion_naming">Naming Rule</link> 로
+    		  	구분해 볼 수 있으며, 이제부터 위 그림을 기반으로 Design Rule을 하나씩 정의해 보도록 하자.
+    		</para>
+    		
+    		<section id="core_spring_aop_examples_designlevelassertion_interaction">
+        	<title>Interaction Rule 정의 예제</title>
+
+		        <para>
+		        	패키지 레벨, 클래스 레벨 등에서 필요한 Pointcut을 정의하고 Declare 문에서 앞서 정의한 여러
+	        		Pointcut을 조합하여 클래스간 Interaction Rule을 정의하였다. 이는 기 정의된 Pointcut을 다른
+	        		Declare 문에서 재사용하기 위함이다. 다음은 DevStandard Aspect에 정의된 Interaction Rule의 일부이다.
+	        	</para>
+
+	        	<orderedlist>
+	          		<listitem>
+	            	<para>
+	            		<emphasis role="bold">프리젠테이션 레이어에 속하지 않은 클래스에서 Action 또는 Form 클래스를 호출할 수 없다.
+	            		</emphasis>
+	            		<programlisting language="java">// 패키지명이 com.sds.emp로 시작하고 중간에 web을 포함하는 모든 패키지에 속한 JoinPoint
+@Pointcut("within(com.sds.emp..web..*)")
+public void <emphasis role="bold">inWebPkg()</emphasis><![CDATA[ {}
+
+// 클래스명이 Action 또는 Form으로 끝나는 클래스의 모든 메소드 호출하는 JoinPoint
+@Pointcut("call(* com.sds.emp..web.*Action.*(..)) && call(* com.sds.emp..web.*Form.*(..))")
+public void ]]><emphasis role="bold">callToWeb()</emphasis> {}	
+	
+// web 패키지에 속하지 않은 클래스에서 web 패키지 내의 Action 또는 Form 클래스를 호출하는 경우 
+// 다음과 같은 Error 메시지를 보여준다.
+@<emphasis role="bold"><![CDATA[DeclareError("!inWebPkg() && callToWeb()")]]></emphasis>
+<emphasis role="bold">static final String irMsg5 = "web 패키지에 속한 모든 클래스에 접근할 수 없습니다.";</emphasis></programlisting>
+					</para>
+					</listitem>
+
+        	  		<listitem>
+            		<para>
+            			<emphasis role="bold">프리젠테이션 레이어에서는 반드시 Interface를 통해 특정 서비스에 접근해야 한다.</emphasis>
+            			<programlisting
+            			language="java">// 패키지명이 com.sds.emp로 시작하고 중간에 web을 포함하는 모든 패키지에 속한 JoinPoint
+@Pointcut("within(com.sds.emp..web..*)")
+public void <emphasis role="bold">inWebPkg()</emphasis> {}
+
+// 클래스명이 DAO로 끝나는 클래스의 모든 메소드 호출하는 JoinPoint
+@Pointcut("call(* com.sds.emp..service.impl.*DAO.*(..))")
+public void <emphasis role="bold">callToDAO()</emphasis> {}
+
+// 클래스명이 Impl로 끝나는 클래스의 모든 메소드 호출하는 JoinPoint
+@Pointcut("call(* com.sds.emp..service.impl.*Impl.*(..))")
+public void <emphasis role="bold">callToImplementation()</emphasis> {}
+	
+// web 패키지에서 DAO 또는 Impl 내의 메소드를 직접 호출하는 경우 다음과 같은 Error 메시지를 보여준다.
+@<emphasis role="bold"><![CDATA[DeclareError("inWebPkg() && ( callToDAO() || callToImplementation())")]]></emphasis>
+<emphasis role="bold">static final String irMsg1 = "Action 클래스에서는 특정 서비스의 구현 클래스나 DAO 클래스에 직접 "</emphasis>
+<emphasis role="bold">+ "접근할 수 없습니다."; </emphasis></programlisting>
+					</para>
+          			</listitem>
+
+          			<listitem>
+           			<para>
+           				<emphasis role="bold">특정 객체(java.sql.Connection)를 직접 사용하지 않도록 한다.</emphasis>
+           				<programlisting
+           				language="java">// 패키지명이 integration 또는 unit으로 시작하는 모든 테스트 패키지에 속한 JoinPoint
+@Pointcut("within(integration..* || unit..*)")
+public void <emphasis role="bold">inTestPkg()</emphasis> {}
+
+// java.sql.Connection 클래스의 모든 메소드를 호출하는 JoinPoint
+@Pointcut("call(* java.sql.Connection.*(..))")
+public void <emphasis role="bold">callToConnection()</emphasis> {}
+
+// 테스트 패키지를 제외한 모든 패키지에서 Connection 객체를 직접 호출하는 경우 다음과 같은
+// Error 메시지를 보여준다.
+@<emphasis role="bold"><![CDATA[DeclareError("callToConnection() && !inTestPkg()")]]></emphasis>
+<emphasis role="bold">static final String irMsg2 = "java.sql.Connection 객체에 직접 접근할 수 없습니다. "</emphasis>
+<emphasis role="bold">+ "Anyframe Service를 이용하세요.";</emphasis></programlisting></para> 
+        			</listitem>
+
+	        	  	<listitem>
+					<para>
+						<emphasis role="bold">생성자를 직접 호출하여 DAO 인스턴스를 생성할 수 없다.
+            			Dependency Injection을 통해 객체간 참조 관계를 정의해야 한다.</emphasis>
+            			<programlisting language="java">// DAO 클래스의 Constructor를 호출하는 JoinPoint
+@Pointcut("call(com.sds.emp..service.impl.*DAO.new(..))")
+public void <emphasis role="bold">callToDAOConstructor()</emphasis> {}
+
+// DAO 클래스를 Constructor를 직접 호출하는 경우 다음과 같은 Error 메시지를 보여준다.
+@<emphasis role="bold">DeclareError("callToDAOConstructor()")</emphasis>
+<emphasis role="bold">static final String irMsg3 = "DAO 인스턴스를 직접 생성하실 수 없습니다. "</emphasis>
+<emphasis role="bold">+ "객체간 참조 관계는 서비스 속성 정의 XML에 정의하여 사용하세요.";  </emphasis></programlisting></para>
+          			</listitem>
+        		</orderedlist>
+      		</section>
+      	
+      		<section id="core_spring_aop_examples_designlevelassertion_naming">
+        	<title>Naming Rule 정의 예제</title>
+
+	        	<para>
+	        		패키지 레벨, 클래스 레벨 등에서 필요한 Pointcut을 정의하고 Declare 문에서 앞서 정의한 여러
+	        		Pointcut을 조합하여 Naming Rule을 정의하였다. 이는 기 정의된 Pointcut을 다른 Declare 문에서
+	        		재사용하기 위함이다. 다음은 DevStandard Aspect에 정의된 Naming Rule의 일부이다.
+	        	</para>
+	
+	 	       	<orderedlist>
+	          		<listitem>
+	            		<para>
+	            		<emphasis role="bold">com.sds.emp.서브모듈명.web 패키지 내에 존재하는 클래스명은 Action 또는
+	            		Form으로 끝내야 한다.</emphasis><programlisting
+    	        		language="java">// 패키지명이 com.sds.emp로 시작하고 중간에 web을 포함하는 모든 패키지에 속한 JoinPoint
+@Pointcut("within(com.sds.emp..web..*)")
+public void <emphasis role="bold">inWebPkg()</emphasis> {}
+
+// 메소드나 Constructor, 메소드 로직이 아닌 모든 JoinPoint 즉, 클래스 정의 부분만 해당
+@Pointcut("!(execution(* *(..)) || withincode(*.new(..)) || withincode(* *(..)))")
+public void <emphasis role="bold">clazz()</emphasis>{}
+
+// 패키지명이 com.sds.emp로 시작하고 중간에 web을 포함하는 모든 패키지에 속한 JoinPoint 중 
+// 클래스명이 Action으로 끝나는 클래스에 속한 모든 JoinPoint
+@Pointcut("within(com.sds.emp..web..*Action)")
+public void <emphasis role="bold">actionName()</emphasis> {}
+
+// 패키지명이 com.sds.emp로 시작하고 중간에 web을 포함하는 모든 패키지에 속한 JoinPoint 중 
+// 클래스명이 Form으로 끝나는 클래스에 속한 모든 JoinPoint
+@Pointcut("within(com.sds.emp..web..*Form)")
+public void <emphasis role="bold">formName()</emphasis> {}		
+
+// web 패키지에 속하면서 클래스명이 Action이나 Form으로 끝나지 않는 클래스 정의 부분이 있을 경우, 
+// 다음과 같은 Warning 메시지를 보여준다.
+@<emphasis role="bold"><![CDATA[DeclareWarning ("inWebPkg() && clazz() && !(actionName() || formName())")]]></emphasis>
+<emphasis role="bold">static final String nrMsg2 = "web 패키지에 속한 모든 클래스의 이름은</emphasis> 
+<emphasis role="bold">Action 또는 Form으로 끝나야 합니다.";</emphasis></programlisting>
+						</para>
+         			</listitem>
+
+          			<listitem>
+            			<para>
+          		  			<emphasis role="bold">com.sds.emp.서브모듈명.service.impl 패키지 내에 존재하는 클래스명은
+            				Impl 또는 DAO로 끝내야 한다.</emphasis> <programlisting
+            				language="java">// 패키지명이 com.sds.emp로 시작하고 중간에 service.impl을 포함하는 모든 패키지에 속한 JoinPoint
+@Pointcut("within(com.sds.emp..service.impl..*)")
+public void <emphasis role="bold">inImplementationPkg()</emphasis> {}
+
+// 메소드나 Constructor, 메소드 로직이 아닌 모든 JoinPoint 즉, 클래스 정의 부분만 해당
+@Pointcut("!(execution(* *(..)) || withincode(* *(..)) || withincode(*.new(..)))")
+public void <emphasis role="bold">clazz()</emphasis>{}
+
+// 패키지명이 com.sds.emp로 시작하고 중간에 service.impl을 포함하는 모든 패키지에 속한 JoinPoint 중 
+// 클래스명이 Impl로 끝나는 클래스에 속한 모든 JoinPoint
+@Pointcut("within(com.sds.emp..service.impl..*Impl)")
+public void <emphasis role="bold">implementationName()</emphasis> {}
+
+// 패키지명이 com.sds.emp로 시작하고 중간에 service.impl을 포함하는 모든 패키지에 속한 JoinPoint 중 
+// 클래스명이 DAO로 끝나는 클래스에 속한 모든 JoinPoint
+@Pointcut("within(com.sds.emp..service.impl..*DAO)")
+public void <emphasis role="bold">daoName()</emphasis> {}
+
+// services.impl 패키지에 속하면서 클래스명이 Impl이나 DAO로 끝나지 않는 클래스 정의 부분이 있을 경우, 
+// 다음과 같은 Warning 메시지를 보여준다
+@<emphasis role="bold"><![CDATA[DeclareWarning ("inImplementationPkg() && clazz() && !(implementationName() || daoName())")]]></emphasis>
+<emphasis role="bold">static final String nrMsg4 = "services 패키지에 속한 모든 클래스의 이름은</emphasis>
+<emphasis role="bold">Impl 또는 DAO로 끝나야 합니다.";</emphasis></programlisting>
+						</para>
+          			</listitem>
+        		</orderedlist>
+      		</section>
+      	
+      		<section id="core_spring_aop_examples_designlevelassertion_refactoring">
+        	<title>Refactoring</title>
+
+        		<para>Eclipse 기반하에 어플리케이션을 개발하면 Design Rule을 위반한 코드를 보다 손쉽게 수정할 수  있다.</para>
+
+        		<orderedlist>
+          			<listitem>
+            			<para>
+            				<![CDATA[Eclipse 작업 공간 내에 Problems View가 없다면, Eclipse 메뉴 Window >;
+            		    	Show View > Problems를 선택하여 Problems view를 오픈한다.]]></para>
+          			</listitem>
+
+          			<listitem>
+            			<para>Problems View를 통해 Design Rule을 위반한 항목들을 확인한다.</para>
+
+			            <mediaobject>
+			              <imageobject>
+			                <imagedata align="center" fileref="../image/core/spring/problem_list.jpg" />
+			              </imageobject>
+			              <textobject>
+			              	<phrase>Problems View를 캡춰한 그림으로써, 정의된 Design Rule을 위반한 항목의 목록을 표현하고 있다.
+			              	예를 들어, "DAO 인스턴스를 직접 생성하실 수 없습니다. 객체간 참조 관계는 서비스 속성 정의  틔 에 정의하여 사용하세요."라는 오류 메시지가
+			              	Problems View에 보여지고 있다.</phrase>
+			              </textobject>
+			            </mediaobject>
+	          		</listitem>
+
+	          		<listitem>
+	            		<para>Problems View에서 수정할 항목을 더블 클릭하여 대상 코드로 이동한다.</para>
+	
+			            <mediaobject>
+			              <imageobject>
+			                <imagedata align="center"
+			                           fileref="../image/core/spring/call_to_dao_constructor.jpg" />
+			              </imageobject>
+			               <textobject>
+			              	<phrase>Problems View에서 특정 오류 항목에 대해 더블 클릭하였을 때 관련된 코드로 이동됨을 나타내고 있는 그림이다. 그림에서는 UserDAO의 인스턴스를 직접
+			              	생성하고 있는 라인으로 이동하였음을 보여주고 있다.</phrase>
+			              </textobject>
+			            </mediaobject>
+	          		</listitem>
+	
+	          		<listitem>
+	            		<para>
+	            			Design Rule을 준수한 코드로 수정함으로써 Problem을 제거한다.
+	            			<programlisting
+	            			language="java">public void <emphasis role="bold">setUserDAO(UserDAO userDAO)</emphasis> {
+    this.userDAO = userDAO;
+}
+
+public Page getUserList(SearchVO searchVO) throws EmpException {
+    <emphasis role="bold">//UserDAO dao2 = new UserDAO();</emphasis>
+    try {
+        // 중략
+    return <emphasis role="bold">userDAO.getUserList(searchVO);</emphasis>
+    }
+    // 중략
+}</programlisting>
+					</para>
+        		</listitem>
+    	    	</orderedlist>
+      		</section>
+		</section>
+	</section>
+	
+	<section id="core_spring_aop_resources">
+	<title>Resources</title>
+		<para>
+			<itemizedlist>
+				<listitem>
+						<para>참고자료</para>
+						<itemizedlist>
+							<listitem><para><ulink url="http://dev.anyframejava.org/anyframe/doc/core/3.2.1/downloads/corefw/guide/aop/AOP-Full.doc">ZDNet Korea의 제휴 매체인 마이크로소프트웨어 - AOP</ulink></para></listitem>
+						</itemizedlist>
+					</listitem>
+			</itemizedlist>
+		</para>
+	</section>
+</chapter>

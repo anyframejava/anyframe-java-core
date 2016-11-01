@@ -1,0 +1,128 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN"
+"http://www.w3.org/TR/html4/loose.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+
+<head>
+<meta http-equiv="content-type" content="text/html; charset=UTF-8" />
+<title>[AnyFrame UI Button] Basic Sample</title>
+<link href="../../../common/css/smoothness/jquery-ui-1.10.0.custom.css"	rel="stylesheet">
+<script src="../../../common/exlibs/jquery-1.9.0.js"></script>
+<script src="../../../common/exlibs/jquery-ui-1.10.0.custom.js"></script>
+
+<link type="text/css" rel="stylesheet" href="../../../common/css/style.css" />
+<link type="text/css" rel="stylesheet" href="sub_css/autocomplete.css">
+
+<script type="text/javascript">
+
+	var ENV = {
+			ID_AUTOCOMPLETE : "#testAutocomplete",
+			ID_AUTOCOMPLETE_RESULT : "#testResult",
+			ID_AUTOCOMPLETE_LIST : "#autocompleteList",
+			ID_ADD_DATA : "#addData"
+			
+	};
+	
+	var DATA = [            
+			"Accordion",
+			"Autocomplete",
+			"Button",
+			"Chart",
+			"Datepicker",
+			"Dialog",
+			"Frame",
+			"Grid",
+			"Menu",
+			"Progressbar",
+			"Slider",
+			"Tab"
+			];
+	
+	
+	var mainView = {
+
+		init : function() {
+			this.dataList();
+		},
+		
+		dataList : function(){
+			for(var i=0; i<DATA.length; i++){
+				$(ENV.ID_AUTOCOMPLETE_LIST).append('<br><span>'+DATA[i]+'</span>');
+			};
+		},
+		
+		addAutocompleteData : function(){
+			var dataToAdd = $(ENV.ID_ADD_DATA).val();
+			DATA.push(dataToAdd);
+		},
+		
+		showAddedList : function(){
+			var dataToAdd = $(ENV.ID_ADD_DATA).val();
+			$(ENV.ID_AUTOCOMPLETE_LIST).append('<br><span>'+dataToAdd+'</span>');
+		},
+		
+		message : function(data) {
+			var message = "선택값 = "+ data;
+			$(ENV.ID_AUTOCOMPLETE_RESULT).append("<li>"+ message+"</li>");
+	      }	
+	};
+
+	$(document).ready(function() {
+
+		mainView.init();
+		
+		var applyBtn = $(ENV.ID_ADD_DATA).next();
+		
+		applyBtn.button().on("click", function(){
+			mainView.addAutocompleteData();
+			mainView.showAddedList();
+		});
+
+		$(ENV.ID_AUTOCOMPLETE).autocomplete(
+					 {
+						minlength : 0,
+						source : DATA,
+						select : function(event, ui) {
+							mainView.message(ui.item.label);
+						},
+						focus : function(event, ui) {
+							$(this).val(ui.item);
+						}
+		});
+
+	});
+</script>
+
+</head>
+
+<body >
+	<div class="title">자동완성기능</div>
+	<div class="display-area">
+		<div class="input-area">
+			자동완성기능 테스트 : <input id="testAutocomplete" type="text" />
+		</div>
+		<hr>
+		<div class="test-area">
+			<u>선택된 데이터 리스트</u> <br> <br>
+			<div id="testResult"></div>
+		</div>
+		<hr>
+	</div>
+
+
+	<div class="display-area">
+		<div class="input-area">
+			자동완성될 데이터 추가 : <input id="addData" type="text" value="Data Test.." /> 
+			<input id="addButton" type="submit" value="add" />
+		</div>
+		<hr>
+		<div class="test-area">
+			<u>자동완성 가능한 데이터 리스트</u>
+			<div id="autocompleteList"></div>
+		</div>
+		<hr>
+	</div>
+
+</body>
+
+</html>
+

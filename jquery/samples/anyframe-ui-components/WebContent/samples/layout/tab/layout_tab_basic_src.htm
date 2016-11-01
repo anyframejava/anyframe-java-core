@@ -1,0 +1,203 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
+<html>
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+<title>Tab Sample - Basic</title>
+
+<link href="../../../common/css/smoothness/jquery-ui-1.10.0.custom.css" rel="stylesheet">
+<script src="../../../common/exlibs/jquery-1.9.0.js"></script>
+<script src="../../../common/exlibs/jquery-ui-1.10.0.custom.js"></script>
+
+<style type="text/css">
+
+	#tab-basic * {
+		font-size: 12px;
+	}
+	
+	#tab-basic .ui-tabs {
+		font-size: 11px;
+	}
+	
+	#tab-basic .section {
+		margin-bottom: 15px;
+		padding: 5px;
+		width: 600px;
+	}
+	
+</style> 
+
+<script type="text/javascript">
+
+	var ENV = {
+			ID_CHECK_COLLAPSE : "#collapse",			
+			ID_CHECK_APPLYEVENT : "#apply_event",
+			ID_TABTYPE_COLLAPSE : "#tabtype_collapsible",
+			ID_TABTYPE_MOUSEOVER : "#tabtype_mouseover"
+	};
+
+	var mainView = {
+			
+			_curCollapseMode : false,
+			_curUseEventMode : false,
+			
+			init : function()
+			{
+			},
+			
+			collapseTab : function(isChecked)
+			{
+				var active_panel_index = $(ENV.ID_TABTYPE_COLLAPSE).tabs('option', 'active');
+				var active_panel_tab_jobj = $(ENV.ID_TABTYPE_COLLAPSE + " > .ui-tabs-nav > li:eq("+active_panel_index+")");
+				var active_control = active_panel_tab_jobj.attr('aria-controls');				
+				var active_panel_jobj = $(ENV.ID_TABTYPE_COLLAPSE + " #" + active_control);
+				
+				if (isChecked) 
+				{
+					active_panel_jobj.css('display', 'none');
+					active_panel_jobj.attr('aria-expanded', 'false');
+					active_panel_jobj.attr('aria-hidden', 'true');
+				}
+				else
+				{
+					active_panel_jobj.css('display', 'block');
+					active_panel_jobj.attr('aria-expanded', 'true');
+					active_panel_jobj.attr('aria-hidden', 'false');
+				}
+				
+				this._curCollapseMode = isChecked;
+			},
+			
+			tabactivate : function(ui)
+			{
+				if (this._curCollapseMode)
+				{
+					ui.newPanel.css('display', 'none');
+					ui.newPanel.attr('aria-expanded', 'false');
+					ui.newPanel.attr('aria-hidden', 'true');		
+				}
+			},
+			
+			applyEventMouseOver : function(isChecked) 
+			{
+				var eventType = (isChecked) ? "mouseover" : "click";
+				
+				this._curUseEventMode = isChecked;
+								
+				$(ENV.ID_TABTYPE_MOUSEOVER).tabs("option", "event", eventType);
+			}
+			
+	};
+
+	$(document).ready(function() {
+		
+		$("#tabtype_top, #tabtype_bottom, #tabtype_collapsible, #tabtype_mouseover").tabs();
+		
+		$(ENV.ID_CHECK_COLLAPSE).click(function(evt) {
+			mainView.collapseTab(this.checked);
+		});
+		
+		$(ENV.ID_TABTYPE_COLLAPSE).on('tabsactivate', function(evt, ui) {
+			mainView.tabactivate(ui);
+		});
+		
+		$(ENV.ID_CHECK_APPLYEVENT).click(function(evt) {
+			mainView.applyEventMouseOver(this.checked);
+		});
+		
+	});
+	
+</script>
+
+</head>
+<body>
+
+<div id="tab-basic">
+
+<div class="section">
+	<span class='ui-icon ui-icon-triangle-1-e' style="display:inline-block;"></span>
+	<span>상단 TAB</span>
+	<div id="tabtype_top">
+			<ul>
+				<li><a href="#tabtype_top_sub1">상단TAB-Sub1</a></li>
+				<li><a href="#tabtype_top_sub2">상단TAB-Sub2</a></li>
+				<li><a href="#tabtype_top_sub3">상단TAB-Sub3</a></li>
+			</ul>
+			<div id="tabtype_top_sub1">
+				<p>sub1 ...</p>
+			</div>
+			<div id="tabtype_top_sub2">
+				<p>sub2 ...</p>
+			</div>
+			<div id="tabtype_top_sub3">
+				<p>sub3 ...</p>
+			</div>
+	</div>
+</div>
+
+ 
+<div class="section">
+	<span class='ui-icon ui-icon-triangle-1-e' style="display:inline-block;"></span>하단 TAB
+	<div id="tabtype_bottom">
+			<div id="tabtype_bottom_sub1">
+				<p>sub1 ...</p>
+			</div>
+			<div id="tabtype_bottom_sub2">
+				<p>sub2 ...</p>
+			</div>
+			<div id="tabtype_bottom_sub3">
+				<p>sub3 ...</p>
+			</div>		
+			<ul>
+					<li><a href="#tabtype_bottom_sub1">하단TAB-Sub1</a></li>
+					<li><a href="#tabtype_bottom_sub2">하단TAB-Sub2</a></li>
+					<li><a href="#tabtype_bottom_sub3">하단TAB-Sub3</a></li>
+			</ul>
+	</div>
+</div>
+
+<div class="section">
+	<span class='ui-icon ui-icon-triangle-1-e' style="display:inline-block;"></span>접히는 TAB
+	<input type="checkbox" id="collapse" style="margin-left:20px">접기</input>
+	<div id="tabtype_collapsible">
+			<ul>
+				<li><a href="#tabtype_coll_sub1">접히는 TAB-Sub1</a></li>
+				<li><a href="#tabtype_coll_sub2">접히는 TAB-Sub2</a></li>
+				<li><a href="#tabtype_coll_sub3">접히는 TAB-Sub3</a></li>
+			</ul>
+			<div id="tabtype_coll_sub1">
+				<p>sub1 ...</p>
+			</div>
+			<div id="tabtype_coll_sub2">
+				<p>sub2 ...</p>
+			</div>
+			<div id="tabtype_coll_sub3">
+				<p>sub3 ...</p>
+			</div>
+	</div>
+</div>
+
+<div class="section">
+	<span class='ui-icon ui-icon-triangle-1-e' style="display:inline-block;"></span>MouseOver 시  펼쳐지는 TAB
+	<input type="checkbox" id="apply_event" style="margin-left:20px">적용</input>
+	<div id="tabtype_mouseover">
+			<ul>
+				<li><a href="#tabtype_coll_sub1">이벤트 TAB-Sub1</a></li>
+				<li><a href="#tabtype_coll_sub2">이벤트 TAB-Sub2</a></li>
+				<li><a href="#tabtype_coll_sub3">이벤트 TAB-Sub3</a></li>
+			</ul>
+			<div id="tabtype_coll_sub1">
+				<p>sub1 ...</p>
+			</div>
+			<div id="tabtype_coll_sub2">
+				<p>sub2 ...</p>
+			</div>
+			<div id="tabtype_coll_sub3">
+				<p>sub3 ...</p>
+			</div>
+	</div>
+</div>
+
+</div>
+
+</body>
+</html>

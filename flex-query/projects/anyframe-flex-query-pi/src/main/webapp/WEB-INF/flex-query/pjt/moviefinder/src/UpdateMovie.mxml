@@ -1,0 +1,131 @@
+<?xml version="1.0" encoding="utf-8"?>
+<mx:TitleWindow xmlns:fx="http://ns.adobe.com/mxml/2009" 
+				xmlns:s="library://ns.adobe.com/flex/spark" 
+				xmlns:mx="library://ns.adobe.com/flex/mx"
+				xmlns:local="*"
+				width="400" height="400" 
+				showCloseButton="true"
+				close="PopUpManager.removePopUp(this)" 
+				title="Movie Update" 
+				creationComplete="create()"
+				verticalScrollPolicy="off" 
+				horizontalScrollPolicy="off">
+	<fx:Script>
+		<![CDATA[
+			import mx.controls.List;
+			import mx.events.FlexEvent;
+			import mx.controls.Alert;
+			import mx.collections.ArrayCollection;
+			import mx.events.ListEvent;
+			import mx.rpc.events.ResultEvent;
+			import mx.managers.PopUpManager;
+			import mx.events.ListEvent;
+
+			[Bindable]
+			public var genreList:ArrayCollection;
+			
+			[Bindable]
+			public var movie:Movie;
+
+			private function create():void{
+				cmbGenreList.text = movie.genreName;
+				cmbNowPlaying.text = movie.nowPlaying;
+			}
+			
+			private function cmbGenreListChange(event:ListEvent):void{
+           		movie.genreId = cmbGenreList.selectedItem.genreId;
+           		movie.genreName = cmbGenreList.selectedItem.name;
+            }
+            
+            private function cmbNowPlayingChange(event:ListEvent):void{
+           		movie.nowPlaying = cmbNowPlaying.selectedItem.data;
+            }
+            
+			private function confirm():void{
+				movieService.update(movie);
+			}
+			
+			private function movieUpdateResultHandler(event:ResultEvent):void{
+				dispatchEvent( new MovieEvent ( MovieEvent.UPDATE, movie ) );
+				PopUpManager.removePopUp(this);
+			}
+			
+			private function movieRemoveResultHandler(event:ResultEvent):void{
+				dispatchEvent( new MovieEvent ( MovieEvent.REMOVE, movie ) );
+				PopUpManager.removePopUp(this);
+			}
+			
+			private function cancel():void{
+				dispatchEvent( new MovieEvent ( MovieEvent.CANCEL, movie ) );
+				PopUpManager.removePopUp(this);
+			}
+			
+			protected function btnRemoveClickHandler(event:MouseEvent):void{
+				movieService.remove(movie.movieId);
+			}
+			
+		]]>
+	</fx:Script>
+	
+	<fx:Declarations>
+		<!-- Place non-visual elements (e.g., services, value objects) here -->
+		<mx:ArrayCollection id="nowPlaying">
+			<fx:Object label="Y" data="Y"/>
+			<fx:Object label="N" data="N"/>
+		</mx:ArrayCollection> 
+		
+		<mx:Validator id="val_title"  source="{txtTitle}"  property="text" requiredFieldError="Title을 입력하세요!"/>	
+		<mx:Validator id="val_director"  source="{txtDirector}"  property="text" requiredFieldError="Director를 입력하세요!"/>	
+		<mx:Validator id="val_actors"  source="{txtActors}"  property="text" requiredFieldError="Actors를 입력하세요!"/>		
+		<mx:NumberValidator id="val_ticketPrice"  source="{txtTicketPrice}"  property="text" minValue="0" maxValue="9999" domain="int"
+							invalidCharError="숫자를 입력하세요" 
+							lowerThanMinError="작은값을 입력했습니다." exceedsMaxError="값이 너무 큽니다."/>
+		<mx:NumberValidator id="val_runtime"  source="{txtRuntime}"  property="text" minValue="0" maxValue="999" domain="int"
+							invalidCharError="숫자를 입력하세요" 
+							lowerThanMinError="작은값을 입력했습니다." exceedsMaxError="값이 너무 큽니다."/>
+		
+		<mx:RemoteObject id="movieService" destination="flexQueryMovieService">
+			<mx:method name="update" result="movieUpdateResultHandler(event)"/>
+			<mx:method name="remove" result="movieRemoveResultHandler(event)"/>
+		</mx:RemoteObject>
+		
+	</fx:Declarations>
+	
+	<mx:Form id="movieDetailForm" verticalScrollPolicy="off" horizontalScrollPolicy="off">
+		<mx:FormItem label="ID">
+			<mx:TextInput id="txtMovieId" text="{movie.movieId}" width="202" editable="false"/> 
+		</mx:FormItem>
+		<mx:FormItem label="Genre">
+			<mx:ComboBox id="cmbGenreList" text="{movie.genreName}" editable="true" dataProvider="{genreList}" labelField="name" change="cmbGenreListChange(event)"  width="202"/>
+		</mx:FormItem>
+		<mx:FormItem label="Title">
+			<mx:TextInput id="txtTitle" text="{movie.title}" width="202" editable="true"/> 
+		</mx:FormItem>
+		<mx:FormItem label="Director">
+			<mx:TextInput id="txtDirector" text="{movie.director}" width="202" editable="true"/> 
+		</mx:FormItem>
+		<mx:FormItem label="Actors">
+			<mx:TextInput id="txtActors" text="{movie.actors}" width="202" editable="true"/> 
+		</mx:FormItem>
+		<mx:FormItem label="Ticket Price">
+			<mx:TextInput id="txtTicketPrice" text="{movie.ticketPrice}" maxChars="4" width="202" editable="true"/> 
+		</mx:FormItem>
+		<mx:FormItem label="Runtime">
+			<mx:TextInput id="txtRuntime" text="{movie.runtime}" maxChars="3" width="202" editable="true"/> 
+		</mx:FormItem>
+		<mx:FormItem label="Now Playing">
+			<mx:ComboBox id="cmbNowPlaying" text="{movie.nowPlaying}" editable="true" dataProvider="{nowPlaying}" labelField="data" change="cmbNowPlayingChange(event)"  width="202"/>
+		</mx:FormItem>
+	</mx:Form>
+	 <mx:ControlBar horizontalAlign="center">
+        <mx:Button label="UPDATE" click="confirm()"/>
+        <mx:Button label="DELETE" id="btnDelete" click="btnRemoveClickHandler(event)"/>
+        <mx:Button id="btnCancel" label="CANCEL" click="cancel()"/>
+    </mx:ControlBar> 
+    
+    <fx:Binding source="txtTitle.text" destination="movie.title"/>
+	<fx:Binding source="txtDirector.text" destination="movie.director"/>
+	<fx:Binding source="txtActors.text" destination="movie.actors"/>
+	<fx:Binding source="Number(txtTicketPrice.text)" destination="movie.ticketPrice"/>
+	<fx:Binding source="Number(txtRuntime.text)" destination="movie.runtime"/>
+</mx:TitleWindow>

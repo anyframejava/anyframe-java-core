@@ -1,0 +1,129 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN"
+"http://www.w3.org/TR/html4/loose.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+ 
+ <!-- Start of head-->
+<head>
+<meta http-equiv="content-type" content="text/html; charset=UTF-8" />
+<title>Frame Target 이용 </title>
+
+
+<!-- include required common files  ----------------------------------------------------->
+<script type="text/javascript" src="../../../common/exlibs/jquery-1.9.0.js" ></script>
+
+<script type="text/javascript" src="../../../common/exlibs/highlighter/scripts/shCore.js" ></script>
+<script type="text/javascript" src="../../../common/exlibs/highlighter/scripts/shBrushJScript.js" ></script>
+
+<script type="text/javascript" src="../../../common/js/template_common.js" ></script>
+
+<!--  stylesheet  -->
+<link type="text/css" rel="stylesheet" href="../../../common/exlibs/highlighter/styles/shCore.css"/>
+<link type="text/css" rel="stylesheet" href="../../../common/exlibs/highlighter/styles/shCoreDefault.css"/>
+ <link rel="stylesheet" type="text/css" href="../../../common/css/style.css" media="screen" /> <!---->
+
+
+
+<!-- scripts to support sample page  ----------------------------------------------------->
+<script type="text/javascript">
+
+$(function() {
+	$("#common").load("../../../common/basicinfo.htm");												//common : basic informations
+})
+
+
+$(function() {
+
+	JTemplate.multiCodeSampleLoad("layout_frame_using_target_src.htm,codeExample, \
+								   sub/layout_frame_using_target_src_sub2.htm,codeExample2");
+	JTemplate.loadDemo2("layout_frame_using_target_src.htm", {height:'450px', border:true});	
+});
+
+
+	
+</script> 
+</head>
+<!-- End of head -->
+
+<!-- Start of body -->
+ <body >
+
+<!-- HEADER BAR -------------------------------------------------------------->
+	<div class="content-title">Layout - Frame</div>
+
+
+<!-- START OF PAGE ... -------------------------------------------------------->
+	<div id="page">
+		<p class="header-title">Target 이용</p>
+		<p class="header-desc">: Frame 의 target attribute 를 이용하여, page 를 로딩하는 예를 보여준다.</p>
+
+<!-- DEMO ----------------------------------------------------------------------->
+		<div class="demo">
+			<h3 >Demo</h3>
+			<iframe id ="visualExample"></iframe>
+		</div>
+		
+<!-- DEMO DESCRIPTION----------------------------------------------------->	
+		<div class="desc">
+			<h3>Demo Description</h3>
+			<hr>
+			<p class="desc-overall">
+			아래 소스 코드에서도 볼 수 있듯이, "targetTop", "targetBottom" 으로 지정된 Frame 에 페이지를 로딩 시키고 있다.
+			</p>
+			
+			<ul class="desc-ul">
+				<li><span>targetTop 클릭</span>: 상단의 "First Document" 영역에 페이지가 로딩된다.</li>
+				<li><span></span>: 로딩 후 추가적으로, reserved target 명에 대한 데모를 실행해 볼 수 있다. (_blank, _self, _parent, _top) </li>
+				<li><span>targetBottom 클릭</span>: 하단의 "First Document" 영역에 페이지가 로딩된다.</li>
+			</ul>
+		</div>		
+                        
+<!-- CODE------------------------------------------------------------------------>
+		<div class="code">
+			<h3>Code Source #1</h3>
+			<pre id="codeExample" class="brush: js"></pre>
+			
+			<h3>Code Source #2</h3>
+			<pre id="codeExample2" class="brush: js"></pre>
+        </div>
+
+<!-- CODE DESCRIPTION------------------------------------------------------>
+		<div class="desc">
+		    <h3>Code Description</h3>
+		    <hr>
+		    <p class="desc-overall">
+		    Code Source # 2 는 "targetTop" 에 올라오는 페이지 소스이며, 예약된 target name 들을 확인 할 수 있다.
+		    </p>
+		    
+		    <p class="desc-title">Frame target names</p>
+			<ul class="desc-ul">
+				<li><span>"_blank"</span>	: 새 창을 열어서 페이지를 로딩 한다.</li>
+				<li><span>"_self"</span>	: 현재 frame 에 페이지를 로딩 한다.</li>
+				<li><span>"_parent"</span>	: 현재 frame 이 포함된 frameset 의 부모 frameset 에 페이지를 로딩한다. 따라서 아래 예제에서의 _parent 는 최초 로딩된 페이지가 된다.</li>
+				<li><span>"_top"</span>		: frame 이 나뉘기 전 original window 영역으로 페이지를 로딩한다. 동작방식은 "_blank" 와 유사하나, 현재 window 에 페이지가 로딩되는 차이가 있다.</li>
+			</ul>
+		</div>
+      
+<!-- RELATED LINKS ----------------------------------------------------------->
+       <div class="related">
+            <h3>Related Links</h3>
+            <hr>
+            <ul class="desc-hypl">
+            	<li>
+            		<span>W3C HTML - Frame Spec</span>
+            		<a href="http://www.w3.org/TR/1999/REC-html401-19991224/present/frames.html"></a>
+            	</li>
+            	<li>
+            		<span>W3C HTML - Frame target names</span>
+            		<a href="http://www.w3.org/TR/1999/REC-html401-19991224/types.html#type-frame-target"></a>
+            	</li>
+            </ul>          
+      </div>      
+      
+
+</div>      
+<!-- End of Page-->
+
+</body>
+<!-- End of body-->
+
+</html>

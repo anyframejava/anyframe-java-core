@@ -1,0 +1,1262 @@
+<chapter id="hibernate_hibernate_mappingfile">
+	<title>Mapping File</title>
+
+	<para>
+    	Mapping xml file is a definition file which contains mapping information between model object and DB table.
+    	When defining Mapping file, you should follow a protocol, http://hibernate.sourceforge.net/hibernate-mapping-3.0.dtd.
+    	The following contains how to define Mapping file, mapping of Java Data Type and DB Data type, and Hibernate Generator.
+   
+    </para>
+
+	<section id="hibernate_hibernate_mapping_write">
+		<title>Mapping File Definition</title>
+
+		<section id="hibernate_hibernate_mapping_write_component">
+        	<title>Mapping File Composition</title>
+
+			<para>
+				The whole composition of Mapping file is as below. The following is a part of Movie.hbm.xml file.
+                <programlisting language="xml"><![CDATA[<?xml version="1.0"?>]]>
+<![CDATA[<!DOCTYPE hibernate-mapping PUBLIC "-//Hibernate/Hibernate Mapping DTD 3.0//EN"
+        "http://hibernate.sourceforge.net/hibernate-mapping-3.0.dtd">
+<hibernate-mapping>
+    <class name="org.anyframe.sample.model.bidirection.Country" table="COUNTRY"
+            lazy="true" schema="PUBLIC">
+        <id name="countryCode" type="string">
+            <column name="COUNTRY_CODE" length="12" />
+            <generator class="assigned" />
+        </id>
+        <property name="countryId" type="string">
+            <column name="COUNTRY_ID" length="2" not-null="true" />
+        </property>
+        <property name="countryName" type="string">
+            <column name="COUNTRY_NAME" length="50" not-null="true" />
+        </property>
+        ...
+    </class>
+</hibernate-mapping>]]></programlisting>
+			</para>
+
+			<para>Hibernate is mainly composed of five parts.</para>
+
+			<orderedlist>
+				<listitem>
+					<para>
+						<emphasis role="bold">Hibernate mapping DTD definition</emphasis>
+					</para>
+
+					<para>
+						As a part of defining Hibernate mapping DTD, it is needed to check validation of xml file.
+                        <programlisting language="xml"><![CDATA[<!DOCTYPE hibernate-mapping PUBLIC "-//Hibernate/Hibernate Mapping DTD 3.0//EN"
+        "http://hibernate.sourceforge.net/hibernate-mapping-3.0.dtd">]]></programlisting>
+					</para>
+				</listitem>
+
+				<listitem>
+					<para>
+						<emphasis role="bold">
+							<![CDATA[<hibernate-mapping>tag]]>
+						</emphasis>
+					</para>
+	
+					<para>
+						Inside <![CDATA[<hibernate-mapping>]]> tag, several sub-tags are defined as above.
+					</para>
+	
+					<informaltable>
+						<tgroup cols="4">
+							<colspec colnum="1" colname="col1" colwidth="1*" />
+							<colspec colnum="2" colname="col2" colwidth="3*" />
+							<colspec colnum="3" colname="col3" colwidth="1*" />
+							<colspec colnum="4" colname="col4" colwidth="1*" />
+							<thead>
+								<row>
+									<entry align="center">Property</entry>
+	
+									<entry align="center">Description</entry>
+	
+									<entry align="center">Mandatory/Optional</entry>
+	
+									<entry align="center">Default value</entry>
+								</row>
+							</thead>
+							<tbody>
+								<row>
+									<entry align="center">schema</entry>
+	
+									<entry>Name of DB schema</entry>
+	
+									<entry align="center">Optional</entry>
+	
+									<entry align="center">N/A</entry>
+								</row>
+	
+								<row>
+									<entry align="center">catalog</entry>
+	
+									<entry>Name of DB catalog</entry>
+	
+									<entry align="center">Optional</entry>
+	
+									<entry align="center">N/A</entry>
+								</row>
+	
+								<row>
+									<entry align="center">package</entry>
+	
+									<entry>Package name where mapping class exists</entry>
+	
+									<entry align="center">Optional</entry>
+	
+									<entry align="center">N/A</entry>
+								</row>
+	
+								<row>
+									<entry align="center">default-lazy</entry>
+	
+									<entry>Class, Basic lazy loading property on Collection defined in Class</entry>
+	
+									<entry align="center">Optional</entry>
+	
+									<entry align="center">true</entry>
+								</row>
+							</tbody>
+						</tgroup>
+					</informaltable>
+				</listitem>
+	
+				<listitem>
+					<para>
+						<emphasis role="bold">Class and DB table mapping</emphasis>
+					</para>
+
+					<para>
+						One or more <![CDATA[<class>]]> can be defined under <![CDATA[<hibernate-mapping>]]>.
+                        <programlisting language="xml"><![CDATA[<hibernate-mapping schema=".." package=“…”>]]>
+    <emphasis role="bold"><![CDATA[<]]><![CDATA[class name="Foo" table=“TBL_FOO"]]></emphasis><![CDATA[>
+    …
+    </class>
+</hibernate-mapping>]]></programlisting>
+					</para>
+
+					<para>
+						Property of <![CDATA[<class>]]> tag is as the following.
+					</para>
+					<informaltable>
+						<tgroup cols="4">
+							<colspec colnum="1" colname="col1" colwidth="1*" />
+							<colspec colnum="2" colname="col2" colwidth="3*" />
+							<colspec colnum="3" colname="col3" colwidth="1*" />
+							<colspec colnum="4" colname="col4" colwidth="2*" />
+							<thead>
+								<row>									
+									<entry align="center">Property</entry>
+	
+									<entry align="center">Description</entry>
+	
+									<entry align="center">Mandatory/Optional</entry>
+	
+									<entry align="center">Default value</entry>
+								</row>
+							</thead>
+							<tbody>
+								<row>
+									<entry align="center">name</entry>
+
+									<entry>
+										Name of mapping class (If package was not defined in hibernate-mapping,
+										define the package name of class as well.)								
+									</entry>
+
+									<entry align="center">Mandatory</entry>
+
+									<entry align="center">N/A</entry>
+								</row>
+
+								<row>
+									<entry align="center">table</entry>
+
+									<entry>DB table name</entry>
+
+									<entry align="center">Mandatory</entry>
+
+									<entry align="center">N/A</entry>
+								</row>
+
+								<row>
+									<entry align="center">lazy</entry>
+
+									<entry>If true, loads when object is needed.</entry>
+
+									<entry align="center">Optional</entry>
+
+									<entry align="center">
+										Default-lazy property value in <![CDATA[<hibernate-mapping>]]>.
+									</entry>
+								</row>
+
+								<row>
+									<entry align="center">schema</entry>
+
+									<entry>Name of DB schema (Can be defined, if not specified in upper tag.)</entry>
+
+									<entry align="center">Optional</entry>
+
+									<entry align="center">
+										Schema property value in <![CDATA[<hibernate-mapping>]]>
+									</entry>
+								</row>
+							</tbody>
+						</tgroup>
+					</informaltable>
+				</listitem>
+
+				<listitem>
+					<para>
+						<emphasis role="bold">Identifier field mapping</emphasis>
+					</para>
+
+					<para>
+						<![CDATA[<id>]]> tag specifies attribute to be mapped with Primary key of specific table in DB. 
+						<![CDATA[<id> tag is used with <generator>]]> tag.
+						For more information on <![CDATA[<generator> ]]>, 
+						see <link linkend="hibernate_hibernate_mapping_generator">Hibernate Generator</link>.			
+                        <programlisting language="xml"><![CDATA[<class name="Foo" table="TBL_FOO">]]>
+    <emphasis role="bold"><![CDATA[<id name="id" column="ID" type="int">]]></emphasis>
+        <emphasis role="bold"><![CDATA[<generator class="assigned"/>]]></emphasis>
+    <emphasis role="bold"><![CDATA[</id>]]></emphasis>
+    <![CDATA[<property name="name" column="NAME" type="string" />
+</class>]]></programlisting>
+					</para>
+
+					<para>
+						If there are multiple Primary keys, define using <![CDATA[<composite-id>]]> tag as below.					
+                        <programlisting language="xml"><![CDATA[<class name="Foo" table="TBL_FOO">]]>
+    <emphasis role="bold"><![CDATA[<composite-id>]]></emphasis>
+        <emphasis role="bold"><![CDATA[<key-property name="username"]]></emphasis> <emphasis role="bold"><![CDATA[column="USERNAME" />]]></emphasis>
+        <emphasis role="bold"><![CDATA[<key-property name="organizationId"]]></emphasis> <emphasis role="bold"><![CDATA[column="ORGANIZATION_ID" />]]></emphasis>							
+    <emphasis role="bold"><![CDATA[</composite-id>]]></emphasis>
+	...
+<![CDATA[</class>]]></programlisting>
+					</para>
+
+					<para>
+						Property of <![CDATA[<id>]]> is as the following. 
+					</para>
+
+					<informaltable>
+						<tgroup cols="4">
+							<colspec colnum="1" colname="col1" colwidth="1*" />
+							<colspec colnum="2" colname="col2" colwidth="3*" />
+							<colspec colnum="3" colname="col3" colwidth="1*" />
+							<colspec colnum="4" colname="col4" colwidth="1*" />
+							<thead>
+								<row>
+									<entry align="center">Property</entry>
+
+									<entry align="center">Description</entry>
+
+									<entry align="center">Mandatory/Optional</entry>
+
+									<entry align="center">Default value</entry>
+								</row>
+							</thead>
+							<tbody>
+								<row>
+									<entry align="center">name</entry>
+
+									<entry>Attribute name to be mapped with primary key column of DB</entry>
+
+									<entry align="center">Optional</entry>
+
+									<entry align="center">N/A</entry>
+								</row>
+
+								<row>
+									<entry align="center">column</entry>
+
+									<entry>Key column name of DB table</entry>
+
+									<entry align="center">Optional</entry>
+
+									<entry align="center">Property value of name</entry>
+								</row>
+
+								<row>
+									<entry align="center">type</entry>
+
+									<entry>attribute type(Hibernate, not Java, mapping type</entry>
+
+									<entry align="center">Optional</entry>
+
+									<entry align="center">N/A</entry>
+								</row>
+							</tbody>
+						</tgroup>
+					</informaltable>
+
+					<para>
+						* If property value of name is not defined, it is considered that the class does not have identifier.
+						In addition, if property value of type is not defined, identifier field type of the class is searched 
+						and mapped in Hibernate type.					
+					</para>
+				</listitem>
+
+				<listitem>
+					<para>
+						<emphasis role="bold">General field mapping</emphasis>
+					</para>
+
+					<para>
+						<![CDATA[<property>]]> tag specifies attribute of general column and mapping class of DB.
+						How to define mapping information by using <![CDATA[<property>]]> tag is as the following.
+						There can be <![CDATA[<column>, <formula>, <meta>]]> under <![CDATA[<property>]]>,
+						but in this part, we will have a look at how to define by using <![CDATA[<column>]]> only which is mainly used.						
+                        <programlisting language="xml"><![CDATA[<property name="countryId" type="string">
+    <column name="COUNTRY_ID" length="2" not-null="true" />
+</property>]]></programlisting>
+					</para>
+
+					<para>
+						<![CDATA[<property>]]>tag
+					</para>
+
+					<informaltable>
+						<tgroup cols="4">
+							<colspec colnum="1" colname="col1" colwidth="1*" />
+							<colspec colnum="2" colname="col2" colwidth="3*" />
+							<colspec colnum="3" colname="col3" colwidth="1*" />
+							<colspec colnum="4" colname="col4" colwidth="1*" />
+							<thead>
+								<row>
+									<entry align="center">Property</entry>
+
+									<entry align="center">Description</entry>
+
+									<entry align="center">Mandatory/Optional</entry>
+
+									<entry align="center">Default value</entry>
+								</row>
+							</thead>
+							<tbody>
+								<row>
+									<entry align="center">name</entry>
+
+									<entry>Attribute name to be mapped</entry>
+
+									<entry align="center">Mandatory</entry>
+
+									<entry align="center">N/A</entry>
+								</row>
+
+								<row>
+									<entry align="center">type</entry>
+
+									<entry> Attribute type(Mapping type of Hibernate, not of Java type)
+							</entry>
+
+									<entry align="center">Optional</entry>
+
+									<entry align="center">N/A</entry>
+								</row>
+							</tbody>
+						</tgroup>
+					</informaltable>
+
+					<para>
+						* If property value of type is not defined, identifier field type of the class is searched 
+						and mapped in Hibernte type.* 						
+					</para>
+
+					<para>
+						<![CDATA[<column>]]>tag
+					</para>
+
+					<informaltable>
+						<tgroup cols="4">
+							<colspec colnum="1" colname="col1" colwidth="1*" />
+							<colspec colnum="2" colname="col2" colwidth="3*" />
+							<colspec colnum="3" colname="col3" colwidth="1*" />
+							<colspec colnum="4" colname="col4" colwidth="1*" />
+							<thead>
+								<row>
+									<entry align="center">Property</entry>
+
+									<entry align="center">Description</entry>
+
+									<entry align="center">Mandatory/Optional</entry>
+
+									<entry align="center">Default value</entry>
+								</row>
+							</thead>
+							<tbody>
+								<row>
+									<entry align="center">name</entry>
+
+									<entry>Column name of DB table</entry>
+
+									<entry align="center">Mandatory</entry>
+
+									<entry align="center">N/A</entry>
+								</row>
+
+								<row>
+									<entry align="center">length</entry>
+
+									<entry>Length of column value</entry>
+
+									<entry align="center">Optional</entry>
+
+									<entry align="center">255</entry>
+								</row>
+
+								<row>
+									<entry align="center">not-null</entry>
+
+									<entry>Defines whether column value is mandatory or not(true or false).</entry>
+
+									<entry align="center">N/A</entry>
+
+									<entry align="center">true</entry>
+								</row>
+							</tbody>
+						</tgroup>
+					</informaltable>
+				</listitem>
+			</orderedlist>
+		</section>
+	</section>
+
+    <section id="hibernate_hibernate_mapping_datatype">
+      	<title>Data-type mapping</title>
+
+      	<section id="hibernate_hibernate_mapping_datatype_dt">
+        	<title>Data-type mapping</title>
+
+        	<para>
+        		How to define Mapping File is as the following as mentioned above.        		
+                <programlisting language="xml"><![CDATA[<property name="countryId" type="string">
+    <column name="COUNTRY_ID" length="2" not-null="true" />
+</property>]]></programlisting>
+			</para>
+
+        	<para>
+        		In the definition above, type defined for mapping Java attribute named "countryId" and DB column named "COUNTRY_ID".
+        		By using mapping type defined in type, value between Java attribute and DB column is converted.
+        		Mapping type defined in type can be customized by developer in addition to what basically provided in Hibernate.    
+        	</para>
+
+        	<itemizedlist>
+          		<listitem>
+            		<para><emphasis role="bold">Java Primitive Mapping Type</emphasis></para>
+
+            		<para>
+            			The following is  Java primitive mapping type provided in Hibernate.
+            			(Note. Oracle Data Type is a column type to be defined when creating table at Oracle l0g.)            
+            		</para>
+
+					<informaltable>
+						<tgroup align="center" cols="4">
+              				<colspec colnum="1" colname="col1" colwidth="1*"/>
+							<colspec colnum="2" colname="col2" colwidth="3*"/>
+							<colspec colnum="3" colname="col3" colwidth="1*"/>
+							<colspec colnum="4" colname="col4" colwidth="1*"/>
+							<thead>
+                
+                  				<row>
+                    				<entry>Mapping Type</entry>
+
+                   					 <entry>Java Type</entry>
+
+                    				<entry>Standard SQL built-in type</entry>
+
+                    				<entry>Oracle Column Type</entry>
+                  				</row>
+                  			</thead>
+							<tbody>
+	                  			<row>
+	                    			<entry>integer</entry>
+	
+	                    			<entry>int or java.lang.Integer</entry>
+	
+	                    			<entry>INTEGER</entry>
+	
+	                    			<entry>NUMBER(10,0)</entry>
+	                  			</row>
+	
+	                  			<row>
+	                    			<entry>long</entry>
+	
+	                    			<entry>long or java.lang.Long</entry>
+	
+	                    			<entry>BIGINT</entry>
+	
+	                    			<entry>NUMBER(19,0)</entry>
+	                  			</row>
+	
+	                  			<row>
+	                    			<entry>short</entry>
+	
+	                    			<entry>short or java.lang.Short</entry>
+	
+	                    			<entry>SMALLINT</entry>
+	
+	                    			<entry>NUMBER(5,0)</entry>
+	                  			</row>
+	
+	                  			<row>
+	                    			<entry>float</entry>
+	
+	                    			<entry>float or java.lang.Float</entry>
+	
+	                    			<entry>FLOAT</entry>
+	
+	                    			<entry>FLOAT</entry>
+	                  			</row>
+	
+	                  			<row>
+	                    			<entry>double</entry>
+	
+	                    			<entry>double or java.lang.Double</entry>
+	
+	                    			<entry>DOUBLE</entry>
+	
+	                    			<entry>DOUBLE PRECISION</entry>
+	                  			</row>
+	
+	                  			<row>
+	                    			<entry>big_decimal</entry>
+	
+	                    			<entry>java.math.BigDecimal</entry>
+	
+	                    			<entry>NUMERIC</entry>
+	
+	                    			<entry>NUMBER(19,2)</entry>
+	                 			</row>
+	
+	                  			<row>
+	                    			<entry>character</entry>
+	
+	                    			<entry>char or java.lang.Character</entry>
+	
+	                    			<entry>CHAR(1)</entry>
+	
+	                    			<entry>CHAR(1 CHAR)</entry>
+	                  			</row>
+	
+	                  			<row>
+	                    			<entry>string</entry>
+	
+	                    			<entry>java.lang.String</entry>
+	
+	                    			<entry>VARCHAR</entry>
+	
+	                    			<entry>VARCHAR2(255 CHAR)</entry>
+	                  			</row>
+	
+	                  			<row>
+	                    			<entry>byte</entry>
+	
+	                    			<entry>byte or java.lang.Byte</entry>
+	
+	                    			<entry>TINYINT</entry>
+	
+	                    			<entry>NUMBER(3,0)</entry>
+	                  			</row>
+	
+	                  			<row>
+	                    			<entry>boolean</entry>
+	
+	                    			<entry>boolean or java.lang.Boolean</entry>
+	
+	                    			<entry>BIT</entry>
+	
+	                    			<entry>NUMBER(1,0)</entry>
+	                  			</row>
+	
+	                  			<row>
+	                    			<entry>yes_no</entry>
+	
+	                    			<entry>boolean or java.lang.Boolean</entry>
+	
+	                    			<entry>CHAR(1) ( ture : false = Y : N )</entry>
+	
+	                    			<entry>CHAR(1 CHAR)</entry>
+	                  			</row>
+	
+	                  			<row>
+	                    			<entry>true_false</entry>
+	
+	                    			<entry>boolean or java.lang.Boolean</entry>
+	
+	                    			<entry>CHAR(1) ( ture : false = T : F )</entry>
+		
+	                    			<entry>CHAR(1 CHAR)</entry>
+	                  			</row>
+	                		</tbody>
+						</tgroup>
+					</informaltable>
+
+            		<para>
+            			Referring to the table above, define according to Java property and DB column type.
+            			The following is a part of JavaDataType.java file which tests Java primitive type.            			
+                        <programlisting language="java"><![CDATA[public class JavaDataType {
+    private int id;
+    private int intType;
+    private long longType;
+    private short shortType;
+    private float floatType;
+    private double doubleType;
+    private java.math.BigDecimal bigDecimalType;
+    private String stringType;
+    private char charType;
+    private byte byteType;
+    private boolean booleanType;
+    private boolean yesNoType;
+    private boolean trueFalseType;
+    ...]]></programlisting>
+						The following is a part of Java primitive type file, which was defined for mapping definition of attribute type and DB column type 
+						defined in JavaDataType.java.						
+                        <programlisting language="xml"><![CDATA[<property name="intType" column="INT_TYPE" type="int"/>
+<property name="longType" column="LONG_TYPE" type="long"/>
+<property name="shortType" column="SHORT_TYPE" type="short"/>
+<property name="floatType" column="FLOAT_TYPE" type="float"/>
+<property name="doubleType" column="DOUBLE_TYPE" type="double"/>
+<property name="bigDecimalType" column="BIGDECIMAL_TYPE" type="big_decimal"/>
+<property name="charType" column="CHAR_TYPE" type="character"/>
+<property name="stringType" column="STRING_TYPE" type="string"/>
+<property name="byteType" column="BYTE_TYPE" type="byte"/>
+<property name="booleanType" column="BOOLEAN_TYPE" type="boolean"/>
+<property name="yesNoType" column="YES_NO_TYPE" type="yes_no"/>
+<property name="trueFalseType" column="TRUE_FALSE_TYPE" type="true_false"/>]]></programlisting>
+					</para>
+
+            		<para>
+            			To see Test code for Java primitive type and DB Column type.
+            		</para>
+          		</listitem>
+
+          		<listitem>
+            		<para><emphasis role="bold">Date And Time Mapping Type</emphasis></para>
+
+            		<para>
+            			The following is a mapping type of data and time provided in Hibernate.
+            			(Note. Oracle Data Type is a column type to define when creating table at Oracle l0g.)            		
+            		
+            		</para>
+
+            		<informaltable>
+              			<tgroup align="center" cols="4">
+               				<colspec colnum="1" colname="col1" colwidth="1*"/>
+							<colspec colnum="2" colname="col2" colwidth="3*"/>
+							<colspec colnum="3" colname="col3" colwidth="1*"/>
+							<colspec colnum="4" colname="col4" colwidth="1*"/>
+                			<thead>
+                  				<row>
+                    				<entry>Mapping Type</entry>
+
+                    				<entry>Java Type</entry>
+
+                    				<entry>Standard SQL built-in type</entry>
+
+                    				<entry>Oracle Column Type</entry>
+                  				</row>
+                 			</thead>
+							<tbody>
+                  				<row>
+                    				<entry>date</entry>
+
+                    				<entry>java.util.Date or java.sql.Date</entry>
+
+                    				<entry>DATE</entry>
+
+                    				<entry>DATE</entry>
+                  				</row>
+
+                  				<row>
+                    				<entry>time</entry>
+
+                    				<entry>java.util.Date or java.sql.Time</entry>
+
+                    				<entry>TIME</entry>
+
+                    				<entry>DATE</entry>
+                  				</row>
+
+                 		 		<row>
+                    				<entry>timestamp</entry>
+
+                    				<entry>java.util.Date or java.sql.TimeStamp</entry>
+
+                    				<entry>TIMESTAMP</entry>
+
+                    				<entry>TIMESTAMP</entry>
+                  				</row>
+
+                  				<row>
+                    				<entry>calendar</entry>
+
+                    				<entry>java.util.Calendar</entry>
+
+                    				<entry>TIMESTAMP</entry>
+
+                    				<entry>TIMESTAMP</entry>
+                  				</row>
+
+                  				<row>
+                    				<entry>calendar_date</entry>
+
+                    				<entry>java.util.Calendar</entry>
+
+                    				<entry>TIMESTAMP</entry>
+
+                    				<entry>DATE</entry>
+                  				</row>
+                			</tbody>
+              			</tgroup>
+            		</informaltable>
+
+            		<para>
+            			When defining mapping file, you can define mapping file based on attribute type of Java object referring to the table above.
+            			The following is a part of TimeDateType.java file which tests time and data type.            			
+                        <programlisting language="java"><![CDATA[public class TimeDateType {
+    private java.sql.Date dateType;
+    private java.sql.Time timeType;
+    private java.sql.Timestamp timestampType;
+    private java.util.Calendar calendarType;
+    private java.util.Calendar calendarDateType;
+    ...]]></programlisting>
+    				</para>
+
+            		<para>
+            			You can define mapping file based on the attribute type above.
+            			The following is a part of TimeDateType.hbm.xml file which defines the mapping information of TimeDataType.java
+            			and DB table.            			
+                        <programlisting language="xml"><![CDATA[<property name="dateType" column="DATE_TYPE" type="date"/>
+<property name="timeType" column="TIME_TYPE" type="time"/>
+<property name="timestampType" column="TIMESTAMP_TYPE" type="timestamp"/>
+<property name="calendarType" column="CALENDAR_TYPE" type="calendar"/>
+<property name="calendarDateType" column="CALENDAR_DATE_TYPE" type="calendar_date"/>
+]]></programlisting></para>
+
+            		<para>
+            			To see test code for Java Date, Time type and DB Column type.
+            		</para>
+          		</listitem>
+
+          		<listitem>
+            		<para>
+            			<emphasis role="bold">Binary And Large Object Mapping Type</emphasis>
+            		</para>
+
+					<informaltable>
+						<tgroup align="center" cols="4">
+              					<colspec colnum="1" colname="col1" colwidth="1*"/>
+								<colspec colnum="2" colname="col2" colwidth="3*"/>
+								<colspec colnum="3" colname="col3" colwidth="1*"/>
+								<colspec colnum="4" colname="col4" colwidth="1*"/>
+					            <thead>
+               
+                  					<row>
+                    					<entry>Mapping Type</entry>
+
+                    					<entry>Java Type</entry>
+
+                    					<entry>Standard SQL built-in type</entry>
+
+                    					<entry>Oracle Column Type</entry>
+                  					</row>
+                  				</thead>
+ 								<tbody>
+                  					<row>
+                    					<entry>binary</entry>
+
+                    					<entry>byte[]</entry>
+
+                    					<entry>VARBINARY</entry>
+
+                    					<entry>BLOB(In case of AUTO CREATE, RAW)</entry>
+                  					</row>
+
+                  					<row>
+                    					<entry>text</entry>
+
+                    					<entry>java.lang.String</entry>
+
+                    					<entry>CLOB</entry>
+
+                    					<entry>CLOB</entry>
+                  					</row>
+
+                  					<row>
+                    					<entry>clob</entry>
+
+                    					<entry>java.sql.Clob</entry>
+
+                    					<entry>CLOB</entry>
+
+                    					<entry>CLOB</entry>
+                  					</row>
+
+                  					<row>
+                    					<entry>blob</entry>
+
+                    					<entry>java.sql.Blob</entry>
+
+                    					<entry>BLOB</entry>
+
+                    					<entry>BLOB</entry>
+                  					</row>
+
+                  					<row>
+                    					<entry>serializable</entry>
+
+                    					<entry>java.io.Serializable</entry>
+
+                    					<entry>VARBINARY</entry>
+
+                    					<entry>-</entry>
+                  					</row>
+                				</tbody>
+             	 			</tgroup>
+						</informaltable>
+
+            			<para>
+            				When defining mapping file, you can define mapping file based on attribute type of Java object referring to the table above.
+            				The following is a part of BlobDataType.java, ClobDataType.java files which test binary, large object type.          				
+                            <programlisting language="java"><![CDATA[public class BlobDataType {
+    private String fileName;
+    private java.math.BigDecimal fileSize;
+    private byte[] fileContentByte;
+    private Blob fileContentBlob;]]></programlisting>
+    					</para>
+
+            			<para>
+                            <programlisting language="java"><![CDATA[public class ClobDataType {
+    private String title;
+    private String contentString;
+    private Clob contentClob;]]></programlisting>
+							You can define mapping file based on the attribute type above.
+							The following is a part of BlobDataType.hbm.xml file and ClobDataType.hbm.xmlfile which define the mapping information
+							of BlobData.java file and DB table.													
+                            <programlisting language="xml"><![CDATA[<property name="fileName" column="FILE_NAME" type="text"/>
+<property name="fileSize" column="FILE_SIZE" type="big_decimal"/>
+<property name="fileContentByte" column="FILE_CONTENT_BYTE" type="binary" />
+<property name="fileContentBlob" column="FILE_CONTENT_BLOB" type="blob"/>]]></programlisting>
+						</para>
+
+            			<para>
+                            <programlisting language="xml"><![CDATA[<property name="title" column="TITLE" type="text"/>
+<property name="contentString" column="CONTENT_STRING" type="text"/>
+<property name="contentClob" column="CONTENT_CLOB" type="clob"/>]]></programlisting>
+								To see test code for Binary, LOB Type and DB Column type mapping.
+						</para>
+
+            			<para>
+            				To see test code for for CLOB Type and DB Column type mapping.
+            			</para>
+          			</listitem>
+        		</itemizedlist>
+		</section>
+    </section>
+
+	<section id="hibernate_hibernate_mapping_generator">
+      	<title>Hibernate Generator</title>
+
+      	<para>
+      		<![CDATA[<generator>]]>tag within  <![CDATA[<id>]]>tag which is used in identifier mapping above mentioned
+      		defines creation method of identifier when saving object.
+      		Therefore, to add new data when defining Mapping xml file, it is needed to select a way to get unique id assigned for the relevant data.
+      		There are two ways of defining, one is using basic Id Generator provided in Hibernate, the other is directly defining.      	
+      	</para>
+
+		<section id="hibernate_hibernate_mapping_generator_id">
+        	<title>Hibernate basic Id Generator</title>
+
+        	<para>Basic Id Generator provided in Hibernate</para>
+
+        	<itemizedlist>
+          		<listitem>
+            		<para>
+            			identity : supports identity column provided in DB2, MySQL, MS SQL Server, Sybase, HypersonicSQL.
+            			Returned identifier types are int, short, long.            			
+            		</para>
+          		</listitem>
+
+          		<listitem>
+            		<para>
+            			native : Dependent on DB. Hibernate assigns new ID automatically.            
+            		</para>
+          		</listitem>
+
+          		<listitem>
+            		<para>
+            			hilo : Creates Id by using column value of specific table applied to hi/lo algorithm.
+            			Returned identifier types are int, short, long.            	
+            		</para>
+          		</listitem>
+
+          		<listitem>
+            		<para>
+            			increment : Hibernate increments value by one and creates Id.
+            		</para>
+          		</listitem>
+
+          		<listitem>
+            		<para>
+            			guid : Returns GUID string created in MS SQL and MySQL as Id.
+            		</para>
+          		</listitem>
+
+          		<listitem>
+            		<para>
+            			sequence : Creates Id by using sequence used in Oracle, DB2, PostgreSQL, SAP DB, Mckoi.
+            			Returned identifier types are int, short, long.            			
+            		</para>
+          		</listitem>
+
+          		<listitem>
+            		<para>
+            			uuid : Creates  128 bit Id by using UUID algorithm.
+            			Created string is shown after encoded in hexadecimal of 32 characters.            			
+            		</para>
+          		</listitem>
+
+          		<listitem>
+            		<para>
+            			seqhilo : Same to hilo, but gets hi value from DB Sequence.            		
+            		</para>
+          		</listitem>
+
+          		<listitem>
+            		<para>
+            			<emphasis role="bold">identity</emphasis>
+            		</para>
+
+            		<para>
+            			Identity provides identifier which is provided in DBMS like MySQL, MS SQL Server.
+            			The following is a part of CountryWithIdentity.hbm.xml which shows the definition for creating identifier
+            			by using identity generator.            		
+                        <programlisting language="xml"><![CDATA[<class name="org.anyframe.sample.model.unidirection.generator.CountryWithIdentity"
+        table="COUNTRY_IDENTITY" lazy="true" schema="PUBLIC">
+    <id name="countryCode" column="COUNTRY_CODE" type="int">
+        <generator class="identity" />
+    </id>
+    ...]]></programlisting>
+					</para>
+            		<para>
+            			The following is a part of HibernateIdGenerator.java which automatically creates and tests COUNTRY_CODE,
+            			primary key of COUNTRY table by using identity generator.            		
+            			<programlisting language="java"><![CDATA[public void addCountryWithIdentityGenerator() throws Exception {
+    CountryWithIdentity country1 = new CountryWithIdentity();
+    country1.setCountryId("KR");
+    country1.setCountryName("Korea");
+
+    Integer countryCode = (Integer) session.save(country1);
+    ...
+}]]></programlisting>
+					</para>
+
+            		<para>
+            			By executing the test case above, you can see identifier is automatically created and saved at COUNTRY_CODE.            	
+            		</para>
+          		</listitem>
+
+          		<listitem>
+            		<para><emphasis role="bold">sequence</emphasis></para>
+
+            		<para>
+            			Creates Id by using Sequence at DBMS which can use Sequence like Oracle.
+            			The following is a part of CountryWithSequence.hbm.xml, configuration file for creating identifier by using sequence generator.            		 
+                        <programlisting language="xml"><![CDATA[<class name="org.anyframe.sample.model.unidirection.generator.CountryWithSequence"
+        table="COUNTRY_SEQ" lazy="true" schema="PUBLIC">
+    <id name="countryCode" type="int">
+        <column name="COUNTRY_CODE" length="12" />
+        <generator class="sequence">
+            <param name="sequence">COUNTRY_ID_SEQ</param>
+        </generator>
+    </id>
+    ...]]></programlisting>
+					</para>
+
+            		<para>
+            			Creates identifier with the Sequence value of COUNTRY_ID_SEQ name in DBMS.
+            			The following is a part of HibernateIdGenerator.java which saves and tests data to primary key column
+            			with DBMS specific sequence by using  sequence generator.            			
+                        <programlisting language="java"><![CDATA[public void addCountryWithSequenceGenerator() throws Exception {
+    CountryWithSequence country1 = new CountryWithSequence();
+    country1.setCountryId("KR");
+    country1.setCountryName("Korea");
+
+    Integer countryCode = (Integer) session.save(country1);
+    ...
+}]]></programlisting>
+					</para>
+
+            		<para>            			
+            			By executing the test case above, you can see sequence value of COUNTRY_ID_SEQ is entered at COUNTRY_CODE at DBMS.            			
+            		</para>
+          		</listitem>
+
+          		<listitem>
+            		<para><emphasis role="bold">hilo</emphasis></para>
+
+            		<para>
+            			hilo generator creates identifier by using hi/lo algorithm.
+            			The following is a part of CountryWithHilo.hbm.xml file which defines the creation of identifier by using hilo.            			
+                        <programlisting language="xml"><![CDATA[<class name="org.anyframe.sample.model.unidirection.generator.CountryWithHilo"
+        table="COUNTRY_HILO" lazy="true" schema="PUBLIC">
+    <id name="countryCode" column="COUNTRY_CODE" type="int">
+        <generator class="hilo">
+            <param name="table">ID_MANAGEMENT</param>
+            <param name="column">NEXT_VALUE</param>
+            <param name="max_lo">2</param>
+        </generator>
+    </id>
+    ...]]></programlisting>
+					</para>
+
+            		<para>
+            			Mapping file above updates the value which added 1(one) to NEXT_VALUE column value 
+            			to get identifier from  NEXT_VALUE of ID_MANAGEMENT and provide unique id.
+            			max_lo is the number of new identifiers newly created at hilo generator execution.
+            			The following is a log on query which creates identifier when executing test case with the mapping file above.            			
+                        <programlisting language="java"><![CDATA[select NEXT_VALUE from ID_MANAGEMENT 
+update ID_MANAGEMENT set NEXT_VALUE = 1 where NEXT_VALUE = 0]]></programlisting>
+					</para>
+
+            		<para>
+            			After creating identifier by getting  NEXT_VALUE from ID_MANAGEMENT table,
+            			you can see query to update.
+            			The following is a part of HibernateIdGenerator.java, which tests hilo generator.            			
+                        <programlisting language="java"><![CDATA[public void addCountryWithHiloGenerator() throws Exception {
+    CountryWithSeqHilo country1 = new CountryWithSeqHilo();
+    country1.setCountryId("KR");
+    country1.setCountryName("Korea");
+
+    Integer countryCode1 = (Integer) session.save(country1);
+    ...
+    CountryWithSeqHilo country2 = new CountryWithSeqHilo();
+    country2.setCountryId("JP");
+    country2.setCountryName("Japan");
+
+    Integer countryCode2 = (Integer) session.save(country2);
+    ...
+    CountryWithSeqHilo country3 = new CountryWithSeqHilo();
+    country3.setCountryId("US");
+    country3.setCountryName("U.S.A");
+
+    Integer countryCode3 = (Integer) session.save(country3);
+}]]></programlisting>
+					</para>
+
+            		<para>
+            			If you execute the test code above in debug mode, you can see that the log which selects the column value of NEXT_VALUE
+            			 will remain only once at ID_MANAGEMENT table until country2 is saved.
+            			 And, when country3 is saved, once again you can see the log which selects the column value of NEXT_VALUE
+            			 will remain at ID_MANAGEMENT table.
+            			 This is because two identifiers were created in the beginning as max_lo value of mapping was set '2'.            			
+            		</para>
+					
+					<para>
+            			<emphasis role="bold">#Note : If table and column are not set at Mapping File,
+            			basic table and
+            			columns are  hibernate_unique_key and next_hi.
+            		</emphasis>
+            		</para>
+          		</listitem>
+
+          		<listitem>
+            		<para>
+            			<emphasis role="bold">seqhilo</emphasis>
+            		</para>
+
+            		<para>
+            			Same to hilo, but this creates identifier by getting hi value from DBMS Sequence not from special DB table column.
+            			The following is a part of CountryWithSeqHilo.hbm.xml which creates identifier by using seqhilo.            		
+                        <programlisting language="xml"><![CDATA[<class name="org.anyframe.sample.model.unidirection.generator.CountryWithSeqHilo"
+        table="COUNTRY_SEQHILO" lazy="true" schema="PUBLIC">
+    <id name="countryCode" column="COUNTRY_CODE" type="int">
+        <generator class="seqhilo">
+            <param name="sequence">COUNTRY_ID_SEQ</param>
+            <param name="max_lo">2</param>
+        </generator>
+    </id>
+    ...]]></programlisting>
+					</para>
+
+            		<para>
+            			To create identifier of COUNTRY_CODE, primary key, the mapping file above creates identifier by using sequence named "COUNTRY_ID_SEQ"
+            			 at DBMS. The following is a query log which is executed to get value from DBMS when creating identifier by using seqhilo generator.
+                        <programlisting language="java"><![CDATA[call next value for COUNTRY_ID_SEQ]]></programlisting>
+                    </para>
+
+            		<para>
+            			The following is a part of  HibernateIdGenerator.java, test code for seqhilo generator.            		
+                        <programlisting language="java"><![CDATA[public void addCountryWithSeqHiloGenerator() throws Exception {
+    CountryWithSeqHilo country1 = new CountryWithSeqHilo();
+    country1.setCountryId("KR");
+    country1.setCountryName("Korea");
+
+    Integer countryCode1 = (Integer) session.save(country1);
+    ...
+    CountryWithSeqHilo country2 = new CountryWithSeqHilo();
+    country2.setCountryId("JP");
+    country2.setCountryName("Japan");
+
+    Integer countryCode2 = (Integer) session.save(country2);
+    ...
+    CountryWithSeqHilo country3 = new CountryWithSeqHilo();
+    country3.setCountryId("US");
+    country3.setCountryName("U.S.A");
+
+    Integer countryCode3 = (Integer) session.save(country3);
+    ...
+}]]></programlisting>
+					</para>
+
+            		<para>
+            			In the test case above, like hilo, the log that creates identifier by using DBMS sequence remains only once
+            			until country2 is saved as max lo was set as "2".
+            			And when country3 is saved, log remains which gets sequence from DBMS to create identifier.            		
+            		</para>
+          		</listitem>
+
+          		<listitem>
+            		<para>
+            			<emphasis role="bold">increment</emphasis>
+            		</para>
+
+            		<para>
+            			'increment generator' gets the highest value of primary key value and creates identifier after Hibernate increments 1.
+            			The following is a part of CountryWithIncrement.hbm.xml file which defines for creation of identifier by using increment generator.            		
+                        <programlisting language="xml"><![CDATA[<class name="org.anyframe.sample.model.unidirection.generator.CountryWithIncrement"
+        table="COUNTRY_INCREMENT" lazy="true" schema="PUBLIC">
+    <id name="countryCode" type="int">
+        <column name="COUNTRY_CODE" length="12" />
+        <generator class="increment" />
+    </id>
+     ...]]></programlisting>
+					</para>
+
+            		<para>
+            			When key creation is needed by using increment generator, query is executed as the following.            	
+                        <programlisting language="java"><![CDATA[select max(COUNTRY_CODE) from COUNTRY_INCREMENT]]></programlisting>
+                    </para>
+
+            		<para>
+            			The query above does not create identifier whenever needed, but increments 1 from memory since the first execution.
+            			Therefore, if used in distributed environment, it may not create identifier.
+            			The following is a part of HibernateIdGenerator.java, test code for creating identifier by using increment generator.            		
+                        <programlisting language="java"><![CDATA[public void addCountryWithIncrementGenerator() throws Exception {
+    CountryWithIncrement country1 = new CountryWithIncrement();
+    country1.setCountryId("KR");
+    country1.setCountryName("Korea");
+
+    Integer countryCode1 = (Integer) session.save(country1);
+    ...                
+    CountryWithIncrement country2 = new CountryWithIncrement();
+    country2.setCountryId("JP");
+    country2.setCountryName("Japan");
+
+    Integer countryCode2 = (Integer) session.save(country2);
+    ...                
+    CountryWithIncrement country3 = new CountryWithIncrement();
+    country3.setCountryId("US");
+    country3.setCountryName("U.S.A");
+
+    Integer countryCode3 = (Integer) session.save(country3);
+}]]></programlisting>
+					</para>
+
+            		<para>
+            			If you execute the test code above, after the maximum key value is returned from DB in the beginning,
+            		    query that gets again is not executed.             		
+            		</para>
+          		</listitem>
+
+          		<listitem>
+            		<para><emphasis role="bold">uuid</emphasis></para>
+
+            		<para>
+            			Creates identifier of 32 characters in hexadecimal by using UUID algorithm.
+            			The following is a part of CountryWithUUID.hbm.xml which was defined for creating identifier by using UUID.            			
+                        <programlisting language="xml"><![CDATA[<class name="org.anyframe.sample.model.unidirection.generator.CountryWithUUID"
+        table="COUNTRY_UUID" lazy="true" schema="PUBLIC">
+    <id name="countryCode" column="COUNTRY_CODE" type="string">
+        <generator class="uuid">
+            <param name="separator">#</param>
+        </generator>
+    </id>
+    ...	]]></programlisting>
+					</para>
+
+            		<para>
+            			The following is a part of HibernateIdGenerator.java, test code for UUID generator.            			
+                        <programlisting language="java"><![CDATA[public void addCountryWithUUIDGenerator() throws Exception {
+    CountryWithUUID country1 = new CountryWithUUID();
+    country1.setCountryId("KR");
+    country1.setCountryName("Republic of Korea");
+	
+    String countryCode = (String) session.save(country1);
+}]]></programlisting>
+					</para>
+
+            		<para>
+            			When the test code above is executed, query log is as the following.            
+            		</para>
+            					
+
+            		<para>
+            			<programlisting language="java"><![CDATA[insert into PUBLIC.COUNTRY_UUID 
+    (COUNTRY_ID, COUNTRY_NAME, COUNTRY_CODE) 
+        values ('KR', 'Republic of Korea', 'c687b6dc#1c894fc4#011c#894fc5ef#0001')]]></programlisting>
+                			As the value of separator was set "#" in Mapping file, "#" was used as the delimiter of identifier.                		
+                	</para>
+          		</listitem>
+			</itemizedlist>
+		</section>
+
+		<section id="hibernate_hibernate_mapping_generator_assigned">
+        	<title>Direct creation </title>
+
+        	<para>
+        		Direct creating of key value is available in addition to using basic generator provided in Hibernate.
+        		If you want to save identifier like 'product-00001', 'product-00002',
+        		the Hibernate basic generator mentioned above cannot be used.        	
+        	</para>
+
+        	<itemizedlist>
+          		<listitem>
+            		<para>assigned</para>
+
+            		<para>
+            			If class property value of <![CDATA[<generator>]]> is defined as "assigned",
+            			the value saved in the object is used as it is.
+            			If there is special ID Generator defined by user,
+            			the relevant class can be defined in the property value.
+            			The following is a sample source defined as "assigned" at Mapping file.            		
+                        <programlisting language="xml"><![CDATA[<id name="categoryNo" type="string">
+    <column name="CATEGORY_NO" length="16" />
+    <generator class="assigned" />
+</id>]]></programlisting>
+					</para>
+
+            		<para>
+	            		If generator was defined as "assigned", value must be set at categoryNo before object is saved.
+	            		The following is a sample source which gets identifier and sets it to object by using  IdGenerationService,
+	            		common technology service of Anyframe.	            		
+                        <programlisting language="java"><![CDATA[category.setCategoryNo(idGenerationService.getNextStringId());
+...
+session.save(category);
+]]></programlisting>
+					</para>
+
+            		<para>
+	            		'assigned generator' is the most frequently used type and useful when used with Anyframe IdGenerationService.	            	
+	            	</para>
+	          	</listitem>
+        	</itemizedlist>
+		</section>
+    </section>
+</chapter>

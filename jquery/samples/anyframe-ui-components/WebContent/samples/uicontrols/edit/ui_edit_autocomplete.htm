@@ -1,0 +1,142 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN"
+"http://www.w3.org/TR/html4/loose.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+ 
+ <!-- Start of head-->
+<head>
+<meta http-equiv="content-type" content="text/html; charset=UTF-8" />
+<title>title : unit sample template </title> <!-- TODO: 타이틀 작성 -->
+
+
+<!-- include required common files  ----------------------------------------------------->
+<script type="text/javascript" src="../../../common/exlibs/jquery-1.9.0.js" ></script>
+
+<script type="text/javascript" src="../../../common/exlibs/highlighter/scripts/shCore.js" ></script>
+<script type="text/javascript" src="../../../common/exlibs/highlighter/scripts/shBrushJScript.js" ></script>
+
+<script type="text/javascript" src="../../../common/js/template_common.js" ></script>
+
+<!--  stylesheet  -->
+<link type="text/css" rel="stylesheet" href="../../../common/exlibs/highlighter/styles/shCore.css"/>
+<link type="text/css" rel="stylesheet" href="../../../common/exlibs/highlighter/styles/shCoreDefault.css"/>
+<link type="text/css" rel="stylesheet" href="../../../common/css/style.css"/>
+
+<!-- scripts to support sample page  ----------------------------------------------------->
+<script type="text/javascript">
+
+$(function() {
+	JTemplate.load("ui_edit_autocomplete_src.htm");
+	JTemplate.loadDemo2("ui_edit_autocomplete_src.htm", {height:'450px'});
+});  
+</script>
+
+</head>
+<!-- End of head -->
+
+<!-- Start of body -->
+ <body >
+ 
+  <!-- HEADER BAR -------------------------------------------------------------->
+<div class="content-title">Component - Edit</div>
+ 
+ <!-- START OF PAGE ... -------------------------------------------------------->
+<div id="page">
+	<p class = "header-title">Edit 자동완성기능</p>
+	<p class="header-desc">: Autocomplete 기능의 기본동작원리와 관련된 데이터 처리방식을 보여주는 예시이다.</p>
+	
+<!-- DEMO ----------------------------------------------------------------------->
+	<div class="demo">
+		<h3 >Demo</h3>
+		<div id="visualExample"></div>
+	</div>
+
+<!-- DEMO DESCRIPTION----------------------------------------------------->
+	<div class="desc">
+		<h3>Demo Description </h3>
+		<hr>
+		
+		<p class="desc-title">자동완성 기본기능</p>
+		<p class="desc-overall">  
+		: 자동완성(autocomplete)의 기본기능과 관련 데이터가 간단하게 동작하는 방식을 보여준다.
+		</p>
+		<ul class ="desc-hypl">
+			<li><span>자동완성 기능</span> : 테스트 입력창에서 쓰는 글자에 따라 포함되는 데이터 리스트가 자동완성되어 나타나며, 선택하면 리스트에 목록화되어 나타난다. </li>
+			<li><span>데이터 추가 기능</span> : 자동완성될 텍스트 데이터를 사용자 임의로 직접 쓰고, add 하여 추가해 볼 수 있다. </li>
+		</ul>
+		
+	</div>
+		
+<!-- CODE------------------------------------------------------------------------>
+	<div class="code">
+		<h3>Code Source </h3>
+		<pre id="codeExample" class="brush: js"></pre>
+	</div>
+	
+	
+<!-- CODE DESCRIPTION------------------------------------------------------>
+	<div class="desc">
+		<h3>Code Description </h3>
+		<hr>
+		
+		<p class="desc-title">데이터 : Souce</p>
+		<p class="desc-overall">  
+		: 자동완성될 데이터는 다음의 3가지가 가능하며, autocomplete 내 source 옵션으로 지정하여야 한다.
+		</p>
+		<ul class ="desc-ul">
+			<li><span>Array</span> : string 배열로 직접 텍스트를 작성하여 source 옵션으로 지정해 줄 수 있다.</li>
+			<li><span></span> ex) source : ["text1", "text2"] </li>
+			<li><span></span>또한 각 데이터마다 하나의 값이 아닌 여러개의 값을 key, value로 가지는 오브젝트로써 배열로 지정해 줄 수도 있다.</li>
+			<li><span></span> ex) [ label : "label1", value : "value1", category : "category1", icon : "image1.png" ...] </li>
+			<li><span></span> 이 때, 자동완성으로 나오는 텍스트는 label이 되며, value의 속성만 존재하면, value 값이 자동으로 대체되어 사용된다. </li>
+			<li><span>String</span> : JSON 데이터를 리턴하는 URL 리소스를 가리키도록 순수  string  text로 지정해 줄 수 있다. </li>
+			<li><span></span> ex) "http://example.com" </li>
+			<li><span>Function</span> : callback으로 데이터를 연동하는 방식으로, request object와 response callback 의 2개 매개변수를 통하여 사용할 수 있다.</li>
+			<li><span></span> ex) function( request, response ) {.....} </li>
+		</ul>
+		
+		<p class="desc-title">정적 데이터 추가</p>
+		<p class="desc-overall">  
+		: 본 예제에서는 입력창으로 입력되는 값을 받아 data 배열에 push()하여 데이터가 추가되는 방식으로 구현되어 있다.
+		</p>
+		
+		<p class="desc-title">자동완성 텍스트 선택</p>
+		<p class="desc-overall">  
+		: autocomplete 내 select 이벤트를 통하여 선택시 이루어질 동작에 대해 코드를 작성할 수 있다.<br>
+		(default 액션 : 선택된 값으로 입력창 내에 텍스트가 나오도록 한다.)<br>
+		select : function(event, ui) { ...} 에서 가지는 ui는 오브젝트 타입으로 선택된 값에 대해 ui.item 으로 접근할 수 있다.(ui.item.(오브젝트 내  key값) 으로 접근가능)<br>
+		</p>
+		
+		<p class="desc-title">자동완성 리스트 Focus 동작</p>
+		<p class="desc-overall">  
+		: autocomplete 내 focus 이벤트를 통하여 입력창에 focus할때 이루어질 동작에 대한 코드를 작성할 수 있다.<br>
+		본 예제에서는 자동완성텍스트에 key down 혹은 mouse로 focus하게 될 때,  같은 텍스트가 입력창에 나와 보여지도록 구현하였다.<br>
+		</p>
+		
+		<p class="desc-title">최소완성단위 설정</p>
+		<p class="desc-overall">  
+		: minLength 옵션으로  자동완성 텍스트들이 나오게 만들 최소 텍스트 단위를 숫자로 지정해 줄 수 있다. 
+		</p>
+				
+	</div>
+	
+
+<!-- RELATED LINKS ----------------------------------------------------------->
+	<div class="related">
+		<h3>Related Links</h3>
+		<hr>
+		 <ul class="desc-hypl">
+           	<li>
+           		<span>Autocomplete API</span>
+           		<a href = "http://api.jqueryui.com/autocomplete/"></a>
+           	</li>
+           	<li>
+           		<span>데이터 형태 : source</span>
+           		<a href = "http://api.jqueryui.com/autocomplete/#option-source"></a>
+           	</li>            	
+		</ul>
+	</div>
+
+</div>
+</body>
+<!-- End of body-->
+</html>

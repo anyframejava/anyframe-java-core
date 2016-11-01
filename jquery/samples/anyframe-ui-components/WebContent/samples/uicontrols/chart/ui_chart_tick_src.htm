@@ -1,0 +1,195 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
+<html>
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+<title>Chart Sample - Label</title>
+
+<link href="../../../common/css/smoothness/jquery-ui-1.10.0.custom.css" rel="stylesheet">
+<link href="../../../common/exlibs/css/jquery.jqplot.css" rel="stylesheet">
+<script src="../../../common/exlibs/jquery-1.9.0.js"></script>
+<script src="../../../common/exlibs/jquery-ui-1.10.0.custom.js"></script>
+<script src="../../../common/exlibs/jquery.jqplot.js"></script>
+<script src="../../../common/exlibs/excanvas.js" ></script>
+<script src="../../../common/exlibs/jqplot.plugins.js"></script>
+
+<link type="text/css" rel="stylesheet" href="../../../common/css/style.css"/>
+<link href="sub_css/label.css" rel="stylesheet">
+
+<script type="text/javascript">
+
+	var RENDERER = {
+			AXIS_LABEL : $.jqplot.CanvasAxisLabelRenderer,
+			AXIS_CATEGORY : $.jqplot.CategoryAxisRenderer,
+			AXIS_TICK : $.jqplot.CanvasAxisTickRenderer,
+			AXIS_DATA : $.jqplot.DateAxisRenderer,
+			BAR : $.jqplot.BarRenderer
+	};
+	
+	var ENV = {
+			ID_LINE_CHART : "lineChart"
+	};
+	
+	var CHART_DATA = {			
+			LABEL_X : ['first', 'second', 'third', 'fourth', 'fifth', 'sixth' ],			
+			TYPE_XY_1 : [ ['title', 7], ['series', 9], ['axes', 15], ['legend', 12], ['grid', 3], ['jqplot', 6] ]			              			
+	};
+	
+	var mainView = {
+			
+			_jqoLineChart : null, 
+			
+			init : function(){
+				this._jqoLineChart = this._initLineChart('Line Chart', [CHART_DATA.TYPE_XY_1],  CHART_DATA.LABEL_X, 1.2);
+			},
+		
+			_initLineChart : function(title, data, xLabelData, padSize){
+			
+				var options = {
+						title : title,
+						seriesDefaults : {
+																
+						},
+						axesDefaults: {
+							pad : padSize,
+							tickRenderer: RENDERER.AXIS_TICK,
+					        tickOptions: {
+					        	angle : 0,
+					        	fontSize: '10pt'
+					        },
+							labelRenderer: RENDERER.AXIS_LABEL,
+							labelOptions : {
+								fontFamily : "Nanum Gothic bold",
+								fontSize : '12pt',
+								textColor : 'blue'
+							}
+						},
+						axes : {
+							xaxis : {
+								renderer : RENDERER.AXIS_CATEGORY,
+								tickOptions : {
+									angle : 0,
+									showGridline : true
+								}
+							},
+							yaxis : {
+								tickOptions : {
+									angle : 0,
+									showGridline : true
+								},
+								min : 0,
+								max : 20,
+								tickInterval : 1 //min, max가 정해져 있어야 함
+							}
+						}
+				};
+		
+				return $.jqplot(ENV.ID_LINE_CHART, data, options);
+			},
+			
+			updateGrid : function(checkedX, checkedY){
+				this._jqoLineChart.options.axes.xaxis.tickOptions.showGridline = checkedX;
+				this._jqoLineChart.options.axes.yaxis.tickOptions.showGridline = checkedY;
+				
+				this._jqoLineChart.replot(this._jqoLineChart.options);
+			},
+			
+			setMinVal : function(value){
+				this._jqoLineChart.options.axes.yaxis.min = value;
+				this._jqoLineChart.replot(this._jqoLineChart.options);
+			},
+			
+			setMaxVal : function(value){
+				this._jqoLineChart.options.axes.yaxis.max = value;
+				this._jqoLineChart.replot(this._jqoLineChart.options);
+			},
+					
+			setTickInterval : function(value){
+				this._jqoLineChart.options.axes.yaxis.tickInterval = value;
+				this._jqoLineChart.replot(this._jqoLineChart.options);
+			}
+	};
+
+	$(document).ready(function() {
+				
+				$("button").button();
+
+				mainView.init();
+				
+				$("input:checkbox[name='showGrid']").on("click", function(){
+					mainView.updateGrid( $("input[name='showGrid'][value='x']").is(":checked"), 
+										 $("input[name='showGrid'][value='y']").is(":checked"));
+				});
+				
+				$("#minValBtn").on("click", function(){
+					mainView.setMinVal( parseInt($("#minVal").val()) );
+				});
+				
+				$("#maxValBtn").on("click", function(){
+					mainView.setMaxVal( parseInt($("#maxVal").val()) );
+				});
+						
+				$("#tickInterval").slider({
+					min : 1,
+					max : 20,
+					slide : function(evt, ui){
+						mainView.setTickInterval(ui.value);
+					}
+				});
+				
+	});
+	
+</script>
+
+</head>
+<body>
+
+<div >
+	<div style="float : left;">
+
+		<div class="title">배경 그리드</div>
+		<div>
+			<div class="text-area">배경 그리드 : </div>
+			<div  class = "input-area">
+				<input name ="showGrid" type="checkbox" value="x" checked/> horizontal
+				<input name ="showGrid" type="checkbox" value="y" checked/> vertical
+			</div>
+		</div>
+	
+		<div class="title">눈금 조절</div>
+		<div>
+			<div class="text-area">최소값 : </div>
+			<div  class = "input-area">
+				<input id="minVal" type="text"   value ="-10"/>
+				<button id="minValBtn" type="button" >apply</button>
+			</div>
+		</div>
+		<div>
+			<div class="text-area">최대값 : </div>
+			<div  class = "input-area">
+				<input id="maxVal" type="text"  value ="40"/>
+				<button id="maxValBtn" type="button" >apply</button>
+			</div>
+		</div>
+		
+		<div>
+			<div class="text-area">눈금간격 : </div>
+			<div class = "input-area">
+				<span style="margin-right: 8px">1</span>
+				<div id="tickInterval" style="width:130px;display:inline-block;*display:inline;zoom:1"></div>
+				<span style="margin-left: 8px">20</span>
+			</div>
+		</div>
+		<div class="display-area"></div>
+		
+	</div>
+	
+		<div class="chart-container">
+			<div id="lineChart"></div>
+		</div>
+		
+		
+	
+</div>
+
+</body>
+</html>

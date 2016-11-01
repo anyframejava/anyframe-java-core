@@ -1,0 +1,12 @@
+<chapter id="tiles_apachetiles_el">
+	<title>EL</title>
+	<para>Tiles를 사용하면 template의 요소가 되는 attribute에 대한 값을 Tiles Definition xml 파일에 정의해 줘야한다. 
+	이 때, 각각의 view 마다 하나의 definition을 매번 정의해줘야 한다. 이에 Apache Tiles는 2.1 버전 부터 EL(Expression Language)의 
+	사용을 지원해준다. 단, servlet spec은 2.5 이상이 되어야 한다. EL을 이용한 Tiles Definition 정의는 아래와 같다.</para>
+	<programlisting language="java"><![CDATA[<definition name="tilesLayout" templateExpression="${layout}">
+    <put-attribute name="left" value="/sample/layouts/left.jsp" />
+    <put-attribute name="body" expression="${requestScope.body}" />
+</definition>]]></programlisting>
+	<para>위와 같이 정의할 경우 template의 이름은 모든 Scope 내에서 "layout"이라는 이름의 객체를 찾게 될 것이다. 
+	또한, body는 reqeust Scope에 있는 "body"로 부터 값을 추출하게 된다.</para>
+</chapter>

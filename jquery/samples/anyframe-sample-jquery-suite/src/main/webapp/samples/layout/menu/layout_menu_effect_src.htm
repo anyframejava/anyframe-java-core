@@ -1,0 +1,87 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
+<html>
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+<title>Menu Sample - Slide 효과적용</title>
+
+<link href="../../../common/css/smoothness/jquery-ui-1.10.0.custom.css" rel="stylesheet">
+<script src="../../../common/exlibs/jquery-1.9.0.js"></script>
+<script src="../../../common/exlibs/jquery-ui-1.10.0.custom.js"></script>
+
+<style type="text/css">
+
+	.ui-menu {
+		font-size: 12px;
+		width: 150px;
+	}
+	
+</style> 
+
+<script type="text/javascript">
+
+	$(document).ready(function() {
+		
+		$("#vmenu").menu( { position: { my: "left top", at: "right+2 top+2" } } );
+				
+		$['ui']['menu'].prototype['delay'] = 1;		
+		
+		$('#vmenu').on('menufocus', function(evt, ui) {
+			
+			var has_submenu = $(ui.item[0]).children('.ui-menu');
+			
+			if (has_submenu.size() > 0)
+			{
+				has_submenu.slideDown(350);				
+			}
+		});		
+
+	});
+	
+</script>
+
+</head>
+<body>
+
+<div>
+	<ul id="vmenu">
+		<li><a href="#">Level1 메뉴 A</a>
+			<ul>
+				<li><a href="#">Level2 메뉴 A</a></li>
+				<li><a href="#">Level2 메뉴 B</a>
+					<ul>
+						<li><a href="#">Level3 메뉴 A</a></li>
+						<li><a href="#">Level3 메뉴 B</a></li>					
+					</ul>
+				</li>
+				<li><a href="#">Level2 메뉴 C</a>
+					<ul>
+						<li><a href="#">Level3 메뉴 A</a></li>
+						<li><a href="#">Level3 메뉴 B</a></li>					
+					</ul>			
+				</li>
+			</ul>
+		</li>
+		<li><a href="#">Level1 메뉴 B</a>
+			<ul>
+				<li><a href="#">Level2 메뉴 A</a></li>
+				<li><a href="#">Level2 메뉴 B</a>
+					<ul>
+						<li><a href="#">Level3 메뉴 A</a></li>
+						<li><a href="#">Level3 메뉴 B</a></li>					
+					</ul>
+				</li>
+				<li><a href="#">Level2 메뉴 C</a>
+					<ul>
+						<li><a href="#">Level3 메뉴 A</a></li>
+						<li><a href="#">Level3 메뉴 B</a></li>					
+					</ul>			
+				</li>
+			</ul>
+		</li>
+		<li><a href="#">Level1 메뉴 C</a></li>
+		<li><a href="#">Level1 메뉴 D</a></li>
+	</ul>	
+</div>
+
+</body>
+</html>

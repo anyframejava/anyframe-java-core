@@ -1,0 +1,83 @@
+<chapter id="jdbcsupport_injectionandlogging_configuration">
+		<title>Configuration</title>
+
+
+		<section id="jdbcsupport_injectionandlogging_configuration_jdbcaspect">
+        	<title>JdbcAspect</title>
+
+        	<para>
+        		Spring 의 MethodInterceptor 를 구현하고 있는 JdbcAspect 를 등록한다. 이때 injectionPatternPostProcessor 와 completeQueryPostProcessor 를 dependency 로 등록해 줘야 한다.
+        		<programlisting language="xml"><![CDATA[<bean id="jdbcAspect" class="org.anyframe.jdbc.support.aspect.JdbcAspect">
+    <property name="injectionPatternPostProcessor" ref="injectionPatternPostProcessor" />
+    <property name="completeQueryPostProcessor" ref="completeQueryPostProcessor" />
+</bean>]]></programlisting>
+        	</para>
+        	
+        	<para>
+        		AOP 를 통한 DataSource interrupt 를 처리하기 위해 Spring 의 aop pointcut 표현식을 지정하여 위에서 등록한 jdbcAspect 를 연결해준다.
+        		<programlisting language="xml"><![CDATA[<aop:config>
+    <aop:pointcut id="jdbcPointcut" expression="execution(* *..*DataSource.*(..))" />
+    <aop:advisor advice-ref="jdbcAspect" pointcut-ref="jdbcPointcut" />
+</aop:config>]]></programlisting>
+        	</para>
+		</section>
+
+
+
+		<section id="jdbcsupport_injectionandlogging_configuration_postprocessor">
+        	<title>injectionPatternPostProcessor 및 completeQueryPostProcessor 설정</title>
+
+			<para>
+        		기본 구현으로 제공되는 injectionPatternPostProcessor
+        		<programlisting language="xml"><![CDATA[<bean id="injectionPatternPostProcessor"
+	class="org.anyframe.jdbc.support.impl.DefaultInjectionPatternPostProcessor">
+    <property name="warningPatterns">
+        <list>
+            <value>-{2,}</value>				<!-- check sql comment pattern -->
+            <value>'?1'?\s*=\s*'?1'?</value>	<!-- check 1 = 1 pattern - ex. '1' = '1' , 1= 1, '1'='1' -->
+            <!-- etc .. your own patterns -->
+        </list>
+    </property>
+    <property name="replacePatterns">
+        <map>
+            <entry key=";" value="" />						<!-- delete query statement delimiter -->
+            <entry key="-{2,}" value="-" />					<!-- ex. sql comment (dash) changing - (one dash) -->
+            <entry key="(?:or|OR)\s+'?1'?\s*=\s*'?1'?" value="" />	<!-- ex. delete always true text pattern - or '1'='1' -->
+            <!-- etc .. your own patterns -->
+        </map>
+    </property>
+</bean>]]></programlisting>
+        	</para>
+        	
+			<para>
+        		기본 구현으로 제공되는 completeQueryPostProcessor
+        		<programlisting language="xml"><![CDATA[<bean id="completeQueryPostProcessor"
+	class="org.anyframe.jdbc.support.impl.DefaultCompleteQueryPostProcessor" />]]></programlisting>
+        	</para>
+        	
+        	<para>위에서 warningPatterns 와 replacePatterns 에 대한 설정은 정규표현식(regular expressions) 으로 작성한다.
+    warningPatterns 나 replacePatterns 를 생략하면 해당 기능은 skip 할 수 있다. (injectionPatternPostProcessor bean 설정 자체를 없애면 안되며 property 태그 영역을 제거)</para>
+    
+    		<para>조직의 보안부서 에서 보안점검 리스트를 정해 특정한 패턴을 방어 가능한지 확인하는 경우가 많고 이러한 요구사항으로 jdbc-support 가 구현되었다.
+    		  정규표현식의 작성은 일반적으로 어렵게 느끼는 경우가 많지만 정규식을 사용하면 강력한 패턴 체크가 가능하므로  이를 잘 활용하면 생산성을 높일 수 있다. 정규식에 대해 더 알고 싶은 경우 참조 링크가 도움이 될 것이다. </para>
+
+      	</section>
+      	
+		<section id="jdbcsupport_injectionandlogging_configuration_logger">
+        	<title>log4j 설정</title>
+
+			<para>
+        		기본 구현으로 제공되는 injectionPatternPostProcessor 및 completeQueryPostProcessor 에 대한 log4j logger 정의는 다음과 같다.
+        		<programlisting language="xml"><![CDATA[<logger name="org.anyframe.jdbc.support.CompleteQueryPostProcessor" additivity="false">
+    <level value="INFO" />
+    <appender-ref ref="console" />
+</logger>
+
+<logger name="org.anyframe.jdbc.support.InjectionPatternPostProcessor" additivity="false">
+    <level value="WARN" />
+    <appender-ref ref="console" />
+</logger>]]></programlisting>
+        	</para>
+        	
+      	</section>
+</chapter>

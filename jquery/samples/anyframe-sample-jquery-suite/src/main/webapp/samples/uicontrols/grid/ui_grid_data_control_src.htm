@@ -1,0 +1,287 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
+<html>
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+<title>Grid Sample - Data 처리</title>
+
+<link href="../../../common/css/smoothness/jquery-ui-1.10.0.custom.css" rel="stylesheet">
+<link href="../../../common/css/smoothness/jquery.jqgrid.css" rel="stylesheet">
+<script src="../../../common/exlibs/jquery-1.9.0.js"></script>
+<script src="../../../common/exlibs/jquery-ui-1.10.0.custom.js"></script>
+<script src="../../../common/exlibs/jquery.jqGrid.src.js"></script>
+
+<link href="sub_css/data_control.css" rel="stylesheet">
+
+<script type="text/javascript">
+
+	var ENV = {
+			ID_GRID : "#grid",
+			JSON_URL : "sub/data_sample.json" 
+	};
+	
+	var mainView = {
+			
+			_grid : null,
+			_data : null,
+			_maxrowid : 10,
+			
+			init : function()
+			{
+				this._grid = $(ENV.ID_GRID);
+				
+				this._grid.jqGrid({
+									
+					datatype: "local",
+					width: 700,
+					height: 300,	
+					caption: "Grid 데이타 처리",
+					colNames: [ "아이디", "일시", "고객", "잔액", "입금액", "기타" ],	
+					colModel: [
+					          	{name:"id", sortable: false},
+					          	{name:"date"},
+					          	{name:"name"},
+					          	{name:"balance"},
+					          	{name:"deposit"},
+					          	{name:"notes"}					          	
+					          ]					
+				});
+			},
+			
+			loadJson : function(url) 
+			{
+				var owner = this;
+				$.getJSON(url, function(data) {
+					owner._loadGridData(data.rows);
+				})
+			},
+			
+			getSelectedRowInfo : function()
+			{
+				var selrow = this._getSelectedOneRow(),
+				    retobj = null;
+				
+				if (selrow == null) {
+					alert('선택된 정보가 없습니다.');
+				}
+				else {
+					retobj = this.getRowInfo(selrow);
+					alert( this._formatRowData( retobj ) );								
+				}				
+			},
+			
+			getRowInfo : function(rowid)
+			{
+				return ( this._grid.jqGrid('getRowData', rowid) );
+			},			
+			
+			getCellInfo : function(colname)
+			{
+				var selrow = this._getSelectedOneRow();
+				
+				if (selrow == null) {
+					alert('선택된 정보가 없습니다.');
+					return;
+				}
+				
+				alert( colname + " = " + this._grid.jqGrid('getCell', selrow, colname) );				
+			},
+			
+			getColumnAllInfo : function(colname)
+			{
+				alert( this._formatArray( this._grid.jqGrid('getCol', colname) ) );
+			},
+						
+			addOneRow : function(addpos)
+			{
+				var selrow = this._getSelectedOneRow();
+				
+				if ( (addpos == "after" || addpos == "before") && selrow == null )
+				{
+					alert('선택된 row 정보가 없어서, before/after 위치에 추가할 수 없습니다.');
+					return;
+				}
+				
+				var owner = this,
+					newrowid = getNewRowId(),
+					newrow = {id: ""+newrowid, date: "2013-01-01", name: "테스트1", balance: "10000", deposit: "1000", notes: "테스트" };
+				
+				this._grid.jqGrid('addRowData', newrowid, newrow, addpos, selrow);
+				
+				function getNewRowId()
+				{
+					owner._maxrowid++;
+					return owner._maxrowid;
+				}
+			},
+			
+			deleteSelRow : function()
+			{
+				var selrow = this._getSelectedOneRow();
+				
+				if (selrow == null) {
+					alert('선택된 정보가 없습니다.');
+				}
+				else {					
+					if ( this._grid.jqGrid('delRowData', selrow) )
+						alert('선택된 row 가 삭제되었습니다.');
+				}
+			},
+			
+			modifySelRow : function(colname, newval)
+			{
+				var selrow = this._getSelectedOneRow(),
+					newcols = {};
+				
+				if (selrow == null) {
+					alert('선택된 정보가 없습니다.');
+					return;
+				}
+				
+				newcols[colname] = newval;
+				this._grid.jqGrid('setRowData', selrow, newcols );
+			},			
+			
+			_getSelectedOneRow : function()
+			{
+				return this._grid.jqGrid('getGridParam', 'selrow');
+			},
+			
+			_loadGridData : function(newData)
+			{
+				this._data = newData;				
+				this._grid.jqGrid('setGridParam', {data: newData}).trigger('reloadGrid');
+			},			
+			
+			_formatRowData : function(rowdata) 
+			{
+				var retstr = "",
+					colModel = this._grid[0].p.colModel;
+			
+				for (var cx = 0, len = colModel.length; cx < len; cx++)
+				{
+					var colobj = colModel[cx];
+					
+					if (cx == 0) {						
+						retstr += colobj.name + " = " + rowdata[colobj.name];
+					}
+					else {
+						retstr += ", " + colobj.name + " = " + rowdata[colobj.name];
+					}
+				}				
+				
+				return retstr;				
+			},
+			
+			_formatArray : function(arry)
+			{
+				var retstr = "";
+				
+				if (arry.length === undefined)
+					return "";
+				
+				for (var ax = 0, len = arry.length; ax < len; ax++)
+				{
+					retstr += "[" + ax + "] " + arry[ax] + ( (ax == len - 1 ? "" : "\n") );
+				}
+				
+				return retstr;
+			}
+			
+			
+	};
+
+	$(document).ready(function() {
+		
+		$('button#btnLoadData').click(function(evt) {		
+				mainView.loadJson(ENV.JSON_URL);
+		});
+		
+		$('button#btnGetInfoSelRow').click(function(evt) {		
+			mainView.getSelectedRowInfo();
+		});
+		
+		$('button#btnGetInfoCell').click(function(evt) {
+			mainView.getCellInfo( $(this).siblings('select').eq(0).val() );
+		});
+		
+		$('button#btnGetInfoColumnAll').click(function(evt) {
+			mainView.getColumnAllInfo( $(this).siblings('select').eq(0).val() );
+		});
+		
+		$('button#btnAddNewRow').click(function(evt) {
+			mainView.addOneRow( $(this).siblings('select').eq(0).val() );
+		});
+		
+		$('button#btnDeleteRow').click(function(evt) {
+			mainView.deleteSelRow();
+		});
+		
+		$('button#btnUpdateCell').click(function(evt) {
+			mainView.modifySelRow( $(this).siblings('select').eq(0).val(),
+								   $(this).siblings('input').eq(0).val()	
+								  );
+		});		
+		
+		mainView.init();
+		
+	});
+	
+</script>
+
+</head>
+<body class="grid_demo">
+	<div>
+		<ul>
+			<li><label>json 파일 로딩</label><button id='btnLoadData'>Load</button></li>
+			<li><label>선택된 row 정보</label><button id='btnGetInfoSelRow'>Show Row Data</button></li>
+			<li><label>선택된 row 내, 특정 column 정보</label><button id='btnGetInfoCell'>Show Cell Data</button>
+				<label style="width:80px;">column 이름</label>
+			    <select>
+			    		<option>id</option>
+			    		<option>date</option>
+			    		<option>name</option>
+			    		<option>balance</option>
+			    		<option>deposit</option>
+			    		<option>notes</option>			    		
+			    </select>
+			</li>
+			<li><label>특정 column 정보 (all)</label><button id='btnGetInfoColumnAll'>Show Column Data</button>
+				<label style="width:80px;">column 이름</label>
+			    <select>
+			    		<option>id</option>
+			    		<option>date</option>
+			    		<option>name</option>
+			    		<option>balance</option>
+			    		<option>deposit</option>
+			    		<option>notes</option>			    		
+			    </select>
+			</li>
+			<li><label>row 추가 (임의의 데이타 사용)</label><button id="btnAddNewRow">Add Row</button>
+				<label style="width:80px;">추가 위치 지정</label>
+			    <select>
+			    		<option>last</option>
+			    		<option>first</option>
+			    		<option>before</option>
+			    		<option>after</option>		    		
+			    </select>
+			</li>
+			<li><label>row 삭제 (선택된 row 기준)</label><button id="btnDeleteRow">Delete Row</button></li>
+			<li><label>선택된 row 내, column 수정</label><button id='btnUpdateCell'>Update Cell Data</button>
+				<label style="width:80px;">column 선택</label>
+			    <select>
+			    		<option>name</option>
+			    		<option>balance</option>
+			    		<option>deposit</option>
+			    		<option>notes</option>
+			    		<option>date</option>			    					    		
+			    </select>
+				<label style="width:auto;">수정 값</label>
+			    <input type="text" value="테스트" />			    
+			</li>			
+		</ul>
+	</div>
+	<div id="grid_container">
+		<table id="grid"></table>
+	</div>
+</body>
+</html>

@@ -1,0 +1,65 @@
+<chapter id="jdbcsupport_injectionandlogging_architecture">
+		<title>Architecture</title>
+
+
+		<section id="jdbcsupport_injectionandlogging_architecture_base">
+        	<title>Architecture</title>
+        	
+        	<para>dataSource  - AOP Method Interceptor - JdbcAspect (p6spy connection wrapping)</para>
+        	
+        	<para>InjectionPatternPostProcessor / CompleteQueryPostProcessor - Spring bean 으로 등록하여 JdbcAspect 에 DI 한다.</para>
+        	
+        	<para>P6Factory 는 사용자 jdbc app. 내에서 발생하는 getConnection, getPreparedStatement 에 대해 InjectionPatternPostProcessor / CompleteQueryPostProcessor 기능이 적용된 P6Connection, P6PreparedStatement 등을 제공하게 된다.</para>
+        	
+        	<para>JDBC 사용 유형에 따라 connection.prepareStatement(sql), preparedStatement.execute(sql) 등의 point 에서 InjectionPattern 처리, CompleteQuery 처리(로깅 또는 기타의 방법으로 사용자에게 전달) 할 수 있다.</para>
+        	
+
+			<para>P6Spy Connection Wrapping</para>
+        	<itemizedlist>
+          		<listitem>
+            		<para>P6Factory 확장</para>
+            	</listitem>
+            	<listitem>
+            		<para>P6Connection 확장</para>
+            	</listitem>
+            	<listitem>	
+            		<para>P6 Statement/PreparedStatement/CallableStatement 확장</para>
+          		</listitem>
+        	</itemizedlist>
+		</section>
+
+
+
+		<section id="jdbcsupport_injectionandlogging_architecture_injection">
+        	<title>InjectionPatternPostProcessor</title>
+
+        	<para>
+        		SQL Injection 패턴이 존재하는지 detect 하고 이에 대한 warning을 처리한다. return void
+        		<programlisting language="java"><![CDATA[public void warningPattern(String sql)]]></programlisting>
+        	</para>
+        	
+        	<para>
+        		Injection 패턴에 대해 replace 처리 후 변경된 sql 문을 리턴한다.
+        		<programlisting language="java"><![CDATA[public String replacePattern(String sql)]]></programlisting>
+        	</para>
+        	
+        	<para>
+        		Default 구현은 멀티건의 warningPatterns, replacePatterns regex(정규표현식) 패턴을 bean 설정 파일의 property로 정의하여 이에 대한 매칭 시 warn 로깅 및 sql replace 를 처리한다.
+   				cf.) 위의 Interface 만 맞추면 Implementation 은 사이트 특성에 맞게 자유롭게 구현해도 된다.
+        	</para>
+      	</section>
+      	
+		<section id="jdbcsupport_injectionandlogging_architecture_completequery">
+        	<title>CompleteQueryPostProcessor</title>
+
+        	<para>
+        		최종 SQL 문에 대해 재처리(ex. SQL Logging)한다.
+        		<programlisting language="java"><![CDATA[public void processCompleteQuery(String sql)]]></programlisting>
+        	</para>
+
+        	<para>
+        		Default 구현은 최종 실행 SQL 문을 commons logging 을 통한 Logger 로 출력한다.
+   				cf.) 위의 Interface 만 맞추면 Implementation 은 사이트 특성에 맞게 자유롭게 구현해도 된다.
+        	</para>
+      	</section>
+</chapter>

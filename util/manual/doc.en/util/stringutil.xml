@@ -1,0 +1,305 @@
+<chapter id="util_stringutil">
+	<title> StringUtil</title>
+	<para>
+		This utility provides functions such as search, conversion, substitution and validity check of a string.
+	</para>
+	<para>The following is explanation of methods of StringUtil.</para>
+	<informaltable>
+		<tgroup cols="3">
+			<colspec colnum="1" colname="col1" colwidth="2*" />
+			<colspec colnum="2" colname="col2" colwidth="4*" />
+			<colspec colnum="3" colname="col3" colwidth="4*" />
+			<thead>
+				<row>
+					<entry align="center">Method</entry>
+					<entry align="center">Description</entry>
+					<entry align="center">Example</entry>
+				</row>
+			</thead>
+			<tbody>
+				<row>
+					<entry><emphasis role="bold">getRandomString</emphasis>(int minSize, int maxSize)</entry>
+					<entry>Return a random string between the minimum and the maximum size</entry>
+					<entry>StringUtil.getRandomString(10, 15)</entry>
+				</row>
+				<row>
+					<entry><emphasis role="bold">getRandomString</emphasis>(int count)</entry>
+					<entry>Return a random string with a specific length</entry>
+					<entry>StringUtil.getRandomString(8)</entry>
+				</row>
+				<row>
+					<entry><emphasis role="bold">getRandomString</emphasis>(int count, char startChar, char endChar)</entry>
+					<entry>Return a random string with a designated length between specific alphabet letters</entry>
+					<entry>StringUtil.getRandomString(10, 'a', 'e')</entry>
+				</row>
+				<row>
+					<entry><emphasis role="bold">getRandomStringByKorean</emphasis>(int count)</entry>
+					<entry>Return a string in Korean with a specific length</entry>
+					<entry>StringUtil.getRandomStringByKorean(20)</entry>
+				</row>
+				<row>
+					<entry><emphasis role="bold">getRandomStringByCharset</emphasis>(int count, String charset)</entry>
+					<entry>Return a given character set string with a specific length</entry>
+					<entry>StringUtil.getRandomStringByCharset(20, "UTF-8")</entry>
+				</row>
+				<row>
+					<entry><emphasis role="bold">indexOf</emphasis>(String str, String search)</entry>
+					<entry>Return the index of the first string when the default string has the search string</entry>
+					<entry>StringUtil.indexOf("Anyframe Java Test", "Java")=9</entry>
+				</row>
+				<row>
+					<entry><emphasis role="bold">getContainsCount</emphasis>(String str, String sub)</entry>
+					<entry>Return the number of a given string containing the relevant string</entry>
+					<entry>StringUtil.getContainsCount("Anyframe Java Test", "a")=3</entry>
+				</row>
+				<row>
+					<entry><emphasis role="bold">getContainsCount</emphasis>(String str, char[] chars)</entry>
+					<entry>Return the number of a given string containing the relevant characters</entry>
+					<entry>StringUtil.getContainsCount("Anyframe Java Test", new char[] { 'a' })=3</entry>
+				</row>
+				<row>
+					<entry><emphasis role="bold">getRandomStringByCharset</emphasis>(int count, String charset)</entry>
+					<entry>Return a given character set string with a specific length</entry>
+					<entry>StringUtil.getRandomStringByCharset(20, "UTF-8")</entry>
+				</row>
+				<row>
+					<entry><emphasis role="bold">compareTo</emphasis>(String sourceStr, String anotherStr)</entry>
+					<entry>Compare two words in alphabetical order</entry>
+					<entry>StringUtil.compareTo("Anyframe Java Test", "Anyframe Java Test")</entry>
+				</row>
+				<row>
+					<entry><emphasis role="bold">compareToIgnoreCase</emphasis>(String sourceStr, String anotherStr)</entry>
+					<entry>Compare two words in alphabetical order regardless of capital or lower case letters</entry>
+					<entry>StringUtil.compareToIgnoreCase("anyframe java test", "Anyframe Java Test")=0</entry>
+				</row>
+				<row>
+					<entry><emphasis role="bold">indexOfIgnoreCase</emphasis>(String str, String search)</entry>
+					<entry>Return the index of the first string regardless of capital or lower case letters when the default string contains the search string</entry>
+					<entry>StringUtil.indexOfIgnoreCase("Anyframe Java Test", "java")=9</entry>
+				</row>
+				<row>
+					<entry><emphasis role="bold">getContainsCountIgnoreCase</emphasis>(String str, String sub)</entry>
+					<entry>Return the number of a given string containing the relevant string regardless of capital or lower case letters</entry>
+					<entry>StringUtil.getContainsCountIgnoreCase("Anyframe Java Test", "test")</entry>
+				</row>
+				<row>
+					<entry><emphasis role="bold">getContainsCountIgnoreCase</emphasis>(String str, char[] chars)</entry>
+					<entry>Return the number of a given string containing relevant characters regardless of capital or lower case letters</entry>
+					<entry>StringUtil.getContainsCountIgnoreCase("Anyframe Java Test", new char[] { 'a', 'T' })=6</entry>
+				</row>
+				<row>
+					<entry><emphasis role="bold">getLength</emphasis>(String str)</entry>
+					<entry>Return the length of a relevant string</entry>
+					<entry>StringUtil.getLength("Anyframe Java Test")</entry>
+				</row>
+				<row>
+					<entry><emphasis role="bold">getByteLength</emphasis>(String str)</entry>
+					<entry>Return the total length of a relevant string by calculating the length by byte</entry>
+					<entry>StringUtil.getByteLength("Anyframe Java Test")</entry>
+				</row>
+				<row>
+					<entry><emphasis role="bold">getCutString</emphasis>(String str, int length)</entry>
+					<entry>Return a new string by cutting the input string to a given length</entry>
+					<entry>StringUtil.getCutString("Anyframe Java Test", 14)="Anyframe Java "</entry>
+				</row>
+				<row>
+					<entry><emphasis role="bold">removeWhitespace</emphasis>(String str)</entry>
+					<entry>Remove all spaces in the string</entry>
+					<entry>StringUtil.removeWhitespace("Anyframe Java Test")="AnyframeJavaTest"</entry>
+				</row>
+				<row>
+					<entry><emphasis role="bold">leftTrim</emphasis>(String str)</entry>
+					<entry>Remove the space on the left side of the string</entry>
+					<entry>StringUtil.leftTrim("   Anyframe Java Test")="Anyframe Java Test"</entry>
+				</row>
+				<row>
+					<entry><emphasis role="bold">rightTrim</emphasis>(String str)</entry>
+					<entry>Remove the space on the right side of the string</entry>
+					<entry>StringUtil.rightTrim("Anyframe Java Test   ")="Anyframe Java Test"</entry>
+				</row>
+				<row>
+					<entry><emphasis role="bold">leftPad</emphasis>(String str, int size)</entry>
+					<entry>Add spaces on the left side of the relevant string to fill the input length</entry>
+					<entry>StringUtil.leftPad("Anyframe", 12)="    Anyframe"</entry>
+				</row>
+				<row>
+					<entry><emphasis role="bold">leftPad</emphasis>(String str, int size, char padChar)</entry>
+					<entry>Add designated characters on the left side of the relevant string to fill the input length</entry>
+					<entry>StringUtil.leftPad("Anyframe", 12, 'a')="aaaaAnyframe"</entry>
+				</row>
+				<row>
+					<entry><emphasis role="bold">leftPad</emphasis>(String str, int size, String padStr)</entry>
+					<entry>Add a designated string on the left side of the relevant string to fill the input length</entry>
+					<entry>StringUtil.leftPad("Anyframe", 12, "Java")="JavaAnyframe"</entry>
+				</row>
+				<row>
+					<entry><emphasis role="bold">rightPad</emphasis>(String str, int size)</entry>
+					<entry>Add spaces on the right side of the relevant string to fill the input length</entry>
+					<entry>StringUtil.rightPad("Anyframe", 12)="Anyframe    "</entry>
+				</row>
+				<row>
+					<entry><emphasis role="bold">rightPad</emphasis>(String str, int size, char padChar)</entry>
+					<entry>Add designated characters on the right side of the relevant string to fill the input length</entry>
+					<entry>StringUtil.rightPad("Anyframe", 12, 'a')="Anyframeaaaa"</entry>
+				</row>
+				<row>
+					<entry><emphasis role="bold">splitHead</emphasis>(String str, int size)</entry>
+					<entry>Cut the relevant string from the left according to a given size</entry>
+					<entry>StringUtil.splitHead("Anyframe Java Test", 3)="Any"</entry>
+				</row>
+				<row>
+					<entry><emphasis role="bold">splitTail</emphasis>(String str, int size)</entry>
+					<entry>Cut the relevant string from the right according to a given size</entry>
+					<entry>StringUtil.splitTail("Anyframe Java Test", 3)="est"</entry>
+				</row>
+				<row>
+					<entry><emphasis role="bold">removeAll</emphasis>(String str, String charsToDelete)</entry>
+					<entry>Remove all the string designated to be removed from the input string</entry>
+					<entry>StringUtil.removeAll("Anyframe Java Test", "Java")="Anyfrme  Test"</entry>
+				</row>
+				<row>
+					<entry><emphasis role="bold">convertToCamelCase</emphasis>(String underscore)</entry>
+					<entry>Convert the input underscore type string to camel case</entry>
+					<entry>StringUtil.convertToCamelCase("anyframe_java_test")="anyframeJavaTest"</entry>
+				</row>
+				<row>
+					<entry><emphasis role="bold">convertToCamelCase</emphasis>(String targetString, char posChar)</entry>
+					<entry>Convert the string cut according to the given character type to camel case</entry>
+					<entry>StringUtil.convertToCamelCase("anyframe-java-test", '-')="anyframeJavaTest"</entry>
+				</row>
+				<row>
+					<entry><emphasis role="bold">convertToUnderScore</emphasis>(String camelCase)</entry>
+					<entry>Convert the camel case type string to an underscore type string</entry>
+					<entry>StringUtil.convertToUnderScore("anyframeJavaTest")="anyframe_java_test"</entry>
+				</row>
+				<row>
+					<entry><emphasis role="bold">reverse</emphasis>(String str)</entry>
+					<entry>Reverse the order of the input string</entry>
+					<entry>StringUtil.reverse("Anyframe Java Test")="tseT avaJ emarfynA"</entry>
+				</row>
+				<row>
+					<entry><emphasis role="bold">convertToUnderScore</emphasis>(String camelCase)</entry>
+					<entry>Convert the camel case type string to an underscore type string</entry>
+					<entry>StringUtil.convertToUnderScore("anyframeJavaTest")="anyframe_java_test"</entry>
+				</row>
+				<row>
+					<entry><emphasis role="bold">null2str</emphasis>(String org, String converted)</entry>
+					<entry>Convert null or an empty string to the given string</entry>
+					<entry>StringUtil.null2str("    ", "empty")="empty"</entry>
+				</row>
+				<row>
+					<entry><emphasis role="bold">null2str</emphasis>(String org)</entry>
+					<entry>Convert null or an empty string to ""</entry>
+					<entry>StringUtil.null2str(null)=""</entry>
+				</row>
+				<row>
+					<entry><emphasis role="bold">decode</emphasis>(String source, String target, String result, String base)</entry>
+					<entry>Compare the first string and the second string and return the third string if they are the same and return the fourth string if they are not</entry>
+					<entry>StringUtil.decode("Java", "Test", "Good", "Bad")="bad"</entry>
+				</row>
+				<row>
+					<entry><emphasis role="bold">replaceFirst</emphasis>(String source, String regex, String replacement)</entry>
+					<entry>Change the first string in the input string that matches the given string to the string to replace it</entry>
+					<entry>StringUtil.replaceFirst("Anyframe Java Test Anyframe Java Test", "Anyframe", "Enterprise")="Enterprise Java Test Anyframe Java Test"</entry>
+				</row>
+				<row>
+					<entry><emphasis role="bold">replaceLast</emphasis>(String source, String regex, String replacement)</entry>
+					<entry>Change the last string in the input string that matches the given string to the string to replace it</entry>
+					<entry>StringUtil.replaceLast("Anyframe Java Test Anyframe Java Test", "Anyframe", "Enterprise")="Anyframe Java Test Enterprise Java Test"</entry>
+				</row>
+				<row>
+					<entry><emphasis role="bold">replaceAll</emphasis>(String source, String regex, String replacement)</entry>
+					<entry>Change all the string in the input string that matches the given string to the string to replace it</entry>
+					<entry>StringUtil.replaceAll("Anyframe Java Test Anyframe Java Test", "Anyframe", "Enterprise")="Enterprise Java Test Enterprise Java Test"</entry>
+				</row>
+				<row>
+					<entry><emphasis role="bold">replaceHtmlEscape</emphasis>(String input)</entry>
+					<entry>Unescape the string that contains HTML tags</entry>
+					<entry>StringUtil.replaceHtmlEscape("&lt;html&gt;Anyframe Java Test&lt;html&gt;")
+					="&lt;html&gt;Anyframe Java Test&lt;html&gt;"</entry>
+				</row>
+				<row>
+					<entry><emphasis role="bold">removeEscapeChar</emphasis>(String input)</entry>
+					<entry>Change the unescaped string to the HTML tag type</entry>
+					<entry>StringUtil.removeEscapeChar("&lt;html&gt;Anyframe Java Test&lt;html&gt;")
+					="&lt;html&gt;Anyframe Java Test&lt;html&gt;"</entry>
+				</row>
+				<row>
+					<entry><emphasis role="bold">swapFirstLetterCase</emphasis>(String str)</entry>
+					<entry>Change the first letter to a capital letter</entry>
+					<entry>StringUtil.swapFirstLetterCase("java")="Java"</entry>
+				</row>
+				<row>
+					<entry><emphasis role="bold">trim</emphasis>(String origString, String trimString)</entry>
+					<entry>Trim the part of the input string that matches the given string</entry>
+					<entry>StringUtil.trim("Anyframe*Java", "*")="AnyframeJava"</entry>
+				</row>
+				<row>
+					<entry><emphasis role="bold">getLastString</emphasis>(String origStr, String strToken)</entry>
+					<entry>Separate the input string by the given token and return the last string</entry>
+					<entry>StringUtil.getLastString("Anyframe_Java_Test", "_")="Test"</entry>
+				</row>
+				<row>
+					<entry><emphasis role="bold">getStringArray</emphasis>(String str, String strToken)</entry>
+					<entry>Separate the input string by the given token and return the array list type</entry>
+					<entry>StringUtil.getStringArray("Anyframe/Java/Test", "/")</entry>
+				</row>
+				<row>
+					<entry><emphasis role="bold">isNotEmpty</emphasis>(String str)</entry>
+					<entry>When a given string is neither null nor empty, return true.</entry>
+					<entry>StringUtil.isNotEmpty("abc")=true</entry>
+				</row>
+				<row>
+					<entry><emphasis role="bold">isEmpty</emphasis>(String str) </entry>
+					<entry>When a given string is null or empty, return true</entry>
+					<entry>StringUtil.isEmpty("")=true</entry>
+				</row>
+				<row>
+					<entry><emphasis role="bold">isEmptyTrimmed</emphasis>(String str)</entry>
+					<entry>When the trimmed string is null or empty, return true</entry>
+					<entry>StringUtil.isEmptyTrimmed("   ")</entry>
+				</row>
+				<row>
+					<entry><emphasis role="bold">replace</emphasis>(String str, String replacedStr, String replaceStr)</entry>
+					<entry>Find the relevant character in the input string and change to the given string</entry>
+					<entry>StringUtil.replace("Anyframe/Common", "/", "|")="Anyframe|Common"</entry>
+				</row>
+				<row>
+					<entry><emphasis role="bold">containsMaxSequence</emphasis>(String str, String maxSeqNumber)</entry>
+					<entry>Check whether the same characters are repeated in the input string according to the given number</entry>
+					<entry>StringUtil.containsMaxSequence("abbbbc", "4")=true</entry>
+				</row>
+				<row>
+					<entry><emphasis role="bold">containsInvalidChars</emphasis>(String str, char[] invalidChars)</entry>
+					<entry>Check whether the input string contains the given characters</entry>
+					<entry>StringUtil.containsInvalidChars("abc*abc", "*")=true</entry>
+				</row>
+				<row>
+					<entry><emphasis role="bold">containsInvalidChars</emphasis>(String str, String invalidChars)</entry>
+					<entry>Check whether the input string contains the given characters</entry>
+					<entry>StringUtil.containsInvalidChars("abc/", new char[] { '*', '/' })=true</entry>
+				</row>
+				<row>
+					<entry><emphasis role="bold">isAlphaNumeric</emphasis>(String str)</entry>
+					<entry>Check whether the input string is composed only of numbers and Unicode letters</entry>
+					<entry>StringUtil.isAlphaNumeric("abcfds")=true</entry>
+				</row>
+				<row>
+					<entry><emphasis role="bold">isAlpha</emphasis>(String str)</entry>
+					<entry>Check whether the input string is composed only of Unicode letters</entry>
+					<entry>StringUtil.isAlpha("abcfds")=true</entry>
+				</row>
+				<row>
+					<entry><emphasis role="bold">getTokens</emphasis>(String lst, String separator)</entry>
+					<entry>Separate the input string by the given separator and return List&lt;String&gt;</entry>
+					<entry>StringUtil.getTokens("Anyframe/Java/Test", "/")</entry>
+				</row>
+				<row>
+					<entry><emphasis role="bold">getTokens</emphasis>(String lst)</entry>
+					<entry>Separate the input string by ,(comma) and return List&lt;String&gt;</entry>
+					<entry>StringUtil.getTokens("Anyframe,Java,Test")</entry>
+				</row>
+			</tbody>
+		</tgroup>  
+	</informaltable>
+</chapter>

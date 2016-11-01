@@ -1,0 +1,56 @@
+<?xml version="1.0" encoding="utf-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-4.0.xsd">
+
+	<bean id="sessionFactory" class="org.springframework.orm.hibernate3.annotation.AnnotationSessionFactoryBean" lazy-init="true">
+		<property name="dataSource" ref="dataSource" />
+		<property name="mappingLocations">
+			<value>classpath:/hibernate/*.hbm.xml</value>
+		</property>		
+		<property name="hibernateProperties">
+			<props>
+				<!--hibernate-dialect-START-->
+				<prop key="hibernate.dialect">org.hibernate.dialect.HSQLDialect</prop>
+				<!--hibernate-dialect-END-->
+				<prop key="hibernate.format_sql">false</prop>
+				<prop key="hibernate.show_sql">false</prop>
+				<prop key="hibernate.use_sql_comments">false</prop>
+				<prop key="hibernate.jdbc.batch_size">5</prop>
+				<prop key="hibernate.cache.provider_class">net.sf.ehcache.hibernate.EhCacheProvider</prop>
+				<prop key="hibernate.cache.provider_configuration_file_resource_path">hibernate/ehcache.xml</prop>
+				<prop key="hibernate.cache.use_second_level_cache">true</prop>
+			</props>
+		</property>
+		<property name="annotatedClasses">
+			<list>
+				<!--Add new Entities here-->			
+			</list>
+		</property>
+		<property name="packagesToScan">
+			<list>
+				<!--Add new Packages to scan here-->
+			</list>
+		</property>
+	</bean>
+
+	<bean id="dynamicHibernateService" class="org.anyframe.hibernate.impl.DynamicHibernateServiceImpl">
+		<property name="sessionFactory" ref="sessionFactory" />
+		<property name="fileNames">
+			<list>
+				<!--Add new file name here-->
+				<value>classpath*:hibernate/dynamic-hibernate-movie.xml</value>
+			</list>
+		</property>
+	</bean>
+
+	<bean id="proxyStore" class="net.sf.gilead.core.store.stateless.StatelessProxyStore" />
+
+	<bean id="persistenceUtil" class="net.sf.gilead.core.hibernate.HibernateUtil">
+		<property name="sessionFactory" ref="sessionFactory" />
+	</bean>
+
+	<bean id="persistentBeanManager" class="net.sf.gilead.core.PersistentBeanManager">
+		<property name="proxyStore" ref="proxyStore" />
+		<property name="persistenceUtil" ref="persistenceUtil" />
+	</bean>
+</beans>

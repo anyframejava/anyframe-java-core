@@ -1,0 +1,89 @@
+<chapter id="idgen_uuid">
+	<title>UUIdGenService</title>
+
+	<para>
+		새로운 ID를 생성하기 위해 UUID 생성 알고리즘을 이용하여 16 바이트 길이의 ID를 생성한다. 다음과 같은 설정을
+    	가질 수 있다.
+    </para>
+
+    <informaltable>
+    	<caption>UUIdGenService 속성 목록</caption>
+      <tgroup cols="4">
+        <colspec colnum="1" colname="col1" colwidth="2*"/>
+        <colspec colnum="2" colname="col2" colwidth="6*"/>
+        <colspec colnum="3" colname="col3" colwidth="1*"/>
+        <colspec colnum="4" colname="col4" colwidth="1*"/>
+        <thead>
+        	<row>
+            	<entry align="center">Property Name</entry>
+            	<entry align="center">Description</entry>
+		        <entry align="center">Required</entry>
+		        <entry align="center">Default Value</entry>
+          	</row>
+        </thead>
+
+        <tbody>
+          <row>
+            <entry>address</entry>
+            <entry>
+            	물리적 네트웍 공간 상의 유일성을 보장하기 위해 IP 주소나 네트웍 카드의 MAC 주소를 값으로 지정한다.
+            	IP 주소일 경우 필드간의 구분은 "."로 하고, MAC 주소일 경우는 “:”로 한다. 지정하지 않으면
+            	UUIdGenService는 내부에서 MAC 주소를 랜덤하게 생성한다.
+            </entry>
+            <entry align="center">False</entry>
+            <entry>랜덤 생성</entry>
+          </row>
+        </tbody>
+      </tgroup>
+    </informaltable>
+
+    <section id="idgen_uuid_samples">
+		<title>Implementation</title>
+
+		<itemizedlist>
+			<listitem>
+			<para><emphasis role="bold">Configuration</emphasis></para>
+
+			<para>
+				다음은 IdGernerationService에서 사용할 UUIdGenService와 그 속성을
+          		정의한 context-idgen.xml 의 일부이다. MAC Address를 기반으로
+          		유일한 Id를 생성하는 UUIdGenService Bean을 정의하고 있다. 
+  				<programlisting
+  				language="xml"><![CDATA[<bean name="UUIdGenService" class="org.anyframe.idgen.impl.UUIdGenServiceImpl">
+    <property name="address" value="00:00:F0:79:19:5B"/>
+</bean>]]></programlisting>
+			</para>
+     	   	</listitem>
+
+			<listitem>
+	        <para><emphasis role="bold">TestCase </emphasis></para>
+
+			<para>
+				다음은 앞서 정의한 속성 설정을 기반으로 하여 UUIdGenService로부터 유일한 id를
+          		추출하는 IdgenServiceTest.java 코드의 일부이다.
+         		<programlisting language="java"><![CDATA[@Inject
+@Named("UUIdGenService")
+IdGenService uuid;
+   
+/**
+ * [Flow #-1] Positive : try to get next String id and BigDecimal id.
+ * 
+ * @throws Exception
+ *           fail to test
+ */
+@Test
+public void testUUIdGenService() {
+    // 1. get next String id
+    for (int i = 0; i < 10; i++) {
+        assertNotNull(uuid.getNextStringId());
+    }
+    // 2. get next BigDecimal id
+    for (int i = 0; i < 10; i++) {
+        assertNotNull(uuid.getNextBigDecimalId());
+    }
+}]]></programlisting>
+			</para>
+        	</listitem>
+		</itemizedlist>
+	</section>
+</chapter>

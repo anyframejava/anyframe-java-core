@@ -1,0 +1,136 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN"
+"http://www.w3.org/TR/html4/loose.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+
+<head>
+<meta http-equiv="content-type" content="text/html; charset=UTF-8" />
+<title>[Button] Basic Sample</title>
+<link href="../../../common/css/smoothness/jquery-ui-1.10.0.custom.css"	rel="stylesheet">
+<script src="../../../common/exlibs/jquery-1.9.0.js"></script>
+<script src="../../../common/exlibs/jquery-ui-1.10.0.custom.js"></script>
+
+<link type="text/css" rel="stylesheet" href="../../../common/css/style.css" />
+<link type="text/css" rel="stylesheet" href="sub_css/basic.css">
+
+<script type="text/javascript">
+	
+	var ENV = {
+		ID_BUTTON_CONTENT : "#btnContent",
+		ID_BUTTON_TXT : "#btnText",
+		ID_BUTTON_DISABLED : "#btnDisabled",
+		ICON_PRIMARY : "ui-icon-person",
+		ICON_SECONDARY : "ui-icon-comment"
+	};
+	
+	var OPTIONS = {
+			TEXT : "text",
+			ICONS : "icons",
+			LABEL : "label",
+			DISABLED :  "disabled"
+	};
+	
+	function setOptions(target, kind, value){
+		$(target).button("option", kind, value);
+	};
+		
+	function getOptions(target, kind) {
+		return $(target).button("option", kind);
+	};
+	
+	var mainView = {
+		
+		setIcons : function(pri, sec){
+			var icons = {
+					primary : pri,
+					secondary : sec
+			};
+			
+			return icons;
+		},
+		
+		setBtnContent : function(target, type){
+
+			var text, icons;
+			
+			switch(type)
+			{
+			case "icon-only":
+				text = false;
+				icons = this.setIcons(ENV.ICON_PRIMARY);
+				break;
+			case "text-only":
+				text = true;
+				icons = this.setIcons();
+				break;
+			case "icon-text-icon":
+				text = true;
+				icons = this.setIcons(ENV.ICON_PRIMARY, ENV.ICON_SECONDARY);
+				break;
+			default:	// icon-text
+				text = true;
+				icons = this.setIcons(ENV.ICON_PRIMARY);
+				break;
+			};
+			
+			setOptions(target,  OPTIONS.ICONS, icons);
+			setOptions(target,  OPTIONS.TEXT, text);
+		}
+	};
+
+	$(document).ready(function() {
+		$(":button").button();
+		
+		$("input:radio[name='btn-content']").on("click", function(){
+			mainView.setBtnContent(ENV.ID_BUTTON_CONTENT, $(this).val());
+		});
+		
+		$("input:button[name='btn-text']").on("click", function(){
+			setOptions(ENV.ID_BUTTON_TXT, OPTIONS.LABEL, $("input:text[name='text']").val());
+		});
+		
+		$("input:checkbox[name='btn-disabled']").on("click", function(){
+			setOptions(ENV.ID_BUTTON_DISABLED, OPTIONS.DISABLED, $(this).is(":checked"));
+		});
+
+	});
+</script>
+
+</head>
+
+<body>
+	<div class="title">버튼 내부 변경</div>
+	<div>
+		<div class="display-area">
+			<button id="btnContent">button</button>
+		</div>
+		<div class="input-area">
+			<input type="radio" name="btn-content" value="icon-only" />icon only
+			<input type="radio" name="btn-content"  value="text-only" checked="checked"/>text only
+			<input type="radio" name="btn-content" value="icon-text" />icon+text
+			<input type="radio" name="btn-content" value="icon-text-icon"/>icon+text+icon
+		</div>
+	</div>
+	
+	<div>
+		<div class="display-area">
+			<button id="btnText">button</button>
+		</div>
+		<div class="input-area">
+			<input type="text" name="text" value="label" />
+			<input type="button" name="btn-text" value="apply"/>
+		</div>
+	</div>
+	
+	<div>
+		<div class="display-area">
+			<button id="btnDisabled">button</button>
+		</div>
+		<div class="input-area">
+			<input type="checkbox" name="btn-disabled" /> disabled
+		</div>
+	</div>
+	
+</body>
+
+</html>
+

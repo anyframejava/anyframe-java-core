@@ -1,0 +1,48 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<queryservice xmlns="http://www.anyframejava.org/schema/query/mapping" 
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" 
+	xsi:schemaLocation="http://www.anyframejava.org/schema/query/mapping http://www.anyframejava.org/schema/query/mapping/anyframe-query-mapping-1.0.xsd ">
+
+	<queries>
+		<query id="findXPCategoryList" isDynamic="true" mappingStyle="upper">
+			<statement>
+			<!--xp-query-findXPCategoryList-START-->
+				SELECT
+				CATEGORY_ID, CATEGORY_NAME, CATEGORY_DESC, REG_DATE
+				FROM XP_CATEGORY
+				<!--Velocity-Support-findXPCategoryList-START-->
+				#if ($SEARCH_CONDITION.length() &gt; 0 &amp;&amp; "0" == $SEARCH_CONDITION)
+					WHERE CATEGORY_NAME like '%' || :SEARCH_KEYWORD || '%'
+				#elseif ($SEARCH_CONDITION.length() &gt; 0 &amp;&amp; "1" == $SEARCH_CONDITION)
+				    WHERE CATEGORY_DESC like '%' || :SEARCH_KEYWORD || '%'
+				#end
+				<!--Velocity-Support-findXPCategoryList-END-->
+				ORDER BY REG_DATE DESC
+			<!--xp-query-findXPCategoryList-END-->
+			</statement>
+		</query>
+		<query id="createXPCategory" isDynamic="true" mappingStyle="upper">
+			<statement>
+			<!--xp-query-createXPCategory-START-->
+				INSERT INTO XP_CATEGORY
+				(CATEGORY_ID, CATEGORY_NAME, CATEGORY_DESC, REG_DATE)
+				VALUES ('CATEGORY-'|| NEXT VALUE FOR XP_CATEGORY_ID_SEQ, :CATEGORY_NAME, :CATEGORY_DESC, sysdate)
+			<!--xp-query-createXPCategory-END-->
+			</statement>
+		</query>
+		<query id="updateXPCategory" isDynamic="true" mappingStyle="upper">
+			<statement>
+				UPDATE XP_CATEGORY
+				SET
+				CATEGORY_NAME = :CATEGORY_NAME, CATEGORY_DESC = :CATEGORY_DESC
+				WHERE CATEGORY_ID = :CATEGORY_ID
+			</statement>
+		</query>
+		<query id="removeXPCategory" isDynamic="true" mappingStyle="upper">
+			<statement>
+				DELETE FROM XP_CATEGORY
+				WHERE CATEGORY_ID = :CATEGORY_ID
+			</statement>
+		</query>
+	</queries>
+</queryservice>

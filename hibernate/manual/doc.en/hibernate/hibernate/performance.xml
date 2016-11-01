@@ -1,0 +1,601 @@
+<chapter id="hibernate_hibernate_performance">
+	<title>Performance Strategy</title>
+	<para>
+		For enhanced performance, Hibernate provides performance
+			strategy such as cache and fetch. Cache is largely composed of 1 level cache and 2 level cache,
+			which enables you search or save object by using the relevant cache
+			without the need to access DB each time.
+			In addition, by properly applying various fetch strategies, it is possible to solve N+1 SELECT issue 
+			which can be caused by lazy loading.
+	</para>
+
+	<section id="hibernate_hibernate_cache">
+		<title>Cache</title>
+
+      	<para>
+      		When using Hibernate, it is needed to perform data access
+				handling by mapping object transfered as input parameter with
+				defined table.
+				To address performance issue that may occur from this process, you can use cache.
+				In particular, when search in a specific application takes up a large
+				share of total execution time, performance can be enhanced by using object saved
+				in cache without accessing DB each time.
+     	</para>
+
+		<section id="hibernate_hibernate_cache_1lc">
+        	<title>1LC (1 Level Cache)</title>
+
+        	<para>
+        		As a cache defined in Hibernate Session, it is used between the
+					beginning and end of session. It also saves objects which was read
+					through Hibernate in session.
+					When loading the same object more than once in one session,from 1LC from the second time,
+					Hibernate gets the object . In addition, when attribute
+					of persistence object in one session is changed, the change is automatically
+					applied to DB at the ending period of session.
+					In other words, when research is performed for the same object in one Hibernate
+					session, application performance will be enhanced by using 1LC because the number of DB access
+					is reduced. As 1LC is a cache basically provided by Hibernate, it is automatically
+					applied without any setting.
+                <programlisting language="java"><![CDATA[public void findMovie() throws Exception {
+    newSession();
+    // Add data to DB]]>
+    <emphasis role="bold">SetUpInitData.initializeData(session);</emphasis>	
+    // 2. find a movie without accessing DB (using 1LC)
+    <emphasis role="bold"><![CDATA[/* #1 */ Movie movie = (Movie) session.get(Movie.class, "MV-00001");]]></emphasis>
+	
+    <![CDATA[Set categories = movie.getCategories();
+    categories.iterator();
+	
+    // 3. find a movie again without accessing DB (using 1LC)]]>
+    <emphasis role="bold"><![CDATA[movie = (Movie) session.get(Movie.class, "MV-00001");]]></emphasis>
+	
+    <![CDATA[categories = movie.getCategories();
+    categories.iterator();
+    closeSession();
+}]]></programlisting>
+			</para>
+
+        	<para>
+        		In the case above, persistence object saved in one session
+					through	SetUpInitData.initializeData(session) is saved in 1LC.
+					Therefore, if the same persistence object is searched in the next time like #1
+					code, that can be searched through cache without re-accessing DB.
+					This can be checked by executing HibernateFirstLevelCache.java
+					source including findMovie() method as DEBUG mode and checking the executed query
+					through console window. For more details, see SetUpInitData.java.
+        	</para>
+		</section>
+
+      	<section id="hibernate_hibernate_cache_2lc">
+			<title>2LC (2 Level Cache)</title>
+
+        	<para>
+        		2LC is a application-level cache and provides cache from
+					application's perspective. In other words, it saves loaded
+					persistence object at session factory level through several transactions.
+        	</para>
+
+        	<para>
+        		<emphasis role="bold">By defining
+						<![CDATA[hibernate.cache.use_second_level_cache,
+						hibernate.cache.provider_class, etc.]]></emphasis>
+					and property of persistence class mapping file which needs to be saved in 2LC,
+					2LC can be applied for specific persistence objects composing the application.
+        	</para>
+
+        	<para>
+        		The following is a part of hibernate.cfg.xml files defined with the configuration of 2LC.        		
+                <programlisting language="xml"><![CDATA[<property name="]]><emphasis role="bold"><![CDATA[hibernate.cache.provider_class]]></emphasis>"><![CDATA[org.hibernate.cache.EhCacheProvider
+</property>]]>
+<![CDATA[<property name="]]><emphasis role="bold"><![CDATA[hibernate.cache.use_second_level_cache]]]></emphasis>"><![CDATA[true
+</property>]]></programlisting>
+			</para>
+
+        	<para>
+        				The following is a part of Country.hbm.xml, persistence class mapping file, 
+        				where cache property was defined as read-write.
+                <programlisting language="xml"><![CDATA[<]]><![CDATA[class name="org.anyframe.sample.model.bidirection.Country" table="COUNTRY" lazy="true"
+        schema="PUBLIC">]]>
+    <![CDATA[<]]><emphasis role="bold"><![CDATA[cache usage="read-write"/]]></emphasis>>
+    <![CDATA[<id name="countryCode" type="string">
+        <column name="COUNTRY_CODE" length="12" />
+        <generator class="assigned" />
+    </id>
+    <property name="countryId" type="string">
+        <column name="COUNTRY_ID" length="2" not-null="true" />
+    </property>
+	...
+ </class>]]></programlisting>
+ 			</para>
+
+        	<para>
+        		On top of above-mentioned read-write, the value of cache can be defined as the following value.
+        	</para>
+
+        	<itemizedlist>
+          		<listitem>
+            		<para>
+            			
+            			<emphasis role="bold">read-only</emphasis> : This can be used when persistence object is not changed.
+							Safe and fast use is available even in distributed environment as there is no modification.
+            		</para>
+          		</listitem>
+
+          		<listitem>
+            		<para>
+            			<emphasis role="bold">read-write</emphasis> : This can be used when persistence object is changed.
+							This controls simultaneous access as read-committed of DBMS.
+            		</para>
+          		</listitem>
+
+          		<listitem>
+            		<para>
+            			<emphasis role="bold">nonstrict-read-write</emphasis> : This can be used when there is no need to strictly apply
+							transaction isolation.
+            		</para>
+          		</listitem>
+
+          		<listitem>
+            		<para>
+            			<emphasis role="bold">transactional</emphasis> : This guarantees perfect transaction but provides the slowest performance.
+							This can be used only in JTA.
+            		</para>
+          		</listitem>
+			</itemizedlist>
+
+        	<para>
+        		If you execute findCountry() method in
+					HibernateSecondLevelCache.java
+					based on this configuration, you can see that even new session was started
+					by #1 code, #2 code does not access DB. Rather, the value saved in the cache in the previous session is used.
+                <programlisting language="java"><![CDATA[public void findCountry() throws Exception {
+    newSession();
+    SetUpInitData.initializeData(session);
+    closeSession();]]>
+	
+    // 2. find a movie without accessing DB (using 2LC)
+    <emphasis role="bold"><![CDATA[/* #1 */ newSession();]]></emphasis>
+    <emphasis role="bold"><![CDATA[/* #2 */ Country country = (Country) session.get(Country.class, "COUNTRY-0001");]]></emphasis>
+	
+    <![CDATA[Set movies = country.getMovies();
+    movies.iterator();
+    closeSession();
+	
+    // 3. find a movie again without accessing DB (using 2LC)
+    newSession();
+    country = (Country) session.get(Country.class, "COUNTRY-0001");
+	
+    movies = country.getMovies();
+    movies.iterator();
+    closeSession();
+}]]></programlisting>
+			</para>
+
+        	<para>
+        		It is recommended to check the search object through 2LC without accessing DB by executing test case in DEBUG mode.
+					findMovie() of HibernateSecondLevelCache.java is a test for Movie,
+					a persistence class which does not use 2LC. Unlike findCountry() mentioned above,
+					this access DB whenever Session is different to search the persistence object.
+        	</para>
+
+        	<para>
+        		However, if there is any chance that DB data can be modified not ,by using the relevant application,
+					directly outside when applying 2LC, note that detailed cache
+					configuration is needed
+					for data synchronization.
+        	</para>
+		</section>
+
+		<section id="hibernate_hibernate_cache_distributed">
+        	<title>Distributed Cache</title>
+
+	        <para>
+	        	While only one application is used, there is no problem using
+					above-mentioned 2LC. Data synchronization among 2LCs in clustered environment where several
+					applications are run will be a critical issue. In this case, data synchronization
+					is a critical issue. For this reason, Hibernate provides cache for clustered application
+					through implementation which supports distributed cache.
+	        </para>
+
+        	<para>
+        		Let's take a look at configuration and execution result by implementation supporting distributed cache.					
+        	</para>
+	
+	        <section id="hibernate_hibernate_cache_distributed_oscache">
+				<title>Using OSCacheProvider </title>
+	
+	          	<para>
+	          		Supporting distributed cache from OSCahe 2.0.
+						Now OSCashe provides implementation to handle event through JaveGroups
+						or JMS in order to distributed synchronize cached data. But, only when flush event
+						occurs in distributed cache (when removing cached object from cache), message broadcasting is provided.
+	          	</para>
+
+	          	<para>
+	          		From this page, let's have a look at how to manage distributed cache by using ActiveMQ which provides OSCacheProvider and JMS function.. The following is Hibernate configuration file, where you
+						can see OSCacheProvider is assigned as a value of <emphasis role="bold">hibernate.cache.provider_class</emphasis> property.					
+                    <programlisting language="java"><![CDATA[<session-factory>
+    ...
+    <property name="hibernate.format_sql">true</property>
+    <property name="hbm2ddl.auto">create</property>
+    <property name="hibernate.cache.use_second_level_cache">true</property>
+    <property name="]]><emphasis role="bold"><![CDATA[hibernate.cache.provider_class]]></emphasis>">
+            <![CDATA[com.opensymphony.oscache.hibernate.OSCacheProvider</property>
+    <property name="]]><emphasis role="bold"><![CDATA[hibernate.cache.region_prefix]]></emphasis>">
+            <![CDATA[hibernate.cache</property> 
+    <property name="]]><emphasis role="bold"><![CDATA[com.opensymphony.oscache.configurationResourceName]]></emphasis>">
+            <![CDATA[oscache-hibernate.properties</property>
+    ...
+</session-factory>]]></programlisting>
+				</para>
+	
+	          	<para>
+	          		In addition, for Hibernate Cache section, <emphasis role="bold"><![CDATA[hibernate.cache.region_prefix ]]></emphasis>
+						has been assigned. (If hibernate.cache.region_prefix is defined as
+						above, org.anyframe.sample.model.bidirection.Country which is a
+						persistence class, is cached in <emphasis role="bold">hibernate.cache.</emphasis>
+						org.anyframe.sample.model.bidirection.Country section in 2LC.)
+						Lastly, for data synchronization among distributed caches,
+						you must define all properties information into <emphasis role="bold">com.opensymphony.oscache.configurationResourceName.
+						</emphasis>	          		
+	          	</para>
+
+	          	<para>
+	          		The following is a content of oscache-hibernate.properties file defined as value of
+						com.opensymphony.oscache.configurationResourceName above.	          		
+                    <programlisting><![CDATA[cache.event.listeners=anyframe.core.cache.impl.JMSBroadcastingListener
+cache.cluster.jndi.config=jndi.properties
+
+cache.cluster.jms.topic.factory=TopicConnectionFactory
+cache.cluster.jms.topic.name=dynamicTopics/topic
+cache.cluster.jms.node.name=node1]]></programlisting>
+				</para>
+
+	          	<para>
+	          		Each property has the following meaning.
+	          	</para>
+	
+				<itemizedlist>
+	            	<listitem>
+	              		<para>
+	              			cache.event.listeners : When change in one cache occurs,
+								event must be performed synchronize distributed caches.
+								OSCache basically provides com.opensymphony.oscache.plugins.clustersupport.JMSBroadcastingListener
+								to handle event through JMS. As mentioned above, however, message broadcasting
+								is provided only when flush event occurs.
+								So, there is vulnerability that message broadcasting is not performed
+								when cached object is modified. Therefore, <emphasis role="bold">Anyframe
+									provides Cache Event Listener class (anyframe.core.cache.impl.JMSBroadcastingListener)</emphasis>
+								, which resolves this issue. JMSBroadcastingListener of Anyframe
+								sends event to remove the relevant object from caches in all
+								clustered applications when modification occurs to cached object in a specific application.
+	              		</para>
+	            	</listitem>
+	
+	            	<listitem>
+	              		<para>
+	              			cache.cluster.jndi.config : This file is needed when defining
+								information required to access JMS Server from Cache Event
+								Listener. That defines <emphasis role="bold">java.naming.factory.initial</emphasis>
+								for defining InitialContextFactory class of JMS Server and
+								<emphasis role="bold">java.naming.provider.url</emphasis> for Provider URL. 
+								The following is the content of jndi.properties file.
+	                        <programlisting><![CDATA[java.naming.factory.initial=org.apache.activemq.jndi.ActiveMQInitialContextFactory
+java.naming.provider.url=tcp://localhost:61616]]></programlisting>
+						</para>
+	            	</listitem>
+	
+	            	<listitem>
+	              		<para>
+	              			cache.cluster.jms.topic.factory : Defines JNDI name to access JMS topic connection factory.
+								In the case of ActiveMQ, if defining like TopicConnectionFactory,
+								Messaging can be handled by using topic.	              		
+	              		</para>
+	            	</listitem>
+	
+	            	<listitem>
+	              		<para>
+	              			cache.cluster.jms.topic.name : This defines JNDI name of topic to send message from OSCache. In ActiveMQ, topic name
+								created in ActiveMQ is defined after dynamicTopics/, but if no
+								topic exists with the defined name, the topic is newly created.
+						</para>
+	            	</listitem>
+	
+	            	<listitem>
+	              		<para>
+	              			cache.cluster.jms.node.name : This defines identifier to
+								identify the relevant application from several applications
+								constituting distributed environment. Each application
+								constituting distributed environment must be assigned with different node name. When
+								cache event occurs ,the relevant event is sent to caches in all
+								applications constituting distributed environment
+								including the relevant application. For the application where cache event
+								occurred, no action needs to be taken. Therefore,
+								<emphasis role="bold">cache.cluster.jms.node.name</emphasis>
+								is used as information about at which application cache event occurred.
+	              		</para>
+	            	</listitem>
+				</itemizedlist>
+	
+	          	<para>
+	          		When all configuration is completed, start two same
+						applications through different WAS and check if cache runs
+						successfully when performing request as below.
+						In this case, along with JMS server library, jms spec., j2ee management spec.
+						library must be deployed to each application and run. In this example, as
+						ActiveMQ is used as JMS server, 
+						activemq-core-x.x.x.jar and jms spec jar, j2ee management spec jar files 
+						have been deployed in WEB-INF/lib folder of each application and tested.
+	          	</para>
+
+				<itemizedlist>
+	            	<listitem>
+	              		<para>
+	              			After searching specific data at application A, when you
+								search the same data in application B, checks whether the data is
+								searched without executing any query statement.
+	             		</para>
+	            	</listitem>
+	
+	            	<listitem>
+	              		<para>
+	              			After modifying specific data in application A, check
+								whether event is sent from application A and the event is received in application B.
+	              		</para>
+	
+		              	<mediaobject>
+		                	<imageobject>
+								<imagedata align="center"
+									fileref="../image/hibernate/clusteredcache1.jpg" />
+		                	</imageobject>
+		              	</mediaobject>
+		
+						<para>
+							In addition, when searching modified data through application A in
+								application B, as the object was removed from cache by Cache Event Listener,
+								this checks that the object is returned not the existing cached
+								object but as changed data by accessing DB.
+						</para>
+						
+	
+	              		<mediaobject>
+	                		<imageobject>
+	                  			<imagedata align="center"
+									fileref="../image/hibernate/clusteredcache2.jpg" />
+	                		</imageobject>
+	              		</mediaobject>
+	            	</listitem>
+				</itemizedlist>
+
+          		<para>
+          			(* If WAS is a Tomcat, download spring-tomcat-weaver.jar file and copy it to [Tomcat instrallation folder]\server\lib.)
+          		</para>
+			</section>
+		</section>
+	</section>
+    
+	<section id="hibernate_hibernate_fetch">
+		<title>Fetch Strategy</title>
+
+		<para>
+      		Lazy loading means returning proxy object not executing SQL until the object is actually needed. 
+      		Lazy loading reduces unnecessary DB access and lessen the number of persistence objects existing in session.
+				However, to handle lazy loading, N+1 SELECT issue arises as follows.
+				The following is a part of HibernateFetchWithDefaultLazyLoading.java file
+				which can test N+1 SELECT issue that may caused by lazy loading.
+            <programlisting language="java"><![CDATA[hqlBuf.append("FROM Category category ");
+hqlBuf.append("ORDER BY category.categoryName ASC");
+Query query = session.createQuery(hqlBuf.toString());]]>
+
+<emphasis role="bold">/**Performing query once :</emphasis>
+<![CDATA[select category0_.CATEGORY_ID as CATEGORY1_0_, 
+category0_.CATEGORY_NAME as CATEGORY2_0_, category0_.CATEGORY_DESC as 
+CATEGORY3_0_ ]]><emphasis role="bold"><![CDATA[from PUBLIC.CATEGORY category0_]]></emphasis>
+        <![CDATA[order by category0_.CATEGORY_NAME ASC */
+List categoryList = query.list();
+
+for (int i = 0; i < categoryList.size(); i++) {
+    Category category = (Category) categoryList.get(i);
+
+    if (i == 0) {
+        Set movies = category.getMovies();]]>
+		
+        /* <emphasis role="bold">Performing query n-times :</emphasis>
+        <![CDATA[select movies0_.CATEGORY_ID as CATEGORY1_1_, movies0_.MOVIE_ID 
+        as MOVIE2_1_, movie1_.MOVIE_ID as MOVIE1_3_0_, movie1_.COUNTRY_CODE 
+        as COUNTRY2_3_0_, movie1_.TITLE as TITLE3_0_, movie1_.DIRECTOR 
+        as DIRECTOR3_0_, movie1_.RELEASE_DATE as RELEASE5_3_0_]]> 
+        <emphasis role="bold"><![CDATA[from MOVIE_CATEGORY movies0_ left outer join PUBLIC.MOVIE movie1_ ]]></emphasis>
+        <emphasis role="bold"><![CDATA[on movies0_.MOVIE_ID=movie1_.MOVIE_ID]]></emphasis>
+        <![CDATA[where movies0_.CATEGORY_ID=? */
+        
+    } else if (i == 1) {
+        Set movies = category.getMovies();
+    ...
+}]]></programlisting>
+		</para>
+
+		<para>
+			Searching for Category is performed and when searching Movie
+				set in a specific Category, SELECT clause for searching Movie
+				information is performed.
+				To resolve this issue, control about fetch strategy is needed and the following is the example.
+				</para>
+
+		<section id="hibernate_hibernate_fetch_batch">
+        	<title>Searching for data using batch</title>
+
+        	<para>
+        		If setting batch-size of specific object in Hibernate Mapping XML,
+					the number of query execution is reduced by n/(batch size) + 1 in
+					a way that the object is loaded as defined number. The following is a
+					part of Country.hbm.xml file, an example of batch-size.
+                <programlisting language="xml"><![CDATA[<hibernate-mapping>
+    <class name="org.anyframe.sample.model.bidirection.Country" table="COUNTRY" 
+            lazy="true" schema="PUBLIC">
+        <id name="countryCode" type="string">
+        ..
+        </id>
+        <property name="countryId" type="string">
+            <column name="COUNTRY_ID" length="2" not-null="true" />
+        </property>
+        ..        
+        <set name="movies" inverse="true" cascade="save-update" batch-size="2">
+            <key>
+                <column name="COUNTRY_CODE" length="12" />
+            </key>
+            <one-to-many class="org.anyframe.sample.model.bidirection.Movie" />
+        </set>
+    </class>
+</hibernate-mapping>]]></programlisting>
+			</para>
+
+        	<para>
+        		When defining as above, fetch strategy for Movie set is batch
+					fetched in Country:Movie relation. (Here, defined as batch-size="2".)
+					When searching for Movie set in a specific Country,
+					SELECT statement is performed based on batch-size.
+                <programlisting language="java"><![CDATA[hqlBuf.append("FROM Country");
+Query query = session.createQuery(hqlBuf.toString());
+List countryList = query.list();
+
+// 3. check result - country
+
+for (int i = 0; i < countryList.size(); i++) {
+    Country country = (Country) countryList.get(i);
+
+    if (i == 0) {
+        Set movies = country.getMovies();
+		
+        /*  as batch-size is two, search is done by two. 
+        select movies0_.COUNTRY_CODE as COUNTRY2_1_, movies0_.MOVIE_ID as MOVIE1_1_,
+        movies0_.MOVIE_ID	as MOVIE1_3_0_, movies0_.COUNTRY_CODE as COUNTRY2_3_0_,
+        movies0_.TITLE as TITLE3_0_, movies0_.DIRECTOR as DIRECTOR3_0_, 
+        movies0_.RELEASE_DATE as RELEASE5_3_0_ from PUBLIC.MOVIE movies0_ 
+        where movies0_.COUNTRY_CODE]]> <emphasis role="bold"><![CDATA[in ('COUNTRY-0001', 'COUNTRY-0003')'*/]]></emphasis>        
+    <![CDATA[} else if (i == 1) {
+        Set movies = country.getMovies();]]>
+        //<emphasis role="bold">query not performed.</emphasis>
+}</programlisting>
+			</para>
+
+        	<para>
+        		For test code above, refer to HibernateFetchWithBatchSize.java.
+        	</para>
+		</section>
+
+		<section id="hibernate_hibernate_fetch_subquery">
+        	<title>Searching for data using Sub-Query</title>
+
+        	<para>
+        		Another fetch strategy is defining subselect property.
+					For how to define subselect property, refer to Movie.hbm.xml.        		
+                <programlisting language="xml"><![CDATA[<hibernate-mapping>
+    <class name="org.anyframe.sample.model.bidirection.Movie" table="MOVIE" lazy="true"..>
+        <id name="movieId" type="string">
+            <column name="MOVIE_ID" />
+            <generator class="assigned" />
+        </id>
+        <property name="title" type="string">
+            <column name="TITLE" length="100" not-null="true" />
+        </property>
+		...
+        <set name="categories" inverse="false" table="MOVIE_CATEGORY" fetch="subselect">
+            <key>
+                <column name="MOVIE_ID" length="8" not-null="true" />
+            </key>
+            ..
+        </set>
+    </class>           
+</hibernate-mapping>]]></programlisting>
+			</para>
+
+			<para>
+        		When 'subselect' is defined as fetch value for categories set in
+					Movie class as above, SELECT statement is performed in sub query style and all are loaded at once
+					when the data is called.        		
+                <programlisting language="java"><![CDATA[for (int i = 0; i < movieList.size(); i++) {
+    Movie movie = (Movie) movieList.get(i);
+
+    if (i == 0) {
+    ..
+		
+        Set categories = movie.getCategories();
+		
+        /* SELECT statement is executed in sub query style for categories.        
+        select categories0_.MOVIE_ID as MOVIE2_1_, categories0_.CATEGORY_ID 
+        as CATEGORY1_1_, category1_.CATEGORY_ID as CATEGORY1_0_0_, category1_.CATEGORY_NAME 
+        as CATEGORY2_0_0_, category1_.CATEGORY_DESC as CATEGORY3_0_0_ 
+        from MOVIE_CATEGORY categories0_ 
+        left outer join PUBLIC.CATEGORY category1_ 
+        on categories0_.CATEGORY_ID=category1_.CATEGORY_ID
+        where categories0_.MOVIE_ID 
+        in ]]><emphasis role="bold"><![CDATA[(select movie0_.MOVIE_ID from PUBLIC.MOVIE movie0_)]]></emphasis> */
+				
+     <![CDATA[} else if (i == 1) {
+        ..
+        Set categories = movie.getCategories();]]>
+        <emphasis role="bold">//Query not performed. </emphasis>
+    ...</programlisting>
+    		</para>
+
+        	<para>
+   	     		However, note that as all data is loaded when first needed,
+					memory usage can dramatically increase when large data is requested
+					simultaneously.
+					For the test code above, refer to HibernateFetchWithSubselect.java.   	     	
+        	</para>
+		</section>
+
+      	<section id="hibernate_hibernate_fetch_join">
+        	<title>Searching data at once by using join fetch </title>
+
+        	<para>
+        		When using "join fetch" phrase in HQL statement, all needed data is loaded for the joined object at once unlike lazy loading.
+					The following is a part of HibernateFetchWithoutLazyLoading.java file which join fetch is applied.
+        		 <programlisting language="java">StringBuilder hqlBuf = new StringBuilder();
+<![CDATA[hqlBuf.append("SELECT movie ");
+hqlBuf.append("FROM Movie movie ]]><emphasis role="bold">join fetch</emphasis><![CDATA[ movie.categories category ");
+hqlBuf.append("WHERE category.categoryName = ?");
+Query query = session.createQuery(hqlBuf.toString());
+query.setParameter(0, "Romantic");
+
+/* data of fetch-joined categories is also loaded at once. (Not lazy loading) 
+select movie0_.MOVIE_ID as MOVIE1_3_0_, category2_.CATEGORY_ID as CATEGORY1_0_1_, 
+movie0_.COUNTRY_CODE as COUNTRY2_3_0_, movie0_.TITLE as TITLE3_0_, 
+movie0_.DIRECTOR as DIRECTOR3_0_, movie0_.RELEASE_DATE as RELEASE5_3_0_, 
+category2_.CATEGORY_NAME as CATEGORY2_0_1_, category2_.CATEGORY_DESC as CATEGORY3_0_1_, 
+categories1_.MOVIE_ID as MOVIE2_0__,]]> <emphasis role="bold"><![CDATA[categories1_.CATEGORY_ID as CATEGORY1_0__]]></emphasis> 
+<![CDATA[from PUBLIC.MOVIE movie0_]]> <emphasis role="bold">inner join MOVIE_CATEGORY categories1_</emphasis> 
+<![CDATA[on movie0_.MOVIE_ID=categories1_.MOVIE_ID inner join PUBLIC.CATEGORY category2_ 
+on categories1_.CATEGORY_ID=category2_.CATEGORY_ID where category2_.CATEGORY_NAME='Romantic' */
+List movieList = query.list();
+
+// 3. check result - movie
+
+for (int i = 0; i < movieList.size(); i++) {
+    Movie movie = (Movie) movieList.get(i);
+
+    if (i == 0) {
+		..
+        Set categories = movie.getCategories();]]>
+        //<emphasis role="bold">Query not performed.</emphasis>
+    <![CDATA[} else if (i == 1) {
+        ..
+        Set categories = movie.getCategories();]]>
+        //<emphasis role="bold">Query not performed.</emphasis>
+    ...</programlisting>
+    		</para>
+
+        	<para>
+        		This performs as same as defining fetch value for
+					categories as "join". However, in case of defining in mapping XML,
+					all category list is initialized and listed in the memory whenever
+					searching for Movie (even when category list is not needed).
+					Therefore, it is be efficient to apply this only when needed by using join fetch in HQL.
+        	
+        	</para>
+		</section>
+	</section>
+</chapter>

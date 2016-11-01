@@ -1,0 +1,132 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN"
+"http://www.w3.org/TR/html4/loose.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+
+<!-- Start of head-->
+<head>
+<meta http-equiv="content-type" content="text/html; charset=UTF-8" />
+<title>Datepicker : Range Limitation</title>
+<!-- TODO: 타이틀 작성 -->
+<!-- include required common files  ----------------------------------------------------->
+<script type="text/javascript" src="../../../common/exlibs/jquery-1.9.0.js" ></script>
+<script type="text/javascript" src="../../../common/exlibs/highlighter/scripts/shCore.js" ></script>
+<script type="text/javascript" src="../../../common/exlibs/highlighter/scripts/shBrushJScript.js" ></script>
+<script type="text/javascript" src="../../../common/js/template_common.js" ></script>
+
+<!--  stylesheet  -->
+<link type="text/css" rel="stylesheet" href="../../../common/exlibs/highlighter/styles/shCore.css"/>
+<link type="text/css" rel="stylesheet" href="../../../common/exlibs/highlighter/styles/shCoreDefault.css"/>
+<link type="text/css" rel="stylesheet" href="../../../common/css/style.css"/>
+
+<!-- scripts to support sample page  ----------------------------------------------------->
+<script type="text/javascript">
+
+$(function() {
+	JTemplate.load("ui_datepicker_range_limitation_src.htm");				
+	JTemplate.loadDemo2("ui_datepicker_range_limitation_src.htm", {height:'300px'});			
+});  
+
+</script>
+
+</head>
+<!-- End of head -->
+
+<!-- Start of body -->
+<body >
+
+ <!-- HEADER BAR -------------------------------------------------------------->
+<div class="content-title">Component - Datepicker</div>
+ 
+ <!-- START OF PAGE ... -------------------------------------------------------->
+<div id="page">
+	<p class = "header-title">Datepicker 선택범위제한</p>
+	<p class="header-desc">: datepicker에서 사용자가 선택가능한 날짜의 범위를 절대적/상대적으로 제한하는 방법을 보여주는예이다. </p>
+<!-- DEMO ----------------------------------------------------------------------->
+	<div class="demo">
+		<h3 >Demo</h3>
+		<div id="visualExample"></div>
+	</div>
+
+
+<!-- DEMO DESCRIPTION----------------------------------------------------->
+	<div class="desc">
+		<h3>Demo Description </h3>
+		<hr>
+		
+		<p class="desc-title">날짜 범위 제한</p>
+		<p class="desc-overall">  
+		: 달력에서 사용자가 선택할 수 있는 날짜의 범위를 제한하여 일부날짜만을 활성화된 상태로 보여주고자 할 때 사용된다.
+		</p>
+		<ul class ="desc-hypl">
+			<li><span>절대값으로 범위제한</span> 
+			: 특정날짜로 최소날짜와 최대날짜를 선택하면, 그 날짜가 Test Date 입력창에서 나오는 달력에 적용되어 제한적으로 활성화된 날짜가 보여지게 된다.
+			</li>
+			<li><span>상대값으로 범위 제한</span> 
+			:  오늘날짜기준으로 10일, 1개월, 3개월, 6개월, 1년 단위로 이전, 이후날짜를 선택하면, 각 해당날수만큼 전후가 적용되어 그 이후 날짜는 비활성화된다.
+			</li>
+		</ul>
+	</div>
+			
+<!-- CODE------------------------------------------------------------------------>
+	<div class="code">
+		<h3>Code Source </h3>
+		<pre id="codeExample" class="brush: js"></pre>
+	</div>
+	
+	
+<!-- CODE DESCRIPTION------------------------------------------------------>
+	<div class="desc">
+		<h3>Code Description </h3>
+		<hr>
+		
+		<p class="desc-title">최대/최소 날짜 지정</p>
+		<p class="desc-overall">  
+		: datepicker 내 최소날짜, 최대날짜값을 지정하여 줄 수 있는 옵션으로, minDate, maxDate이 존재한다.<br>
+		: 옵션값으로 줄 수 있는 타입은 Date, Number, String 세가지이며, 설정방식에 따라 다음과 같은 포맷을 가질 수 있다.
+		</p>
+		<ul class ="desc-ul">
+			<li><span>절대값</span> 
+			: Date object type으로 최소, 최대의 절대값을 주어 특정날짜로 지정가능하다.<br>
+			</li>
+			<li><span></span>
+			: new Date(2013, 1, 1) 과 같은 값으로 지정할 수 있고, 동적으로 구현하게 될 경우, getDate() method 등을 활용하여 변수로 지정해 줄 수도 있다.
+			</li>
+			<li><span>상대값</span> 
+			: Number 혹은 String 값으로 오늘날짜 기준으로 전 후 범위 지정이 가능하다.<br>
+			</li>
+			<li><span></span>
+			: Number type 경우, 정수값(...-2, -1, 0, 1, 2...)으로써 오늘날짜로부터 얼마나 떨어져 있는지를 숫자로 표기하는 것이다.
+			</li>
+			<li><span></span>
+			: String type 경우, 날짜단위를 표현하는 "y", "m", "d", "w" 과 숫자의 조합으로써 오늘날짜로부터 몇년, 몇달, 몇일, 몇주가 떨어져 있는지 표기한다.
+			</li>
+			<li><span></span>
+			:  ex) 오늘날로부터 (1달+3일) 후까지 설정하려면 "+1m+3d" 로 maxDate 옵션값을 지정해주면 된다.
+			</li>
+		</ul>
+	</div>
+
+<!-- RELATED LINKS ----------------------------------------------------------->
+	<div class="related">
+		<h3>Related Links</h3>
+		<hr>
+		 <ul class="desc-hypl">
+           	<li>
+           		<span>Datepicker API</span>
+           		<a href = "http://api.jqueryui.com/datepicker"></a>
+           	</li>
+           	<li>
+           		<span>minDate</span>
+           		<a href = "http://api.jqueryui.com/datepicker/#option-minDate"></a>
+           	</li> 
+           	<li>
+           		<span>maxDate</span>
+           		<a href = "http://api.jqueryui.com/datepicker/#option-maxDate"></a>
+           	</li>         	
+		</ul>
+	</div>
+
+</div>
+</body>
+
+</html>

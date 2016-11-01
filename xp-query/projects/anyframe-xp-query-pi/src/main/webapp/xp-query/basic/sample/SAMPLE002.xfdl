@@ -1,0 +1,439 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<FDL version="1.4">
+  <TypeDefinition url="..\default_typedef.xml"/>
+  <Form id="frmSAMPLE002" classname="SAMPLE002" inheritanceid="" position="absolute 0 0 765 540" titletext="GRDFRM" onload="SAMPLE002_onload" onbeforeclose="SAMPLE002_onbeforeclose" style="background:#f2f2efff;">
+    <Layouts>
+      <Layout>
+        <Div id="divSearch" taborder="3" text="search" position="absolute 0 40 765 80" style="background:#fff0f5ff;border:1 solid #906d3bff ;" anchor="left top right">
+          <Layouts>
+            <Layout>
+              <Static id="stSearchCondition" text="global.domain.searchcondition" position="absolute 2 9 57 31"/>
+              <Combo id="cmbSearchCondition" taborder="4" innerdataset="dsSearchComboBox" codecolumn="CODE" datacolumn="DATA" position="absolute 59 9 167 31" index="0" value="0" text="제목"/>
+              <Edit id="edtSearchKeyword" taborder="5" position="absolute 169 9 328 31" onkeydown="divSearch_edtSearchKeyword_onkeydown"/>
+              <Button id="btDoSearch" taborder="6" position="absolute 330 9 351 31" onclick="divSearch_btDoSearch_onclick" style="background:URL('image::btn_TP_SearchDrop_N.png') left middle;cursor:hand;"/>
+            </Layout>
+          </Layouts>
+        </Div>
+        <Div id="divGrd" taborder="4" text="divGrid" position="absolute 0 110 765 312" anchor="left top right">
+          <Layouts>
+            <Layout>
+              <Grid id="grdBoard" taborder="0" binddataset="dsGrdBoard" useinputpanel="false" selecttype="multirow" nodatatext="조회된 데이터가 없습니다." position="absolute 0 0 765 202" formats="&lt;Formats&gt;&#10;  &lt;Format id=&quot;default&quot;&gt;&#10;    &lt;Columns&gt;&#10;      &lt;Col size=&quot;80&quot;/&gt;&#10;      &lt;Col size=&quot;80&quot;/&gt;&#10;      &lt;Col size=&quot;80&quot;/&gt;&#10;      &lt;Col size=&quot;80&quot;/&gt;&#10;      &lt;Col size=&quot;80&quot;/&gt;&#10;      &lt;Col size=&quot;80&quot;/&gt;&#10;      &lt;Col size=&quot;80&quot;/&gt;&#10;      &lt;Col size=&quot;80&quot;/&gt;&#10;      &lt;Col size=&quot;80&quot;/&gt;&#10;      &lt;Col size=&quot;80&quot;/&gt;&#10;    &lt;/Columns&gt;&#10;    &lt;Rows&gt;&#10;      &lt;Row band=&quot;head&quot; size=&quot;24&quot;/&gt;&#10;      &lt;Row band=&quot;body&quot; size=&quot;24&quot;/&gt;&#10;    &lt;/Rows&gt;&#10;    &lt;Band id=&quot;head&quot;&gt;&#10;      &lt;Cell col=&quot;0&quot; disptype=&quot;normal&quot; text=&quot;TITLE&quot;/&gt;&#10;      &lt;Cell col=&quot;1&quot; disptype=&quot;normal&quot; text=&quot;CONTENTS&quot;/&gt;&#10;      &lt;Cell col=&quot;2&quot; disptype=&quot;normal&quot; text=&quot;REG_ID&quot;/&gt;&#10;      &lt;Cell col=&quot;3&quot; disptype=&quot;normal&quot; text=&quot;REG_DATE&quot;/&gt;&#10;      &lt;Cell col=&quot;4&quot; disptype=&quot;normal&quot; text=&quot;POST_ID&quot;/&gt;&#10;      &lt;Cell col=&quot;5&quot; disptype=&quot;normal&quot; text=&quot;COMMUNITY_ID&quot;/&gt;&#10;      &lt;Cell col=&quot;6&quot; disptype=&quot;normal&quot; text=&quot;pageCount&quot;/&gt;&#10;      &lt;Cell col=&quot;7&quot; disptype=&quot;normal&quot; text=&quot;pageIndex&quot;/&gt;&#10;      &lt;Cell col=&quot;8&quot; disptype=&quot;normal&quot; text=&quot;pageSize&quot;/&gt;&#10;      &lt;Cell col=&quot;9&quot; disptype=&quot;normal&quot; text=&quot;totalCount&quot;/&gt;&#10;    &lt;/Band&gt;&#10;    &lt;Band id=&quot;body&quot;&gt;&#10;      &lt;Cell col=&quot;0&quot; disptype=&quot;normal&quot; text=&quot;bind:TITLE&quot;/&gt;&#10;      &lt;Cell col=&quot;1&quot; disptype=&quot;normal&quot; text=&quot;bind:CONTENTS&quot;/&gt;&#10;      &lt;Cell col=&quot;2&quot; disptype=&quot;normal&quot; text=&quot;bind:REG_ID&quot;/&gt;&#10;      &lt;Cell col=&quot;3&quot; disptype=&quot;normal&quot; text=&quot;bind:REG_DATE&quot;/&gt;&#10;      &lt;Cell col=&quot;4&quot; disptype=&quot;normal&quot; text=&quot;bind:POST_ID&quot;/&gt;&#10;      &lt;Cell col=&quot;5&quot; disptype=&quot;normal&quot; text=&quot;bind:COMMUNITY_ID&quot;/&gt;&#10;      &lt;Cell col=&quot;6&quot; disptype=&quot;normal&quot; text=&quot;bind:pageCount&quot;/&gt;&#10;      &lt;Cell col=&quot;7&quot; disptype=&quot;normal&quot; text=&quot;bind:pageIndex&quot;/&gt;&#10;      &lt;Cell col=&quot;8&quot; disptype=&quot;normal&quot; text=&quot;bind:pageSize&quot;/&gt;&#10;      &lt;Cell col=&quot;9&quot; disptype=&quot;normal&quot; text=&quot;bind:totalCount&quot;/&gt;&#10;    &lt;/Band&gt;&#10;  &lt;/Format&gt;&#10;&lt;/Formats&gt;&#10;" autofittype="col" cellsizingtype="col" onrbuttonup="divGrd_grdBoard_onrbuttonup" onheadclick="divGrd_grdBoard_onheadclick" anchor="all">
+                <Formats>
+                  <Format id="default">
+                    <Columns>
+                      <Column size="478"/>
+                      <Column size="134"/>
+                      <Column size="118"/>
+                    </Columns>
+                    <Rows>
+                      <Row size="24" band="head"/>
+                      <Row size="24"/>
+                    </Rows>
+                    <Band id="head">
+                      <Cell text="global.domain.title"/>
+                      <Cell col="1" text="global.domain.regid"/>
+                      <Cell col="2" text="global.domain.regdate"/>
+                    </Band>
+                    <Band id="body">
+                      <Cell style="align:left;" text="bind:TITLE"/>
+                      <Cell col="1" text="bind:REG_ID"/>
+                      <Cell col="2" text="bind:REG_DATE"/>
+                    </Band>
+                  </Format>
+                </Formats>
+              </Grid>
+            </Layout>
+          </Layouts>
+        </Div>
+        <Div id="divBoardForm" taborder="6" text="divBoardForm" position="absolute 0 352 765 540" anchor="all">
+          <Layouts>
+            <Layout>
+              <Static id="stPostId" text="global.domain.boardid" position="absolute 0 1 85 27" style="background:#edeee6ff;border:1 solid #c6c6c5ff ;align:center middle;"/>
+              <Static id="stTitle" text="global.domain.title" position="absolute 0 26 85 52" style="background:#edeee6ff;border:1 solid #c6c6c5ff ;align:center middle;"/>
+              <Static id="stContents" text="global.domain.contents" position="absolute 0 51 85 113" style="background:#edeee6ff;border:1 solid #c6c6c5ff ;align:center middle;"/>
+              <Static id="stRegId" text="global.domain.regid" position="absolute 0 112 85 138" style="background:#edeee6ff;border:1 solid #c6c6c5ff ;align:center middle;"/>
+              <Static id="stRegDate" text="global.domain.regdate" position="absolute 0 137 85 163" style="background:#edeee6ff;border:1 solid #c6c6c5ff ;align:center middle;"/>
+              <Static id="stCommunityId" text="global.domain.community" position="absolute 0 162 85 188" style="background:#edeee6ff;border:1 solid #c6c6c5ff ;align:center middle;"/>
+              <Static id="Static00" position="absolute 84 1 765 27" style="background:#ffffffff;border:1 solid #c6c6c5ff ;align:center middle;" text="" anchor="left top right"/>
+              <Edit id="edtPostId" taborder="6" readonly="true" enable="false" position="absolute 86 3 334 25" anchor="left top right"/>
+              <Static id="Static01" position="absolute 84 26 765 52" style="background:#ffffffff; border:1 solid #c6c6c5ff ; align:center middle; " text="" anchor="left top right"/>
+              <Edit id="edtTitle" taborder="7" position="absolute 86 29 334 51" anchor="left top right"/>
+              <Static id="Static02" position="absolute 84 51 765 113" style="background:#ffffffff; border:1 solid #c6c6c5ff ; align:center middle; " text="" anchor="left top right"/>
+              <TextArea id="txaContents" taborder="8" wordwrap="char" position="absolute 86 53 710 111" anchor="left top right"/>
+              <Static id="Static03" position="absolute 84 112 765 138" style="background:#ffffffff; border:1 solid #c6c6c5ff ; align:center middle; " text="" anchor="left top right"/>
+              <Edit id="edtRegId" taborder="9" enable="false" position="absolute 86 114 334 136" readonly="true" anchor="left top right"/>
+              <Static id="Static04" position="absolute 84 137 765 163" style="background:#ffffffff; border:1 solid #c6c6c5ff ; align:center middle; " text="" anchor="left top right"/>
+              <Calendar id="calRegDate" taborder="10" readonly="true" dateformat="yyyy-MM-dd" enable="false" position="absolute 86 139 334 161" style="align:left middle; " anchor="left top right"/>
+              <Static id="Static05" position="absolute 84 162 765 188" style="background:#ffffffff; border:1 solid #c6c6c5ff ; align:center middle; " text="" anchor="left top right"/>
+              <Combo id="cmbCommunityId" taborder="11" innerdataset="@dsCboCommunity" codecolumn="COMMUNITY_ID" datacolumn="COMMUNITY_NAME" position="absolute 86 164 334 186" anchor="left top right"/>
+            </Layout>
+          </Layouts>
+        </Div>
+        <Div id="divPage" taborder="5" url="includes::LISTPAGE.xfdl" text="divPage" position="absolute 0 312 765 348"/>
+        <Div id="divGrdStatus" taborder="7" url="includes::GRDSTATUS.xfdl" text="divPage" position="absolute 0 80 765 110"/>
+        <PopupMenu id="popupMenuGrd" position="absolute 28 184 176 241"/>
+        <Div id="Div00" taborder="8" text="Div00" position="absolute 0 0 765 40">
+          <Layouts>
+            <Layout>
+              <Static id="stTitle" text="global.domain.boardlist" position="absolute 18 10 219 32" style="border:0px solid #b1b5b9b3 ; "/>
+              <Button id="btAddCategory" taborder="4" text="global.domain.add" onclick="btAddCategory_onclick" position="absolute 542 7 615 32"/>
+              <Button id="btDeleteCategory" taborder="5" text="global.domain.delete" onclick="btDeleteCategory_onclick" position="absolute 617 7 690 32"/>
+              <Button id="btSaveAll" taborder="6" text="global.domain.save" onclick="btSaveAll_onclick" position="absolute 692 7 765 32"/>
+            </Layout>
+          </Layouts>
+        </Div>
+        <Static id="Static00" position="absolute 2 10 16 32" style="background:URL('image::bullet_WF_Lev1.png') left middle; " text=""/>
+      </Layout>
+    </Layouts>
+    <Objects>
+      <Dataset id="dsService" firefirstcount="0" firenextcount="0" useclientlayout="false" updatecontrol="true" enableevent="true" loadkeymode="keep" loadfiltermode="keep" reversesubsum="false">
+        <ColumnInfo>
+          <Column id="SVC_ID" type="STRING" size="100"/>
+          <Column id="QUERY_LIST" type="STRING" size="256"/>
+          <Column id="SERVICE" type="STRING" size="100"/>
+          <Column id="IN_DATASET_LIST" type="STRING" size="256"/>
+          <Column id="OUT_DATASET_LIST" type="STRING" size="256"/>
+          <Column id="CONTROLLER" type="STRING" size="512"/>
+          <Column id="CALLBACK" type="STRING" size="100"/>
+          <Column id="SYNC_YN" type="STRING" size="1"/>
+        </ColumnInfo>
+        <Rows>
+          <Row>
+            <Col id="SVC_ID">saveAllBoard</Col>
+            <Col id="QUERY_LIST">querySet1=createXPBoard,updateXPBoard,removeXPBoard</Col>
+            <Col id="IN_DATASET_LIST">querySet1=dsGrdBoard:U</Col>
+          </Row>
+          <Row>
+            <Col id="SVC_ID">getPagingListBoard</Col>
+            <Col id="QUERY_LIST">querySet1=findXPBoardList</Col>
+            <Col id="IN_DATASET_LIST">querySet1=dsSearch</Col>
+            <Col id="OUT_DATASET_LIST">dsGrdBoard=querySet1</Col>
+          </Row>
+          <Row>
+            <Col id="SVC_ID">getListCommunity</Col>
+            <Col id="QUERY_LIST">querySet1=findXPCommunityList</Col>
+            <Col id="OUT_DATASET_LIST">dsCboCommunity=querySet1</Col>
+          </Row>
+          <Row>
+            <Col id="SVC_ID">checkSession</Col>
+            <Col id="QUERY_LIST"/>
+            <Col id="SERVICE"/>
+            <Col id="IN_DATASET_LIST"/>
+            <Col id="OUT_DATASET_LIST"/>
+            <Col id="CONTROLLER">checkSession.do</Col>
+            <Col id="CALLBACK"/>
+            <Col id="SYNC_YN"/>
+          </Row>
+        </Rows>
+      </Dataset>
+      <Dataset id="dsSearch" firefirstcount="0" firenextcount="0" useclientlayout="false" updatecontrol="true" enableevent="true" loadkeymode="keep" loadfiltermode="keep" reversesubsum="false">
+        <ColumnInfo>
+          <ConstColumn id="pageIndex" type="INT" size="30" value="1"/>
+          <ConstColumn id="pageSize" type="INT" size="30" value="5"/>
+          <ConstColumn id="pageUnit" type="INT" size="30" value="5"/>
+          <Column id="SEARCH_CONDITION" type="STRING" size="100"/>
+          <Column id="SEARCH_KEYWORD" type="STRING" size="100"/>
+        </ColumnInfo>
+        <Rows>
+          <Row>
+            <Col id="SEARCH_CONDITION"/>
+            <Col id="SEARCH_KEYWORD"/>
+          </Row>
+        </Rows>
+      </Dataset>
+      <Dataset id="dsGrdBoard" firefirstcount="0" firenextcount="0" useclientlayout="false" updatecontrol="true" enableevent="true" loadkeymode="keep" loadfiltermode="keep" reversesubsum="false">
+        <ColumnInfo>
+          <ConstColumn id="pageCount" type="INT" size="30" value="0"/>
+          <ConstColumn id="pageIndex" type="INT" size="30" value="0"/>
+          <ConstColumn id="pageSize" type="INT" size="30" value="0"/>
+          <ConstColumn id="totalCount" type="INT" size="30" value="0"/>
+          <Column id="TITLE" type="STRING" size="256"/>
+          <Column id="CONTENTS" type="STRING" size="256"/>
+          <Column id="REG_ID" type="STRING" size="256"/>
+          <Column id="REG_DATE" type="DATE" size="8"/>
+          <Column id="POST_ID" type="STRING" size="256"/>
+          <Column id="COMMUNITY_ID" type="STRING" size="256"/>
+        </ColumnInfo>
+      </Dataset>
+      <Dataset id="dsCboCommunity" firefirstcount="0" firenextcount="0" useclientlayout="false" updatecontrol="true" enableevent="true" loadkeymode="keep" loadfiltermode="keep" reversesubsum="false">
+        <ColumnInfo>
+          <Column id="COMMUNITY_ID" type="STRING" size="256"/>
+          <Column id="COMMUNITY_NAME" type="STRING" size="256"/>
+          <Column id="COMMUNITY_DESC" type="STRING" size="256"/>
+          <Column id="CATEGORY_ID" type="STRING" size="256"/>
+          <Column id="REG_ID" type="STRING" size="256"/>
+          <Column id="RED_DATE" type="STRING" size="256"/>
+        </ColumnInfo>
+      </Dataset>
+      <Dataset id="dsSearchComboBox" firefirstcount="0" firenextcount="0" useclientlayout="false" updatecontrol="true" enableevent="true" loadkeymode="keep" loadfiltermode="keep" reversesubsum="false">
+        <ColumnInfo>
+          <Column id="CODE" type="STRING" size="256"/>
+          <Column id="DATA" type="STRING" size="256"/>
+        </ColumnInfo>
+        <Rows>
+          <Row>
+            <Col id="CODE">0</Col>
+            <Col id="DATA"/>
+          </Row>
+          <Row>
+            <Col id="CODE">1</Col>
+            <Col id="DATA"/>
+          </Row>
+        </Rows>
+      </Dataset>
+      <Dataset id="dsGrdBoardValid" firefirstcount="0" firenextcount="0" useclientlayout="false" updatecontrol="true" enableevent="true" loadkeymode="keep" loadfiltermode="keep" reversesubsum="false">
+        <ColumnInfo>
+          <Column id="TITLE" type="STRING" size="256"/>
+          <Column id="CONTENTS" type="STRING" size="256"/>
+          <Column id="REG_ID" type="STRING" size="256"/>
+          <Column id="REG_DATE" type="DATE" size="8"/>
+          <Column id="POST_ID" type="STRING" size="256"/>
+          <Column id="COMMUNITY_ID" type="STRING" size="256"/>
+        </ColumnInfo>
+        <Rows>
+          <Row>
+            <Col id="TITLE">title:title,required:true,maxlength:150</Col>
+            <Col id="CONTENTS">title:contents,maxlength:360</Col>
+          </Row>
+        </Rows>
+      </Dataset>
+    </Objects>
+    <Bind>
+      <BindItem id="item5" compid="divSearch.edtSearchKeyword" propid="value" datasetid="dsSearch" columnid="SEARCH_KEYWORD"/>
+      <BindItem id="item7" compid="divSearch.cmbSearchCondition" propid="value" datasetid="dsSearch" columnid="SEARCH_CONDITION"/>
+      <BindItem id="item0" compid="divBoardForm.edtPostId" propid="value" datasetid="dsGrdBoard" columnid="POST_ID"/>
+      <BindItem id="item1" compid="divBoardForm.edtTitle" propid="value" datasetid="dsGrdBoard" columnid="TITLE"/>
+      <BindItem id="item2" compid="divBoardForm.txaContents" propid="value" datasetid="dsGrdBoard" columnid="CONTENTS"/>
+      <BindItem id="item3" compid="divBoardForm.edtRegId" propid="value" datasetid="dsGrdBoard" columnid="REG_ID"/>
+      <BindItem id="item6" compid="divBoardForm.calRegDate" propid="value" datasetid="dsGrdBoard" columnid="REG_DATE"/>
+      <BindItem id="item4" compid="divBoardForm.cmbCommunityId" propid="value" datasetid="dsGrdBoard" columnid="COMMUNITY_ID"/>
+    </Bind>
+    <Script type="xscript4.0"><![CDATA[include "lib::commonScript.xjs";
+
+var searchKeyword = "";
+var searchCondition = 0;
+var nCurrentPage = 1;
+var objFocusedGrd;
+var userId;
+
+// Form onload 이벤트 처리
+function SAMPLE002_onload(obj:Form, e:LoadEventInfo)
+{
+	divGrdStatus.fnSetUserData("GRD_STATUS=grdBoard");
+	
+	// 검색 조건 Combo Box Message 처리
+	dsSearchComboBox.setColumn(0, "DATA", gfnGetMessage("global.domain.title"));
+	dsSearchComboBox.setColumn(1, "DATA", gfnGetMessage("global.domain.regid"));
+	divSearch.cmbSearchCondition.index = 0;
+	dsSearch.setConstColumn("pageIndex", nCurrentPage);
+	dsSearch.setColumn(0, "SEARCH_CONDITION", searchCondition);
+	
+	// Grid, Combo Box Data 수신
+	gfnService("getPagingListBoard");
+	gfnService("getListCommunity");
+	
+	// session check
+	gfnService("checkSession");
+
+	// 각 컴포넌트 Message 처리
+	gfnSetTitle();
+		
+	// Popup Menu 처리
+	popupMenuGrd.innerdataset = gdsPopupMenu;
+	popupMenuGrd.captioncolumn = "CAPTION";
+	popupMenuGrd.idcolumn = "ID";
+	popupMenuGrd.levelcolumn = "LEVEL";
+	
+	popupMenuGrd.onmenuclick.addHandler(fnPopupMenu_onmenuclick);
+}
+
+// 팝업 메뉴 클릭 이벤트 처리
+function fnPopupMenu_onmenuclick(obj:PopupMenu, e:MenuClickEventInfo){
+	switch(e.id){
+		case "find":
+			fnFindForm();
+			break;
+		case "excelexport":
+			fnExcelExport();
+			break;
+		default:
+			break;
+	}
+}
+
+// 팝업 메뉴 중 "검색" 클릭 시
+function fnFindForm(){
+	popupMenuGrd.closePopup();
+	var resultForm = gfnShowModal("includes::GRDFIND.xfdl", {objGrd:objFocusedGrd}, "global.domain.popupmenu.find", 525, 300);
+}
+
+// 팝업 메뉴 중 "엑셀 다운로드" 클릭 시
+function fnExcelExport(){
+	popupMenuGrd.closePopup();
+	// 엑셀 파일을 저장할지 열어볼지 선택 팝업 생성
+	var resultForm = gfnConfirm(gfnGetMessage("global.domain.popup.excelsave"), "OSC");
+	
+	if(resultForm == "S"){
+		// xls 파일로 저장
+		gfnExportSaveAsExcel(objFocusedGrd);
+	} else if(resultForm == "Y"){
+		// Excel 프로그램 실행
+		gfnExportExcelEx(objFocusedGrd);
+	}
+}
+
+// 삭제 버튼 클릭 이벤트 처리
+function btDeleteCategory_onclick(obj:Button,  e:ClickEventInfo)
+{
+	var nRow = dsGrdBoard.rowposition;
+	
+	if(!dsGrdBoard.getSelect(nRow)){
+		gfnAlertMsg("err.grid.noselect");
+	} else{
+		var rtVal = gfnConfirm("msg.before.delete", "YN");
+
+		if(rtVal == "Y"){
+			dsGrdBoard.deleteSelectedRows();
+		} else {
+			return;
+		}
+	}
+}
+
+// 저장 버튼 클릭 이벤트 처리
+function btSaveAll_onclick(obj:Button,  e:ClickEventInfo)
+{
+	// 유효성 검사 후 이상 없는 경우 변경 내역 모두 저장
+	if(gfnDsCheckValid(dsGrdBoard)){
+		gfnService("saveAllBoard");
+	}
+}
+
+// 추가 버튼 클릭 이벤트 처리
+function btAddCategory_onclick(obj:Button,  e:ClickEventInfo)
+{
+	dsGrdBoard.addRow();
+	if(!gfnIsNull(gfnGetUserId())){
+		dsGrdBoard.setColumn(dsGrdBoard.rowposition, "REG_ID", gfnGetUserId());
+	}
+	dsGrdBoard.setColumn(dsGrdBoard.rowposition, "REG_DATE", gfnToday());
+	divBoardForm.cmbCommunityId.index = 0;
+}
+
+// 페이징 처리
+function fnGetPagingList(obj) {
+	dsSearch.setColumn(0, "SEARCH_KEYWORD", searchKeyword);
+	dsSearch.setColumn(0, "SEARCH_CONDITION", searchCondition);
+	nCurrentPage = dsSearch.getConstColumn("pageIndex");
+	gfnService("getPagingListBoard");
+}
+
+// 검색 버튼 클릭 이벤트 처리
+function divSearch_btDoSearch_onclick(obj:Button,  e:ClickEventInfo)
+{
+	if(gfnDsGetUpdate(dsGrdBoard)){
+		var resultValue = gfnConfirm("msg.before.search", "YN");
+		
+		if(resultValue == "N") {
+			return;
+		} else if(resultValue == "Y") {
+			searchKeyword = divSearch.edtSearchKeyword.text;
+			searchCondition = divSearch.cmbSearchCondition.index;
+			divPage.nCurrentPage = 1;
+			nCurrentPage = 1;
+			dsSearch.setConstColumn("pageIndex", 1);
+			
+			gfnService("getPagingListBoard");
+		}
+	} else{
+		searchKeyword = divSearch.edtSearchKeyword.text;
+		searchCondition = divSearch.cmbSearchCondition.index;
+		divPage.nCurrentPage = 1;
+		nCurrentPage = 1;
+		dsSearch.setConstColumn("pageIndex", 1);
+		
+		gfnService("getPagingListBoard");
+	}
+}
+
+// 검색어 입력 후 엔터키를 입력한 경우
+function divSearch_edtSearchKeyword_onkeydown(obj:Edit, e:KeyEventInfo)
+{
+	if(e.keycode == 13){
+		dsSearch.setColumn(0, "SEARCH_KEYWORD", divSearch.edtSearchKeyword.text);
+		divSearch_btDoSearch_onclick();
+	}
+}
+
+// Form을 닫기 전, DataSet 변경이 있는 경우 저장 하고 닫을지 물어보는 팝업 생성
+function SAMPLE002_onbeforeclose(obj:Form, e:CloseEventInfo)
+{
+	if(gfnDsGetUpdate(dsGrdBoard)){
+		var resultValue = gfnConfirm("msg.before.movepage", "YN");
+		
+		if(resultValue == "N") {
+			return;
+		} else if(resultValue == "Y") {
+			btSaveAll_onclick();
+		}
+	}
+}
+
+// Grid Head 클릭시 정렬
+function divGrd_grdBoard_onheadclick(obj:Grid, e:GridClickEventInfo)
+{
+	gfnGridSort(obj, e);
+}
+
+// Grid 우클릭 이벤트 발생 시 PopupMenu를 마우스 위치에 생성 시킴
+function divGrd_grdBoard_onrbuttonup(obj:Grid, e:GridMouseEventInfo)
+{
+	nSelectedCol = e.col;
+	nSelectedRow = e.row;
+	objFocusedGrd = obj;
+	var nGridX = system.cursorx;
+	var nGridY = system.cursory;
+	popupMenuGrd.trackPopup(nGridX, nGridY);
+}
+
+// gfnService 처리 후 callback 처리
+function fnCallback(strServiceId, strErrorCode, strErrorMsg){
+	if(strErrorCode == -1){
+		gfnAlertMsg(strErrorMsg, "ERR");
+	} else {
+		if(strServiceId == "saveAllBoard"){
+			gfnAlertMsg("msg.save.success");
+			SAMPLE002_onload();
+		} else if(strServiceId == "getPagingListBoard"){
+			divPage.objListDataset = dsGrdBoard;
+			divPage.objPageDataset = dsSearch;
+			divPage.fnMakePage();
+		} else if(strServiceId == "checkSession"){
+			if(userId == null || userId == ""){
+				var objChildFrame = new ChildFrame(); 
+
+				objChildFrame.init("Login", 0, 0, 525, 300, "layout::Login.xfdl");
+					
+				objChildFrame.titletext 			= "Login";
+				objChildFrame.showcascadetitletext 	= false;
+				objChildFrame.layered				= "true";
+				objChildFrame.style					= "background:#ffffff60;";
+				objChildFrame.openalign 			= "center middle";
+				
+				// Show Object  
+				popupResult = objChildFrame.showModal(this, {});
+				
+				if(!gfnIsNull(popupResult) && popupResult != "N"){
+					// session check
+					gfnService("checkSession");
+				} else {
+					exit();
+				}
+			}
+		}
+	}
+}
+
+]]></Script>
+  </Form>
+</FDL>

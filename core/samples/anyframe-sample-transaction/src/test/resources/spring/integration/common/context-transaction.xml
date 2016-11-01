@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:tx="http://www.springframework.org/schema/tx"
+	xmlns:aop="http://www.springframework.org/schema/aop"
+	xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-4.0.xsd
+						http://www.springframework.org/schema/tx http://www.springframework.org/schema/tx/spring-tx-4.0.xsd
+						http://www.springframework.org/schema/aop http://www.springframework.org/schema/aop/spring-aop-4.0.xsd">
+
+	<tx:advice id="txAdvice" transaction-manager="transactionManager">
+		<tx:attributes>
+			<tx:method name="insert*" rollback-for="Exception" propagation="REQUIRED" />
+			<tx:method name="update*" rollback-for="Exception" propagation="REQUIRED" />
+			<tx:method name="remove*" rollback-for="Exception" propagation="REQUIRED" />
+			<tx:method name="*" rollback-for="Exception" propagation="SUPPORTS" read-only="true" />
+		</tx:attributes>
+	</tx:advice>
+
+	<aop:config>
+		<aop:pointcut id="txTestSampleRequiredTx" expression="execution(* org.anyframe.transaction.TransactionTestSampleServiceImpl.*(..))" />
+		<aop:advisor advice-ref="txAdvice" pointcut-ref="txTestSampleRequiredTx" />
+	</aop:config>
+
+	<bean id="transactionSample"
+		class="org.anyframe.transaction.TransactionTestSampleServiceImpl">
+		<property name="dataSource" ref="dataSource" />
+	</bean>
+</beans>

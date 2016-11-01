@@ -1,0 +1,139 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN"
+"http://www.w3.org/TR/html4/loose.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+ 
+ <!-- Start of head-->
+<head>
+<meta http-equiv="content-type" content="text/html; charset=UTF-8" />
+<title>Grid Inline Editing </title>
+
+
+<!-- include required common files  ----------------------------------------------------->
+<script type="text/javascript" src="../../../common/exlibs/jquery-1.9.0.js" ></script>
+
+<script type="text/javascript" src="../../../common/exlibs/highlighter/scripts/shCore.js" ></script>
+<script type="text/javascript" src="../../../common/exlibs/highlighter/scripts/shBrushJScript.js" ></script>
+
+<script type="text/javascript" src="../../../common/js/template_common.js" ></script>
+
+<!--  stylesheet  -->
+<link type="text/css" rel="stylesheet" href="../../../common/exlibs/highlighter/styles/shCore.css"/>
+<link type="text/css" rel="stylesheet" href="../../../common/exlibs/highlighter/styles/shCoreDefault.css"/>
+<link rel="stylesheet" type="text/css" href="../../../common/css/style.css" /> 
+
+
+<!-- scripts to support sample page  ----------------------------------------------------->
+<script type="text/javascript">
+
+$(function() {
+	$("#common").load("../../../common/basicinfo.htm");												//common : basic informations	
+})
+
+
+$(function() {
+	JTemplate.load("ui_grid_inlineedit_src.htm");					//{TODO} source url 수정
+	JTemplate.loadDemo2("ui_grid_inlineedit_src.htm", {height:"450px"});			//{TODO} source url 수정, show visaul demo sample
+}); 
+	
+</script> 
+</head>
+<!-- End of head -->
+
+<!-- Start of body -->
+ <body >
+      
+<!-- HEADER BAR -------------------------------------------------------------->
+	<div class="content-title">Grid - Grid</div>
+
+    
+<!-- START OF PAGE ... -------------------------------------------------------->       
+	<div id="page">
+		<p class="header-title">Grid Inline Editting</p>
+		<p class="header-desc">: Inline Editing 적용 방법 및 관련 예를 보여준다.</p>
+          
+      
+<!-- DEMO ----------------------------------------------------------------------->
+		<div class="demo">
+			<h3 >Demo</h3>
+			<div id="visualExample"></div>
+		</div>
+        
+<!-- DEMO DESCRIPTION ----------------------------------------------------->
+		<div class="desc">
+			<h3>Demo Description</h3>
+			<hr>
+			<p class="desc-overall">
+			Grid Inline 편집은 Row 단위로 Grid 에 직접적으로 입력 및 수정하는 것을 말한다. <br>
+			위 데모는 추가, 수정, 저장 및 취소의 기능을 모두 버튼에 연결하였으므로, 저장과 취소 또한 해당 기능을 호출하여야 한다. 
+			</p>
+		</div>
+             
+<!-- CODE ------------------------------------------------------------------------>
+		<div class="code">
+			<h3>Code Source</h3>
+			<pre id="codeExample" class="brush: js"></pre>
+        </div>
+
+
+<!-- CODE DESCRIPTION ------------------------------------------------------>
+		<div class="desc">
+			<h3>Code Description</h3>
+			<hr>
+			
+			<p class="desc-title">편집가능 여부 설정</p>
+			<span class="code-line">#51 ~ #58</span>
+			<p class="desc-overall">
+			colModel 정의 시, Inline 편집이 가능하게 하려면, "editable" property 를 "true" 로 설정해 두어야 한다. 			<br>
+			"id" 컬럼의 경우는, rowid 와 맵핑된 키 정보이므로, "editable" 값을 "false" 로 설정해 두었고, 편집 또는 추가시 해당 컬럼이 Read-Only 상태인 것을 볼 수 있다. 
+			</p>
+			
+			<ul class="desc-hypl">
+				<li><span>Add</span>: "addRow" 메소드 호출. <span class="code-line">#75</span></li>
+				<li><span>Edit</span>: "editRow" 메소드 호출. <span class="code-line">#80</span></li>
+				<li><span>Save</span>: "saveRow" 메소드 호출. <span class="code-line">#85</span></li>
+				<li><span>Restore</span>: "restoreRow" 메소드 호출. <span class="code-line">#96</span></li>
+			</ul>
+			
+			<p class="desc-title">메소드 호출규약</p>
+			<p class='desc-overall'>
+			Grid 의 각 메소드 호출 규약은 아래와 같은 두가지 형태를 갖고 있으며, 어떤 방식을 사용하여도 무방하다.
+			</p>
+			<div class="code-block">
+<pre>
+Type1. this._grid.jqGrid('addRow', addparams);
+Type2. this._grid.jqGrid.addRow(rowid, addparams);			
+</pre>			
+			</div>
+			
+			<p class="desc-title">저장</p>
+			<span class="code-line">#111 ~ #139</span>
+			<p class="desc-overall">
+			 선택된 Row 를 저장 시, 실제 로컬 데이타에 값을 저장하는 코드이다.				<br>
+			 "id" 키 값의 유/무를 판별하여, 데이타를 추가 또는 수정한다.   
+			</p>			
+
+		</div>
+      
+<!-- RELATED LINKS ----------------------------------------------------->
+        <div class="related">
+            <h3>Related Links</h3>
+            <hr>
+            <ul class="desc-hypl">
+            	<li>
+            		<span>Grid Doc</span>
+            		<a href="http://www.trirand.com/jqgridwiki/doku.php?id=wiki:jqgriddocs"></a>
+            	</li>
+				<li>
+					<span>Grid Inline Edit</span>
+					<a href="http://www.trirand.com/jqgridwiki/doku.php?id=wiki:inline_editing"></a>
+				</li>
+            </ul>
+      </div>      
+
+</div>      
+<!-- End of Page-->
+
+</body>
+<!-- End of body-->
+
+</html>

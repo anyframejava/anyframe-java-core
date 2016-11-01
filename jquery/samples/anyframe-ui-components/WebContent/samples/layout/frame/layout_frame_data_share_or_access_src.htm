@@ -1,0 +1,52 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
+<html>
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+<title>Frame Sample - Data 공유 및 접근</title>
+
+<script type="text/javascript">
+
+	//define shared object
+	var sharedObject = (function(){
+		
+		var _dataArray = [];
+		
+		function _sharedObject() {};
+		
+		_sharedObject.prototype.add = function(newData) {
+			_dataArray.push(newData);
+			
+			//update				
+			updateViewFrame();
+		}
+		
+		_sharedObject.prototype.del = function(delData) {
+			_dataArray.pop();
+			
+			//update				
+			updateViewFrame();
+		}
+		
+		_sharedObject.prototype.getData = function() {
+			return _dataArray;
+		}
+		
+		function updateViewFrame()
+		{
+			//call targetDataView-frame
+			targetDataView.updateListView();
+		}
+		
+		return new _sharedObject();			
+	})();
+		
+</script>
+</head>
+
+<frameset cols="350, 250, *" >
+	<frame name="targetLeft" src="sub/layout_frame_data_soa_src_sub1.htm" />
+	<frame name="targetRight" src="sub/layout_frame_data_soa_src_sub2.htm" />
+	<frame name="targetDataView" src="sub/layout_frame_data_soa_src_sub3.htm" />	
+</frameset>
+
+</html>

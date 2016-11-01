@@ -1,0 +1,134 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN"
+"http://www.w3.org/TR/html4/loose.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+
+<head>
+<meta http-equiv="content-type" content="text/html; charset=UTF-8" />
+<title>Progressbar : CSS Style</title>
+
+<!-- FILES INCLUDED.. ----------------------------------------------------->
+<script type="text/javascript" src="../../../common/exlibs/jquery-1.9.0.js"></script>
+
+<script type="text/javascript" src="../../../common/exlibs/highlighter/scripts/shCore.js"></script>
+<script type="text/javascript" src="../../../common/exlibs/highlighter/scripts/shBrushJScript.js"></script>
+
+<script type="text/javascript" src="../../../common/js/template_common.js"></script>
+
+<!--  STYLESHEET  -->
+<link type="text/css" rel="stylesheet"
+	href="../../../common/exlibs/highlighter/styles/shCore.css" />
+<link type="text/css" rel="stylesheet" 	href="../../../common/exlibs/highlighter/styles/shCoreDefault.css" />
+<link type="text/css" rel="stylesheet" 	href="../../../common/css/style.css" />
+
+<!-- SCRIPT  ----------------------------------------------------->
+<script type="text/javascript">
+
+$(function() {
+	JTemplate.load("ui_progressbar_style_using_css_src.htm");					
+	JTemplate.loadDemo("ui_progressbar_style_using_css_src.htm");			
+});  
+
+</script>
+
+</head>
+
+<!-- CONTENTS BODY -------------------------------------------------------------->
+<body >
+
+<!-- HEADER BAR -------------------------------------------------------------->
+<div class="content-title">Component - Progressbar</div>
+
+<!-- START OF PAGE ... -------------------------------------------------------->
+<div id="page">
+		<p class="header-title">기본 CSS를 이용한 Progressbar의 스타일 변화</p>
+		<p class="header-desc">: progressbar 의 기본 제공 CSS를 바꾸어 customizing 할 수 있는 방법을 제공한다.</p>
+
+<!-- DEMO ----------------------------------------------------------------------->
+			<div class="demo">
+				<h3 >Demo</h3>
+				<div id="visualExample"></div>
+			</div>
+
+<!-- DEMO DESCRIPTION----------------------------------------------------->
+		<div class="desc">
+			<h3>Demo Description</h3>
+			<hr>
+			<p class = "desc-title">스타일 변화</p>
+			<p class ="desc-overall">
+				: border, value color, label position을 변화시켜 스타일을 조작할 수 있다.<br>
+			</p>
+			<ul class ="desc-hypl">
+				<li><span>border</span>: thick, thin, none으로 border의 유무, 너비정도를 조작할 수 있다.</li>
+				<li><span>value color</span>: solid 버튼을 통해 단색으로, gradation 버튼을 통해 색의 그라데이션으로 변화하는 것을 확인할 수 있다.</li>
+				<li><span>label position</span>: progressbar에서 내부 라벨의 위치를 left, center, right 으로 바꾸어 조작해 볼 수 있다.</li>
+			</ul>
+
+		</div>
+
+
+<!-- CODE------------------------------------------------------------------------>
+			<div class="code">
+				<h3>Code Source </h3>
+				<pre id="codeExample" class="brush: js"></pre>
+			</div>
+
+<!-- CODE DESCRIPTION------------------------------------------------------>
+			<div class="desc">
+				<h3>Code Description </h3>
+				<hr>
+				<p class="desc-title">CSS Class 구조</p>
+				<p class = "desc-overall">
+				바의 외부 div, value 값의 내부 div, label의 div 각각의 위치와 class 구조는 다음과 같다.
+				</p>
+				
+				<ul class="desc-hypl">
+					<li><span>외부 division</span>
+					: id= "porgressbar" 로 설정되어 전체 크기 윤곽선(border)을 가지는 부분으로, 
+					컴포넌트 생성시 .ui-progressbar의 클래스가 적용된다.</li>
+					<li><span>내부 label division</span>
+					: id="progressbarLabel" 로 설정된 부분으로, label이 쓰여지는 division 공간이다. </li>
+					<li><span>내부 value division</span>
+					: progressbar의 컴퍼넌트를 생성하면 자동으로 내부에 .ui-progressbar-value클래스가 적용되며,
+					값이 변화함에 따라 width가 value값의 %단위로 정해지게 된다.</li>
+				</ul>
+				
+				<p class="desc-title">CSS 변경</p>
+				<p class = "desc-overall">
+				border, value color, position 에 대해 어느 division에 접근하여 무엇을 바꿔야 하는지에 대한 방법은 다음과 같다.
+				</p>
+				
+				<ul class="desc-hypl">
+					<li><span>border</span>
+					: id가 progressbar로 만든 division의 .ui-progressbar 클래스가 바의 border를 생성하게 되는데, 
+					이를 css() 메소드를 통해 border값을 thick, thin, none 과 같은 값으로 변경할 수 있다.
+					</li>
+					<li><span>value color</span>
+					: 외부 division 안에 자동적으로 생성되는  내부 value division의 css 중 background-color속성를 바꾸어 주면 된다.
+					</li>
+					<li><span>label position</span>
+					: 외부 division 안에 label div을 쓰고, position을 absolute, width: progressbar의 크기로 설정한 후, 
+					text-align 속성을 위치에 따라 left, center, right 으로 값을 바꾸어 주면 된다.
+					</li>
+				</ul>
+			</div>
+		
+<!-- RELATED LINKS ----------------------------------------------------------->
+		<div class="related">
+			<h3>Related Links</h3>
+			<hr>
+			<ul class ="desc-hypl">
+				<li>
+					<span>Progressbar API</span>
+					<a href="http://api.jqueryui.com/progressbar/"></a>
+				</li>
+				<li>
+					<span>CSS</span>
+					<a href="http://api.jquery.com/css/"></a>
+				</li>
+			</ul>
+		</div>
+
+</div>
+<!-- END OF PAGE------------------------------------------------------------->
+</body>
+</html>

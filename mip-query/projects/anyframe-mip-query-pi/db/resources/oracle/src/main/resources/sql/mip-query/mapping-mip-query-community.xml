@@ -1,0 +1,47 @@
+		<!--mip-query-findCommunityList-START-->
+			SELECT 
+			COMMUNITY_ID, COMMUNITY_NAME, COMMUNITY_DESC, CATEGORY_ID, REG_ID, REG_DATE
+			FROM MIP_COMMUNITY
+			<!--Velocity-Support-findCommunityList-START-->
+			#if ($SEARCH_CONDITION.length() &gt; 0 &amp;&amp; "0" == $SEARCH_CONDITION) 				    
+				WHERE COMMUNITY_NAME like '%' || :SEARCH_KEYWORD || '%'
+			#elseif ($SEARCH_CONDITION.length() &gt; 0 &amp;&amp; "1" == $SEARCH_CONDITION)
+			    WHERE COMMUNITY_DESC like '%' || :SEARCH_KEYWORD || '%'
+			#end
+			<!--Velocity-Support-findCommunityList-START-->
+			ORDER BY REG_DATE DESC		
+		<!--mip-query-findCommunityList-END-->
+		<!--mip-query-findCommunityListForTree-START-->
+			SELECT * FROM (
+				SELECT	CATE.CATEGORY_ID, CATE.CATEGORY_NAME TEXT_NAME, CATE.CATEGORY_NAME, CATE.CATEGORY_DESC, CATE.REG_DATE CATE_REGDATE,
+				'' COMMUNITY_ID, '' COMMUNITY_NAME,	'' COMMUNITY_DESC,	'' REG_ID, sysdate REG_DATE, 0 DEPTH
+				FROM	MIP_CATEGORY CATE
+
+				UNION
+					
+				SELECT	COMM.CATEGORY_ID, COMM.COMMUNITY_NAME TEXT_NAME,'' CATEGORY_NAME, '' CATEGORY_DESC, sysdate REGDATE,  
+				COMM.COMMUNITY_ID,	COMM.COMMUNITY_NAME, COMM.COMMUNITY_DESC, COMM.REG_ID, COMM.REG_DATE, 1 DEPTH
+				FROM MIP_COMMUNITY COMM
+				)
+			ORDER BY CATEGORY_ID, DEPTH		
+		<!--mip-query-findCommunityListForTree-END-->
+		<!--mip-query-findCommunityListBySearchCondition-START-->
+			SELECT
+			COMMUNITY_ID, COMMUNITY_NAME, COMMUNITY_DESC, CATEGORY_ID, REG_ID, REG_DATE
+			FROM MIP_COMMUNITY
+			WHERE CATEGORY_ID = :CATEGORY_ID
+			<!--mip-query-findCommunityListBySearchCondition-START-->
+			#if ($SEARCH_CONDITION.length() &gt; 0 &amp;&amp; "0" == $SEARCH_CONDITION) 				    
+				AND COMMUNITY_NAME like '%' || :SEARCH_KEYWORD || '%'
+			#else
+			    AND COMMUNITY_DESC like '%' || :SEARCH_KEYWORD || '%'
+			#end
+			<!--mip-query-findCommunityListBySearchCondition-END-->
+			ORDER BY REG_DATE DESC		
+		<!--mip-query-findCommunityListBySearchCondition-END-->
+		<!--mip-query-createCommunity-START-->
+			INSERT INTO MIP_COMMUNITY
+			(COMMUNITY_ID, COMMUNITY_NAME, COMMUNITY_DESC, REG_ID, REG_DATE, CATEGORY_ID) 
+			VALUES ('COMMUNITY-'|| COMMUNITY_ID_SEQ.NEXTVAL, :COMMUNITY_NAME, :COMMUNITY_DESC, :REG_ID, sysdate, :CATEGORY_ID)		
+		<!--mip-query-createCommunity-END-->
+		

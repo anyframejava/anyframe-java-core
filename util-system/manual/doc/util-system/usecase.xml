@@ -1,0 +1,440 @@
+<chapter id="utilsystem_usecase">
+	<title>Utilities 활용 사례</title>
+	<para>Util System Plugin을 통해 제공되는 화면들은 아래와 같다.</para>
+	
+	<informaltable>
+		<caption>Util System Plugin을 통해 제공되는 화면</caption>
+		<tgroup cols="2">
+			<colspec colnum="1" colname="col1" colwidth="3*" />
+			<colspec colnum="2" colname="col2" colwidth="7*" />
+			<thead>
+				<row>
+					<entry align="center">Name</entry>
+					<entry align="center">Description</entry>
+				</row>
+			</thead>
+			<tbody>
+				<row>
+					<entry>System Utility Test List</entry>
+					<entry>portlet 형태로 OS 정보, Java JVM 정보, CPU 정보, 메모리 정보 등의 시스템 관련 속성 정보를 제공한다.</entry>
+				</row>
+				<row>
+					<entry>Network Utility Test List</entry>
+					<entry>portlet 형태로 네트워크 상태 및 IP 정보, Mac 주소정보, PortScan 정보를 제공한다.</entry>
+				</row>
+				<row>
+					<entry>SystemUsageInfo Test List</entry>
+					<entry>portlet 형태로 CPU 사용량, 프로세스 목록 정보 등을 제공한다.</entry>
+				</row>
+				<row>
+					<entry>SystemUsageChart Test List</entry>
+					<entry>Chart 형태로 CPU, 메모리, 디스크 사용량을 보여준다. </entry>
+				</row>
+			</tbody>
+		</tgroup>
+	</informaltable>	
+
+	<section id="utilsystem_usecase_architecture">
+		<title>샘플 어플리케이션의 Architecture</title>
+		<para>다음 그림은 Util System Plugin을 통해 제공되는 샘플 어플리케이션의 Architecture이다.</para>
+		<mediaobject>
+	      <imageobject>
+	        <imagedata align="center" fileref="../image/util-system/util-system-PluginArchitecture.jpg" />
+	      </imageobject>
+	      <textobject>
+			<phrase>Util System Plugin을 통해 제공되는 샘플 어플리케이션의 Architecture</phrase>
+		  </textobject>
+	    </mediaobject>
+	    <itemizedlist>
+     		<listitem><para>util-system의 라이브러리들을 사용해서 시스템 정보들을 수집한다. </para></listitem>
+     		<listitem><para>simpleweb-jquery 에 포함되어 있는 jQuery UI Portlet 형태로 정보들을 보여준다.</para></listitem>
+     		<listitem><para>chart 에 포함되어 있는 FusionChart Free 의 chart/graph 를 이용하여 직관적으로 보기 쉬운 화면을 제공한다.</para></listitem>
+	   	</itemizedlist>
+	</section>
+	
+	<section id="utilsystem_usecase_implementation">
+		<title>샘플 어플리케이션 구성</title>
+		<para>직관적으로 보기 쉽도록 portlet과 chart를 이용한 시스템 , 네트워크 관련 정보 화면을 제공한다.</para>
+		<para>
+			아래는 portlet 사용을 위한 샘플 소스이다.
+			<itemizedlist>
+      			<listitem>
+        			<para>portlet 화면 구성을 위한 systemInfoUtilTest.jsp의 일부분이다.</para>
+        			<para>
+        				<programlisting language="xml"><![CDATA[<div class="portlet">
+    <div class="portlet-header">OsInfo</div>
+    <div class="portlet-content" id="osInfo"></div>
+</div>]]></programlisting>
+        			</para>
+      			</listitem>
+      			<listitem>
+        			<para>
+        				portlet 데이터 조회를 위한 systemInfoUtilTest.jsp의  JavaScript부분이다.
+        				아래 javascript 소스 영역은 Portlet Header click 시 실행될 callback function 이고 jQuery Ajax 요청은 search 함수로 일반화하여 재사용하고 
+        				success callback function 을 인자로 넘겨준다.
+        				아래에서 확인할 수 있듯이 해당 portlet 영역(div) 에 simpleAutoProperties 함수로 공통화 하여  json 결과 데이터를  html 요소(ul-li)로 동적으로 
+        				그려주게 된다. 
+        			</para>
+        			<para>
+        				<programlisting language="java">if($(this).parent().text() == "OsInfo") {
+    search("OsInfo", function(data){
+        var osInfo = simpleAutoProperties(data.result);
+        $("#osInfo").html(osInfo);
+    }
+);</programlisting>
+        			</para>
+      			</listitem>
+      			<listitem>
+        			<para>
+        				portlet 데이터 핸들링을 위한 UtilSystemController.java 의 일부분이다.
+        				Util-System 기능(내부적으로 Sigar 활용)인 SystemInfoUtil을 호출하여 결과 객체(여기서는 OsInfo Value Object)를 result 라는 key 로 Model 에 담는다.
+        				jsonView 로 리턴하게 되면  VO 가 Json 객체로 변환되어  클라이언트에 되돌려진다.
+        			</para>
+        			<para>
+        				<programlisting language="java">@RequestMapping("/utilSystem/getOsInfo.do")
+public String getOsInfo(ModelMap map) {
+    map.addAttribute("result", SystemInfoUtil.getSystemInfo());
+    return "jsonView";
+}</programlisting>
+        			</para>
+      			</listitem>
+    		</itemizedlist>
+		</para>
+		<section id="utilsystem_usecase_implementation_systemutil">
+			<title>System Utility Test List</title>
+			<para>
+				<mediaobject>
+			      <imageobject>
+			        <imagedata align="center" fileref="../image/util-system/util-system-SystemUtility.jpg" />
+			      </imageobject>
+			      <textobject>
+					<phrase>System Utility</phrase>
+		  		</textobject>
+			    </mediaobject>
+			</para>
+			<para>
+				상단의 refresh 버튼을 클릭하면 전체 화면의 개별 Portlet Header click 이벤트를 trigger 시켜 각 기능을 재조회하게 된다.
+				Portlet 형태의 UI 를 제공하므로 각 Portlet Header 를 마우스로 drag &amp; drop 하여 위치를 쉽게 이동할 수 있고
+				Header 에 있는 refresh 아이콘이나 접힘/펼침 아이콘을 클릭하여 데이터 재조회와 화면 표시를 제어할 수 있다.
+			</para>
+			<informaltable>
+				<caption>Util System Plugin을 통해 제공되는 화면</caption>
+				<tgroup cols="2">
+					<colspec colnum="1" colname="col1" colwidth="3*" />
+					<colspec colnum="2" colname="col2" colwidth="7*" />
+					<thead>
+						<row>
+							<entry align="center">Portlet</entry>
+							<entry align="center">Description</entry>
+						</row>
+					</thead>
+					<tbody>
+						<row>
+							<entry><emphasis role="bold">OsInfo</emphasis></entry>
+							<entry>OS 정보</entry>
+						</row>
+						<row>
+							<entry><emphasis role="bold">JavaInfo</emphasis></entry>
+							<entry>Java JVM 정보</entry>
+						</row>
+						<row>
+							<entry><emphasis role="bold">NativeInfo</emphasis></entry>
+							<entry>Sigar 관련 제공 정보</entry>
+						</row>
+						<row>
+							<entry><emphasis role="bold">CpuInfo</emphasis></entry>
+							<entry>CPU 정보</entry>
+						</row>
+						<row>
+							<entry><emphasis role="bold">MemoryInfo</emphasis></entry>
+							<entry>Memory 정보 (단위 : KB)</entry>
+						</row>
+						<row>
+							<entry><emphasis role="bold">UptimeInfo</emphasis></entry>
+							<entry>Uptime 정보 (시스템 최초 기동 및 경과시간)</entry>
+						</row>
+						<row>
+							<entry><emphasis role="bold">ClientInfo</emphasis></entry>
+							<entry>Client 정보 (Request Header 에서 추출)</entry>
+						</row>
+						<row>
+							<entry><emphasis role="bold">ProcessStatInfo</emphasis></entry>
+							<entry>Process status 정보</entry>
+						</row>
+						<row>
+							<entry><emphasis role="bold">UlimitInfo</emphasis></entry>
+							<entry>Ulimit 정보</entry>
+						</row>
+						<row>
+							<entry><emphasis role="bold">FileSystemInfo</emphasis></entry>
+							<entry>File System 정보</entry>
+						</row>
+					</tbody>
+				</tgroup>
+			</informaltable>
+		</section>
+
+		<section id="utilsystem_usecase_implementation_network">
+			<title>Network Utility Test List</title>
+			<informaltable>
+				<caption>Network Utility</caption>
+				<tgroup cols="2">
+					<colspec colnum="1" colname="col1" colwidth="3*" />
+					<colspec colnum="2" colname="col2" colwidth="7*" />
+					<thead>
+						<row>
+							<entry align="center">Portlet</entry>
+							<entry align="center">Description</entry>
+						</row>
+					</thead>
+					<tbody>
+						<row>
+							<entry><emphasis role="bold">NetworkInfoList</emphasis></entry>
+							<entry>Network 목록 정보 - Mac 주소, 호스트명, IP 주소, 서브넷, 게이트웨이, DNS</entry>
+						</row>
+						<row>
+							<entry><emphasis role="bold">MyIPInfo</emphasis></entry>
+							<entry>Local Network 정보</entry>
+						</row>
+						<row>
+							<entry><emphasis role="bold">MyIPList</emphasis></entry>
+							<entry>내 IP 목록</entry>
+						</row>
+						<row>
+							<entry><emphasis role="bold">MyMacAddressList</emphasis></entry>
+							<entry>내 Mac 주소 목록</entry>
+						</row>
+						<row>
+							<entry><emphasis role="bold">Ping</emphasis></entry>
+							<entry>해당 주소에 대한 네트워크 상태 정보 (구동 기반인 InetAddress.isReachable() 은 완전한 ICMP ping 구현은 아니며 방화벽 환경에 따라 동작하지 않는 경우가 있음)</entry>
+						</row>
+						<row>
+							<entry><emphasis role="bold">Route</emphasis></entry>
+							<entry>route 정보</entry>
+						</row>
+						<row>
+							<entry><emphasis role="bold">PortScan</emphasis></entry>
+							<entry>port 스캔한 정보 (Sigar 의 netstat 수행 시 네트워크 환경에 따라 실행 시간이 오래 걸리는 경우가 있음에 유의!)</entry>
+						</row>
+					</tbody>
+				</tgroup>
+			</informaltable>
+			<para>
+				PortScan 기능의 경우 해당 Portlet 의 refresh 아이콘(기본 refresh 와 아이콘 모양이 다름!) 을 클릭한 경우에만 실행된다.
+				또한 위 캡쳐 화면에서 IP 정보 중 일부 영역은 보안상 편집하였으므로 참고한다.
+			</para>
+		</section>
+
+		<section id="utilsystem_usecase_implementation_systemusage">
+			<title>SystemUsageInfo Test List</title>
+			<para>
+				<mediaobject>
+			      <imageobject>
+			        <imagedata align="center" fileref="../image/util-system/util-system-SystemUsageInfo.jpg" />
+			      </imageobject>
+			      <textobject>
+					<phrase>SystemUsageInfo</phrase>
+		  		</textobject>
+			    </mediaobject>
+			</para>
+			<informaltable>
+				<caption>SystemUsageInfo Utility</caption>
+				<tgroup cols="2">
+					<colspec colnum="1" colname="col1" colwidth="3*" />
+					<colspec colnum="2" colname="col2" colwidth="7*" />
+					<thead>
+						<row>
+							<entry align="center">Portlet</entry>
+							<entry align="center">Description</entry>
+						</row>
+					</thead>
+					<tbody>
+						<row>
+							<entry><emphasis role="bold">CpuPerc</emphasis></entry>
+							<entry>CPU percentage usage</entry>
+						</row>
+						<row>
+							<entry><emphasis role="bold">CpuPercList</emphasis></entry>
+							<entry>개별 CPU에 대한 CPU percentage usage</entry>
+						</row>
+						<row>
+							<entry><emphasis role="bold">DiskUsage</emphasis></entry>
+							<entry>디스크별 사용량</entry>
+						</row>
+						<row>
+							<entry><emphasis role="bold">ProcessInfo</emphasis></entry>
+							<entry>개별 프로세스 상세 정보(process 의 status/cpu/메모리/실행파일)</entry>
+						</row>
+						<row>
+							<entry><emphasis role="bold">ProcessList</emphasis></entry>
+							<entry>프로세스 목록</entry>
+						</row>
+					</tbody>
+				</tgroup>
+			</informaltable>
+		</section>
+
+		<section id="utilsystem_usecase_implementation_systemusagechart">
+			<title>SystemUsageChart Test List</title>
+			<para>
+				<mediaobject>
+			      <imageobject>
+			        <imagedata align="center" fileref="../image/util-system/util-system-SystemUsageChart.jpg" />
+			      </imageobject>
+			      <textobject>
+					<phrase>SystemUsageChart</phrase>
+		  		</textobject>
+			    </mediaobject>
+			</para>
+			<para>그래프를 구현하기 위한 코드는 아래와 같다.
+				<itemizedlist>
+		      		<listitem>
+		        		<para role="introduction_title"><emphasis role="bold">Controller 구현</emphasis></para>
+		        		<para>
+		        			다음은 UtilSystemController.java 소스 코드중의 일부로 FusionChart Free 의 Pie2d 차트를 그리기 위해
+		        			먼저 Pie2d 차트 data xml 로 변환하기 위한 Jaxb Model class 로 데이터를 세팅한 후 marshallingView 를 통해 XML 로 변환하는 예이다.
+		        			<programlisting language="java"><![CDATA[@RequestMapping("/utilSystem/getMemoryUsageChart.do")
+public String getMemoryUsageChart(ModelMap map) throws Exception {
+    SigarAccessor.gatherMemoryInfo();
+    MemoryInfo memoryInfo = SigarAccessor.getSysInfo().getMemoryInfo();
+
+    Pie2dGraph pie2d = new Pie2dGraph();
+    pie2d.setCaption("Memory Usage");
+    pie2d.setDecimalPrecision(0);
+    pie2d.setShowPercentageValues(1);
+    pie2d.setShowNames(1);
+    pie2d.setNumberSuffix("MB");
+    pie2d.setShowValues(1);
+    pie2d.setShowPercentageInLabel(0);
+    pie2d.setPieYScale(45);
+    pie2d.setPieBorderAlpha(100);
+    pie2d.setPieRadius(100);
+    pie2d.setAnimation(0);
+    pie2d.setShadowXShift(4);
+    pie2d.setShadowAlpha(40);
+    pie2d.setPieFillAlpha(95);
+    pie2d.setPieBorderColor("FFFFFF");
+    pie2d.setFormatNumberScale(0);
+    pie2d.setFormatNumber(1);
+    pie2d.setThousandSeparator(",");
+
+    Pie2dSet set1 = new Pie2dSet();
+    set1.setValue((double) memoryInfo.getMemFree() / 1024.0);
+    set1.setName("Free");
+    set1.setColor("AFD8F8");
+    Pie2dSet set2 = new Pie2dSet();
+    set2.setValue((double) memoryInfo.getMemUsed() / 1024.0);
+    set2.setName("Used");
+    set2.setColor("F6BD0F");
+    set2.setIsSliced(1);
+
+    List<Pie2dSet> sets = new ArrayList<Pie2dSet>();
+    sets.add(set1);
+    sets.add(set2);
+
+    pie2d.setSet(sets);
+
+    map.addAttribute(pie2d);
+    return "utilMarshallingView";
+}]]></programlisting>
+	        			</para>
+	      			</listitem>
+	      			<listitem>
+	        			<para role="introduction_title"><emphasis role="bold">화면 구현</emphasis></para>
+	        			<para>
+							그래프 구현 코드는 아래와 같다. 다음은 systemUsageChartTest.jsp 소스 코드중의 일부이다.
+							FusionChart Free for jQuery 플러그인(jquery.fusionchart.js) 을 사용하여 차트를 삽입하고자 하는 영역(div)에 원하는 옵션을 다양하게 지정하여 손쉽게
+							웹페이지에 차트를 통합하고 있다.
+							<programlisting language="java"><![CDATA[if($(this).parent().text() == "CpuPercChart") {
+    $('#cpuPercChart').insertFusionCharts({
+        swfPath: "<c:url value='/chart/javascript/fusionchart-free/charts/'/>",
+        type: "Pie2D",
+        data: "<c:url value='/utilSystem/getCpuPercChart.do'/>",
+        dataFormat: "URIData",
+        width: "370",
+        height: "270",
+        wMode: "opaque"
+    });
+} else if($(this).parent().text() == "MemoryUsageChart") {
+    $('#memoryUsageChart').insertFusionCharts({
+        swfPath: "<c:url value='/chart/javascript/fusionchart-free/charts/'/>",
+        type: "Pie2D",
+        data: "<c:url value='/utilSystem/getMemoryUsageChart.do'/>",
+        dataFormat: "URIData",
+        width: "450",
+        height: "270",
+        wMode: "opaque"
+    });
+} else if($(this).parent().text() == "DiskUsageChart") {
+    $('#diskUsageChart').insertFusionCharts({
+        swfPath: "<c:url value='/chart/javascript/fusionchart-free/charts/'/>",
+        type: "StackedBar2D",
+        data: "<c:url value='/utilSystem/getDiskUsageChart.do'/>",
+        dataFormat: "URIData",
+        width: "450",
+        height: "350",
+        wMode: "opaque"
+    });
+} else if($(this).parent().text() == "ProcessMemoryUsageChart") {
+    $('#processMemoryUsageChart').insertFusionCharts({
+        swfPath: "<c:url value='/chart/javascript/fusionchart-free/charts/'/>",
+        type: "Pie2D",
+        data: "<c:url value='/utilSystem/getProcessMemoryUsageChart.do'/>",
+        dataFormat: "URIData",
+        width: "370",
+        height: "270",
+        wMode: "opaque"
+    });
+} else if($(this).parent().text() == "ProcessCpuUsageChart") {
+    $('#processCpuUsageChart').insertFusionCharts({
+        swfPath: "<c:url value='/chart/javascript/fusionchart-free/charts/'/>",
+        type: "Pie2D",
+        data: "<c:url value='/utilSystem/getProcessCpuUsageChart.do'/>",
+        dataFormat: "URIData",
+        width: "370",
+        height: "270",
+        wMode: "opaque"
+    });
+}]]></programlisting>
+						</para>
+	      			</listitem>
+	    		</itemizedlist>
+			</para>
+
+			<para>
+				DiskUsageChart의 경우는 가장 오른쪽의 버튼을 클릭하면 확대된 막대 그래프로 볼 수 있다. 해당 기능은 jQuery UI 의 Modal Dialog box 기능을 활용하였다.
+				<mediaobject>
+			      <imageobject>
+			        <imagedata align="center" fileref="../image/util-system/util-system-DiskUsageChart.jpg" />
+			      </imageobject>
+			      <textobject>
+					<phrase>DiskUsageChart</phrase>
+		  		</textobject>
+			    </mediaobject>
+		    	<para>
+		    		확대된 그래프 관련 구현 사례는 아래와 같다.
+		    		<programlisting language="java"><![CDATA[$(".portlet-header .ui-icon-newwin").click(function() {
+     if($(this).parent().text() == "DiskUsageChart") {
+
+        $("#dialog-modal").dialog({
+            width: 1024,
+            height: 768,
+            zindex: 100,
+            modal: true
+        });
+
+        $('#diskUsageChartModal').insertFusionCharts({
+            swfPath: "<c:url value='/chart/javascript/fusionchart-free/charts/'/>",
+            type: "StackedBar2D",
+            data: "<c:url value='/utilSystem/getDiskUsageChart.do'/>",
+            dataFormat: "URIData",
+            width: "1000",
+            height: "700"
+        });
+    }
+});]]></programlisting>
+		    	</para>
+			</para>
+		</section>
+	</section>	
+</chapter>

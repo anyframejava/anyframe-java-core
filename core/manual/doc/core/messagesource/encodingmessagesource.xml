@@ -1,0 +1,37 @@
+<chapter id="core_encoding_messagesource">
+	<title>ReloadableResourceBundleMessageSource</title>
+	<para>
+		웹 애플리케이션을 개발하다보면 MessageSource가 변경될 경우 MessageSource를 반영하기 위하여 애플리케이션 서버를 재시작하는 경우가 있다.
+		MessageSource가 변경될 때마다 서버를 재시작하는 것은 상당히 귀찮은 일이다. 이 같은 문제를 해결하기 위해 Spring 프레임워크에서는 ReloadableResourceBundleMessageSource 클래스를 통해 지원하고 있다.
+		ReloadableResourceBundleMessageSource 클래스의 cacheSeconds 설정을 통해 reloading을 지원한다.
+	</para>
+	<para>
+		다음은 Core Plugin 설치로 추가된 context-message.xml 파일의 일부로 'messageSource' Bean 정의 내용이다.
+	</para>
+	<programlisting language="xml"><![CDATA[<bean id="messageSource" 
+    class="]]><emphasis role="bold"><![CDATA[org.springframework.context.support.ReloadableResourceBundleMessageSource]]></emphasis><![CDATA[">
+    <property name="basenames">
+        <list>
+            <value>message/message-generation</value>        
+            <value>message/message-moviefinder</value>
+            <value>message/message-converter</value>
+        </list>
+    </property>
+    ]]><emphasis role="bold"><![CDATA[<property name="defaultEncoding">
+        <value>UTF-8</value>
+    </property>]]></emphasis><![CDATA[
+</bean>]]></programlisting>
+	<para>
+		위와 같이 ReloadableResourceBundleMessageSource의 defaultEncoding 속성을 사용하여 Encoding을 정의해 줌으로써 messageSource bean을 정의한다.
+		defaultEncoding을 정의하지 않을 시에는 기본적으로 "UTF-8"로 셋팅된다. 
+	</para>
+	<important>
+		<title>ReloadableResourceBundleMessageSource 사용시 유의할 점</title>
+		<para>
+			ReloadableResourceBundleMessageSource 클래스를 사용할 때 ResourceBundleMessageSource와 다른 점은 사용할 MessageSource파일을 classpath에 두지 말아야 하는 것이다. 
+			애플리케이션 서버는 클래스패스에 있는 모든 리소스를 캐싱하기 때문에 파일을 변경하더라도 반영되지 않는다.
+			따라서 ReloadableResourceBundleMessageSource 클래스를 사용하기 위해서는 /WEB-INF/classes 디렉토리 이외의 다른 디렉토리에 MessageSource 파일을 관리해야한다.
+			예를 들어 /WEB-INF/messages 디렉토리와 같은 곳에서 관리해야한다.
+		</para>
+	</important>
+</chapter>

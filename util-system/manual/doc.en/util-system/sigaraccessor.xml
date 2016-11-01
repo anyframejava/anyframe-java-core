@@ -1,0 +1,160 @@
+<chapter id="utilsystem_sigaraccessor">
+	<title> SigarAccessor</title>
+	<para>
+		To use JNI linkage function provided by Sigar, Sigar Library Path should be set up.
+		SigarAccessor basically assigns library path for the sigar-bin/lib folder in JVM working directory.
+		Therefore, there should be no problem in initializing it if sigar-bin/lib, which is a group of JNI native libraries included in plug-in samples, is copied in the default route.
+		(Default working directories differ depending on WAS/build Tool.)
+		Sigar Library Path can be changed for a specific project through JVM starting option or library path setup for each platform.
+		(The java.library.path system parameters can be directly set or appended with path setup in Windows, LD_LIBRARY_PATH setup in Linux/Solaris, and LIBPATH setup in AIX.)
+		It can be reset in the System.setProperty ("java.library.path", existing path + sigarLibPath) type when Spring Container is initialized, 
+		and refer to initSigar() method set as @PostConstruct in UtilSystemController of util-system plugin for related samples.
+	</para>
+
+	<section id="utilsystem_sigaraccessor_sysinfo">
+		<title>System information gathering</title>
+		<para>
+			SigarAccessor basically gathers system related information. Internally it returns a VO object called SysInfo.
+			To use the information the following VO objects in SysInfo can be used.
+		</para>
+		<informaltable>
+		<tgroup cols="4">
+			<colspec colnum="1" colname="col1" colwidth="1*" />
+			<colspec colnum="2" colname="col2" colwidth="3*" />
+			<colspec colnum="3" colname="col3" colwidth="5*" />
+			<colspec colnum="3" colname="col3" colwidth="1*" />
+			<thead>
+				<row>
+					<entry align="center">Information Gathering Method</entry>
+					<entry align="center">Description</entry>
+					<entry align="center">VO</entry>
+					<entry align="center">Necessity of Real-time Information Gathering</entry>
+				</row>
+			</thead>
+			<tbody>
+				<row>
+					<entry><emphasis role="bold">gatherVersionInfo()</emphasis></entry>
+					<entry>Gather Sigar and OS, and Java version information</entry>
+					<entry>NativeInfo, OsInfo, JavaInfo</entry>
+					<entry>No</entry>
+				</row>
+				<row>
+					<entry><emphasis role="bold">gatherUptimeInfo()</emphasis></entry>
+					<entry>Uptime information - system booting time and execution time until now</entry>
+					<entry>UptimeInfo</entry>
+					<entry>Yes</entry>
+				</row>
+				<row>
+					<entry><emphasis role="bold">gatherCpuInfo()</emphasis></entry>
+					<entry>CPU information - vendor, model, Mhz, number of CPUs, number of Cores, number of sockets for each Core, etc.</entry>
+					<entry>CpuInfo</entry>
+					<entry>No</entry>
+				</row>
+				<row>
+					<entry><emphasis role="bold">gatherMemoryInfo()</emphasis></entry>
+					<entry>System memory information - total memory, assigned memory, idle memory, etc.</entry>
+					<entry>MemoryInfo</entry>
+					<entry>Yes</entry>
+				</row>
+				<row>
+					<entry><emphasis role="bold">gatherFileSystemInfo()</emphasis></entry>
+					<entry>File System information - directory name, file name of the total file system, etc.</entry>
+					<entry>FileSystemInfo</entry>
+					<entry>No</entry>
+				</row>
+				<row>
+					<entry><emphasis role="bold">gatherFileSystemUsageMap()</emphasis></entry>
+					<entry>Total File System usage information - total disk size, used disk size, available disk size, etc.</entry>
+					<entry>FileSystemUsageInfo</entry>
+					<entry>Yes</entry>
+				</row>
+				<row>
+					<entry><emphasis role="bold">gatherProcessStatInfo()</emphasis></entry>
+					<entry>System process stats information</entry>
+					<entry>ProcessStatInfo</entry>
+					<entry>Yes</entry>
+				</row>
+				<row>
+					<entry><emphasis role="bold">gatherProcessInfo()</emphasis></entry>
+					<entry>Total process information - CPU, execution, state, time information, etc.</entry>
+					<entry>
+				    	<para>ProcessInfo</para>
+				        <para>ProcessCpuInfo, ProcessExeInfo, ProcessStateInfo, ProcessMemoryInfo</para>
+				    </entry>
+					<entry>Yes</entry>
+				</row>
+				<row>
+					<entry><emphasis role="bold">gatherNetworkInfoMap()</emphasis></entry>
+					<entry>Network list information -  ip, mac,network mask, etc.</entry>
+					<entry>NetworkInfo</entry>
+					<entry>No</entry>
+				</row>
+				<row>
+					<entry><emphasis role="bold">gatherNetworkInfo()</emphasis></entry>
+					<entry>Local network information - ip, mac,network mask, etc.</entry>
+					<entry>NetworkInfo</entry>
+					<entry>No</entry>
+				</row>
+				<row>
+					<entry><emphasis role="bold">gatherUlimitInfo()</emphasis></entry>
+					<entry>Ulimit information - date, file, time, core dump, memory, etc.</entry>
+					<entry>UlimitInfo</entry>
+					<entry>Yes</entry>
+				</row>
+			</tbody>
+		</tgroup>
+	</informaltable>
+	</section>
+
+	<section id="utilsystem_sigar_sigaraccessor_directrun">
+		<title> Access to Sigar using directRun </title>
+		<para>
+			Using the basic shell of SigarAccessor set when the system is initialized, registered Commands of Sigar API can be directly run and the result can be checked in console.
+		</para>
+		<para>
+			Examples of registeredCmd: df,du,ls,iostat,free,pargs,penv,pfile,pmodules,pinfo,cpuinfo,ifconfig,uptime,ps,pidof,kill,
+			netstat,netinfo,nfsstat,route,version,mps,sysinfo,time,ulimit,who [service,fversion in Windows]
+			<programlisting language="java">SigarAccessor.directRun("<emphasis role="bold">df</emphasis>", new String[] {});
+SigarAccessor.directRun("<emphasis role="bold">du</emphasis>", new String[] { "." });
+SigarAccessor.directRun("<emphasis role="bold">ls</emphasis>", new String[] { "." });
+SigarAccessor.directRun("<emphasis role="bold">iostat</emphasis>", new String[] {});
+SigarAccessor.directRun("<emphasis role="bold">free</emphasis>", new String[] {});
+SigarAccessor.directRun("<emphasis role="bold">pargs</emphasis>", new String[] {});
+SigarAccessor.directRun("<emphasis role="bold">penv</emphasis>", new String[] {});
+SigarAccessor.directRun("<emphasis role="bold">pfile</emphasis>", new String[] {});
+SigarAccessor.directRun("<emphasis role="bold">pmodules</emphasis>", new String[] {});
+SigarAccessor.directRun("<emphasis role="bold">pinfo</emphasis>", new String[] {});
+SigarAccessor.directRun("<emphasis role="bold">cpuinfo</emphasis>", new String[] {});
+SigarAccessor.directRun("<emphasis role="bold">ifconfig</emphasis>", new String[] {});
+SigarAccessor.directRun("<emphasis role="bold">uptime</emphasis>", new String[] {});
+SigarAccessor.directRun("<emphasis role="bold">ps</emphasis>", new String[] {});
+String topPid = sigarCmdTest.getTopPid();
+
+SigarAccessor.directRun("<emphasis role="bold">pidof</emphasis>", new String[] { topPid });
+SigarAccessor.directRun("<emphasis role="bold">kill</emphasis>", new String[] { topPid });
+
+SigarAccessor.directRun("<emphasis role="bold">netstat</emphasis>", new String[] {});
+SigarAccessor.directRun("<emphasis role="bold">netinfo</emphasis>", new String[] {});
+SigarAccessor.directRun("<emphasis role="bold">nfsstat</emphasis>", new String[] {});
+SigarAccessor.directRun("<emphasis role="bold">route</emphasis>", new String[] {});
+SigarAccessor.directRun("<emphasis role="bold">version</emphasis>", new String[] {});
+
+// PTQL
+SigarAccessor.directRun("<emphasis role="bold">mps</emphasis>", new String[] { "State.Name.eq=java" });
+
+SigarAccessor.directRun("<emphasis role="bold">sysinfo</emphasis>", new String[] {});
+SigarAccessor.directRun("<emphasis role="bold">time</emphasis>", new String[] { "ps" });
+SigarAccessor.directRun("<emphasis role="bold">ulimit</emphasis>", new String[] {});
+SigarAccessor.directRun("<emphasis role="bold">who</emphasis>", new String[] {});
+if (SigarLoader.IS_WIN32) {
+	SigarAccessor.directRun("<emphasis role="bold">service</emphasis>", new String[] { "Alerter", "state" });
+	SigarAccessor.directRun("<emphasis role="bold">fversion</emphasis>", new String[] { "C:\\WINDOWS\\winhelp.exe" });
+}</programlisting>
+		</para>
+		<para>The result of executing df is as follows.</para>
+		<programlisting language="java">Filesystem    Size Used Avail Use% Mounted on      Type
+C:\             117G  30G   87G  26%     C:\         NTFS/local
+D:\             349G  40G  308G  12%     D:\         NTFS/local
+E:\             0    0     0     -       E:\         cdrom/cdrom</programlisting>
+	</section>
+</chapter>

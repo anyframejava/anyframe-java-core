@@ -1,0 +1,316 @@
+<chapter id="jquery_jstree">
+	<title>jstree</title>
+	<para>
+		jstree는 계층적으로 조직된 데이타를 tree 형태로 보여주기 위해 제공되는 jQuery 기반의 오픈소스 UI 컴포넌트이다.
+	</para>
+	<para>
+		jsTree is a javascript based, cross browser tree component. It is packaged as a jQuery plugin (<ulink url="http://www.jstree.com">http://www.jstree.com</ulink>)
+	</para> 
+	<section id="jquery_jstree_sec001">
+		<title>jsTree의 활용</title>
+		<para>jstree는 0.9.9a 이후 1.0-rc3로 업그레이드 되면서 일부 api 및 사용법이 변경되었다. 여기서는 1.0-rc3 버전을 기준으로 설명한다.</para>
+		<para>jstree는 크게 html, json, xml 방식의 data loading 방식을 제공하며, 여기서는 html 방식을 제공한다. html은 JSTL을 사용하여 다음과 같이 표시 할 수 있다.</para>
+		<programlisting><![CDATA[<!-- start of tree -->
+<div id="tree">
+	<span>listNode</span>
+	<ul>
+	<li id="ROOT" rel="root">
+		<a href='#'>ROOT</a>
+			<c:set var="prevDepth" value="-1"/>
+			<c:forEach var="node" items="${treeList}">
+				<c:if test="${node.depth > prevDepth}">
+				<ul>
+				</c:if>
+				<c:if test="${prevDepth > node.depth}">
+					<c:forEach begin="${node.depth}" end="${prevDepth - 1}" step="1">
+					</ul></li>
+					</c:forEach>
+				</c:if>
+				<li id="${node.nodeId}" parentId="${node.parentId}" depth="${node.depth}" rel="${node.type}">
+					<a href='#'>${node.nodeName}</a>
+				<c:if test="${node.hasChild == 0}">
+				</li>
+				</c:if>
+				<c:set var="prevDepth" value="${node.depth}"/>
+			</c:forEach>
+		</li>
+    </ul>
+</div>
+<!-- end of tree -->]]></programlisting>
+		<para>jsTree를 사용하여 트리를 구성하면 다음과 같다.</para>
+		<programlisting><![CDATA[// tree definition
+$(document).ready(function() {
+
+		$("#tree").jstree({
+	   		'plugins' : ["themes","json_data","ui","types","contextmenu","crrm"], //,"dnd"  ,"html_data" , 'checkbox', "cookies", 
+	   		'themes' : {
+	   			'theme' : 'apple',
+	   			'dots' : false,
+	   			'icons' : true,
+	   			'url': "jquery/jquery/jstree/themes/apple/style.css"
+			},
+			'json_data' : {
+				'ajax':{ //# Tree data 가져옴.
+					"url" : "<c:url value='/jqueryMovieTree.do?method=tree' />",
+					"data" : function(n){
+						var return_id = $('#searchKeyword').val();
+						if(n.attr) {
+							var id = n.attr("id");
+							var pid = n.parents('li:eq(0)').attr('id');
+							if(pid == undefined) {
+								return {
+									searchKeyword : id,
+									id : id
+								};
+							} else {
+								return {
+									id:id,
+									searchKeyword : return_id};
+							}
+						} else {
+							return {
+								id : 0,
+								searchKeyword : return_id};
+										
+						}
+					},
+					"success" : function(data){
+						return data.JSTreeNodeList;
+					}
+				}
+		    },
+		    'types' : {
+				'types' : {
+					'root' : {
+						'icon' : {'image' : '<c:url value="/jquery/image/icons.png"/>'}
+					},
+					'lockedroot' : {
+						'icon' : {'image' : '<c:url value="/jquery/image/lockedicons.png"/>'}
+					},
+					'leaf' :{
+						'icon' : {'image' : '<c:url value="/jquery/image/leaficons.png"/>'}
+					}
+				}
+			},
+			'contextmenu' : {
+				'items' : createContextMenu
+			}
+		}).bind("remove.jstree", function(e, data) { // event handling for node delete
+			if(confirm("Are you sure you want to delete this movie?")){
+				data.rslt.obj.each(function() {
+						$.ajax({
+						async : false,
+						type : 'POST',
+						url : "<c:url value='/jqueryMovieTree.do?method=remove'/>",
+						data : {
+							"movieId" : $(data.rslt.obj).attr("id")
+						},
+						error : function() {
+							$.jstree.rollback(data.rlbk);
+						}
+					});
+				});
+			}else{
+				$.jstree.rollback(data.rlbk);
+			}	
+		}).bind("select_node.jstree", function (e, data) { // event handling for node select
+			var node = data.rslt.obj; 
+			var id = node.attr('id');
+			var pid = node.parents('li:eq(0)').attr('id'); 
+			
+			if(pid == undefined){//genre
+			
+				$("#tabs").show();
+				$("#tabs").tabs("enable", 0);
+				$("#tabs").tabs("select", 0);
+				$("#tabs").tabs("disable", 1);
+				
+				//GET Genre
+				$.getJSON("<c:url value='jqueryMovieTree.do?method=getGenre'/>&genreId=" + id, function(data){
+					document.genreForm.genreId1.value = data.genre.genreId;
+					document.genreForm.name.value = data.genre.name;
+				});
+			}else{//movie 
+				
+				$("#tabs").show();
+				$("#tabs").tabs("enable", 1);
+				$("#tabs").tabs("select", 1);
+				$("#tabs").tabs("enable", 0);
+
+				$("#releaseDate").datepicker({dateFormat: "yy-mm-dd", autoSize:true});
+
+				$.ajaxSetup({
+					  "error":function() {   
+						   alert('<spring:message code="error.movieserviceimpl.get" />');
+						   $("#tabs").hide();
+				}});
+				
+				//GET Movie
+				$.getJSON("<c:url value='/jqueryMovieTree.do?method=get' />&movieId=" + id, function(data){
+					document.movieForm.movieId.value = data.movie.movieId;
+					document.movieForm.title.value = data.movie.title;
+					document.movieForm.director.value = data.movie.director;
+					document.movieForm.actors.value = data.movie.actors;
+					document.movieForm.genreId.value = data.movie.genre.genreId;
+					
+					if(data.movie.nowPlaying == "Y"){
+						document.movieForm.nowPlaying.checked = true;
+					}
+					else{
+						document.movieForm.nowPlaying.checked = false;
+					}
+
+					//for safari
+					document.getElementById("releaseDate").value=data.movie.releaseDate;
+					
+					if(document.getElementById("releaseDate").value=="null"){
+						document.getElementById("releaseDate").value="";
+					}
+					document.movieForm.runtime.value = data.movie.runtime;
+
+					document.movieForm.filePaths.value = data.movie.filePaths;
+					if(data.movie.filePaths == null || data.movie.filePaths == ""){
+						$("#imgSrc").hide();
+						$("#imgTxt").show();
+					}
+					else{
+						jQuery("#poster").attr("src", "${ctx}"+document.movieForm.filePaths.value);
+						$("#imgSrc").show();
+						$("#imgTxt").hide();
+					}
+
+					document.movieForm.ticketPrice.value = data.movie.ticketPrice;
+
+					$('#genreId').msDropDown();
+					
+				});
+			
+				$.getJSON("<c:url value='/jqueryMovieTree.do?method=getGenre'/>&genreId="  + pid, function(data){
+					document.genreForm.genreId1.value = data.genre.genreId;
+					document.genreForm.name.value = data.genre.name;
+				}); 
+			}
+			$("#tabs").show();
+		});
+		
+	});]]></programlisting>
+		<para>트리의 노드 타입에 따른 컨텍스트 메뉴 구성은 다음과 같이 구현한다.</para>
+		<programlisting><![CDATA[/**
+ * context menu generate for tree
+ */
+function createContextMenu(node) {
+		var default_object = {
+				remove : {}
+			};
+		
+		var pid = node.parents('li:eq(0)').attr('id'); 
+		var id = node.attr('id');
+		if(pid == undefined){//genre
+			default_object = {
+				remove : {
+					label : '<spring:message code="movie.button.remove" />',
+					_disabled : true
+				}
+			};
+		}else{//movie
+			default_object = {
+				remove : {
+					label :  '<spring:message code="movie.button.remove" />',
+					action : function(obj) {
+						if(this.is_selected(obj)) { 
+							this.remove(); 
+						} else { 
+							this.remove(obj); 
+						} 
+					}
+				}
+			};
+		}
+		return default_object;
+	}]]></programlisting>
+
+	<para>
+		다음은 Tree에 표시할 데이터를 만드는 Controller 클래스이다. Tree의 상위 노드는 Genre가 되고 하위 노드는 영화 Title이 된다.	
+		
+	</para>
+	<programlisting><![CDATA[
+@Controller("jqueryMovieTreeController")
+@RequestMapping("/jqueryMovieTree.do")
+public class MovieTreeController {
+	
+		...중략...
+
+	@RequestMapping(params = "method=tree")
+	public String tree(@RequestParam("id") String id, MovieSearchVO search, Model model) throws Exception {
+		List<JSTreeNode> nodeList = buildTree(id,search);
+		model.addAttribute("JSTreeNodeList", nodeList);
+		return "jsonView";
+	}
+	
+	private List<JSTreeNode> buildTree(String id, MovieSearchVO search) throws Exception {
+		JSTreeNode node = null;
+		Attributes attribute = null;
+		List<?> jsTreeList = null;
+		List<JSTreeNode> nodeList = new ArrayList<JSTreeNode>();
+		
+ 		if (id.equals("0")) {
+ 			//If id equals to "0", it means jsTree need a list of genre to generate its root. (root is a genre in this sample)
+ 			jsTreeList = genreService.getGenreList(search);
+			for (int i = 0; i < jsTreeList.size(); i++) {
+				Genre genre = (Genre) jsTreeList.get(i);
+				node = new JSTreeNode();
+				attribute = new Attributes();
+
+				attribute.setId(genre.getGenreId());
+
+				node.setAttr(attribute);
+				node.setData(genre.getName());
+				//if the value of state is "closed", jsTree generates an expendable button on the left of its folder image.
+				node.setState(genre.getState());
+				if (genre.getState() == null || "".equals(genre.getState()))
+					attribute.setRel("lockedroot");
+				else
+					attribute.setRel("root");
+				nodeList.add(node);
+			}
+		} else { 
+			/*
+			 * If id does not equal to "0", it means jsTree need a leaf data of the selected root. (In this case, id is one of genres id, not "0")
+			 * The leaf data is a list of movie.   
+			*/
+			jsTreeList = movieFinder.getListByCategory(search);
+			if (jsTreeList.size() > 0) {
+				for (int i = 0; i < jsTreeList.size(); i++) {
+					Movie movie = (Movie) jsTreeList.get(i);
+
+					node = new JSTreeNode();
+					attribute = new Attributes();
+
+					attribute.setId(movie.getMovieId());
+					attribute.setRel("leaf");
+					node.setAttr(attribute);
+					node.setData(movie.getTitle());
+					nodeList.add(node);
+				}
+			}
+		}
+		return nodeList;
+	}
+		
+		...중략...
+}]]>	</programlisting>
+	<para> 위의 예제에서 buildTree() 매소드로 jsTree에 출력할 Node List를 생성한 후, 결과값을 Model에 저장한다. 이 때 Key 값을 'JSTreeNodeList'로 설정하였다.</para>
+	<para>'JSTreeNodeList'는 jsTree가 Controller로 부터 넘어온 JSON 객체에서 바인딩할 데이터를 가져올 때 Key값으로 사용한다.</para>
+	
+
+		<para>다음은 jstree를 이용하여 Tree를 출력한 화면이다.</para>
+		<mediaobject>
+			<imageobject>
+				<imagedata fileref="../image/jquery/jquery_jstree.png"	align="center" />
+			</imageobject>
+			<textobject>
+				<phrase>jstree를 이용하여 Tree를 출력한 화면</phrase>
+			</textobject>
+		</mediaobject>
+	</section>
+</chapter>

@@ -1,0 +1,545 @@
+<chapter id="xp_query_xpuisample_commonflow">
+	<title>Working with Common Flow</title>
+	
+	<para>
+		본 절에서는 앞서 설명한 Anyframe XP Query를 이용하여 화면 개발 시 필요한 설정들에 대해
+		설명 한다. 
+	</para>
+	
+	<section id="xp_query_xpuisample_commonflow_commonscript">
+		<title>Common Script</title>
+		<para>
+			모든 화면의 Form 스크립트에는 반드시 최상위에 다음과 같은 공통 스크립트 추가 구문을 작성 해야 한다.
+			<emphasis role="bold">include "lib::commonScript.xjs";</emphasis>
+			commonScript.xjs 파일에는 Anyframe XP Query Plugin에서 공통적으로 사용되는 스크립트 함수들이
+			정의되어 있고, 또한 그 외 제공되는 스크립트 파일들(*.xjs)이 추가 되어 있다.
+			commonScript.xjs 파일에 정의된 함수 중 Request를 발생시켜 서버를 호출하는 함수는 다음과 같이 정의 되어 있다.
+		</para>
+		
+		<section id="xp_query_xpuisample_commonflow_commonscript_servicecall">
+			<title>Service Call</title>
+			<para>
+				gfnService() 함수는 서버측에 사용자가 원하는 Service bean을 호출하기 위한 함수로
+				내부적으로 XPLATFORM에서 자체적으로 제공하는 transaction() 함수를 호출하도록 작성되어 있다.
+			</para>
+			
+			<section id="xp_query_xpuisample_commonflow_commonscript_servicecall_syntax">
+				<title>Syntax</title>
+				<para>
+					<emphasis role="bold">gfnService(strServiceId, strArgument)</emphasis>
+				</para>
+				<para>
+					예) gfnService("getListCommunity"), gfnService("saveAllBoard")
+				</para>
+			</section>
+			
+			<section id="xp_query_xpuisample_commonflow_commonscript_servicecall_parameters">
+				<title>Parameters</title>
+				
+				<informaltable>
+					<caption>gfnService() 함수에서 사용되는 파라미터</caption>
+					<tgroup cols="2">
+						<colspec colnum="1" colname="col1" colwidth="3*" />
+						<colspec colnum="2" colname="col2" colwidth="7*" />
+						<thead>
+							<row>
+								<entry align="center">Parameter</entry>
+								<entry align="center">Description</entry>
+							</row>
+						</thead>
+	
+						<tbody>
+							<row>
+								<entry align="left">strServiceId</entry>
+								<entry align="left">
+									사용자가 임의로 정하는 Service에 대한 고유한 ID
+									접두어는 아래 정의된 내용으로 한정함.
+									<itemizedlist>
+										<listitem>
+											<para><emphasis role="bold">getList: 조회</emphasis></para>
+										</listitem>
+				
+										<listitem>
+											<para><emphasis role="bold">getPagingList: 페이지조회</emphasis></para>
+										</listitem>
+				
+										<listitem>
+											<para><emphasis role="bold">get: 단건 조회</emphasis></para>										
+										</listitem>
+												
+										<listitem>
+											<para><emphasis role="bold">create: 등록</emphasis></para>
+										</listitem>
+												
+										<listitem>
+											<para><emphasis role="bold">update: 수정</emphasis></para>
+										</listitem>
+												
+										<listitem>
+											<para><emphasis role="bold">remove: 삭제</emphasis></para>
+										</listitem>
+												
+										<listitem>
+											<para><emphasis role="bold">saveAll: 등록/수정/삭제 모두 수행 (하나의 Transaction)</emphasis></para>
+										</listitem>
+												
+										<listitem>
+											<para><emphasis role="bold">execute: DBMS의 Stored Procedure 실행</emphasis></para>
+										</listitem>
+									</itemizedlist>			
+									예) getListCommunity
+								</entry>
+							</row>
+							<row>
+								<entry align="left">strArgument</entry>
+								<entry align="left">
+									<para>Service 호출 시 HTTP GET 방식으로 전달할 파라미터</para> 
+									Syntax: “name1=value1 name2=value2”
+								</entry>
+							</row>
+						</tbody>
+					</tgroup>
+				</informaltable>
+			</section>
+		</section>
+		
+		<section id="xp_query_xpuisample_commonflow_commonscript_callback">
+			<title>Callback</title>
+			<para>
+				Anyframe XP Query Plugin에서 제공되는 gfnService() 함수를 이용해서 서버에 리퀘스트를 보낸 경우,
+				요청에 대한 응답이 도착했을 때 <emphasis role="bold">gfnCallback()</emphasis> 함수를 디폴트로 호출한다.
+				gfnCallback() 함수는 내부적으로 화면 스크립트 내의 <emphasis role="bold">fnCallback()</emphasis> 함수를
+				호출하도록 정의되어 있다. 따라서 Service 호출이 완료된 후에 메세지 처리나 컴포넌트 reload 등의 기능을
+				수행하기 위해서 화며에 정의된 스크립트 내에 fnCallback() 함수를 적절하게 정의 하면 된다. 
+			</para>
+			
+			<section id="xp_query_xpuisample_commonflow_commonscript_callback_syntax">
+				<title>Syntax</title>
+				<para>
+					<emphasis role="bold">fnCallback(strServiceId, strErrorCode, strErrorMsg)</emphasis>
+				</para>
+				<para>
+					예)
+					<programlisting language="java"><![CDATA[
+// gfnService 처리 후 callback 처리
+function fnCallback(strServiceId, strErrorCode, strErrorMsg){
+	if(strErrorCode == -1){
+		gfnAlertMsg(strErrorMsg, "ERR");
+	} else {
+		if(strServiceId == "saveAllCategory"){
+			gfnAlertMsg("msg.save.success");
+			SAMPLE001_onload();
+		} else if(strServiceId == "getPagingListCategory"){
+			dsSearch.setColumn("SEARCH_CONDITION", searchCondition);
+			divPage.objListDataset = dsGrdCategory;
+			divPage.objPageDataset = dsSearch;
+			divPage.fnMakePage();
+		}
+	}
+}]]></programlisting>
+				</para>
+			</section>	
+			
+			<section id="xp_query_xpuisample_commonflow_commonscript_callback_parameters">
+				<title>Parameters</title>
+				
+				<informaltable>
+					<caption>gfnService() 함수 리턴값</caption>
+					<tgroup cols="2">
+						<colspec colnum="1" colname="col1" colwidth="3*" />
+						<colspec colnum="2" colname="col2" colwidth="7*" />
+						<thead>
+							<row>
+								<entry align="center">Parameter</entry>
+								<entry align="center">Description</entry>
+							</row>
+						</thead>
+
+						<tbody>
+							<row>
+								<entry align="left">strServiceId</entry>
+								<entry align="left">gfnService()로 Service 호출 시 입력했던 strServiceId와 동일한 값</entry>
+							</row>
+							
+							<row>
+								<entry align="left">strErrorCode</entry>
+								<entry align="left">에러 코드, '-1' 인 경우 Error</entry>
+							</row>
+							
+							<row>
+								<entry align="left">strErrorMsg</entry>
+								<entry align="left">호출한 Service에서 넘겨준 에러 메세지</entry>
+							</row>
+						</tbody>
+					</tgroup>
+				</informaltable>
+			</section>	
+		</section>
+	</section>
+	
+	<section id="xp_query_xpuisample_commonflow_dataset">
+		<title>Common DataSet</title>
+		
+		<section id="xp_query_xpuisample_commonflow_dataset_service">
+			<title>DataSet For Service</title>
+			<para>
+				데이터를 가져오기 위해서 gfnService() 함수를 통해 Service를 호출 할 경우,
+				호출할 Seervice에 대한 여라가지 파라미터 정보를 DataSet에 정의해야 한다.
+				따라서 모든 화면에 다음과 같은 값들이 정의된 
+				<emphasis role="bold">dsService</emphasis> 라는 이름의 DataSet이 반드시 포함 되어야 한다.
+			</para>
+			
+			<informaltable>
+				<caption>dsService DataSet 정보</caption>
+				<tgroup cols="2">
+					<colspec colnum="1" colname="col1" colwidth="3*" />
+					<colspec colnum="2" colname="col2" colwidth="7*" />
+					<thead>
+						<row>
+							<entry align="center">Column</entry>
+							<entry align="center">Description</entry>
+						</row>
+					</thead>
+					
+					<tbody>
+						<row>
+							<entry align="left">SVC_ID</entry>
+							<entry align="left">
+								<para>gfnService()의 strServiceId와 동일한 값을 지님</para>
+								<para>예) getListCommunity</para>
+							</entry>
+						</row>
+						
+						<row>
+							<entry align="left">QUERY_LIST</entry>
+							<entry align="left">
+								<para>
+								Service에서 실행해야 할 쿼리ID (space로 구분하여 다중입력 가능)
+								</para>
+								Syntax: "querySet" + 순번 + "=" + 쿼리ID
+	                            <para>
+								예) querySet1=getListMethodCode
+								querySet1=getListMethodCode querySet2=getListCategory
+								</para>
+	                            <para>
+								SVC_ID가 'saveAll'로 시작하는 경우(Grid 일괄 저장 시)는 comma(,)를 사용하여
+								<emphasis role="bold">create, update, remove 쿼리를 한번에 지정</emphasis>
+								</para>
+								<para>
+								예) querySet1=createCategory, updateCategory, removeCategory
+								</para>
+							</entry>
+						</row>
+						
+						<row>
+							<entry align="left">SERVICE</entry>
+							<entry align="left">
+								<para>공통Service를 사용하지 않을 경우 호출할 Service 정보 미지정시, 디폴트로 'gvService'에 설정된 공통Service인 
+								'xpService' 가 호출됨.</para>
+								Syntax: Service명 + "." + Method명
+	                            <para></para>
+								예) categoryMgmtService.getListCategory, categoryMgmtService.createCategory
+							</entry>
+						</row>
+						
+						<row>
+							<entry align="left">IN_DATASET_LIST</entry>
+							<entry align="left">
+								<para>쿼리 실행 시, 파라미터로 사용될 Dataset ID (space로 구분하여 다중입력 가능)</para>
+								Syntax: "querySet"+ 순번 + "=" + DatasetID
+	                            <para></para>
+								예) querySet1=dsSearch
+	 							querySet1=dsSearch querySet2=dsParam
+							</entry>
+						</row>
+						
+						<row>
+							<entry align="left">OUT_DATASET_LIST</entry>
+							<entry align="left">
+								<para>쿼리 수행 결과로 받을 Dataset 이름 목록 (다중입력 가능 - space로 구분)</para>
+								Syntax: DatasetID + "=" + "querySet" + 순번
+	                            <para></para>
+								예) dsSearch=querySet1
+								dsSearch=querySet1 dsParam=querySet2
+								<para></para>
+								<para>Procedure를 호출한 경우 다음 명명 규칙을 따름</para>
+								<para></para>
+								<para>
+								"querySet" + 순번 + "_" + Out Parameter Name
+								</para>
+								<para>
+								예) Mapping Sql의 Out Parameter의 이름 : outVal1
+								</para>
+        						<para>
+        						 OUT_DATASET_LIST : resultDs1=querySet1_outVal1
+								</para>
+							</entry>
+						</row>
+						
+						<row>
+							<entry align="left">CALLBACK</entry>
+							<entry align="left">
+								Service로부터 응답을 받았을 때 실행될 Callback 함수 이름
+								gfnCallback() 내에서 호출. 미지정시, 디폴트로 'fnCallback' 호출.
+							</entry>
+						</row>
+						
+						<row>
+							<entry align="left">SYNC_YN</entry>
+							<entry align="left">
+								Y: Sync 호출
+								N: Async 호출 (default) – 권장
+							</entry>
+						</row>
+						
+						<row>
+							<entry align="left">CONTROLLER</entry>
+							<entry align="left">
+								공통Controller를 사용하지 않을 경우 호출할 Controller 정보 미지정시, 
+								디폴트로 'gvController'에 설정된 공통Controller인 'xpController.do'
+								가  호출됨.
+	                            <para></para>
+								공통Controller를 사용하지 않는 경우, 호출 할 Service에 대한 정보는 신규 작성한 
+								Controller 에서 포함하고 있으므로 SERVICE 속성을 따로 정의하지 않아도 됨.
+							</entry>
+						</row>		
+					</tbody>
+				</tgroup>
+			</informaltable>
+			<para></para>
+			<mediaobject>
+          		<imageobject>
+           			<imagedata align="center"
+                       	fileref="../image/xp-query/xpuisample/dsservice.png" />
+          		</imageobject>
+          		<textobject>
+					<phrase>dsService</phrase>
+				</textobject>
+        	</mediaobject>
+		</section>
+	</section>
+	
+	<section id="xp_query_xpuisample_commonflow_example">
+		<title>Example</title>
+		
+		<para>
+			본 절에서는 앞서 설명한 내용들을 바탕으로 공통 Flow를 통해 커뮤니티 목록을 조회해서 Grid로 출력하는 
+			단순 조회 화면 생성 예제를 설명한다. 
+		</para>
+		<itemizedlist>
+			<listitem>
+				<para>
+					XPLATFORM UXStudio의 Project Explorer에서 File - New - Item - Form을 클릭한다.
+				</para>
+			</listitem>
+			<listitem>
+				<para>
+					Create New Form Wizard 창에서 적절한 Form name을 지정하고 Next 버튼을 클릭한다.
+				</para>
+				<mediaobject>
+	          		<imageobject>
+	           			<imagedata align="center"
+	                       	fileref="../image/xp-query/xpuisample/newform.png" />
+	          		</imageobject>
+	          		<textobject>
+						<phrase>UX Studio New Form Wizard</phrase>
+					</textobject>
+	        	</mediaobject>
+			</listitem>
+			<listitem>
+				<para>
+					이후의 Form size 설정 등을 정의하고 Finish 버튼을 클릭하면 새로운 Form이 생성된다.
+				</para>
+        		<mediaobject>
+	          		<imageobject>
+	           			<imagedata align="center"
+	                       	fileref="../image/xp-query/xpuisample/form.png" />
+	          		</imageobject>
+	          		<textobject>
+						<phrase>새로운 Form</phrase>
+					</textobject>
+	        	</mediaobject>
+			</listitem>
+			<listitem>
+				<para>
+					새로 만든 Form 편집 창에서 상단의 DataSet 아이콘을 클릭한 후 하단의 Invisible Objects 영역을 다시 클릭 하는 것으로
+					새로운 DataSet을 생성한다. 그 후 DataSet 이름을 dsService로 수정하고, 아래에 나열된 Column을 입력한다.
+					(혹은 다른 샘플 화면에서 dsService DataSet을 복사하여 붙여넣기 해도 무방하다.)
+					마찬가지 방법으로 'dsGrdCommunity' DataSet을 생성한다.
+				</para>
+				<para>
+					dsService DataSet은 아래와 같은 컬럼 데이터를 가지도록 설정한다.
+				</para>
+				<informaltable>
+					<caption>dsService DataSet 컬럼 정보</caption>
+					<tgroup cols="2">
+						<colspec colnum="1" colname="col1" colwidth="3*" />
+						<colspec colnum="2" colname="col2" colwidth="7*" />
+						<thead>
+							<row>
+								<entry align="center">Column</entry>
+								<entry align="center">Description</entry>
+							</row>
+						</thead>
+						
+						<tbody>
+							<row>
+								<entry align="left">SVC_ID</entry>
+								<entry align="left">getListCommunity</entry>
+							</row>
+							<row>
+								<entry align="left">QUERY_LIST</entry>
+								<entry align="left">querySet1=findXPCommunityList</entry>
+							</row>
+							<row>
+								<entry align="left">SERVICE</entry>
+							</row>
+							<row>
+								<entry align="left">IN_DATASET_LIST</entry>
+							</row>
+							<row>
+								<entry align="left">OUT_DATASET_LIST</entry>
+								<entry align="left">dsGrdCommunity=querySet1</entry>
+							</row>
+							<row>
+								<entry align="left">CALLBACK</entry>
+							</row>
+							<row>
+								<entry align="left">SYNC_YN</entry>
+							</row>
+							<row>
+								<entry align="left">CONTROLLER</entry>
+							</row>
+						</tbody>
+					</tgroup>
+				</informaltable>
+				<para>
+					dsGrdCommunity DataSet Column 정보는 아래와 같다.
+				</para>
+				<informaltable>
+				<caption>dsGrdCommunity DataSet 컬럼 정보</caption>
+				<tgroup cols="3">
+						<colspec colnum="1" colname="col1" colwidth="4*" />
+						<colspec colnum="1" colname="col1" colwidth="3*" />
+						<colspec colnum="2" colname="col2" colwidth="3*" />
+						<thead>
+							<row>
+								<entry align="center">Column</entry>
+								<entry align="center">Type</entry>
+								<entry align="center">Size</entry>
+							</row>
+						</thead>
+						
+						<tbody>
+							<row>
+								<entry align="left">COMMUNITY_ID</entry>
+								<entry align="left">STRING</entry>
+								<entry align="left">16</entry>
+							</row>
+							<row>
+								<entry align="left">COMMUNITY_NAME</entry>
+								<entry align="left">STRING</entry>
+								<entry align="left">256</entry>
+							</row>
+							<row>
+								<entry align="left">COMMUNITY_DESC</entry>
+								<entry align="left">STRING</entry>
+								<entry align="left">256</entry>
+							</row>
+							<row>
+								<entry align="left">CATEGORY_ID</entry>
+								<entry align="left">STRING</entry>
+								<entry align="left">16</entry>
+							</row>
+							<row>
+								<entry align="left">REG_ID</entry>
+								<entry align="left">STRING</entry>
+								<entry align="left">256</entry>
+							</row>
+							<row>
+								<entry align="left">REG_DATE</entry>
+								<entry align="left">STRING</entry>
+								<entry align="left">10</entry>
+							</row>
+						</tbody>
+					</tgroup>	
+				</informaltable>
+				<para></para>
+			</listitem>
+			<listitem>
+				<para>
+					Form 화면을 클릭 한 후, 오른쪽의 Properties 탭에서 이벤트 보기 아이콘을 클릭하고 Form의 onload 이벤트의 CheckBox 부분을 더블클릭 하여
+	          		새로운 이벤트 핸들러를 등록한다.
+          		</para>
+				<mediaobject>
+	          		<imageobject>
+	           			<imagedata align="center"
+	                       	fileref="../image/xp-query/xpuisample/onload.png" />
+	          		</imageobject>
+	          		<textobject>
+						<phrase>onload event</phrase>
+					</textobject>
+	        	</mediaobject>
+	        	<para></para>
+			</listitem>
+			<listitem>
+				<para>
+					Script 편집 창으로 이동하여 자동 생성된 onload 이벤트 처리 함수를 완성 한다.
+					이때 Script 최상단에 commonScript.xjs 파일을 추가하는 구문을 	반드시 작성 해야 한다.
+					아래의 예제 코드를 참고하여 스크립트를 완성한다.
+                    <programlisting language="java"><emphasis role="bold">include "lib::commonScript.xjs";</emphasis>
+function SAMPLEGRD_onload(obj:Form, e:LoadEventInfo)
+{
+     <emphasis role="bold">gfnService("getListCommunity");</emphasis>
+}</programlisting>
+				</para>
+			</listitem>
+			<listitem>
+				<para>
+					Design 탭을 클릭하여 Form 편집 창을 열고, 메뉴바 하단에 Grid 아이콘을 클릭하여 적당한 크기의 Grid Component를 그린다.
+				</para>
+        		<mediaobject>
+	          		<imageobject>
+	           			<imagedata align="center"
+	                       	fileref="../image/xp-query/xpuisample/drawing.png" />
+	          		</imageobject>
+	          		<textobject>
+						<phrase>Grid 컴포넌트</phrase>
+					</textobject>
+	        	</mediaobject>
+	        	<para></para>
+			</listitem>
+			<listitem>
+				<para>
+					하단의 Invisible Objects 창에 앞서 만든 dsGrdCommunity DataSet을 드래그해서
+					Grid Component 위에 드롭 한다. 그 후 Grid Component가 선택 된 상태에서 오른쪽의
+					Properties 창에서 autofittype 속성을 col 로 변경한다.
+				</para>
+        		<mediaobject>
+	          		<imageobject>
+	           			<imagedata align="center"
+	                       	fileref="../image/xp-query/xpuisample/autofit.png" />
+	          		</imageobject>
+	          		<textobject>
+						<phrase>autofittype 속성</phrase>
+					</textobject>
+	        	</mediaobject>
+			</listitem>
+			<listitem>
+				<para>
+					Tool Bar에서 Quick View 아이콘을 클릭하여 조회 화면이 출력 되는것을 확인 한다.
+				</para>
+        		<mediaobject>
+	          		<imageobject>
+	           			<imagedata align="center"
+	                       	fileref="../image/xp-query/xpuisample/frm_form.png" />
+	          		</imageobject>
+	          		<textobject>
+						<phrase>조회 화면</phrase>
+					</textobject>
+	        	</mediaobject>
+			</listitem>
+		</itemizedlist>
+	</section>
+</chapter>
+    

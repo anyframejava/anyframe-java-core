@@ -1,0 +1,349 @@
+<chapter id="springrest_restsupport_resttemplate">
+	<title>Implementing REST Client</title>
+	<para>
+		지금까지 위에서 설명한 내용들은 모두 서버측 구현과 관련된 내용이었다. RestTemplate/AsyncRestTemplate은 REST 아키텍처에서 클라이언트 구현과 관련된 내용이다.
+	</para>
+	<para>
+		RestTemplate/AsyncRestTemplate은 Spring에서 제공하고 있는 JdbcTemplate이나, JmsTemplate과 같은 맥락의 Template으로,
+		RESTful Service 호출과 관련된 여러 메소드를 제공하여 REST 클라이언트를 쉽게 개발할 수 있도록 도와주는 것이다.
+		<emphasis role="bold">RestTemplate/AsyncRestTemplate에서 Java 객체를 HTTP Request로 변환하거나 서버로 부터 전달된 HTTP Response를 다시 Java 객체로 변환할 때 HttpMessageConverter가 사용된다.</emphasis>
+		Spring에서 제공하는 주요 타입에 대한 HttpMessageConverter들은 RestTemplate에 디폴트로 등록된다. 그 외에 추가가 필요한 경우, RestTemplate/AsyncRestTemplate을 정의할 때 <emphasis role="bold">messageConverters</emphasis>라는 속성을 이용한다.
+	</para>
+	<section id="springrest_restsupport_resttemplate_configuration">
+		<title>Configuration</title>
+		<para>
+			RestTemplate/AsyncRestTemplate 역시 Spring 컨테이너에 Bean으로 정의하고, 참조할 클래스에서 Injection 받아 사용한다.
+			다음은 springrest plugin의 src/test/resources/context-restclient.xml파일의 일부이다.
+			<programlisting language="xml"><emphasis role="bold"><![CDATA[<bean id="restTemplate" class="org.springframework.web.client.RestTemplate" />]]></emphasis></programlisting>
+			<programlisting language="xml"><emphasis role="bold"><![CDATA[<bean id="asyncRestTemplate" class="org.springframework.web.client.AsyncRestTemplate" />]]></emphasis></programlisting>
+		</para>
+		<para>
+			RestTemplate/AsyncRestTemplate에서도 HTTP Request 메세지를 구성하거나, Response 메세지를 파싱할 때 HttpMessageConverter를 사용한다.
+			디폴트로 등록된 HttpMessageConverter를 변경하거나 새로운 HttpMessageConverter를 추가하려면 <emphasis role="bold">messageConverters</emphasis> 속성을 사용한다.
+			<programlisting language="xml"><emphasis role="bold"><![CDATA[<bean id="restTemplate" class="org.springframework.web.client.RestTemplate">
+    <property name="messageConverters">
+        <list>
+            <bean class="my.custom.MarshallingHttpMessageConverter">
+                <property name="unmarshaller" ref="marshaller" />
+                <property name="marshaller" ref="marshaller"/>
+            </bean>
+        </list>
+    </property>
+</bean>]]></emphasis><emphasis role="bold"><![CDATA[<bean id="asyncRestTemplate" class="org.springframework.web.client.AsyncRestTemplate">
+    <property name="messageConverters">
+        <list>
+            <bean class="my.custom.MarshallingHttpMessageConverter">
+                <property name="unmarshaller" ref="marshaller" />
+                <property name="marshaller" ref="marshaller"/>
+            </bean>
+        </list>
+    </property>
+</bean>]]>
+				</emphasis>
+			</programlisting>
+		</para>
+	</section>
+	
+	<section id="springrest_restsupport_resttemplate_resttemplate">
+		<title>RestTemplate</title>
+		<para>
+			RestTemplate은 GET, POST 등 모든 HTTP Method를 사용하여 쉽고 간편하게 RESTful 웹 서비스를 호출할 수 있도록 다음과 같은 메소드를 제공하고 있다.
+		</para>
+		<para>
+			<informaltable>
+				<caption>RestTemplate에서 제공하는 메소드</caption>
+	    		<tgroup cols="2">
+	    			<colspec colname="col1" colnum="1" colwidth="3*" />
+			        <colspec colname="col2" colnum="2" colwidth="7*" />
+		
+			        <thead>
+			        	<row>
+			            	<entry align="center">HTTP</entry>
+			            	<entry align="center">Method</entry>
+			          	</row>
+			        </thead>
+		
+		 	        <tbody>
+						<row>
+							<entry>DELETE</entry>
+							<entry><ulink url="http://static.springsource.org/spring/docs/3.0.x/javadoc-api/org/springframework/web/client/RestTemplate.html#delete(java.lang.String, java.lang.Object...)">delete(java.lang.String, java.lang.Object...)</ulink></entry>
+			          	</row>
+						<row>
+							<entry>GET</entry>
+							<entry><ulink url="http://static.springsource.org/spring/docs/3.0.x/javadoc-api/org/springframework/web/client/RestTemplate.html#getForObject(java.lang.String, java.lang.Class, java.lang.Object...)">getForObject(java.lang.String, java.lang.Class, java.lang.Object...)</ulink></entry>
+			          	</row>	
+			          	<row>
+							<entry></entry>
+							<entry><ulink url="http://static.springsource.org/spring/docs/3.0.x/javadoc-api/org/springframework/web/client/RestTemplate.html#getForEntity(java.lang.String, java.lang.Class, java.lang.Object...)">getForEntity(java.lang.String, java.lang.Class, java.lang.Object...)</ulink></entry>
+			          	</row>
+						<row>
+							<entry>HEAD</entry>
+							<entry><ulink url="http://static.springsource.org/spring/docs/3.0.x/javadoc-api/org/springframework/web/client/RestTemplate.html#headForHeaders(String, String...)">headForHeaders(java.lang.String, java.lang.Object...)</ulink></entry>
+			          	</row>	
+						<row>
+							<entry>OPTIONS</entry>
+							<entry><ulink url="http://static.springsource.org/spring/docs/3.0.x/javadoc-api/org/springframework/web/client/RestTemplate.html#optionsForAllow(String, String...)">optionsForAllow(java.lang.String, java.lang.Object...)</ulink></entry>
+			          	</row>	
+						<row>
+							<entry>POST</entry>
+							<entry><ulink url="http://static.springsource.org/spring/docs/3.0.x/javadoc-api/org/springframework/web/client/RestTemplate.html#postForLocation(String, Object, String...)">postForLocation(java.lang.String, java.lang.Object, java.lang.Object...)</ulink></entry>
+			          	</row>
+			          	<row>
+							<entry></entry>
+							<entry><ulink url="http://static.springsource.org/spring/docs/3.0.x/javadoc-api/org/springframework/web/client/RestTemplate.html#postForObject(java.lang.String, java.lang.Object, java.lang.Class, java.lang.Object...)">postForObject(java.lang.String, java.lang.Object, java.lang.Class, java.lang.Object...)</ulink></entry>
+			          	</row>	
+						<row>
+							<entry>PUT</entry>
+							<entry><ulink url="http://static.springsource.org/spring/docs/3.0.x/javadoc-api/org/springframework/web/client/RestTemplate.html#put(String, Object, String...)">put(java.lang.String, java.lang.Object, java.lang.Object...)</ulink></entry>
+			          	</row>
+			          	<row>
+							<entry>any</entry>
+							<entry><ulink url="http://static.springsource.org/spring/docs/3.0.x/javadoc-api/org/springframework/web/client/RestTemplate.html#exchange(java.lang.String, org.springframework.http.HttpMethod, org.springframework.http.HttpEntity, java.lang.Class, java.lang.Object...)">exchange(java.lang.String, org.springframework.http.HttpMethod, org.springframework.http.HttpEntity, java.lang.Class, java.lang.Object...)</ulink></entry>
+			          	</row>
+			          	<row>
+							<entry>&nbsp;</entry>
+							<entry><ulink url="http://static.springsource.org/spring/docs/3.0.x/javadoc-api/org/springframework/web/client/RestTemplate.html#execute(java.lang.String, org.springframework.http.HttpMethod, org.springframework.web.client.RequestCallback, org.springframework.web.client.ResponseExtractor, java.lang.Object...)">execute(java.lang.String, org.springframework.http.HttpMethod, org.springframework.web.client.RequestCallback, org.springframework.web.client.ResponseExtractor, java.lang.Object...)</ulink></entry>
+			          	</row>
+					</tbody>
+				</tgroup>
+			</informaltable>
+		</para>
+		
+		<para>
+			RestTemplate에서 제공하는 getForObject() 메소드를 사용하면 서버로부터 어떤 리소스를 조회하는 기능을 구현할 수 있고, 
+			postForLocation() 메소드를 사용하면 서버 측에 리소스를 생성하거나 수정하는 기능을 구현할 수 있다.
+		</para>
+		
+		<para>
+			다음은 springrest plugin의 TestCase에서 RestTemplate을 사용한 예이다. 
+			코드에서 볼 수 있듯이 RESTful 서비스를 호출하여 결과를 받아오는 것이 한 줄의 코드로 처리가 가능하다. 
+			<programlisting language="java">@Inject
+@Named("restTemplate")
+private RestTemplate restTemplate;
+
+@Test
+public void findMovie() {
+    String movieId = "MV-00005";
+    String movieSearchUrl = "http://localhost:8080/mypjt2/movies/{movieId}";
+
+    Movie movie = restTemplate.getForObject(movieSearchUrl, Movie.class,
+        movieId);
+
+    assertThat(movie.getMovieId(), is(movieId));
+}</programlisting>
+		</para>
+		
+		<para>
+			RestTemplate의 메소드들은 모두 URI Template을 사용하여 요청 URI를 명시할 수 있다.
+			<programlisting language="java"><![CDATA[String result = restTemplate.getForObject("http://localhost:8080/testrest/springrest/movies/{movieId}/edit.xml", Movie.class, "MV-00005");]]></programlisting>
+		</para>
+	
+		<para>
+			아래와 같이 URI Template의 변수를 Map으로 처리할 수도 있다.
+			<programlisting language="java"><![CDATA[Map<String, String> vars = new HashMap<String, String>();
+vars.put("movieId", "MV-00005");
+String result = restTemplate.getForObject("http://localhost:8080/testrest/springrest/movies/{movieId}/edit.xml", Movie.class, vars);]]></programlisting>
+		</para>
+		
+		<para>
+			또한, exchange 메소드를 이용하여 HTTP Response의 header와 body 정보를 자유롭게 사용할 수도 있다.
+			<programlisting language="java"><![CDATA[@Test
+public void createMovie() throws Exception {
+    String movieCreateUrl = "http://localhost:8080/mypjt2/movies";
+
+    Movie movie = makeMovie();
+
+    HttpHeaders headers = new HttpHeaders();
+    headers.setContentType(MediaType.APPLICATION_ATOM_XML);
+    HttpEntity<Movie> requestEntity = new HttpEntity<Movie>(movie, headers);
+
+    ResponseEntity<String> response = restTemplate.exchange(movieCreateUrl,
+        HttpMethod.POST, requestEntity, String.class);
+    assertThat(response.getStatusCode().toString(), is("201"));
+
+    String movieSearchUrl = response.getHeaders().getLocation().toURL()
+        .toString();
+    movie = restTemplate.getForObject(movieSearchUrl, Movie.class);
+
+    assertThat(movie, notNullValue());
+    assertThat(movieSearchUrl,
+        is("http://localhost:8080/mypjt2/movies/"
+            + movie.getMovieId()));
+    assertThat(movie.getTitle(), is("괴물"));
+
+    System.out.println("New movie is registered.");
+    System.out.println("1.MOVIE ID : " + movieSearchUrl);
+    System.out.println("2.MOVIE Object : " + movie);
+}]]></programlisting>
+		</para>
+		
+		<note>
+			<title>Error Status Code</title>
+			<!--para>
+				RestTemplate으로 RESTful 웹 서비스를 호출했을 때, 서버로부터 404나 500 등의 Error Status Code를 리턴을 받게되면 Exception이 발생한다.
+				Response Status Code에 대해서는 본 매뉴얼의 <link linkend="springrest_restsupport_contentnegotiation_responsestatuscode">HTTP Response Status Code</link>
+				를 참조하기 바란다.
+			</para-->
+			<para>
+				RestTemplate으로 RESTful 웹 서비스를 호출했을 때, 서버로부터 404나 500 등의 Error Status Code를 리턴을 받게되면 Exception이 발생한다.
+			</para>
+		</note>
+	</section>
+
+<!-- 종석 작성 -->
+	<section id="springrest_restsupport_restclient_asyncresttemplate">
+		<title>AsyncRestTemplate</title>
+		<para>
+			AsyncRestTemplate 도 RestTemplate과 마찬가지로 GET, POST 등 모든 HTTP Method를 사용하여 쉽고 간편하게 RESTful 웹 서비스를 async 호출할 수 있도록 다음과 같은 메소드를 제공하고 있다.
+			RestTemplate 과 유사한 Method들이 존재하나, RestTemplate과는 다르게 AsyncRestTemplate 은 ListenableFuture 형식을 return 한다.
+		</para>
+		<para>
+			<informaltable>
+				<caption>AsyncRestTemplate에서 제공하는 메소드</caption>
+	    		<tgroup cols="2">
+	    			<colspec colname="col1" colnum="1" colwidth="3*" />
+			        <colspec colname="col2" colnum="2" colwidth="7*" />
+		
+			        <thead>
+			        	<row>
+			            	<entry align="center">HTTP</entry>
+			            	<entry align="center">Method</entry>
+			          	</row>
+			        </thead>
+		
+		 	        <tbody>
+						<row>
+							<entry>DELETE</entry>
+							<entry><ulink url="http://docs.spring.io/spring/docs/4.0.0.RELEASE/javadoc-api/org/springframework/web/client/AsyncRestTemplate.html#delete-java.lang.String-java.lang.Object...-">delete(java.lang.String, java.lang.Object...)</ulink></entry>
+			          	</row>
+						<row>
+							<entry>GET</entry>
+							<entry><ulink url="http://docs.spring.io/spring/docs/4.0.0.RELEASE/javadoc-api/org/springframework/web/client/AsyncRestTemplate.html#getForEntity-java.lang.String-java.lang.Class-java.lang.Object...-">getForEntity(java.lang.String, java.lang.Class, java.lang.Object...)</ulink></entry>
+			          	</row>
+						<row>
+							<entry>HEAD</entry>
+							<entry><ulink url="http://docs.spring.io/spring/docs/4.0.0.RELEASE/javadoc-api/org/springframework/web/client/AsyncRestTemplate.html#headForHeaders-java.lang.String-java.lang.Object...-">headForHeaders(java.lang.String, java.lang.Object...)</ulink></entry>
+			          	</row>	
+						<row>
+							<entry>OPTIONS</entry>
+							<entry><ulink url="http://docs.spring.io/spring/docs/4.0.0.RELEASE/javadoc-api/org/springframework/web/client/AsyncRestTemplate.html#optionsForAllow-java.lang.String-java.lang.Object...-">optionsForAllow(java.lang.String, java.lang.Object...)</ulink></entry>
+			          	</row>	
+						<row>
+							<entry>POST</entry>
+							<entry><ulink url="http://docs.spring.io/spring/docs/4.0.0.RELEASE/javadoc-api/org/springframework/web/client/AsyncRestTemplate.html#postForLocation-java.lang.String-org.springframework.http.HttpEntity-java.lang.Object...-">postForLocation(java.lang.String, java.lang.Object, java.lang.Object...)</ulink></entry>
+			          	</row>
+			          	<row>
+							<entry></entry>
+							<entry><ulink url="http://docs.spring.io/spring/docs/4.0.0.RELEASE/javadoc-api/org/springframework/web/client/AsyncRestTemplate.html#postForEntity-java.lang.String-org.springframework.http.HttpEntity-java.lang.Class-java.lang.Object...-">postForEntity(java.lang.String, java.lang.Object, java.lang.Class, java.lang.Object...)</ulink></entry>
+			          	</row>	
+						<row>
+							<entry>PUT</entry>
+							<entry><ulink url="http://docs.spring.io/spring/docs/4.0.0.RELEASE/javadoc-api/org/springframework/web/client/AsyncRestTemplate.html#put-java.lang.String-org.springframework.http.HttpEntity-java.lang.Object...-">put(java.lang.String, java.lang.Object, java.lang.Object...)</ulink></entry>
+			          	</row>
+			          	<row>
+							<entry>any</entry>
+							<entry><ulink url="http://docs.spring.io/spring/docs/4.0.0.RELEASE/javadoc-api/org/springframework/web/client/AsyncRestTemplate.html#exchange-java.lang.String-org.springframework.http.HttpMethod-org.springframework.http.HttpEntity-java.lang.Class-java.lang.Object...-">exchange(java.lang.String, org.springframework.http.HttpMethod, org.springframework.http.HttpEntity, java.lang.Class, java.lang.Object...)</ulink></entry>
+			          	</row>
+			          	<row>
+							<entry>&nbsp;</entry>
+							<entry><ulink url="http://docs.spring.io/spring/docs/4.0.0.RELEASE/javadoc-api/org/springframework/web/client/AsyncRestTemplate.html#execute-java.lang.String-org.springframework.http.HttpMethod-org.springframework.web.client.AsyncRequestCallback-org.springframework.web.client.ResponseExtractor-java.lang.Object...-">execute(java.lang.String, org.springframework.http.HttpMethod, org.springframework.web.client.RequestCallback, org.springframework.web.client.ResponseExtractor, java.lang.Object...)</ulink></entry>
+			          	</row>
+					</tbody>
+				</tgroup>
+			</informaltable>
+		</para>
+		
+		<para>
+			AsyncRestTemplate에서 제공하는 getForEntity() 메소드를 사용하면 서버로부터 어떤 리소스를 조회하는 기능을 구현할 수 있고, 
+			postForLocation() 메소드를 사용하면 서버 측에 리소스를 생성하거나 수정하는 기능을 구현할 수 있다.
+		</para>
+		
+		<para>
+			다음은 springrest plugin의 TestCase에서 AsyncRestTemplate을 사용한 예이다. 
+			코드에서 볼 수 있듯이 RESTful 서비스를 async호출이 가능하여, 결과를 받아올 때는 async 호출 이후에 ListenableFuture.get() 이나 ListenableFuture.addCallback(...) 을 사용한다.  
+			<programlisting language="java">@Inject
+	@Named("asyncRestTemplate")
+	private AsyncRestTemplate asyncRestTemplate;
+
+public void getMovie(String movieId) throws Exception {
+		
+		String movieSearchUrl = "http://localhost:8080/anyframe-sample-springrest/springrest/moviesasync/{movieId}";
+
+		<![CDATA[ListenableFuture<ResponseEntity<Movie>> futureEntity = asyncRestTemplate.getForEntity(movieSearchUrl, Movie.class, movieId);]]>
+
+		<![CDATA[ResponseEntity<Movie> movie = futureEntity.get();]]>
+		System.out.println("--> movie id : " + movie.getBody().getMovieId());
+		System.out.println("--> movie title : " + movie.getBody().getTitle());
+
+	}</programlisting>
+		</para>
+		
+		<para>
+			AsyncRestTemplate의 메소드들은 모두 URI Template을 사용하여 요청 URI를 명시할 수 있다.
+			<programlisting language="java"><![CDATA[String result = asyncRestTemplate.getForEntity("http://localhost:8080/testrest/springrest/movies/{movieId}/edit.xml", Movie.class, "MV-00005");]]></programlisting>
+		</para>
+	
+		<para>
+			아래와 같이 URI Template의 변수를 Map으로 처리할 수도 있다.
+			<programlisting language="java"><![CDATA[Map<String, String> vars = new HashMap<String, String>();
+vars.put("movieId", "MV-00005");
+String result = asyncRestTemplate.getForEntity("http://localhost:8080/testrest/springrest/movies/{movieId}/edit.xml", Movie.class, vars);]]></programlisting>
+		</para>
+		
+		<para>
+			또한, exchange 메소드를 이용하여 HTTP Response의 header와 body 정보를 자유롭게 사용할 수도 있다.
+			<programlisting language="java">
+				public String createMovie(Movie movie) throws Exception {
+		String movieCreateUrl = "http://localhost:8080/anyframe-sample-springrest/springrest/moviesasync";
+		
+		HttpHeaders headers = new HttpHeaders();
+		headers.setContentType(MediaType.APPLICATION_ATOM_XML);
+		<![CDATA[HttpEntity<Movie> requestEntity = new HttpEntity<Movie>(movie, headers);]]>
+		
+		<![CDATA[ListenableFuture<ResponseEntity<String>> futureEntity = 
+				asyncRestTemplate.exchange(movieCreateUrl, HttpMethod.POST, requestEntity, String.class);]]>
+				
+		<![CDATA[futureEntity.addCallback(new ListenableFutureCallback<ResponseEntity<String>>() {
+
+			public void onFailure(Throwable arg0) {
+				System.out.println("--> Fail!!!");
+			}
+
+			public void onSuccess(ResponseEntity<String> arg0) {
+				System.out.println("--> Success!!!");
+				
+				String movieSearchUrl = "";
+				try {
+					movieSearchUrl = arg0.getHeaders().getLocation().toURL().toString();
+				} catch (MalformedURLException e) {
+					e.printStackTrace();
+				}
+				System.out.println("result movieSearchUrl : " + movieSearchUrl);
+			}
+		});]]>
+
+		return "";
+	}			
+			</programlisting>
+		</para>
+		
+		<warning>
+			<title>asyncRestTemplate 를 사용한 async 호출시 유의사항</title>
+			<para>
+				asyncRestTemplate 를 사용하여 async 호출을 할 경우 ListenableFuture 타입을 return 한다고 위에서 명시했다. 
+				결과값을 얻기 위해서는 ListenableFuture.get() 이나 ListenableFuture.addCallback(...) 응 사용하는데, 
+				해당 Method 를 사용하는 경우 기존의 javaScript 에서 서비스를 async 호출하는 것과 같이 별도의 Thread가 생성되어 종료시까지 모니터링하는 형식이 아니고,
+				get이나 addCallback 을 한 시점에서 server 쪽의 작업이 종료되길 기다렸다가 결과값을 받아오게 된다. 
+				이점을 유의하여, asyncRestTemplate을 통한 async 호출은 한꺼번에 여러가지 일을 Server 쪽에 요청한 후 이후에 한꺼번에 결과값을 받아오는 것이 가능한 부분에 사용하는것이  적합할 것으로 보인다. 
+			</para>
+		</warning>
+		
+		<note>
+			<title>Error Status Code</title>
+			<para>
+				AsyncRestTemplate으로 RESTful 웹 서비스를 호출했을 때, 서버로부터 404나 500 등의 Error Status Code를 리턴을 받게되면 Exception이 발생한다.
+			</para>
+		</note>
+	</section>
+<!-- 종석 작성 -->
+</chapter>

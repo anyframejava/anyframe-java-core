@@ -1,0 +1,125 @@
+<chapter id="jdbcsupport_injectionandlogging_implementation">
+		<title>기본 구현 및 사용자 확장 구현 방안</title>
+
+
+		<section id="jdbcsupport_injectionandlogging_implementation_defaultinjectionpostprocessor">
+        	<title>DefaultInjectionPatternPostProcessor</title>
+
+        	<itemizedlist>
+          		<listitem>
+            		<para>warningPattern</para>
+
+            		<para>p6spy 를 사용하면 실행 SQL 이 넘어오므로 default 구현은 SQL Injection 패턴을 regex 로 정의(Spring 설정파일에 warningPatterns 로 사이트에 특화된 패턴들을 마음대로 정의가능)하고 
+            		해당 패턴을 순차적으로 matching 비교하여 match 되면 detect 로 판단한 다음 이에 대해 org.anyframe.jdbc.support.InjectionPatternPostProcessor Logger 로 match된 패턴 문자열 및 
+            		실행 sql 를 WARN Level 로그로 남기는 로직으로 warning 처리를 구현하였다.</para>
+          		</listitem>
+
+          		<listitem>
+            		<para>replacePattern</para>
+
+            		<para>default 구현은 최종 SQL 에 대해 Spring 설정파일에 replacePatterns 로 정의한 regex 패턴 및 replacement 패턴을 순차적으로 String.replaceAll 로 변경한다.</para>
+          		</listitem>
+
+        	</itemizedlist>
+        	
+			<note>
+      			<title>replacePattern 적용 시 유의사항</title>
+      			<para>
+            		<emphasis role="bold">최종 query 에 대한 전체 일괄 변경</emphasis>이기 때문에 잘못된 패턴 설정 시 SQL Syntax Error를 유발할 수 있다.
+				</para>
+				<para>
+					cf.) InjectionPatternPostProcessor 는 Spring Bean 으로 등록하므로 Application 의 어떤 영역에서든지 DI 하여 활용 가능함
+		        	<itemizedlist>
+		          		<listitem>
+		            		<para>ex1. ServletFilter 로 모든 request parameter 에 대해 일괄 InjectionPatternPostProcessor 의 warning/replace 적용 가능.</para>
+		          		</listitem>
+		          		<listitem>
+		            		<para>ex2. PreparedStatement 문의 bind 변수 처리가 어려운 사용자 전달 query parameter 에 대해 사용자 DAO 영역에서 선별적으로 InjectionPatternPostProcessor 의 replace 적용 가능.</para>
+		          		</listitem>
+		        	</itemizedlist>
+				</para>		        
+			</note>
+		</section>
+		
+		
+		<section id="jdbcsupport_injectionandlogging_implementation_defaultcompletequerypostprocessor">
+        	<title>DefaultCompleteQueryPostProcessor</title>
+        	
+     		<para>
+           		default 구현은 최종 실행 SQL 에 대해 org.anyframe.jdbc.support.CompleteQueryPostProcessor Logger 로 INFO Level 로 로그를 남긴다.
+			</para>
+			<para>
+				logger 의 appender 등을 별도로 지정하면 Pattern Layout 이나 target(File, DB ..) 을 자유롭게 조절할 수 있다.
+			</para>		        
+
+		</section>
+		
+		<section id="jdbcsupport_injectionandlogging_implementation_extension">
+        	<title>확장 구현체 Sample - ThreadLocalCompleteQueryPostProcessor</title>
+        	
+     		<para>
+           		jdbc 실행을 전(flag 설정) / 후(executedQuery 추출 및 ThreadLocal clear) 하여 ThreadLocal 처리에 신경써야 한다.
+			</para>
+			<para>
+				실제 JDBC 실행이 목적이 아니고 Query 만 추출하고 싶은 경우 Exception 을 throw 하는 것이 필요할 것이다.
+				(cf. queryService 를 사용하는 경우 stackTrace 가 남는 문제 존재(queryService Logger OFF 가능) 
+				--> QueryLogException 등을 별도로 정의하여 일괄 AOP 로 Exception 처리하는 영역 등에서 사용자 UI 에 해당 Query 를 되돌려주기 위한 로직을 공통으로 적용하는 것이 바람직함. 
+			</para>
+			
+			<para>
+				Sample Source
+				<programlisting language="java"><![CDATA[public class ThreadLocalCompleteQueryPostProcessor extends DefaultCompleteQueryPostProcessor {
+
+    @Override
+    public void processCompleteQuery(String sql) {
+        super.processCompleteQuery(sql);
+
+        if ("Q".equals(SharedInfoHolder.getJobType())) {
+            SharedInfoHolder.setExecutedQuery(sql);
+            // throw new QueryLogException(sql);
+        }
+    }
+
+}]]></programlisting>
+
+				<programlisting language="java"><![CDATA[@Test
+public void testCompleteQueryPostProcessor() {
+    NamedParameterJdbcTemplate jdbcTemplate = new NamedParameterJdbcTemplate(dataSource);
+    
+    StringBuffer testSql = new StringBuffer();
+    testSql.append("SELECT LOGON_ID, NAME, PASSWORD FROM TB_USER \n");
+    testSql.append("WHERE LOGON_ID = :logonId AND PASSWORD = :password \n");
+
+    Map<String, Object> paramMap = new HashMap<String, Object>();
+    paramMap.put("logonId", "admin");
+    paramMap.put("password", "adminpw");
+
+    // if ThreadLocal flag set - jobType = "Q"
+    SharedInfoHolder.setJobType("Q");
+
+    // execute jdbc - cf.) in ThreadLocalCompleteQueryPostProcessor,
+    // executes query actually cause it does not throw Exception
+    Map<String, Object> resultMap = jdbcTemplate.queryForMap(testSql.toString(), paramMap);
+    assertEquals("admin", resultMap.get("logon_id"));
+    assertEquals("adminpw", resultMap.get("password"));
+
+    // check the last executed query (CompleteQuery) in ThreadLocal
+    assertEquals(
+        "SELECT LOGON_ID, NAME, PASSWORD FROM TB_USER \nWHERE LOGON_ID = 'admin' AND PASSWORD = 'adminpw' \n",
+        SharedInfoHolder.getExecutedQuery());
+
+    // ThreadLocal must be cleared!
+    SharedInfoHolder.clearSharedInfo();
+}]]></programlisting>
+			</para>
+			
+			<para>
+				configuration
+				<programlisting language="xml"><![CDATA[<!-- some ThreadLocal processing added sample -->
+<bean id="completeQueryPostProcessor"
+    class="org.anyframe.jdbc.support.ext.ThreadLocalCompleteQueryPostProcessor" />]]></programlisting>
+			</para> 
+
+		</section>
+
+</chapter>

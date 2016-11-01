@@ -1,0 +1,113 @@
+<chapter id="async_suppport_configuration">
+	<title>Configuration for Asychronous Support</title>
+		<itemizedlist>
+				<listitem>
+					<para><emphasis role="bold">Anyframe Plugin Config</emphasis></para>
+					<para>servlet 2.5 기반을 둔 애니프레임  5.5.1 에서 배포되는 본 플러그인을  servlet 3 환경에서 사용하기 위해서 Servlet api가 업그레이드 되었다.
+					애니프레임 기반으로 프로젝트를 생성하고 async-support 플러그인이 설치된 것을 확인한 pom.xml의  servlet-api.jar 라이브러리의 버전을 확인하다.
+					</para>
+					<programlisting language="xml"><![CDATA[
+<dependency>
+      <groupId>javax.servlet</groupId>
+      <artifactId>servlet-api</artifactId>
+      <version>3.0</version>
+      <scope>provided</scope>
+</dependency>]]></programlisting>
+					<para>servlet 3를 지원하기 위하여 애니프레임 코어 1.5.1 버전은 Spring 3.2.2Release 버전에 기반을 두고 개발되었다. async-support 플러그인을
+					설치한 후 pom.xml 파일의 프로퍼티 항목을 체크하여 JDK는 1.6으로 수정하고  Spring버전이 3.2.2 이상인지  확인한다  </para>
+					<programlisting language="xml"><![CDATA[<properties>
+        <inspection.dir>${user.home}/.anyframe/inspection</inspection.dir>
+        <spring.version>3.2.2.RELEASE</spring.version>
+        <targetJdk>1.6</targetJdk>
+        <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+    </properties>]]></programlisting>
+					<para> Spring 버전을 확인하였다면 다음의 라이브러리가 pom.xml에 dependency로 설정되어 있다면 해당하는 의존성이 바로 제거되어 있는지 확인한다.
+					</para>
+					<programlisting language="xml"><![CDATA[<dependency>
+      <groupId>org.springframework</groupId>
+      <artifactId>spring-asm</artifactId>
+      <version>${spring.version}</version>
+</dependency>]]></programlisting>
+				</listitem>
+				<listitem>
+					<para><emphasis role="bold">Servlet 3 Async Config</emphasis></para>
+					<para>일반적인 Servlet 3 개발 환경 혹은 Servlet 3 표준에 기반한 스프링 3.2에서 비동기적인 처리를 사용하기 위해서는 web.xml 파일을 다음과 같이 수정해야한다.
+					</para>
+					<programlisting language="xml"><![CDATA[<web-app xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns="http://java.sun.com/xml/ns/javaee" xmlns:web="http://java.sun.com/xml/ns/javaee/web-app_3_0.xsd"
+xsi:schemaLocation="http://java.sun.com/xml/ns/javaee http://java.sun.com/xml/ns/javaee/web-app_3_0.xsd" id="WebApp_ID" version="3.0">]]></programlisting>
+				</listitem>
+				<listitem>
+					<para><emphasis role="bold">Spring MVC 3.2 Async Config</emphasis></para>
+					<para> 
+			  			Spring MVC 3.2에서는 DispatcherServlet 이나 Filter 역시 <![CDATA[<async-supported>true</async-supported>]]> 속성을 정의해줘야한다.
+			  			주의해야할 점은 비동기적인 처리에 관여하는 필터는 반드시 비동기 Dispatcher 타입을 지원하도록 설정이 되어야한다는 것이다. 
+			  			스프링 프레임워크와 함께 제공되는 모든 필터를 위한 비동기 dispatcher type을 사용하게 하는 것은 안전하지 않다. 왜냐하면 필요가
+			  			없다면 모든 필터가 비동기적인 처리에 사용되지 않을 것이기 때문이다.
+			  		</para>
+  	  				 <programlisting language="xml"><![CDATA[<filter>
+        <filter-name>encodingFilter</filter-name>
+        <filter-class>org.springframework.web.filter.CharacterEncodingFilter</filter-class>
+        <async-supported>true</async-supported>
+        <init-param>
+            <param-name>encoding</param-name>
+            <param-value>utf-8</param-value>
+        </init-param>
+</filter>
+...
+<servlet>
+        <servlet-name>action</servlet-name>
+        <servlet-class>org.springframework.web.servlet.DispatcherServlet</servlet-class>
+        <init-param>
+            <param-name>contextConfigLocation</param-name>
+            <param-value>classpath:/spring/*-servlet.xml</param-value>
+        </init-param>
+        <load-on-startup>1</load-on-startup>
+        <async-supported>true</async-supported>
+</servlet>]]></programlisting>
+  					<para>위와 같이 web.xml에 정의를 할 수 있고 WebMvcConfigurer 클래스에서 제공하는 configureAsyncSupport 메소드를 통해서 비동기적인 처리를 지원할
+  					수도 있다. 두 옵션 다 비동기적인 처리를 위한 타임아웃을 설정할 수 있는데 임의로 설정을 하지 않는 다면 기본적으로 Servlet Container의 세팅을 따른다(e.g Tomcat에서는 10초)</para>
+				</listitem>
+				<listitem>
+					<para>
+						Servlet 3.0에 기반한 비동기적인 처리를 지원하는  WAS 혹은 서블릿 컨테이너
+					</para>
+					<informaltable>
+						<caption>AsyncContext API</caption>
+						<tgroup cols="3">
+							<thead>
+								<row>
+									<entry align="center">Server</entry>
+									<entry align="center">Server version</entry>
+								</row>
+							</thead>
+							<tbody>
+								<row>
+									<entry>Apache Tomcat</entry>
+									<entry>7.0.x 이상</entry>
+								</row>
+								<row>
+									<entry>Jetty</entry>
+									<entry>8.x 이상</entry>
+								</row>
+								<row>
+									<entry>GlassFish</entry>
+									<entry>3.0.x 이상</entry>
+								</row>
+								<row>
+									<entry>Weblogic</entry>
+									<entry>12.1.x 이상</entry>
+								</row>
+								<row>
+									<entry>Websphere</entry>
+									<entry>8.0.x 이상</entry>
+								</row>
+								<row>
+									<entry>Jeus</entry>
+									<entry>7.0.x이상</entry>
+								</row>
+							</tbody>
+						</tgroup>
+				</informaltable>
+				</listitem>
+		</itemizedlist>
+</chapter>

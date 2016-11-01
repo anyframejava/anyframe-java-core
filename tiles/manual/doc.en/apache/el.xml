@@ -1,0 +1,9 @@
+<chapter id="tiles_apachetiles_el">
+	<title>EL</title>
+	<para>If you use Tiles, value of attribute that is template element should be defined in Tiles Definition xml file. In this case, a definition should be defined for each view. So, Apache Tiles supports the use of EL(Expression Language) from version 2.1 onwards under the condition that servlet spec is 2.5 or over. Defining Tiles Definition using EL is as below.</para>
+	<programlisting language="java"><![CDATA[<definition name="tilesLayout" templateExpression="${layout}">
+    <put-attribute name="left" value="/sample/layouts/left.jsp" />
+    <put-attribute name="body" expression="${requestScope.body}" />
+</definition>]]></programlisting>
+	<para>When defined as above, template name will search object named "layout" within all Scope. Also, body will extract value from "body" in request Scope.</para>
+</chapter>

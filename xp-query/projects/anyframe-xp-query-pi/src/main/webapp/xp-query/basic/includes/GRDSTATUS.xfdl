@@ -1,0 +1,84 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<FDL version="1.4">
+  <TypeDefinition url="..\default_typedef.xml"/>
+  <Form id="GRDSTATUS" classname="GRDSTATUS" inheritanceid="" position="absolute 0 0 500 50" titletext="GRDSTATUS" onload="GRDSTATUS_onload" ontimer="GRDSTATUS_ontimer">
+    <Layouts>
+      <Layout>
+        <Static id="stGridStatus" position="absolute 0 0 200 25" style="align:right middle;" text=""/>
+      </Layout>
+    </Layouts>
+    <Script type="xscript4.0"><![CDATA[include "lib::commonScript.xjs";
+
+var TIMER_ID = 100;
+var TIMER_ELAPSE = 400;
+
+var bActive = false;
+var objGrid = null;
+var objGrdDataSet = null;
+
+// Form onload 이벤트 처리
+function GRDSTATUS_onload(obj:Form, e:LoadEventInfo)
+{
+	var nFormWidth = this.position.width;
+	var nFormHeight = this.position.height;
+	
+	stGridStatus.position = "absolute 0 0 " + nFormWidth + " " + nFormHeight;		
+
+}
+
+function fnSetUserData(strUserDataArg)
+{
+	var arrUserData = gfnSplit(strUserDataArg, ",");
+	
+	for(var i = 0 ; i < gfnLength(arrUserData) ; i++){
+		var arrUserDataDtl = gfnSplit(arrUserData[i], "=");
+		
+		if(arrUserDataDtl[0] == "GRD_STATUS"){
+			fnSetActive(false);
+			fnSetGrid(arrUserDataDtl[1]);
+			fnSetActive(true);
+			break;
+		}
+	}
+}
+
+function fnSetActive(bValue){
+	if(bActive == bValue){
+		return;
+	}	
+	bActive = bValue;
+	
+	if(bActive){
+		setTimer(TIMER_ID, TIMER_ELAPSE);
+	} else{
+		killTimer(TIMER_ID);
+	}
+}
+
+function fnSetGrid(sGridID){
+	fnSetActive(false);
+	objGrid = gfnGetComponent(sGridID, parent);
+	objGridDataSet = parent.objects[objGrid.binddataset];
+	fnSetActive(true);
+}
+
+function GRDSTATUS_ontimer(obj:Form, e:TimerEventInfo)
+{
+	var nRowCount = objGridDataSet.rowcount;
+	var nRowPos = 1 + objGridDataSet.rowposition;
+	var strTotalCount = objGridDataSet.getConstColumn("totalCount");
+	
+	if(!gfnIsNull(strTotalCount) && parseInt(strTotalCount) != 0){
+		nRowCount = strTotalCount;
+		nRowPos = 1 + objGridDataSet.rowposition + ((objGridDataSet.getConstColumn("pageIndex") - 1) * objGridDataSet.getConstColumn("pageSize"));		
+	}
+	
+	if(bActive){
+		stGridStatus.text = "Total Count : " + nRowPos + "/" + nRowCount + " ";
+	} else {
+		stGridStatus.text = "Total Count : ";
+	}
+}
+]]></Script>
+  </Form>
+</FDL>

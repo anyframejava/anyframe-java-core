@@ -1,0 +1,96 @@
+<chapter id="idgen_sequenceid">
+	<title>SequenceIdGenService</title>
+
+		<para>
+			새로운 ID를 생성하기 위해 Database의 SEQUENCE 문을 사용하는 서비스이다. 다음과 같은 설정을 가질 수 있다.</para>
+		<informaltable>
+			<caption>SequenceIdGenService 속성 목록</caption>
+      		<tgroup cols="4">
+        		<colspec colnum="1" colname="col1" colwidth="2*"/>
+        		<colspec colnum="2" colname="col2" colwidth="6*"/>
+        		<colspec colnum="3" colname="col3" colwidth="1*"/>
+        		<colspec colnum="4" colname="col4" colwidth="1*"/>
+        		<thead>
+          			<row>
+            		<entry align="center">Property Name</entry>
+            		<entry align="center">Description</entry>
+		            <entry align="center">Required</entry>
+		            <entry align="center">Default Value</entry>
+          			</row>
+        		</thead>
+
+        		<tbody>
+          			<row>
+            		<entry>dataSource</entry>
+            		<entry>
+            			SequenceIdGenService를 사용하는 경우 필요하다. Database 연결을 위한
+            			DataSourceService를 지정한다.
+            		</entry>
+		            <entry align="center">Y</entry>
+        		    <entry align="center">N/A</entry>
+          			</row>
+          			<row>
+			            <entry>useBigDecimals</entry>
+			            <entry>long 타입의 ID 대신 BigDecimal 타입의 ID를 사용하고자 할 때 정의한다.</entry>
+			            <entry align="center">N</entry>
+			            <entry align="center">false</entry>          			
+          			</row>
+          			<row>
+          				<entry>query</entry>
+			            <entry>SEQUENCE SQL을 value로써 지정한다.(Database에 의존적이다.)</entry>
+			            <entry align="center">Y</entry>
+			            <entry align="center">N/A</entry>          			
+          			</row>
+        		</tbody>
+      		</tgroup>
+    	</informaltable>
+    <section id="idgen_sequenceid_sample">
+	<title>Implementation</title>
+
+		<itemizedlist>
+			<listitem>
+				<para><emphasis role="bold">Configuration </emphasis></para>
+
+				<para>
+					다음은 SequenceIdGenService의 속성을 정의한
+          			context-idgen.xml 의 일부이다.
+          			SequenceIdGenService는 common_datasource를 통하여 Connection 객체를
+          			얻게 되며, IDGEN_SEQ라는 이름의 Sequence를 사용한다. 따라서, 다음 속성 기반의
+          			SequenceIdGenService 실행을 위해서는 IDGEN_SEQ라는 이름의 Sequence가
+          			생성되어 있어야 한다.
+          			<programlisting language="xml"><![CDATA[<bean name="SequenceIdGenService" class="org.anyframe.idgen.impl.SequenceIdGenServiceImpl"
+	destroy-method="destroy">
+    <property name="dataSource" ref="dataSource" />
+    <property name="query" value="SELECT NEXT VALUE FOR IDGEN_SEQ FROM IDS"/>	
+</bean>]]></programlisting>
+				</para>
+        	</listitem>
+
+        	<listitem>
+          		<para><emphasis role="bold">TestCase </emphasis></para>
+
+          		<para>
+          			다음은 앞서 정의한 속성 설정을 기반으로 하여 SequenceIdGenService를 이용하여
+          			유일한 id를 추출하는 IdgenServiceTest.java 코드의 일부이다.
+          			<programlisting language="java">@Inject
+@Named("SequenceIdGenService")
+IdGenService sequenceid;
+   
+/**
+ * [Flow #-4] Positive Case : try to get next Long id
+ * 
+ * @throws Exception
+ *             fail to test
+ */
+@Test
+public void testSequenceIdGenServiceTest() {
+    // 1. get id twice to compare with each other
+    String id1 = sequenceid.getNextStringId();
+    String id2 = sequenceid.getNextStringId();
+    assertEquals("fail to get differenct id", true, !id1.equals(id2));
+}</programlisting>
+				</para>
+        	</listitem>
+      	</itemizedlist>
+    </section>
+  </chapter>

@@ -1,0 +1,67 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<queryservice xmlns="http://www.anyframejava.org/schema/query/mapping" 
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" 
+	xsi:schemaLocation="http://www.anyframejava.org/schema/query/mapping http://www.anyframejava.org/schema/query/mapping/anyframe-query-mapping-1.0.xsd ">
+
+	<queries>
+		<query id="findFlexQueryCompanyList" mappingStyle="lower">
+			<statement>
+				SELECT * FROM FLEX_company ORDER BY id
+			</statement>
+		</query>
+		
+		<query id="findFlexQueryCompanyListByName" mappingStyle="lower">
+			<statement>
+				<!--flex-query-findFlexQueryCompanyListByName-START-->
+				SELECT * FROM FLEX_company WHERE name like '%'|| :name ||'%'	ORDER BY name
+				<!--flex-query-findFlexQueryCompanyListByName-END-->
+			</statement>
+		</query>
+		
+		<query id="findFlexQueryCompanyByName" mappingStyle="lower">
+			<statement>
+				SELECT * FROM FLEX_company WHERE name = :name
+			</statement>
+		</query>
+		
+		<query id="createFlexQueryCompany">
+			<statement>
+				<!--flex-query-createFlexQueryCompany-START-->
+				INSERT 
+				INTO 
+				FLEX_COMPANY(ID, NAME, ADDRESS, CITY, STATE, ZIP, PHONE, INDUSTRY_ID) 
+				VALUES(
+				'COMPANY-'|| NEXT VALUE FOR FLEX_COMPANY_ID_SEQ, :name,:address,:city,:state,:zip,:phone,:industry_id
+				)
+				<!--flex-query-createFlexQueryCompany-END-->
+			</statement>
+		</query>
+		
+		<query id="updateFlexQueryCompany">
+			<statement>
+				UPDATE 
+				FLEX_COMPANY
+				SET
+				NAME = :name,
+				ADDRESS = :address,
+				CITY = :city, 
+				STATE = :state, 
+				ZIP = :zip, 
+				PHONE = :phone, 
+				INDUSTRY_ID = :industry_id
+				WHERE ID = :id
+			</statement>
+		</query>
+		
+		<query id="removeFlexQueryCompany">
+			<statement>
+				DELETE
+				FROM
+				FLEX_COMPANY
+				WHERE
+				NAME = :name
+			</statement>
+		</query>
+	</queries>
+</queryservice>
+

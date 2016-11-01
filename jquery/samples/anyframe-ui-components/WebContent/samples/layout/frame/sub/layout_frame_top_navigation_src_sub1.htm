@@ -1,0 +1,97 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
+<html>
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+<title>Frame Sample - Top Navigation 메뉴 Layout</title>
+<link href="../../../../common/css/smoothness/jquery-ui-1.10.0.custom.css" rel="stylesheet">
+<script src="../../../../common/exlibs/jquery-1.9.0.js"></script>
+<script src="../../../../common/exlibs/jquery-ui-1.10.0.custom.js"></script>
+
+<style type="text/css">
+
+	.menu > li {
+		float: left;
+		border: 1px solid #3B9AAC;
+		border-left: none;
+		cursor: default;		 
+	}
+	
+	.menu > li:FIRST-CHILD {
+		border-left: 1px solid #3B9AAC;
+	}
+	
+	.menu li {
+		list-style: none;
+		width: 100px;
+		height: 20px;
+		text-align: center;	
+	}
+	
+	.menu ul li {
+		position: relative;
+		left: 2px;
+		top: 2px;
+		border: 1px solid #3B9AAC;
+		border-top: none;
+	}
+	
+	.menu ul li:FIRST-CHILD {
+		border-top: 1px solid #3B9AAC;
+	}
+	
+	.menu, .menu ul {
+		list-style: none;
+		position: relative;
+		margin: 0;
+		padding: 0;		
+	}
+	
+	.menu ul {
+		display: none;
+	}
+	
+	.menu > li:HOVER > ul {
+		display: block;
+	}
+	
+	.menu a {
+		text-decoration: none;
+		color: black;
+	}
+}
+	
+</style>
+
+<script type="text/javascript">
+	
+	$(document).ready(function() {
+		$(".menu ul a").on("click", function(event) { 
+            parent.shared_selected_name = $(this).text(); 
+        }); 
+	});
+</script>
+</head>
+
+<body>
+<div class="topmenudiv">
+	<div>
+			<ul class="menu">
+				<li>
+					<a>카테고리1</a>
+					<ul>
+						<li><a target="targetBottom" href="layout_frame_top_navigation_src_sub2.htm">아이템1-1</a></li>
+						<li><a target="targetBottom" href="layout_frame_top_navigation_src_sub2.htm">아이템1-2</a></li>
+					</ul>
+				</li>
+				<li>
+					<a>카테고리2</a>
+					<ul>
+						<li><a target="targetBottom" href="layout_frame_top_navigation_src_sub2.htm">아이템2-1</a></li>
+						<li><a target="targetBottom" href="layout_frame_top_navigation_src_sub2.htm">아이템2-2</a></li>
+					</ul>
+				</li>				
+			</ul>	
+	</div>
+</div>
+</body>
+</html>

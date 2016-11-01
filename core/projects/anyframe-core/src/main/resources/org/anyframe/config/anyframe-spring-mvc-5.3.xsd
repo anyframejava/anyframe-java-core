@@ -1,0 +1,165 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<xsd:schema xmlns="http://www.anyframejava.org/schema/mvc"
+	xmlns:xsd="http://www.w3.org/2001/XMLSchema" 
+	xmlns:beans="http://www.springframework.org/schema/beans"
+	xmlns:tool="http://www.springframework.org/schema/tool"
+	targetNamespace="http://www.anyframejava.org/schema/mvc"
+	elementFormDefault="qualified" attributeFormDefault="unqualified">
+
+	<xsd:import namespace="http://www.springframework.org/schema/beans" schemaLocation="http://www.springframework.org/schema/beans/spring-beans-3.1.xsd" />
+	<xsd:import namespace="http://www.springframework.org/schema/tool" schemaLocation="http://www.springframework.org/schema/tool/spring-tool-3.1.xsd" />
+
+	<xsd:element name="annotation-driven">
+		<xsd:annotation>
+			<xsd:documentation source="java:org.springframework.web.servlet.mvc.annotation.AnnotationMethodHandlerAdapter"><![CDATA[
+	Configures the annotation-driven Spring MVC Controller programming model.
+	Note that, with Spring 3.0, this tag works in Servlet MVC only!
+	
+	See org.springframework.web.servlet.config.annotation.EnableWebMvc Javadoc for
+	information on code-based alternatives to enabling annotation-driven Spring MVC
+	support.
+			]]></xsd:documentation>
+		</xsd:annotation>
+		<xsd:complexType>
+			<xsd:all minOccurs="0">
+				<xsd:element name="message-converters" minOccurs="0">
+					<xsd:annotation>
+						<xsd:documentation><![CDATA[
+	Configures one or more HttpMessageConverter types to use for converting @RequestBody method parameters and @ResponseBody method return values.
+	Using this configuration element is optional.
+	HttpMessageConverter registrations provided here will take precedence over HttpMessageConverter types registered by default.
+	Also see the register-defaults attribute if you want to turn off default registrations entirely.
+						]]></xsd:documentation>
+					</xsd:annotation>
+					<xsd:complexType>
+						<xsd:sequence>
+							<xsd:element ref="beans:bean" minOccurs="0" maxOccurs="unbounded">
+								<xsd:annotation>
+									<xsd:documentation><![CDATA[
+	The HttpMessageConverter bean definition.
+									]]></xsd:documentation>
+								</xsd:annotation>
+							</xsd:element>
+							<xsd:element ref="beans:property" minOccurs="0" maxOccurs="1">
+								<xsd:annotation>
+									<xsd:documentation><![CDATA[
+	The HttpMessageConverter bean reference.
+									]]></xsd:documentation>
+								</xsd:annotation>
+							</xsd:element>
+						</xsd:sequence>
+						<xsd:attribute name="register-defaults" type="xsd:boolean" default="true">
+							<xsd:annotation>
+								<xsd:documentation><![CDATA[
+	Whether or not default HttpMessageConverter registrations should be added in addition to the ones provided within this element.
+								]]></xsd:documentation>
+							</xsd:annotation>
+						</xsd:attribute>
+					</xsd:complexType>
+				</xsd:element>
+				<xsd:element name="argument-resolvers" minOccurs="0">
+					<xsd:annotation>
+						<xsd:documentation><![CDATA[
+	Configures HandlerMethodArgumentResolver types to support custom controller method argument types.
+    Using this option does not override the built-in support for resolving handler method arguments.
+    To customize the built-in support for argument resolution configure RequestMappingHandlerAdapter directly.
+						]]></xsd:documentation>
+					</xsd:annotation>
+					<xsd:complexType>
+						<xsd:sequence>
+							<xsd:element ref="beans:bean" minOccurs="1" maxOccurs="unbounded">
+								<xsd:annotation>
+									<xsd:documentation><![CDATA[
+	The HandlerMethodArgumentResolver (or WebArgumentResolver for backwards compatibility) bean definition.
+									]]></xsd:documentation>
+								</xsd:annotation>
+							</xsd:element>
+						</xsd:sequence>
+					</xsd:complexType>
+				</xsd:element>			
+				<xsd:element name="return-value-handlers" minOccurs="0">
+					<xsd:annotation>
+						<xsd:documentation><![CDATA[
+	Configures HandlerMethodReturnValueHandler types to support custom controller method return value handling.
+    Using this option does not override the built-in support for handling return values.
+    To customize the built-in support for handling return values configure RequestMappingHandlerAdapter directly.
+						]]></xsd:documentation>
+					</xsd:annotation>
+					<xsd:complexType>
+						<xsd:sequence>
+							<xsd:element ref="beans:bean" minOccurs="1" maxOccurs="unbounded">
+								<xsd:annotation>
+									<xsd:documentation><![CDATA[
+	The HandlerMethodReturnValueHandler bean definition.
+									]]></xsd:documentation>
+								</xsd:annotation>
+							</xsd:element>
+						</xsd:sequence>
+					</xsd:complexType>
+				</xsd:element>			
+			</xsd:all>
+			<xsd:attribute name="conversion-service" type="xsd:string">
+				<xsd:annotation>
+					<xsd:documentation source="java:org.springframework.core.convert.ConversionService"><![CDATA[
+	The bean name of the ConversionService that is to be used for type conversion during field binding.
+	This attribute is not required, and only needs to be specified explicitly if custom converters need to be configured.
+	If not specified, a default FormattingConversionService is registered that contains converters to/from standard JDK types.
+	In addition, full support for date/time formatting will be installed if the Joda Time library is present on the classpath.
+					]]></xsd:documentation>
+					<xsd:appinfo>
+						<tool:annotation kind="ref">
+							<tool:expected-type type="java:org.springframework.core.convert.ConversionService" />
+						</tool:annotation>
+					</xsd:appinfo>
+				</xsd:annotation>
+			</xsd:attribute>
+			<xsd:attribute name="validator" type="xsd:string">
+				<xsd:annotation>
+					<xsd:documentation source="java:org.springframework.validation.Validator"><![CDATA[
+	The bean name of the Validator that is to be used to validate Controller model objects.
+	This attribute is not required, and only needs to be specified explicitly if a custom Validator needs to be configured.
+	If not specified, JSR-303 validation will be installed if a JSR-303 provider is present on the classpath.
+					]]></xsd:documentation>
+					<xsd:appinfo>
+						<tool:annotation kind="ref">
+							<tool:expected-type type="java:org.springframework.validation.Validator" />
+						</tool:annotation>
+					</xsd:appinfo>
+				</xsd:annotation>
+			</xsd:attribute>
+			<xsd:attribute name="message-codes-resolver" type="xsd:string">
+				<xsd:annotation>
+					<xsd:documentation><![CDATA[
+	The bean name of a MessageCodesResolver to use to build message codes from data binding and validation error codes.
+	This attribute is not required.
+	If not specified the DefaultMessageCodesResolver is used.
+					]]></xsd:documentation>
+					<xsd:appinfo>
+						<tool:annotation kind="ref">
+							<tool:expected-type type="java:org.springframework.validation.MessageCodesResolver" />
+						</tool:annotation>
+					</xsd:appinfo>
+				</xsd:annotation>
+			</xsd:attribute>
+			<xsd:attribute name="ignoreDefaultModelOnRedirect" type="xsd:boolean">
+				<xsd:annotation>
+					<xsd:documentation><![CDATA[
+	By default the content of the "default" model is used both during rendering and redirect scenarios. 
+	Alternatively a controller method can declare a RedirectAttributes argument and use it to provide attributes for a redirect. 
+	Setting this flag to true ensures the "default" model is never used in a redirect scenario even if a RedirectAttributes argument is not declared.
+	Setting it to false means the "default" model may be used in a redirect if the controller method doesn't declare a RedirectAttributes argument.
+	The default setting is false but new applications should consider setting it to true.
+					]]></xsd:documentation>
+				</xsd:annotation>
+			</xsd:attribute>
+			<xsd:attribute name="synchronizeOnSession" type="xsd:boolean" default="false">
+				<xsd:annotation>
+					<xsd:documentation><![CDATA[
+	The synchronizeOnSession property of AnnotationMethodHandlerAdapter. By default, the value of synchronizeOnSession is false.
+					]]></xsd:documentation>
+				</xsd:annotation>
+			</xsd:attribute>			
+		</xsd:complexType>
+	</xsd:element>
+	
+</xsd:schema>

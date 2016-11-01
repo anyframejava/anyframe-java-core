@@ -1,0 +1,422 @@
+<?xml version="1.0" encoding="utf-8"?>
+<Window>
+	<Form BKColor="white" DomainID="title.month_schedule" Height="640" Id="frm11CALMTLY" Left="8" OnLoadCompleted="frm11CALMTLY_OnLoadCompleted" PidAttrib="7" Style="stlFrm" Top="8" Ver="1.0" Width="834" WorkArea="true">
+		<Datasets>
+			<Dataset DataSetType="Dataset" Id="dsBaseInfo">
+				<Contents>
+					<colinfo id="DATE" size="256" summ="default" type="STRING"/>
+					<colinfo id="INFO" size="256" summ="default" type="STRING"/>
+				</Contents>
+			</Dataset>
+			<Dataset DataSetType="Dataset" Id="dsGrdCalendar">
+				<Contents>
+					<colinfo id="DAY0" size="256" summ="default" type="STRING"/>
+					<colinfo id="DAY1" size="256" summ="default" type="STRING"/>
+					<colinfo id="DAY2" size="256" summ="default" type="STRING"/>
+					<colinfo id="DAY3" size="256" summ="default" type="STRING"/>
+					<colinfo id="DAY4" size="256" summ="default" type="STRING"/>
+					<colinfo id="DAY5" size="256" summ="default" type="STRING"/>
+					<colinfo id="DAY6" size="256" summ="default" type="STRING"/>
+					<colinfo id="INFO0" size="256" summ="default" type="STRING"/>
+					<colinfo id="INFO1" size="256" summ="default" type="STRING"/>
+					<colinfo id="INFO2" size="256" summ="default" type="STRING"/>
+					<colinfo id="INFO3" size="256" summ="default" type="STRING"/>
+					<colinfo id="INFO4" size="256" summ="default" type="STRING"/>
+					<colinfo id="INFO5" size="256" summ="default" type="STRING"/>
+					<colinfo id="INFO6" size="256" summ="default" type="STRING"/>
+					<colinfo id="BASE_INFO0" size="256" summ="default" type="STRING"/>
+					<colinfo id="BASE_INFO1" size="256" summ="default" type="STRING"/>
+					<colinfo id="BASE_INFO2" size="256" summ="default" type="STRING"/>
+					<colinfo id="BASE_INFO3" size="256" summ="default" type="STRING"/>
+					<colinfo id="BASE_INFO4" size="256" summ="default" type="STRING"/>
+					<colinfo id="BASE_INFO5" size="256" summ="default" type="STRING"/>
+					<colinfo id="BASE_INFO6" size="256" summ="default" type="STRING"/>
+					<colinfo id="SCHD_ID0" size="256" summ="default" type="STRING"/>
+					<colinfo id="SCHD_ID1" size="256" summ="default" type="STRING"/>
+					<colinfo id="SCHD_ID2" size="256" summ="default" type="STRING"/>
+					<colinfo id="SCHD_ID3" size="256" summ="default" type="STRING"/>
+					<colinfo id="SCHD_ID4" size="256" summ="default" type="STRING"/>
+					<colinfo id="SCHD_ID5" size="256" summ="default" type="STRING"/>
+					<colinfo id="SCHD_ID6" size="256" summ="default" type="STRING"/>
+					<colinfo id="HOL0" size="256" summ="default" type="STRING"/>
+					<colinfo id="HOL1" size="256" summ="default" type="STRING"/>
+					<colinfo id="HOL2" size="256" summ="default" type="STRING"/>
+					<colinfo id="HOL3" size="256" summ="default" type="STRING"/>
+					<colinfo id="HOL4" size="256" summ="default" type="STRING"/>
+					<colinfo id="HOL5" size="256" summ="default" type="STRING"/>
+					<colinfo id="HOL6" size="256" summ="default" type="STRING"/>
+				</Contents>
+			</Dataset>
+			<Dataset DataSetType="Dataset" Id="dsSchd">
+				<Contents>
+					<colinfo id="SCHD_ID" size="16" type="STRING"/>
+					<colinfo id="SCHD_STARTDATE" size="16" type="DATE"/>
+					<colinfo id="SCHD_ENDDATE" size="16" type="DATE"/>
+					<colinfo id="SCHD_TITLE" size="256" type="STRING"/>
+					<colinfo id="SCHD_CONTENTS" size="256" type="STRING"/>
+					<colinfo id="SCHD_PLACE" size="256" type="STRING"/>
+					<colinfo id="USER_ID" size="16" type="STRING"/>
+				</Contents>
+			</Dataset>
+			<Dataset DataSetType="Dataset" Id="dsService">
+				<Contents>
+					<colinfo id="SVC_ID" size="100" summ="default" type="STRING"/>
+					<colinfo id="QUERY_LIST" size="256" summ="default" type="STRING"/>
+					<colinfo id="SERVICE" size="100" summ="default" type="STRING"/>
+					<colinfo id="IN_DATASET_LIST" size="256" summ="default" type="STRING"/>
+					<colinfo id="OUT_DATASET_LIST" size="256" summ="default" type="STRING"/>
+					<colinfo id="CONTROLLER" size="512" summ="default" type="STRING"/>
+					<colinfo id="CALLBACK" size="100" summ="default" type="STRING"/>
+					<colinfo id="SYNC_YN" size="1" summ="default" type="STRING"/>
+					<record>
+						<CALLBACK></CALLBACK>
+						<CONTROLLER></CONTROLLER>
+						<IN_DATASET_LIST>querySet1=dsSearch</IN_DATASET_LIST>
+						<OUT_DATASET_LIST>dsSchd=querySet1</OUT_DATASET_LIST>
+						<QUERY_LIST>querySet1=findScheduleList</QUERY_LIST>
+						<SERVICE></SERVICE>
+						<SVC_ID>getListSchedule</SVC_ID>
+						<SYNC_YN></SYNC_YN>
+					</record>
+				</Contents>
+			</Dataset>
+			<Dataset DataSetType="Dataset" Id="dsSearch">
+				<Contents>
+					<colinfo id="SEARCH_CONDITION" size="100" type="STRING"/>
+					<colinfo id="SEARCH_KEYWORD" size="100" type="STRING"/>
+					<record>
+						<SEARCH_CONDITION></SEARCH_CONDITION>
+						<SEARCH_KEYWORD></SEARCH_KEYWORD>
+					</record>
+				</Contents>
+			</Dataset>
+		</Datasets>
+		<Grid AutoFit="TRUE" AutoFitEndLine="Hide" AutoScrollBar="None" BKColor="white" BkColor2="user10" BoldHead="true" Border="Flat" BorderColor="user12" Bottom="628" Color="user32" ColSelect="TRUE" Enable="true" EndLineColor="default" HeadBorder="Flat" HeadHeight="30" Height="532" Id="grdCalendar" InputPanel="FALSE" Left="14" LineColor="default" MinWidth="100" OnCellDBLClick="grdCalendar_OnCellDblClick" Right="828" RowHeight="22" Style="stlGrd" TabOrder="1" TabStop="true" Top="96" UseDBuff="true" UsePopupMenu="true" UseSelColor="FALSE" Visible="true" VLineColor="default" WheelScrollRow="1" Width="814">
+			<contents>
+				<format id="Default">
+					<columns>
+						<col width="14"/>
+						<col width="24"/>
+						<col width="60"/>
+						<col width="14"/>
+						<col width="24"/>
+						<col width="60"/>
+						<col width="14"/>
+						<col width="24"/>
+						<col width="60"/>
+						<col width="14"/>
+						<col width="24"/>
+						<col width="60"/>
+						<col width="14"/>
+						<col width="24"/>
+						<col width="60"/>
+						<col width="14"/>
+						<col width="24"/>
+						<col width="60"/>
+						<col width="14"/>
+						<col width="24"/>
+						<col width="60"/>
+					</columns>
+					<head>
+						<cell bkcolor="#eedbd5" col="0" colspan="3" display="text" domainid="biz.month_schedule.sun"/>
+						<cell bkcolor="#e3e3e3" col="3" colspan="3" display="text" domainid="biz.month_schedule.mon"/>
+						<cell bkcolor="#e3e3e3" col="6" colspan="3" display="text" domainid="biz.month_schedule.tue"/>
+						<cell bkcolor="#e3e3e3" col="9" colspan="3" display="text" domainid="biz.month_schedule.wed"/>
+						<cell bkcolor="#e3e3e3" col="12" colspan="3" display="text" domainid="biz.month_schedule.thu"/>
+						<cell bkcolor="#e3e3e3" col="15" colspan="3" display="text" domainid="biz.month_schedule.fri"/>
+						<cell bkcolor="user2" col="18" colspan="3" display="text" domainid="biz.month_schedule.sat"/>
+					</head>
+					<body>
+						<cell bkcolor="expr:fnGridTodayExpr(DAY0)" col="0" colspan="3" display="text" rowspan="2" wordwrap="word">
+							<cell col="0" color="red" display="text"/>
+							<cell col="1" colid="DAY0" color="red" display="text" font="Arial,10,Bold"/>
+							<cell col="2" colid="BASE_INFO0" display="text" font="돋움,8" scrollbar="vert" wordwrap="word"/>
+							<cell col="0" colid="INFO0" colspan="3" display="text" font="돋움,8" row="1" scrollbar="vert"/>
+						</cell>
+						<cell bkcolor="expr:fnGridTodayExpr(DAY1)" col="3" colspan="3" display="text" rowspan="2">
+							<cell col="0" color="red" display="text"/>
+							<cell align="center" col="1" colid="DAY1" color="expr:iif(HOL1&#32;==&#32;true,&#32;&apos;red&apos;,&#32;&apos;default&apos;)" display="text" font="Arial,10,Bold"/>
+							<cell align="left" col="2" colid="BASE_INFO1" display="text" font="돋움,8"/>
+							<cell align="left" col="0" colid="INFO1" colspan="3" display="text" font="돋움,8" row="1" scrollbar="vert"/>
+						</cell>
+						<cell bkcolor="expr:fnGridTodayExpr(DAY2)" col="6" colspan="3" display="text" rowspan="2">
+							<cell col="0" color="red" display="text"/>
+							<cell align="center" col="1" colid="DAY2" color="expr:iif(HOL2&#32;==&#32;true,&#32;&apos;red&apos;,&#32;&apos;default&apos;)" display="text" font="Arial,10,Bold"/>
+							<cell align="left" col="2" colid="BASE_INFO2" display="text" font="돋움,8"/>
+							<cell align="left" col="0" colid="INFO2" colspan="3" display="text" font="돋움,8" row="1" scrollbar="vert"/>
+						</cell>
+						<cell bkcolor="expr:fnGridTodayExpr(DAY3)" col="9" colspan="3" display="text" rowspan="2">
+							<cell col="0" color="red" display="text"/>
+							<cell align="center" col="1" colid="DAY3" color="expr:iif(HOL3&#32;==&#32;true,&#32;&apos;red&apos;,&#32;&apos;default&apos;)" display="text" font="Arial,10,Bold"/>
+							<cell align="left" col="2" colid="BASE_INFO3" display="text" font="돋움,8"/>
+							<cell align="left" col="0" colid="INFO3" colspan="3" display="text" font="돋움,8" row="1" scrollbar="vert"/>
+						</cell>
+						<cell bkcolor="expr:fnGridTodayExpr(DAY4)" col="12" colspan="3" display="text" rowspan="2">
+							<cell col="0" color="red" display="text"/>
+							<cell align="center" col="1" colid="DAY4" color="expr:iif(HOL4&#32;==&#32;true,&#32;&apos;red&apos;,&#32;&apos;default&apos;)" display="text" font="Arial,10,Bold"/>
+							<cell align="left" col="2" colid="BASE_INFO4" display="text" font="돋움,8"/>
+							<cell align="left" col="0" colid="INFO4" colspan="3" display="text" font="돋움,8" row="1" scrollbar="vert"/>
+						</cell>
+						<cell bkcolor="expr:fnGridTodayExpr(DAY5)" col="15" colspan="3" display="text" rowspan="2">
+							<cell col="0" color="red" display="text"/>
+							<cell align="center" col="1" colid="DAY5" color="expr:iif(HOL5&#32;==&#32;true,&#32;&apos;red&apos;,&#32;&apos;default&apos;)" display="text" font="Arial,10,Bold"/>
+							<cell align="left" col="2" colid="BASE_INFO5" display="text" font="돋움,8"/>
+							<cell align="left" col="0" colid="INFO5" colspan="3" display="text" font="돋움,8" row="1" scrollbar="vert"/>
+						</cell>
+						<cell bkcolor="expr:fnGridTodayExpr(DAY6)" col="18" colspan="3" display="text" rowspan="2">
+							<cell col="0" color="red" display="text"/>
+							<cell align="center" col="1" colid="DAY6" color="expr:iif(HOL6&#32;==&#32;true,&#32;&apos;red&apos;,&#32;&apos;blue&apos;)" display="text" font="Arial,10,Bold"/>
+							<cell align="left" col="2" colid="BASE_INFO6" display="text" font="돋움,8"/>
+							<cell align="left" col="0" colid="INFO6" colspan="3" display="text" font="돋움,8" row="1" scrollbar="vert"/>
+						</cell>
+					</body>
+				</format>
+			</contents>
+		</Grid>
+		<Div BKColor="user39" Border="Flat" BorderColor="user12" Height="43" Id="divSearch" Left="14" Style="stlDivSearch" TabOrder="2" Text="Div0" Top="48" UserData="RESIZE=TWH" Width="814">
+			<Contents>
+				<Combo BKColor="white" Border="Flat" Font="돋움,9" Height="20" Id="cboYear" ImeMode="keep,native" INDEX="0" Left="50" ResetIndex="FIRST" Search="FILTERED" Style="stlCbo2" TabOrder="5" Top="11" Width="55">
+					<contents>
+						<Record Code="2000" Data="2000"/>
+						<Record Code="2001" Data="2001"/>
+						<Record Code="2002" Data="2002"/>
+						<Record Code="2003" Data="2003"/>
+						<Record Code="2004" Data="2004"/>
+						<Record Code="2005" Data="2005"/>
+						<Record Code="2006" Data="2006"/>
+						<Record Code="2007" Data="2007"/>
+						<Record Code="2008" Data="2008"/>
+						<Record Code="2009" Data="2009"/>
+						<Record Code="2010" Data="2010"/>
+						<Record Code="2011" Data="2011"/>
+						<Record Code="2012" Data="2012"/>
+						<Record Code="2013" Data="2013"/>
+					</contents>
+				</Combo>
+				<Combo BKColor="white" Border="Flat" Font="돋움,9" Height="20" Id="cboMonth" ImeMode="keep,native" INDEX="0" Left="128" ResetIndex="FIRST" Search="FILTERED" Style="stlCbo2" TabOrder="6" Top="11" Width="40">
+					<contents>
+						<Record Code="01" Data="01"/>
+						<Record Code="02" Data="02"/>
+						<Record Code="03" Data="03"/>
+						<Record Code="04" Data="04"/>
+						<Record Code="05" Data="05"/>
+						<Record Code="06" Data="06"/>
+						<Record Code="07" Data="07"/>
+						<Record Code="08" Data="08"/>
+						<Record Code="09" Data="09"/>
+						<Record Code="10" Data="10"/>
+						<Record Code="11" Data="11"/>
+						<Record Code="12" Data="12"/>
+					</contents>
+				</Combo>
+				<Static Color="user12" Height="20" Id="Static4" Left="34" Style="stlLineVertic" TabOrder="3" Text="|" Top="12" VAlign="Middle" Width="18"></Static>
+				<Static DomainID="biz.month_schedule.month" Height="20" Id="Static1" Left="170" Style="stlLbl" TabOrder="4" Text="월" Top="12" VAlign="Middle" Width="18"></Static>
+				<Image Cursor="HAND" Height="20" Id="imgNextMon" ImageID="btn_s_arrow1a" Left="283" OnClick="imgNextMon_OnClick" Static="FALSE" TabOrder="2" Top="12" Transparent="TRUE" Width="20"></Image>
+				<Image Cursor="HAND" Height="20" Id="imgPrevMon" ImageID="btn_s_arrow2a" Left="15" OnClick="imgPrevMon_OnClick" Static="FALSE" TabOrder="1" Top="12" Transparent="TRUE" Width="20"></Image>
+				<Button Align="Left" ButtonStyle="TRUE" Cursor="HAND" DomainID="biz.month_schedule.move_date" Height="19" Id="btnGo" ImageID="btn_b4" Left="188" OnClick="btnGo_OnClick" Style="stlBtn" TabOrder="7" Text="날짜이동" Top="13" Width="78"></Button>
+				<Static DomainID="biz.month_schedule.year" Height="20" Id="Static0" Left="108" Style="stlLbl" TabOrder="8" Text="년" Top="12" VAlign="Middle" Width="18"></Static>
+				<Static Color="user12" Height="20" Id="Static2" Left="273" Style="stlLineVertic" TabOrder="9" Text="|" Top="12" VAlign="Middle" Width="18"></Static>
+			</Contents>
+		</Div>
+		<Image Align="Left" DomainID="title.month_schedule" Height="16" Id="imgTitle" ImageID="b_title_icon1" Left="14" LeftMargin="12" Style="stlTitle" TabOrder="3" Text="월간&#32;일정&#32;조회" Top="24" VAlign="Top" Width="400"></Image>
+	</Form>
+	<Script><![CDATA[#include "javascript::common.js";
+
+// Calendar를 drawing할 때 사용할 현재 월(Callback function에서 사용하기 위해서 전역변수 사용)
+var strCurrentMonth = substr(today(), 0, 6);
+
+//form onload event
+function frm11CALMTLY_OnLoadCompleted(obj) {
+	gfnService("getListSchedule");
+}
+
+// 날짜 배경 색상 지정, Grid의 Cell Property BKColor에서 호출되는 함수
+function fnGridTodayExpr(strDate) {	
+	strDate = grdCalendar.userData + lpad(strDate, "0", 2);
+	
+	if(today() == strDate)
+		return "user34";
+	else
+		return "default";
+}
+
+// 이전 화살표(◀) 클릭시 
+function imgPrevMon_OnClick(obj, nX, nY) {
+	strCurrentMonth = substr(addMonth(grdCalendar.userData + "01", -1), 0, 6);
+	fnDrawCalendar(dsGrdCalendar, grdCalendar, dsBaseInfo, dsSchd);
+}
+
+// 다음 화살표 (▶) 클릭 시 
+function imgNextMon_OnClick(obj,nX,nY) {	
+	strCurrentMonth = substr(addMonth(grdCalendar.userData + "01", 1), 0, 6);
+	fnDrawCalendar(dsGrdCalendar, grdCalendar, dsBaseInfo, dsSchd);
+}
+
+// 년/월 combo 선택하고 "날짜이동" 버튼 클릭 시 
+function btnGo_OnClick(obj) {	
+	strCurrentMonth = divSearch.cboYear + divSearch.cboMonth;
+	fnDrawCalendar(dsGrdCalendar, grdCalendar, dsBaseInfo, dsSchd);
+}
+
+// 달력에서 날짜 선택시(Cell DblClick)
+function grdCalendar_OnCellDblClick(obj, nRow, nCell, nX, nY, nPivotIndex) {
+	if(dsGrdCalendar.getColumn(nRow, "DAY"+nCell) != null) {
+		// 일정 상세 정보 조회 창 Popup
+		var strArg;
+		var strOpenStyle = "AutoSize=false CloseFlag=false";
+		var nWidth = 500;
+		var nHeight = 240;
+		var strSelectDate = substr(strCurrentMonth, 0, 4) + substr(strCurrentMonth, 4) + lpad(dsGrdCalendar.getColumn(nRow, "DAY"+nCell), "0", 2);
+		var strScheduleId = dsGrdCalendar.getColumn(nRow, "SCHD_ID"+nCell);	
+	
+		// 일정이 존재하지 않으면 새 일정 추가
+		if(gfnIsNull(strScheduleId)){
+			strArg = "paramMode=C";
+			strArg += " paramDate=" + strSelectDate;
+		// 일정이 존재하면 상세조회
+		} else {
+			strArg = "paramMode=U";
+			dsSchd.row = dsSchd.findRow("SCHD_ID", strScheduleId);
+		}
+	
+		var strReturnValue = gfnOpenDialog("samples::11CALMTLY_P.xml", strArg, nWidth, nHeight, strOpenStyle);
+		
+		if(strReturnValue == "Y"){
+			frm11CALMTLY_OnLoadCompleted();
+		}
+	}
+}
+
+//callback 메소드 정의
+function fnCallback(strServiceId, strErrorCode, strErrorMsg) {
+	if ( strErrorCode == -1 ) {
+		gfnMsg(strErrorMsg, "ERR");
+		
+	} else {
+		if(strServiceId == "getListSchedule"){
+			fnDrawCalendar(dsGrdCalendar, grdCalendar, dsBaseInfo, dsSchd);
+		} else {
+			frm11CALMTLY_OnLoadCompleted();
+		}
+	}
+}
+
+
+///////////////////Calendar Drawing Function////////////////////////////////////
+// 달력 그리기
+function fnDrawCalendar(objGridDataset, objGrid, objBaseInfoDataset, objScheduleDataset) {
+	var strYearMonth = iif(gfnIsNull(strCurrentMonth), substr(today(),0 ,6), strCurrentMonth);
+	
+	var i, nCellPos, nNewRow, colid;
+	var nDayOfStart, nLastDay;
+	
+	// 년, 월 Combo 값 셋팅
+	divSearch.cboYear.value = substr(strYearMonth,0 ,4);
+	divSearch.cboMonth.value = substr(strYearMonth,4 ,2);
+
+	fnMakeBaseInfo(objBaseInfoDataset, strYearMonth);
+	
+	objGrid.userData = strYearMonth;
+	
+	// Dataset 만들기
+	objGrid.bindDataset = "";
+	objGridDataset.clearData();
+	nDayOfStart = getDay(strYearMonth + "01"); // 0 = 일요일 ~ 6 = 토요일
+	nLastDay = toInteger(gfnGetLastDay(strYearMonth)); // 30|31
+	
+	nNewRow = objGridDataset.addRow();
+
+	for( i = 1, nCellPos = nDayOfStart ; i <= nLastDay ; i++ ) {		
+		
+		objGridDataset.setColumn(nNewRow, "DAY"+nCellPos, i);
+		
+		// 휴일 처리
+		if( gfnIsHoliday(strYearMonth + lpad(i, "0", 2)) != "" ){
+			objGridDataset.setColumn(nNewRow, "HOL"+nCellPos, "1");
+		}
+		
+		// dsBaseInfo --> 달력 Data
+		var nBaseInfoRow = objBaseInfoDataset.findRow("DATE", strYearMonth + lpad(i, "0", 2));
+		
+		if( nBaseInfoRow >= 0 ) {
+			objGridDataset.setColumn(nNewRow, "BASE_INFO" + nCellPos, objBaseInfoDataset.getColumn(nBaseInfoRow, "INFO"));
+		}
+		
+		nCellPos = (nCellPos + 1) % 7;
+		if(nCellPos == 0 && i != nLastDay) {
+			nNewRow = objGridDataset.addRow();
+		}
+	}
+		
+	// objScheduleDataset --> 달력 Data
+	var nScheduleRow, nCalendarRow;
+	var strScheduleStartDate, strScheduleEndDate, strScheduledDate;
+	var nCellPos;
+	
+	for( nScheduleRow = 0 ; nScheduleRow < objScheduleDataset.rowCount() ; nScheduleRow++ ) {
+		strScheduleStartDate = objScheduleDataset.getColumn(nScheduleRow, "SCHD_STARTDATE");
+		strScheduleEndDate = objScheduleDataset.getColumn(nScheduleRow, "SCHD_ENDDATE");
+		
+		strScheduledDate = strScheduleStartDate;
+		nDayOfScheduledDate = toInteger(substr(strScheduledDate, 6, 2));
+		
+		// 스케줄 시작일 ~ 끝일 까지 SCHD_TITLE로 setColumn
+		for(i = 1 ; i <= gfnCalcDay(strScheduleStartDate, strScheduleEndDate) ; i++){
+			
+			// 이번달 스케줄인지 확인
+			if(indexOf(strScheduledDate, strYearMonth) >= 0){
+				nCellPos = getDay(strScheduledDate);
+				//trace(nCellPos +". strScheduleStartDate, strScheduleEndDate, nCellPos = " + strScheduleStartDate + " / " + strScheduleEndDate + " / " + nCellPos + " / ");
+				nCalendarRow = objGridDataset.findRow("DAY"+nCellPos, nDayOfScheduledDate+"");
+				
+				if( nCalendarRow >= 0 ) {
+					// note값 --> 달력 Data
+					objGridDataset.setColumn(nCalendarRow, "INFO"+nCellPos, objScheduleDataset.getColumn(nScheduleRow, "SCHD_TITLE"));
+					objGridDataset.setColumn(nCalendarRow, "SCHD_ID"+nCellPos, objScheduleDataset.getColumn(nScheduleRow, "SCHD_ID"));
+				}
+			}
+			nCellPos++;
+			strScheduledDate = addDate(strScheduledDate);
+			nDayOfScheduledDate = toInteger(substr(strScheduledDate, 6, 2));
+		}
+	}
+	
+	objGrid.bindDataset = objGridDataset.id;
+	
+	// Grid높이 조정
+	objGrid.rowHeight = (objGrid.height - objGrid.headHeight)/(objGridDataset.rowCount() * 2);
+}
+
+// 매월 마다 정보 갱신
+// 달력에 쓰일 기본정보(공휴일, 음력) 처리 내용
+function fnMakeBaseInfo(objBaseInfoDataset, strYearMonth) {
+	var strHolidayName, strLunar, nMonthOfLunar, nDayOfLunar;
+	var nNewRow;
+	var strDate;
+	var nLastDay = parseInt(gfnGetLastDay(strYearMonth)); // 30|31
+	
+	objBaseInfoDataset.clearData();
+
+	// 공휴일 지정
+	for( var i = 1 ; i <= nLastDay ; i++ ) {		
+		strDate = strYearMonth + lpad(i, "0", 2);
+		strHolidayName = gfnIsHoliday(strDate);
+		
+		if(strHolidayName != "" && strHolidayName != gfnGetMessage("MSG_SUNDAY")) {
+			nNewRow = objBaseInfoDataset.addRow();
+			objBaseInfoDataset.setColumn(nNewRow, "DATE", strDate);
+			objBaseInfoDataset.setColumn(nNewRow, "INFO", strHolidayName);
+		}
+		
+		// 음력표기
+		if( i % 5 == 1 ) {
+			strLunar = solar2lunar(strDate);
+			nMonthOfLunar = toInteger(substr(strLunar, 4, 2));
+			nDayOfLunar = toInteger(substr(strLunar, 6, 2));
+			nNewRow = objBaseInfoDataset.addRow();
+			objBaseInfoDataset.setColumn(nNewRow, "DATE", strDate);
+			objBaseInfoDataset.setColumn(nNewRow, "INFO", "(" + nMonthOfLunar + "." + nDayOfLunar + ")");
+		}
+	}
+}]]></Script>
+</Window>

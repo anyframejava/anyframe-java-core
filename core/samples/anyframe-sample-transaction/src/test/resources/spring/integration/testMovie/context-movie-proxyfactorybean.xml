@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:aop="http://www.springframework.org/schema/aop"
+	xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-4.0.xsd
+    http://www.springframework.org/schema/aop http://www.springframework.org/schema/aop/spring-aop-4.0.xsd">
+
+	<bean id="MovieServiceWithProxyFactoryBean" parent="txConfig">
+		<property name="target" ref="txMovieService" />
+		<property name="proxyInterfaces"
+			value="org.anyframe.sample.transaction.moviefinder.service.MovieService" />
+	</bean>
+
+	<!-- transaction management -->
+	<bean id="txConfig" abstract="true"
+		class="org.springframework.transaction.interceptor.TransactionProxyFactoryBean">
+		<property name="transactionManager" ref="transactionManager" />
+		<property name="transactionAttributes">
+			<props>
+				<prop key="*">
+					PROPAGATION_REQUIRED,-java.lang.Exception,-org.anyframe.exception.BaseException,+org.anyframe.sample.exception.MovieException
+				</prop>
+			</props>
+		</property>
+	</bean>
+
+</beans>

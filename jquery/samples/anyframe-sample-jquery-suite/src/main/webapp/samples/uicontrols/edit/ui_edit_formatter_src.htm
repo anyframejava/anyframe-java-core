@@ -1,0 +1,120 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN"
+"http://www.w3.org/TR/html4/loose.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+
+<head>
+<meta http-equiv="content-type" content="text/html; charset=UTF-8" />
+<title>[AnyFrame UI Button] Basic Sample</title>
+<link href="../../../common/css/smoothness/jquery-ui-1.10.0.custom.css"	rel="stylesheet">
+<script src="../../../common/exlibs/jquery-1.9.0.js"></script>
+<script src="../../../common/exlibs/jquery-ui-1.10.0.custom.js"></script>
+
+<link type="text/css" rel="stylesheet" href="../../../common/css/style.css" />
+<link type="text/css" rel="stylesheet" href="sub_css/formatter.css">
+
+<script type="text/javascript">
+
+	var ENV = {
+			ID_MONEY_FORMAT : "#moneyFormat",
+			ID_PHONE_FORMAT : "#phoneFormat"
+	}
+	var mainView = {
+		
+		moneyFormatter : function()
+		{
+			var beforeVal = $(ENV.ID_MONEY_FORMAT).val();
+			var afterVal = this._moneyFormatter(beforeVal);
+		  	
+			$(ENV.ID_MONEY_FORMAT).val(afterVal);			
+		},
+		
+		_moneyFormatter : function(inputVal)
+		{
+			var commaPos = 0;
+			var outputVal = "";
+			var numExp = /[0-9]/;
+			
+			for (var i = inputVal.length; i >= 0; i--) {
+					var eachChar = inputVal.charAt(i);
+					if (numExp.test(eachChar)) {
+								if (commaPos%3 ==0 && i <= (inputVal.length-3)) {
+									outputVal = ',' + outputVal;
+								}
+								commaPos++;
+								outputVal = eachChar + outputVal;
+					};
+			};
+		
+		return outputVal;
+			
+		},
+		
+		phoneFormatter : function()
+		{
+			var beforeVal = $(ENV.ID_PHONE_FORMAT).val();
+		  	var afterVal =  this._phoneFormatter(beforeVal);
+			$(ENV.ID_PHONE_FORMAT).val(afterVal);
+		},
+		
+		_phoneFormatter : function(inputVal)
+		{
+			var hyphen = 0;
+			var outputVal = "";
+			var numExp = /[0-9]/;
+			
+		for (var i =0 ; i <inputVal.length; i++) {
+			var eachChar = inputVal.charAt(i);
+			if (numExp.test(eachChar) && i <=12) {
+				outputVal = outputVal + eachChar;
+				if (hyphen == 2 ||hyphen == 6) {
+					outputVal = outputVal + '-';
+				};
+				hyphen++;
+			};
+		};
+		return outputVal;
+		}
+
+	};
+
+	$(document).ready(function() {
+	
+		//화폐단위 format : 1,234,567,890 과 같이 자동형식으로 나타내 보여주는 format
+		$(ENV.ID_MONEY_FORMAT).autocomplete({
+			source : "",
+			search : function(){
+				mainView.moneyFormatter(this);			
+			}
+		});
+		
+		//전화번호 format : 123-4567-8910 과 같이 자동형식으로 나타내 보여주는 format
+		$(ENV.ID_PHONE_FORMAT).autocomplete({
+			source : "",
+			search : function(){
+				mainView.phoneFormatter(this);
+			}
+		});
+		
+	});
+</script>
+
+</head>
+
+<body>
+
+	<div class = "title">숫자 화폐단위 Formatter</div>
+	<div class = "text-area">00,000,000 형식 : </div>
+	<div class = "input-area">
+		<input id="moneyFormat" type="text" />
+	</div>
+	
+	<div class = "title">숫자 전화번호단위 Formatter</div>
+	<div class = "text-area">000-0000-0000 형식 : </div>
+	<div class = "input-area">
+		<input id="phoneFormat" type="text" />
+	</div>
+	
+</body>
+
+</html>
+

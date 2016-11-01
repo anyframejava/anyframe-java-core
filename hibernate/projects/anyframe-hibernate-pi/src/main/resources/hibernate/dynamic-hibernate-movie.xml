@@ -1,0 +1,33 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE dynamic-hibernate PUBLIC "-//ANYFRAME//DTD DYNAMIC-HIBERNATE//EN"
+"http://www.anyframejava.org/dtd/anyframe-dynamic-hibernate-mapping-4.0.dtd">
+<dynamic-hibernate>
+
+	<!--Velocity-Support-findMovieList-START-->
+	<query name="findMovieList">
+		<![CDATA[
+		SELECT genre, movie
+		FROM Movie movie join movie.genre genre
+		WHERE 
+			movie.nowPlaying = :nowPlaying		
+			#if($title)
+				AND movie.title like :title
+			#end
+		]]>
+	</query>
+	<!--Velocity-Support-findMovieList-END-->
+	
+	<!--Velocity-Support-countMovieList-START-->
+	<query name="countMovieList">
+		<![CDATA[
+		SELECT count(*)
+		FROM Movie movie join movie.genre genre
+		WHERE 
+			movie.nowPlaying = :nowPlaying
+			#if($title)
+				AND movie.title like :title
+			#end					
+		]]>
+	</query>	
+	<!--Velocity-Support-countMovieList-END-->
+</dynamic-hibernate>

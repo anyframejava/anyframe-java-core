@@ -1,0 +1,18 @@
+<chapter id="loggingsql_sqllogging_queryservice">
+		<title>Step 4. Query service definition</title>
+
+		<para>
+			<emphasis role="bold">Define bean id of dataSource which query service is referring to as 'commonDataSource', a bean id of above-defined dataSource.</emphasis>
+			The following is a part of sample context-query.xml file which defines
+				the properties of query service.			
+      		<programlisting language="xml"><![CDATA[<bean name="queryService" class="org.anyframe.query.impl.QueryServiceImpl">
+    <property name="jdbcTemplate"]]> <emphasis role="bold">ref="jdbcTemplate"</emphasis><![CDATA[ />
+    <property name="pagingSQLGenerator" ref="pagingSQLGenerator"/>
+    <property name="sqlRepository" ref="sqlLoader"/>
+</bean>
+
+<bean]]> <emphasis role="bold">id="jdbcTemplate"</emphasis> <![CDATA[class="org.anyframe.query.impl.jdbc.PagingJdbcTemplate">
+    <property name="dataSource"]]> <emphasis role="bold">ref="commonDataSource"</emphasis> <![CDATA[/>
+</bean>]]></programlisting>
+		</para>
+</chapter>

@@ -1,0 +1,189 @@
+<chapter id="flex_query_configuration">
+	<title>Spring BlazeDS Integration Configuration</title>
+	<para>
+		When developing Web Application by using Flex, Spring BlazeDS Integration provides convenience
+		by integrating BlazeDS which is needed for communicating with Server in RPC to Spring Framework.
+		Complex configuration is simplified through flex namespace and annotation is provided for exporting Spring Bean.
+	</para> 
+	<para>
+		Environment for using Spring BlazeDS Integration is as the following.
+	</para>
+	<itemizedlist>
+		<listitem><para>Java 5+</para></listitem>
+		<listitem><para>Spring 2.5.6+</para></listitem>
+		<listitem><para>Adobe BlazeDS 3.2+</para></listitem>
+	</itemizedlist>
+	
+	<section id="flex_query_configuration_sec001">
+		<title>Spring BlazeDS MessageBroker configuration</title>
+		<section id="flex_query_configuration_sec001_001">
+			<title>Spring DispatcherServlet</title>
+			<para>
+			BlazeDS handled request of Flex client by using MessageBrokerServlet as front Controller.
+			If you use Spring BlazeDS Integration, DispatcherServlet of Spring MVC handles the request of this Flex client.
+			Therefore, add the following configuration to web.xml. 
+			</para>
+			<programlisting language="xml"><![CDATA[<servlet>
+    <servlet-name>SpringBlazeDS</servlet-name>
+    <servlet-class>org.springframework.web.servlet.DispatcherServlet</servlet-class>
+    <init-param>
+        <param-name>contextConfigLocation</param-name>
+        <param-value>classpath:/springmvc/flex-servlet.xml</param-value>
+    </init-param>
+</servlet>
+
+<servlet-mapping>
+    <servlet-name>SpringBlazeDS</servlet-name>
+    <url-pattern>/messagebroker/*</url-pattern>
+</servlet-mapping>]]></programlisting>
+		</section>
+		
+		<section id="flex_query_configuration_sec001_002">
+			<title>MessageBroker</title>
+			<para>
+			Spring BlazeDS Integration provides flex namespace to simplify complex configuration for integrating BlazeDS to Spring.
+			To use flex namespace, add the following xsd definition to Spring configuration file.
+	</para>
+			<programlisting language="xml"><![CDATA[<?xml version="1.0" encoding="UTF-8"?>	
+<beans xmlns="http://www.springframework.org/schema/beans"
+    xmlns:flex="http://www.springframework.org/schema/flex" 
+    xmlns:security="http://www.springframework.org/schema/security"
+    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+    xmlns:context="http://www.springframework.org/schema/context"
+    xsi:schemaLocation="
+        http://www.springframework.org/schema/beans
+        http://www.springframework.org/schema/beans/spring-beans-3.1.xsd
+        http://www.springframework.org/schema/flex 
+        http://www.springframework.org/schema/flex/spring-flex-1.0.xsd">
+        
+        ...
+</bean>]]></programlisting>
+			<para>As DispatcherServlet handles the request of flex client by web.xml file definition, 
+			the request must be delegated to MessageBroker.</para>
+			<para> By adding flex namespace, MessageBroker can be easily defined as the following.</para>
+			<programlisting language="xml"><![CDATA[<?xml version="1.0" encoding="UTF-8"?>	
+<beans xmlns="http://www.springframework.org/schema/beans"
+    xmlns:flex="http://www.springframework.org/schema/flex" 
+    xmlns:security="http://www.springframework.org/schema/security"
+    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+    xmlns:context="http://www.springframework.org/schema/context"
+    xsi:schemaLocation="
+        http://www.springframework.org/schema/beans
+        http://www.springframework.org/schema/beans/spring-beans-3.1.xsd
+        http://www.springframework.org/schema/flex 
+        http://www.springframework.org/schema/flex/spring-flex-1.0.xsd">
+			
+    <flex:message-broker />
+</beans>]]></programlisting>
+			
+			<para>As the definition above, basically  /WEB-INF/flex/services-config.xml  files is referred.
+			If the location of configuration file is different, you can update by defining services-config-path attribute.
+			</para>
+			<programlisting language="xml">
+<![CDATA[<flex:message-broker services-config-path="classpath*:services-config.xml" />
+]]></programlisting>
+			<para>
+			If flex namespace was not used, define as the following.			
+			</para>
+			<programlisting language="xml"><![CDATA[<bean id="messageBroker" 
+           class="org.springframework.flex.core.MessageBrokerFactoryBean">
+    <property name=""serviceConfigPath" value="classpath*:services-config.xml"/>
+</bean>]]></programlisting>
+    	<para>
+    	Like <link linkend="flex_query_configuration_sec001_002">Configuring the Spring DispatcherServlet</link> above,
+    	if DispatcherServlet handles all requests without defining servlet-mapping for /messagebroker/* request,
+    	for MessageBroker to handle the request on /messagebroker/*, define SimpleUrlHandlerMapping as the following.    
+    	</para>
+    	<programlisting language="xml"><![CDATA[<bean class="org.springframework.web.servlet.handler.SimpleUrlHandlerMapping">
+    <property name="mappings">
+        <value>
+        /messagebroker/*=_messageBroker
+        </value>
+    </property>
+</bean>
+
+<bean class="org.springframework.flex.servlet.MessageBrokerHandlerAdapter"/>]]></programlisting>
+		<para>
+			When using flex namespace, SimpleUrlHandlerMapping definition above is as the following.			
+		</para>
+		<programlisting language="xml"><![CDATA[<flex:message-broker>
+    <flex:mapping pattern="/messagebroker/*" />
+</flex:message-broker>]]></programlisting>
+		</section>
+	</section>
+	
+	<section id="flex_query_configuration_sec002">
+		<title>Exporting Spring Beans</title>
+		<section id="flex_query_configuration_sec002_001">
+			<title>RemotingService configuration</title>
+			<para>
+			For channel configuration of Application level, define as the following inside services tag of services-config.xml file.
+			When there is needed no special channel configuration on RemotingService at Flex Client, use my-amf channel.		
+			</para>
+			<programlisting language="xml">
+<![CDATA[<services>
+    ...
+    <default-channels>
+        <channel ref="my-amf"/>
+    </default-channels>        
+</services>
+]]></programlisting>
+			<para>
+			If you'd like to use specific channel on RemotingService,
+			enter channel name to default-channels property of remoting-service.			
+			</para>
+			<programlisting language="xml">
+<![CDATA[<flex:message-broker>
+    <flex:remoting-service default-channels="my-amf, my-secure-amf" />
+</flex:message-broker>]]></programlisting>
+		</section>
+		<section id="flex_query_configuration_sec002_002">
+			<title>remoting-destination tag</title>
+			<para>remoting-destination tag exposes Spring Bean as Remote object. </para>
+			<programlisting language="xml">
+<![CDATA[<bean id="productService" class="flex.samples.product.ProductServiceImpl" />
+<flex:remoting-destination ref="productService" />
+]]></programlisting>
+			<para>The following definition is also possible.</para>
+			<programlisting language="xml"><![CDATA[<bean id="productService" class="flex.samples.product.ProductServiceImpl">
+    <flex:remoting-destination />
+</bean>]]></programlisting>
+			<para>Method-level control is also possible by using include-methods / exclude-methods property.
+			If include-methods / exclude-methods is not defined, default is include-method.</para>
+			<programlisting language="xml"><![CDATA[<flex:remoting-destination ref="productService"
+    include-methods="read, update"
+    exclude-methods="create, delete"
+    channels="my-amf, my-secure-amf" />]]></programlisting>
+		</section>
+		<section id="flex_query_configuration_sec002_003">
+			<title>@RemotingDestination</title>
+			<para>It is also possible to expose Spring Bean as Remote object by using @RemotingDestination.
+		</para>
+			<programlisting>
+<![CDATA[
+@Service("productService")
+@RemotingDestination
+public class ProductServiceImpl implements ProductService {
+...
+]]></programlisting>
+	<para>
+		It is possible to define whether or not to expose by method by using @RemotingInclude, @RemotingExclude annotation.		
+	</para>
+	<programlisting language="java">@RemotingInclude
+public Category getCategoryList(SearchVO searchVO) throws Exception{
+..
+}
+
+@RemotingExclude
+public void removeCategory(Category category) throws Exception{
+...
+}</programlisting>
+	<para>
+		When exposing  Spring Bean by using @RemotingDestination annotation, Destination channel configuration is as the following.	
+	</para>
+		<programlisting language="java">@Service("categoryService")
+@RemotingDestination(channels={"my-amf","my-secure-amf"})
+public class CategoryServiceImpl implements CategoryService {</programlisting>
+		</section>
+	</section>
+</chapter>

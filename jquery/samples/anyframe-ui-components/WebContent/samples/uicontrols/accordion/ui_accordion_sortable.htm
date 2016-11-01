@@ -1,0 +1,125 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN"
+"http://www.w3.org/TR/html4/loose.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+ 
+ <!-- Start of head-->
+<head>
+<meta http-equiv="content-type" content="text/html; charset=UTF-8" />
+<title>Accordion : Sortable </title> <!-- TODO: 타이틀 작성 -->
+
+
+<!-- include required common files  ----------------------------------------------------->
+<script type="text/javascript" src="../../../common/exlibs/jquery-1.9.0.js" ></script>
+<script type="text/javascript" src="../../../common/exlibs/highlighter/scripts/shCore.js" ></script>
+<script type="text/javascript" src="../../../common/exlibs/highlighter/scripts/shBrushJScript.js" ></script>
+<script type="text/javascript" src="../../../common/js/template_common.js" ></script>
+
+<!--  stylesheet  -->
+<link type="text/css" rel="stylesheet" href="../../../common/exlibs/highlighter/styles/shCore.css"/>
+<link type="text/css" rel="stylesheet" href="../../../common/exlibs/highlighter/styles/shCoreDefault.css"/>
+<link type="text/css" rel="stylesheet" href="../../../common/css/style.css"/>
+
+<!-- scripts to support sample page  ----------------------------------------------------->
+<script type="text/javascript">
+$(function() {
+	JTemplate.load("ui_accordion_sortable_src.htm");
+	JTemplate.loadDemo2("ui_accordion_sortable_src.htm", {height:"500px"});
+}); 
+
+</script>
+ 
+</head>
+<!-- End of head -->
+
+<!-- Start of body -->
+ <body >
+ 
+ <!-- HEADER BAR -------------------------------------------------------------->
+<div class="content-title">Component - Accordion</div>
+ 
+ <!-- START OF PAGE ... -------------------------------------------------------->
+<div id="page">
+	<p class = "header-title">Accordion Drag&Drop</p>
+	<p class="header-desc">: 사용자가 각 섹션의 순서를 drag&drop 으로 바꿀 수 있도록 하는 예이다. </p>
+<!-- DEMO ----------------------------------------------------------------------->
+	<div class="demo">
+		<h3 >Demo</h3>
+		<div id="visualExample"></div>
+	</div>
+
+<!-- DEMO DESCRIPTION----------------------------------------------------->
+	<div class="desc">
+		<h3>Demo Description </h3>
+		<hr>
+		<p class="desc-title">순서조절</p>
+		<p class="desc-overall">  
+		: accordion의 헤더를 원하는 순서의 위치에 드래그한 후 드롭하면 그 위치에 헤더 및 해당 콘텐츠가 이동하여진다.<br>
+		활성화 되어 있는 헤더를 움직여 이동시킬 경우, 콘텐츠가 열려져 있는 상태 그대로 함께 이동한다.<br>
+		비활성화 되어 있는 헤더를 움직여 이동시킬 경우, 헤더만 보여지는 상태에서 이동하지만, 실제로는 같이 묶여 있는 콘텐츠도 같이 이동한다.
+		</p>
+	</div>         
+
+<!-- CODE------------------------------------------------------------------------>
+	<div class="code">
+		<h3>Code Source </h3>
+		<pre id="codeExample" class="brush: js"></pre>
+	</div>
+	
+	
+<!-- CODE DESCRIPTION------------------------------------------------------>
+	<div class="desc">
+		<h3>Code Description </h3>
+		<hr>
+		
+		<p class="desc-title">그룹화</p>
+		<span class="code-line">#25 - #27</span>
+		<p class="desc-overall">  
+		: 각 섹션은 header와 그 바로 아래 panel로 이루어져 있는데, 이를 묶어 함께 이동시키도록 하기위해서 하나의 class로 묶어둘 필요가 있다.<br>
+		본 예제에서 header는 h3이고, panel은 바로 다음의 div태그로 이루어져 있으므로, 
+		이 둘을(h3, div)  wrapAll 함수를 이용하여 클래스명이 accordion-unit 인 div 태그로 묶어 구현하였다. 
+		
+		<p class="desc-title">header 옵션</p>
+		<span class="code-line">#31</span>
+		<p class="desc-overall">  
+		: 어코디언의 헤더로 쓰일 태그를 header옵션으로 새로 지정해 줄 수 있다. 
+		특히 위와같이 그룹화를 하였을 경우, 각 헤더 앞에 태그가 더 생겼으므로 이를 변경하여 지정해 줄 필요가 있다.<br>
+		앞서 accordion-unit 명의 클래스를 가지는 div로 한 섹션의 세트를 묶어 두었으므로, ".accordion-unit > h3" 로 header 옵션을 지정해 주어야 한다.
+		
+		<p class="desc-title">Sortable 메소드</p>
+		<span class="code-line">#32 - #37</span>
+		<p class="desc-overall">  
+		: 마우스를 사용하여 리스트나 그리드에 있는 엘리먼트들의 순서를 재조정할 수 있다.
+		<ul class ="desc-hypl">
+			<li><span>axis</span> : 아이템의 순서를 바꾸기 위해 이동될 방향을 설정해주는 옵션으로 위와같이 y로 설정하면 세로방향의 위아래의 이동이 가능하다.</li>
+			<li><span>handle</span> : 순서를 바꾸고자 하는 아이템의 대상을 설정하는 옵션으로, 위와같이 h3 엘리먼트를 정해두면 이에 한정적으로 적용된다. </li>
+			<li><span>stop</span> : 어떤 이벤트에 대해 정렬을 멈추게 할지 정한다. 위와 같이 트리거 핸들러로 focusout으로 설정하면, 그 이벤트가 발생할 때 정렬이 멈추게 된다. </li>
+		</ul>
+	</div>
+
+<!-- RELATED LINKS ----------------------------------------------------------->
+	<div class="related">
+		<h3>Related Links</h3>
+		<hr>
+		 <ul class="desc-hypl">
+           	<li>
+           		<span>Accordion API</span>
+           		<a href = "http://api.jqueryui.com/accordion/"></a>
+           	</li>
+           	<li>
+           		<span>태그묶음(wrapAll)</span>
+           		<a href = "http://api.jqueryui.com/wrapAll/"></a>
+           	</li>  
+           	<li>
+           		<span>Sortable</span>
+           		<a href = "http://api.jqueryui.com/sortable/"></a>
+           	</li>    	
+		</ul>
+	</div>
+
+</div>
+
+<!-- End of Page-->
+</body>
+<!-- End of body-->
+
+</html>

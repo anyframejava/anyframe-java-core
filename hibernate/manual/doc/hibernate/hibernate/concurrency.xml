@@ -1,0 +1,403 @@
+<chapter id="hibernate_hibernate_concurrency">
+	<title>Concurrency</title>
+    <para>
+		Hibernate에서는 동시에 동일한 데이터에 접근할 때에 데이터에 대한 접근을 제어하기 위해 Optimistic
+    	Locking 또는 Pessimistic Locking 기법 등을 제공한다.</para>
+
+	<section id="hibernate_hibernate_concurrency_optimistic">
+		<title>Optimistic Locking</title>
+
+		<para>
+			<programlisting language="java"><![CDATA[public void updateMovieWithoutOptimisticLocking() throws Exception {
+    // 1. insert a new country, movies information
+    newSession(); // 첫번째 트랜잭션
+    addCountryMovieAtOnce();
+    closeSession();
+
+    // 2. select a country
+    newSession(); // 두번째 트랜잭션]]>
+    <emphasis role="bold"><![CDATA[/* #1 */ Movie fstMovie = (Movie) session.get(Movie.class, "MV-00001");]]></emphasis>
+    <emphasis role="bold"><![CDATA[/* #2 */ Movie scdMovie = (Movie) session.get(Movie.class, "MV-00001");]]></emphasis>
+
+    <![CDATA[closeSession();]]>
+
+    // 3. set country name
+    <emphasis role="bold"><![CDATA[/* #3 */ fstMovie.setTitle("First : My Sassy Girl");]]></emphasis>
+
+
+    // 4. select a country again with same id and update country name
+    <![CDATA[newSession(); // 세번째 트랜잭션]]>
+    <emphasis role="bold"><![CDATA[/* #4 */ scdMovie.setTitle("Second : My Sassy Girl");]]></emphasis>
+
+    <![CDATA[closeSession();]]>
+
+    // 5. try to update with detached object
+    <![CDATA[newSession(); // 네번째 트랜잭션]]>
+    <emphasis role="bold"><![CDATA[/* #5 */ session.update(fstMovie);]]></emphasis>
+
+    <![CDATA[closeSession();
+}]]></programlisting>
+			위에서 제시한 updateMovieWithoutOptimisticLocking()의
+			로직에 대해 자세히 살펴보자.
+		</para>
+
+		<orderedlist>
+			<listitem>
+				<para>#1, #2번 코드에 의해 각각 동일한 식별자를 이용하여 같은 데이터 조회</para>
+        	</listitem>
+
+        	<listitem>
+          		<para>
+          			두번째 트랜잭션이 종료된 후, #3번 코드에서는 Detached 상태의 fstMovie 객체의 title 변경
+          		</para>
+        	</listitem>
+
+        	<listitem>
+          		<para>
+          			세번째 트랜잭션 내의 #4번 코드에서는 scdMovie 객체의 title 변경, 세번째 트랜잭션 종료시 변경
+          			사항이 DB에 반영
+          		</para>
+        	</listitem>
+
+        	<listitem>
+          		<para>
+          			네번째 트랜잭션 내에서 #3번 코드를 통해 변경된 fstMovie 객체에 대해 update 수행
+          		</para>
+        	</listitem>
+
+        	<listitem>
+          		<para>
+          			fstMovie에 대한 수정 작업 또한 성공적으로 처리
+          		</para>
+        	</listitem>
+      	</orderedlist>
+
+      	<para>
+      		결론적으로 보면, MOVIE_ID가 "MV-00001"인 Movie의 Title은 "First : My Sassy Girl"이 되어 앞서 scdMovie에서 요청했던
+      		수정 작업은 무시된 것이다. 이러한 현상을 Lost Update라고 하며, 이를 해결하기 위한 방법은 3가지가 있다.
+      	</para>
+
+      	<orderedlist>
+        	<listitem>
+				<para>
+          			Last Commit Wins : Optimistic Locking 을 수행하지 않게 되면 기본적으로 수행되는 유형으로 2개의 트랜잭션 모두 
+          			성공적으로 commit된다. 그러므로 두번째 commit은 첫번째 commit 내용을 덮어쓸 수 있다.
+          		</para>
+			</listitem>
+
+        	<listitem>
+				<para>
+					First Commit Wins : Optimistic Locking을 적용한 유형으로 첫번째 commit만이 성공적으로 이루어지며, 
+					두번째 commit 시에는 Error를 얻게 된다.
+				</para>
+        	</listitem>
+
+        	<listitem>
+          		<para>
+          			Merge : 첫번째 commit만이 성공적으로 이루어지며, 두번째 commit 시에는 Error를 얻게 된다.
+          			그러나 First Commit Wins와는 달리 두번째 commit을 위한 작업을 처음부터 다시 하지 않고 개발자의 선택에
+         			 의해 선택적으로 변경될 수 있도록 한다. 가장 좋은 전략이나 변경 사항을 merge 할 수 있는 화면이나 방법을 직접
+         			 제공해 줄 수 있어야 한다.(추가 구현 필요함)
+         		</para>
+        	</listitem>
+      	</orderedlist>
+
+      	<para>
+      		Hibernate에서는 Versioning 기반의 Automatic Optimistic Locking을 통해 First Commit Wins 전략을 취할 수 있도록 
+      		지원한다. <emphasis role="bold">Hibernate에서 Optimistic Locking을 수행하기 위해서는 해당 테이블에 Version 또는 
+      		Timestamp 컬럼을 추가해야 한다.</emphasis> 그러한 경우 해당 테이블과 매핑된 객체를 로드할 때 Version 또는 Timestamp 
+      		정보도 함께 로드되고 객체 수정시 테이블의 현재 값과 비교하여 처리 여부를 결정하게 된다.
+      	</para>
+
+      	<para>
+      		다음은 Version을 이용하여 Optimistic Locking을 수행하는 예제이다.
+      	</para>
+
+		<para>
+			Optimistic Locking의 대상이 되는 Persistence Class에 Version 관리를 위한 int 유형의 속성을 정의하고, 
+      		Hibernate Mapping XML 파일 내의 <![CDATA[<id>]]> 태그 다음에 <![CDATA[<version>]]>을 이용하여 Version에 
+      		대한 매핑 정보를 정의하고 있다. 
+            <programlisting language="java"><![CDATA[1. Country.java
+
+public class Country implements java.io.Serializable {
+
+    private int version;
+
+    private String countryCode;
+    private String countryId;
+    private String countryName;
+    private Set movies = new HashSet(0);
+	
+    //...
+}
+
+2. Country.hbm.xml
+
+<class name="org.anyframe.sample.model.bidirection.concurrency.optimistic.Country" 
+        table="COUNTRY" lazy="true" schema="PUBLIC">
+    <id name="countryCode" type="string">
+        <column name="COUNTRY_CODE" length="12" />
+        <generator class="assigned" />
+    </id>
+    <version name="version" access="field" column="COUNTRY_VERSION"/>
+    ...중략
+</class>]]></programlisting>
+			이와 같이 정의된 경우 다음의 updateCountryWithOptimisticLocking() 메소드를 수행하였을 때 첫번째 수정 작업은 성공적으로
+			이루어지나 두번째 수정 작업에 대해서는 #6번 코드에서처럼 StaleObjectStateException이 throw될 것이다.
+            <programlisting language="java"><![CDATA[1. HibernateOptimisticLocking.java
+			
+public void updateCountryWithOptimisticLocking() throws Exception {
+    // 1. insert a new country, movies information
+    newSession();
+    addCountryMovieAtOnce();
+    closeSession();
+
+    // 2. select a country
+    newSession();]]>
+    <emphasis role="bold"><![CDATA[/* #1 */ Country fstCountry = (Country) session.get(Country.class,]]></emphasis>
+            <emphasis role="bold">"COUNTRY-0001");</emphasis>
+
+    <emphasis role="bold"><![CDATA[/* #2 */ Country scdCountry = (Country) session.get(Country.class,]]></emphasis>
+            <emphasis role="bold">"COUNTRY-0001");</emphasis>
+
+    <![CDATA[closeSession();]]>
+
+    // 3. set country name
+    <emphasis role="bold"><![CDATA[/* #3 */ fstCountry.setCountryName("First : Republic of Korea.");]]></emphasis>
+
+    // 4. select a country again with same id and update country name
+    <![CDATA[newSession();]]>
+    <emphasis role="bold"><![CDATA[/* #4 */ scdCountry.setCountryName("Second : Republic of Korea.");]]></emphasis>
+
+    <![CDATA[closeSession();
+
+    // 5. try to update with detached object
+    newSession();
+    try {]]>
+        <emphasis role="bold"><![CDATA[/* #5 */ session.update(fstCountry);]]></emphasis>
+        <![CDATA[closeSession();
+    } catch (Exception e) {
+        e.printStackTrace();
+    }
+}]]></programlisting>
+		</para>
+
+		<para>
+			Timestamp 사용은 Version에 비해 안전하지 않다. 일반적으로 JVM이 Millisecond 단위의 정확도를 가지지 않으므로 
+			Timestamp 값으로 동시 제어를 위한 구분이 어려울 수 있다. 이러한 문제를 해결하기 위해 <![CDATA[<timestamp>]]> 
+			내에 해당 컬럼에 대한 속성을 source="db"와 같이 정의함으로써 Timestamp 값을 DB에서 가져오도록 설정할 수 있으나 
+			이 또한 Timestamp 값을 얻어낼 때마다 DB에 접속해야 하는 추가 비용이 발생하게 된다. 이러한 이유로 Hibernate에서는 
+			Timestamp 보다 Version 사용을 권장한다. 이 외에도 <![CDATA[<class>]]> 내에 optimistic-lock 속성의 값을 "all" 
+			또는 "dirty"로 정의하면 별도 Version 또는 Timestamp 컬럼에 대한 추가 정의없이도 Optimistic Locking이 가능해진다. 그러나 이 또한
+      		성능, 복잡성과 같은 이유로 권장하는 방법은 아니다.
+      	</para>
+
+      	<itemizedlist>
+        	<listitem>
+          		<para>
+          			optimistic-lock="all" : 해당되는 객체 조회 당시와 비교하여 변경되지 않은 속성들을 해당 객체를 조회하기 
+        			위한 조건(WHERE절)으로 명시하여 변경 작업을 시도함으로써 Optimistic Locking 적용.
+          		</para>
+        	</listitem>
+
+        	<listitem>
+          		<para>
+          			optimistic-lock="dirty" : 두 트랜잭션에서 동일한 속성의 값에 대해 변경을 수행하였을 경우에  대해
+					Optimistic Locking 적용. 따라서, 두 트랜잭션이 서로 다른 속성의 값을 변경한 경우에는 해당되지
+          			않는다.
+          		</para>
+			</listitem>
+		</itemizedlist>
+    </section>
+
+    <section id="hibernate_hibernate_concurrency_pessimistic">
+		<title>Pessimistic Locking</title>
+
+		<para>
+			동시 접근 제어를 위해 어플리케이션 전체의 isolation level을 read committed 이상으로 높이는  것은 어플리케이션의 
+			확장성을 고려할 때 그리 추천하지 않는다. 특정 작업에 대해 isolation을 보다 잘 보장해 주는 것이 바람직하다. Hibernate 
+			기반의 Pessimistic Locking은 다음과 같은 Locking Mode중, 개발자가 정의한 Locking Mode를 이용하여 특정 트랜잭션에 
+			대해 Locking을 정의하는 방식으로 수행된다.
+		</para>
+
+		<itemizedlist>
+        	<listitem>
+          		<para>
+          			<emphasis role="bold">LockMode.NONE</emphasis> : 기본값으로
+          			Locking이 수행되지 않으며 캐쉬에 객체가 존재하면 캐쉬 내의 객체를 사용한다.
+          		</para>
+        	</listitem>
+
+        	<listitem>
+          		<para>
+          			<emphasis role="bold">LockMode.READ</emphasis> : Cache가 아닌 현재 트랜잭션에 포함되어 있는 DB로부터 
+          			데이터를 읽어 와서 메모리 상의 객체와 동일한 것인지 확인한다.
+          		</para>
+        	</listitem>
+
+        	<listitem>
+          		<para>
+          			<emphasis role="bold">LockMode.UPGRADE</emphasis> : 조회시 SELECT .. FOR UPDATE와 같은 쿼리가 
+          			수행되므로 다른 쓰레드에서 동일한 객체에 접근하려고 할 때 행 단위로 Locking 한다. SELECT .. FOR UPDATE 
+          			기능을 제공하는 DBMS에 한해 지원된다. SELECT .. FOR UPDATE 문을 지원하지 않는 DB를 사용할 때는 LockMode.READ
+          			로 전환된다.
+          		</para>
+        	</listitem>
+
+        	<listitem>
+          		<para>
+          			<emphasis role="bold">LockMode.UPGRADE_NOWAIT</emphasis> : 조회시 오라클의 SELECT .. FOR UPDATE NO 
+          			WAIT와 같은 쿼리가 수행되므로 행 단위로 Locking을 걸며, 다른 쓰레드에서 동일한 객체에 접근하려고 할 때 Blocking 
+          			되지 않고 바로 Exception을 발생시킨다. SELECT .. FOR UPDATE NO WAIT를 지원하지 않으면 LockMode.UPGRADE로
+         			 전환된다.
+         		</para>
+        	</listitem>
+
+        	<listitem>
+          		<para>
+          			<emphasis role="bold">LockMode.FORCE</emphasis> : 현재 트랜잭션에 의해 객체가 수정되었음을 인식할 수 있게 
+          			하기 위해 DB 내의 객체 버전을 강제로 증가시킨다.
+          		</para>
+        	</listitem>
+
+			<listitem>
+          		<para>
+          			<emphasis role="bold">LockMode.WRITE</emphasis> : Hibernate에 의해 현재 트랜잭션에서 행을 추가했을 때 
+          			자동으로 얻어진다. (Hibernate 내부에서 사용하는 mode로 개발자가 어플리케이션에서 명시적으로 사용하지 않도록 
+          			한다.)
+          		</para>
+
+          		<mediaobject>
+            		<imageobject>
+	              		<imagedata align="center"
+							fileref="../image/hibernate/pessimistic-locking.png" />
+	            	</imageobject>
+	            	<textobject>
+	            		<phrase>Hibernate의 Pessimistic Locking에 대해 설명하고 있는 그림이다. 클라이언트 1과 2는 동일한 데이터에 접근하고 있으며, 
+	            		이 때 클라이언트 1에서 먼저 lock을 걸게 되면 그 이후 클라이언트 2에서는 클라이언트 1의 lock이 해제될 때까지 해당 데이터에 접근할 수
+				        없게 된다. 즉, 클라이언트 1의 트랜잭션이 종료되고 난 이후에야 lock이 해제되어 다른 클라이언트에서 해당 데이터에 접근할 수 있게 됨을 표현하고 있다.
+	            		</phrase>
+	            	</textobject>
+	          	</mediaobject>
+	
+	          	<para>
+	          		위의 그림을 살펴보면, 클라이언트 1과 2는 동일한 데이터에 접근하고 있으며, 이 때 클라이언트 1에서 먼저
+				    lock()을 걸었으므로 그 이후 다른 Client에서는 클라이언트 1의 lock이 해제될 때까지 해당 데이터에 접근할 수
+				          없게 된다. 즉, 클라이언트 1의 트랜잭션이 종료되고 난 이후에야 lock이 해제되어 다른 Client에서 해당 데이터에
+				          접근할 수 있게 되는 것이다. 강력한 Locking 기법인 Pessimistic Locking은 데이터에 대한 접근이 먼저
+				          이루어졌다 하더라도 수정 작업을 먼저 반영하지 않으면 Exception이 발생하는 Optimistic Locking
+				          기법과는 달리 lock을 보유한 트랜잭션이 종료될 때까지 다른 트랜잭션의 해당 데이터에 대한 접근을 막기 때문에 안전한
+				          데이터 수정이 가능해진다.
+				</para>
+
+	          	<para>
+	          		다음에서는 Pessimistic Locking 수행을 테스트하기 위한 예제 코드 HibernatePessimisticLocking 를 이용하여, 
+	          		<emphasis role="bold">LockMode.NONE, LockMode.UPGRADE, LockMode.UPGRADE_NOWAIT</emphasis> 에 대해 
+	          		상세히 비교해 보고자 한다.
+	          	</para>
+
+				<para>
+	          		하나의 객체에 대한 동시 접근을 실현하기 위해 다음과 같은 Thread가 구현되었으며 모든 테스트 메소드에서는
+	          		두번째 Thread에 sleeptime을 줌으로써, 첫번째 Thread를 명시적으로 먼저 start시켜 하나의 객체에 대해
+	          		첫번째 Thread에서 먼저 접근할 수 있도록 강제하고 있다. 또한 첫번째 Thread의 변경 사항을 DB에 반영하기
+	          		전에는 sleep시켜 첫번째 Thread에 의한 변경 사항 반영을 지연시킨다. 
+                    <programlisting language="java"><![CDATA[public class CountryThread extends Thread {
+    ...중략 
+    public void run() {
+        try {
+            Session session = initialSessionFactory.openSession();
+            session.beginTransaction();]]>
+
+            <emphasis role="bold"><![CDATA[Country country = (Country) session.get(Country.class,]]></emphasis>
+                    <emphasis role="bold"><![CDATA["COUNTRY-0001", this.lockMode);]]></emphasis>
+            <![CDATA[this.beforeCountryName = country.getCountryName();
+
+            country.setCountryName(id + " : Republic of Korea");]]>
+            <emphasis role="bold"><![CDATA[this.sleep(sleepTime);]]></emphasis>
+
+            <emphasis role="bold"><![CDATA[session.flush();]]></emphasis>
+
+            <![CDATA[country = (Country) session.get(Country.class, "COUNTRY-0001");
+            this.afterCountryName = country.getCountryName();
+
+            session.getTransaction().commit();
+            session.close();
+        } catch (Exception e) {
+            if (this.lockMode == LockMode.UPGRADE_NOWAIT
+                    && id.equals("second")) {
+                e instanceof LockAcquisitionException);
+            }
+        }
+    }
+    //...
+}]]></programlisting>
+				</para>
+			</listitem>
+
+			<listitem>
+          		<para>
+          			<emphasis role="bold">LockMode.NONE인 경우</emphasis> : 첫번째 Thread를 통해 먼저 select ... 문이 수행
+          			되나 LockMode.NONE이므로, Lock이 걸리지는 않는다. 그리고 첫번째 Thread에서는 session.flush()를 수행하기 
+          			전에 주어진 시간만큼 sleep()하게 되므로, 뒤이어 시작한 두번째 Thread에서 select를 수행한 후, 바로 수정 작업을
+					commit한다. 첫번째 Thread에서는 주어진 시간만큼 sleep()한 후, 두번째 Thread의 변경 내용을 무시하고 수정 작업을
+          			commit하게 된다. 즉, LockMode.NONE일 경우에는 Pessimistic Locking이 수행되지 않음을 알 수 있다.
+          		</para>
+        	</listitem>
+
+        	<listitem>
+          		<para>
+          			<emphasis role="bold">LockMode.UPGRADE인 경우</emphasis> : 첫번째 Thread를 통해 먼저 select ... for 
+          			update 문이 수행되면서 해당 Row에 Lock이 생긴다. 그리고 첫번째 Thread에서는 session.flush()를 수행하기 전에 
+          			주어진 시간만큼 sleep()하게 되므로 뒤이은 두번째 Thread에서는 첫번째 Thread의 update 작업이 완료될 때까지
+          			blocking되어 있다가 첫번째 Thread에서 변경한 값을 기반으로 하여 수정 작업을 commit한다.
+          		</para>
+        	</listitem>
+
+        	<listitem>
+          		<para>
+          			<emphasis role="bold">LockMode.UPGRADE_NOWAIT인 경우</emphasis> :
+         			 첫번째 Thread를 통해 먼저 select ... for update nowait 문이 수행되면서 해당 Row에
+			          Lock이 생긴다. 그리고 첫번째 Thread에서는 session.flush()를 수행하기 전에 주어진 시간만큼
+			          sleep()하게 되며, 뒤이은 두번째 Thread에서 select ... for update nowait를 시도하면
+			          blocking 없이 바로 LockAcquisitionException이 throw되면서 두번째 Thread를 통한 수정
+          				작업은 이루어지지 않게 된다.
+          		</para>
+        	</listitem>
+      	</itemizedlist>
+    </section>
+
+    <section id="hibernate_hibernate_concurrency_offline">
+		<title>Offline Locking</title>
+
+      	<para>
+      		지금까지는 한 트랜잭션 내에서의 동시 접근 처리 기법에 대해 알아보았다. Offline Locking에서는 여러 개의
+			      트랜잭션을 통해 하나의 작업이 이루어져야 하는 경우에서의 동시 접근 처리 기법에 대해 살펴보기로 하자. 웹어플리케이션의 
+			      일반적인 화면 구성을 가정해보자. 상영중인 영화 목록을 제공하는 웹어플리케이션에서 특정 영화 정보를 수정하는 작업을 
+			      수행하기 위해서는 먼저 선택된 영화 정보 조회가 이루어지고, 수정 작업이 뒤따라야 한다. 즉, 2개의 트랜잭션 수행을 통해 
+			      원하는 작업을 수행할 수 있게 되는 것이다. 동시 사용자가 이러한 작업을 수행한다고 했을때, 동시 제어가 제대로 이루어지지 
+			      않으면 어느 한 사용자의 작업 정보는 손실될 가능성이 존재하게 된다. 이와 같이 여러 트랜잭션을 통해 이루어지는 작업에서 
+			      동시 접근 제어를 수행하기 위해서는 다음과 같은 작업이 필요하다.
+		</para>
+
+		<itemizedlist>
+			<listitem>
+				<para>
+					<emphasis role="bold">Offline Optimistic Locking</emphasis> :
+          			Optimistic Locking과 동일하게 Version을 사용하는 방법이다. 첫번째 트랜잭션을 통해 얻어온 Detached 상태의 
+          			객체(version 정보 포함하고 있음.)를 HTTP 세션에 저장해 둔다. 사용자가 수정 작업 반영을 요청하면 HTTP 세션에 
+          			저장된 Detached 객체를 꺼내 수정된 정보로 셋팅하고 두번째 트랜잭션에서 session.update() 메소드 호출시 입력 
+          			인자로 전달한다. 이렇게 하면 Optimistic Locking과 유사하게 Version 정보를 기반으로 동시 접근을 제어할 수 있게 
+          			된다.
+          		</para>
+        	</listitem>
+
+        	<listitem>
+          		<para>
+          			<emphasis role="bold">Offline Pessimistic Locking</emphasis> :
+          			Pessimistic Locking과 동일한 동작 원리를 가지면서 DB 레벨이 아닌 어플리케이션 레벨에서 Locking을
+          			관리할 수 있는 별도의 LockManager 구현이 필요하다.</para>
+        	</listitem>
+      	</itemizedlist>
+    </section>
+ </chapter>
+

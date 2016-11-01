@@ -1,0 +1,286 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
+<html>
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+<title>Chart Sample - Label</title>
+
+<link href="../../../common/css/smoothness/jquery-ui-1.10.0.custom.css" rel="stylesheet">
+<link href="../../../common/css/smoothness/jquery.jqplot.css" rel="stylesheet">
+<script src="../../../common/exlibs/jquery-1.9.0.js"></script>
+<script src="../../../common/exlibs/jquery-ui-1.10.0.custom.js"></script>
+<script src="../../../common/exlibs/jquery.jqplot.js"></script>
+<script src="../../../common/exlibs/excanvas.js" ></script>
+<script src="../../../common/exlibs/jqplot.plugins.js"></script>
+
+<link type="text/css" rel="stylesheet" href="../../../common/css/style.css"/>
+<link href="sub_css/label.css" rel="stylesheet">
+
+<script type="text/javascript">
+
+	var RENDERER = {
+			AXIS_LABEL : $.jqplot.CanvasAxisLabelRenderer,
+			AXIS_CATEGORY : $.jqplot.CategoryAxisRenderer,
+			AXIS_TICK : $.jqplot.CanvasAxisTickRenderer,
+			AXIS_DATA : $.jqplot.DateAxisRenderer,
+			BAR : $.jqplot.BarRenderer
+	};
+	
+	var ENV = {
+			ID_BAR_CHART : "barChart",
+			ID_DUAL_CHART : "dualChart"
+	};
+	
+	var CHART_DATA = {
+			
+			LABEL_X : ['first', 'second', 'third', 'fourth', 'fifth', 'sixth' ],
+			
+			 TYPE_XY_1 : [ ['title', 7], ['series', 9], ['axes', 15], ['legend', 12], ['grid', 3], ['jqplot', 6] ],
+			              
+			TYPE_XY_2 : [['text', 28], ['color', 13], ['tickRenderer', 54], ['location', 47], ['drawGridliens', 16], ['data', 14] ]
+			
+	};
+	
+	var mainView = {
+			
+			barChartObj : function(){
+				return this.initBarChart('Bar Chart', [CHART_DATA.TYPE_XY_1],  CHART_DATA.LABEL_X, 1.2);
+			},
+			
+			dualChartObj : function(){
+				return this.initDualChart('Dual Chart', [CHART_DATA.TYPE_XY_1, CHART_DATA.TYPE_XY_2],  CHART_DATA.LABEL_X, 1.2);
+			},
+		
+			initBarChart : function(title, data, xLabelData, padSize){
+			
+			
+				var options = {
+						title : title,
+						seriesDefaults : {
+																
+						},
+						axesDefaults: {
+							pad : padSize,			
+							//눈금  텍스트 설정
+							tickRenderer: RENDERER.AXIS_TICK,
+					        tickOptions: {
+					        	angle : 0,
+					        	fontSize: '10pt'
+					        },
+					        //x축, y축 Label(타이틀과 같은..) 의 설정
+							labelRenderer: RENDERER.AXIS_LABEL,
+							labelOptions : {
+								fontFamily : "Nanum Gothic bold",
+								fontSize : '12pt',
+								textColor : 'blue'
+							}
+						},
+						axes : {
+							xaxis : {
+								renderer : RENDERER.AXIS_CATEGORY,
+								tickOptions : {
+									angle : 0,//미리 이 프로퍼티가 존재해야 나중에 set하여 값을 동적 변경할 수 있음.
+									showGridline : true//미리 이 프로퍼티가 존재해야
+								}
+							},
+							yaxis : {
+								tickOptions : {
+									angle : 0,
+									showGridline : true//미리 showGridline의 옵션 프로퍼티 존재해야..
+								},
+								autoscale : true,
+								min : 0,
+								max : 20,
+								//numberTicks : 10,
+								tickInterval : 2 //min, max가 정해져 있어야
+							}
+						}
+				};
+				
+		
+				return $.jqplot (ENV.ID_BAR_CHART,  data, options);
+		
+			},
+		
+			setAngle : function(target, axis, value){
+				if(axis == "x"){
+					target.options.axes.xaxis.tickOptions.angle += value;
+					console.log("Test");
+				}else if(axis=="y"){
+					target.options.axes.yaxis.tickOptions.angle += value;
+				};
+				target.replot(target.options);
+			},
+			
+			//y값 최소값 set
+			setMinVal : function(target, value){
+				target.options.axes.yaxis.min = value;
+				target.replot(target.options);
+			},
+			//y값 최대값 set
+			setMaxVal : function(target, value){
+				target.options.axes.yaxis.max = value;
+				target.replot(target.options);
+			},
+			
+			//x축, y축, label값 set
+			setLabel : function(target, axis, value){
+				if(axis == "x"){
+					target.options.axes.xaxis.label = value;
+				}else if(axis == "y"){
+					target.options.axes.yaxis.label = value;
+				}
+				target.replot(target.options);
+			},
+			
+			setGrid : function(target, axis, value){
+				if(axis == "x"){
+					target.options.axes.xaxis.tickOptions.showGridline = value;
+				}else if(axis == "y"){
+					target.options.axes.yaxis.tickOptions.showGridline = value;
+				};
+				
+				target.replot(target.options);
+			},
+			
+			setTickInterval : function(target, value){
+				target.options.axes.yaxis.tickInterval = value;
+				target.replot(target.options);
+			}
+	};
+
+	$(document).ready(function() {
+				
+				$("button").button();
+				
+
+				var bar = mainView.barChartObj();
+				
+				$("input:checkbox[name= 'showGrid']").on("click", function(){
+					mainView.setGrid(bar, $(this).val(), $(this).is(":checked"));
+				});
+				
+				$("#minValBtn").on("click", function(){
+					var value = parseInt($("#minVal").val());
+					mainView.setMinVal(bar, value);
+				});
+				
+				$("#maxValBtn").on("click", function(){
+					var value = parseInt($("#maxVal").val());
+					mainView.setMaxVal(bar, value);
+				});
+								
+				$("button[name='xangle']").on("click", function(){
+					var value = parseInt($(this).val());
+					mainView.setAngle(bar, "x", value);
+				});
+				
+				$("button[name='yangle']").on("click", function(){
+					var value = parseInt($(this).val());
+					mainView.setAngle(bar, "y", value);
+				});
+				
+				$("#xLabelNmBtn").on("click", function(){
+					mainView.setLabel(bar, "x", $("#xLabelName").val());
+				});
+				
+				$("#yLabelNmBtn").on("click", function(){
+					mainView.setLabel(bar, "y", $("#yLabelName").val());
+				});
+				
+				$("#tickInterval").slider({
+					min : 1,
+					max : 20,
+					slide : function(evt, ui){
+						mainView.setTickInterval(bar, ui.value);
+					}
+				});
+				
+	});
+	
+</script>
+
+</head>
+<body>
+
+<div >
+	<div style="float : left;">
+
+		<div class="title">배경 그리드</div>
+		<div>
+			<div class="text-area">배경 그리드 : </div>
+			<div  class = "input-area">
+				<input name ="showGrid" type="checkbox" value="x" checked/> horizontal
+				<input name ="showGrid" type="checkbox" value ="y" checked /> vertical
+			</div>
+		</div>
+	
+		<div class="title">눈금 조절</div>
+		<div>
+			<div class="text-area">최소값 : </div>
+			<div  class = "input-area">
+				<input id="minVal" type="text"   value ="-10"/>
+				<button id="minValBtn" type="button" >apply</button>
+			</div>
+		</div>
+		<div>
+			<div class="text-area">최대값 : </div>
+			<div  class = "input-area">
+				<input id="maxVal" type="text"  value ="40"/>
+				<button id="maxValBtn" type="button" >apply</button>
+			</div>
+		</div>
+		
+		<div>
+			<div class="text-area">눈금간격 : </div>
+			<div  class = "input-area">
+				<div id="tickInterval" style="width:220px;"></div>
+			</div>
+		</div>
+	
+		<div class="title">레이블 텍스트</div>
+		<div>
+			<div class="text-area">x축 텍스트: </div>
+				<div  class = "input-area">
+					<input id="xLabelName" type="text" value ="x축 : 이름"/>
+					<button id="xLabelNmBtn" type="button" >apply</button>
+				</div>
+			<div>
+				<div class="text-area">y축 텍스트 : </div>
+				<div  class = "input-area">
+					<input id="yLabelName" type="text" value ="y축 : 이름"/>
+					<button id="yLabelNmBtn" type="button" >apply</button>
+				</div>
+			</div>
+			
+			<div class="display-area">
+				(초기 설정정보 -  font : 나눔고딕 / fot-size : 12pt / text-color : blue)
+			</div>
+			
+			<div class="title">눈금 레이블 각도</div>
+			<div>
+				<div class="text-area">x축 : </div>
+				<div  class = "input-area">
+					<button name="xangle" type="button" value="10">+</button>
+					<button name="xangle" type="button" value="-10">-</button>
+				</div>
+			</div>
+			<div>
+				<div class="text-area">y축 : </div>
+				<div  class = "input-area">
+						<button name="yangle" type="button" value="10">+</button>
+						<button name="yangle" type="button" value="-10">-</button>
+				</div>
+			</div>
+		
+		</div>
+		
+	</div>
+	
+		<div class="chart-container">
+			<div id="barChart"></div>
+		</div>
+	
+</div>
+
+</body>
+</html>

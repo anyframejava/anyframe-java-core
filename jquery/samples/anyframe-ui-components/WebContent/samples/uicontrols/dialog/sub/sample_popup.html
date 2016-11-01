@@ -1,0 +1,95 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+        "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8"/>
+
+    <script type="text/javascript">
+        /* Global Variable	 */
+        var ENV_POP = {
+            ID_DIALOG : "#dialog_pop",
+            ID_BIZ_SEARCH_GRID_POP: "#grid_pop",
+            ID_BIZ_SEARCH_GRID_PAGER_POP: "#grid_pager",
+            ID_CLOSE_POP: "#close_pop",
+            GRID_ROOT: "grid_pop",
+            JSON_URL: "sub/data_popup.json"
+        };
+
+
+        var mainView = {
+
+            _grid : null,
+            _data : null,
+
+            init : function()
+            {
+                this._grid = $(ENV_POP.ID_BIZ_SEARCH_GRID_POP);
+
+                this._grid.jqGrid({
+                    url: ENV_POP.JSON_URL,
+                    datatype: "json",
+                    width: "420",
+                    height: "231",
+                    colNames: ['사업번호', '사업명', '유관부서'],
+                    colModel: [
+                        {name: 'bizNo', index: 'bizNo', align: 'center', width: '100', jsonmap: 'bizNo', sortable: false, editable: true, editoptions: {readonly: true}},
+                        {name: 'bizNm', index: 'bizNm', align: 'left', width: '150', jsonmap: 'bizNm', sortable: false, editable: true, editoptions: {readonly: true}},
+                        {name: 'bizDeptNm', index: 'bizDeptNm', align: 'left', width: '150', jsonmap: 'bizDeptNm', sortable: false, editable: true, editoptions: {readonly: true}}
+                    ],
+                    rowNum: 10,
+                    rowList: [10, 20, 30],
+                    rownumbers: true,
+                    recordtext: "Total {2}",
+                    pgtext: "{0} / {1}",
+                    emptyrecords: "Empty",
+                    scrollOffset: 0,
+                    pager: jQuery(ENV_POP.ID_BIZ_SEARCH_GRID_PAGER_POP),        //페이지 네비게이션 설정
+                    viewrecords: true,
+                    jsonReader: {
+                        root: ENV_POP.GRID_ROOT,				//SVO의 ArrayList(), the points to the array that contains the data.
+                        page: "page",						//current page of the query
+                        total: "total",					//total pages for the query
+                        records: "records",				//total number of records for the query
+                        repeatitems: false, 				//the information for the data in the row is repeatable
+                        id: "bizNo"						//the unique id of the row
+                    }
+                });
+            }
+        };
+
+        jQuery(document).ready(function () {
+            //그리드 로드
+            mainView.init();
+
+            //닫기 버튼
+            $(ENV_POP.ID_CLOSE_POP).button().click(function () {
+                $(ENV_POP.ID_DIALOG).dialog('close');
+            });
+        });
+    </script>
+
+</head>
+<body>
+<table border="0" cellspacing="2" cellpadding="0" width="100%">
+    <tr>
+        <td>
+            <table width="100%" border="0" cellspacing="0" cellpadding="0">
+                <tr>
+                    <td>
+                        <!-- 그리드테이블삽입공간 -->
+                        <table id="grid_pop" width="100%" border="0" cellspacing="0" cellpadding="0"></table>
+                        <div id="grid_pager" style="text-align:center;"></div>
+                        <!-- //그리드테이블삽입공간 -->
+                    </td>
+                </tr>
+            </table>
+        </td>
+    </tr>
+    <tr>
+        <td align="right">
+        <button id="close_pop">Close</button>
+        </td>
+    </tr>
+</table>
+</body>
+</html>

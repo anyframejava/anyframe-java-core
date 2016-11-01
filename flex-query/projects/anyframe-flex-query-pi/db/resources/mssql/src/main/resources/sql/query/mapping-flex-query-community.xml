@@ -1,0 +1,22 @@
+			<!--flex-query-findCommunityList-START-->
+			SELECT 
+				community.COMMUNITY_ID,
+				community.COMMUNITY_NAME,
+				community.COMMUNITY_DESC,
+				community.CATEGORY_ID,
+				community.REG_ID,
+				community.REG_DATE,
+				category.CATEGORY_NAME
+			FROM FLEX_COMMUNITY community, FLEX_CATEGORY category
+			WHERE community.CATEGORY_ID = category.CATEGORY_ID
+			<!--Velocity-Support-dynamicFindCommunityList-START-->
+			#if ($vo.searchCondition == "categoryId")
+				AND community.CATEGORY_ID like '%'+ :vo.searchKeyword +'%'		
+			#elseif ($vo.searchCondition == "communityName")
+				AND community.COMMUNITY_NAME like '%'+ :vo.searchKeyword +'%'	
+			#elseif ($vo.searchCondition == "communityDesc")
+				AND community.COMMUNITY_DESC like '%'+ :vo.searchKeyword +'%'	
+			#end			
+				order by community.COMMUNITY_ID DESC
+			<!--Velocity-Support-dynamicFindCommunityList-END-->
+			<!--flex-query-findCommunityList-END-->

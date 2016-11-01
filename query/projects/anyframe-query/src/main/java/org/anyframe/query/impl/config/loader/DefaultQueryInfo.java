@@ -144,9 +144,8 @@ public class DefaultQueryInfo implements QueryInfo {
 							String compositeField = "";
 							Map<String, List<String>> tmpColumnMap = new HashMap<String, List<String>>();
 							for (int j = 0; j < compositeFieldes.length; j++) {
-								
 								String compositeFieldName = compositeFieldes[j];
-								String key = compositeFieldName.substring(0 ,
+								String key = compositeFieldName.substring(0,
 										compositeFieldName.indexOf("."));
 								Tree<String> child;
 								
@@ -160,12 +159,24 @@ public class DefaultQueryInfo implements QueryInfo {
 									QueryService.LOGGER
 											.warn("Query Service : This mapping information is ignored. Property name is different. If you want to handle properties of user defined type, attribute should start with same property name. Please check result mapping (queryId ='{}')",
 													queryId);
-								
+								String[] fieldNames = compositeFieldName
+										.substring(compositeFieldName
+												.indexOf(".") + 1).split("\\.");
+								Tree<String> lvnChild;
 								compositeField = key;
+//								if(child.getTree(fieldNames[0])!=null){
+//									lvnChild = child.getTree(fieldNames[0]);
+//								}else{
+//									lvnChild = child.addLeaf(fieldNames[0]);
+//								}
+								lvnChild = child.addLeaf(fieldNames[0]);
 								
-								//Tree 구조 생성 후 매핑할 field 리턴
-								compositeField = makeNdepthTree(compositeFieldName, child, key);
-								
+								if (fieldNames.length > 1) {
+									for (int k=1; k < fieldNames.length; k++) {
+										lvnChild = lvnChild.addLeaf(fieldNames[k]);
+										compositeField = fieldNames[k-1];
+									}
+								}
 								List<String> attrs  = new ArrayList<String>();
 								if(tmpColumnMap.get(compositeField)!=null && tmpColumnMap.get(compositeField).size() > 0){
 									attrs = tmpColumnMap.get(compositeField);
@@ -248,30 +259,6 @@ public class DefaultQueryInfo implements QueryInfo {
 						.getAttribute("type");
 			}
 		}
-	}
-	
-	public String makeNdepthTree(String compositeFieldName, Tree<String> child, String rootKey){
-		String[] fieldNames = compositeFieldName.substring(compositeFieldName.indexOf(".") + 1).split("\\.");
-		
-		if(fieldNames.length <= 1){
-			child.addLeaf(fieldNames[0]);
-		}else {
-			Tree<String> nextChild;
-			if(child.getTree(fieldNames[0]) != null){
-				nextChild = child.getTree(fieldNames[0]);
-			}else{
-				nextChild = child.addLeaf(fieldNames[0]);
-			}
-
-			String nextRootKey = fieldNames[fieldNames.length-2];
-			String nextCompositeFieldName = compositeFieldName.substring(compositeFieldName.indexOf('.')+1);
-			
-			makeNdepthTree(nextCompositeFieldName, nextChild, nextRootKey);
-			
-			return nextRootKey;
-		}
-		
-		return rootKey;
 	}
 
 	public List<SqlParameter> getSqlParameterList() {

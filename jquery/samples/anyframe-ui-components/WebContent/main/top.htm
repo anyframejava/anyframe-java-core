@@ -1,0 +1,102 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
+<html>
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+<title>Insert title here</title>
+<script type="text/javascript" src="../common/exlibs/jquery-1.9.0.js" ></script>
+
+<!--  stylesheet  -->
+<link type="text/css" rel="stylesheet" href="../common/css/suite.css"/>
+
+<script>
+
+	var frameglobal = parent.frameglobal;
+
+	var ENV = {
+			ID_TOP_MENU : "#top-menu",
+			SELECT_LI_ALL : "#top-menu > li",
+			CLASS_MENU_CLICKED : "top-menu-clicked"
+	};
+
+	var mainView = {
+			
+		_SampleDS : parent.SampleDS,
+		_selected_menu : "",
+		
+		
+		init : function() 
+		{
+			if (!this._SampleDS.loaded) throw "it must be loaded first. no data...";	//TODO: sleep.js 로 대체 예정
+			
+			var catarry = this._SampleDS.getCategory(),
+				newhtml = "";
+			
+			for(var cx = 0, len = catarry.length; cx < len; cx++)
+			{
+				newhtml += this._makeNavMenu( catarry[cx], this._SampleDS.getCategoryDisable(catarry[cx]) );
+			}
+			
+			$(ENV.ID_TOP_MENU).html( newhtml );	
+		},
+		
+		_makeNavMenu : function(name, disable)
+		{
+			var makehtml = (!disable) ? "<li><a href='#'>" + name + "</a></li>\n" : 
+										"<li><a class='disable' href='#'>" + name + "</a></li>\n"; 
+			return makehtml;			
+		},
+		
+		menuclicked : function(elm)
+		{
+			$(ENV.SELECT_LI_ALL).removeClass(ENV.CLASS_MENU_CLICKED);
+			
+			this._selected_menu = $(elm).parent().toggleClass(ENV.CLASS_MENU_CLICKED)
+				  						.end()
+				  						.text();			
+			
+			frameglobal.setSelectedCategory(this._selected_menu);
+			frameglobal.updateframe( frameglobal.targetname.FRAME_NAV );
+		}		
+		
+	};
+	
+	$(document).ready(function() {
+		
+		var lasyLoadingId = setInterval(function() {
+			
+			if (parent.SampleDS && parent.SampleDS.loaded)
+			{
+				clearInterval(lasyLoadingId);
+				mainView.init();
+				
+				$(ENV.SELECT_LI_ALL).on('click', function(evt) {
+					if ( $(evt.target).hasClass('disable') )
+						alert('준비 중 입니다.');
+					else
+						mainView.menuclicked(evt.target);
+				});			
+			}
+			
+		}, 0);
+		
+	});
+	
+</script>
+
+</head>
+<body>
+
+<div class="top">
+ 	<!--  HOME BUTTON 부분 ---------------------------------------------- -->
+	<div class="top-home">
+			<a href="main.htm" target="_parent" >ANYFRAME UI STUDIO</a>
+	</div>
+	
+	<!--  TOP MENU 부분 ---------------------------------------------- -->
+	<div class="top-menu" >
+		<ul id="top-menu">
+		</ul>
+	</div>		
+</div>		
+</body>
+</html>

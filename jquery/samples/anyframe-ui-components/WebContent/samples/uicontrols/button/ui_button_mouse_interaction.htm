@@ -1,0 +1,148 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN"
+"http://www.w3.org/TR/html4/loose.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+ 
+ <!-- Start of head-->
+<head>
+<meta http-equiv="content-type" content="text/html; charset=UTF-8" />
+<title>title : unit sample template </title> <!-- TODO: 타이틀 작성 -->
+
+
+<!-- include required common files  ----------------------------------------------------->
+<script type="text/javascript" src="../../../common/exlibs/jquery-1.9.0.js" ></script>
+<script type="text/javascript" src="../../../common/exlibs/highlighter/scripts/shCore.js" ></script>
+<script type="text/javascript" src="../../../common/exlibs/highlighter/scripts/shBrushJScript.js" ></script>
+<script type="text/javascript" src="../../../common/js/template_common.js" ></script>
+
+<!--  stylesheet  -->
+<link type="text/css" rel="stylesheet" href="../../../common/exlibs/highlighter/styles/shCore.css"/>
+<link type="text/css" rel="stylesheet" href="../../../common/exlibs/highlighter/styles/shCoreDefault.css"/>
+<link type="text/css" rel="stylesheet" href="../../../common/css/style.css"/>
+
+<!-- scripts to support sample page  ----------------------------------------------------->
+<script type="text/javascript">
+
+$(function() {
+	JTemplate.load("ui_button_mouse_interaction_src.htm");
+	JTemplate.loadDemo2("ui_button_mouse_interaction_src.htm", {height:'300px'});
+});  
+
+</script>
+ 
+</head>
+<!-- End of head -->
+
+<!-- Start of body -->
+ <body >
+<!-- HEADER BAR -------------------------------------------------------------->
+<div class="content-title">Component - Button</div>
+ 
+ <!-- START OF PAGE ... -------------------------------------------------------->
+<div id="page">
+	<p class = "header-title">Button 마우스 이벤트</p>
+	<p class="header-desc">: Button을 마우스 클릭, 오버 이벤트와 같은 인터랙션 조작방법을 보여주는 예이다.</p>
+<!-- DEMO ----------------------------------------------------------------------->
+	<div class="demo">
+		<h3 >Demo</h3>
+		<div id="visualExample"></div>
+	</div>
+ 
+ <!-- DEMO DESCRIPTION----------------------------------------------------->
+	<div class="desc">
+		<h3>Demo Description </h3>
+		<hr>
+		<p class="desc-title">Button 마우스 이벤트</p>
+		<p class="desc-overall">  
+		: 버튼을 마우스로 클릭, 오버 하는 인터랙션을 할 때 일어날 수 있는 여러 변화를 조작해 볼 수 있다.
+		</p>
+		<ul class ="desc-hypl">
+			<li><span>mouse click event</span> 마우스로 이 버튼을 클릭하면, alert로 창이 띄워져 클릭동작이 이루어졌음을 확인할 수 있다.</li>
+			<li><span>mouse over event</span> 
+				<ul class="sub-desc-hypl">
+					<li><span>text</span> : 마우스 오버를 하면 버튼 내 텍스트가 바뀌며, 마우스 아웃하면 다시 처음상태의 텍스트로 되돌아온다.</li>
+					<li><span>color</span> : 마우스 오버를 하면 버튼의 배경색이 바뀌어지며, 마우스 아웃하면 다시 처음상태로 되돌아 온다.</li>
+					<li><span>effect</span> : 마우스 오버를 하면 버튼이 fade out 의 효과가 나타나며, 아웃하면 fade in 의 효과가 나타난다.</li>
+				</ul>
+			</li>
+		</ul>
+		
+	</div>
+
+<!-- CODE------------------------------------------------------------------------>
+	<div class="code">
+		<h3>Code Source </h3>
+		<pre id="codeExample" class="brush: js"></pre>
+	</div>
+	
+	
+<!-- CODE DESCRIPTION------------------------------------------------------>
+	<div class="desc">
+		<h3>Code Description </h3>
+		<hr>
+		<p class="desc-title">Click 이벤트</p>
+		<p class="desc-overall">: 클릭하는 인터랙션으로 일어나는 동작에 대해서 다음과 같은 3가지 방법을 사용할 수 있다.</p>
+		<div class="code-block">
+			<pre>
+1. $(selector).click(eventHnadler)
+2. $(selector).on('click', handler)
+3. $(selector).trigger('click') </pre>
+		</div>
+		
+		<p class="desc-title">Mouse Over 이벤트</p>
+		<p class="desc-overall"> 
+		 : 마우스 오버라는 인터랙션으로 일어나는 동작에 대해서는 다음과 같은 3가지 방법을 사용할 수 있다.
+		</p>
+		<div class="code-block">
+			<pre>
+1. $(selector).mouseover(handlerIn)/.mouseout(handlerOut)
+2. $(selector).mouseenter(handlerIn)/.mouseleave(handlerOut) 
+3. $(selector).hover(handlerIn, handlerOut)
+* 1,2번과 같은 경우 $(selector).on() , $(selector).trigger() 와 같은 방식으로 사용가능</pre>
+		</div>
+		
+		<p class="desc-title">	mouseover/out과 mouseenter/leave 의 차이점</p>
+		<p class="desc-overall"> 
+		 : .mouseover()/.mouseout() 와 .mouseenter()/mouseleave() 는 기본적으로 마우스오버라는 동작을 지원하는 이벤트함수이지만, 차이점이 존재한다.
+		</p>
+		<ul class="desc-hypl" >
+			<li><span> .mouseover()</span>마우스포인터에 대해 child element까지 인지하여 마우스오버 인터랙션이 적용된다.<br>
+				<span></span>div와 같은 한 블럭 안에 여러개의 또다른 내부 div  블럭이 있을 경우, 그 모든 포함된 블럭에 마우스가 위치하게 될 때마다 똑같은 마우스오버상태가 적용되어 이벤트가 발생하게 된다.
+			</li>
+			<li><span>  .mouseenter()</span>마우스포인터에 대해 한 개의 해당블럭만 인지하여 마우스오버 인터랙션이 적용된다. 
+				<span></span>하위의 어떤 child element가 있을지라도 반복적으로 적용되지 않는다.
+			</li>
+		</ul>
+		
+		<p> *위의 3번 hover는  mouseenter/mouseleave와 같은 방식으로 동작하게 된다.</p>
+		<p> 본 예제 참조 : </p>
+		
+		<ul class="desc-hypl" >
+			<li>
+				<span>mouseenter/leave 방식</span><span class="code-line">#57 ~ #93 </span>
+			</li>
+		</ul>
+		
+	</div>	
+
+<!-- RELATED LINKS ----------------------------------------------------------->
+	<div class="related">
+		<h3>Related Links</h3>
+		<hr>
+		 <ul class="desc-hypl">
+           	<li>
+           		<span>Button API</span>
+           		<a href = "http://api.jqueryui.com/button"></a>
+           	</li>
+           	<li>
+           		<span>마우스 이벤트</span>
+           		<a href = "http://api.jquery.com/mouseenter/"></a>
+           	</li>
+		</ul>
+	</div>
+
+</div>
+<!-- END OF PAGE------------------------------------------------------------->
+</body>
+<!-- End of body-->
+
+</html>

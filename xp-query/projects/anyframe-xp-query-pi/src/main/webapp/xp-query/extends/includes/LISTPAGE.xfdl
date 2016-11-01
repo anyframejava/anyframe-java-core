@@ -1,0 +1,143 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<FDL version="1.4">
+  <TypeDefinition url="..\default_typedef.xml"/>
+  <Form id="LISTPAGE" classname="LISTPAGE" inheritanceid="" position="absolute 0 0 576 30" titletext="paging">
+    <Layouts>
+      <Layout>
+        <Div height="34" id="divList" width="383" text="divList" position="absolute 0 0 576 30"/>
+      </Layout>
+    </Layouts>
+    <Script type="xscript4.0"><![CDATA[include "lib::commonScript.xjs";
+
+var nCurrentPage = 1;	// 현재 페이지
+var objListDataset;
+var objPageDataset;
+
+// Page 클릭 이벤트 처리
+function fnPage_Onclick(obj:Static,  e:ClickEventInfo){
+	this.setFocus();
+	if(gfnDsGetUpdate(objListDataset)){
+		var resultValue = gfnConfirm("msg.before.movepagewithoutsave", "YN");
+		
+		if(resultValue == "N") {
+			return;
+		}
+	}
+	
+	var objName = obj.name;
+	if(gfnIndexOf(objName, "bt") != -1) {
+		objName = gfnSubStr(obj.name, 2);
+	}
+	
+	if(objName == "First" || objName == "Before" || objName == "Next" || objName == "End"){
+		// ◀, ▶ 클릭
+		objPageDataset.setConstColumn("pageIndex", parseInt(obj.userData));
+		nCurrentPage = obj.userData;
+		
+		//Page Number 클릭
+	} else if (gfnCheckNumber(objName)){
+		objPageDataset.setConstColumn("pageIndex", parseInt(objName));
+		nCurrentPage = obj.userData;
+	}
+	
+	parent.fnGetPagingList();
+}
+
+// Page를 그리는 함수
+function fnMakePage(){
+	var nWidthOfParent;
+	var nHeightOfParent;
+
+	nWidthOfParent = divList.parent.position.width; 
+	nHeightOfParent = divList.parent.position.height; 
+	
+	divList.position = "absolute 0 0 " + nWidthOfParent + " " + nHeightOfParent;
+	
+	var nDivCompLength = divList.components.length;
+	
+	//기존의 Div component 삭제
+	for(var i = nDivCompLength - 1 ; i >= 0 ; i--){
+		divList.removeChild(divList.components[i].name);
+	}
+	
+	var nTotalPage;
+	var nPageUnit = objPageDataset.getConstColumn("pageUnit");
+	var nPageSize = objPageDataset.getConstColumn("pageSize");
+	var nTotalCount = objListDataset.getConstColumn("totalCount");
+	
+	if( Math.floor(nTotalCount % nPageSize) > 0 ) {
+		nTotalPage = Math.floor(nTotalCount / nPageSize) + 1;
+	} else {
+		nTotalPage = Math.floor(nTotalCount / nPageSize);
+	}
+	
+	var nBeginUnitPage = (Math.floor((parseInt(nCurrentPage) - 1) / parseInt(nPageUnit))) * nPageUnit + 1;
+	
+	var nNextBeginUnitPage = parseInt(nBeginUnitPage + nPageUnit);
+	
+	var nLength = gfnLength((nNextBeginUnitPage - 1) + "");
+	var nLeft = 10;
+	var nBtnImageWidth = 16;
+	var nWidth = 25 + (nLength - 2) * 5;
+	var nStaticWidth = 30;
+
+	// 이전 PageUnit(◀)
+	var nBeforeLeft = (nWidthOfParent / 2) - ((nPageUnit * nStaticWidth) / 2 + nStaticWidth);	
+	var btBefore = new Static("btBefore", nBeforeLeft, 0, nBeforeLeft + nStaticWidth, 25);
+	
+	divList.addChild("btBefore", btBefore);
+	btBefore.text = "◀";
+	btBefore.userData = nBeginUnitPage - 1;
+	btBefore.style.cursor = "hand"
+	btBefore.onclick.setHandler(fnPage_Onclick);
+	btBefore.show();
+	
+	if(nBeginUnitPage <= nPageUnit) {
+		btBefore.enable = false;
+	}
+	
+	// 페이징[1 2 3 4 5 6 7 8 9 10]
+	var nStartPaging = (nWidthOfParent / 2) - ((nPageUnit * nStaticWidth) / 2);
+	var nCountStatic = 0;
+	for(var i = nBeginUnitPage ; i < nNextBeginUnitPage ; i++) {
+		if(i > nTotalPage){
+			break;
+		}
+
+		if(nTotalPage + 1 < nNextBeginUnitPage){
+			var stPage = new Static("bt" + i, (nWidthOfParent / 2) - (((nTotalPage % nPageUnit )/ 2) * nStaticWidth) + nCountStatic * nStaticWidth, 0, (nWidthOfParent / 2) - (((nTotalPage % nPageUnit) / 2) * nStaticWidth) + nCountStatic * nStaticWidth + nStaticWidth, 25);
+		} else {
+			var stPage = new Static("bt" + i, nStartPaging + nCountStatic * nStaticWidth, 0, nStartPaging + nCountStatic * nStaticWidth + nStaticWidth, 25);
+		}
+		stPage.text = i;
+		stPage.userData = i;
+		if(i == nCurrentPage){
+			stPage.style.color = "red";
+		} else {
+			stPage.style.color = "black";
+		}
+		stPage.style.cursor = "hand"
+		divList.addChild("bt" + i, stPage);
+		stPage.onclick.setHandler(fnPage_Onclick);
+		stPage.show();
+		nCountStatic++;
+	}
+	
+	// 다음 PageUnit (▶)
+	var nAfterRight = (nWidthOfParent / 2) + ((nPageUnit * nStaticWidth) / 2);	
+	var btNext = new Static("btNext", nAfterRight, 0, nAfterRight + nStaticWidth, 25);
+	divList.addChild("btNext", btNext);
+	btNext.text = "▶";
+	btNext.style.cursor = "hand"
+	btNext.userData = nNextBeginUnitPage;
+	btNext.onclick.setHandler(fnPage_Onclick);
+	btNext.show();
+	if(nNextBeginUnitPage > nTotalPage) {
+		btNext.enable = false;
+	}
+	
+	
+	
+}]]></Script>
+  </Form>
+</FDL>

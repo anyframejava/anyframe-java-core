@@ -1,0 +1,77 @@
+	<section id="jquery_tab_sec001">
+		<title>Tab widget</title>
+		<para>Tab 위젯은 동일한 목적을 가지고 있으나 성격이 상이한 UI를 분할하여 화면 복잡도를 낮추고 효율적인 User Inteface 구현을 도와주는 자바스크립트 기반의 UI 컴포넌트이다. 
+		<ulink url="http://api.jqueryui.com/tabs">(http://api.jqueryui.com/tabs)</ulink>		</para>
+		
+		
+		<para>Tab 위젯을 사용하기위해 jQuery UI를 다음과 같이 추가해 주었다.</para>
+		<programlisting><![CDATA[
+<script type="text/javascript" src="<c:url value='/jquery/jquery/jquery-ui/jquery-ui-1.8.22.custom.min.js'/>"></script>
+<link href="<c:url value='/jquery/jquery/jquery-ui/themes/smoothness/jquery-ui-1.8.22.custom.css'/>" rel="stylesheet" type="text/css" />
+]]></programlisting>
+		
+		<para>
+			Jquery Plugin의 Tree 샘플에서는 두개의 탭을 사용한다. 다음은 Tab 위젯을 사용하기 위한 설정이다. 
+		</para>	
+		<programlisting><![CDATA[
+$("#tabs").tabs({remote : true,	disabled: [0, 1]});
+]]></programlisting>		
+		<para>
+			 위의 코드에서 {remote : true} 옵션은 AJAX Loading 을 사용한다는 의미이고 {disabled: [0,1]} 옵션은 첫 번째, 두 번째 탭을 비활성화 한다는 것을 의미한다. 
+		</para>
+
+		<para>다음은 Tab 위젯을 구현한 jsTree 코드이며, 'enable' 과 'disable' 속성을 변경해서 탭 화면을 보여준다. Tree jsTree는 이곳을 참조한다. </para>
+		
+	
+		<programlisting><![CDATA[	
+		...생략
+	.bind("select_node.jstree", function (e, data) { // event handling for node select
+			var node = data.rslt.obj; 
+			var id = node.attr('id');
+			var pid = node.parents('li:eq(0)').attr('id'); 
+			
+			if(pid == undefined){//genre
+			
+				$("#tabs").show();
+				$("#tabs").tabs("enable", 0);
+				$("#tabs").tabs("select", 0);
+				$("#tabs").tabs("disable", 1);
+				
+				...생략...
+				
+				});
+			}else{//movie 
+				
+				$("#tabs").show();
+				$("#tabs").tabs("enable", 1);
+				$("#tabs").tabs("select", 1);
+				$("#tabs").tabs("enable", 0);
+
+				...생략...
+				
+				});
+			}
+			$("#tabs").show();
+		});
+		]]></programlisting>
+		
+		<para>왼쪽 트리에서 영화 선택 시 해당화면이 우측에 활성화 되며, 탭을 클릭해 탭 화면을 전환한다.</para>
+		<para>아래 그림은 Movie Information 탭을 클릭했을 때 이다.</para>
+		<mediaobject>
+			<imageobject>
+				<imagedata fileref="../image/jquery/jquery_tab1.png"	align="center" />
+			</imageobject>
+			<textobject>
+				<phrase>왼쪽 트리에서 영화 선택 시 해당화면이 우측에 활성화 되며, 탭을 클릭해 탭 화면을 전환</phrase>
+			</textobject>
+		</mediaobject>
+		<para>아래 그림은 Genre Information 탭을 클릭했을 때 이다.</para>
+		<mediaobject>
+			<imageobject>
+				<imagedata fileref="../image/jquery/jquery_tab2.png"	align="center" />
+			</imageobject>
+			<textobject>
+				<phrase>Genre Information 탭을 클릭한 결과</phrase>
+			</textobject>
+		</mediaobject>
+	</section>

@@ -1,0 +1,25 @@
+			<!--flex-query-createCategory-START-->
+			INSERT INTO FLEX_CATEGORY ( 			
+				CATEGORY_ID, 
+				CATEGORY_DESC, 
+				CATEGORY_NAME, 
+				REG_DATE) 
+			VALUES (CONCAT('CATEGORY-', FLEX_CATEGORY_ID_SEQ_NEXT_VALUE()), 
+				:vo.categoryDesc, 
+				:vo.categoryName, 
+				:vo.regDate)
+			<!--flex-query-createCategory-END-->
+		
+			<!--flex-query-findCategoryList-START-->
+			SELECT 
+				category.CATEGORY_ID, category.CATEGORY_DESC, category.CATEGORY_NAME, category.REG_DATE 
+			FROM FLEX_CATEGORY category
+			<!--Velocity-Support-dynamicFindCategoryList-START-->
+			#if ($vo.searchCondition == "categoryDesc")
+				where coalesce(category.CATEGORY_DESC, ' ') like CONCAT('%',:vo.searchKeyword,'%')		
+			#elseif ($vo.searchCondition == "categoryName")
+				where category.CATEGORY_NAME like CONCAT('%',:vo.searchKeyword,'%')		
+			#end			
+				order by category.CATEGORY_ID DESC
+			<!--Velocity-Support-dynamicFindCategoryList-END-->
+			<!--flex-query-findCategoryList-END-->

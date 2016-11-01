@@ -1,0 +1,90 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN"
+        "http://www.w3.org/TR/html4/loose.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+
+<head>
+    <meta http-equiv="content-type" content="text/html; charset=UTF-8"/>
+    <title>[Tooltip] Basic Sample</title>
+    <link href="../../../common/css/smoothness/jquery-ui-1.10.0.custom.css" rel="stylesheet">
+    <script src="../../../common/exlibs/jquery-1.9.0.js"></script>
+    <script src="../../../common/exlibs/jquery-ui-1.10.0.custom.js"></script>
+    <script src="../../../common/exlibs/jquery.jgrowl.js"></script>
+
+    <link type="text/css" rel="stylesheet" href="../../../common/css/style.css"/>
+    <link type="text/css" rel="stylesheet" href="sub_css/basic.css">
+    <link type="text/css" rel="stylesheet" href="sub_css/jquery.jgrowl.css">
+    <link type="text/css" rel="stylesheet" href="sub_css/jgstyle.css">
+
+    <script>
+        $(document).ready(function () {
+            $('#default').button().click(function () {
+                $.jGrowl("Default jGrowl Notification.");
+            });
+
+            $('#topLeft').button().click(function () {
+                $("#topLeftDiv").jGrowl("notification on upper left", {
+                    header: 'Top Left',
+                    life: 2000
+                });
+            });
+
+            $('#topRight').button().click(function () {
+                $("#topRightDiv").jGrowl("notification on upper right", {
+                    header: 'Top Right',
+                    life: 2000
+                });
+            });
+
+            $('#bottomLeft').button().click(function () {
+                $("#bottomLeftDiv").jGrowl("notification on lower left", {
+                    header: 'Bottom Left',
+                    life: 2000
+                });
+            });
+
+            $('#bottomRight').button().click(function () {
+                $("#bottomRightDiv").jGrowl("notification on lower right", {
+                    header: 'Bottom Right',
+                    life: 2000
+                });
+            });
+
+            $('#iPhone').button().click(function () {
+                $.jGrowl("Sticky Notification with iPhone Theme", {
+                    sticky: true,
+                    theme: 'iphone',
+                    header: 'iPhone Theme'
+                });
+            });
+
+            $('#smoke').button().click(function () {
+                $.jGrowl("Sticky Notification with Smoke Theme", {
+                    sticky: true,
+                    theme: 'smoke',
+                    header: 'Smoke Theme'
+                });
+            });
+
+        });
+    </script>
+</head>
+<body>
+<div class="title">기본 기능</div>
+<p>▶ 버튼을 클릭하면 jGrowl이 동작하여 화면에 기본 알림메시지를 출력한다. (2초후 사라진다. / 오른쪽 상단)</p>
+<button id="default">Default</button>
+<div class="title">위치 변경</div>
+<p>▶ 각 버튼이 지정하는 위치에 알림메시지를 출력한다. (2초후 사라진다.)</p>
+<button id="topLeft">Top Left</button>
+<div id="topLeftDiv" class="jGrowl top-left"></div>
+<button id="topRight">Top Right</button>
+<div id="topRightDiv" class="jGrowl top-right"></div>
+<button id="bottomLeft">Bottom Left</button>
+<div id="bottomLeftDiv" class="jGrowl bottom-left"></div>
+<button id="bottomRight">Bottom Right</button>
+<div id="bottomRightDiv" class="jGrowl bottom-right"></div>
+<div class="title">테마 변경</div>
+<p>▶ 버튼을 클릭하면 커스터마이징 된 효과의 알림메시지가 출력된다. (Sticky)</p>
+<button id="iPhone">iPhone Style</button>
+<button id="smoke">Smoke Style</button>
+</body>
+</html>

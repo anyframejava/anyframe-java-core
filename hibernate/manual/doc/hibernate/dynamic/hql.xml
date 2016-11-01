@@ -1,0 +1,51 @@
+<chapter id="hibernate_dynamic_hql">
+	<title>Dynamic HQL(Hibernate Query Language)</title>
+	<para>
+		<![CDATA[DynamicHibernateService 속성 정의 파일 내의 fileNames 값으로 정의한 Dynamic
+		HQL 정의 파일은 다음과 같이 구성된다. <dynamic-hibernate> 태그는 여러 개의 query 태그를
+		포함할 수 있다. <query> 태그는 Velocity Rule을 접목시켜 Dynamic HQL문을 정의하기 위한
+		용도이며, 해당 HQL의 식별을 위해 name이라는 속성을 가져야 한다. <query> 태그 내에서는 text
+		치환과 named parameter 형태를 통해 Dynamic HQL 설정을 지원한다. 위에서 설명한 DinamicHibernateService syntax를 사용하면
+		다양한 형태로 운영시 조건 값에 따라 동적으로 HQL을 변환할 수 있다.]]>
+	</para>
+       
+
+    <para>
+		다음은 Dynamic HQL을 포함하고 있는 dynamic-hibernate.xml 파일의 일부로, 입력 조건에
+        director 정보가 포함되어 있으면, director 정보에 대해 like 조건으로 검색하는 HQL이 생성되고, 그렇지
+		않을 경우에는 title 정보에 대해 like 조건으로 검색하는 HQL이 생성될 것이다. 이 외에도 sortColumn,
+        sortDirection 정보도 입력 조건으로 전달받도록 정의되어 있음을 알 수 있다.
+        <programlisting language="xml"><![CDATA[<dynamic-hibernate>
+         <query name="findMovieListAll">
+                  FROM Movie movie
+                  WHERE]]> 
+                           <emphasis role="bold">#if(${director})</emphasis>
+                                    <emphasis role="bold">movie.director like :director</emphasis>
+                           <emphasis role="bold">#else</emphasis>
+                                    <emphasis role="bold">movie.title       like :title</emphasis>
+                           <emphasis role="bold">#end</emphasis>
+                  <emphasis role="bold">ORDER BY {{sortColumn}} {{sortDirection}}</emphasis>
+
+         <![CDATA[</query>
+</dynamic-hibernate>]]></programlisting>
+	</para>
+	
+	<para>
+		DynamicHibernateService를 활용하기 위해서는 MovieDAOHibernateImpl 코드에서처럼
+        DynamicHibernateService를 통해 입력 조건과 해당 Dynamic HQL의 name을 전달하도록 한다.
+        <programlisting language="java">public List findMovieList(int conditionType, String condition) {
+    Object[] args = new Object[3];
+    if (conditionType == 0) {
+        <emphasis role="bold">args[0] = "director=%" + condition</emphasis> + "%";
+        <emphasis role="bold">args[1] = "sortColumn=movie.director";</emphasis>
+    } else {
+        <emphasis role="bold">args[0] = "title=%" + condition</emphasis> + "%";
+        <emphasis role="bold">args[1] = "sortColumn=movie.title";</emphasis>
+    }
+    <emphasis role="bold">args[2] = "sortDirection=ASC";</emphasis>
+
+    return <emphasis role="bold">dynamicHibernateService.findList("findMovieListAll", args);</emphasis>
+}</programlisting>
+	</para>
+	
+</chapter>

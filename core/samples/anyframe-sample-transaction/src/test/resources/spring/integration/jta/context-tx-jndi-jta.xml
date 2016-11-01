@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:jee="http://www.springframework.org/schema/jee"
+	xmlns:tx="http://www.springframework.org/schema/tx"
+	xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-4.0.xsd
+	                    http://www.springframework.org/schema/tx http://www.springframework.org/schema/tx/spring-tx-4.0.xsd
+	                    http://www.springframework.org/schema/jee http://www.springframework.org/schema/jee/spring-jee-4.0.xsd">
+
+	<!-- id sets automatically "transactionManager" -->
+	<tx:jta-transaction-manager />
+
+	<jee:jndi-lookup id="dataSource" jndi-name="#{contextProperties.jndiName}"
+		resource-ref="true">
+		<jee:environment>
+		java.naming.factory.initial=#{contextProperties['java.naming.factory.initial']}
+		java.naming.provider.url=#{contextProperties['java.naming.provider.url']}
+		</jee:environment>
+	</jee:jndi-lookup>
+
+</beans>

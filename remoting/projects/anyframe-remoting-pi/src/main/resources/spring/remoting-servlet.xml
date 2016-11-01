@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-4.0.xsd">
+	
+	<bean id="remotingMovieFinderClient" class="org.springframework.remoting.httpinvoker.HttpInvokerProxyFactoryBean">
+		<property name="serviceUrl" value="http://localhost:8080/anyframe-remoting-pi/remoting/MovieFinder" />
+		<property name="serviceInterface" value="org.anyframe.plugin.remoting.moviefinder.service.MovieFinder"/>
+	</bean>		
+	
+	<bean id="remotingMovieClient" class="org.springframework.remoting.httpinvoker.HttpInvokerProxyFactoryBean">
+		<property name="serviceUrl" value="http://localhost:8080/anyframe-remoting-pi/remoting/MovieService" />
+		<property name="serviceInterface" value="org.anyframe.plugin.remoting.moviefinder.service.MovieService"/>
+	</bean>
+	
+	<bean class="org.springframework.web.servlet.handler.SimpleUrlHandlerMapping">
+		<property name="mappings">
+			<props>
+				<prop key="/MovieFinder">remotingMovieFinderExporter</prop>
+				<prop key="/MovieService">remotingMovieExporter</prop>
+			</props>
+		</property>
+	</bean>
+	
+</beans>

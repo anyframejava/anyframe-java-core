@@ -1,0 +1,368 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
+<html>
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+<title>Grid Sample - Edit Type 별 처리</title>
+
+<link href="../../../common/css/smoothness/jquery-ui-1.10.0.custom.css" rel="stylesheet">
+<link href="../../../common/exlibs/css/ui.jqgrid.css" rel="stylesheet">
+<script src="../../../common/exlibs/jquery-1.9.0.js"></script>
+<script src="../../../common/exlibs/jquery-ui-1.10.0.custom.js"></script>
+<script src="../../../common/exlibs/jquery.jqGrid.src.js"></script>
+
+<link href="sub_css/edittype_control.css" rel="stylesheet">
+
+<script type="text/javascript">
+
+	var ENV = {
+			ID_GRID_TEXT : 		"#grid_text",
+			ID_GRID_TEXTAREA : 	"#grid_textarea",
+			ID_GRID_SELECT : 	"#grid_select",
+			ID_GRID_CHECKBOX : 	"#grid_checkbox",
+			ID_GRID_PASSWORD : 	"#grid_password",
+			ID_GRID_BUTTON : 	"#grid_button",
+			ID_GRID_IMAGE : 	"#grid_image",
+			ID_GRID_FILE : 		"#grid_file"
+	};
+	
+	var mainView = {
+			
+			_maxrowid : 0,			
+			_gridarry : [],
+			_bEditMode : false,
+			
+			init : function()
+			{
+				this._gridarry.push(this.gridtext);
+				this._gridarry.push(this.gridtextarea);
+				this._gridarry.push(this.gridselect);
+				this._gridarry.push(this.gridcheckbox);
+				this._gridarry.push(this.gridpassword);
+				this._gridarry.push(this.gridbutton);
+				this._gridarry.push(this.gridimage);
+				this._gridarry.push(this.gridfile);
+				
+				$.jgrid.defaults = {
+						width : 300
+				}
+				
+				for (var ax = 0, len = this._gridarry.length; ax < len; ax++)
+				{
+					this._gridarry[ax].init(this);
+				}
+			},
+			
+			gridtext : {
+				
+				parent : null, _grid : null, _data : [],
+				
+				init : function(p)
+				{
+					var owner = this;
+					
+					this.parent = p;
+					this._grid = $(ENV.ID_GRID_TEXT);
+					
+					this._grid.jqGrid( {
+							
+							datatype: "local",
+							caption: "Edit Type - Text",
+							colNames: ["id", "입력값"],
+							colModel: [
+							            {name: "id", 	editable:false, sortable: false},
+							            {name: "input",	editable:true,	edittype:"text"}
+							          ]
+					});
+				}				
+			},
+			
+			gridtextarea : {
+				
+				parent : null, _grid : null, _data : [],
+				
+				init : function(p)
+				{
+					var owner = this;
+					
+					this.parent = p;
+					this._grid = $(ENV.ID_GRID_TEXTAREA);
+					
+					this._grid.jqGrid( {
+							
+							datatype: "local",
+							caption: "Edit Type - TextArea",
+							colNames: ["id", "입력값"],
+							colModel: [
+							            {name: "id", 	editable:false, sortable: false},
+							            {name: "input",	editable:true,	edittype:"textarea"}
+							          ]
+					});
+				}
+				
+			},
+			
+			gridselect : {
+				
+				parent : null, _grid : null, _data : [],
+				
+				init : function(p)
+				{
+					var owner = this;
+					
+					this.parent = p;
+					this._grid = $(ENV.ID_GRID_SELECT);
+					
+					this._grid.jqGrid( {
+							
+							datatype: "local",
+							caption: "Edit Type - Select",
+							colNames: ["id", "입력값1", "입력값2"],
+							colModel: [
+							            {name: "id", 		editable:false, sortable: false},
+							            {name: "input1",	editable:true,	edittype:"select",
+							             					editoptions: { value: "opt1:선택1; opt2:선택2" }	
+							            },
+							            {name: "input2",	editable:true,	edittype:"select",
+			             									editoptions: { value: {opt1:'선택1', opt2:'선택2', op3:'선택3' }  }	
+			            				}
+							          ]
+					});
+				}				 
+			},
+			
+			
+			gridcheckbox : {
+				
+				parent : null, _grid : null, _data : [],
+				
+				init : function(p)
+				{
+					var owner = this;
+					
+					this.parent = p;
+					this._grid = $(ENV.ID_GRID_CHECKBOX);
+					
+					this._grid.jqGrid( {
+							
+							datatype: "local",
+							caption: "Edit Type - Checkbox",
+							colNames: ["id", "입력값"],
+							colModel: [
+							            {name: "id", 		editable:false, sortable: false},
+							            {name: "input",		editable:true,	edittype:"checkbox",
+							             					editoptions: { value: "Check:UnCheck" }	
+							            }
+							          ]
+					});
+				}					
+			},
+			
+			gridpassword : {
+				
+				parent : null, _grid : null, _data : [],
+				
+				init : function(p)
+				{
+					var owner = this;
+					
+					this.parent = p;
+					this._grid = $(ENV.ID_GRID_PASSWORD);
+					
+					this._grid.jqGrid( {
+							
+							datatype: "local",
+							caption: "Edit Type - Password",
+							colNames: ["id", "입력값"],
+							colModel: [
+							            {name: "id", 		editable:false, sortable: false, width: 40},
+							            {name: "input",		editable:true,	edittype:"password",
+							             					editoptions: { maxlength: 10 }
+							            }
+							          ]
+					});
+				}				
+			},
+			
+			gridbutton : {
+				
+				parent : null, _grid : null, _data : [],
+				
+				init : function(p)
+				{
+					var owner = this;
+					
+					this.parent = p;
+					this._grid = $(ENV.ID_GRID_BUTTON);
+					
+					this._grid.jqGrid( {
+							
+							datatype: "local",
+							caption: "Edit Type - Button",
+							colNames: ["id", "입력값"],
+							colModel: [
+							            {name: "id", 		editable:false, sortable: false, width: 40},
+							            {name: "input",		editable:true,	edittype:"button",
+							             					editoptions: { value: "TestButton" }	
+							            }
+							          ]
+					});
+				}				
+			},
+			
+			gridimage : {
+				
+				parent : null, _grid : null, _data : [],
+				
+				init : function(p)
+				{
+					var owner = this;
+					
+					this.parent = p;
+					this._grid = $(ENV.ID_GRID_IMAGE);
+					
+					this._grid.jqGrid( {
+							
+							datatype: "local",
+							caption: "Edit Type - Image",
+							colNames: ["id", "입력값"],
+							colModel: [
+							            {name: "id", 		editable:false, sortable: false, width: 40},
+							            {name: "input",		editable:true,	edittype:"image",
+							             					editoptions: { src: "sub/logo-jquery-ui.png" }	
+							            }
+							          ]
+					});
+				}				
+			},
+			
+			gridfile : {
+				
+				parent : null, _grid : null, _data : [],
+				
+				init : function(p)
+				{
+					var owner = this;
+					
+					this.parent = p;
+					this._grid = $(ENV.ID_GRID_FILE);
+					
+					this._grid.jqGrid( {
+							
+							datatype: "local",
+							caption: "Edit Type - File",
+							colNames: ["id", "입력값"],
+							colModel: [
+							            {name: "id", 		editable:false, sortable: false, width: 40},
+							            {name: "input",		editable:true,	edittype:"file"}
+							          ]
+					});
+				}				
+			},			
+			
+			
+			addRow : function()
+			{
+				if (this._bEditMode) {
+					this.saveRow();
+				}
+				
+				var addparams = {},
+					newrowid = this._getNextNewRowId();
+				
+				addparams.rowID = newrowid;
+				addparams.initdata = { id: newrowid };
+				addparams.position = "last";
+				
+				for (var ax = 0, len = this._gridarry.length; ax < len; ax++)
+				{
+					this._gridarry[ax]._grid.jqGrid('addRow', addparams);
+				}
+				
+				this._bEditMode = true;
+			},
+			
+			saveRow : function()
+			{
+				for (var ax = 0, len = this._gridarry.length; ax < len; ax++)
+				{
+					this._gridarry[ax]._grid.jqGrid('saveRow', this._maxrowid);
+				}
+				
+				this._bEditMode = false;
+			},
+			
+			_getNextNewRowId : function() 
+			{
+				this._maxrowid++;
+				return ("" + this._maxrowid);
+			}		
+	};
+
+	$(document).ready(function() {
+		
+		mainView.init();
+		
+		$('button').click(function(evt) {
+			
+			var cmdWhat = ($(this).text()).toLowerCase();
+			
+			if (cmdWhat == "add") mainView.addRow();
+			else if (cmdWhat == "save") mainView.saveRow();
+		});
+		
+	});
+	
+</script>
+
+</head>
+<body class="grid_demo">
+	<div>
+		<ul>
+			<li><label>Edit : </label>
+				<button style="width:100px">Add</button>
+				<button style="width:100px">Save</button>
+			</li>						
+		</ul>	
+	</div>
+	
+	<div class="grid_container">
+		<label>edittype : Text</label>
+		<table id="grid_text"></table>
+	</div>
+	
+	<div class="grid_container">
+		<label>edittype : TextArea</label>
+		<table id="grid_textarea"></table>
+	</div>	
+	
+	<div class="grid_container">
+		<label>edittype : Select (ComboBox)</label>
+		<table id="grid_select"></table>
+	</div>
+	
+	<div class="grid_container">
+		<label>edittype : Checkbox</label>
+		<table id="grid_checkbox"></table>
+	</div>
+	
+	<div class="grid_container">
+		<label>edittype : Password</label>
+		<table id="grid_password"></table>
+	</div>
+	
+	<div class="grid_container">
+		<label>edittype : Button</label>
+		<table id="grid_button"></table>
+	</div>
+	
+	<div class="grid_container">
+		<label>edittype : Image</label>
+		<table id="grid_image"></table>
+	</div>
+	
+	<div class="grid_container">
+		<label>edittype : File</label>
+		<table id="grid_file"></table>
+	</div>	
+</body>
+</html>

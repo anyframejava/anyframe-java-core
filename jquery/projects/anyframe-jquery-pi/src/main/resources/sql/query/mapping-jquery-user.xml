@@ -1,0 +1,82 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<queryservice xmlns="http://www.anyframejava.org/schema/query/mapping" 
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" 
+	xsi:schemaLocation="http://www.anyframejava.org/schema/query/mapping http://www.anyframejava.org/schema/query/mapping/anyframe-query-mapping-1.0.xsd ">
+
+	<queries>
+		<query id="createJqueryUser">
+			<statement>
+				INSERT INTO JQUERY_USER (USER_NAME, EN_NAME, COMP_PHONE, PHONE, CELL_PHONE, COMPANY, JOB_POSITION, ASSIGNMENT, OFFICER_YN, FAX, ZIP_CODE, ADDRESS, COMP_ZIP_CODE, COMP_ADDRESS, EMAIL, USER_ID, DEPT_ID, PASSWORD, FIRST_HALF_VOLUNTEER_WORK, SECOND_HALF_VOLUNTEER_WORK)
+				VALUES (:vo.userName, :vo.enName, :vo.compPhone, :vo.phone, :vo.cellPhone, :vo.company, :vo.jobPosition, :vo.assignment, :vo.officerYn, :vo.fax, :vo.zipCode, :vo.address, :vo.compZipCode, :vo.compAddress, :vo.email, :vo.userId, :vo.deptId, :vo.password, :vo.firstHalfVolunteerWork, :vo.secondHalfVolunteerWork)
+			</statement>
+		</query>
+		<query id="removeJqueryUser">
+			<statement>
+				DELETE FROM JQUERY_USER 
+				WHERE USER_ID = :vo.userId
+			</statement>
+		</query>
+		<query id="updateJqueryUser">
+			<statement>
+				UPDATE JQUERY_USER
+				SET USER_NAME = :vo.userName,
+					EN_NAME = :vo.enName,
+					COMP_PHONE = :vo.compPhone,
+					PHONE = :vo.phone,
+					CELL_PHONE = :vo.cellPhone,
+					COMPANY = :vo.company,
+					JOB_POSITION = :vo.jobPosition,
+					ASSIGNMENT = :vo.assignment,
+					OFFICER_YN = :vo.officerYn,
+					FAX = :vo.fax,
+					ZIP_CODE = :vo.zipCode,
+					ADDRESS = :vo.address,
+					COMP_ZIP_CODE = :vo.compZipCode,
+					COMP_ADDRESS = :vo.compAddress,
+					EMAIL = :vo.email,
+					DEPT_ID = :vo.deptId,
+					PASSWORD = :vo.password,
+					FIRST_HALF_VOLUNTEER_WORK = :vo.firstHalfVolunteerWork,
+					SECOND_HALF_VOLUNTEER_WORK = :vo.secondHalfVolunteerWork
+				WHERE USER_ID = :vo.userId
+			</statement>
+		</query>
+		<query id="findJqueryUserList" isDynamic="true">
+			<statement>
+			<![CDATA[
+				SELECT 
+					user,USER_ID, user.USER_NAME, user.JOB_POSITION, user.PHONE, user.CELL_PHONE, user.DEPT_ID
+				FROM JQUERY_USER user
+				WHERE user.DEPT_ID = :deptId
+				order by							
+						user.USER_NAME
+			]]>
+			</statement>
+			<result class="org.anyframe.plugin.jquery.userfinder.domain.User"/>
+		</query>
+		<query id="findJqueryUserPagingList" isDynamic="true">
+			<statement>
+			<![CDATA[
+				SELECT 
+					user.USER_NAME, user.JOB_POSITION, user.PHONE, user.CELL_PHONE, user.DEPT_ID
+				FROM JQUERY_USER user
+				order by							
+						user.USER_NAME
+			]]>
+			</statement>
+			<result class="org.anyframe.plugin.jquery.userfinder.domain.User"/>
+		</query>
+		<query id="findJqueryUserByPk">
+			<statement>
+				<![CDATA[
+					SELECT 
+						user.USER_NAME, user.EN_NAME, user.COMP_PHONE, user.COMPANY, user.JOB_POSITION, user.PHONE, user.CELL_PHONE, user.DEPT_ID, user.ASSIGNMENT, user.OFFICER_YN, 
+						user.FAX, user.ZIP_CODE, user.ADDRESS, user.COMP_ZIP_CODE, user.COMP_ADDRESS, user.EMAIL, user.USER_ID, user.PASSWORD, user.FIRST_HALF_VOLUNTEER_WORK, user.SECOND_HALF_VOLUNTEER_WORK
+					FROM JQUERY_USER user
+					WHERE user.USER_ID = :vo.userId
+				]]>
+			</statement>
+			<result class="org.anyframe.plugin.jquery.userfinder.domain.User"/>
+		</query>
+	</queries>
+</queryservice>

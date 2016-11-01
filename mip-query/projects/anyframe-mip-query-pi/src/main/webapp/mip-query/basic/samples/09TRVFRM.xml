@@ -1,0 +1,183 @@
+<?xml version="1.0" encoding="utf-8"?>
+<Window>
+	<Form BKColor="white" DomainID="title.community_info" Height="640" Id="frm09TRVFRM" Left="8" OnLoadCompleted="frm09TRVFRM_OnLoadCompleted" PidAttrib="7" Style="stlFrm" Top="8" Ver="1.0" Width="834" WorkArea="true">
+		<Datasets>
+			<Dataset CanColumnChange="dsTrvCommunity_CanColumnChange" DataSetType="Dataset" Editable="True" Id="dsTrvCommunity" OnRowPosChanged="dsTrvCommunity_OnRowPosChanged">
+				<Contents>
+					<colinfo id="COMMUNITY_ID" size="16" summ="default" type="STRING"/>
+					<colinfo id="TEXT_NAME" size="256" summ="default" type="STRING"/>
+					<colinfo id="COMMUNITY_DESC" size="256" summ="default" type="STRING"/>
+					<colinfo id="CATEGORY_ID" size="16" summ="default" type="STRING"/>
+					<colinfo id="REG_ID" size="256" summ="default" type="STRING"/>
+					<colinfo id="REG_DATE" size="10" summ="default" type="STRING"/>
+					<colinfo id="DEPTH" size="256" summ="default" type="STRING"/>
+					<colinfo id="CATEGORY_DESC" size="256" summ="default" type="STRING"/>
+					<colinfo id="COMMUNITY_NAME" size="256" summ="default" type="STRING"/>
+					<colinfo id="CATEGORY_NAME" size="256" summ="default" type="STRING"/>
+					<colinfo id="CATE_REGDATE" size="256" summ="default" type="STRING"/>
+				</Contents>
+			</Dataset>
+			<Dataset DataSetType="Dataset" Id="dsService">
+				<Contents>
+					<colinfo id="SVC_ID" size="100" summ="default" type="STRING"/>
+					<colinfo id="QUERY_LIST" size="256" summ="default" type="STRING"/>
+					<colinfo id="SERVICE" size="100" summ="default" type="STRING"/>
+					<colinfo id="IN_DATASET_LIST" size="256" summ="default" type="STRING"/>
+					<colinfo id="OUT_DATASET_LIST" size="256" summ="default" type="STRING"/>
+					<colinfo id="CONTROLLER" size="512" summ="default" type="STRING"/>
+					<colinfo id="CALLBACK" size="100" summ="default" type="STRING"/>
+					<colinfo id="SYNC_YN" size="1" summ="default" type="STRING"/>
+					<record>
+						<CALLBACK></CALLBACK>
+						<CONTROLLER></CONTROLLER>
+						<IN_DATASET_LIST></IN_DATASET_LIST>
+						<OUT_DATASET_LIST>dsTrvCommunity=querySet1</OUT_DATASET_LIST>
+						<QUERY_LIST>querySet1=findCommunityListForTree</QUERY_LIST>
+						<SERVICE></SERVICE>
+						<SVC_ID>getListCommunity</SVC_ID>
+						<SYNC_YN></SYNC_YN>
+					</record>
+					<record>
+						<CALLBACK></CALLBACK>
+						<CONTROLLER></CONTROLLER>
+						<IN_DATASET_LIST>querySet1=dsTrvCommunity:U</IN_DATASET_LIST>
+						<OUT_DATASET_LIST></OUT_DATASET_LIST>
+						<QUERY_LIST>querySet1=createCommunity,updateCommunity,deleteCommunity</QUERY_LIST>
+						<SERVICE></SERVICE>
+						<SVC_ID>saveAllCommunity</SVC_ID>
+						<SYNC_YN></SYNC_YN>
+					</record>
+				</Contents>
+			</Dataset>
+		</Datasets>
+		<Shape BKColor="#a3a3a3" Bottom="148" Height="0" Id="Shape0" Left="384" LineColor="#a3a3a3" LineWidth="0" Right="600" TabOrder="1" Top="148" Width="216"></Shape>
+		<Button ButtonStyle="TRUE" Cursor="HAND" DomainID="button.save" Height="19" Id="btnSaveAll" ImageID="btn_save" Left="772" LeftMargin="13" OnClick="btnSaveAll_OnClick" Style="stlBtn" TabOrder="2" Text="저장" Top="30" Width="56"></Button>
+		<TreeView BindDataset="dsTrvCommunity" Border="Flat" BorderColor="user12" Expand="FALSE" Height="515" Id="trvCommunity" ImageID="tree_icon1" InnerImageCount="3" Left="14" LevelColumn="DEPTH" OnCollapse="trvCommunity_OnCollapse" OnExpand="trvCommunity_OnExpand" Style="stlTrv" TabOrder="3" TEXTColumn="TEXT_NAME" Top="109" Width="330"></TreeView>
+		<Image Align="Left" DomainID="title.community_info" Height="16" Id="imgTitle" ImageID="b_title_icon1" Left="14" LeftMargin="12" Style="stlTitle" TabOrder="4" Text="커뮤니티&#32;정보" Top="24" VAlign="Top" Width="400"></Image>
+		<Div BKColor="user39" Border="Flat" BorderColor="user12" Height="43" Id="divSearch" Left="14" Style="stlDivSearch" TabOrder="5" Text="Div0" Top="53" UserData="RESIZE=TWH" Width="814">
+			<Contents>
+				<Image Align="Left" DomainID="biz.community.name" Font="돋움체,9,Bold" Height="19" Id="imgSearch4" ImageID="blet_search" Left="20" LeftMargin="18" OnClick="Div0_Image0_OnClick" Style="stlImg" TabOrder="2" TabStop="FALSE" Text="커뮤니티명" Top="12" Width="108"></Image>
+				<Edit BKColor="white" Border="Flat" Height="20" Id="edtSearchKw" ImeMode="keep,native" Left="133" LeftMargin="2" OnKeyDown="divSearch_edtSearchKw_OnKeyDown" Style="stlEdt" TabOrder="1" Top="11" Width="100"></Edit>
+				<Button ButtonStyle="TRUE" Cursor="HAND" Height="22" Id="btnSearch" ImageID="icon_search" Left="237" OnClick="divSearch_btnSearch_OnClick" Style="stlBtn" TabOrder="3" Top="11" UserData="TYPE=S" Width="22"></Button>
+			</Contents>
+		</Div>
+		<Div BKColor="user26" Border="Flat" Height="515" Id="divCategory" Left="352" Style="stlDivManage" TabOrder="6" Text="Div0" Top="109" Width="476">
+			<Contents>
+				<Static Border="Flat" DomainID="biz.category" Font="돋움,9,Bold" Height="487" Id="stGrpCategory" Left="10" Style="stlLblGrp" TabOrder="5" Text="카테고리" Top="10" Type="Groupbox" Width="444"></Static>
+				<Image Align="Left" DomainID="biz.id" Font="돋움체,9,Bold" Height="20" Id="Image0" ImageID="blet_01" Left="18" LeftMargin="20" OnClick="Div0_Image0_OnClick" Style="stlImgManage" TabOrder="1" TabStop="FALSE" Text="ID" Top="28" Width="100"></Image>
+				<Edit BindDataset="dsTrvCommunity" Border="Flat" Column="CATEGORY_ID" Enable="FALSE" Height="20" Id="Edit1" ImeMode="keep,native" Left="94" Style="stlCal" TabOrder="2" Top="27" UserData="titleObj=imgItem3" Width="344"></Edit>
+				<Image Align="Left" DomainID="biz.desc" Font="돋움체,9,Bold" Height="20" Id="Image1" ImageID="blet_01" Left="18" LeftMargin="20" OnClick="Div0_Image0_OnClick" Style="stlImgManage" TabOrder="3" TabStop="FALSE" Text="설명" Top="86" Width="100"></Image>
+				<TextArea BindDataset="dsTrvCommunity" Border="Flat" Column="CATEGORY_DESC" Enable="FALSE" Height="395" Id="TextArea0" Left="94" Style="stlTxa" TabOrder="4" Top="86" UserData="titleObj=imgItem4" VScroll="TRUE" Width="344"></TextArea>
+				<Edit BindDataset="dsTrvCommunity" Border="Flat" Column="CATEGORY_NAME" Enable="FALSE" Height="20" Id="edtItem3" ImeMode="keep,native" Left="94" Style="stlEdt" TabOrder="6" Top="57" UserData="titleObj=imgItem3" Width="344"></Edit>
+				<Image Align="Left" DomainID="biz.name" Font="돋움체,9,Bold" Height="20" Id="imgTitle" ImageID="blet_01" Left="18" LeftMargin="20" OnClick="Div0_Image0_OnClick" Style="stlImgManage" TabOrder="7" TabStop="FALSE" Text="이름" Top="57" Width="100"></Image>
+			</Contents>
+		</Div>
+		<Div BKColor="user26" Border="Flat" Height="515" Id="divCommunity" Left="64" Style="stlDivManage" TabOrder="7" Text="Div0" Top="252" Visible="FALSE" Width="476">
+			<Contents>
+				<Static Border="Flat" DomainID="biz.community" Font="돋움,9,Bold" Height="487" Id="stGrpCommunity" Left="10" Style="stlLblGrp" TabOrder="7" Text="커뮤니티" Top="10" Type="Groupbox" Width="444"></Static>
+				<Image Align="Left" DomainID="biz.id" Font="돋움체,9,Bold" Height="20" Id="imgBoard" ImageID="blet_01" Left="18" LeftMargin="20" OnClick="Div0_Image0_OnClick" Style="stlImgManage" TabOrder="1" TabStop="FALSE" Text="ID" Top="28" Width="100"></Image>
+				<Image Align="Left" DomainID="biz.name" Font="돋움체,9,Bold" Height="20" Id="imgTitle" ImageID="blet_02" Left="18" LeftMargin="20" OnClick="Div0_Image0_OnClick" Style="stlImgManage" TabOrder="2" TabStop="FALSE" Text="이름" Top="57" Width="100"></Image>
+				<Edit BindDataset="dsTrvCommunity" BKColor="white" Border="Flat" Column="COMMUNITY_NAME" Height="20" Id="edtItem3" ImeMode="keep,native" Left="94" Style="stlEdt" TabOrder="3" Top="57" UserData="titleObj=imgItem3" Width="344"></Edit>
+				<Image Align="Left" DomainID="biz.desc" Font="돋움체,9,Bold" Height="20" Id="imgContents" ImageID="blet_01" Left="18" LeftMargin="20" OnClick="Div0_Image0_OnClick" Style="stlImgManage" TabOrder="4" TabStop="FALSE" Text="설명" Top="86" Width="80"></Image>
+				<TextArea BindDataset="dsTrvCommunity" BKColor="white" Border="Flat" Column="COMMUNITY_DESC" Height="395" Id="txaItem4" Left="94" Style="stlTxa" TabOrder="5" Top="86" UserData="titleObj=imgItem4" VScroll="TRUE" Width="344"></TextArea>
+				<Edit BindDataset="dsTrvCommunity" Border="Flat" Column="COMMUNITY_ID" Enable="FALSE" Height="20" Id="Edit0" Left="94" Style="stlEdt" TabOrder="6" Top="28" Width="344"></Edit>
+			</Contents>
+		</Div>
+	</Form>
+	<Script><![CDATA[#include "javascript::common.js";
+
+var nCurRow = 0;
+
+//화면 로딩시 Community List 출력
+function frm09TRVFRM_OnLoadCompleted(obj, nErrorCode, strErrorMsg, nReason) {
+	gfnService("getListCommunity");
+}
+
+//저장
+function btnSaveAll_OnClick(obj) {
+	// 현재 선택된 상태를 유지하기 위해서 선택값 저장
+	nCurRow = dsTrvCommunity.currow;
+	gfnService("saveAllCommunity");
+}
+
+//검색 버튼 클릭시 Community List 출력
+function divSearch_btnSearch_OnClick(obj) {
+	//별도의 service를 호출하지 않고 dateSet의 row를 검색
+	var nRow = dsTrvCommunity.searchRow("COMMUNITY_NAME=divSearch.edtSearchKw.text");
+	
+	if(nRow >= 0){
+		dsTrvCommunity.row = nRow;
+	} else {
+		gfnMsg("MSG_NOT_FOUND");
+	}
+}
+
+// 검색어 입력후 엔터키
+function divSearch_edtSearchKw_OnKeyDown(obj, nChar, bShift, bCtrl, bAlt, LLParam, HLParam) {
+	if(bShift == 0 && bAlt == 0 && nChar == 13){
+		applyData(divSearch.edtSearchKw);
+		divSearch_btnSearch_OnClick(obj);
+	}
+}
+
+function dsTrvCommunity_OnRowPosChanged(obj, nOldRow, nRow) {
+	//Community가 아닌 Category를 클릭할 경우 Category 정보 출력	
+	if(gfnIsNull(dsTrvCommunity.getColumn(nRow, "COMMUNITY_ID"))) {
+		fnShowCategory(true);
+	} else {
+		fnShowCategory(false);
+	}
+}
+
+// Validation
+function dsTrvCommunity_CanColumnChange(obj, nRow, strColumnId, strOldValue, strNewValue, nPivotIndex) {	
+	if(strColumnId =="COMMUNITY_NAME") {
+		if(gfnIsNull(strNewValue)) {
+			gfnMsg("MSG_REQUIRED", "WARN", global.domain.biz.community.name);
+			return false;
+		} else {
+			return true;
+		}
+	}
+}
+
+// Community/Category에 따른 상세정보 division Component의 visible 속성 변경
+function fnShowCategory(bVisible) {
+	divCategory.visible = bVisible;
+	divCommunity.visible = !bVisible;
+	
+	if(!bVisible){
+		divCommunity.top = "109";
+		divCommunity.bottom = "624";
+		divCommunity.left = "352";
+		divCommunity.right = "828";
+	}	
+}
+
+// Tree에서 상위 노드를 접었을 때
+function trvCommunity_OnCollapse(obj, strText, nLevel, nImage, nExpandImage, nCollapseImage, nRow) {
+	fnShowCategory(true);
+}
+// Tree에서 상위 노드를 펼쳤을 때
+function trvCommunity_OnExpand(obj, strText, nLevel, nImage, nExpandImage, nCollapseImage, nRow) {
+	fnShowCategory(true);
+}
+
+// callback 메소드 정의
+function fnCallback(strServiceId, strErrorCode, strErrorMsg) {
+	if ( strErrorCode == -1 ) {
+		gfnMsg(strErrorMsg, "ERR");
+		
+	} else {
+		//svcid별 callback 처리
+		if (strServiceId == "saveAllCommunity") {
+			gfnService("getListCommunity");
+			gfnMsg("MSG_SAVE_SUCCESS");
+			
+		} else if(strServiceId == "getListCommunity") {
+			dsTrvCommunity.row = nCurRow;
+		}
+	}
+}
+]]></Script>
+</Window>

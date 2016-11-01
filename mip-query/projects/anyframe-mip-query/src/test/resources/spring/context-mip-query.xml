@@ -1,0 +1,55 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:config="http://www.anyframejava.org/schema/service"
+	xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-3.2.xsd
+	http://www.anyframejava.org/schema/service http://www.anyframejava.org/schema/service/anyframe-core-service-2.0.xsd">
+	
+	<bean id="mipQueryService" class="org.anyframe.mip.query.impl.MiPQueryServiceImpl">
+		<property name="namedParamJdbcTemplate" ref="pagingNamedParamJdbcTemplate"/>
+		<property name="lobHandler" ref="lobHandler"/>
+		<property name="sqlRepository" ref="sqlLoader"/>
+		<lookup-method name="getRowCallbackHandler" bean="rowCallbackHandler"/>
+		<lookup-method name="getCallableStatementCallbackHandler" bean="callableStatementCallbackHandler"/>
+		<lookup-method name="getPrintWriterRowCallbackHandler" bean="printWriterRowCallbackHandler"/>
+	</bean>	
+	
+	<bean id="callableStatementCallbackHandler" class="org.anyframe.mip.query.impl.jdbc.mapper.MiPCallableStatementCallbackHandler" scope="prototype"/>
+	
+	<bean id="rowCallbackHandler" class="org.anyframe.mip.query.impl.jdbc.mapper.MiPDataSetCallbackHandler" scope="prototype"/>
+	
+	<bean id="printWriterRowCallbackHandler" class="org.anyframe.mip.query.impl.jdbc.mapper.MiPPrintWriterCallbackHandler" scope="prototype"/>
+	
+	<!-- The original JdbcTemplate definition -->
+    <bean id="pagingNamedParamJdbcTemplate" class="org.anyframe.query.impl.jdbc.PagingNamedParamJdbcTemplate">
+    	<constructor-arg ref="pagingJdbcTemplate"/>
+    </bean> 
+    
+    <bean id="pagingJdbcTemplate" class="org.anyframe.query.impl.jdbc.PagingJdbcTemplate">
+	    <property name="dataSource" ref="dataSource"/>
+	    <property name="exceptionTranslator" ref="exceptionTranslator"/>
+	    <property name="paginationSQLGetter" ref="pagingSQLGenerator"/>
+    </bean>
+    
+    <bean id="pagingSQLGenerator" class="org.anyframe.query.impl.jdbc.generator.OraclePagingSQLGenerator"/>
+    
+    
+    <!--  SqlLoader -->
+	<bean name="sqlLoader" class="org.anyframe.query.impl.config.loader.MappingXMLLoader">
+		<property name="mappingFiles">
+			<value>classpath:/mappings/testcase-*.xml</value>
+		</property>	
+		<property name="nullchecks">
+			<map>
+		    	<entry key="VARCHAR" value=""/>
+		    </map>
+		</property>	    
+		<property name="skipError" value="true" />				
+	</bean>
+	
+	<bean id="lobHandler" class="org.springframework.jdbc.support.lob.DefaultLobHandler" lazy-init="true"/>
+	
+    <bean id="exceptionTranslator" class="org.anyframe.query.impl.util.RawSQLExceptionTranslator"/>
+    
+</beans>
+

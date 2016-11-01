@@ -1,0 +1,55 @@
+<chapter id="springrest_restsupport_urisupportutils">
+	<title>URI Support Utils</title>
+	<para>
+		Spring에서는 REST 방식에서 사용되는 URI 형식의 문자열을 생성하기 위해 UriTemplate, UriComponents 등의 util class를 제공한다.
+	</para>
+	<section id="springrest_restsupport_uritemplate_uritemplate">
+		<title>UriTemplate</title>
+		<para>
+			UriTemplate class는 중괄호({, })로 묶여진 변수를 포함하는 문자열을
+			실제 URI 형식으로 만들어주기 위해 Spring에서 제공하는 Class이다.
+		</para>
+		<para>
+			아래는 UriTemplate을 사용하여 URI 문자열을 만들어내는 사용 예제이다.
+		</para>
+		<para>
+			<programlisting language="java">UriTemplate template = new UriTemplate("http://example.com/hotels/{hotel}/bookings/{booking}");
+System.out.println(template.expand("1", "42));
+</programlisting>
+		</para>
+		<para>
+			<programlisting language="java"><![CDATA[UriTemplate template = new UriTemplate("http://example.com/hotels/{hotel}/bookings/{booking}");
+ Map<String, String> uriVariables = new HashMap<String, String>();
+ uriVariables.put("booking", "42");
+ uriVariables.put("hotel", "1");
+ System.out.println(template.expand(uriVariables));
+]]></programlisting>
+	출력 결과 - http://example.com/hotels/1/bookings/42
+		</para>
+		<para>
+			위의 두 예제 실행 결과를 살펴보면 {hotel}, {booking} 대신에 "1", "42"로 값이 변경되었음을 확인 할 수 있다.
+		</para>
+	</section>
+	
+	<section id="springrest_restsupport_uritemplate_uricomponents">
+		<title>UriComponents</title>
+		<para>
+			UriComponents class는 URI 형식의 문자열을 쉽게 작성하기 위해 Spring 3.1에서 새롭게 지원하는 class이다.
+			URI의 각 구성요소를 설정 할 수 있는 API를 제공한다.
+		</para>
+		<para>
+			<programlisting language="java"><![CDATA[UriComponents redirectUri = UriComponentsBuilder.fromPath(
+		"/springrest/test/{movieId}").build()
+		.expand(movie.getMovieId()).encode(); // movieId = "MV-000001"
+		
+		System.out.println(redirectUri.toUriString());
+]]></programlisting>
+		출력 결과 - "/springrest/test/MV-000001"
+		</para>
+		<para>
+			위의 예제에서 확인 할 수 있는 것처럼, UriComponentsBuilder class를 이용하여 UriComponents를 생성한 후,
+			중괄호({, })로 표시된 movieId에 값을 치환해서 URI문자열을 만들 수 있다.
+			그 밖에 host, port 등 URI에서 제공할 수 있는 정보를 API를 통해 제공하고 있다. 
+		</para>
+	</section>
+</chapter>

@@ -1,0 +1,86 @@
+<?xml version="1.0" encoding="utf-8"?>
+<s:Application xmlns:fx="http://ns.adobe.com/mxml/2009" 
+			   xmlns:s="library://ns.adobe.com/flex/spark" 
+			   xmlns:mx="library://ns.adobe.com/flex/mx"
+			   xmlns:local="*" 
+			   xmlns:data="org.anyframe.flex.messaging.data.*"
+			   minWidth="955" minHeight="600">
+	<fx:Script>
+		<![CDATA[
+			
+			import mx.collections.ArrayCollection;
+			import mx.controls.Alert;
+			import mx.rpc.events.FaultEvent;
+			import mx.rpc.events.ResultEvent;
+			
+			import org.anyframe.flex.messaging.data.DataRow;
+			protected function dataService_faultHandler(event:FaultEvent):void
+			{
+				Alert.show(event.message.toString());
+			}
+			
+			protected function search():void
+			{
+				var searchParam:Object = new Object;
+				searchParam["firstName"] = searchStr.text;
+				dataService.getList( ['dsContact'], searchParam , getList_resultHandler );
+			}
+			
+			protected function getList_resultHandler(event:ResultEvent):void
+			{
+				dsContact =  (event.result as ArrayCollection)[0] as DataSet;
+			}
+			
+			public function openContact(contact:DataRow):void
+			{
+				var children:Array = tn.getChildren();
+				for (var i:int = 0; i<children.length; i++)
+				{
+					if (ContactForm(children[i]).contact['contactId'] == contact['contactId'])
+					{
+						tn.selectedChild = children[i];
+						return;
+					}
+				}
+				
+				var form:ContactForm = new ContactForm();
+				if( contact["contactId"] == null ){
+					contact["contactId"] = 0;
+				}
+				tn.addChild(form);
+				form.contact = contact;
+				tn.selectedChild = form;
+			}
+			
+		]]>
+	</fx:Script>
+	
+	<fx:Declarations>
+		<!-- Place non-visual elements (e.g., services, value objects) here -->
+		<data:DataSet id="dsContact" dataSetName="dsContact" selectQueryId="findFlexQueryContactList" />
+		<data:DataService id="dataService" fault="dataService_faultHandler(event)"/>
+	</fx:Declarations>
+	
+	<s:layout>
+		<s:VerticalLayout gap="0" horizontalAlign="center"/>
+	</s:layout>
+	
+	<mx:ApplicationControlBar width="100%">
+		<mx:TextInput id="searchStr"/>
+		<mx:Button label="Search" click="search()"/>
+		<mx:Button label="New Contact" click="openContact(new DataRow())"/>
+	</mx:ApplicationControlBar>
+	
+	<mx:HDividedBox width="100%" height="100%">
+		<mx:DataGrid id="dg" dataProvider="{dsContact}" width="30%" height="100%"
+					 doubleClickEnabled="true"
+					 doubleClick="openContact(dg.selectedItem as DataRow)">
+			<mx:columns>
+				<mx:DataGridColumn dataField="firstName" headerText="First Name"/>
+				<mx:DataGridColumn dataField="lastName" headerText="Last Name"/>
+			</mx:columns>
+		</mx:DataGrid>
+		<mx:TabNavigator id="tn" width="70%" height="100%"/>
+	</mx:HDividedBox>
+	
+</s:Application>

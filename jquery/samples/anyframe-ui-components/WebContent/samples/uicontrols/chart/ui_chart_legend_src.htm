@@ -1,0 +1,350 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
+<html>
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+<title>Chart Sample - Label</title>
+
+<link href="../../../common/css/smoothness/jquery-ui-1.10.0.custom.css" rel="stylesheet">
+<link href="../../../common/exlibs/css/jquery.jqplot.css" rel="stylesheet">
+<script src="../../../common/exlibs/jquery-1.9.0.js"></script>
+<script src="../../../common/exlibs/jquery-ui-1.10.0.custom.js"></script>
+<script src="../../../common/exlibs/jquery.jqplot.js"></script>
+<script src="../../../common/exlibs/excanvas.js" ></script>
+<script src="../../../common/exlibs/jqplot.plugins.js"></script>
+
+<link type="text/css" rel="stylesheet" href="../../../common/css/style.css"/>
+<link href="sub_css/legend.css" rel="stylesheet">
+
+<script type="text/javascript">
+
+	var RENDERER = {
+			AXIS_LABEL : $.jqplot.CanvasAxisLabelRenderer,
+			AXIS_CATEGORY : $.jqplot.CategoryAxisRenderer,
+			AXIS_TICK : $.jqplot.CanvasAxisTickRenderer,
+			AXIS_DATA : $.jqplot.DateAxisRenderer,
+			BAR : $.jqplot.BarRenderer,
+			PIE : $.jqplot.PieRenderer,
+			PIE_LEGEND : $.jqplot.PieLegendRenderer
+	};
+	
+	var ENV = {
+			ID_BAR_CHART : "barChart",
+			ID_PIE_CHART : "pieChart"
+	};
+	
+	var CHART_DATA = {			
+			LABEL_X : ['first', 'second', 'third', 'fourth', 'fifth', 'sixth' ],
+			TYPE_XY_1 : [ 2, 5, 12, 8, 6, 10 ],
+			TYPE_XY_2 : [4, 8, 14, 15, 9, 12 ],
+			TYPE_XY_3 : [7, 10, 17, 20, 14, 16],
+			TYPE_PIE : 	[
+			            	[ ['Line Chart', 116],['Bar Chart', 134], ['Candle Chart', 152], 
+			            	  ['Pie Chart', 105],['Donut Chart', 79], ['Bubble', 131] ]
+						]
+	};
+	
+	var mainView = {
+			
+			_jqoBarChart : null,
+			_jqoPieChart : null,
+			
+			init : function() {
+				
+				this._jqoBarChart = this._initBarChart('Bar Stack Chart', 
+													   [CHART_DATA.TYPE_XY_1, CHART_DATA.TYPE_XY_2, CHART_DATA.TYPE_XY_3], 
+													   1.2);
+				
+				this._jqoPieChart = this._initPieChart('Pie Chart', 
+													   CHART_DATA.TYPE_PIE);
+				
+				this._putLegendColor("#barChart tr:eq(2)", "#bcolor01");
+				this._putLegendColor("#barChart tr:eq(1)", "#bcolor02");
+				this._putLegendColor("#barChart tr:eq(0)", "#bcolor03");
+				
+				this._putLegendColor("#pieChart tr:eq(0)", "#pcolor01");
+				this._putLegendColor("#pieChart tr:eq(1)", "#pcolor02");
+				this._putLegendColor("#pieChart tr:eq(2)", "#pcolor03");
+				this._putLegendColor("#pieChart tr:eq(3)", "#pcolor04");
+				this._putLegendColor("#pieChart tr:eq(4)", "#pcolor05");
+				this._putLegendColor("#pieChart tr:eq(5)", "#pcolor06");				
+			},
+
+			_initBarChart : function(title, data, padSize){
+				
+				var options = {
+						title : title,
+						stackSeries : true,
+						seriesDefaults : {
+							pointLabels : {show : true},
+							renderer : RENDERER.BAR,
+							rendererOptions :{
+								barWidth : 30,
+								barMargin : 25
+							}
+						},
+						axesDefaults: {
+							pointLabels: { show: true },
+							pad : padSize
+						},
+						legend : {
+							show : true,
+							location : 'e',
+							placement : "outside",
+							labels : ['', '', ''],
+							showSwatch : true
+						}
+				};
+			
+				return $.jqplot (ENV.ID_BAR_CHART,  data, options);		
+			},
+			
+			_initPieChart : function(title, data){
+				
+				var options = {
+							title : title,
+							seriesDefaults : {
+												renderer : RENDERER.PIE,
+												rendererOptions : {
+																	showDataLabels : true,
+																	dataLabels : 'value'
+																}
+							},
+							legend : {
+										show : true,
+										location : 'e',
+										renderer : RENDERER.PIE_LEGEND,
+										rendererOptions : {
+											numberRows : 6,//최대 행의 수
+											numberColumns : 1//최대 열의 수
+										}
+							}
+				};
+							
+				return $.jqplot (ENV.ID_PIE_CHART, data, options);
+			},
+			
+			setBarChartLabel : function()
+			{
+				this._jqoBarChart.options.legend.labels[0] = $("#blabel01").val();
+				this._jqoBarChart.options.legend.labels[1] = $("#blabel02").val();
+				this._jqoBarChart.options.legend.labels[2] = $("#blabel03").val();
+				
+				this._jqoBarChart.replot(this._jqoBarChart.options);
+			},
+			
+			setLegendLocation : function(value){
+				this._jqoBarChart.options.legend.location = value;
+				this._jqoBarChart.replot(this._jqoBarChart.options);
+			},
+			
+			setLegendPlacement : function(value) {
+				this._jqoBarChart.options.legend.placement = value;
+				this._jqoBarChart.replot(this._jqoBarChart.options);
+			},
+			
+			setPieChartLabel : function()
+			{
+				this._jqoPieChart.data[0][0][0] = $("#plabel01").val();
+				this._jqoPieChart.data[0][1][0] = $("#plabel02").val();
+				this._jqoPieChart.data[0][2][0] = $("#plabel03").val();
+				this._jqoPieChart.data[0][3][0] = $("#plabel04").val();
+				this._jqoPieChart.data[0][4][0] = $("#plabel05").val();
+				this._jqoPieChart.data[0][5][0] = $("#plabel06").val();
+				
+				this._jqoPieChart.replot(this._jqoPieChart.options);				
+			},
+			
+			setPieDataLabel : function (value){
+				this._jqoPieChart.options.seriesDefaults.rendererOptions.dataLabels = value;
+				
+				if (value == "array") {
+					this._jqoPieChart.options.seriesDefaults.rendererOptions.dataLabels = ['a', 'b', 'c', 'd', 'e', 'f'];
+				}
+				
+				this._jqoPieChart.replot(this._jqoPieChart.options);
+			},
+			
+			setPieLegendRowNum : function (value){
+				this._jqoPieChart.options.legend.rendererOptions.numberRows = value;
+				this._jqoPieChart.replot(this._jqoPieChart.options);
+			},
+			
+			setPieLegendColNum : function (value){
+				this._jqoPieChart.options.legend.rendererOptions.numberColumns = value;
+				this._jqoPieChart.replot(this._jqoPieChart.options);
+			},
+						
+			_getLegendColor : function (target){
+				return $(target).find("div.jqplot-table-legend-swatch").css("background-color");
+			},
+			
+			_putLegendColor : function (getTarget, putTarget){
+				var colorValue = this._getLegendColor(getTarget);
+				$(putTarget).css("background-color", colorValue);
+			}
+	};
+
+	$(document).ready(function() {
+				
+				$("button").button();
+				
+				mainView.init();
+
+// BAR STACK 부분==========================================================
+
+				$("#blabelBtn").on("click", function(){
+					mainView.setBarChartLabel();
+				});
+				
+				$("input:radio[name='location']").on("click", function(){
+					mainView.setLegendLocation($(this).val());
+				});
+				
+				$("input:radio[name='placement']").on("click", function(){
+					mainView.setLegendPlacement($(this).val());
+				});
+				
+// PIE 부분================================================================
+	
+				$("#plabelBtn").on("click", function(){
+					mainView.setPieChartLabel();
+				});
+				
+				$("input:radio[name='labelFormat']").on("click", function(){
+					mainView.setPieDataLabel($(this).val());
+				});
+				
+				$("input:radio[name='rowNum']").on("click", function(){
+					mainView.setPieLegendRowNum($(this).val());
+				});
+				
+				$("input:radio[name='colNum']").on("click", function(){
+					mainView.setPieLegendColNum($(this).val());
+				});
+	});
+	
+</script>
+
+</head>
+<body>
+
+<!--  STACK BAR형 차트 ======================================================-->
+<div >
+	<div style="float : left">
+
+		<div class="title">Bar Stack Type 범례</div>
+		<div>
+			<div class="text-area">텍스트 : </div>
+			<div class="input-area">
+				<div id="bcolor01"></div>
+				<input id="blabel01" type="text" value="label : 1" size="12"/> 
+				<div id="bcolor02"></div>
+				<input id="blabel02" type="text" value="label : 2" size="12" />
+				<div id="bcolor03"></div>
+				<input id="blabel03" type="text" value="label : 3" size="12" />
+				<button id="blabelBtn" type ="button">apply</button>
+			</div>
+		</div>
+		
+		<div>
+			<div class="text-area">위치 -방향 : </div>
+			<div class="input-area">
+				<input name="location" type="radio" value="e" checked /> Right
+				<input name="location" type="radio" value="n" />Top
+				<input name="location" type="radio" value="w" />Left
+				<input name="location" type="radio" value="s" />Bottom
+				<br>
+				<input name="location" type="radio" value="ne" /> Top Right
+				<input name="location" type="radio" value="nw" /> Top Left
+				<input name="location" type="radio" value="se" /> Bottom Right
+				<input name="location" type="radio" value="sw" /> Bottom Left
+			</div>
+		</div>
+		
+		<div>
+			<div class="text-area">위치 -내/외부 : </div>
+			<div  class="input-area">
+				<input name="placement" type="radio" value="inside" /> 내부
+				<input name="placement" type="radio" value="outside" checked/> 외부
+			</div>
+		</div>
+		
+	</div>
+	<div class="chart-container">
+		<div id="barChart"></div>
+	</div>
+	
+</div>
+
+<!--  PIE형 차트 ======================================================-->
+<div >
+	<div style="float : left">
+
+		<div class="title">Pie Type 범례</div>
+		<div>
+			<div class="text-area">텍스트 : </div>
+			<div class="input-area">
+				<div id="pcolor01"></div>
+				<input id="plabel01" type="text" value="label : 1" size="12"/> 
+				<div id="pcolor02" ></div>
+				<input id="plabel02" type="text" value="label : 2" size="12" />
+				<div id="pcolor03" ></div>
+				<input id="plabel03" type="text" value="label : 3" size="12" />
+				<br>
+				<div id="pcolor04" ></div>
+				<input id="plabel04" type="text" value="label : 4" size="12"/> 
+				<div id="pcolor05" ></div>
+				<input id="plabel05" type="text" value="label : 5" size="12" />
+				<div id="pcolor06" ></div>
+				<input id="plabel06" type="text" value="label : 6" size="12" />
+				<button id="plabelBtn" type="button">apply</button>
+			</div>
+		</div>
+		
+		<div>
+			<div class="text-area">행의 수 : </div>
+			<div  class="input-area">
+				<input name="rowNum" type="radio" value="1" /> 1
+				<input name="rowNum" type="radio" value="2" /> 2
+				<input name="rowNum" type="radio" value="3" /> 3
+				<input name="rowNum" type="radio" value="4" />4
+				<input name="rowNum" type="radio" value="5" />5
+				<input name="rowNum" type="radio" value="6" checked />6
+			</div>
+		</div>
+		
+		<div>
+			<div class="text-area">열의 수 : </div>
+			<div  class = "input-area">
+				<input name="colNum" type="radio" value="1" checked/> 1
+				<input name="colNum" type="radio" value="2" /> 2
+				<input name="colNum" type="radio" value="3" /> 3
+				<input name="colNum" type="radio" value="4" />4
+				<input name="colNum" type="radio" value="5" />5
+				<input name="colNum" type="radio" value="6" />6
+			</div>
+		</div>
+		
+		<div>
+			<div class="text-area">데이터 레이블 포맷: </div>
+			<div  class = "input-area">
+				<input name="labelFormat" type="radio" value="percent" /> Percent
+				<input name="labelFormat" type="radio" value="value" checked /> Value
+				<input name="labelFormat" type="radio" value="label" /> Label
+				<input name="labelFormat" type="radio" value="array" /> Array(['a', 'b', 'c', 'd', 'e', 'f'])
+			</div>
+		</div>
+		
+		
+	</div>
+
+	<div class="chart-container">
+		<div id="pieChart"></div>
+	</div>
+	 
+</div>
+
+
+
+</body>
+</html>

@@ -1,0 +1,270 @@
+<?xml version="1.0" encoding="utf-8"?>
+<Window>
+	<Form BKColor="white" DomainID="title.community_list" Height="640" Id="frm10CTGGRD" Left="8" OnLoadCompleted="frm10CTGGRD_OnLoadCompleted" PidAttrib="7" Style="stlFrm" Top="8" Ver="1.0" Width="834" WorkArea="true">
+		<Datasets>
+			<Dataset DataSetType="Dataset" Id="dsGrdCategory">
+				<Contents>
+					<colinfo id="id0" size="16" type="STRING"/>
+					<colinfo id="id1" size="100" type="STRING"/>
+					<colinfo id="id2" size="256" type="STRING"/>
+					<colinfo id="name0" size="256" type="STRING"/>
+					<colinfo id="name1" size="256" type="STRING"/>
+					<colinfo id="name2" size="256" type="STRING"/>
+				</Contents>
+			</Dataset>
+			<Dataset DataSetType="Dataset" Editable="True" Id="dsGrdCommunity">
+				<Contents>
+					<colinfo id="_chk" size="1" summ="default" type="CHAR"/>
+					<colinfo id="COMMUNITY_ID" size="16" summ="default" type="STRING"/>
+					<colinfo id="COMMUNITY_NAME" size="256" summ="default" type="STRING"/>
+					<colinfo id="COMMUNITY_DESC" size="256" summ="default" type="STRING"/>
+					<colinfo id="CATEGORY_ID" size="16" summ="default" type="STRING"/>
+					<colinfo id="REG_ID" size="256" summ="default" type="STRING"/>
+					<colinfo id="REG_DATE" size="10" summ="default" type="STRING"/>
+				</Contents>
+			</Dataset>
+			<Dataset DataSetType="Dataset" Id="dsCategory">
+				<Contents>
+					<colinfo id="CATEGORY_ID" size="16" type="STRING"/>
+					<colinfo id="CATEGORY_NAME" size="100" type="STRING"/>
+				</Contents>
+			</Dataset>
+			<Dataset DataSetType="Dataset" Id="dsService">
+				<Contents>
+					<colinfo id="SVC_ID" size="100" summ="default" type="STRING"/>
+					<colinfo id="QUERY_LIST" size="256" summ="default" type="STRING"/>
+					<colinfo id="SERVICE" size="100" summ="default" type="STRING"/>
+					<colinfo id="IN_DATASET_LIST" size="256" summ="default" type="STRING"/>
+					<colinfo id="OUT_DATASET_LIST" size="256" summ="default" type="STRING"/>
+					<colinfo id="CONTROLLER" size="512" summ="default" type="STRING"/>
+					<colinfo id="CALLBACK" size="100" summ="default" type="STRING"/>
+					<colinfo id="SYNC_YN" size="1" summ="default" type="STRING"/>
+					<record>
+						<CALLBACK></CALLBACK>
+						<CONTROLLER></CONTROLLER>
+						<IN_DATASET_LIST>querySet1=dsGrdCommunity:U</IN_DATASET_LIST>
+						<OUT_DATASET_LIST></OUT_DATASET_LIST>
+						<QUERY_LIST>querySet1=createCommunity,updateCommunity,removeCommunity</QUERY_LIST>
+						<SERVICE></SERVICE>
+						<SVC_ID>saveAll</SVC_ID>
+						<SYNC_YN></SYNC_YN>
+					</record>
+					<record>
+						<CALLBACK></CALLBACK>
+						<CONTROLLER></CONTROLLER>
+						<IN_DATASET_LIST></IN_DATASET_LIST>
+						<OUT_DATASET_LIST>dsCategory=querySet1&#32;dsGrdCommunity=querySet2</OUT_DATASET_LIST>
+						<QUERY_LIST>querySet1=findCategoryList&#32;querySet2=findCommunityList</QUERY_LIST>
+						<SERVICE></SERVICE>
+						<SVC_ID>getListAll</SVC_ID>
+						<SYNC_YN></SYNC_YN>
+					</record>
+				</Contents>
+			</Dataset>
+			<Dataset DataSetType="Dataset" Id="dsCboSearchCd">
+				<Contents>
+					<colinfo id="CODE" size="256" summ="default" type="STRING"/>
+					<colinfo id="DATA" size="256" summ="default" type="STRING"/>
+					<record>
+						<CODE>0</CODE>
+						<DATA></DATA>
+					</record>
+					<record>
+						<CODE>1</CODE>
+						<DATA></DATA>
+					</record>
+				</Contents>
+			</Dataset>
+		</Datasets>
+		<Grid AutoFit="TRUE" AutoFitEndLine="Hide" AutoScrollBar="Vert" BindDataset="dsGrdCategory" BKColor="user36" BkColor2="default" BoldHead="true" Border="Flat" BorderColor="user12" Bottom="101" Color="user37" ColSelect="TRUE" Enable="true" EndLineColor="default" Height="54" Id="grdCategory" InputPanel="FALSE" Left="14" LineColor="default" LineType="NONE" MinWidth="100" OnCellClick="grdCategory_OnCellClick" Right="828" RowHeight="26" Style="stlCategory" TabOrder="1" TabStop="true" Top="47" UseDBuff="true" UsePopupMenu="true" UseSelColor="FALSE" Visible="true" VLineColor="default" WheelScrollRow="1" Width="814">
+			<contents>
+				<format id="Default">
+					<columns>
+						<col width="91"/>
+						<col width="99"/>
+						<col width="97"/>
+					</columns>
+					<body>
+						<cell align="center" col="0" colid="name0" cursor="hand" display="text"/>
+						<cell align="center" col="1" colid="name1" cursor="hand" display="text"/>
+						<cell align="center" col="2" colid="name2" cursor="hand" display="text"/>
+					</body>
+				</format>
+			</contents>
+		</Grid>
+		<Grid AutoEnter="TRUE" AutoFit="TRUE" AutoFitEndLine="Hide" BindDataset="dsGrdCommunity" BkColor2="user10" BoldHead="true" Border="Flat" BorderColor="user24" Bottom="627" Color="user42" ColSizing="TRUE" Editable="TRUE" Enable="true" EndLineColor="default" Font="돋움,9" HeadBorder="Flat" HeadHeight="23" Height="414" Id="grdCommunity" InputPanel="FALSE" Left="14" LineColor="default" MinWidth="100" OnHeadClick="grdCommunity_OnHeadClick" Right="830" Style="stlGrd" TabOrder="2" TabStop="true" Top="213" UseDBuff="true" UsePopupMenu="true" UseSelColor="true" Visible="true" VLineColor="default" WheelScrollRow="1" Width="816">
+			<contents>
+				<format id="Default">
+					<columns>
+						<col width="24"/>
+						<col width="198"/>
+						<col width="354"/>
+						<col width="130"/>
+						<col width="80"/>
+						<col width="80"/>
+					</columns>
+					<head>
+						<cell col="0" display="checkbox" edit="checkbox" text="0"/>
+						<cell col="1" color="user11" display="text" domainid="biz.community.name"/>
+						<cell col="2" color="user11" display="text" domainid="biz.community.desc"/>
+						<cell col="3" color="user11" display="text" domainid="biz.category"/>
+						<cell col="4" color="user11" display="text" domainid="biz.community.reg_id"/>
+						<cell col="5" color="user11" display="text" domainid="biz.community.reg_date"/>
+					</head>
+					<body>
+						<cell col="0" colid="_chk" display="checkbox" edit="checkbox"/>
+						<cell col="1" colid="COMMUNITY_NAME" display="text" edit="normal"/>
+						<cell col="2" colid="COMMUNITY_DESC" display="text" edit="normal"/>
+						<cell align="center" col="3" colid="CATEGORY_ID" combocol="CATEGORY_ID" combodataset="dsCategory" combodisplaynltext="true" combotext="CATEGORY_NAME" display="combo"/>
+						<cell align="center" col="4" colid="REG_ID" display="text"/>
+						<cell align="center" col="5" colid="REG_DATE" display="text"/>
+					</body>
+				</format>
+			</contents>
+		</Grid>
+		<Image Align="Left" DomainID="biz.category" Height="16" Id="imgTitleCategory" ImageID="b_title_icon1" Left="14" LeftMargin="12" Style="stlTitle" TabOrder="3" Text="카테고리" Top="24" VAlign="Top" Width="400"></Image>
+		<Image Align="Left" DomainID="title.community_list" Height="16" Id="imgTitleCommunity" ImageID="b_title_icon1" Left="14" LeftMargin="12" Style="stlTitle" TabOrder="4" Text="커뮤니티&#32;목록" Top="122" VAlign="Top" Width="400"></Image>
+		<Div BKColor="user39" Border="Flat" BorderColor="user12" Height="43" Id="divSearch" Left="14" Style="stlDivSearch" TabOrder="5" Text="Div0" Top="144" UserData="RESIZE=TWH" Width="814">
+			<Contents>
+				<Image Align="Left" DomainID="button.search_condition" Font="돋움체,9,Bold" Height="19" Id="imgSearch4" ImageID="blet_search" Left="20" LeftMargin="18" OnClick="Div0_Image0_OnClick" Style="stlImg" TabOrder="1" TabStop="FALSE" Text="검색조건" Top="11" Width="80"></Image>
+				<Button ButtonStyle="TRUE" Cursor="HAND" Height="22" Id="btnSearch" ImageID="icon_search" Left="327" OnClick="divSearch_btnSearch_OnClick" Style="stlBtn" TabOrder="2" Top="12" UserData="TYPE=S" Width="22"></Button>
+				<Combo BKColor="white" Border="Flat" CodeColumn="CODE" DataColumn="DATA" Font="돋움,9" Height="20" Id="cboSearchCd" ImeMode="none" INDEX="0" InnerDataset="dsCboSearchCd" Left="100" ResetIndex="FIRST" Style="stlCbo" TabOrder="3" Top="10" Width="120"></Combo>
+				<Edit BKColor="white" Border="Flat" Column="SEARCH_KEYWORD" Font="돋움,9" Height="20" Id="edtSearchKw" ImeMode="keep,native" Left="223" LeftMargin="2" OnKeyDown="edtSearchKw_OnKeyDown" Style="stlEdt" TabOrder="4" Top="11" Width="100"></Edit>
+			</Contents>
+		</Div>
+		<Div Height="13" Id="divGrdStatus" Left="628" Style="stlLblGrp" TabOrder="6" TabStop="FALSE" Text="Div0" Top="197" Url="includes::GRDSTATUS.xml" UserData="GRD_STATUS=grdCommunity" Width="208">
+			<Contents></Contents>
+		</Div>
+		<Button ButtonStyle="TRUE" DomainID="button.add" Height="19" Id="btnAddRow" ImageID="btn_add" Left="654" OnClick="btnAddRow_OnClick" Style="stlBtn" TabOrder="7" Text="&#32;추가" Top="121" Width="56"></Button>
+		<Button ButtonStyle="TRUE" DomainID="button.remove" Height="19" Id="btnDelRow" ImageID="btn_delete" Left="713" OnClick="btnDelRow_OnClick" Style="stlBtn" TabOrder="8" Text="&#32;삭제" Top="121" Width="56"></Button>
+		<Button ButtonStyle="TRUE" Cursor="HAND" DomainID="button.save" Height="19" Id="btnSaveAll" ImageID="btn_save" Left="772" OnClick="btnSaveAll_OnClick" Style="stlBtn" TabOrder="9" Text="&#32;저장" Top="121" Width="56"></Button>
+		<Static Height="13" Id="stCategoryName" Left="14" Style="stlLblGrp" TabOrder="10" Text="카테고리&#32;:&#32;" Top="200" Width="208"></Static>
+	</Form>
+	<Script><![CDATA[#include "javascript::common.js";
+
+var nCellPos = 0;
+var nRowPos = 0;
+
+//form onload event
+function frm10CTGGRD_OnLoadCompleted(obj) {
+	// 초기 화면 로딩에 필요한 모든 데이터 가져오기	
+	gfnService("getListAll");
+	
+	dsCboSearchCd.setColumn(0, "DATA", global.domain.biz.community.name);
+	dsCboSearchCd.setColumn(1, "DATA", global.domain.biz.community.desc);
+	divSearch.cboSearchCd.value = global.domain.biz.community.name;
+	
+	//공통OnloadEvent call 예 - 아래와 같이 화면 로딩시에 공통적인 기능이 실행되어야 할 경우 정의해서 호출
+	gfnForm_OnLoadCompleted(obj);
+}
+
+// Category 선택 시 해당 Category하위의 Community 가져오기 
+function grdCategory_OnCellClick(obj, nRow, nCell, nX, nY, nPivotIndex) {
+	
+	//Filter를 이용해 Master grid의 선택 된 CATEGORY_ID만 display함
+	divSearch.cboSearchCd.index = 0;
+	divSearch.edtSearchKw.text = "";
+	dsGrdCommunity.filter("CATEGORY_ID='" + dsGrdCategory.getColumn(nRow, "id"+nCell) + "'");
+	stCategoryName.text = global.domain.biz.category + " : " + dsGrdCategory.getColumn(nRow, "name"+nCell);
+}
+
+// 검색 버튼 클릭 시 
+function divSearch_btnSearch_OnClick(obj) {
+	var strFilterExpr = "CATEGORY_ID='" + dsGrdCategory.getColumn(grdCategory.clickedRow, "id" + grdCategory.clickedCell) + "'";
+	
+	//Filter를 이용해 검색
+	var strSearchKw = divSearch.edtSearchKw.text;
+	strSearchKw = replace(strSearchKw, "'", "\\'");
+	
+	if(divSearch.cboSearchCd == 0 && !gfnIsNull(strSearchKw)) {
+		strFilterExpr += " && indexOf(COMMUNITY_NAME, '" + strSearchKw + "') != -1";
+	} else if(divSearch.cboSearchCd == 1 && !gfnIsNull(strSearchKw)) {
+		strFilterExpr += " && indexOf(COMMUNITY_DESC, '" + strSearchKw + "') != -1";
+	}
+	dsGrdCommunity.filter(strFilterExpr);
+}
+
+// 검색어 입력후 엔터키
+function edtSearchKw_OnKeyDown(obj, nChar, bShift, bCtrl, bAlt, LLParam, HLParam) {
+	if(bShift == 0 && bAlt == 0 && nChar == 13){
+		applyData(divSearch.edtSearchKw);
+		divSearch_btnSearch_OnClick(obj);
+	}
+}
+
+// 커뮤니티 목록 Head 클릭시 
+function grdCommunity_OnHeadClick(obj, nCell, nX, nY, nPivotIndex) {
+	gfnGrid_OnHeadClick(obj, nCell, nX, nY, nPivotIndex);
+}
+
+// 삭제 버튼 클릭
+function btnDelRow_OnClick(obj) {
+	gfnRemoveCheckedRows(dsGrdCommunity, "_chk");
+}
+
+// 추가 버튼 클릭
+function btnAddRow_OnClick(obj) {
+	dsGrdCommunity.addRow();
+	//REG_ID Column에 User Name을 세팅
+	if(!gfnIsNull(gfnGetUserId())){
+		dsGrdCommunity.setColumn(dsGrdCommunity.currow, "REG_ID", gfnGetUserId());
+	}
+	dsGrdCommunity.setColumn(dsGrdCommunity.row, "CATEGORY_ID", dsGrdCategory.getColumn(grdCategory.clickedRow, "id"+grdCategory.clickedCell));
+}
+
+// 저장 버튼 클릭
+function btnSaveAll_OnClick(obj) {
+	// 현재 선택된 상태를 유지하기 위해서 선택값 저장
+	nCellPos = grdCategory.clickedCell;
+	nRowPos = grdCategory.clickedRow;
+	
+	gfnService("saveAll");
+}
+
+// callback 메소드 정의
+function fnCallback(strServiceId, strErrorCode, strErrorMsg) {
+	if ( strErrorCode == -1 ) {
+		gfnMsg(strErrorMsg, "ERR");
+		
+	} else {
+		//svcid별 callback 처리
+		if (strServiceId == "getListAll") {
+			fnDrawCategory(dsGrdCategory, grdCategory);
+			grdCategory_OnCellClick(grdCategory, nRowPos, nCellPos);
+			
+		} else if (strServiceId == "saveAll") {
+			gfnService("getListAll");
+			gfnMsg("MSG_SAVE_SUCCESS");
+		}
+	}
+}
+
+//  상단 Category 영역에 Binding 될 DataSet 구성
+function fnDrawCategory(objGridDataSet, objGrid) {
+	var nGridCellPos, strCategoryId, strCategoryName;
+	var nRowCount = dsCategory.getRowCount();
+			
+	// Dataset 만들기
+	objGrid.bindDataset = "";
+	objGridDataSet.clearData();
+	
+	nNewRow = objGridDataSet.addRow();
+	
+	for( var i = 0, nGridCellPos = 0 ; i < nRowCount ; i++ ) {
+		strCategoryId = dsCategory.getColumn(i, "CATEGORY_ID");
+		strCategoryName = dsCategory.getColumn(i, "CATEGORY_NAME");
+		
+		// Dateset에 값 채우기
+		objGridDataSet.setColumn(nNewRow, "id" + nGridCellPos, strCategoryId);
+		objGridDataSet.setColumn(nNewRow, "name" + nGridCellPos, strCategoryName);
+
+		// 0, 1, 2 cell 채운 후 row 넘기기
+		nGridCellPos = (nGridCellPos + 1) % 3;		
+		if(nGridCellPos == 0 && i != nRowCount-1) {
+			nNewRow = objGridDataSet.addRow();
+		}
+	}
+	
+	objGrid.bindDataset = objGridDataSet.id;
+}]]></Script>
+</Window>

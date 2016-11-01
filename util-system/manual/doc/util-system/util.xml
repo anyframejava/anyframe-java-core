@@ -1,0 +1,752 @@
+<chapter id="utilsystem_util">
+	<title>Utilities</title>
+	<para>Anyframe에서는 system, network, file 관련 정보들을 손쉽게 사용하기 위해 관련 유틸리티들을 제공한다.</para>
+
+	<section id="utilsystem_util_system">
+		<title>SystemInfo Utility</title>
+		<para>
+			SystemInfoUtil 클래스를 통해 시스템 정보를 얻을 수 있다.
+		</para>
+		<informaltable>
+		<caption>SystemUsageInfo 통해 얻을수 있는 시스템 정보</caption>
+		<tgroup cols="3">
+			<colspec colnum="1" colname="col1" colwidth="2*" />
+			<colspec colnum="2" colname="col2" colwidth="5*" />
+			<colspec colnum="2" colname="col2" colwidth="3*" />
+			<thead>
+				<row>
+					<entry align="center">Method</entry>
+					<entry align="center">Description</entry>
+					<entry align="center">Return</entry>
+				</row>
+			</thead>
+			<tbody>
+				<row>
+					<entry><emphasis role="bold">getDiskProperty</emphasis>()</entry>
+					<entry>파일 시스템 목록 조회 - 디렉토리명, 파일명 등</entry>
+					<entry>List&lt;FileSystemInfo&gt;</entry>
+				</row>
+				<row>
+					<entry><emphasis role="bold">getDiskProperty</emphasis>(final String name)</entry>
+					<entry>특정한 파일 시스템 조회 - 디렉토리명, 파일명 등</entry>
+					<entry>FileSystemInfo</entry>
+				</row>
+				<row>
+					<entry><emphasis role="bold">getDiskCapacity</emphasis>()</entry>
+					<entry>전체파일시스템 유효정보 조회 - 전체메모리사이즈,사용중인사이즈,퍼센트,사용가능한 메모리사이즈등</entry>
+					<entry>Map&lt;String, FileSystemUsageInfo&gt;</entry>
+				</row>
+				<row>
+					<entry><emphasis role="bold">getDiskCapacity</emphasis>(final String name)</entry>
+					<entry>특정한 파일시스템 유효정보 조회 - 전체메모리사이즈,사용중인사이즈,퍼센트,사용가능한 메모리사이즈등</entry>
+					<entry>FileSystemUsageInfo</entry>
+				</row>
+				<row>
+					<entry><emphasis role="bold">getMountedDiskCapacity</emphasis>()</entry>
+					<entry>마운트된 특정한 파일 시스템 유효정보 조회 - 전체메모리사이즈,사용중인사이즈,퍼센트,사용가능한 메모리사이즈</entry>
+					<entry>FileSystemUsageInfo</entry>
+				</row>
+				<row>
+					<entry><emphasis role="bold">replacePath</emphasis>(final String path)</entry>
+					<entry>OS 에 맞는 드라이브 경로 문자로 변경</entry>
+					<entry>String</entry>
+				</row>
+				<row>
+					<entry><emphasis role="bold">getSystemInfo</emphasis>()</entry>
+					<entry>OS 정보</entry>
+					<entry>OsInfo</entry>
+				</row>
+				<row>
+					<entry><emphasis role="bold">getProcessStat</emphasis>()</entry>
+					<entry>시스템 프로세스 status 정보 - 프로세스 정보 . 전체갯수, 실행중인갯수, 상태별 프로세스 갯수, 스레드갯수 등</entry>
+					<entry>ProcessStatInfo</entry>
+				</row>
+				<row>
+					<entry><emphasis role="bold">getProcessList</emphasis>(final String[] args)</entry>
+					<entry>프로세스 실행 정보 조회</entry>
+					<entry>Map&lt;Long, ProcessInfo&gt;</entry>
+				</row>
+				<row>
+					<entry><emphasis role="bold">getPs</emphasis>()</entry>
+					<entry>ps 를 실행한 결과와 같은 정보 - 현재 실행되는 프로세스의 실행 상태</entry>
+					<entry>List&lt;String&gt;</entry>
+				</row>
+				<row>
+					<entry><emphasis role="bold">getWho</emphasis>()</entry>
+					<entry>who 를 실행한 결과와 같은 정보 - 현재 시스템에 접속한 사용자 확인</entry>
+					<entry>List&lt;String&gt;</entry>
+				</row>
+				<row>
+					<entry><emphasis role="bold">getMemoryCapacity</emphasis>(final MemRegion memRegion)</entry>
+					<entry>memRegion 입력 값에 따라 전체메모리사이즈,사용중인사이즈,사용가능한 메모리사이즈 중에 하나를 보여준다.</entry>
+					<entry>long</entry>
+				</row>
+				<row>
+					<entry><emphasis role="bold">getLs</emphasis>(final String name)</entry>
+					<entry>ls 를 실행한 결과와 같은 정보 - 해당 디렉토리 및 파일에 대한 ls 정보</entry>
+					<entry>String</entry>
+				</row>
+				<row>
+					<entry><emphasis role="bold">getLsList</emphasis>(final String name)</entry>
+					<entry>해당하는 디렉토리 하위의 파일들에 대한 ls 목록 조회</entry>
+					<entry>List&lt;String&gt;</entry>
+				</row>
+				<row>
+					<entry><emphasis role="bold">getCpuInfo</emphasis>()</entry>
+					<entry>해당 시스템의 Cpu 정보 조회</entry>
+					<entry>CpuInfo</entry>
+				</row>
+				<row>
+					<entry><emphasis role="bold">getClientIP</emphasis>(final HttpServletRequest request)</entry>
+					<entry>클라이언트의 IP 주소 정보 조회</entry>
+					<entry>String</entry>
+				</row>
+				<row>
+					<entry><emphasis role="bold">getClientOS</emphasis>(final HttpServletRequest request)</entry>
+					<entry>클라이언트의 OS 정보 조회</entry>
+					<entry>String</entry>
+				</row>
+				<row>
+					<entry><emphasis role="bold">getClientBrowser</emphasis>(final HttpServletRequest request)</entry>
+					<entry>클라이언트의 브라우져와 버젼 정보</entry>
+					<entry>String</entry>
+				</row>
+			</tbody>
+		</tgroup>
+	</informaltable>
+	</section>
+
+	<section id="utilsystem_util_network">
+		<title>Network Utility</title>
+		<para>
+			NetworkStateUtil 클래스를 통해 네트워크 상태 및 IP, Mac Address 등에 대한 정보를 얻을 수 있다.
+		</para>
+		<informaltable>
+		<caption>NetworkStateUtil 통해 얻을수 있는 정보</caption>
+		<tgroup cols="3">
+			<colspec colnum="1" colname="col1" colwidth="2*" />
+			<colspec colnum="2" colname="col2" colwidth="5*" />
+			<colspec colnum="2" colname="col2" colwidth="3*" />
+			<thead>
+				<row>
+					<entry align="center">Method</entry>
+					<entry align="center">Description</entry>
+					<entry align="center">Return</entry>
+				</row>
+			</thead>
+			<tbody>
+				<row>
+					<entry><emphasis role="bold">testPing</emphasis>(final String destHost, final int timeout)</entry>
+					<entry>네트워크 상태를 확인한다.</entry>
+					<entry>boolean</entry>
+				</row>
+				<row>
+					<entry><emphasis role="bold">getNetworkInfoList</emphasis>()</entry>
+					<entry>전체 네트워크 목록에 대한 ip, mac,network mask 등 조회</entry>
+					<entry>Map&lt;String, NetworkInfo&gt;</entry>
+				</row>
+				<row>
+					<entry><emphasis role="bold">getMyIPInfo</emphasis>()</entry>
+					<entry>NetInfo 를 실행한 결과와 같은 형태의 정보 조회</entry>
+					<entry>NetworkInfo</entry>
+				</row>
+				<row>
+					<entry><emphasis role="bold">getMyIPList</emphasis>()</entry>
+					<entry>전체 네트워크 목록에 대한 ip 목록 조회</entry>
+					<entry>List&lt;String&gt;</entry>
+				</row>
+				<row>
+					<entry><emphasis role="bold">getMyMacAddressList</emphasis>()</entry>
+					<entry>전체 네트워크 목록에 대한 Mac Address 목록</entry>
+					<entry>List&lt;String&gt;</entry>
+				</row>
+				<row>
+					<entry><emphasis role="bold">getPortScan</emphasis>()</entry>
+					<entry>netstat 를 실행한 결과와 같은 형태의 정보 조회. 명령어 옵션으로 "a", "p" 사용</entry>
+					<entry>List&lt;String&gt;</entry>
+				</row>
+				<row>
+					<entry><emphasis role="bold">getPortScan</emphasis>(final String[] args)</entry>
+					<entry>netstat 를 실행한 결과와 같은 형태의 정보 조회. Sigar 에서 지원하는 Netstat 옵션 ("l", "a", "n", "p", "s", "t", "u", "w", "x")</entry>
+					<entry>List&lt;String&gt;</entry>
+				</row>
+				<row>
+					<entry><emphasis role="bold">getRoute</emphasis>()</entry>
+					<entry>route 를 실행한 결과와 같은 형태의 정보 조회.</entry>
+					<entry>List&lt;String&gt;</entry>
+				</row>
+			</tbody>
+		</tgroup>
+		</informaltable>
+	</section>
+
+	<section id="utilsystem_util_filesystem">
+		<title>FileSystem Utility</title>
+		<para>
+			FileSystemUtil 클래스를 통해  파일 및 디렉토리 속성 정보, 권한 체크, 복사, 삭제, 생성 등의 기능을 사용할 수 있다.
+		</para>
+		<informaltable>
+		<caption>FileSystemUtil에서 제공하는 기능</caption>
+		<tgroup cols="3">
+			<colspec colnum="1" colname="col1" colwidth="4*" />
+			<colspec colnum="2" colname="col2" colwidth="4*" />
+			<colspec colnum="2" colname="col2" colwidth="2*" />
+			<thead>
+				<row>
+					<entry align="center">Method</entry>
+					<entry align="center">Description</entry>
+					<entry align="center">Return</entry>
+				</row>
+			</thead>
+			<tbody>
+				<row>
+					<entry><emphasis role="bold">canRead</emphasis>(String file)</entry>
+					<entry>대상 파일 또는 디렉토리를 읽을 수 있는지 여부 체크</entry>
+					<entry>boolean</entry>
+				</row>
+				<row>
+					<entry><emphasis role="bold">canWrite</emphasis>(String file)</entry>
+					<entry>대상 파일 또는 디렉토리를 쓸 수 있는지 여부 체크</entry>
+					<entry>boolean</entry>
+				</row>
+				<row>
+					<entry><emphasis role="bold">copyDirectory</emphasis>(final String srcDir, final String destDir)</entry>
+					<entry>원본디렉토리를 대상 디렉토리명으로 복사한다.</entry>
+					<entry>void</entry>
+				</row>
+				<row>
+					<entry><emphasis role="bold">copyDirectory</emphasis>(final String srcDir, final String destDir, final boolean preserveFileDate)</entry>
+					<entry>원본디렉토리를 대상 디렉토리명으로 복사한다. preserveFileDate가 true면 원본디렉토리의 파일 최종 수정일을 그대로 사용하고 false면 현재 일자를 최종 수정일로 설정한다.</entry>
+					<entry>void</entry>
+				</row>
+				<row>
+					<entry><emphasis role="bold">copyDirectory</emphasis>(final String srcDir, final String destDir, final FileDir filedir)</entry>
+					<entry>원본디렉토리를 대상 디렉토리명으로 복사한다. fileDir가 'file'이면 파일만 'directory'면 디렉토리만 복사한다.</entry>
+					<entry>void</entry>
+				</row>
+				<row>
+					<entry><emphasis role="bold">copyDirectory</emphasis>(final String srcDir, final String destDir, final FileDir filedir, final boolean preserveFileDate)</entry>
+					<entry>
+						원본디렉토리를 대상 디렉토리명으로 복사한다. fileDir가 'file'이면 파일만 'directory'면 디렉토리만 복사한다.
+						preserveFileDate가 true면 원본디렉토리의 파일 최종 수정일을 그대로 사용하고 false면 현재 일자를 최종 수정일로 설정한다.
+					</entry>
+					<entry>void</entry>
+				</row>
+				<row>
+					<entry><emphasis role="bold">copyDirectory</emphasis>(final String srcDir, final String destDir, final String extension)</entry>
+					<entry>원본디렉토리를 대상 디렉토리명으로 복사한다. 입력된 파일 확장자랑 일치하는 파일들만 복사한다.</entry>
+					<entry>void</entry>
+				</row>
+				<row>
+					<entry><emphasis role="bold">copyDirectory</emphasis>(final String srcDir, final String destDir, final String extension, final boolean preserveFileDate)</entry>
+					<entry>
+						원본디렉토리를 대상 디렉토리명으로 복사한다. 입력된 파일 확장자랑 일치하는 파일들만 복사한다.
+						preserveFileDate가 true면 원본디렉토리의 파일 최종 수정일을 그대로 사용하고 false면 현재 일자를 최종 수정일로 설정한다.
+					</entry>
+					<entry>void</entry>
+				</row>
+				<row>
+					<entry><emphasis role="bold">copyDirectory</emphasis>(final String srcDir, final String destDir, final Date cutoffDate, final boolean acceptOlder)</entry>
+					<entry>
+						원본디렉토리를 대상 디렉토리명으로 복사한다. 입력된 파일 확장자랑 일치하는 파일들만 복사한다.
+						입력받은 날짜를 기준으로 최종 수정일이 입력받은 날짜보다 적거나 많은 파일만 복사함.
+					</entry>
+					<entry>void</entry>
+				</row>
+				<row>
+					<entry><emphasis role="bold">copyDirectory</emphasis>(final String srcDir, final String destDir, final Date cutoffDate,
+							final boolean acceptOlder, final boolean preserveFileDate)</entry>
+					<entry>
+						원본디렉토리를 대상 디렉토리명으로 복사한다. 입력된 파일 확장자랑 일치하는 파일들만 복사한다.
+						입력받은 날짜를 기준으로 최종 수정일이 입력받은 날짜보다 적거나 많은 파일만 복사함.
+						preserveFileDate가 true면 원본디렉토리의 파일 최종 수정일을 그대로 사용하고 false면 현재 일자를 최종 수정일로 설정한다.
+					</entry>
+					<entry>void</entry>
+				</row>
+				<row>
+					<entry><emphasis role="bold">copyDirectory</emphasis>(final String srcDir, final String destDir, final long threshold, final boolean acceptLarger)</entry>
+					<entry>
+						원본디렉토리를 대상 디렉토리명으로 복사한다.
+						대상 디렉토리에 대해 입력받은 사이즈를 기준으로 파일 사이즈가 입력받은 사이즈보다 적거나 많은 파일 복사
+					</entry>
+					<entry>void</entry>
+				</row>
+				<row>
+					<entry><emphasis role="bold">copyDirectory</emphasis>(final String srcDir, final String destDir, final long threshold,
+							final boolean acceptLarger, final boolean preserveFileDate)</entry>
+					<entry>
+						원본디렉토리를 대상 디렉토리명으로 복사한다.
+						대상 디렉토리에 대해 입력받은 사이즈를 기준으로 파일 사이즈가 입력받은 사이즈보다 적거나 많은 파일 복사
+						preserveFileDate가 true면 원본디렉토리의 파일 최종 수정일을 그대로 사용하고 false면 현재 일자를 최종 수정일로 설정한다.
+					</entry>
+					<entry>void</entry>
+				</row>
+				<row>
+					<entry><emphasis role="bold">copyDirectory</emphasis>(final String srcDir, final String destDir, final long minSize, final long maxSize)</entry>
+					<entry>
+						원본디렉토리를 대상 디렉토리명으로 복사한다. 대상 디렉토리에 대해 입력받은 최대, 최소 사이의 사이즈의 파일 목록 복사
+					</entry>
+					<entry>void</entry>
+				</row>
+				<row>
+					<entry><emphasis role="bold">copyDirectory</emphasis>(final String srcDir, final String destDir, final long minSize, final long maxSize,
+							final boolean preserveFileDate)</entry>
+					<entry>
+						원본디렉토리를 대상 디렉토리명으로 복사한다. 대상 디렉토리에 대해 입력받은 최대, 최소 사이의 사이즈의 파일 목록 복사
+						preserveFileDate가 true면 원본디렉토리의 파일 최종 수정일을 그대로 사용하고 false면 현재 일자를 최종 수정일로 설정한다.
+					</entry>
+					<entry>void</entry>
+				</row>
+				<row>
+					<entry><emphasis role="bold">copyDirectory</emphasis>(final String srcDir, final String destDir, final String name,
+							final FileNameSearch fileNameSearch)</entry>
+					<entry>
+						파일명의 검색 조건에 따라 원본디렉토리를 대상 디렉토리명으로 복사한다. 검색하고자 하는 파일 명 또는 prefix , suffix
+					</entry>
+					<entry>void</entry>
+				</row>
+				<row>
+					<entry><emphasis role="bold">copyDirectory</emphasis>(final String srcDir, final String destDir, final String name,
+							final FileNameSearch fileNameSearch, final boolean preserveFileDate)</entry>
+					<entry>
+						파일명의 검색 조건에 따라 원본디렉토리를 대상 디렉토리명으로 복사한다. 검색하고자 하는 파일 명 또는 prefix , suffix
+						preserveFileDate가 true면 원본디렉토리의 파일 최종 수정일을 그대로 사용하고 false면 현재 일자를 최종 수정일로 설정한다.
+					</entry>
+					<entry>void</entry>
+				</row>
+				<row>
+					<entry><emphasis role="bold">copyDirectoryToDirectory</emphasis>(final String srcDir, final String destDir)</entry>
+					<entry>
+						원본 디렉토리를 대상 디렉토리의 하위로 복사한다.
+					</entry>
+					<entry>void</entry>
+				</row>
+				<row>
+					<entry><emphasis role="bold">moveDirectory</emphasis>(final String srcDir, final String destDir)</entry>
+					<entry>
+						디렉토리 이동-원본 디렉토리가 대상 디렉토리 명으로 이동한다.
+					</entry>
+					<entry>void</entry>
+				</row>
+				<row>
+					<entry><emphasis role="bold">moveDirectoryToDirectory</emphasis>(final String src, final String destDir, final boolean createDestDir)</entry>
+					<entry>
+						디렉토리 이동-원본 디렉토리가 대상 디렉토리 하위로 이동한다.
+					</entry>
+					<entry>void</entry>
+				</row>
+				<row>
+					<entry><emphasis role="bold">makeDirectory</emphasis>(final String directory)</entry>
+					<entry>
+						디렉토리 생성
+					</entry>
+					<entry>void</entry>
+				</row>
+				<row>
+					<entry><emphasis role="bold">deleteFileDirectory</emphasis>(final String src)</entry>
+					<entry>
+						해당 디렉토리 및 파일을 삭제한다.
+					</entry>
+					<entry>void</entry>
+				</row>
+				<row>
+					<entry><emphasis role="bold">copyFile</emphasis>(final String srcFile, final String destFile)</entry>
+					<entry>
+						파일 복사
+					</entry>
+					<entry>void</entry>
+				</row>
+				<row>
+					<entry><emphasis role="bold">copyFile</emphasis>(final String srcFile, final String destFile, final boolean preserveFileDate)</entry>
+					<entry>
+						파일 복사. preserveFileDate가 true면 원본디렉토리의 파일 최종 수정일을 그대로 사용하고 false면 현재 일자를 최종 수정일로 설정한다.
+					</entry>
+					<entry>void</entry>
+				</row>
+				<row>
+					<entry><emphasis role="bold">copyFileToDirectory</emphasis>(final String srcFile, final String destDir)</entry>
+					<entry>
+						파일을 대상 디렉토리에 복사
+					</entry>
+					<entry>void</entry>
+				</row>
+				<row>
+					<entry><emphasis role="bold">copyFileToDirectory</emphasis>(final String srcFile, final String destDir, final boolean preserveFileDate)</entry>
+					<entry>
+						파일을 대상 디렉토리에 복사. preserveFileDate가 true면 원본디렉토리의 파일 최종 수정일을 그대로 사용하고 false면 현재 일자를 최종 수정일로 설정한다.
+					</entry>
+					<entry>void</entry>
+				</row>
+				<row>
+					<entry><emphasis role="bold">moveFile</emphasis>(final String srcFile, final String destFile)</entry>
+					<entry>
+						파일 이동
+					</entry>
+					<entry>void</entry>
+				</row>
+				<row>
+					<entry><emphasis role="bold">moveFileToDirectory</emphasis>(final String srcFile, final String destDir, final boolean createDestDir)</entry>
+					<entry>
+						파일을 대상 디렉토리 하위로 이동
+					</entry>
+					<entry>void</entry>
+				</row>
+				<row>
+					<entry><emphasis role="bold">getInformation</emphasis>(final String name)</entry>
+					<entry>
+						해당하는 파일이나 디렉토리의 속성정보 반환(사이즈, 권한, 타입, etc)
+					</entry>
+					<entry>FileInfo</entry>
+				</row>
+				<row>
+					<entry><emphasis role="bold">getFileList</emphasis>(final String directory, final String[] extensions, final boolean recursive)</entry>
+					<entry>
+						해당하는 디렉토리 밑의 파일 목록 조회
+					</entry>
+					<entry>File[]</entry>
+				</row>
+				<row>
+					<entry><emphasis role="bold">getFileList</emphasis>(final String directory, final Date date, final boolean acceptOlder)</entry>
+					<entry>
+						대상 디렉토리에 대해 입력받은 날짜를 기준으로 최종 수정일이 입력받은 날짜보다 적거나 많은 파일 목록 조회
+					</entry>
+					<entry>File[]</entry>
+				</row>
+				<row>
+					<entry><emphasis role="bold">getFileList</emphasis>(final String directory, final long size, final boolean acceptLarger)</entry>
+					<entry>
+						대상 디렉토리에 대해 입력받은 사이즈를 기준으로 파일 사이즈가 입력받은 사이즈보다 적거나 많은 파일 목록 조회
+					</entry>
+					<entry>File[]</entry>
+				</row>
+				<row>
+					<entry><emphasis role="bold">getFileList</emphasis>(final String directory, final long minSizeInclusive, final long maxSizeInclusive)</entry>
+					<entry>
+						대상 디렉토리에 대해 입력받은 최대, 최소 사이의 사이즈의 파일 목록 조회
+					</entry>
+					<entry>File[]</entry>
+				</row>
+				<row>
+					<entry><emphasis role="bold">getFileList</emphasis>(final String directory, final String name, final FileNameSearch fileNameSearch)</entry>
+					<entry>
+						파일명에 따른 대상 디렉토리의 파일 검색. 검색하고자 하는 파일 명 또는 prefix , suffix
+					</entry>
+					<entry>File[]</entry>
+				</row>
+				<row>
+					<entry><emphasis role="bold">existsFile</emphasis>(final String filepath)</entry>
+					<entry>
+						대상 파일이 존재하는지 체크
+					</entry>
+					<entry>boolean</entry>
+				</row>
+				<row>
+					<entry><emphasis role="bold">existsDir</emphasis>(final String dirpath)</entry>
+					<entry>
+						 대상 디렉토리가 존재하는지 체크
+					</entry>
+					<entry>boolean</entry>
+				</row>
+				<row>
+					<entry><emphasis role="bold">existsDir</emphasis>(final String srcDir, final String fromDate, final String toDate)</entry>
+					<entry>
+						 해당 디렉토리의 마지막 수정일이 입력받은 날짜 사이에 존재하는지 체크
+					</entry>
+					<entry>boolean</entry>
+				</row>
+			</tbody>
+		</tgroup>
+	</informaltable>
+	</section>
+
+	<section id="utilsystem_util_filemonitor">
+		<title>FileMonitor</title>
+		<para>
+			FileMonitor 클래스를 통해 디렉토리 감시 기능을 사용할 수 있으며
+			감시 대상 디렉토리내에 추가/수정/삭제된 파일에 대한 정보를 로그로 기록할 수 있다.
+                                디렉토리내 파일이 많은 경우 성능 저하가 발생할 수 있으며, Windows 인 경우 감시 대상 디렉토리 내에 한글 파일명이 존재하는 경우 문제가 발생하므로 유의한다.
+		</para>
+		<itemizedlist>
+			<listitem>
+				<para>
+					파일에 기록하기 위한 log4j 설정의 예이다.
+					<programlisting language="xml"><![CDATA[<appender name="file"
+	class="org.apache.log4j.DailyRollingFileAppender">
+	<param name="File"
+		value="logs/fileMonitor.log" />
+	<param name="Append" value="true" />
+	<param name="DatePattern" value="'.'yyyy-MM-dd" />
+	<layout class="org.apache.log4j.PatternLayout">
+		<param name="ConversionPattern"
+			value="%d %5p [%c] %m%n" />
+	</layout>
+</appender>
+..
+<logger name="fileMonitor" additivity="false">
+	<level value="INFO"/>
+	<appender-ref ref="file"/>
+</logger>]]></programlisting>
+				</para>
+			</listitem>
+			<listitem>
+				<para>
+					실제 사용예는 아래와 같다.
+					<programlisting language="java">Logger logger = LoggerFactory.getLogger("fileMonitor");
+FileWatcherThread fileWatcherThread = FileMonitor.start(log, targetDir, 5000);</programlisting>
+				</para>
+			</listitem>
+			<listitem>
+				<para>
+					아래는 모니터링 주기 5초로 디렉토리 감시 start ~ stop 까지의 로그 파일 기록 예이다. 파일의 생성/변경/삭제 내용이 prefix(NEW/MOD/DEL) 및
+					파일명으로 나타나며 이때 변경시간(Mtime), 변경된 Size 등이 before|after 형식으로 나타남을 확인할 수 있다.
+					<programlisting language="java"><![CDATA[ 2011-01-19 10:13:01,625  INFO [anyframe.core.util.system.FileMonitor] FileWatcherThread started.
+ 2011-01-19 10:13:06,718  INFO [anyframe.core.util.system.FileMonitor] NEW$D:\workspace_neis_helios\local.common-component.system\test\default2.txt${Mtime: 1월 19 10:13}{Size: 52}
+ 2011-01-19 10:13:11,750  INFO [anyframe.core.util.system.FileMonitor] NEW$D:\workspace_neis_helios\local.common-component.system\test\default3.txt${Mtime: 1월 19 10:13}{Size: 52}
+ 2011-01-19 10:13:11,765  INFO [anyframe.core.util.system.FileMonitor] NEW$D:\workspace_neis_helios\local.common-component.system\test\default4.txt${Mtime: 1월 19 10:13}{Size: 16}
+ 2011-01-19 10:13:11,765  INFO [anyframe.core.util.system.FileMonitor] NEW$D:\workspace_neis_helios\local.common-component.system\test\default5.txt${Mtime: 1월 19 10:13}{Size: 16}
+ 2011-01-19 10:13:11,812  INFO [anyframe.core.util.system.FileMonitor] MOD$D:\workspace_neis_helios\local.common-component.system\test\default2.txt${Mtime: 1월 19 10:13|1월 19 10:13}{Size: 52|16}
+ 2011-01-19 10:13:16,828  INFO [anyframe.core.util.system.FileMonitor] DEL$D:\workspace_neis_helios\local.common-component.system\test\default5.txt
+ 2011-01-19 10:13:16,843  INFO [anyframe.core.util.system.FileMonitor] MOD$D:\workspace_neis_helios\local.common-component.system\test\default4.txt${Mtime: 1월 19 10:13|1월 19 10:13}{Size: 16|24}
+ 2011-01-19 10:13:16,859  INFO [anyframe.core.util.system.FileMonitor] DEL$D:\workspace_neis_helios\local.common-component.system\test\default3.txt
+ 2011-01-19 10:13:21,625  INFO [anyframe.core.util.system.FileMonitor] FileWatcherThread stopped.]]></programlisting>
+				</para>
+			</listitem>
+			<listitem>
+				<para>
+					FileMonitor 를 위해 singleton 방식의 startSingleton()/stopSingleton 과 멀티스레드 방식의  start()/stop 두가지 타입의 메소드를 지원한다.
+				</para>
+				<itemizedlist>
+		        	<listitem>
+						<para>
+							singleton 방식의 사용예는 아래와 같다.
+							<programlisting language="java">String targetDir = "test";
+init(targetDir);
+
+//파일모니터 시작
+FileMonitor.startSingleton(targetDir, 5000);
+
+중략...
+
+Thread.sleep(20 * 1000);
+
+//파일모니터 종료
+FileMonitor.stopSingleton();</programlisting>
+						</para>
+					</listitem>
+					<listitem>
+						<para>
+							멀티스레드 방식의 사용예는 아래와 같다.
+							<programlisting language="java">String targetDir = "test4";
+init(targetDir);
+
+Log log = LogFactory.getLog("fileMonitor");
+//파일모니터 시작
+FileWatcherThread fileWatcherThread = FileMonitor.start(log, targetDir, 5000);
+
+중략...
+
+//파일모니터 종료
+FileMonitor.stop(log, fileWatcherThread);</programlisting>
+						</para>
+					</listitem>
+				</itemizedlist>
+			</listitem>
+		</itemizedlist>
+	</section>
+
+	<section id="utilsystem_util_zip">
+		<title>Zip Utility</title>
+		<para>
+			ZipUtil 클래스를 통해 파일 및 디렉토리 압축/해제 기능을 제공한다. Java JDK 및 Apache Commons Compress 를 활용한다.
+			Zip 파일의 경우는 추가로 Encoding 을 지정할 수 있으며, 특히 한글 파일명이 포함된 압축파일의 해제 시 원본 Encoding 에 유의하여 지정해 주어야 한다.
+		</para>
+
+		<itemizedlist>
+			<listitem>
+				<para>파일 및 디렉토리 압축</para>
+				<informaltable>
+				<caption>파일 및 디렉토리 압축 기능</caption>
+				<tgroup cols="2">
+					<colspec colnum="1" colname="col1" colwidth="3*" />
+					<colspec colnum="2" colname="col2" colwidth="7*" />
+					<thead>
+						<row>
+							<entry align="center">Method</entry>
+							<entry align="center">Description</entry>
+						</row>
+					</thead>
+					<tbody>
+						<row>
+							<entry><emphasis role="bold">compressZip</emphasis>(String targetDir)</entry>
+							<entry>디렉토리 또는 파일에 대한 압축대상 경로를 인자로 받아 Zip 압축을 처리한다.</entry>
+						</row>
+						<row>
+							<entry><emphasis role="bold">compressZip</emphasis>(String targetDir, String destArchiveStr)</entry>
+							<entry>
+								디렉토리 또는 파일에 대한 압축대상 경로를 인자로 받아 Zip 압축을 처리한다.
+								이때 압축파일을 인자로 전달받은 destArchiveStr 경로에 생성한다.
+							</entry>
+						</row>
+						<row>
+							<entry><emphasis role="bold">compressZip</emphasis>(String targetDir, String destArchiveStr, final String encoding)</entry>
+							<entry>
+								디렉토리 또는 파일에 대한 압축대상 경로를 인자로 받아 Zip 압축을 처리한다.
+								이때 압축파일을 인자로 전달받은 destArchiveStr 경로에 생성하며, 인자로 전달된 Encoding 을 적용하여 압축파일 내 Entry filename 이 작성된다.
+							</entry>
+						</row>
+						<row>
+							<entry><emphasis role="bold">compressJar</emphasis>(String targetDir)</entry>
+							<entry>디렉토리 또는 파일에 대한 압축대상 경로를 인자로 받아 Jar 압축(Zip 압축과 유사)을 처리한다.</entry>
+						</row>
+						<row>
+							<entry><emphasis role="bold">compressJar</emphasis>(String targetDir, String destArchiveStr)</entry>
+							<entry>
+								디렉토리 또는 파일에 대한 압축대상 경로를 인자로 받아 Jar 압축(Zip 압축과 유사)을 처리한다.
+								이때 압축파일을 인자로 전달받은 destArchiveStr 경로에 생성한다.
+							</entry>
+						</row>
+						<row>
+							<entry><emphasis role="bold">compressJar</emphasis>(String targetDir, String destArchiveStr, final String encoding)</entry>
+							<entry>
+								디렉토리 또는 파일에 대한 압축대상 경로를 인자로 받아 Jar 압축(Zip 압축과 유사)을 처리한다.
+								이때 압축파일을 인자로 전달받은 destArchiveStr 경로에 생성하며,
+								인자로 전달된 Encoding 을 적용하여 압축파일 내 Entry filename 이 작성된다.
+		 					</entry>
+						</row>
+						<row>
+							<entry><emphasis role="bold">compressTar</emphasis>(String targetDir)</entry>
+							<entry>
+								디렉토리 또는 파일에 대한 압축대상 경로를 인자로 받아 Tar 압축(하나의 파일로 묶어줌)을 처리한다.
+		 					</entry>
+						</row>
+						<row>
+							<entry><emphasis role="bold">compressTar</emphasis>(String targetDir, String destArchiveStr)</entry>
+							<entry>
+								디렉토리 또는 파일에 대한 압축대상 경로를 인자로 받아 Tar 압축(하나의 파일로 묶어줌)을 처리한다.
+								이때 압축파일을 인자로 전달받은 destArchiveStr 경로에 생성한다.
+		 					</entry>
+						</row>
+						<row>
+							<entry><emphasis role="bold">compressGzip</emphasis>(File targetArchiveOrFile, String destArchiveStr)</entry>
+							<entry>
+								Gzip 압축을 처리한다. Gzip 압축 대상은 주로 tar 압축파일이며 compressTarGz 메서드에서 내부적으로 해당 메서드를 호출하게 된다.
+		 					</entry>
+						</row>
+						<row>
+							<entry><emphasis role="bold">compressTarGz</emphasis>(String targetDir)</entry>
+							<entry>
+								디렉토리 또는 파일에 대한 압축대상 경로를 인자로 받아 tar.gz 압축을 처리한다.
+		 					</entry>
+						</row>
+						<row>
+							<entry><emphasis role="bold">compressTarGz</emphasis>(final String targetDir, final String destTarGzStr)</entry>
+							<entry>
+								디렉토리 또는 파일에 대한 압축대상 경로를 인자로 받아 tar.gz 압축을 처리한다.
+								이때 압축파일을 인자로 전달받은 destTarGzStr 경로에 생성한다.
+								내부적으로 먼저 compressTar 압축 후 생성된 Tar 파일을 다시 compressGzip 메서드를 호출하여 Gzip 압축하게 된다.
+								최종 tar.gz 압축파일과 동일 위치에 tar 파일도 함께 생성됨에 유의한다.
+		 					</entry>
+						</row>
+						<row>
+							<entry><emphasis role="bold">compressAr</emphasis>(String targetDir)</entry>
+							<entry>
+								디렉토리 또는 파일에 대한 압축대상 경로를 인자로 받아 Ar 압축을 처리한다.
+		 					</entry>
+						</row>
+						<row>
+							<entry><emphasis role="bold">compressAr</emphasis>(String targetDir, String destArchiveStr)</entry>
+							<entry>
+								디렉토리 또는 파일에 대한 압축대상 경로를 인자로 받아 Ar 압축을 처리한다.
+								이때 압축파일을 인자로 전달받은 destArchiveStr 경로에 생성한다. filename 길이 16 byte 제한이 있으므로 유의한다.
+		 					</entry>
+						</row>
+						<row>
+							<entry><emphasis role="bold">compressCpio</emphasis>(String targetDir)</entry>
+							<entry>
+								디렉토리 또는 파일에 대한 압축대상 경로를 인자로 받아 Cpio 압축을 처리한다.
+		 					</entry>
+						</row>
+						<row>
+							<entry><emphasis role="bold">compressCpio</emphasis>(String targetDir, String destArchiveStr)</entry>
+							<entry>
+								디렉토리 또는 파일에 대한 압축대상 경로를 인자로 받아 Cpio 압축을 처리한다.
+								이때 압축파일을 인자로 전달받은 destArchiveStr 경로에 생성한다.
+		 					</entry>
+						</row>
+					</tbody>
+				</tgroup>
+				</informaltable>
+			</listitem>
+
+			<listitem>
+				<para>파일 및 디렉토리 해제</para>
+				<informaltable>
+				<caption>파일 및 디렉토리 해제 기능</caption>
+				<tgroup cols="2">
+					<colspec colnum="1" colname="col1" colwidth="3*" />
+					<colspec colnum="2" colname="col2" colwidth="7*" />
+					<thead>
+						<row>
+							<entry align="center">Method</entry>
+							<entry align="center">Description</entry>
+						</row>
+					</thead>
+					<tbody>
+						<row>
+							<entry><emphasis role="bold">decompressZip</emphasis>(String targetZipFileStr)</entry>
+							<entry>Zip 압축파일 경로를 인자로 해당 압축파일을 해제한다. 이때 해당 압축파일과 동일한 path 에 압축을 해제하게 된다.</entry>
+						</row>
+						<row>
+							<entry><emphasis role="bold">decompressZip</emphasis>(String targetZipFileStr, String destDirStr)</entry>
+							<entry>
+								Zip 압축파일을 해제한다. 이때 인자로 전달받은 대상경로에 압축을 해제하게 된다.
+							</entry>
+						</row>
+						<row>
+							<entry><emphasis role="bold">decompressZip</emphasis>(String targetZipFileStr, String destDirStr, final String encoding)</entry>
+							<entry>
+								Zip 압축파일을 해제한다. 이때 인자로 대상경로와 Encoding 을 전달받아 처리한다
+							</entry>
+						</row>
+						<row>
+							<entry><emphasis role="bold">decompressGzip</emphasis>(String gzipFile)</entry>
+							<entry>Gzip 파일을 압축해제하고 해당 파일을 돌려준다.</entry>
+						</row>
+						<row>
+							<entry><emphasis role="bold">decompressArchive</emphasis>(String targetCompressFileStr)</entry>
+							<entry>
+								Commons Compress 의 ArchiveStreamFactory 를 사용하여 압축파일(Zip/Jar/Tar/Ar/Cpio)을 해제한다.
+							</entry>
+						</row>
+						<row>
+							<entry><emphasis role="bold">decompressArchive</emphasis>(String targetCompressFileStr, String destDirStr)</entry>
+							<entry>
+								Commons Compress 의 ArchiveStreamFactory 를 사용하여 압축파일(Zip/Jar/Tar/Ar/Cpio)을 해제한다.
+								이때 인자로 전달받은 대상경로에 압축을 해제하게 된다.
+							</entry>
+						</row>
+						<row>
+							<entry><emphasis role="bold">decompressJavaZip</emphasis>(String targetZipFileStr)</entry>
+							<entry>
+								자바 기본 기능(java.util.zip)을 사용하여 Zip 압축파일을 해제한다. 압축파일 내의 filename 은 UTF-8 이어야 함에 유의한다.
+		 					</entry>
+						</row>
+						<row>
+							<entry><emphasis role="bold">decompressJavaZip</emphasis>(String targetZipFileStr, String destDirStr)</entry>
+							<entry>
+								자바 기본 기능(java.util.zip)을 사용하여 Zip 압축파일을 해제한다. 압축파일 내의 filename 은 UTF-8 이어야 함에 유의한다.
+								이때 인자로 전달받은 대상경로에 압축을 해제하게된다.
+		 					</entry>
+						</row>
+					</tbody>
+				</tgroup>
+				</informaltable>
+
+				<para>
+					일반적으로 사용자가 local PC 에서 Windows 환경의 압축 프로그램으로 생성한 zip 압축 파일은 EUC-KR 로 인코딩되어 있는 경우가 많으므로 이런 경우 EUC-KR 을 지정하여 ZipUtil 의 decompressZip 메서드를 실행해야 한다.
+					서버 상의 Application 에서 Zip 압축을 생성하는 경우 UTF-8 인코딩을 지정하여 처리하는 것이 타 시스템 연동 유연성이 높으며 EUC-KR 로 decompressZip 을 실행하여도 에러가 발생하지 않으므로 참고한다.
+				</para>
+			</listitem>
+		</itemizedlist>
+	</section>
+</chapter>

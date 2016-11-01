@@ -1,0 +1,35 @@
+<?xml version="1.0"?>
+<!DOCTYPE hibernate-mapping PUBLIC "-//Hibernate/Hibernate Mapping DTD 3.0//EN"
+"http://hibernate.sourceforge.net/hibernate-mapping-3.0.dtd">
+<!-- Generated 2008. 9. 1 ???? 1:00:43 by Hibernate Tools 3.2.1.GA -->
+<hibernate-mapping>
+    <class name="org.anyframe.sample.hibernate.model.unidirection.relation.collection.CountryWithIdBag" table="COUNTRY_IDBAG" lazy="true" schema="PUBLIC">
+        <id name="countryCode" type="string">
+            <column name="COUNTRY_CODE" length="12" />
+            <generator class="assigned" />
+        </id>
+        <property name="countryId" type="string">
+            <column name="COUNTRY_ID" length="2" not-null="true" />
+        </property>
+        <property name="countryName" type="string">
+            <column name="COUNTRY_NAME" length="50" not-null="true" />
+        </property>
+     	<idbag name="movies" table="MOVIE"> 
+       		<collection-id column="id" type="java.lang.String"> 
+         		<generator class="uuid"/> 
+       		</collection-id> 
+       		<key column="COUNTRY_CODE" />
+       		<composite-element class="org.anyframe.sample.hibernate.model.unidirection.Movie"> 
+		        <property name="title" type="string">
+		            <column name="TITLE" length="100" not-null="true" />
+		        </property>
+		        <property name="director" type="string">
+		            <column name="DIRECTOR" length="10" not-null="true" />
+		        </property>
+		        <property name="releaseDate" type="date">
+		            <column name="RELEASE_DATE" length="0" />
+		        </property>
+	        </composite-element>
+     	</idbag> 
+    </class>
+</hibernate-mapping>

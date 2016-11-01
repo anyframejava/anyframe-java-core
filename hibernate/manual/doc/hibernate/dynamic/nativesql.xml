@@ -1,0 +1,101 @@
+<chapter id="hibernate_dynamic_nativesql">
+	<title>Dynamic Native SQL</title>
+	<para>
+		<![CDATA[Dynamic Native SQL의 정의 방법은 Dynamic HQL 정의와 마찬가지로
+		DynamicHibernateService 속성 정의 파일 내의 fileNames 값으로 정의한 xml파일에 정의한다.
+		단, <query>가 아닌 <sql-query> 태그를 사용한다. <dynamic-hibernate> 태그의 하위로 여러 개의
+		<sql-query>태그를 정의 할 수 있다.]]>
+	</para>
+       
+	<para>
+		<![CDATA[다음은 Dynamic Native SQL을 포함하고 있는 dynamic-hibernate.xml파일의 일부로,  
+        director 정보에 대해 like 조건으로 검색하는 Native SQL이 실행되고, 
+       	그렇지 않을 경우에는 title 정보에 대해 like 조건으로 검색하는 Native SQL이 실행 될 것이다. 
+		또 <return> 타입에 대한 정의가 없으므로 Object[] List로 리턴된다.]]> 		
+        <programlisting language="xml"><![CDATA[<dynamic-hibernate>
+    <sql-query name="dynamicFindMovieListWithoutReturn">
+        SELECT movie.* 
+        FROM Movie movie
+        WHERE]]> 
+            <emphasis role="bold">#if(${director})</emphasis>
+                <emphasis role="bold">movie.DIRECTOR like :director</emphasis>
+            <emphasis role="bold">#else</emphasis>
+                <emphasis role="bold">movie.TITLE	like :title</emphasis>
+            <emphasis role="bold">#end</emphasis>
+            <emphasis role="bold">ORDER BY {{sortColumn}} {{sortDirection}}</emphasis>		
+    <![CDATA[</sql-query>
+</dynamic-hibernate>>]]]></programlisting>
+	</para>   
+
+	<para>
+		<![CDATA[다음은 <return alias="movie" class="org.anyframe.sample.model.bidirection.Movie"/>을 이용해
+		return type를 정의한 Dynamic Native SQL의 예이다. 
+		아래 Native SQL의 실행 결과는 사용자가 정의한 클래스(Movie)의 List이다.]]>
+		<programlisting language="xml"><![CDATA[<dynamic-hibernate>
+    <sql-query name="dynamicFindMovieListWithSQL">]]>
+        <emphasis role="bold"><![CDATA[<return alias="movie" class="org.anyframe.sample.model.bidirection.Movie"/>]]></emphasis>
+        SELECT movie.*
+        FROM Movie movie
+        WHERE 
+            #if(${director})
+                movie.DIRECTOR like :director
+            #else
+                movie.TITLE	like :title
+            #end
+        ORDER BY {{sortColumn}} {{sortDirection}}		
+    <![CDATA[</sql-query>
+</dynamic-hibernate>]]></programlisting>
+	</para>
+
+	<para>
+		<![CDATA[다음은 <return-scalar>을 이용해 특정 컬럼의 값만 조회 하는 Dynamic Native SQL의 예이다. 
+		아래 Native SQL의 실행 결과는 Object[] List이다.]]>
+		<programlisting language="xml"><![CDATA[<dynamic-hibernate>
+    <sql-query name="dynamicFindMovieListWithScalar">]]>
+        <emphasis role="bold"><![CDATA[<return-scalar column="DIRECTOR" type="string"/>]]></emphasis>
+        <emphasis role="bold"><![CDATA[<return-scalar column="TITLE"/>]]></emphasis>
+        <emphasis role="bold"><![CDATA[<return-scalar column="COUNTRY_CODE" type="string"/>]]></emphasis>
+        SELECT DIRECTOR, TITLE, COUNTRY_CODE 
+        FROM Movie movie
+        WHERE 
+            #if(${director})
+                movie.DIRECTOR like :director
+            #else
+                movie.TITLE	like :title
+            #end
+        ORDER BY {{sortColumn}} {{sortDirection}}		
+    <![CDATA[</sql-query>
+</dynamic-hibernate>]]></programlisting>
+	</para>
+	
+	<para>
+		<![CDATA[다음은 join을 했을 경우 <return-join>을 정의한  Dynamic Native SQL의 예이다.
+		아래 Native SQL의 실행 결과는 Object[] List이고 Object[]안에  조인된 다른 Object[]가 포함되어 있다.]]>
+		<programlisting language="xml"><![CDATA[<dynamic-hibernate>
+    <sql-query name="dynamicFindMovieListByCountry">]]>
+        <emphasis role="bold"><![CDATA[<return alias="movie" class="org.anyframe.sample.model.bidirection.Movie"/>]]></emphasis>
+        <emphasis role="bold"><![CDATA[<return-join alias="country" property="movie.country"/>]]></emphasis>
+        SELECT movie.*, country.*
+        FROM Movie movie join COUNTRY country ON movie.COUNTRY_CODE = country.COUNTRY_CODE 
+        WHERE country.COUNTRY_CODE like :countryCode
+        ORDER BY {{sortColumn}} {{sortDirection}}		
+    <![CDATA[</sql-query>
+</dynamic-hibernate>]]></programlisting>
+	</para>
+	<para>
+		Dynamic Native SQL은 다음과 같은 방법으로 DynamicHibernateService를 사용한다.
+	 	<programlisting language="java">public List findMovieListWithSQL(int conditionType, String condition) {
+    Object[] args = new Object[3];
+    if (conditionType == 0) {
+        <emphasis role="bold">args[0] = "director=%" + condition</emphasis> + "%";
+        <emphasis role="bold">args[1] = "sortColumn=movie.director";</emphasis>
+    } else {
+        <emphasis role="bold">args[0] = "title=%" + condition</emphasis> + "%";
+        <emphasis role="bold">args[1] = "sortColumn=movie.title";</emphasis>
+    }
+    <emphasis role="bold">args[2] = "sortDirection=ASC";</emphasis>
+
+    return <emphasis role="bold">dynamicHibernateService.findList("dynamicFindMovieListWithSQL", args);</emphasis>
+	</programlisting>
+	</para>
+</chapter>

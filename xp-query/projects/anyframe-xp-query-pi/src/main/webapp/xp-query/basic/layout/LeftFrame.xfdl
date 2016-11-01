@@ -1,0 +1,145 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<FDL version="1.4">
+  <TypeDefinition url="..\default_typedef.xml"/>
+  <Form id="LeftFrame" classname="LeftFrame" inheritanceid="" position="absolute 0 0 195 647" class="frm_LF" titletext="Left Menu" scrollbars="none" onload="LeftFrame_onload">
+    <Layouts>
+      <Layout>
+        <Div id="divMenu" taborder="1" text="divMenu" position="absolute 0 0 195 647" anchor="top bottom">
+          <Layouts>
+            <Layout>
+              <Static id="sta_Title" text="메뉴" class="sta_LF_Title" position="absolute 16 7 126 23" style="background:URL('theme://images/bullet_LF_Title.png') left middle; "/>
+              <Grid id="grd_LF_SubMenu" class="grd_LF_SubMenu" taborder="1" binddataset="dsLeftMenu" scrollpixel="default" wheelscrollrow="1" useinputpanel="false" selecttype="treecell" autofittype="col" treeuseline="false" treeusecheckbox="false" treeinitstatus="expand,null" oncellclick="grd_LF_SubMenu_oncellclick" onselectchanged="grd_LF_SubMenu_onselectchanged" position="absolute 8 32 195 499">
+                <Formats>
+                  <Format id="default">
+                    <Columns>
+                      <Column size="165"/>
+                    </Columns>
+                    <Rows>
+                      <Row size="18"/>
+                    </Rows>
+                    <Band id="body">
+                      <Cell displaytype="tree" edittype="tree" style="background:EXPR((Level==0)?&quot;#ffffff00&quot;:&quot;&quot;);background2:EXPR((Level==0)?&quot;#ffffff00&quot;:&quot;&quot;);color:EXPR((Level==0)?&quot;#1c81beff&quot;:&quot;&quot;);color2:EXPR((Level==0)?&quot;#1c81beff&quot;:&quot;&quot;);font:EXPR((Level==0)?&quot;Dotum,9,bold&quot;:&quot;&quot;);selectbackground:EXPR((Level==0)?&quot;#ffffff00&quot;:&quot;&quot;);selectcolor:EXPR((Level==0)?&quot;#1c81beff&quot;:&quot;&quot;);selectfont:EXPR((Level==0)?&quot;Dotum,9,bold&quot;:&quot;&quot;);" text="bind:menuTitle" treelevel="bind:menuLevel"/>
+                    </Band>
+                  </Format>
+                </Formats>
+              </Grid>
+              <Static id="sta_LF_DivLine" class="sta_LF_DivLine" position="absolute 8 29 185 31"/>
+              <Div id="div_range" taborder="1" scrollbars="none" position="absolute 8 621 181 644">
+                <Layouts>
+                  <Layout>
+                    <Button id="btn_LF_Range00" taborder="1" onclick="div_range_btn_LF_Range00_onclick" class="btn_LF_Range" position="absolute 0 0 21 21" style="image:URL('theme://images/arrange_min_N.png'); "/>
+                    <Button id="btn_LF_Range01" taborder="1" onclick="div_range_btn_LF_Range01_onclick" class="btn_LF_Range" position="absolute 30 0 51 21" style="image:URL('theme://images/arrange_max_N.png'); "/>
+                    <Button id="btn_LF_Range02" taborder="1" onclick="div_range_btn_LF_Range02_onclick" class="btn_LF_Range" position="absolute 60 0 81 21" style="image:URL('theme://images/arrange_ver_N.png'); imagepadding:2 0 0 0; "/>
+                    <Button id="btn_LF_Range03" taborder="1" onclick="div_range_btn_LF_Range03_onclick" class="btn_LF_Range" position="absolute 90 0 111 21" style="image:URL('theme://images/arrange_hor_N.png'); imagepadding:2 0 0 0; "/>
+                    <Button id="btn_LF_Range04" taborder="1" onclick="div_range_btn_LF_Range04_onclick" class="btn_LF_Range" position="absolute 120 0 141 21" style="image:URL('theme://images/arrange_tile_N.png'); imagepadding:2 0 0 0; "/>
+                    <Button id="btn_LF_Range05" taborder="1" onclick="div_range_btn_LF_Range05_onclick" class="btn_LF_Range" position="absolute 150 0 171 21" style="image:URL('theme://images/arrange_close_N.png'); imagepadding:3 -2 -2 0; "/>
+                  </Layout>
+                </Layouts>
+              </Div>
+            </Layout>
+          </Layouts>
+        </Div>
+      </Layout>
+    </Layouts>
+    <Objects>
+      <Dataset id="dsLeftMenu" firefirstcount="0" firenextcount="0" useclientlayout="false" updatecontrol="true" enableevent="true" loadkeymode="keep" loadfiltermode="keep" reversesubsum="false" canrowposchange="dsLeftMenu_canrowposchange">
+        <ColumnInfo>
+          <Column id="menuId" type="STRING" size="256"/>
+          <Column id="menuUrl" type="STRING" size="256"/>
+          <Column id="menuTitle" type="STRING" size="256"/>
+          <Column id="menuLevel" type="STRING" size="256"/>
+          <Column id="formType" type="STRING" size="256"/>
+        </ColumnInfo>
+      </Dataset>
+    </Objects>
+    <Script type="xscript4.0"><![CDATA[include "lib::commonScript.xjs";
+
+// 상단에 메뉴가 있는 경우 해당 클릭한 메뉴를 fnSetLeftMenu 함수로 호출 하면 됨
+// 제공되는 샘플에는 상단 메뉴바가 없는 관계로 값을 직접 입력
+function LeftFrame_onload(obj:Form, e:LoadEventInfo)
+{
+	fnSetLeftMenu("01");
+}
+
+// 좌측의 메뉴 tree를 클릭 했을 때, 메뉴에 해당하는 화면의 Frame을 생성하는 함수
+function grd_LF_SubMenu_oncellclick(obj:Grid, e:GridClickEventInfo)
+{
+//	var menuId;
+//	if(dsLeftMenu.getColumn(e.row, "menuLevel") == "2"){
+//		menuId = dsLeftMenu.getColumn(e.row, "menuId");
+//		gfnOpenMenu(menuId);
+//	}
+}
+
+// 상단의 메뉴를 클릭 했을 때, 해당 메뉴에 속하는 하위 메뉴를 좌측 메뉴 트리로 설정하는 함수
+// 제공되는 샘플에는 상단 메뉴바가 없는 관계로 값을 직접 입력했음
+function fnSetLeftMenu(menuId){
+	var nFRow = gdsMenu.findRow("menuId", menuId);
+	
+	gdsMenu.filter("menuId.toString().substr(0,2)=='" + menuId + "'&&menuLevel!='0'");
+	dsLeftMenu.copyData(gdsMenu, true);
+	gdsMenu.filter("");
+}
+
+// MDI 창 수평 분할
+function div_range_btn_LF_Range02_onclick(obj:Button,  e:ClickEventInfo)
+{
+	AM.WORK.arrange("horizontal");
+}
+
+// MDI 창 수직 분할
+function div_range_btn_LF_Range03_onclick(obj:Button,  e:ClickEventInfo)
+{
+	AM.WORK.arrange("vertical");
+}
+
+// MDI 창 모두 닫기
+function div_range_btn_LF_Range05_onclick(obj:Button,  e:ClickEventInfo)
+{
+	var oFrameSet = AM.WORK;
+	for(var i = (oFrameSet.all.length - 1) ; i >= 0 ; i--){
+		oFrameSet.all[i].form.close();
+	}
+}
+
+// 현재 활성화된 MDI 창을 최대화
+function div_range_btn_LF_Range01_onclick(obj:Button,  e:ClickEventInfo)
+{
+	AM.WORK.getActiveFrame().openstatus = "maximize";
+}
+
+// MDI 창 바둑판 정렬
+function div_range_btn_LF_Range04_onclick(obj:Button,  e:ClickEventInfo)
+{
+	AM.WORK.arrange("tilevertical");
+}
+
+// 현재 활성화된 MDI 창 최소화
+function div_range_btn_LF_Range00_onclick(obj:Button,  e:ClickEventInfo)
+{
+	AM.WORK.getActiveFrame().openstatus = "minimize";
+}
+
+function dsLeftMenu_canrowposchange(obj:Dataset, e:DSRowPosChangeEventInfo)
+{
+	var menuId;
+	if(obj.getColumn(e.newrow, "menuLevel") == "2"){
+		menuId = obj.getColumn(e.newrow, "menuId");
+		gfnOpenMenu(menuId);
+	}
+}
+
+function grd_LF_SubMenu_onselectchanged(obj:Grid, e:GridSelectEventInfo)
+{
+//	this.getFocus();
+//	var menuId;
+//	var objDs = eval(obj.binddataset);
+//	
+//	if(objDs.getColumn(e.row, "menuLevel") == "2"){
+//		menuId = objDs.getColumn(e.row, "menuId");
+//		gfnOpenMenu(menuId);
+//	}
+}
+]]></Script>
+  </Form>
+</FDL>

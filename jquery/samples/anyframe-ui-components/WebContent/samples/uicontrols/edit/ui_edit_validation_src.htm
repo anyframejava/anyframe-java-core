@@ -1,0 +1,213 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN"
+"http://www.w3.org/TR/html4/loose.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+
+<head>
+<meta http-equiv="content-type" content="text/html; charset=UTF-8" />
+<title>[AnyFrame UI Button] Basic Sample</title>
+<link href="../../../common/css/smoothness/jquery-ui-1.10.0.custom.css"	rel="stylesheet">
+<script src="../../../common/exlibs/jquery-1.9.0.js"></script>
+<script src="../../../common/exlibs/jquery-ui-1.10.0.custom.js"></script>
+
+<link type="text/css" rel="stylesheet" href="../../../common/css/style.css" />
+<link type="text/css" rel="stylesheet" href="sub_css/validation.css">
+
+<script type="text/javascript">
+	var editValidationView = {
+			
+		//빈칸으로 둘경우 체크
+		emptyValidation : function(inputSelector){
+			if((inputSelector.val())){
+				$("#emptyMsg").text("입력 값이 존재합니다. :)").css("color", "green");
+			}else{
+				$("#emptyMsg").text("입력값이 존재하지 않습니다. 값을 입력해주세요!").css("color", "red");
+			};
+		},
+		
+		//문자열만 가능하도록 체크
+		charOnlyValidation : function(inputSelector){
+			var checkCharExp = new RegExp(/[a-z]/);
+			if(checkCharExp.test(inputSelector.val())){
+				$("#charOnlyMsg").text("영문자조합로 잘 표현되어있습니다. :)").css("color", "green");
+			}else{
+				$("#charOnlyMsg").text("영문자조합으로만 입력해주세요!")
+														  .css("color", "red");
+			};
+		},
+		
+		//문자열의 길이를 제한하도록 체크 : 본 샘플에서는 3~5자리수로 제한
+		charLengthValidation : function(inputSelector){
+			var checkCharLengthExp = /^[a-z]{3,5}$/;
+			if(checkCharLengthExp.test(inputSelector.val())){
+				$("#charLengthMsg").text("3자리 이상, 5자리 미만의 영문자로 잘 구성되어 있습니다. :)").css("color", "green");
+			}else{
+				$("#charLengthMsg").text("3자리 이상, 5자리 미만의 영문자의 조합으로 입력해 주세요!")
+													   .css("color", "red");
+			};
+		},
+		
+		//숫자만 가능하도록 체크
+		numOnlyValidation : function(inputSelector){
+			var checkNumExp = new RegExp(/[0-9]/);
+			if(checkNumExp.test(inputSelector.val())){
+				$("#numOnlyMsg").text("숫자조합로 잘 표현되어 있습니다. :)").css("color", "green");
+			}else{
+				$("#numOnlyMsg").text("숫자조합으로만 입력해주세요!")
+													   .css("color", "red");
+			};
+		},
+		
+		//숫자의 범위를 제한하도록 체크 : 본 샘플에서는 3~5자리수로 제한
+		numRangeValidation : function(inputSelector){
+			var checkNumRangeExp = /^[0-9]{3,5}$/;
+			if(checkNumRangeExp.test(inputSelector.val())){
+				$("#numRangeMsg").text("3자리 이상, 5자리 미만의 수로 잘 구성되어 있습니다. :)").css("color", "green");
+			}else{
+				$("#numRangeMsg").text("3자리 이상, 5자리 미만의 수의 조합으로 입력해 주세요!")
+													   .css("color", "red");
+			};
+		},
+		
+		//두 개의 입력값이 서로 같은 값인지 체크
+		valueMatchValidation : function(inputSelector01, inputSelector02){
+			if((inputSelector01.val()) == (inputSelector02.val())){
+				$("#valueMatchMsg").text("두 입력값이 일치합니다. :)").css("color", "green");
+			}else{
+				$("#valueMatchMsg").text("두 입력값이 일치하지 않습니다!")
+													   .css("color", "red");
+			};
+		},
+	
+		//영문, 숫자, 특수문자 일부(_; underbar)가 포함된 값으로 6-8자리수가 되도록 체크 
+		combinationValidation : function(inputSelector){
+			var combinationExp =/^[a-z0-9_-]{6,10}$/;
+			if(combinationExp.test(inputSelector.val())){
+				$("#combinationMsg").text("영문, 숫자, _(underbar)의 조합으로 잘 이루어져 있습니다. :)").css("color", "green");
+			}else{
+				$("#combinationMsg").text("영문, 숫자, _(underbar) 의 조합으로 6~10자리수가 되도록 입력해 주세요!").css("color", "red");
+			};
+		},
+
+		//이메일 주소형식(a@a.com과 같은..)에 알맞게 입력하도록 체크 
+		emailFormValidation : function(inputSelector){
+			var emailFormExp =/^([a-z0-9_\.-]+)@([\da-z\.-]+)\.([a-z\.]{2,6})$/;
+			if(emailFormExp.test(inputSelector.val())){
+				$("#emailFormMsg").text("올바른 이메일 형식입니다. :)").css("color", "green");
+			}else{
+				$("#emailFormMsg").text("올바른 이메일 주소형식으로 입력해 주세요!").css("color", "red");
+			};
+		}
+		
+	};
+
+	$(document).ready(function() {
+		
+		
+		$("#empty").focusout(function(){
+			editValidationView.emptyValidation($(this));
+		});
+	
+		$("#charOnly").focusout(function(){
+			editValidationView.charOnlyValidation($(this));
+		});
+		
+		$("#charLength").focusout(function(){
+			editValidationView.charLengthValidation($(this));
+		});
+		
+		$("#numOnly").focusout(function(){
+			editValidationView.numOnlyValidation($(this));
+		});
+		
+		$("#numRange").focusout(function(){
+			editValidationView.numRangeValidation($(this));
+		});
+	
+		$("#valueMatch02").focusout(function(){
+			editValidationView.valueMatchValidation($("#valueMatch01"), $(this));
+		});
+	
+		$("#combination").focusout(function(){
+			editValidationView.combinationValidation($(this));
+		});
+	
+		$("#emailForm").focusout(function(){
+			editValidationView.emailFormValidation($(this));
+		});
+		
+	});
+</script>
+
+</head>
+
+<body>
+	<div class="title">조건별 유효성 체크</div>
+	<div>
+		<div class="text-area">비어있는 값 체크</div>
+		<div class="input-area">
+			<input id="empty" type="text" />
+			<span id="emptyMsg"></span>
+		</div>
+	</div>
+	
+	<div>
+		<div class="text-area">영문 문자열만 입력가능 체크</div>
+		<div class="input-area">
+			<input id="charOnly" type="text" />
+			<span id="charOnlyMsg"></span>
+		</div>
+	</div>
+
+	<div>
+		<div class="text-area">문자열의 길이 체크(3-5자리)</div>
+		<div class="input-area">
+			<input id="charLength" type="text" />
+			<span id="charLengthMsg"></span>
+		</div>
+	</div>
+	
+	<div>
+	<div class="text-area">숫자값만 입력가능 체크</div>
+	<div class="input-area">
+		<input id="numOnly" type="text" />
+		<span id="numOnlyMsg"></span>
+		</div>
+	</div>
+	
+	<div>
+		<div class="text-area">숫자값의 범위 체크 (3-5자리) </div>
+		<div class="input-area">
+			<input id="numRange" type="text" />
+			<span id="numRangeMsg"></span>
+		</div>
+	</div>
+
+	<div>
+		<div class="text-area">입력값의 일치 체크</div>
+		<div class="input-area">
+			<input id="valueMatch01" type="text" /> =
+			<input id="valueMatch02" type="text" />
+			<span id="valueMatchMsg"></span>
+		</div>
+	</div>
+
+	<div>
+		<div class="text-area">값의 조합 체크(영문, 숫자, '_' 가 조합된 6-10자리수 ) </div>
+		<div class="input-area">
+			<input id="combination" type="text" />
+			<span id="combinationMsg"></span>
+		</div>
+	</div>
+
+	<div>
+		<div class="text-area">이메일 주소포맷 체크</div>
+		<div class="input-area">
+			<input id="emailForm" type="text" />
+			<span id="emailFormMsg"></span>
+		</div>
+	</div>
+
+</body>
+
+</html>
+
