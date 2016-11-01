@@ -1,0 +1,14 @@
+    	<!--query-propertyLobHandler-START-->		
+		<property name="lobHandler" ref="lobHandler"/>
+		<!--query-propertyLobHandler-END-->	
+
+    <!--query-generator-START-->
+	<bean id="pagingSQLGenerator" class="org.anyframe.query.impl.jdbc.generator.OraclePagingSQLGenerator"/>
+	<!--query-generator-END-->
+
+    <!--query-lobHandler-START-->
+	<bean id="lobHandler" class="org.springframework.jdbc.support.lob.OracleLobHandler" lazy-init="true">
+	    <property name="nativeJdbcExtractor" ref="nativeJdbcExtractor"/>
+    </bean>
+    <bean id="nativeJdbcExtractor" class="org.springframework.jdbc.support.nativejdbc.CommonsDbcpNativeJdbcExtractor" lazy-init="true"/>
+	<!--query-lobHandler-END-->

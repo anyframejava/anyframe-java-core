@@ -1,0 +1,171 @@
+<?xml version="1.0" encoding="utf-8"?>
+<mx:Module xmlns:mx="http://www.adobe.com/2006/mxml" layout="absolute" width="686" height="383" initialize="init()" xmlns:category="samples.category.*">
+	<mx:Script>
+		<![CDATA[
+			import samples.domain.Community;
+			import flash.utils.getQualifiedClassName;
+			import samples.domain.Category;
+			import mx.controls.Alert;
+			import mx.collections.ArrayCollection;
+			import mx.rpc.events.ResultEvent;
+			import org.anyframe.flex.query.service.FlexSearchVO;
+			import samples.domain.User;
+			import mx.managers.PopUpManager;
+			import mx.core.IFlexDisplayObject;
+			import mx.rpc.events.FaultEvent;
+			import samples.renderer.ResultHandler;
+			 
+			[Bindable]
+			private var categoryTree:ArrayCollection;
+			 
+			[Bindable]
+			private var category:Category;
+			 
+			[Bindable]
+			private var community:Community; 
+			
+			private var updateCommunityList:ArrayCollection = new ArrayCollection();
+			
+			private function init():void{
+				categoryService.getTree(new FlexSearchVO);
+				currentState = "CATEGORY";
+			}
+			private function getCategoryTreeResultHandler(event:ResultEvent):void{
+				categoryTree = event.result as ArrayCollection;
+			}
+			
+			private function searchCommunity():void{
+				var searchCommunityName:String = searchKeyword.text;
+				var flag:Boolean = false;
+				if ( searchCommunityName == null || searchCommunityName.length == 0 ){
+					mx.controls.Alert.show("검색 조건을 입력하세요");
+				}else{
+					for ( var i:int = 0; i < categoryTree.length ; i ++ ){
+						category = categoryTree.getItemAt(i) as Category;
+						var communityList:ArrayCollection = category.children as ArrayCollection;
+						for ( var j:int = 0 ; j < communityList.length ; j ++){
+							community = communityList.getItemAt(j) as Community;
+							
+							if ( community.label == searchCommunityName ){
+								flag = true;
+								trvCategory.expandItem( trvCategory.dataProvider[i] , true, false);
+								trvCategory.selectedItem = community;
+							}
+							if ( flag ) break;
+						}
+						if ( flag ) break;
+					}
+					if ( !flag ){
+						Alert.show("부서를 찾을 수 없습니다.")
+					}
+				}
+			}
+			
+			private function saveCommunity():void{
+				for ( var i:int = 0; i < categoryTree.length ; i ++ ){
+					var category:Category = categoryTree.getItemAt(i) as Category;
+					var communityList:ArrayCollection = category.children as ArrayCollection;
+					for ( var j:int = 0 ; j < communityList.length ; j ++){
+						var community:Community = communityList.getItemAt(j) as Community;
+						
+						if ( community.status == 2 ){
+						updateCommunityList.addItem(community);
+						}
+					}
+				} 
+				if (updateCommunityList.length > 0 ){
+					communityService.saveAll(updateCommunityList);
+				}else{
+					Alert.show("저장할 데이터가 없습니다.");
+				}
+			}
+			
+			private function treeClickHandler():void{
+				var className:String = getQualifiedClassName(trvCategory.selectedItem);
+				if( className == "samples.domain::Category"){
+					currentState = "CATEGORY";
+					category = trvCategory.selectedItem as Category;
+				}else{
+					currentState = "COMMUNITY";
+					community = trvCategory.selectedItem as Community;
+				}
+			}
+			
+			private function updateCommunity():void{
+				community.communityName = formCommunityName.text;
+				community.communityDesc = formCommunityDesc.text;
+				community.status = 2; 
+			}
+			
+			private function saveAllResultHandler(e:ResultEvent):void{
+				Alert.show("저장하였습니다.");
+			}
+			]]>
+	</mx:Script>
+	<mx:RemoteObject id="categoryService" destination="categoryService" showBusyCursor="true">
+		<mx:method name="getTree" result="getCategoryTreeResultHandler(event)" fault="ResultHandler.faultMessage(event)"/>
+		<mx:method name="getList" fault="ResultHandler.faultMessage(event)"/>
+	</mx:RemoteObject> 
+	<mx:RemoteObject id="communityService" destination="flexService" showBusyCursor="true">
+		<mx:method name="getList" fault="ResultHandler.faultMessage(event)"/>
+		<mx:method name="saveAll" fault="ResultHandler.faultMessage(event)" result="saveAllResultHandler(event)"/>
+	</mx:RemoteObject>
+	<mx:states>
+		<mx:State name="CATEGORY">
+			<mx:AddChild relativeTo="{categoryView}"/>
+			<mx:RemoveChild target="{communityView}"/>
+			<mx:SetProperty target="{categoryView}" name="width" value="391"/>
+			<mx:SetProperty target="{formCategoryDesc}" name="height" value="190"/>
+			<mx:SetProperty target="{formitem1}" name="x" value="10"/>
+			<mx:SetProperty target="{formitem1}" name="y" value="64"/>
+			<mx:SetProperty target="{formitem2}" name="x" value="10"/>
+			<mx:SetProperty target="{formitem2}" name="y" value="37"/>
+			<mx:SetProperty target="{formitem3}" name="x" value="10"/>
+			<mx:SetProperty target="{formitem3}" name="y" value="10"/>
+		</mx:State>
+		<mx:State name="COMMUNITY">
+			<mx:AddChild relativeTo="{communityView}"/>
+			<mx:RemoveChild target="{categoryView}"/>
+			<mx:SetProperty target="{formCommunityDesc}" name="height" value="190"/>
+			<mx:SetProperty target="{formitem4}" name="x" value="10"/>
+			<mx:SetProperty target="{formitem4}" name="y" value="64"/>
+			<mx:SetProperty target="{formitem5}" name="x" value="10"/>
+			<mx:SetProperty target="{formitem5}" name="y" value="37"/>
+			<mx:SetProperty target="{formitem6}" name="x" value="10"/>
+			<mx:SetProperty target="{formitem6}" name="y" value="10"/>
+		</mx:State>
+	</mx:states>
+	<mx:Panel title="     커뮤니티 정보" width="686" height="383" x="0" y="0" layout="absolute" styleName="panelContents" verticalScrollPolicy="off" horizontalScrollPolicy="off">
+				<mx:Label text="커뮤니티 이름" x="16" y="38"/>
+				<mx:TextInput id="searchKeyword" imeMode="KOREAN" enter="searchCommunity()" x="63" y="36" width="179" backgroundAlpha="#ffffff" borderColor="#abbdd2" borderStyle="solid" color="#333333" cornerRadius="4"/>
+				<mx:Button id="searchButton" click="searchCommunity()" x="247" y="32" styleName="buttonSearch" toolTip="Search"/>
+				<mx:Button label="저장" click="saveCommunity()" x="609.8" y="36" styleName="button01" icon="@Embed(source='../assets/images/icon_save.png')" textAlign="left"/>
+			<mx:HDividedBox width="680" height="300" x="2" y="66">
+			<mx:Canvas width="265" height="300" styleName="canvasTree" id="canvas1">
+				<mx:Tree id="trvCategory" dataProvider="{categoryTree}" showRoot="true" width="242" height="283" labelField="label" verticalScrollPolicy="auto" itemClick="treeClickHandler()" x="13" y="7"/>
+			</mx:Canvas>
+				<mx:Canvas id="categoryView" width="200" height="280" backgroundAlpha="0">
+						<mx:FormItem label="ID" id="formitem3">
+			 				<mx:TextInput id="formCategoryId" text="{category.categoryId}" width="230" editable="false" height="19"/> 
+						</mx:FormItem>
+						<mx:FormItem label="이름" id="formitem2">
+							<mx:TextInput id="formCategoryName" text="{category.categoryName}" width="230" maxChars="20" editable="false" height="19"/> 
+						</mx:FormItem>
+						<mx:FormItem label="설명" height="70%" id="formitem1">
+							<mx:TextArea id="formCategoryDesc" text="{category.categoryDesc}" width="306" height="208" editable="false"/> 
+						</mx:FormItem>
+				</mx:Canvas>
+				<mx:Canvas id="communityView" width="200" height="280" backgroundAlpha="0">
+						<mx:FormItem label="ID" id="formitem6">
+							<mx:TextInput id="formCommunityId" text="{community.communityId}" width="230" editable="false" height="19"/> 
+						</mx:FormItem>
+						<mx:FormItem label="이름" id="formitem5">
+							<mx:TextInput id="formCommunityName" text="{community.communityName}" width="230" maxChars="20" focusOut="updateCommunity()" height="19"/> 
+						</mx:FormItem>
+						<mx:FormItem label="설명" height="70%" id="formitem4">
+							<mx:TextArea id="formCommunityDesc" text="{community.communityDesc}" width="306" height="208" focusOut="updateCommunity()"/> 
+						</mx:FormItem>
+				</mx:Canvas>
+			</mx:HDividedBox>
+	</mx:Panel>
+</mx:Module>

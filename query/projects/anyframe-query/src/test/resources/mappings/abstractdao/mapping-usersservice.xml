@@ -1,0 +1,62 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE queryservice PUBLIC "-//ANYFRAME//DTD QUERYSERVICE//EN"
+"http://www.anyframejava.org/dtd/anyframe-core-query-mapping-3.2.dtd">
+<queryservice>
+	<queries>
+		<query id="createUsers">
+			<statement>
+				<![CDATA[
+				insert into USERS 
+				( USER_ID, USER_NAME, PASSWORD, SSN, SL_YN, 				
+				BIRTH_DAY, AGE, CELL_PHONE, ADDR, EMAIL, 				
+				EMAIL_YN, IMAGE_FILE, REG_DATE )
+				values ( :userId, :userName, :password, :ssn, :slYn, 				
+				:birthDay, :age, :cellPhone, :addr, :email, 				
+				:emailYn, :imageFile, :regDate  )
+				]]>
+			</statement>
+		</query>
+		<query id="updateUsers">
+			<statement>
+				<![CDATA[
+				update USERS 
+				SET USER_NAME= :userName, PASSWORD= :password, SSN= :ssn, SL_YN= :slYn, 				
+				BIRTH_DAY= :birthDay, AGE= :age, CELL_PHONE= :cellPhone, ADDR= :addr, EMAIL= :email, 				
+				EMAIL_YN= :emailYn, IMAGE_FILE= :imageFile, REG_DATE= :regDate				
+				where USER_ID= :userId
+				]]>				
+			</statement>
+		</query>
+		<query id="removeUsers">
+			<statement>
+				<![CDATA[
+				delete from USERS 
+				where USER_ID= :userId	
+				]]>			
+			</statement>
+		</query>
+		<query id="findUsersByPk">
+			<statement>
+				<![CDATA[
+				select
+				USER_ID, USER_NAME, PASSWORD, SSN, SL_YN, 				
+				BIRTH_DAY, AGE, CELL_PHONE, ADDR, EMAIL, 				
+				EMAIL_YN, IMAGE_FILE, REG_DATE				
+				from USERS
+				where USER_ID = :userId		
+				]]>		
+			</statement>
+		</query>		
+		<query id="findUsersList">
+			<statement>
+				<![CDATA[
+				select
+				USER_ID, USER_NAME, PASSWORD, SSN, SL_YN, 				
+				BIRTH_DAY, AGE, CELL_PHONE, ADDR, EMAIL, 				
+				EMAIL_YN, IMAGE_FILE, REG_DATE				
+				from USERS
+				]]>
+			</statement>
+		</query>	
+	</queries>
+</queryservice>

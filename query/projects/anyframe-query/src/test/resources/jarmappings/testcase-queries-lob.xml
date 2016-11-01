@@ -1,0 +1,35 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE queryservice PUBLIC "-//ANYFRAME//DTD QUERYSERVICE//EN"
+"http://www.anyframejava.org/dtd/anyframe-core-query-mapping-3.2.dtd">
+<queryservice>
+  	<queries>
+  		<query id="insertBlobClob" isDynamic="false">
+  			<statement>insert into TB_BINARY_TEST values(?,?,?)</statement>		
+  			<param type="INTEGER"/>
+  			<param type="BLOB"/>  			  			  			
+ 			<param type="CLOB"/>  			  			  			
+  		</query> 
+  		<query id="findBlobClob" isDynamic="false">
+  			<statement>select bin_id , myblob, myclob from TB_BINARY_TEST where bin_id = ?</statement>
+  			<param type="INTEGER"/>
+  		</query>  
+  		<query id="findBlobClobWithResultClass" isDynamic="false">
+  			<statement>select bin_id , myblob, myclob from TB_BINARY_TEST where bin_id = ?</statement>
+  			<param type="INTEGER"/>
+  			<result class="org.anyframe.query.vo.LobVO"/>
+  		</query>    			
+  		<query id="insertBlobClobWithOra8i" isDynamic="false">
+  			<statement>insert into TB_BINARY values(?,empty_blob(),empty_clob())</statement>		
+  			<param  type="INTEGER"/>
+  			<lobStatement>
+  				<statement>select  myclob, myblob from TB_BINARY where bin_id = ? for update</statement>
+  				<param type="INTEGER"/>				
+  			</lobStatement> 			  			  			  			
+  		</query>   	
+  		<query id="findBlobClobWithOra8i" isDynamic="false">
+  			<statement>select myblob, myclob from TB_BINARY where bin_id = ?</statement>
+  			<param type="INTEGER"/>
+  		</query>   							 			  						 				  			
+    </queries>
+    
+</queryservice>

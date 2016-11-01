@@ -1,0 +1,635 @@
+<chapter id="foundation_springmvc_view">
+	<title>View</title>
+	<para>
+		Spring MVC는 JSP에서 보다 쉽게 데이터를 출력할 수 있도록 Tag Library를 제공하며 여러 View
+		기술(Velocity, Freemarker, Tiles 등)과의 연계 방법을 제시한다. 여기서는 Spring Form Tag와 Tiles
+		연계 방안에 대해 설명하도록 한다.
+	</para>
+	
+	<section id="foundation_springmvc_view_springformtag">
+		<title>Tag library</title>
+		
+		<para>
+			Spring MVC에서는 입력 폼 구현을 보다 쉽게 구현하기 위해 Spring Form Tag를 제공한다. 이는 태그에서
+			command 객체, controller 참조 데이터로의 접근이 가능하다. Spring Form tag의 사용 방법은 매우 간단하며
+			예제를 중심으로 각 tag에 대한 내용을 살펴본다.
+		</para>
+		
+		<section id="foundation_springmvc_view_springformtag_conf">
+			<title>configuration</title>
+			
+			<para>
+				Spring Form Tag를 사용하기 위해서는 spring-form.tld 파일이 필요하고 이는
+				spring-webmvc-2.5.2.jar 파일에 포함되어 있다. 이 폼 태그를 사용하기 위해서는 JSP 페이지에 taglib을
+				추가해줘야한다. 
+				<programlisting language="xml">&lt;%@ taglib prefix="form" uri="http://www.springframework.org/tags/form" %&gt;</programlisting>
+			</para>
+		</section>
+		
+		<section id="foundation_springmvc_view_springformtag_form">
+			<title>form</title>
+			<para>
+				<![CDATA[<form>]]>은 데이터 바인딩을 위해 태그 안에 바인딩 path를 지정해 줄 수 있다. path에 해당되는
+				값은 도메인 모델의 Bean 객체를 의미한다. 사용예는 다음과 같다. 
+				<programlisting language="xml"><![CDATA[<form:form commandName="user">
+    userId : <form:input path="userId"/>
+</form:form>]]></programlisting>
+			</para>
+			
+			<para>
+				또한 Spring Form Tag를 이용하기 위해서는 각각의 입력 path값에 매칭될 트랜스퍼 오브젝트를 지정해 줘야하는데 
+				<![CDATA[<form>]]>안에 commandName 속성으로 다음과 같이 지정해 줄 수 있다.
+				<programlisting language="xml"><![CDATA[<% request.setAttribute("user", sample.services.UserVO())>]]></programlisting>
+			</para>
+
+      		<para>
+      			이러한 commandName의 기본값은 "command"이며 input값들과 매칭될 트랜스퍼 오브젝트를 request값으로 셋팅해줘야한다. 
+      			이 값은 SimpleFormController를 사용할 경우 FormBackingObject()메소드에서 지정해 줄 수도있다. 
+      			<programlisting language="xml">protected Object formBackingObject(HttpServletRequest request)
+    throws Exception {
+    <emphasis role="bold">UserVO vo=new UserVO();</emphasis>
+    <emphasis role="bold">request.setAttribute</emphasis>("<emphasis
+            role="bold">user</emphasis>",<emphasis role="bold">vo</emphasis>);
+    return new UserVO();
+}
+</programlisting>
+			</para>
+    	</section>
+
+    	<section id="foundation_springmvc_view_springformtag_input">
+    		<title>input</title>
+    		<para>HTML의 <![CDATA[<input>]]>의 value가 text인 것을 기본 value로 갖는다. 이 태그의 예는 위의 <![CDATA[<form>]]> 예에서 볼 수 있다.</para>
+    	</section>
+    	
+    	<section id="foundation_springmvc_view_springformtag_checkbox">
+    		<title>checkbox</title>
+    		<para>
+    			다음은 <![CDATA[<checkbox>]]>의 예이다. 마찬가지로 path에 트랜스퍼 오브젝트의 bean name을 매핑시켜주고 
+    			label속성을 이용하면 jsp페이지로 보여질 이름을 설정할 수 있다. 
+    			<programlisting language="xml">&lt;form:checkbox path="hobby" value="listeningMusic" label="음악감상"/&gt;
+&lt;form:checkbox path="hobby" value="study" label="공부"/&gt;</programlisting>
+			</para>
+			
+			<para>※ 위 코드는 아래와 같은 화면을 출력한다.</para>
+			
+			<mediaobject>
+				<imageobject>
+					<imagedata align="center" fileref="../image/foundation/springmvc/formtag2.jpg" />
+				</imageobject>
+			</mediaobject>
+		</section>
+		
+		<section id="foundation_springmvc_view_springformtag_checkboxes">
+			<title>checkboxes</title>
+			<para>
+				위의 <![CDATA[<checkbox>]]>는 각각의 항목에 대해 작성해줘야 하지만 <![CDATA[<checkboxes>]]>를 사용하면
+				items속성을 이용해서 한줄로 나타내줄 수 있다. 이러한 items에 들어갈 값은 컨트롤러의
+				formBackingObject()메소드에서 Array, List, Map형태의 것들로 넘겨 줄 수 있다. Map의 key와
+				value쌍으로 넘겨줄 경우 key는 태그의 value값이 되고 value는 label명이 된다. (단, Array나 List로
+				넘길 경우 label은 value와 같은 값을 가지게 된다.) 다음은 그 예이다. 
+				<programlisting language="java">protected Object formBackingObject(HttpServletRequest request) throws Exception {
+    UserVO vo=new UserVO();
+    <emphasis role="bold">Map interest = new HashMap();
+    interest.put("reading", "독서");
+    interest.put("listeningMusic", "음악감상");
+    interest.put("study", "공부");
+    request.setAttribute("interest", interest);
+    request.setAttribute("user",vo);</emphasis>
+    return new UserVO();
+}
+</programlisting>
+			</para>
+			
+			<programlisting language="xml"><![CDATA[<tr>
+    <td>hobby :</td>
+    <td><form:checkboxes path="hobby" items="${interest}" /></td>
+</tr>]]></programlisting>
+
+      		<para>※ 위 코드는 아래와 같은 화면을 출력한다.</para>
+
+      		<mediaobject>
+        		<imageobject>
+          			<imagedata align="center" fileref="../image/foundation/springmvc/formtag3.jpg" />
+        		</imageobject>
+      		</mediaobject>
+    	</section>
+
+    	<section id="foundation_springmvc_view_springformtag_radiobutton">
+    		<title>radiobutton</title>
+    	
+    		<para>
+	      		다음은 <![CDATA[<radiobutton>]]>의 예이다. <![CDATA[<radiobutton>]]> 또한 label 속성을 이용하여 label명을 설정해 줄 수 있다. 
+	      		<programlisting language="xml"><![CDATA[<tr>
+    <td>Gender:</td>
+    <td>Male: <form:radiobutton path="gender" value="M" label="남자"/> <br/>
+        Female: <form:radiobutton path="gender" value="F" label="여자"/> </td>
+</tr>]]></programlisting>
+			</para>
+			
+			<mediaobject>
+				<imageobject>
+					<imagedata align="center" fileref="../image/foundation/springmvc/formtag4.jpg" />
+				</imageobject>
+			</mediaobject>
+		</section>
+
+    	<section id="foundation_springmvc_view_springformtag_radiobuttons">
+	    	<title>radiobuttons</title>
+	    	
+	    	<para>
+	    		다음은 <![CDATA[<radiobuttons>]]>의 예이다. items 속성의 사용방법은 위의 <![CDATA[<checkboxes>]]>와 동일하다. 
+	    		<programlisting language="xml"><![CDATA[<tr>
+    <td>Gender:</td>
+    <td><form:radiobuttons path="gender" items="${genderOptions}"/></td>
+</tr>]]></programlisting>
+			</para>
+    	</section>
+
+    	<section id="foundation_springmvc_view_springformtag_password">
+	    	<title>password</title>
+	    	<para>
+	    		다음은 <![CDATA[<password>]]>의 예이다.
+	    		<programlisting language="xml"><![CDATA[<tr>
+    <td>password :</td>
+    <td><form:password path="password" /></td>
+</tr>]]></programlisting>
+			</para>
+			
+			<para>※ 위 코드는 아래와 같은 화면을 출력한다.</para>
+		
+			<mediaobject>
+				<imageobject>
+					<imagedata align="center" fileref="../image/foundation/springmvc/formtag8.jpg" />
+				</imageobject>
+			</mediaobject>
+		</section>
+	
+	    <section id="foundation_springmvc_view_springformtag_select">
+	    	<title>select</title>
+			<para>
+				<![CDATA[<select>]]>도 위의 <![CDATA[<checkboxes>]]>나 <![CDATA[<radiobuttons>]]>처럼 items 속성을 이용하여 formBackingObject에서 
+				넘겨주는 값으로 자동 매핑 시켜줄 수 있다.
+				<programlisting language="java">protected Object formBackingObject(HttpServletRequest request)
+                throws Exception {
+    UserVO vo=new UserVO();
+    <emphasis role="bold">Map address = new HashMap();
+    address.put("seoul","서울");
+    address.put("daegu","대구");
+    address.put("busan","부산");
+    request.setAttribute("address", address);
+    request.setAttribute("user",vo);</emphasis>
+    
+	return new UserVO();
+}
+</programlisting>
+			</para>
+
+			<programlisting language="xml"><![CDATA[<tr>
+    <td>주소</td>
+    <td><form:select path="address" items="${address}" /></td>
+</tr>]]></programlisting>
+
+			<para>※ 위 코드는 아래와 같은 화면을 출력한다.</para>
+		
+			<mediaobject>
+				<imageobject>
+					<imagedata align="center" fileref="../image/foundation/springmvc/formtag6.jpg" />
+				</imageobject>
+			</mediaobject>
+	
+			<para>
+				일반적인 <![CDATA[<option>]]>와 함께 아래와 같이 사용할 수도 있다.
+			</para>
+		</section>
+	
+	    <section id="foundation_springmvc_view_springformtag_option">
+	    	<title>option</title>
+			<para>
+				다음은 <![CDATA[<option>]]>의 사용 예이다.
+				<programlisting language="xml"><![CDATA[<tr>
+    <td>주소</td>
+    <td><form:select path="address">
+        <form:option value="seoul" label="서울" />
+        <form:option value="daegu" label="대구" />
+        <form:option value="busan" label="부산" />
+    </form:select></td>
+</tr>]]></programlisting>
+			</para>
+	    </section>
+	
+	    <section id="foundation_springmvc_view_springformtag_options">
+	    	<title>options</title>
+	    	<para>
+	      		다음은 <![CDATA[<options>]]>의 사용예이다. 
+      			<programlisting language="xml"><![CDATA[<tr>
+    <td>주소</td>
+    <td><form:select path="address">
+        <form:options items="${address}" />
+    </form:select></td>
+</tr>]]></programlisting>
+			</para>
+	    </section>
+	
+	    <section id="foundation_springmvc_view_springformtag_textarea">
+	    	<title>textarea</title>
+	    	<para>
+	    		다음은 <![CDATA[<textarea>]]>의 사용 예이다. 
+	    		<programlisting language="xml"><![CDATA[<td>Note :</td>
+<td><form:textarea path="comment" rows="3" cols="20"></form:textarea></td>]]></programlisting>
+			</para>
+			
+			<mediaobject>
+				<imageobject>
+					<imagedata align="center" fileref="../image/foundation/springmvc/formtag7.jpg" />
+				</imageobject>
+			</mediaobject>
+	    </section>
+	
+	    <section id="foundation_springmvc_view_springformtag_hidden">
+	    	<title>hidden</title>
+	    	<para>
+	    		다음은 <![CDATA[<hidden>]]>의 사용 예이다. 
+	    		<programlisting language="xml"><![CDATA[<form:hidden path="userId" />]]></programlisting>
+	    	</para>
+	    </section>
+
+	    <section id="foundation_springmvc_view_springformtag_errors">
+	    	<title>errors</title>
+	
+			<para>
+		      	Spring MVC는 validatior에서 얻어진 메시지를 JSP페이지에서 쉽게 출력할 수 있도록 Spring Form 태그의 <![CDATA[<form:errors>]]>를 제공한다. 
+		      	이는 생성한 validator를 통해 입력값의 유효성 체크 후 에러 메시지를 출력해주는데 자세한 사항은 
+		      	본 매뉴얼 <link linkend="foundation_springmvc_validation_validator_taglibrary">Foundation Plugin >> Spring MVC >> Validation의 <![CDATA[<form:errors>]]> 태그 사용</link>을 참고한다.
+			</para>
+		</section>
+	
+	    <section id="foundation_springmvc_view_springformtag_sample">
+	    	<title>sample</title>
+	    	
+	    	<section id="foundation_springmvc_view_springformtag_sample_formview">
+	    		<title>입력 화면</title>
+	    		
+	    		<para>
+	    			다음은 입력 화면 작성 예인 userForm.jsp 파일의 일부이다. 
+	    			<programlisting language="xml"><![CDATA[<%@ taglib prefix="form" uri="http://www.springframework.org/tags/form"%>
+<form:form commandName="users" name="form" enctype="multipart/form-data">
+    <table>
+    <tr><td colspan="3"><center><strong>
+        <spring:message code="title.user.form"></spring:message>
+    </strong></center><br/><br/></td></tr>
+        <tr>
+            <td> Name :</td>
+            <td><form:input path="userName" />(required)</td>
+            <td><form:errors path="userName" /></td>
+        </tr>
+        <tr>
+            <td>password :</td>
+            <td><form:password path="password" />(required, 6자이상입력)</td>
+            <td><form:errors path="password" /></td>
+        </tr>
+        <tr>
+            <td>confirm password :</td>
+            <td><form:password path="confirmPassword" />(위의 password와 동일해야함)</td>
+            <td><form:errors path="confirmPassword" /></td>
+        </tr>
+        <tr>
+            <td>sex :</td>
+            <td><form:radiobutton path="sex" value="M" label="남자" /> 
+            <form:radiobutton path="sex" value="F" label="여자" /></td>
+        </tr>
+        <tr>
+            <td>address :</td>
+            <!-- items 속성을 사용하여 컨트롤러의 
+            formbackingObject()에서 넘겨준  Map 형태의 객체를 받아 출력해준다. -->
+            <td><form:select path="address" items="${address}"/>
+        </tr>
+        <tr>
+            <td>hobby :</td>
+            <td><form:checkboxes path="hobby" items="${hobby}" /></td>
+        </tr>
+        <tr>
+            <td>Note :</td>
+            <td><form:textarea path="comment" rows="3" cols="20"></form:textarea></td>
+        </tr>
+    </table>
+    <a href="javascript:fncGetUser();">submit</a>
+</form:form>]]></programlisting>
+				</para>
+			</section>
+			
+			<section id="foundation_springmvc_view_springformtag_sample_controller">
+				<title>Controller 클래스</title>
+				
+				<para>
+					다음은 Form에서 사용할 객체를 셋팅해주는 UserController.java 파일의 FormBackingObjet()메소드와 요청 처리 결과를 
+					모델 객체에 셋팅해서 view로 넘겨주는 onSubmit()메소드의 일부이다. 
+					<programlisting language="java">public class <emphasis role="bold">UserController</emphasis> extends SimpleFormController {
+    ... 중략...
+    // setting command class for data binding
+    public UserController() {
+        setCommandClass(UserVO.class);
+        //form tag에서 사용할 commandName 된다. 
+        setCommandName("<emphasis role="bold">users</emphasis>"); 
+        setFormView("/jsp/user/userForm.jsp");
+    }
+
+    // override onSubmit() method.
+    protected ModelAndView onSubmit(Object command) throws Exception {
+        // data binding using command object
+        UserVO userVO = (UserVO) command;
+
+        // call business service
+        userVO = userService.getUser(userVO);
+        // setting view name
+        ModelAndView mav = new ModelAndView("/jsp/user/getUser.jsp");
+        //view에 "userVO"라는 모델 객체를 넘겨준다. 
+        <emphasis role="bold">mav.addObject</emphasis>(<emphasis role="bold">userVO</emphasis>);
+        // return a ModelAndView object.
+        return mav;
+    }
+
+    protected Object formBackingObject(HttpServletRequest request)
+            throws Exception {
+        Map address = new HashMap();
+        address.put("seoul", "서울");
+        address.put("daegu", "대구");
+        address.put("busan", "부산");
+
+        Map hobby = new HashMap();
+        hobby.put("reading", "독서");
+        hobby.put("listeningMusic", "음악감상");
+        hobby.put("study", "공부");
+        
+        request.setAttribute("address", address);
+        request.setAttribute("hobby", hobby);
+        
+        //commandName인 "users"에 return값이 셋팅된다. 
+        return new UserVO();
+    }
+}</programlisting>
+				</para>
+			</section>
+			
+			<section id="foundation_springmvc_view_springformtag_sample_output">
+				<title>출력 화면</title>
+				
+				<para>
+					다음은 EL문을 사용한 데이터 출력을 작성한 getUser.jsp 파일의 일부이다. 
+					<programlisting language="xml"><![CDATA[<tr><td>User Name : </td><td>${userVO.userName}</td></tr>
+<tr><td>User Password : </td><td>${userVO.password}</td></tr>
+<tr><td>User Address : </td><td>${userVO.address}</td></tr>
+<tr><td>User hobby : </td><td>${userVO.hobby}</td></tr>]]></programlisting>
+				</para>
+				
+				<para>
+					위의 JSP 코드처럼 Expression Language(JSP 2.0에서 지원)를 사용하여 Controller에서 넘겨준 "userVO"라는 이름의 모델 객체의 값을 출력할 수 있다.
+				</para>
+			</section>
+		</section>
+	</section>
+	
+	<section id="foundation_springmvc_view_tilesintegration">
+    	<title>Tiles Integration</title>
+    	<para>
+    		Spring MVC에서는 Tiles1, Tiles2를 각각 지원하는 viewClass를 제공한다. 본 매뉴얼에서는 Tiles2와의 연계 방안에 대해 설명할 것이며 
+    		기본적인 viewResolver에 대한 내용은 Foundation Plugin >> Spring MVC >> Configuration의 <link linkend="foundation_springmvc_configuration_actionservletxml_viewresolver">View Resolver</link> 정의 부분을 참고한다. 
+    		Spring MVC와 Tiles2를 연계하기 위해서는 JDK1.5 이상, Tiles 2.0.X, Commons BeanUtils, Commons Digester, Commons Logging이 필요하다. 
+    		Tiles2를 연계하기 위해서는 아래와 같은 절차를 따른다.
+    	</para>
+    	
+    	<itemizedlist>
+    		<listitem>
+    			<para>Tiles view class 정의</para>
+    		</listitem>
+    		<listitem>
+    			<para>TilesConfigurer 정의</para>
+    		</listitem>
+    		<listitem>
+    			<para>Tiles definition 파일 작성</para>
+    		</listitem>
+    	</itemizedlist>
+    	
+    	<section id="foundation_springmvc_view_tilesintegration_viewclass">
+    		<title>Tiles view class 정의</title>
+    		
+    		<para>
+    			viewResolver 정의 부분에서 간략하게 설명했듯이 Tiles 2를 이용하기 위해서는 UrlBasedViewResolver를 정의한 후 
+    			viewClass를 아래 코드와 같이 org.springframework.web.servlet.view.tiles2.TilesView로 정의해줘야 한다.
+    			<programlisting language="xml"><emphasis role="bold"><![CDATA[<bean id="tilesViewResolver"
+    class="org.springframework.web.servlet.view.UrlBasedViewResolver">
+    <property name="viewClass"
+        value="org.springframework.web.servlet.view.tiles2.TilesView" />
+</bean>]]></emphasis></programlisting>
+			</para>
+		</section>
+		
+		<section id="foundation_springmvc_view_tilesintegration_tilesconfigurer">
+			<title>TilesConfigurer 정의</title>
+			
+			<para>
+				Tiles 매핑 관련 정보가 작성되어 있는 tiles definition 파일의 위치를 정의해줘야 하는데 이 때 TilesConfigurer를 아래와 같이 정의해 준다.
+				<programlisting language="xml"><emphasis role="bold"><![CDATA[<bean id="tilesConfigurer"
+    class="org.springframework.web.servlet.view.tiles2.TilesConfigurer">
+    <property name="definitions">
+        <list>
+            <value>/WEB-INF/tiles-def.xml</value>
+        </list>
+    </property>
+</bean>]]></emphasis></programlisting>
+			</para>
+			
+			<para>위와 같이 정의할 경우 /WEB-INF/tiles-def.xml 파일을 로드하여 각 view 이름에 맞는 tiles view를 리턴해 준다.</para>
+		</section>
+		
+		<section id="foundation_springmvc_view_tilesintegration_tilesdefinition">
+			<title>Tiles definition 파일 작성</title>
+			
+			<para>
+				Tiles를 사용하기 위해서는 실제 Controller에서 리턴된 view 이름을 토대로 페이지에 출력해줄 tiles attribute를 정의해주는 tiles definition을 정의해야 한다. 
+				(위의 tilesConfigurer 위치로 정의한 tiles-def.xml 파일) 다음은 tiles definition 정의 예이다. 
+				<programlisting language="xml"><![CDATA[<definition name="template" template="/sample/layouts/layout.jsp">
+    <put-attribute name="header" value="/sample/layouts/top.jsp" />
+    <put-attribute name="body" value="/sample/layouts/welcome.jsp" />
+    <put-attribute name="footer" value="/sample/layouts/left.jsp" />
+</definition>
+<definition name="listCategory" extends="template">
+    <put-attribute name="body" value="/sample/category/listCategory.jsp" />
+</definition>]]></programlisting>
+			</para>
+			
+			<para>
+				먼저 Layout을 정의한 jsp 페이지를 정의한다. 해당 layout.jsp 페이지에서 기본적으로 사용할 페이지 구성 요소(위의 예에선 header, body, footer)들을 정의한 후 
+				다른 view들은 미리 정의된 template이라는 definition을 extends하여 body만 설정하여 사용할 수 있다. 
+				위의 예에서 listCategory라는 이름의 view가 리턴될 경우 "/sample/layouts/layout.jsp" 페이지의 레이아웃으로 header에는 "/sample/layouts/top.jsp" body는 
+				"/sample/category/listCategory.jsp", footer는 "/sample/layouts/left.jsp"이 될 것이다. 
+				JSP에서 tiles 구성 요소를 넣을 때는 아래와 같이 tiles taglib을 정의한 후 <![CDATA[<tiles:insertAttribute>]]> 태그를 이용하여 사용한다.
+				<programlisting language="xml"><![CDATA[<definition name="template" template="/sample/layouts/layout.jsp">
+    <put-attribute name="header" value="/sample/layouts/top.jsp" />
+    <put-attribute name="body" value="/sample/layouts/welcome.jsp" />
+    <put-attribute name="footer" value="/sample/layouts/left.jsp" />
+</definition>
+<definition name="listCategory" extends="template">
+    <put-attribute name="body" value="/sample/category/listCategory.jsp" />
+</definition>]]></programlisting>
+			</para>
+			
+			<para>name attribute에 들어갈 이름은 tiles definition 파일의 name attribute의 이름이 된다.</para>
+		</section>
+	</section>
+  
+	<section id="foundation_springmvc_view_tiles">
+		<title>Apache Tiles</title>
+		
+		<para>
+			Apache Tiles는 Web Application을 개발할 때 화면 Layout을 간단하게 정의할 수 있는 Template Framework이다. 
+			Tiles는 개발자가 정의한 Tiles의 요소를 가지고 실행시 화면을 완성시키게 된다. 이러한 Tiles의 요소는 Tiles Definition xml을 이용해
+			쉽게 정의할 수 있으며 화면 정의의 중복을 감소시키고 재사용성을 높일 수 있다. Anyframe 4.5.0에서는 Apache Tiles 2.2 버전을 사용하고 있으며
+			이 장에서는 Tiles에 대해 알아보도록 한다.
+		</para>
+		
+		<section id="foundation_springmvc_view_tiles_features">
+			<title>Features</title>
+			<para>Tiles 2에서 새롭게 제공하는 Tiles의 주요 특징은 아래와 같다.</para>
+			<itemizedlist>
+				<listitem><para>Nested Definition 지원</para></listitem>
+				<listitem><para>Freemarker, Velocity 지원</para></listitem>
+				<listitem><para>Regular Expression을 이용한 패턴 매칭 지원</para></listitem>
+				<listitem><para>OGNL, MVEL 지원</para></listitem>
+			</itemizedlist>
+			이 중 Anyframe에서는 EL문을 사용하여 보다 쉽게 TilesDefinition 파일을 작성할 것을 가이드 한다.
+		</section>
+		
+		<section id="foundation_springmvc_view_tiles_install">
+			<title>Installation</title>
+			<para>Apache Tiles는 아래의 4개의 프로젝트로 구성되어 있다. </para>
+			<itemizedlist>
+				<listitem><para>tiles-core</para></listitem>
+				<listitem><para>tiles-api</para></listitem>
+				<listitem><para>tiles-servlet</para></listitem>
+				<listitem><para>tiles-jsp</para></listitem>
+			</itemizedlist>
+			<para>위 프로젝트는 버전에 따라 Apache Tiles 홈페이지에서 다운로드 받을 수 있으며 
+			Anyframe 4.5.0 설치시 Tiles 2.2.1 버전이 자동 배포 된다.
+			또한, Tiles2.2를 사용하기 위해서는 아래와 같은 참조 라이브러리가 필요하다.</para> 
+			<itemizedlist>
+				<listitem><para>Jakarta Commons BeanUtils(1.8.0 이상)</para></listitem>
+				<listitem><para>Jakarta Commons Digester(2.0 이상)</para></listitem>
+				<listitem><para>SLF4j(API와 구현체, 1.5.8 이상)</para></listitem>
+			</itemizedlist>
+			<para>이 또한, Anyframe 설치시 자동 배포 된다.</para>
+		</section>
+		
+		<section id="foundation_springmvc_view_tiles_element">
+			<title>구성 요소</title>
+			<para>Tiles는 기본적으로 Composite View Pattern을 사용하며 Template, Attribute, Definition으로 구성된다. </para>
+			<itemizedlist>
+				<listitem><para>Template : 페이지의 레이아웃이 되며 attribute를 호출하여 해당 페이지를 채운다. </para></listitem>
+				<listitem><para>Attribute : Template으로 정의된 빈 공간을 채운다. Attribute는 아래의 3가지 타입을 가진다.</para>
+					<itemizedlist>
+						<listitem><para>string : 직접 화면에 출력할 문자열</para></listitem>
+						<listitem><para>template : attribute를 가지거나 가지지 않는 template. attribute를 가지고 있다면 그 attribute 또한 채워져야 함</para></listitem>
+						<listitem><para>definition : 재사용 가능한 페이지를 조합함. 페이지에 포함되는 모든 attribute는 채워져야 함</para></listitem>
+					</itemizedlist>
+				</listitem>
+				<listitem><para>Definition : end-user를 위한 화면에 출력할 구성이다.
+				필수적으로 template들의 조합으로 이루어 지며 전체적 또는 부분적으로 attribute들을 채운다. 모든 attribute가 채워져 있으면 해당 attribute들을 포함한 화면을 출력하며
+				채워져 있지 않은 attribute에 대해서는 extended definition으로 정의되어 있는 definition의 attribute들을 채우게 된다.  </para></listitem>
+			</itemizedlist>
+		</section>
+		
+		<section id="foundation_springmvc_view_tiles_basic">
+			<title>화면 개발</title>
+			<para>
+				Tiles 기반의 페이지를 개발하기 위해서는 먼저 template을 생성해야 한다. Anyframe Plugin 설치로 
+				생성되게 되는 Anyframe Application은 다음과 같은 화면 Layout을 가진다. 
+			</para>
+			<mediaobject>
+				<imageobject>
+					<imagedata align="center" fileref="../image/foundation/springmvc/springmvc_view_tiles_layout.jpg" />
+				</imageobject>
+			</mediaobject>
+			<para>
+				위의 그림에서 보는바와 같이 화면 Layout은 top, left, body의 구성요소로 이루어져 있다.
+				이러한 화면 Layout을 정의하기 위해 해당 Layout을 정의한 template 파일을 생성한다.
+				attribute의 삽입에 대해서는 &lt;tiles:insertAttribute&gt; tag를 사용하고 이 tag의 사용을 위해 taglib 또한 정의되어야 한다.
+				다음은 해당 Layout을 정의하고 있는standard.jsp 파일의 일부이다. 
+			</para>
+			<programlisting language="java"><emphasis><![CDATA[<%@ taglib prefix="tiles" uri="http://tiles.apache.org/tags-tiles" %>]]></emphasis><![CDATA[
+			
+<body>
+	<table width="100%" height="79" border="0" cellpadding="0" cellspacing="0">
+	 <!---- Top ------>
+	  <tr>
+	    <td height="79" align="left" valign="top">
+	    	]]><emphasis role="bold"><![CDATA[<tiles:insertAttribute name="top"/>]]></emphasis><![CDATA[
+	    </td>
+	  </tr>
+	</table>
+	<table width="100%" height="100%" border="0" cellpadding="0" cellspacing="0">
+	  <tr>
+	  <!---- Left Menu ------>
+	    <td width="177" height="100%" align="left" valign="top"  bgcolor="#eeeeee">
+	    	<div id="left">
+	    		]]><emphasis role="bold"><![CDATA[<tiles:insertAttribute name="left"/>]]></emphasis><![CDATA[
+	    	</div>
+	    </td>
+		<!---- Body ------>
+	    <td width="100%" height="100%" align="left" valign="top" style="padding:0 20px 0 20px">   
+			<div id="body">
+	        	]]><emphasis role="bold"><![CDATA[<tiles:insertAttribute name="body"/>]]></emphasis><![CDATA[
+	        </div>	
+	    </td>
+	  </tr>
+	</table>
+</body>]]></programlisting>
+			<para>위와 같이 template JSP 파일을 정의하고 해당 Definition을 정의한 xml 파일을 작성한다. 
+			다음 코드는 위의 template을 정의한 Definition 파일의 일부이다.</para>
+			<programlisting language="xml"><![CDATA[<?xml version="1.0" encoding="utf-8"?>
+<!DOCTYPE tiles-definitions PUBLIC
+"-//Apache Software Foundation//DTD Tiles Configuration 2.1//EN"
+"http://tiles.apache.org/dtds/tiles-config_2_1.dtd">
+]]><emphasis role="bold"><![CDATA[<tiles-definitions>
+    <definition name="foundationLayout" template="/sample/layouts/standard.jsp">
+        <put-attribute name="top" value="/sample/layouts/top.jsp" />
+        <put-attribute name="left" value="/sample/layouts/left.jsp" />
+        <put-attribute name="body" value="/sample/layouts/welcome.jsp" />
+    </definition>
+</tiles-definitions]]></emphasis></programlisting>
+		<para>위의 Tiles Definition 파일에소 볼수 있듯이 "/sample/layouts/standard.jsp"을 template으로 가지며
+		"top", "left", "body"의 attribute를 채울 요소들을 지정해 주고 있다.</para>
+		</section>
+		<section id="foundation_springmvc_view_tiles_el">
+			<title>EL</title>
+			<para>Tiles를 사용하면 template의 요소가 되는 attribute에 대한 값을 Tiles Definition xml 파일에 정의해 줘야한다. 
+			이 때, 각각의 view 마다 하나의 definition을 매번 정의해줘야 한다. 이에 Apache Tiles는 2.1 버전 부터 EL(Expression Language)의 
+			사용을 지원해준다. 단, servlet spec은 2.5 이상이 되어야 한다. EL을 이용한 Tiles Definition 정의는 아래와 같다.</para>
+			<programlisting language="java"><![CDATA[<definition name="foundationLayout" templateExpression="${layout}">
+    <put-attribute name="top" value="/sample/layouts/top.jsp" />
+    <put-attribute name="left" value="/sample/layouts/left.jsp" />
+    <put-attribute name="body" expression="${requestScope.body}" />
+</definition>]]></programlisting>
+			<para>위와 같이 정의할 경우 template의 이름은 모든 Scope 내에서 "layout"이라는 이름의 객체를 찾게 될 것이다. 
+			또한, body는 reqeust Scope에 있는 "body"로 부터 값을 추출하게 된다.</para>
+		</section>
+		<!-- 필요시 추가 
+		<section id="foundation_springmvc_view_tiles_wildcard">
+			<title>Wildcard</title>
+			<para>Tiles 2.2 부터는 Tilde definition을 정의할 때 wildcard를 지원한다. wildcard 또한 definition의 코드를 줄여줄 수 있다.
+			다음 코드는 wildcard를 사용하여 definition을 작성한 예이다.</para>
+			<programlisting language="xml"><![CDATA[<definition name="foundationLayout*.message*" template="/layout{1}.jsp">
+    <put-attribute name="title"  value="This definition has a message: {2}."/>
+    <put-attribute name="header" value="/header.jsp"/>
+    <put-attribute name="body"   value="/body.jsp"/>
+</definition>]]></programlisting>
+			<para>위와 같이 definition을 정의하고 JSP 페이지에서 아래와 같은 insert문이 정의되었을 때, </para>
+			<programlisting language="java"><![CDATA[<tiles:insertDefinition name="foundationLayoutOne.messageThisIsAMessage" />]]></programlisting>
+			<para>위에서 정의한 definition은 다음과 같이 바뀌게 된다.</para>
+			<programlisting language="xml"><![CDATA[<definition name="foundationLayoutOne.messageThisIsAMessage" template="/layoutOne.jsp">
+    <put-attribute name="title"  value="This definition has a message: ThisIsAMessage."/>
+    <put-attribute name="header" value="/header.jsp"/>
+    <put-attribute name="body"   value="/body.jsp"/>
+</definition>]]></programlisting>
+		</section> 
+		-->
+	</section>
+</chapter>

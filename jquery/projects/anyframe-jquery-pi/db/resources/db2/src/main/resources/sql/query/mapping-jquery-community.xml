@@ -1,0 +1,42 @@
+			<!--jquery-findJqueryCommunityList-START-->
+			SELECT 
+				community.COMMUNITY_ID,
+				community.COMMUNITY_NAME,
+				community.COMMUNITY_DESC,
+				community.CATEGORY_ID,
+				community.REG_ID,
+				community.REG_DATE,
+				category.CATEGORY_NAME
+			FROM JQUERY_COMMUNITY community, JQUERY_CATEGORY category
+			WHERE community.CATEGORY_ID = category.CATEGORY_ID
+			<!--Velocity-Support-dynamicFindJqueryCommunityList-START-->
+			#if($vo.categoryId &amp;&amp; !$vo.categoryId.equals(""))
+				AND community.CATEGORY_ID = :vo.categoryId
+			#end		
+			#if ($vo.communityName &amp;&amp; !$vo.communityName.equals(""))
+				AND community.COMMUNITY_NAME like '%' CONCAT :vo.communityName CONCAT '%'	
+			#end
+			#if ($vo.communityDesc &amp;&amp; !$vo.communityDesc.equals(""))
+				AND community.COMMUNITY_DESC like '%' CONCAT :vo.communityDesc CONCAT '%'	
+			#end			
+			ORDER BY
+				#if($vo.sidx &amp;&amp; !$vo.sidx.equals(""))
+					#if($vo.sidx == "communityName")
+						community.COMMUNITY_NAME
+					#elseif($vo.sidx == "communityDesc")
+						community.COMMUNITY_DESC
+					#elseif($vo.sidx == "regId")
+						community.REG_ID
+					#elseif($vo.sidx == "regDate")
+						community.REG_DATE
+					#end
+					#if($vo.sord == "desc" || $vo.sord == "")
+						DESC
+					#else
+						ASC
+					#end
+				#else
+					community.COMMUNITY_ID DESC
+				#end
+			<!--Velocity-Support-dynamicFindJqueryCommunityList-END-->
+			<!--jquery-findJqueryCommunityList-END-->

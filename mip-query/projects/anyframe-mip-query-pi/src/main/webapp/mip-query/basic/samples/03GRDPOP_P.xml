@@ -1,0 +1,76 @@
+<?xml version="1.0" encoding="utf-8"?>
+<Window>
+	<Form DomainID="title.board_detail" Height="264" Id="frm03GRDPOP_P" Left="8" OnLoadCompleted="frm03GRDPOP_P_OnLoadCompleted" PidAttrib="7" Style="stlFrm" Top="8" Ver="1.0" Width="500" WorkArea="true">
+		<Datasets>
+			<Dataset DataSetType="Dataset" Id="dsBoard">
+				<Contents>
+					<colinfo id="TITLE" size="256" summ="default" type="STRING"/>
+					<colinfo id="CONTENTS" size="256" summ="default" type="STRING"/>
+					<colinfo id="REG_ID" size="256" summ="default" type="STRING"/>
+					<colinfo id="REG_DATE" size="256" summ="default" type="STRING"/>
+					<colinfo id="POST_ID" size="256" summ="default" type="STRING"/>
+					<colinfo id="COMMUNITY_ID" size="256" summ="default" type="STRING"/>
+				</Contents>
+			</Dataset>
+		</Datasets>
+		<Div BKColor="user2" Border="Flat" Height="230" Id="divManage" Left="5" Style="stlDivManage" TabOrder="1" Text="Div0" Top="2" UserData="RESIZE=TWH" Width="490">
+			<Contents>
+				<Image Align="Left" DomainID="biz.board.id" Font="돋움체,9,Bold" Height="20" Id="imgBoardId" ImageID="blet_01" Left="2" LeftMargin="20" OnClick="Div0_Image0_OnClick" Style="stlImgManage" TabOrder="1" TabStop="FALSE" Text="게시물ID" Top="11" Width="110"></Image>
+				<Image Align="Left" DomainID="biz.board.title" Font="돋움체,9,Bold" Height="20" Id="imgTitle" ImageID="blet_02" Left="2" LeftMargin="20" OnClick="Div0_Image0_OnClick" Style="stlImgManage" TabOrder="2" TabStop="FALSE" Text="제&#32;&#32;목" Top="34" Width="110"></Image>
+				<Edit BindDataset="dsBoard" Border="Flat" Column="TITLE" Height="20" Id="edtTitle" ImeMode="none" Left="90" Style="stlEdt" TabOrder="3" Top="34" UserData="titleObj=imgTitle,&#32;required" Width="390"></Edit>
+				<Image Align="Left" DomainID="biz.board.desc" Font="돋움체,9,Bold" Height="20" Id="imgContents" ImageID="blet_01" Left="2" LeftMargin="20" OnClick="Div0_Image0_OnClick" Style="stlImgManage" TabOrder="4" TabStop="FALSE" Text="내&#32;&#32;용" Top="57" Width="110"></Image>
+				<TextArea BindDataset="dsBoard" Border="Flat" Column="CONTENTS" Height="89" Id="txaItem4" Left="90" Style="stlTxa" TabOrder="5" Top="57" VScroll="TRUE" Width="390"></TextArea>
+				<Edit BindDataset="dsBoard" Border="Flat" Column="POST_ID" Enable="FALSE" Height="20" Id="edtBoardId" Left="90" Style="stlEdtRead" TabOrder="6" Top="11" Width="390"></Edit>
+				<Image Align="Left" DomainID="biz.board.reg_id" Font="돋움체,9,Bold" Height="20" Id="imgRegId" ImageID="blet_01" Left="2" LeftMargin="20" OnClick="Div0_Image0_OnClick" Style="stlImgManage" TabOrder="7" TabStop="FALSE" Text="등록자" Top="149" Width="110"></Image>
+				<Edit BindDataset="dsBoard" Border="Flat" Column="REG_ID" Enable="FALSE" Height="20" Id="edtRegId" ImeMode="none" Left="90" Style="stlCal" TabOrder="8" Top="149" UserData="titleObj=imgItem3" Width="390"></Edit>
+				<Image Align="Left" DomainID="biz.board.reg_date" Font="돋움체,9,Bold" Height="20" Id="imgRegDate" ImageID="blet_01" Left="2" LeftMargin="20" OnClick="Div0_Image0_OnClick" Style="stlImgManage" TabOrder="9" TabStop="FALSE" Text="등록일" Top="173" Width="110"></Image>
+				<Image Align="Left" DomainID="biz.board.community" Font="돋움체,9,Bold" Height="20" Id="imgCommunity" ImageID="blet_01" Left="2" LeftMargin="20" OnClick="Div0_Image0_OnClick" Style="stlImgManage" TabOrder="10" TabStop="FALSE" Text="커뮤니티" Top="196" Width="110"></Image>
+				<Combo BindDataset="dsBoard" Border="Flat" CodeColumn="COMMUNITY_ID" Column="COMMUNITY_ID" DataColumn="COMMUNITY_NAME" Height="20" Id="cboCommunity" InnerDataset="dsCboCommunity" Left="89" ResetIndex="FIRST" Style="stlCbo" TabOrder="11" Top="196" Width="390"></Combo>
+				<MaskEdit BindDataset="dsBoard" Border="Flat" Column="REG_DATE" Enable="FALSE" Height="20" Id="mdtRegDate" Left="90" Mask="####-##-##" Style="stlMdt" TabOrder="12" Top="173" Type="STRING" Width="151"></MaskEdit>
+			</Contents>
+		</Div>
+		<Button ButtonStyle="TRUE" Cursor="HAND" DomainID="button.cancel" Height="19" Id="btnCancel" ImageID="btn_cancel" Left="439" LeftMargin="13" OnClick="btnCancel_OnClick" Style="stlBtn" TabOrder="2" Text="취소" Top="236" UserData="TYPE=D" Width="56"></Button>
+		<Button ButtonStyle="TRUE" Cursor="HAND" DomainID="button.draft" Height="19" Id="btnSaveDraft" ImageID="btn_xsave" Left="355" OnClick="btnSaveDraft_OnClick" RightMargin="3" Style="stlBtn" TabOrder="3" Text="임시저장" Top="236" UserData="TYPE=D" Width="81"></Button>
+	</Form>
+	<Script><![CDATA[#include "javascript::common.js";
+
+var strMode;
+
+// Form OnLoadCompleted event
+function frm03GRDPOP_P_OnLoadCompleted(obj) {
+	strMode = paramMode;
+	
+	dsBoard.clearData();
+	dsBoard.addRow();
+	
+	if(strMode == "C") {
+		//REG_ID Column에 User Name을 세팅
+		if(!gfnIsNull(gfnGetUserId())){
+			dsBoard.setColumn(dsBoard.currow, "REG_ID", gfnGetUserId());
+		}
+		divManage.cboCommunity.index = 0;
+		
+	} else {
+		dsBoard.copyRow(dsBoard.row, dsGrdBoard, dsGrdBoard.row);
+		dsBoard.applyChange();
+	}
+	divManage.edtTitle.setFocus();
+}
+
+//임시저장 버튼 클릭시 close
+function btnSaveDraft_OnClick(obj) {
+	if(gfnValidate(divManage)) {
+		if(strMode == "C") {
+			dsGrdBoard.addRow();
+		}
+		dsGrdBoard.copyRow(dsGrdBoard.row, dsBoard, dsBoard.row);
+	
+		close("Y");
+	}
+}
+
+//취소 버튼 클릭시 close
+function btnCancel_OnClick(obj) {
+	close("N");
+}]]></Script>
+</Window>

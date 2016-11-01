@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://www.springframework.org/schema/beans 
+	http://www.springframework.org/schema/beans/spring-beans-2.5.xsd">
+
+	<bean id="dataSource" class="org.springframework.jndi.JndiObjectFactoryBean">
+   		<property name="jndiName" value="AnyframeDS"/>
+   		<property name="jndiTemplate" ref="jnditemplate"/>
+	</bean>	
+
+	<bean class="org.springframework.jndi.JndiTemplate" id="jnditemplate">
+		<property name="environment">
+			<props>
+				<prop key="java.naming.factory.initial">weblogic.jndi.WLInitialContextFactory</prop>
+				<prop key="java.naming.provider.url">t3://70.2.229.101:7001</prop>			
+			</props>
+		</property>
+	</bean>	
+</beans>

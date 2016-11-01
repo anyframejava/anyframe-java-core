@@ -1,0 +1,90 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE queryservice PUBLIC "-//ANYFRAME//DTD QUERYSERVICE//EN"
+"http://www.anyframejava.org/dtd/anyframe-core-query-mapping-3.2.dtd">
+<queryservice>
+  	<queries>
+		<query id="findLogonIdByRange" isDynamic="true">
+			<statement>
+				SELECT LOGON_ID FROM TB_USER
+				WHERE LOGON_ID BETWEEN :lowID AND :highID 
+			</statement>
+			<param name="lowID" type="VARCHAR" />
+			<param name="highID" type="VARCHAR" />
+		</query>	
+		<query id="findLogonIdByRangeWithError" isDynamic="true">
+			<statement>
+				SELECT LOGON_ID FROM TB_USER 
+				WHERE LOGON_ID BETWEEN :lowID AND :highID
+			</statement>
+			<param type="VARCHAR" />
+			<param type="VARCHAR" />
+		</query>	
+		<query id="findUsers" isDynamic="true">
+			<statement>
+				SELECT LOGON_ID FROM {{schema}} ORDER BY {{sortColumn}}
+			</statement>
+			<result mapper="org.anyframe.query.impl.jdbc.mapper.CallbackResultSetMapper"/>
+		</query>	
+		<query id="findUsersByCondition" isDynamic="true">
+			<statement>
+				SELECT LOGON_ID FROM TB_USER 
+				#if ($id) 
+					WHERE LOGON_ID =:id 
+				#end 
+				ORDER BY {{sortColumn}}
+			</statement>
+			<param name="id" type="VARCHAR" />
+		</query>  	
+		
+  		<query id="dynamicWithKoreanLanguage" isDynamic="true">
+  			<statement>select NAME, ADDRESS from TB_CUSTOMER 
+					   where
+							NAME like '%테스트%'
+							#if($key.equals("true"))
+								OR NAME like '%테스트%'
+							#end
+			</statement>
+  		</query>
+  		
+		<query id="dynamicWithForEach" isDynamic="true">
+			<statement>
+				<![CDATA[
+				SELECT LOGON_ID, NAME 
+				FROM TB_USER 
+				WHERE LOGON_ID IN (
+					#foreach ($logonId in $logonIdList) 
+						#if ($velocityCount == 1 ) 
+							'$logonId' 
+						#else 
+							, '$logonId' 
+						#end 
+					#end 
+				) ORDER BY NAME
+				]]>
+			</statement> 
+		</query>   
+		
+		<query id="findLogonIdByRangeWithBlockComments" isDynamic="true">
+			<statement>
+				<![CDATA[
+				SELECT LOGON_ID FROM TB_USER /* test = :test */
+				WHERE LOGON_ID BETWEEN :lowID AND :highID /* test = &test -- test */
+				]]>
+			</statement>
+			<param name="lowID" type="VARCHAR" />
+			<param name="highID" type="VARCHAR" />
+		</query>
+		
+		<query id="findLogonIdByRangeWithLineComments" isDynamic="true">
+			<statement>
+				<![CDATA[
+				SELECT LOGON_ID FROM TB_USER -- test = :test */
+				WHERE LOGON_ID BETWEEN :lowID AND :highID -- test = &test
+				]]>
+			</statement>
+			<param name="lowID" type="VARCHAR" />
+			<param name="highID" type="VARCHAR" />
+		</query>								  		  							 			  						 				  			
+    </queries>
+    
+</queryservice>

@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="utf-8"?>
+<mx:TitleWindow xmlns:mx="http://www.adobe.com/2006/mxml" xmlns="*" showCloseButton="true" 
+	close="PopUpManager.removePopUp(this)">
+<mx:Script>
+	<![CDATA[
+	import mx.managers.PopUpManager;
+	
+	private function changeDate(date:Date):void{
+		 if (date == null){
+		 	return;
+		 }else{
+		 	parentDocument.setRegDate(date);
+       		PopUpManager.removePopUp(this);
+		 }
+	}
+	
+	]]>
+</mx:Script>
+<mx:DateChooser yearSymbol="년" dayNames="['일', '월', '화', '수', '목', '금', '토']" change="changeDate(DateChooser(event.target).selectedDate)"/>
+</mx:TitleWindow>

@@ -1,0 +1,86 @@
+	<chapter id="stomp_samples">
+		<title>Samples</title>
+		<para>
+			다음은 STOMP의 속성 설정 및 구현 코드에 대한 예제이다.
+		</para>
+		<section id="stomp_samples_configuration">
+			<title>Configuration</title>
+			<para>
+				Spring환경에서 STOMP 서비스를 사용하기 위해 정의한 stomp-servlet.xml의 일부이다. 
+			</para>
+			<para>
+				websocket handler 집합을 정의 하고 handler와의 연결을 위한 path를 지정한다.
+				Message Broker의 destination URL(prefix)을 선언한다.
+			</para>
+			<programlisting language="xml"><![CDATA[<websocket:message-broker application-destination-prefix="/app">
+		<websocket:stomp-endpoint path="/getMovieList">
+			<!-- <websocket:sockjs/> -->
+		</websocket:stomp-endpoint>
+		<websocket:simple-broker prefix="/topic/"/>
+	</websocket:message-broker>]]></programlisting>
+		</section>
+		<section id="stomp_samples_client">
+			<title>client</title>
+			<para>
+				클라이언트의 javascript로 WebSocket을 생성하고 STOMP 프로토콜에 탑재한다.
+				Message Broker의 destination에 연결 후 메시지 전송에 대한 서버 응답을 연결된 모든 client에게 푸시 메시지로 전송한다.
+			</para>
+			<programlisting language="java"><![CDATA[<script type="text/javascript" src="<c:url value='/sample/javascript/stomp.js'/>" /> 
+<script>
+function connect() {
+	var socket = new WebSocket("ws://" + window.location.host + 
+	"/anyframe-sample-stomp/_stomp_/getMovieList");
+	client = Stomp.over(socket);
+
+		client.connect({}, function(frame) {
+	console.log('Connected: ' + frame);
+	client.subscribe('/topic/movieList', function(message){
+	showMessage(message.body);
+	});
+	});
+}
+
+function disconnect() {
+	client.disconnect();
+	console.log("Disconnected");
+}
+
+$('#btnSearch').on("click", function () {
+	$('#movieGrid').clearGridData();
+
+	client.send("/app/list", {},
+	JSON.stringify({
+	title : $("#title").val(),
+	nowPlaying : $("#nowPlaying").val()
+	}));
+});
+</script>]]></programlisting>
+
+		</section>
+		<section id="stomp_samples_server">
+			<title>server</title>
+			<para>
+				MessageMapping의 URL로 전달된 메시지를 처리하여 MessageBroker의 URL로 처리결과를 전송한다.
+			</para>
+			<programlisting language="java"><![CDATA[@Controller
+public class MovieFinderStompController {
+private static Logger log = 
+	
+@Autowired
+private MovieFinder movieFinder;
+
+@MessageMapping(value="/list")
+    @SendTo("/topic/movieList")
+    public Page list(Movie movie) throws Exception {
+int pageIndex = 1;
+        
+        Page page = movieFinder.getPagingList(movie, pageIndex);
+		
+        log.debug("The result will display after three seconds.!!");
+        Thread.sleep(3000);
+        
+        return page;
+    }
+}]]></programlisting>
+		</section>
+	</chapter>

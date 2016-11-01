@@ -1,0 +1,31 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<flow xmlns="http://www.springframework.org/schema/webflow"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://www.springframework.org/schema/webflow
+        http://www.springframework.org/schema/webflow/spring-webflow-2.0.xsd">
+
+	<var name="movie" class="org.anyframe.plugin.webflow.domain.Movie" />
+	<var name="genre" class="org.anyframe.plugin.webflow.domain.Genre"/>
+	
+	<view-state id="createView" model="movie" view="webflow/moviefinder/movie/form">
+		<on-render>
+			<evaluate expression="webflowGenreService.getList()"
+				result="flowScope.genreList" />
+			<set name="requestScope.movie" value="movie"/>
+			<set name="requestScope.movie.genre" value="genre"/>
+		</on-render>
+		<transition on="create" to="create">
+			<set name="movie.nowPlaying" value="requestParameters._nowPlaying"/>
+		</transition>
+	</view-state>
+
+	<view-state id="create" view="webflow/moviefinder/movie/review">
+		<transition on="revise" to="createView" />
+		<transition on="create" to="backtolist" history="invalidate">
+			<evaluate expression="webflowMovieService.create(movie)" />
+		</transition>
+	</view-state>
+
+	<end-state id="backtolist"
+		view="externalRedirect:contextRelative:webflowMovieFinder.do?method=list" />
+</flow>

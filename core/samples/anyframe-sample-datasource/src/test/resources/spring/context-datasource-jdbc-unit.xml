@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE beans PUBLIC "-//SPRING//DTD BEAN 2.0//EN" "http://www.springframework.org/dtd/spring-beans-2.0.dtd">
+<beans>
+
+    <bean id="someDAO" class="org.anyframe.sample.datasource.some.JdbcSomeDAO">
+        <property name="dataSource" ref="dataSource"/>
+    </bean>
+
+    <!-- Database Datasource configuration -->
+  <bean id="dataSource" class="org.springframework.jdbc.datasource.DriverManagerDataSource">
+    <property name="driverClassName" value="sun.jdbc.odbc.JdbcOdbcDriver" />
+    <property name="url" value="@DB-URL@"/>
+        <property name="username" value="@DB-USERNAME@"/>
+        <property name="password" value="@DB-PASSWORD@"/>
+  </bean>
+
+</beans>

@@ -1,0 +1,74 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE dynamic-hibernate PUBLIC "-//ANYFRAME//DTD DYNAMIC-HIBERNATE//EN"
+"http://www.anyframejava.org/dtd/anyframe-dynamic-hibernate-mapping-4.0.dtd">
+<dynamic-hibernate>
+	<query name="dynamicFindMovieListAll">
+		<![CDATA[
+		FROM Movie movie
+		WHERE 
+			#if(${director})
+				movie.director like :director
+			#else
+				movie.title	like :title
+			#end
+		ORDER BY {{sortColumn}} {{sortDirection}}		
+		]]>
+	</query>
+	
+	<sql-query name="dynamicFindMovieListWithSQL">
+		<return alias="movie" class="org.anyframe.hibernate.sample.model.bidirection.Movie"/>
+		<![CDATA[
+		SELECT movie.* 
+		FROM Movie movie
+		WHERE 
+			#if(${director})
+				movie.DIRECTOR like :director
+			#else
+				movie.TITLE	like :title
+			#end
+		ORDER BY {{sortColumn}} {{sortDirection}}		
+		]]>
+	</sql-query>
+	
+	<sql-query name="dynamicFindMovieListWithoutReturn">
+		<![CDATA[
+		SELECT movie.* 
+		FROM Movie movie
+		WHERE 
+			#if(${director})
+				movie.DIRECTOR like :director
+			#else
+				movie.TITLE	like :title
+			#end
+		ORDER BY {{sortColumn}} {{sortDirection}}		
+		]]>
+	</sql-query>	
+	
+	<sql-query name="dynamicFindMovieListWithScalar">
+		<return-scalar column="DIRECTOR" type="string"/>
+		<return-scalar column="TITLE"/>
+		<return-scalar column="COUNTRY_CODE" type="string"/>
+		<![CDATA[
+		SELECT DIRECTOR, TITLE, COUNTRY_CODE 
+		FROM Movie movie
+		WHERE 
+			#if(${director})
+				movie.DIRECTOR like :director
+			#else
+				movie.TITLE	like :title
+			#end
+		ORDER BY {{sortColumn}} {{sortDirection}}		
+		]]>
+	</sql-query>
+	
+    <sql-query name="dynamicFindMovieListByCountry">
+    	<return alias="movie" class="org.anyframe.hibernate.sample.model.bidirection.Movie"/>
+    	<return-join alias="country" property="movie.country"/>
+    	<![CDATA[	
+    	SELECT movie.*, country.*
+    	FROM Movie movie join COUNTRY country ON movie.COUNTRY_CODE = country.COUNTRY_CODE 
+    	WHERE country.COUNTRY_CODE like :countryCode
+    	ORDER BY {{sortColumn}} {{sortDirection}}		
+    	]]>
+    </sql-query> 				
+</dynamic-hibernate>

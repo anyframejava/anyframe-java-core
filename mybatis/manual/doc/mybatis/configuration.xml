@@ -1,0 +1,141 @@
+<chapter id="mybatis_configuration">
+	<title>Configuration</title>
+	<para>
+		본 절에서는 Anyframe과 MyBatis와 연계와 관련된 설정에 대해서만 다룰 것이다. 
+		MyBatis에 대한 자세한 내용은 <ulink url="http://www.mybatis.org/core/">MyBatis 매뉴얼</ulink>을 참고 하도록 한다.
+	</para>
+	
+    <section id="mybatis_configuration_sqlsessionfactorybean">
+    	<title>SqlSessionFactoryBean</title>
+	    <para>
+			MyBatis에서는 SqlSessionFactoryBuilder 클래스를 사용하여 session factory를 생성한다. 
+			MyBatis-Spring은 SqlSessionFactoryBuilder 클래스 대신 SqlSessionFactoryBean 클래스를 사용하여 생성한다.
+	    </para>
+	    
+	    <section id="mybatis_configuration_sqlsessionfactorybean_setup">
+            <title>Configuration</title>
+            <para>
+				Factory Bean은 다음과 같이 Spring XML 설정 파일에 정의 한다.
+			</para>
+		</section>
+	    
+	    <programlisting language="xml"><![CDATA[<bean id="sqlSessionFactory" class="org.mybatis.spring.SqlSessionFactoryBean">
+    <property name="dataSource" ref="dataSource" />
+    <property name="configLocation" value="classpath:sql/mybatis/mybatis-config.xml" />
+    <property name="mapperLocations" value="classpath:sql/mybatis/mapper-mybatis-*.xml" />
+</bean>]]></programlisting>
+
+		<section id="mybatis_configuration_sqlsessionfactorybean_properties">
+            <title>Properties</title>
+            <para>
+				SqlSessionFactoryBean 클래스의 속성들 주요 속성들에 대해서 설명한다. 이 속성들 중 필수적으로 정의 해야하는 속성은 dataSource 이다.
+			</para>
+			
+			<informaltable>
+				<tgroup cols="4">
+					<colspec colname="col1" colnum="1" colwidth="2.5*" />
+					<colspec colname="col2" colnum="2" colwidth="6*" />
+					<colspec colname="col3" colnum="3" colwidth="1*" />
+					<colspec colname="col4" colnum="4" colwidth="1*" />
+	
+					<thead>
+						<row>
+							<entry align="center">Property</entry>
+							<entry align="center">Description</entry>
+							<entry align="center">Required</entry>
+							<entry align="center">Default Value</entry>
+						</row>
+					</thead>
+	
+					<tbody>
+						<row>
+							<entry>
+								<emphasis role="bold">dataSource</emphasis>								
+							</entry>
+							<entry>
+								JDBC Datasource를 설정한다.
+							</entry>
+							<entry align="center">Y</entry>
+							<entry align="center">N/A</entry>
+						</row>
+						<row>
+							<entry>
+								configLocation
+							</entry>
+							<entry>
+								MyBatis XML 설정 파일의 위치를 지정한다.
+							</entry>
+							<entry align="center">N</entry>
+							<entry align="center">N/A</entry>
+						</row>
+						<row>
+							<entry>
+								mapperLocations
+							</entry>
+							<entry>
+								MyBatis mapper 파일(쿼리 파일)의 위치를 지정한다.
+							</entry>
+							<entry align="center">N</entry>
+							<entry align="center">N/A</entry>
+						</row>
+						<row>
+							<entry>
+								transactionFactory
+							</entry>
+							<entry>
+								MyBatis TransactionFactory를 사용할 경우 설정한다.
+							</entry>
+							<entry align="center">N</entry>
+							<entry align="center">N/A</entry>
+						</row>
+					</tbody>
+				</tgroup>
+			</informaltable>
+		</section>
+	</section>
+     
+	<section id="mybatis_configuration_transaction">
+      	<title>Transactions</title>
+		<para>
+			Mybatis-Spring을 사용하는 중요한 목적중에 한가지는 transaction을 Spring Framework에 위임하기 위해서 이다. 
+			MyBatis에서 새로운 transaction manager를 생성하는 것보다 Spring에서 제공하는 DataSourceTransactionManager를 활용한다. 
+			Transaction에 대한 설정은 @Transactional annotation 이나 AOP style 설정을 모두 지원한다.
+		</para>
+		
+		<section id="mybatis_configuration_transaction_standard">
+            <title>Standard Configuration</title>
+            <para>
+				Spring Framemwork에서 제공하는 transaction을 사용하기 위한 Spring XML 설정 파일은 다음과 같다.
+			</para>
+			
+			<programlisting language="xml"><![CDATA[<bean id="txManager" class="org.springframework.jdbc.datasource.DataSourceTransactionManager">
+    <property name="dataSource" ref="dataSource" />
+</bean>]]></programlisting>
+
+			<para>
+				Transaction Manager에 정의된 datasource와 SqlSessionFactoryBean에 정의된 datasource는 같은 bean이어야 한다.
+			</para>
+		</section>
+		
+		<section id="mybatis_configuration_transaction_container">
+            <title>Container Managed Transaction</title>
+            <para>
+				Spring Framework에서 제공하는 DataSourceTransactionManager 클래스를 사용하지 않고 JEE container(WAS)에 transaction을 위임하기 위한 Spring XML 설정은 다음과 같다.
+			</para>
+			
+			<programlisting language="xml"><![CDATA[<tx:jta-transaction-manager>]]></programlisting>
+			
+			<para>
+				위와 같이 DataSourceTransactionManager 클래스를 사용하지 않고 JEE container(WAS)에 transaction을 위임하는 경우
+				SqlSesssionFactoryBean 설정에는 다음과 같이 ManagedTransactionFactory를 추가해줘야 한다.  
+			</para>
+			
+			<programlisting language="xml"><![CDATA[<bean id="sqlSessionFactory" class="org.mybatis.spring.SqlSessionFactoryBean">
+    <property name="dataSource" ref="dataSource" />
+    <property name="transactionFactory">
+        <bean class="org.apache.ibatis.transaction.managed.ManagedTransactionFactory" />    
+    </property>
+</bean>]]></programlisting>
+		</section>
+	</section>
+</chapter>

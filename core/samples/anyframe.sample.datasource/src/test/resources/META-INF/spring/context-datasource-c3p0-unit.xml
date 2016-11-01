@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE beans PUBLIC "-//SPRING//DTD BEAN 2.0//EN" "http://www.springframework.org/dtd/spring-beans-2.0.dtd">
+<beans>
+
+    <bean id="someDAO" class="org.anyframe.datasource.sample.some.JdbcSomeDAO">
+        <property name="dataSource" ref="dataSource"/>
+    </bean>
+
+    <!-- the DataSource (parameterized for configuration via a PropertyPlaceHolderConfigurer) -->
+    <bean id="dataSource" class="com.mchange.v2.c3p0.ComboPooledDataSource" destroy-method="close">
+        <property name="driverClass" value="@DB-DRIVERNAME@"/>
+        <property name="jdbcUrl" value="@DB-URL@"/>
+        <property name="user" value="@DB-USERNAME@"/>
+        <property name="password" value="@DB-PASSWORD@"/>
+        <property name="minPoolSize" value="5"/>
+        <property name="acquireIncrement" value="5"/>
+        <property name="maxPoolSize" value="15"/>
+    </bean>
+
+</beans>

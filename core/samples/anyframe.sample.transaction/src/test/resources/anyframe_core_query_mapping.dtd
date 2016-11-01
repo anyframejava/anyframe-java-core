@@ -1,0 +1,67 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!ENTITY % version "CDATA #FIXED &#34;6.2&#34;">
+
+<!ELEMENT queryservice (
+	table-mapping?,
+	queries?
+)>
+
+<!ELEMENT table-mapping (
+  table*
+)>
+<!ELEMENT table (
+  field-mapping+,
+  primary-key
+)>
+<!ATTLIST table name CDATA #REQUIRED>
+<!ATTLIST table class CDATA #REQUIRED>
+
+<!ELEMENT field-mapping (
+  dbms-column,
+  class-attribute
+)>
+
+<!ELEMENT primary-key (
+  dbms-column+
+)>
+
+<!ELEMENT dbms-column (#PCDATA)>
+<!ELEMENT class-attribute (#PCDATA)>
+
+<!ELEMENT queries (
+  query*
+)>
+
+<!ELEMENT query (
+  statement,
+  param*,
+  result?,
+  lobStatement?  
+)>
+
+<!ATTLIST query id ID #REQUIRED>
+<!ATTLIST query isDynamic CDATA #IMPLIED>
+
+<!ELEMENT statement (#PCDATA)>
+
+<!ELEMENT param EMPTY>
+<!ATTLIST param type CDATA #REQUIRED>
+<!ATTLIST param binding CDATA #IMPLIED>
+<!ATTLIST param name CDATA #IMPLIED>
+
+<!ELEMENT lobStatement (
+  statement,
+  param*
+)>
+
+<!ELEMENT result (
+  result-mapping*
+)>
+
+<!ATTLIST result length CDATA #IMPLIED>
+<!ATTLIST result class CDATA #IMPLIED>
+
+<!ELEMENT result-mapping EMPTY>
+<!ATTLIST result-mapping column CDATA #REQUIRED>
+<!ATTLIST result-mapping attribute CDATA #REQUIRED>
+

@@ -1,0 +1,42 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<queryservice xmlns="http://www.anyframejava.org/schema/query/mapping" 
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" 
+	xsi:schemaLocation="http://www.anyframejava.org/schema/query/mapping http://www.anyframejava.org/schema/query/mapping/anyframe-query-mapping-1.0.xsd ">
+  <queries>
+	<query id="createPostAttachFile">
+		<statement>
+		<![CDATA[
+			INSERT INTO POST_ATTACH_FILE (
+				POST_ID,
+				ATTACH_FILE_ID,
+				ATTACH_FILE_NAME,
+				ATTACH_FILE_SIZE,
+				ATTACH_FILE_PATH	
+			) 
+			VALUES (
+				:vo.postId, 			
+				:vo.attachFileId, 			
+				:vo.attachFileName, 			
+				:vo.attachFileSize, 			
+				:vo.attachFilePath		
+			)
+ 		 ]]>
+		</statement>
+	</query>
+	<query id="findPostAttachFileList" isDynamic="true">
+		<statement>
+		<![CDATA[
+			SELECT 
+				postAttachFile.POST_ID, postAttachFile.ATTACH_FILE_ID, postAttachFile.ATTACH_FILE_NAME, postAttachFile.ATTACH_FILE_SIZE, postAttachFile.ATTACH_FILE_PATH
+			FROM POST_ATTACH_FILE postAttachFile
+			WHERE 		
+					postAttachFile.POST_ID = :postId
+			order by							
+					postAttachFile.ATTACH_FILE_NAME
+		]]>
+		</statement>
+		<result class="${packageName}.attachfile.domain.PostAttachFile">		
+		</result>	
+	</query>
+  </queries>
+</queryservice>

@@ -1,0 +1,141 @@
+	<chapter id="board_template">
+		<title>Templates</title>
+		<para>
+			Board Plugin에서는 사용자가 입력한 정보를 토대로 게시판 관련 파일을 생성하게 되는데 이 때, 기반이 되는 파일은 모두 Board Plugin 설치시 [ProjectHome]/templates 하위에 생성되어 있는 template 파일을 기반으로 생성되게 된다.
+			Template 파일들과 사용자가 입력한 정보가 Velocity를 통해 Merge되어 실제 게시판을 구성하는 파일이 생성된다. 다음은 <ulink url="http://velocity.apache.org/">Apache Velocity</ulink> 기반으로 작성된 Template 하위의 Board.java 파일의 일부이다. 
+			<programlisting language="xml"><![CDATA[package ${packageName}.${boardName.toLowerCase()}.domain;
+
+public class ]]><emphasis role="bold"><![CDATA[${BoardName}]]></emphasis><![CDATA[ implements Serializable {
+	private static final long serialVersionUID = 1L;
+	]]><emphasis role="bold"><![CDATA[#if(${boardInfo.useComment} == "Y")]]></emphasis><![CDATA[private Integer commentCount = 0;
+    
+	public Integer getCommentCount(){
+		return this.commentCount;
+	}
+	public void setCommentCount(Integer commentCount){
+		this.commentCount = commentCount;
+	}]]><emphasis role="bold"><![CDATA[#end
+	#foreach($colInfo in $allFields)
+	#if(${colInfo.columnType} == 'TIME' || ${colInfo.columnType} == 'DATE')]]></emphasis><![CDATA[
+	public Date get]]><emphasis role="bold"><![CDATA[${display.capitalize(${colInfo.fieldId})}]]></emphasis><![CDATA[(){
+		return this.]]><emphasis role="bold"><![CDATA[${colInfo.fieldId}]]></emphasis><![CDATA[;
+	}
+
+	public void set]]><emphasis role="bold"><![CDATA[${display.capitalize(${colInfo.fieldId})}]]></emphasis><![CDATA[(Date ${colInfo.fieldId}){
+		this.]]><emphasis role="bold"><![CDATA[${colInfo.fieldId} = ${colInfo.fieldId}]]></emphasis><![CDATA[;
+	}
+	//... 중략 ... ]]></programlisting>
+			</para>
+		<section id="board_template_structure">
+		<title>Template 구조</title>
+		<para>
+			Board Plugin 설치시 [ProjectHome] 하위에 생성되는 templates 폴더의 내용은 아래와 같다.  				
+		</para>
+		 <mediaobject>
+			<imageobject>
+ 	     		<imagedata align="center"
+ 	           		fileref="../image/board/board_template.png" />
+		     	</imageobject>
+   	 		<textobject>
+   				<phrase>template 구조</phrase>
+   			</textobject>
+   		</mediaobject>
+   		<para>
+			Templates 폴더는 Board Plugin 설치 시 현재 프로젝트에 생성되며, 이는 Velocity 문법 기반으로 작성되어 있다. 기본적으로 현재는 Java + JSP + jQuery + HSQL DB 조합으로 Template이 제공되고 있으며,
+			그대로 사용하거나 확장/수정하여 사용할 수 있다. 또한, 프로젝트에서 필요한 형태의 Template을 새로 추가할 수 있다.
+		</para>
+		</section>
+		<section id="board_template_new">
+			<title>Template 추가하기</title>
+			<para>위에서 언급한 것과 같이 기본적으로 Board Plugin에서 제공하는 Template을 수정하여 적용하거나 새로운 Template 파일을 추가할 수 있다. 아래는 Template 파일 작성의 예시이다. </para>
+			<section id="board_template_new_write">
+				<title>Template 파일 작성</title>
+				<para>
+				아래와 같이 추가할 Template 파일을 작성한다. 이 때, Apache Velocity 문법을 사용하여 아래와 같이 작성한다. 
+				<programlisting language="xml"><![CDATA[#foreach(${colInfo} in ${viewFields})
+<tr>
+	<th><label for="${colInfo.fieldId}"><spring:message code='${boardName.toLowerCase()}.${colInfo.fieldId.toLowerCase()}'/>&nbsp;</label></th>
+	<td>${${boardName}.${colInfo.fieldId}}</td> 
+</tr>
+#end]]></programlisting>
+위처럼 작성된 코드는 viewFileds로 정의된 ColInfo의 List를 받아 하나 하나의 Table Row로 출력해주는 예시이다. 기본적으로 "viewFileds" 처럼 VelocityContext에 저장된 Key에다한 Value값을 얻어 올수 있으며
+이는 Board Plugin 설치시 배포되는 GenerateBoardServiceImpl.java에 명시되어 있다. GenerateBoardServiceImpl.java 파일에 이미 명시되어  VelocityContext에 저장되어 있는 내용은 아래와 같다.
+				<informaltable>
+					<caption>Board information in VelocityContext</caption>
+					<tgroup cols="3">
+						<colspec colnum="1" colname="col1" colwidth="2*" />
+						<colspec colnum="2" colname="col2" colwidth="4*" />
+						<colspec colnum="2" colname="col2" colwidth="4*" />
+						<thead>
+							<row>
+								<entry align="center">Key</entry>
+								<entry align="center">Value</entry>
+								<entry align="center">Type</entry>
+							</row>
+						</thead>
+						<tbody>
+							<row>
+								<entry align="center">packageName</entry>
+								<entry>사용자가 입력한 패키지 이름</entry>
+								<entry>String</entry>
+							</row>
+							<row>
+								<entry align="center">boardName</entry>
+								<entry>사용자가 입력한 게시판의 서비스 bean 이름</entry>
+								<entry>String</entry>
+							</row>
+							<row>
+								<entry align="center">BoardName</entry>
+								<entry>사용자가 입력한 게시판의 서비스 bean 이름(첫 문자가 대문자)</entry>
+								<entry>String</entry>
+							</row>
+							<row>
+								<entry align="center">tableName</entry>
+								<entry>사용자가 입력한 DB Table 이름</entry>
+								<entry>String</entry>
+							</row>
+							<row>
+								<entry align="center">boardTitle</entry>
+								<entry>사용자가 입력한 게시판명</entry>
+								<entry>String</entry>
+							</row>
+							<row>
+								<entry align="center">boardInfo</entry>
+								<entry>사용자가 입력한 정보를 담고있는 도메인 객체</entry>
+								<entry>BoardInfo</entry>
+							</row>
+							<row>
+								<entry align="center">addedFields</entry>
+								<entry>사용자가 추가한 확장컬럼에 대한 정보</entry>
+								<entry>List&lt;ColInfo&gt;</entry>
+							</row>
+							<row>
+								<entry align="center">allFields</entry>
+								<entry>모든 컬럼에 대한 정보(기본컬럼+확장컬럼)</entry>
+								<entry>List&lt;ColInfo&gt;</entry>
+							</row>
+							<row>
+								<entry align="center">listFields</entry>
+								<entry>목록화면에 표시될 항목(컬럼)에 대한 정보</entry>
+								<entry>List&lt;ColInfo&gt;</entry>
+							</row>
+							<row>
+								<entry align="center">viewFields</entry>
+								<entry>등록(수정,상세)화면에 표시될 항목(컬럼)에 대한 정보</entry>
+								<entry>List&lt;ColInfo&gt;</entry>
+							</row>
+						</tbody>
+					</tgroup>
+				</informaltable>
+				위의 표 내용처럼 기본적으로 제공되는 값 이외의 필요한 값이 있으면 GenerateBoardServiceImpl.java 파일의 VelocityContext 셋팅부분에 추가하여 사용할 수 있다. 
+				<programlisting language="xml"><![CDATA[context.put("myInfo", myInfo);]]></programlisting>
+				</para>
+			</section>
+			<section id="board_template_new_confirm">
+				<title>Template 위치 확인하기</title>
+				<para>앞의 내용에서 본 것과 같이 Template 파일이 작성되면 기본적으로 Template 파일의 위치가 [프로젝트홈]/templates 폴더이므로 해당 폴더 하위에 위치할 수 있도록 한다. templates 폴더 하위의 폴더 구조 그대로
+				내 프로젝트 하위에 해당 Template 파일이 생성되게 된다. 참고로 templates의 하위의 java 파일이 위치하고 있는 "board" 폴더의 경우 사용자가 입력한 ${packagename}.${boardName}으로 변환되게 되며, 클래스 명의 "SampleBoard"는 ${BoardName}으로 변경되게 된다.
+				또한, Java 파일 이외의 파일을 담고있는 "board"라는 이름의 폴더 또는 파일일 경우 ${boardName}으로 폴더명이 치환된다. </para>
+			</section>
+		</section>
+	</chapter>

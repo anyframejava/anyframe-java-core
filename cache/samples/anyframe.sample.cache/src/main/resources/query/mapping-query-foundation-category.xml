@@ -1,0 +1,74 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE queryservice PUBLIC "-//ANYFRAME//DTD QUERYSERVICE//EN"
+"http://www.anyframejava.org/dtd/anyframe-core-query-mapping-3.2.dtd">
+<queryservice>
+	<queries>
+		<query id="findCategoryByPk">
+			<statement>
+			<![CDATA[
+				SELECT CATEGORY_NO, CATEGORY_NAME, CATEGORY_DESC, USE_YN, REG_ID
+				FROM CATEGORY
+				WHERE CATEGORY_NO = :vo.categoryNo
+			]]>
+			</statement>
+			<result class="anyframe.sample.domain.Category" />
+		</query>
+
+		<query id="findDropDownCategoryList" isDynamic="false">
+			<statement>
+			<![CDATA[
+				SELECT CATEGORY_NO, CATEGORY_NAME
+				FROM CATEGORY
+				WHERE USE_YN = 'Y'
+				ORDER BY CATEGORY_NO
+			]]>
+			</statement>
+			<result class="anyframe.sample.domain.Category" />
+		</query>
+
+		<query id="findCategoryList">
+			<statement>
+			<![CDATA[
+				SELECT CATEGORY_NO, CATEGORY_NAME, CATEGORY_DESC, USE_YN, REG_ID, REG_DATE
+				FROM CATEGORY
+				ORDER BY category.CATEGORY_NO DESC
+			]]>
+			</statement>
+			<result class="anyframe.sample.domain.Category" />
+		</query>
+
+		<query id="createCategory">
+			<statement>
+			<![CDATA[
+				INSERT INTO CATEGORY 
+				( CATEGORY_NO, CATEGORY_NAME, CATEGORY_DESC, USE_YN, REG_ID, REG_DATE) 
+				VALUES (:vo.categoryNo, :vo.categoryName, :vo.categoryDesc, :vo.useYn, 'test', sysdate)
+			]]>
+			</statement>
+		</query>
+
+		<query id="updateCategory">
+			<statement>
+			<![CDATA[
+				UPDATE CATEGORY
+				SET CATEGORY_NAME = :vo.categoryName,
+					CATEGORY_DESC = :vo.categoryDesc,
+					USE_YN = :vo.useYn,
+					MODIFY_ID = 'test',
+					MODIFY_DATE = sysdate
+				WHERE CATEGORY_NO = :vo.categoryNo
+			]]>
+			</statement>
+		</query>
+
+		<query id="removeCategory">
+			<statement>
+			<![CDATA[
+				DELETE FROM CATEGORY 
+				WHERE CATEGORY_NO = :vo.categoryNo
+			]]>
+			</statement>
+		</query>
+
+	</queries>
+</queryservice>

@@ -1,0 +1,82 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+	xmlns:context="http://www.springframework.org/schema/context"
+	xmlns:aop="http://www.springframework.org/schema/aop"
+	xmlns:tx="http://www.springframework.org/schema/tx"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:jee="http://www.springframework.org/schema/jee"
+	xmlns:util="http://www.springframework.org/schema/util"
+	xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-2.5.xsd
+	http://www.springframework.org/schema/context http://www.springframework.org/schema/context/spring-context-2.5.xsd
+	http://www.springframework.org/schema/jee http://www.springframework.org/schema/jee/spring-jee-2.5.xsd
+	http://www.springframework.org/schema/util http://www.springframework.org/schema/util/spring-util-2.5.xsd
+	http://www.springframework.org/schema/aop 
+	http://www.springframework.org/schema/aop/spring-aop-2.5.xsd
+	http://www.springframework.org/schema/tx 
+	http://www.springframework.org/schema/tx/spring-tx-2.5.xsd">
+
+	<!--  
+	1. Spring DriverManagerDataSource
+	<bean id="dataSource"
+	    class="org.springframework.jdbc.datasource.DriverManagerDataSource">
+	    <property name="driverClassName" value="oracle.jdbc.driver.OracleDriver" />
+	    <property name="url" value="jdbc:oracle:thin:@server.ip:1521:xe" />
+	    <property name="username" value="athena" />
+	    <property name="password" value="athena" />
+	</bean> 
+	
+	2. DBCP BasicDataSource
+	<bean id="dataSource" class="org.apache.commons.dbcp.BasicDataSource" destroy-method="close">
+        <property name="driverClassName" value="net.sf.log4jdbc.DriverSpy"/>
+        <property name="url" value="jdbc:log4jdbc:oracle:thin:@server.ip:1521:xe"/>
+        <property name="username" value="athena"/>
+        <property name="password" value="athena"/>
+    </bean>
+    
+    3. WebLogic 9.2
+	<bean class="org.springframework.jndi.JndiObjectFactoryBean" id="dataSource">
+		<property name="jndiName" value="AnyframeDS"/>
+		<property name="jndiTemplate" ref="jnditemplate"/>
+	</bean>
+	
+	<bean class="org.springframework.jndi.JndiTemplate" id="jnditemplate">
+		<property name="environment">
+			<props>
+				<prop key="java.naming.factory.initial">weblogic.jndi.WLInitialContextFactory</prop>
+				<prop key="java.naming.provider.url">t3://trixie:7011</prop>			
+			</props>
+		</property>
+	</bean>	  
+	
+	4. JEUS 5.0
+	<bean class="org.springframework.jndi.JndiObjectFactoryBean" id="dataSource">
+		<property name="jndiName" value="oracleXADS"/>
+		<property name="jndiTemplate" ref="jnditemplate"/>
+	</bean>
+	
+	<bean class="org.springframework.jndi.JndiTemplate" id="jnditemplate">
+		<property name="environment">
+			<props>
+				<prop key="java.naming.factory.initial">jeus.jndi.JNSContextFactory</prop>
+				<prop key="java.naming.provider.url">70.7.53.141:9736</prop>			
+			</props>
+		</property>
+	</bean>	  	     	 	   	    
+    -->  
+    
+	<bean id="dataSource" class="org.apache.commons.dbcp.BasicDataSource" destroy-method="close">
+        <property name="driverClassName" value="oracle.jdbc.driver.OracleDriver"/>
+        <property name="url" value="jdbc:oracle:thin:@server.ip:1521:xe"/>
+        <property name="username" value="athena"/>
+        <property name="password" value="athena"/>
+    </bean>
+            	 
+	<bean class="org.springframework.context.support.ResourceBundleMessageSource"
+		id="messageSource">
+		<property name="basenames">
+			<list>
+				<value>org/anyframe/query/message/query</value>
+				<value>org/anyframe/util/properties/message/properties</value>
+			</list>
+		</property>
+	</bean>	
+</beans>	

@@ -1,0 +1,89 @@
+<chapter id="miplatform_overview">
+	<title>Install a Miplatform Plugin</title>
+	<para>
+		This chapter describes how to connect Anyframe and MiPlatform and perform effective development, 
+		centered on sample code created by MiPlatform Plugin installation.
+	</para>
+	
+	<para>
+		Let's start with installing MiPlatform Plugin on your local PC. 
+		(This chapter only gives simple instructions on MiPlatform Plugin installation. For more specific information on plugin installation, 
+		go to <ulink url="http://dev.anyframejava.org/docs/anyframe/ide/1.0.1/reference/htmlsingle/ide.html#cli_maven">
+		Anyframe based development environment building</ulink> in Anyframe IDE Manual.)
+	</para>
+	<note>
+		<title>MiPlatform is commercial software, so please purchase and install.</title>
+		<para>
+			To execute Anyframe plugin related to MiPlatform, the following MiPlatform software should be installed.
+						
+			<itemizedlist>
+				<listitem>
+					<para>MiPlatform PID (Presentation Interface Developer) V3.2.0 Unicode</para>
+				</listitem>
+				<listitem>
+					<para>MiPlatform Updater 321</para>
+				</listitem>
+			</itemizedlist>
+		</para>
+	</note>
+	<orderedlist numeration="arabic" inheritnum="inherit">	
+		<listitem>
+			<para>
+				To install MiPlatform Plugin, Foundation Plugin which is the base of all plugins should be installed.  
+				If you need to install Foundation Plugin, go to <ulink url="http://dev.anyframejava.org/docs/anyframe/plugin/foundation/4.6.1/reference/htmlsingle/foundation.html#foundation_installation">Foundation Plugin Installation</ulink>.
+			</para>
+		</listitem>	
+		<listitem>
+			<para>
+				After moving to sample project on the command window, start sample DB by executing db/hsqldb/start.cmd (or start.sh). 
+				(If you wish to use another DB instead of HsqlDB which is basically provided, go to <ulink url="http://dev.anyframejava.org/docs/anyframe/ide/1.0.1/reference/htmlsingle/ide.html#cli_maven_db">Change DB
+				</ulink> in Anyframe IDE Manual.)
+			</para>
+		</listitem>
+		<listitem>
+			<para>
+				Enter the following command in the command window to install MiPlatform Plugin.
+			</para>
+			<programlisting language="java"><![CDATA[mvn anyframe:install -DpluginName=miplatform]]></programlisting>							
+		</listitem>
+		<listitem>
+			<para>
+				Enter the following in the command window, and when the Jetty Server starts, check if MiPlatform Plugin is installed properly through browser. 
+	    		(Enter http://localhost:8080/myproject in the browser address box if the created sample project name is myproject.)
+			</para>
+			<programlisting language="java"><![CDATA[mvn clean jetty:run]]></programlisting>
+			<mediaobject>
+				<imageobject>
+					<imagedata fileref="../image/miplatform/miplatform_installation.jpg" />
+				</imageobject>
+			</mediaobject>
+			<para>
+				As seen in the figure above, MiPlatform Sample menu has been created other than the Foundation Sample menu. 
+				Click the MiPlatform Sample menu to check the functions of sample application executed by MiPlatform UI.
+			</para>				
+		</listitem>
+	</orderedlist>
+	<note id="miplatform_overview_note">
+		<title>Notice for each WAS(Web Application Server)</title>
+		<para>
+			This document describes Jetty and Tomcat as WAS for executing sample application created by Plugin installation.
+			However, as the sample application created by Plugin installation is not dependent on a specific WAS,
+			it is possible to deploy and execute other WAS as well such as WebLogic, JEUS after packaging 
+			through executing command such as "mvn clean compile war:war".
+			However, there are cases where the version of some libraries which sample application refer to is not provided in the relevant WAS.
+		</para>
+		<para>	
+			If you with to install and test a sample application using WAS other than Tomcat or Jetty, 
+		    you must refer to <ulink url="http://dev.anyframejava.org/docs/anyframe/plugin/foundation/4.6.1/reference/htmlsingle/foundation.html#foundation_overview_note">Notice for each WAS(Web Application Server)</ulink>
+		    in foundation plugin manual.
+     	</para>
+     	<para>
+     		When there plugins installed other than foundation plugin, also refer to Installation > Notice for each WAS(Web Application Server) in
+     		each plugin manual.
+     	</para>
+		<para>
+			Also, plugins provided by Anyframe are composed based on Jetty, so they basically use 8080 port. 
+			So, when using other WAS, open Anyframe_MIP_Sample_sdi.xml file of sample application, and change 'http://localhost:8080/...' to 'http://localhost:{relevant WAS port}/...'.
+		</para>     	
+     </note>	
+</chapter>

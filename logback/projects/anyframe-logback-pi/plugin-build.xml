@@ -1,0 +1,65 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<plugin name="logback" description="Logback Plugin consists sample code, libraries and configurations needed to use logback with Anyframe.">
+  <groupId>org.anyframe.plugin</groupId>
+  <artifactId>anyframe-logback-pi</artifactId>
+  <version>1.0.0</version>
+  <dependent-plugins>
+    <dependent-plugin name="core" version="2.0.0&gt;*"/>
+  </dependent-plugins>
+  <resources>
+    <resource dir="src/main/java" filtered="true" packaged="true">
+      <include name="**/*.java"/>
+    </resource>
+    <resource dir="src/main/resources" filtered="true" packaged="false">
+      <include name="**/*.xml"/>
+    </resource>
+    <resource dir="src/test/java" filtered="true" packaged="true">
+      <include name="**/*.java"/>
+    </resource>
+    <resource dir="src/test/resources" filtered="true" packaged="false">
+      <include name="**/*.xml"/>
+    </resource>
+    <resource dir="src/main/webapp/WEB-INF/jsp" filtered="false" packaged="false">
+      <include name="**/*.jsp"/>
+    </resource>  
+  </resources>
+  
+  <build>
+    <filesets>
+      <fileset dir="src/main/java" filtered="true" packaged="true">
+        <include name="**/org/anyframe/plugin/logback/**/*.java"/>
+      </fileset>
+      
+      <fileset dir="src/main/resources" filtered="true" packaged="false">
+        <include name="**/logback*.xml"/>
+      </fileset>
+      
+      <fileset dir="src/test/java" filtered="true" packaged="true">
+        <include name="**/org/anyframe/plugin/logback/**/*.java"/>
+      </fileset>
+      
+      <fileset dir="src/test/resources" filtered="true" packaged="false">
+        <include name="**/logback*.xml"/>
+      </fileset>
+      
+      <fileset dir="src/main/webapp" filtered="false" packaged="false">
+        <include name="**/logback/**/*.*"/>
+        <include name="**/anyframe.jsp"/>
+      </fileset>
+      
+      <fileset dir="src/main/webapp" filtered="true" packaged="false">
+        <include name="**/web.xml"/>
+      </fileset>
+      
+      <fileset dir="" filtered="false" packaged="false">
+        <include name="**/remove-pom.xml"/>
+      </fileset>
+      
+    </filesets>
+  </build>
+  <samples>true</samples>
+  <interceptor>
+    <class></class>
+  </interceptor>
+  <essential>false</essential>
+</plugin>

@@ -1,0 +1,63 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<plugin name="excel" description="Excel Plugin consists of sample code that provides guidelines on how to use Apache POI that provides Excel Download and Upload etc.">
+  <groupId>org.anyframe.plugin</groupId>
+  <artifactId>anyframe-excel-pi</artifactId>
+  <version>1.0.0</version>
+  <dependent-plugins>
+    <dependent-plugin name="fileupload" version="2.0.0&gt;*"/>
+    <dependent-plugin name="query" version="2.0.0&gt;*"/>
+  </dependent-plugins>
+  <resources>
+    <resource dir="src/main/java" filtered="true" packaged="true">
+      <include name="**/*.java"/>
+    </resource>
+    <resource dir="src/main/resources" filtered="true" packaged="false">
+      <include name="**/*.xml"/>
+    </resource>
+    <resource dir="src/test/java" filtered="true" packaged="true">
+      <include name="**/*.java"/>
+    </resource>
+    <resource dir="src/test/resources" filtered="true" packaged="false">
+      <include name="**/*.xml"/>
+    </resource>
+    <resource dir="src/main/webapp/WEB-INF/jsp" filtered="false" packaged="false">
+      <include name="**/*.jsp"/>
+    </resource>
+    <resource dir="src/main/webapp/WEB-INF/classes/excel" filtered="false" packaged="false">
+        <include name="**/*.xml"/>
+      </resource>
+    <resource dir="db" filtered="false" packaged="false">
+      <include name="**/*.sql"/>
+    </resource>
+  </resources>
+  <build>
+    <filesets>
+      <fileset dir="src/main/java" filtered="true" packaged="true">
+        <include name="**/org/anyframe/plugin/excel/**/*.java"/>
+      </fileset>
+      <fileset dir="src/main/resources" filtered="false" packaged="false">
+        <include name="**/excel/*.xml"/>
+        <include name="**/*excel*.xml"/>
+      </fileset>
+      <fileset dir="src/test/java" filtered="true" packaged="true">
+        <include name="**/org/anyframe/plugin/anyframe/excel/**/*.java"/>
+      </fileset>
+      <fileset dir="src/main/webapp" filtered="false" packaged="false">
+        <include name="**/excel/**/*.*"/>
+        <include name="**/web.xml"/>
+        <include name="**/anyframe.jsp"/>
+      </fileset>
+      <fileset dir="src/main/webapp/WEB-INF/classes/excel" filtered="false" packaged="false">
+        <include name="**/*.xml"/>
+      </fileset>
+      <fileset dir="db" filtered="false" packaged="false">
+        	<include name="**/*.sql"/>
+      </fileset>     
+    </filesets>
+  </build>
+  <samples>true</samples>
+  <interceptor>
+    <class></class>
+  </interceptor>
+  <essential>false</essential>
+</plugin>

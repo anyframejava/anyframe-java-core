@@ -1,0 +1,32 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<plugin name="chart" description="Chart Plugin consists of functions that provides fusionchart-free support with JAXB Model class, and reference libraries necessary to use these open sources.">
+  <groupId>org.anyframe.plugin</groupId>
+  <artifactId>anyframe-chart-pi</artifactId>
+  <version>1.0.0</version>
+  <dependent-plugins>
+    <dependent-plugin name="core" version="2.0.0&gt;*"/>
+  </dependent-plugins>
+  <resources>
+    <resource dir="src/main/resources" filtered="true" packaged="false">
+      <include name="**/*.xml"/>
+    </resource>
+    <resource dir="src/main/webapp" filtered="false" packaged="false">
+      <include name="**/chart/**/*.*"/>
+    </resource>
+  </resources>
+  <build>
+    <filesets>
+      <fileset dir="src/main/resources" filtered="true" packaged="false">
+        <include name="**/**/*chart*.xml"/>
+      </fileset>
+      <fileset dir="src/main/webapp" filtered="false" packaged="false">
+        <include name="**/chart/**/*.*"/>
+      </fileset>
+    </filesets>
+  </build>
+  <samples>true</samples>
+  <interceptor>
+    <class></class>
+  </interceptor>
+  <essential>false</essential>
+</plugin>

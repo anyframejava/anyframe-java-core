@@ -1,0 +1,33 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE queryservice PUBLIC "-//ANYFRAME//DTD QUERYSERVICE//EN"
+"http://www.anyframejava.org/dtd/anyframe-core-query-mapping-3.2.dtd">
+<queryservice>
+  	<queries>  		
+  		<query id="findCustomerWithResultSetMapper" isDynamic="false">
+  			<statement>select NAME, ADDRESS from TB_CUSTOMER where SSNO like ?</statement>
+  			<param type="VARCHAR"/>
+  			<result mapper="org.anyframe.query.mapper.CustomerMapper"/>
+  		</query>  		
+  		
+  		<query id="findCustomerWithResultSetMapperAndLength" isDynamic="false">
+  			<statement>select NAME, ADDRESS from TB_CUSTOMER where SSNO like ?</statement>
+  			<param type="VARCHAR"/>
+  			<result length="2" mapper="org.anyframe.query.mapper.CustomerMapper"/>
+  		</query>   
+  		
+  		<query id="findCategoryListGeneral" isDynamic="false">
+  			<statement>select * from TB_CATEGORY</statement>
+  			<result class="org.anyframe.query.vo.CategoryVO"/>	  		
+  		</query>  
+  		
+  		<query id="findCategoryListResultMapper" isDynamic="false">
+  			<statement>select * from TB_CATEGORY</statement>
+  			<result mapper="org.anyframe.query.mapper.CategoryMapper"/>	  		
+  		</query>  
+  		
+  		<query id="findCategoryListHashMap" isDynamic="false">
+  			<statement>select * from TB_CATEGORY</statement>		
+  		</query>   		  		 				  							 			  						 				  			
+    </queries>
+    
+</queryservice>

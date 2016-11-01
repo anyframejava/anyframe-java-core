@@ -1,0 +1,23 @@
+<?xml version="1.0"?>
+
+<project name="Deploy libraries into web project" default="deploy" basedir="." xmlns:artifact="urn:maven-artifact-ant">
+	<!-- MAVEN_ANT Settings -->
+	<property name="ANT_HOME" value="/usr/share/ant"/>
+	<typedef resource="org/apache/maven/artifact/ant/antlib.xml" uri="urn:maven-artifact-ant">
+		<classpath>
+			<pathelement location="${ANT_HOME}/lib/maven-ant-task-2.0.10.jar" />
+		</classpath>
+	</typedef>
+	
+	<target name="deploy">
+		<artifact:pom file="${basedir}/pom.xml" id="pomfile"/>	 	
+		<artifact:dependencies filesetId="pomfile.dependencies" scopes="compile">
+		  	<pom refid="pomfile"/>
+		</artifact:dependencies>	
+		<mkdir dir="${basedir}/src/main/webapp/WEB-INF/lib"/>
+		<copy todir="${basedir}/src/main/webapp/WEB-INF/lib" overwrite="true">
+			<fileset refid="pomfile.dependencies"/>
+			<mapper type="flatten" />	      
+		</copy>		
+	</target>	
+</project>

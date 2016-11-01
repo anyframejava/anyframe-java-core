@@ -1,0 +1,47 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE queryservice PUBLIC "-//ANYFRAME//DTD QUERYSERVICE//EN"
+"http://www.anyframejava.org/dtd/anyframe-core-query-mapping-3.2.dtd">
+<queryservice>
+	<queries>
+		<query id="createSchedulingGenre">
+			<statement>
+				INSERT INTO GENRE (genre_id, name)
+				VALUES (:vo.genreId, :vo.name)
+			</statement>
+		</query>
+
+		<query id="updateSchedulingGenre">
+			<statement>
+				UPDATE GENRE 
+				SET name = :vo.name
+				WHERE genre_id = :vo.genreId
+			</statement>
+		</query>
+
+		<query id="removeSchedulingGenre">
+			<statement>
+				DELETE FROM GENRE 
+				WHERE genre_id = :vo.genreId
+			</statement>
+		</query>
+		
+		<query id="findSchedulingGenreByPk">
+			<statement>
+				SELECT genre_id, name
+				FROM GENRE
+				WHERE genre_id = :vo.genreId
+			</statement>
+			<result class="org.anyframe.plugin.struts.domain.Genre" />
+		</query>
+					
+		<query id="findSchedulingGenreList" isDynamic="false">
+			<statement>
+				SELECT genre_id, name
+				FROM GENRE
+				ORDER BY name
+			</statement>
+			<result class="org.anyframe.plugin.scheduling.domain.Genre" />
+		</query>
+	</queries>
+</queryservice>
+

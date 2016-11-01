@@ -1,0 +1,71 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE queryservice PUBLIC "-//ANYFRAME//DTD QUERYSERVICE//EN"
+"http://www.anyframejava.org/dtd/anyframe-core-query-mapping-3.2.dtd">
+<queryservice>
+	<queries>
+		<!--  Query : 신규 상품 등록 -->
+		<query id="createProduct">
+			<statement>
+			<![CDATA[
+				INSERT INTO PRODUCT 
+				( PROD_NO, PROD_NAME, SELLER_ID, PROD_DETAIL, MANUFACTURE_DAY, AS_YN, SELL_QUANTITY, 
+				  SELL_AMOUNT, IMAGE_FILE, REG_DATE ) 
+				VALUES (:vo.prodNo, :vo.prodName, :vo.sellerId, :vo.prodDetail, 
+				        :vo.manufactureDay, :vo.asYn, :vo.sellQuantity, :vo.sellAmount, :vo.imageFile, '2009-10-10')
+			]]>
+			</statement>
+		</query>
+		<!--  Query : 상품 정보 수정 -->
+		<query id="updateProduct">
+			<statement>
+			<![CDATA[
+				UPDATE PRODUCT 
+				SET PROD_NAME = :vo.ProdName,
+					PROD_DETAIL = :vo.prodDetail,
+					MANUFACTURE_DAY = :vo.manufactureDay,
+					AS_YN = :vo.asYn,
+					SELL_QUANTITY = :vo.sellQuantity,
+					SELL_AMOUNT = :vo.sellAmount,
+					REG_DATE = sysdate
+				WHERE PROD_NO = :vo.ProdNo
+			]]>
+			</statement>
+		</query>
+		<!--  Query : 상품 상세 정보 조회 -->
+		<query id="findProductByPk">
+			<statement>
+			<![CDATA[
+				SELECT	PROD_NO, PROD_NAME, SELLER_ID, PROD_DETAIL, MANUFACTURE_DAY, AS_YN, 
+						SELL_QUANTITY, SELL_AMOUNT, IMAGE_FILE, REG_DATE 
+				FROM PRODUCT
+				WHERE PROD_NO = :vo.ProdNo
+			]]>
+			</statement>
+			<result class="anyframe.sample.domain.Product"/>
+		</query>
+		<!--  Query : Product 정보 삭제 -->
+		<query id="removeProduct">
+			<statement>
+			<![CDATA[
+				DELETE FROM PRODUCT 
+				WHERE PROD_NO = :vo.prodNo
+			]]>
+			</statement>
+		</query>
+
+		<query id="findProductList">
+			<statement>
+		    <![CDATA[
+				SELECT product.PROD_NO, product.PROD_NAME, product.SELLER_ID, product.PROD_DETAIL, product.MANUFACTURE_DAY, product.AS_YN, product.SELL_QUANTITY, product.SELL_AMOUNT, product.IMAGE_FILE, product.REG_DATE 
+				FROM PRODUCT product 
+				WHERE 
+					product.PROD_NAME like :vo.prodName
+					AND product.AS_YN = :vo.asYn
+				ORDER BY product.PROD_NO DESC
+			]]>
+			</statement>
+			<result class="anyframe.sample.domain.Product"/>
+		</query>
+	</queries>
+</queryservice>
+

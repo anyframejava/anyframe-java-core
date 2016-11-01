@@ -1,0 +1,59 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<plugin name="scheduling" description="Scheduling Plugin consists of sample code that provides guidelines on scheduling specific works by connecting Spring with Quartz, and reference libraries needed to use these open sources.">
+  <groupId>org.anyframe.plugin</groupId>
+  <artifactId>anyframe-scheduling-pi</artifactId>
+  <version>1.0.0</version>
+  <dependent-plugins>
+    <dependent-plugin name="query" version="2.0.0&gt;*"/>
+  </dependent-plugins>
+  <resources>
+    <resource dir="src/main/java" filtered="true" packaged="true">
+      <include name="**/*.java"/>
+    </resource>
+    <resource dir="src/main/resources" filtered="true" packaged="false">
+      <include name="**/*.xml"/>
+    </resource>
+    <resource dir="src/test/java" filtered="true" packaged="true">
+      <include name="**/*.java"/>
+    </resource>
+    <resource dir="src/test/resources" filtered="true" packaged="false">
+      <include name="**/*.xml"/>
+    </resource>
+    <resource dir="src/main/webapp/WEB-INF/jsp" filtered="false" packaged="false">
+      <include name="**/*.jsp"/>
+    </resource>
+    <resource dir="db/scripts" filtered="false" packaged="false">
+      <include name="**/*.sql"/>
+    </resource>    
+  </resources>
+  <build>
+    <filesets>
+      <fileset dir="src/main/java" filtered="true" packaged="true">
+        <include name="**/org/anyframe/plugin/scheduling/**/*.java"/>
+      </fileset>
+      <fileset dir="src/main/resources" filtered="true" packaged="false">
+        <include name="**/*scheduling*.xml"/>
+      </fileset>
+      <fileset dir="src/test/java" filtered="true" packaged="true">
+        <include name="**/org/anyframe/plugin/scheduling/**/*.java"/>
+      </fileset>
+      <fileset dir="src/test/resources" filtered="true" packaged="false">
+        <include name="**/*scheduling*.xml"/>
+      </fileset>
+      <fileset dir="src/main/webapp" filtered="false" packaged="false">
+        <include name="**/scheduling/**/*.*"/>
+        <include name="**/anyframe.jsp"/>
+      </fileset>
+      <fileset dir="db" filtered="false" packaged="false">
+        <include name="**/resources/**/*.*"/>
+        <include name="**/scripts/*.*"/>
+      </fileset>      
+    </filesets>
+  </build>
+  <samples>true</samples>
+  <interceptor>
+    <class></class>
+  </interceptor>
+  <essential>false</essential>
+  <checked>false</checked>
+</plugin>

@@ -1,0 +1,102 @@
+<chapter id="foundation_idgen_uuid">
+	<title>UUIdGenerationService</title>
+
+	<para>
+		To create new id, create 16-byte id using UUID creating algorithm.
+			Setting can be as follows.
+		
+    </para>
+
+    <informaltable>
+      <tgroup cols="6">
+        <colspec colnum="1" colname="col1" colwidth="1*"/>
+        <colspec colnum="2" colname="col2" colwidth="2*"/>
+        <colspec colnum="3" colname="col3" colwidth="4*"/>
+        <colspec colnum="4" colname="col4" colwidth="1*"/>
+        <colspec colnum="5" colname="col5" colwidth="1*"/>
+        <colspec colnum="6" colname="col6" colwidth="1*"/>
+        <thead>
+          <row>
+            <entry align="center">Tag Name</entry>
+            <entry align="center">config:configuration Attribute</entry>
+            <entry align="center">Description</entry>
+            <entry align="center">Required</entry>
+            <entry align="center">Default Value</entry>
+            <entry align="center">Child Tag</entry>
+          </row>
+        </thead>
+
+        <tbody>
+          <row>
+            <entry>ROOT</entry>
+            <entry />
+            <entry />
+            <entry />
+            <entry />
+            <entry>address</entry>
+          </row>
+          <row>
+            <entry>address</entry>
+            <entry />
+            <entry>
+            	To guarantee uniqueness in space, define ID address or network car
+							MAC address as value.
+							Division between fields is ".", and ":" for MAC address.
+							If not defined, MAC address is randomly created in
+							UUIdGenerationService.
+            	
+            </entry>
+            <entry align="center">False</entry>
+            <entry>Random creation</entry>
+            <entry />
+          </row>
+        </tbody>
+      </tgroup>
+    </informaltable>
+
+    <section id="foundation_idgen_uuid_samples">
+		<title>Samples</title>
+
+		<itemizedlist>
+			<listitem>
+			<para><emphasis role="bold">Configuration</emphasis></para>
+
+			<para>
+				The following is a part of context-idgen.xml which defines UUIdGernerationService to
+						use in IdGernerationService
+						and the properties.
+						Based on MAC address, UUIdGenerationService Bean creating unique id is
+						defined.
+				
+  				<programlisting
+  				language="xml"><![CDATA[<bean name="UUIdGenerationService" class="anyframe.core.idgen.impl.UUIdGenerationService">
+    <config:configuration>
+        <address>00:00:F0:79:19:5B</address>
+    </config:configuration>
+</bean>]]></programlisting>
+			</para>
+     	   	</listitem>
+
+			<listitem>
+	        <para><emphasis role="bold">TestCase </emphasis></para>
+
+			<para>
+				The following is a part of ProductServiceImpl.java code which extracts unique id from UUIdGenerationService
+				based on the above-mentioned configuration.
+				
+          		<programlisting language="java">@Resource(name="UUIdGenerationService")
+IIdGenerationService idGenerationService;
+   
+/**
+ * Product information creation using UUIdGeneration
+ */
+public void create(Product product) throws Exception {
+    // Get new id and set prodNo.	
+    product.setProdNo(<emphasis role="bold">idGenerationService.getNextStringId()</emphasis>);
+    productDao.create(product);
+}</programlisting>
+			</para>
+        	</listitem>
+		</itemizedlist>
+	</section>
+</chapter>

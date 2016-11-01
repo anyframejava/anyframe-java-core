@@ -1,0 +1,3 @@
+DROP TABLE EXCEL_MOVIE;
+
+commit;

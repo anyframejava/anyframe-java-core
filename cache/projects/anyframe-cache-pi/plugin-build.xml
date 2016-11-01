@@ -1,0 +1,49 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<plugin name="cache" description="Cache Plugin consists of sample code that provides guidelines on how to use Cache Service developed based on OSCache of opensymphony, and reference libraries needed to use these open sources.">
+  <groupId>org.anyframe.plugin</groupId>
+  <artifactId>anyframe-cache-pi</artifactId>
+  <version>1.0.0</version>
+  <dependent-plugins>
+    <dependent-plugin name="query" version="2.0.0&gt;*"/>
+  </dependent-plugins>
+  <resources>
+    <resource dir="src/main/java" filtered="true" packaged="true">
+      <include name="**/*.java"/>
+    </resource>
+    <resource dir="src/main/resources" filtered="true" packaged="false">
+      <include name="**/*.xml"/>
+    </resource>
+    <resource dir="src/test/java" filtered="true" packaged="true">
+      <include name="**/*.java"/>
+    </resource>
+    <resource dir="src/test/resources" filtered="true" packaged="false">
+      <include name="**/*.xml"/>
+    </resource>
+    <resource dir="src/main/webapp/WEB-INF/jsp" filtered="false" packaged="false">
+      <include name="**/*.jsp"/>
+    </resource>
+  </resources>
+  <build>
+    <filesets>
+      <fileset dir="src/main/java" filtered="true" packaged="true">
+        <include name="**/org/anyframe/plugin/cache/**/*.java"/>
+      </fileset>
+      <fileset dir="src/main/resources" filtered="true" packaged="false">
+        <include name="**/*cache*.xml"/>
+      </fileset>
+      <fileset dir="src/test/java" filtered="true" packaged="true">
+        <include name="**/org/anyframe/plugin/cache/**/*.java"/>
+      </fileset>
+      <fileset dir="src/test/resources" filtered="true" packaged="false">
+        <include name="**/*cache*.xml"/>
+      </fileset>
+      <fileset dir="src/main/webapp" filtered="false" packaged="false">
+        <include name="**/cache/**/*.*"/>
+        <include name="**/anyframe.jsp"/>
+      </fileset>
+    </filesets>
+  </build>
+  <samples>true</samples>
+  <essential>false</essential>
+  <checked>false</checked>
+</plugin>

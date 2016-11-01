@@ -1,0 +1,34 @@
+<chapter id="tiles_tilesintegration_tilesdefinition">
+	<title>Tiles definition 파일 작성</title>
+	
+	<para>
+		Tiles를 사용하기 위해서는 실제 Controller에서 리턴된 view 이름을 토대로 페이지에 출력해줄 tiles attribute를 정의해주는 tiles definition을 정의해야 한다. 
+		(위의 tilesConfigurer 위치로 정의한 tiles-def.xml 파일) 다음은 tiles definition 정의 예이다. 
+		<programlisting language="xml"><![CDATA[<definition name="template" template="/sample/layouts/layout.jsp">
+    <put-attribute name="header" value="/sample/layouts/top.jsp" />
+    <put-attribute name="body" value="/sample/layouts/welcome.jsp" />
+    <put-attribute name="footer" value="/sample/layouts/left.jsp" />
+</definition>
+<definition name="listCategory" extends="template">
+    <put-attribute name="body" value="/sample/category/listCategory.jsp" />
+</definition>]]></programlisting>
+	</para>
+	
+	<para>
+		먼저 Layout을 정의한 jsp 페이지를 정의한다. 해당 layout.jsp 페이지에서 기본적으로 사용할 페이지 구성 요소(위의 예에선 header, body, footer)들을 정의한 후 
+		다른 view들은 미리 정의된 template이라는 definition을 extends하여 body만 설정하여 사용할 수 있다. 
+		위의 예에서 listCategory라는 이름의 view가 리턴될 경우 "/sample/layouts/layout.jsp" 페이지의 레이아웃으로 header에는 "/sample/layouts/top.jsp" body는 
+		"/sample/category/listCategory.jsp", footer는 "/sample/layouts/left.jsp"이 될 것이다. 
+		JSP에서 tiles 구성 요소를 넣을 때는 아래와 같이 tiles taglib을 정의한 후 <![CDATA[<tiles:insertAttribute>]]> 태그를 이용하여 사용한다.
+		<programlisting language="xml"><![CDATA[<definition name="template" template="/sample/layouts/layout.jsp">
+    <put-attribute name="header" value="/sample/layouts/top.jsp" />
+    <put-attribute name="body" value="/sample/layouts/welcome.jsp" />
+    <put-attribute name="footer" value="/sample/layouts/left.jsp" />
+</definition>
+<definition name="listCategory" extends="template">
+    <put-attribute name="body" value="/sample/category/listCategory.jsp" />
+</definition>]]></programlisting>
+	</para>
+	
+	<para>name attribute에 들어갈 이름은 tiles definition 파일의 name attribute의 이름이 된다.</para>
+</chapter>

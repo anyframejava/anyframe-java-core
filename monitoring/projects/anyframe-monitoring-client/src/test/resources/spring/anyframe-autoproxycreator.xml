@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE beans PUBLIC "-//SPRING//DTD BEAN 2.0//EN" "http://www.springframework.org/dtd/spring-beans-2.0.dtd">
+
+<beans>
+	<bean id="_jdkBeanNameProxyCreator" class="org.anyframe.monitoring.client.spring.ExclusiveBeanNameAutoProxyCreator">
+	  <property name="beanNames"><value>user*</value></property>
+	  <property name="exclusiveBeanNames"><list><value>userWithoutInterceptor</value></list></property>	  
+	  <property name="interceptorNames">
+			<list>
+				<value>stringConcatenation</value>
+			</list>
+	  </property>
+	</bean>
+	
+	<bean id="stringConcatenation" class="org.anyframe.monitoring.client.StringConcatenation"/>
+
+	<bean id="userWithInterceptor" class="org.anyframe.monitoring.client.sample.User">	
+		<property name="userId"><value>userWithInterceptor</value></property>
+	</bean>
+
+	<bean id="userWithoutInterceptor" class="org.anyframe.monitoring.client.sample.User">	
+		<property name="userId"><value>userWithoutInterceptor</value></property>
+	</bean>
+	
+</beans>		

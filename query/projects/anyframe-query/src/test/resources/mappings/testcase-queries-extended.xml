@@ -1,0 +1,42 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE queryservice PUBLIC "-//ANYFRAME//DTD QUERYSERVICE//EN"
+"http://www.anyframejava.org/dtd/anyframe-core-query-mapping-3.2.dtd">
+<queryservice>
+	<queries>
+		<query id="insertCategory">
+			<statement>
+				INSERT INTO TB_EXT_CATEGORY 
+				(CATEGORY_NO, CATEGORY_NAME, CATEGORY_DESC, USE_YN, REG_ID, REG_DATE, MODIFY_ID, MODIFY_DATE) 
+				VALUES (:vo.categoryNo, :vo.categoryName, :vo.categoryDesc, :vo.useYn, :vo.regId, sysdate, :vo.regId, sysdate)
+			</statement>	
+		</query>	
+		<query id="updateCategory">
+			<statement>
+				UPDATE TB_EXT_CATEGORY   
+				SET CATEGORY_NAME = :vo.categoryName, CATEGORY_DESC = :vo.categoryDesc, USE_YN =:vo.useYn, MODIFY_ID = :vo.modifyId, MODIFY_DATE = sysdate
+				WHERE CATEGORY_NO = :vo.categoryNo
+			</statement>
+		</query>	
+		<query id="deleteCategory">
+			<statement>
+			delete from TB_EXT_CATEGORY where CATEGORY_NO = :vo.categoryNo
+			</statement>	
+		</query>
+		<query id="findCategoryList">
+			<statement>
+				SELECT CATEGORY_NO, CATEGORY_NAME, CATEGORY_DESC, USE_YN, REG_ID
+				FROM TB_EXT_CATEGORY
+				WHERE CATEGORY_NO like :vo.categoryNo
+			</statement>
+			<result class="org.anyframe.query.vo.CategoryVO"></result>
+		</query>
+		<query id="findCategory">
+			<statement>
+				SELECT CATEGORY_NO, CATEGORY_NAME, CATEGORY_DESC, USE_YN, REG_ID
+				FROM TB_EXT_CATEGORY
+				WHERE CATEGORY_NO = :vo.categoryNo
+			</statement>
+			<result class="org.anyframe.query.vo.CategoryVO"></result>
+		</query>					
+	</queries>
+</queryservice>

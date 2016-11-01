@@ -1,0 +1,35 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-3.0.xsd">
+
+	<bean name="job" class="org.anyframe.plugin.scheduling.job.MovieStatusSummaryJob" init-method="initialize">
+		<constructor-arg index="0" ref="schedulingGenreService" />
+		<constructor-arg index="1" ref="queryService" />
+	</bean>
+
+	<bean id="movieSummaryJob" class="org.springframework.scheduling.quartz.MethodInvokingJobDetailFactoryBean">
+		<property name="targetObject" ref="job" />
+		<property name="targetMethod" value="execute" />
+		<property name="concurrent" value="false" />
+	</bean>
+
+	<bean id="cronTrigger" class="org.springframework.scheduling.quartz.CronTriggerBean">
+		<property name="jobDetail" ref="movieSummaryJob" />
+		<property name="cronExpression" value="0 0/1 * * * ?" />
+	</bean>
+
+	<bean id="schedulerFactoryBean" class="org.springframework.scheduling.quartz.SchedulerFactoryBean">
+		<property name="triggers">
+			<list>
+				<ref bean="cronTrigger" />
+			</list>
+		</property>
+		<property name="globalTriggerListeners" ref="globalTriggerListener" />
+	</bean>
+	
+	<bean id="globalTriggerListener" class="org.anyframe.plugin.scheduling.listener.GlobalTriggerListener">
+		<property name="listenerType" value="Global"/>
+	</bean>
+
+</beans>

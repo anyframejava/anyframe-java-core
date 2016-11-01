@@ -1,0 +1,19 @@
+		<!--mip-query-queryDept-START-->
+		<query id="findDeptList" isDynamic="true" mappingStyle="upper">
+			<statement><![CDATA[
+				SELECT DEPT_ID, DEPT_NAME, DEPT_DESC
+				FROM MIP_DEPT
+				#if ($SEARCH_CONDITION.length()>0 && "0" == $SEARCH_CONDITION)
+					WHERE DEPT_NAME like '%' CONCAT :SEARCH_KEYWORD CONCAT '%'
+				#elseif ($SEARCH_CONDITION.length()>0 && "1" == $SEARCH_CONDITION)
+				    WHERE DEPT_DESC like '%' CONCAT :SEARCH_KEYWORD CONCAT '%'
+				#end
+				ORDER BY DEPT_ID
+			]]></statement>
+		</query>
+		<query id="findDeptListForTree" isDynamic="true" mappingStyle="upper">
+			<statement><![CDATA[
+				SELECT PARENT_DEPT, DEPT_LEVEL, DEPT_ID, DEPT_NAME FROM MIP_DEPT ORDER BY PARENT_DEPT, DEPT_LEVEL, DEPT_ID
+			]]></statement>
+		</query>
+		<!--mip-query-queryDept-END-->

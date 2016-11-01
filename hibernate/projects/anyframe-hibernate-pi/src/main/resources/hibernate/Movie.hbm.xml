@@ -1,0 +1,39 @@
+<?xml version="1.0"?>
+<!DOCTYPE hibernate-mapping PUBLIC "-//Hibernate/Hibernate Mapping DTD 3.0//EN"
+"http://hibernate.sourceforge.net/hibernate-mapping-3.0.dtd">
+<hibernate-mapping>
+    <class name="org.anyframe.plugin.hibernate.domain.Movie" table="MOVIE">
+    	<cache usage="read-write"/>
+        <id name="movieId" type="string">
+            <column name="MOVIE_ID"/>
+            <generator class="assigned" />
+        </id>
+        <many-to-one name="genre" class="org.anyframe.plugin.hibernate.domain.Genre" fetch="select">
+            <column name="GENRE_ID" not-null="true" />
+        </many-to-one>
+        <property name="title" type="string">
+            <column name="TITLE" not-null="true" />
+        </property>
+        <property name="director" type="string">
+            <column name="DIRECTOR" not-null="true" />
+        </property>
+        <property name="actors" type="string">
+            <column name="ACTORS" not-null="true" />
+        </property>
+        <property name="runtime" type="long">
+            <column name="RUNTIME"/>
+        </property>
+        <property name="releaseDate" type="date">
+            <column name="RELEASE_DATE"/>
+        </property>
+        <property name="ticketPrice" type="float">
+            <column name="TICKET_PRICE"/>
+        </property>
+        <property name="posterFile" type="string">
+            <column name="POSTER_FILE"/>
+        </property>
+        <property name="nowPlaying" type="string">
+            <column name="NOW_PLAYING"/>
+        </property>
+    </class>
+</hibernate-mapping>

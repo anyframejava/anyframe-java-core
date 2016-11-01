@@ -1,0 +1,288 @@
+<chapter id="foundation_installation">
+	<title>Install a Foundation Plugin</title>
+	<para>
+		This chapter will introduce in detail how to use open source more broadly central to sample code created by Foundation Plugin installation.
+	
+	</para>
+	
+	<para>
+		Before starting the content of this part in earnest, let's install Foundation Plugin in local PC.
+		(As this chapter briefly introduces the installation process of Foundation Plugin,
+		for more details on Plugin installation,
+		refer to 
+		<ulink url="http://dev.anyframejava.org/docs/anyframe/ide/1.0.1/reference/htmlsingle/ide.html#cli_maven">Anyframe-based development environment composition</ulink>
+		in this document.
+		
+	</para>
+	
+	<orderedlist numeration="arabic" inheritnum="inherit">
+		<listitem>
+			<para>
+				As Foundation Plugin installation is Maven-bases, 
+				check if the installation environment is properly set by referring to 
+				<ulink url="http://dev.anyframejava.org/docs/anyframe/ide/1.0.1/reference/htmlsingle/ide.html#installation_maven_configuration">Maven installation
+				 and environment setup</ulink>.
+				</para>
+		</listitem>
+		<listitem>
+			<para>
+				To create the structure of sample project, open command window and move to the installation-target file,
+				and then enter command as the following and install anyframe-basic-archetype.
+			
+			</para>
+			<programlisting language="java"><![CDATA[mvn archetype:generate 
+   -DarchetypeCatalog="http://dev.anyframejava.org/maven/repo/archetype-catalog.xml]]></programlisting>					
+		</listitem>
+		<listitem>
+			<para>
+				Check whether the sample project with the same name as artifactId was created
+				which was registered when installing anyframe-basic-archetype under installation target folder.
+				
+			</para>
+		</listitem>
+		<listitem>
+			<para>
+				After moving to sample project location from command window, execute db/hsqldb/start.cmd (or start.sh)and start sample DB.
+				(If you want to utilize other DB instead of basically-provided HsqlDB,
+				refer to <ulink url="http://dev.anyframejava.org/docs/anyframe/ide/1.0.1/reference/htmlsingle/ide.html#cli_maven_db">Changing DB</ulink>
+				in this document.
+				Note that if DB is not started,
+				addition to sample data for executing Foundation Plugin does not occur properly.
+			
+			</para>
+		</listitem>
+		<listitem>
+			<para>
+				Enter the following command at command window and install Foundation Plugin.
+				
+			</para>
+			<programlisting language="java"><![CDATA[mvn anyframe:install -DpluginName=foundation]]></programlisting>							
+		</listitem>
+		<listitem>
+			<para>
+				Enter the following command in command window.
+				Then, if Jetty server was properly started,
+				check whether Foundation Plugin was properly installed through browser.
+				(If the created sample project name is 'myproject',
+				enter http://localhost:8080/myproject in the address box.)
+	
+				
+			</para>
+			<programlisting language="java"><![CDATA[mvn clean jetty:run]]></programlisting>
+			<mediaobject>
+				<imageobject>
+					<imagedata fileref="../image/foundation/foundation_installation.png" />
+				</imageobject>
+			</mediaobject>				
+		</listitem>
+	</orderedlist>
+
+	<note id="foundation_overview_note">
+		<title>Note for each WAS(Web Application Server)</title>
+		<para>
+			This document describes Jetty and Tomcat as WAS for executing sample application created by Plugin installation.
+			However, as the sample application created by Plugin installation is not dependent on a specific WAS,
+			it is possible to deploy and execute other WAS as well such as WebLogic, JEUS after packaging 
+			through executing command such as mvn clean compile war:war.
+			However, there are some cases where the version of some libraries which sample application refer to is not provided 
+			in the relevant WAS. The following is how to handle in such cases.
+			
+			
+			<itemizedlist>
+     			<listitem>
+     				<para>WebLogic</para>
+     				<itemizedlist>
+     					<listitem>
+	     				<!-- para>9.2 : Sample application is composed in Tiles-based, and tiles-config_2_1.dtd is adopted
+	     					for utilizing EL(Expression Language) when defining Tiles.
+	     					However, this is supported from Servlet Spec. 2.5, and as WebLogic 9.2 is a WAS implementing Servlet Spec. 2.4,
+	     					there are some problems in handling this function.
+	     					Therefore, after installing Foundation Plugin, open src/main/resources/spring/moviefinder-servlet.xml  
+	     					under the created sample project,
+	     					then remove tilesInitializer at 'tilesConfigurer' bean definition, 
+	     					and leave only the location of Tiles Definition XML file.
+	     					Property of the revised 'tilesConfigurer' bean is as the following.
+	     				</para>  
+     					<programlisting language="xml"><![CDATA[<bean id="tilesConfigurer" class="org.springframework.web.servlet.view.tiles2.TilesConfigurer">
+    <property name="definitions">
+        <list>
+            <value>/WEB-INF/tilesviews.xml</value>
+        </list>
+    </property>
+</bean>]]></programlisting-->
+							<para>9.2 : 샘플 어플리케이션은 Tiles 기반으로 구성되어 있으며 Tiles 정의시 EL(Expression Language)를 활용할 수 있도록 하기 위해
+		     					tiles-config_2_1.dtd를 채택하고 있다. 그런데 이는  Servlet Spec. 2.5 이후부터 지원되는 기능이며 WebLogic 9.2는 Servlet Spec. 2.4를 구현한 WAS이므로
+		     					이 기능 처리에 문제가 있다. 따라서 Foundation Plugin 설치 이후 생성된 샘플 프로젝트 하위의 src/main/resources/spring/moviefinder-servlet.xml 파일을
+		     					열고 'tilesConfigurer' Bean 정의에서 tilesInitializer 속성 정의를 Servlet Spec. 2.4 용으로 변경하고<ulink url="http://seam-forum.googlecode.com/files/el-api.jar"> el-api.jar</ulink>를 Web app. libraries로 추가 한다. 
+		     					수정된 'tilesConfigurer' Bean의 속성은 다음과 같다.
+     						</para> 
+     						<programlisting language="xml"><![CDATA[<bean id="tilesConfigurer" class="org.springframework.web.servlet.view.tiles2.TilesConfigurer">
+	<property name="tilesInitializer">
+		<bean class="anyframe.web.tiles2.Servlet24ELTilesInitializer">
+			<property name="definitions">
+				<list>
+					<value>/WEB-INF/tilesviews.xml</value>
+				</list>
+			</property>
+		</bean>
+	</property>
+</bean>]]></programlisting>  
+     					</listitem>
+     					<listitem>
+     					<para>     			     	
+	     					10.1 : As WebLogic 10.1 which supports JavaEE 5 contains JPA 1.0 library as a standard,
+	     					problems can occur as the following.
+	     				</para>	
+		     			<para>
+	 						Sample project created by Foundation Plugin installation utilizes Hibernate Validator 4.1.0 library
+	 						to execute Model Validation based on JSR-303 Annotation and this library refers to JPA 2.0 library.
+	 						However, as WebLogic 10.1 provides PersistenceProvider based on  JPA 1.0 library,
+	 						java.lang.AbstractMethodError at javax.persistence.Persistence$1.isLoaded error occurs when using Model Validation. 					
+		     			</para>
+		     			<para>		
+	     					This issue is not solved even by adjusting prefer-web-inf-classes to true in weblogic.xml,
+	     					therefore, you can avoid this problem as the following.     								   					
+	     				</para> 
+	     				<itemizedlist>
+	     					<listitem>
+	     						<para>
+	     						 	Remove hibernate-jpa-2.0-api-1.0.0.Final.jar file at WEB-INF/lib under sample project folder,
+	     						 	and deploy javax.persistence_2.0.1.vxxx.jar instead.
+	     						 	This jar file and be downloaded and used at <ulink url="http://www.eclipse.org/eclipselink/">EclipseLink(Eclipse Persistence Services Project, http://www.eclipse.org/eclipselink/) 
+	     						 	website</ulink>. After downloading EclipseLink 2.x version Installer Zip file and extract the file, you can check the jar file.	    					 	
+			     				</para>
+			     			</listitem>
+			     			<listitem>			 
+	     						 <para>Copy javax.persistence_2.0.1.vxxx. and antlr-2.7.7.jar file in [WebLogic installation Home]/common/lib directory.
+	     						  </para>
+	     					</listitem>
+	     					<listitem>
+	     						<para>Add the following content to setDomainEnv.cmd(or setDomainEnv.sh) file in [User Domain Home]/bin folder.
+	     						</para>
+	     						<programlisting language="xml"><![CDATA[set PRE_CLASSPATH=%WL_HOME%\common\lib\antlr-2.7.7.jar;%WL_HOME%\common
+\lib\javax.persistence_2.0.1.vxxx.jar
+
+
+(UNIX sh : set PRE_CLASSPATH="${WL_HOME}/common/lib/antlr-2.7.6.jar:
+${WL_HOME}/common/lib/javax.persistence_2.0.1.vxxx.jar")]]></programlisting>
+     						</listitem>
+     					</itemizedlist>
+     					</listitem>     			
+						<listitem>
+		     				<para>
+		     					10.3.3 : As WebLogic 10.3.3 which supports JavaEE 6 contains JPA 1.0 library as a standard,
+		     					problems can occur as the following.
+     						</para>
+   							<para>
+	     						Sample project created by Foundation Plugin installation utilizes Hibernate Validator 4.1.0 library
+ 						to execute Model Validation based on JSR-303 Annotation and this library refers to JPA 2.0 library.
+ 						However, as WebLogic 10.3.3 provides PersistenceProvider based on JPA 1.0  library,
+ 						java.lang.AbstractMethodError at javax.persistence.Persistence$1.isLoaded error occurs when using Model Validation.	     				   							
+   							</para>
+	     					<para>
+	     						The following approach can avoid such problem.  .
+	     					</para>	     					
+		    				<itemizedlist>
+		     					<listitem> 
+     						 	<para>Compose EAR Folder. For example, if you work on project named 'myproject' as ear,
+     						 	it can be composed in two types of folder.
+     							</para>
+     							<programlisting language="xml"><![CDATA[myproject.ear/ META-INF
+                 / myproject]]></programlisting>     						  
+     							</listitem>     				
+     							<listitem>
+	     						 <para>Deploy application.xml at META-INF folder.
+	     						 Refer to the following example.
+	     						 </para>
+     						<programlisting language="xml"><![CDATA[<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE application PUBLIC "-//Sun Microsystems,Inc.//DTD J2EE Application 1.3//EN"
+   "http://java.sun.com/dtd/application_1_3.dtd">
+<application>
+   <display-name>Myproject</display-name>
+   <module>
+     <web>
+       <web-uri>myproject</web-uri>
+       <context-root>myproject</context-root>
+     </web>
+    </module>
+</application>]]></programlisting>     						 
+     							</listitem>    
+		     					<listitem>
+		     						 <para>Deploy weblogic-application.xml file at META-INF folder.
+		     						 Set library in WEB-INF/lib folder as priority referring target for javax.persistence package.
+		     						 Refer to the following example.		     					
+		     						 </para>
+		     						<programlisting language="xml"><![CDATA[<?xml version="1.0" encoding="UTF-8"?>
+
+<weblogic-application>
+   <prefer-application-packages>
+	<package-name>javax.persistence.*</package-name>
+   </prefer-application-packages>
+</weblogic-application>]]></programlisting>     						 
+     							</listitem>      					
+		     					<listitem>
+		     						 <para>Deploy weblogic.xml file in WEB-INF under myproject folder.
+		     						 Set libraries and class files in web application as priority reference target.
+		     						 Refer to the following example.
+		     						</para>
+		     						<programlisting language="xml"><![CDATA[<?xml version="1.0" encoding="ISO-8859-1"?>
+
+<weblogic-web-app>
+  	<container-descriptor>
+	    <prefer-web-inf-classes>true</prefer-web-inf-classes>
+	</container-descriptor>
+</weblogic-web-app>]]></programlisting>     						 
+		     					</listitem>     								
+		     					<listitem>
+		     						 <para>
+     						 Remove hibernate-jpa-2.0-api-1.0.0.Final.jar at WEB-INF/lib in myproject folder
+     						 and deploy javax.persistence_2.0.1.vxxx.jar file instead.
+     						 This jar file can be downloaded and used from 
+     						 <ulink url="http://www.eclipse.org/eclipselink/">EclipseLink(Eclipse Persistence Services Project, http://www.eclipse.org/eclipselink/) website</ulink>.
+     						 Download and extract Installer Zip file of EclipseLink 2.x version and check jar file.
+     						 
+		     						 </para>
+		     					</listitem>       					 	     					
+     					</itemizedlist>
+     				</listitem>
+     				</itemizedlist>
+     			<para>
+  						When executing sample application based on WebLogic,
+  						although the number of slf4j-log4j-x.x.x.jar file under WEB-INF/lib of the relevant application is one,
+  						warming message that begins with "SLF4J: Class path contains multiple SLF4J bindings." can appear.
+  						This is <ulink url="http://bugzilla.slf4j.org/show_bug.cgi?id=138">known bug existing in SLF4J</ulink>, but can be ignored
+  						as it does not cause any problem in application execution.  				
+  					</para>
+  				</listitem>	     			
+     			<listitem>
+     				<para>JEUS</para>
+     				<itemizedlist>
+     					<listitem>
+		     				<para>6.0 :Sample project is composed of domain class, which utilizes JSR-303 Annotation.
+		     				    This JSR-303 Annotation enables Model Validation function.
+		     					In this case, Hibernate Validator 4.0.2.GA is utilized as JSR-303 Provider
+		     					and this library refers to JPA 2.0 library.
+		     					However, as JEUS 6.0 contains JPA 1.0 library and JPA library is needed at the beginning stage of WAS,
+		     					the following handling is needed.
+		     				</para>
+		     				<itemizedlist>
+		     					<listitem>
+		     						 <para>Remove javax.persistence from javaee.jar file at [JEUS installation Home]/lib/system folder.
+		     						</para>
+		     					</listitem>
+		     					<listitem>
+		     						<para>Remove toplink-*.jar file at [JEUS installation Home]/lib/system folder.
+		     						</para>
+		     					</listitem>
+		     					<listitem>
+		     						<para>Copy [Sample project]/src/main/webapp/WEB-INF/lib/hibernate-jpa-2.0-api-1.0.0.Final.jar file
+		     						at [JEUS installation Home]/lib/system folder.</para>
+		     					</listitem>
+		     				</itemizedlist>
+     					</listitem>
+     				</itemizedlist>
+     			</listitem>
+     		</itemizedlist>	     		
+		</para>
+	</note>
+</chapter>

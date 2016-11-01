@@ -1,0 +1,72 @@
+<chapter id="tiles_integration_config">
+	<title>logback.xml</title>
+	Logback 플러그인 설치시 기본으로 설정되는 logback.xml의 설정정보에 대해서 알아보고자 한다.
+	
+	<para>
+		다음은 60초 간격으로 해당 설정 파일의 변경여부를 체크하고 변경된 설정파일을 적용하도록 한 설정이다.
+      	<programlisting language="xml"><![CDATA[
+    <]]><emphasis role="bold">configuration scan="true" scanPeriod="60 seconds"</emphasis><![CDATA[>
+    ...
+    </configuration>]]></programlisting>
+	</para>
+	<para>
+		다음은 loggingCondition이라는 property를 이용하여 설정된 값에 따라 appender 설정을 변경하는 설정이다. 
+		해당 appender에서는 로그 메시지와 함께 MDC에 있는 사용자 아이디, IP, 요청 URL 정보를 출력한다. 
+      	<programlisting language="xml"><![CDATA[
+    <property name="loggingCondition" value="ID"/>
+        <]]><emphasis role="bold">if condition='property("loggingCondition").equals("ID")'</emphasis><![CDATA[>
+            <]]><emphasis role="bold">then</emphasis><![CDATA[>
+                <!-- separate logging using user ID-->
+                <appender name="file" class="ch.qos.logback.classic.sift.SiftingAppender">
+                    <discriminator>
+                        <key>userId</key>
+                        <defaultValue>guest</defaultValue>
+                    </discriminator>
+                    <sift>
+                        <appender name="id-${userId}" class="ch.qos.logback.core.FileAppender">
+                            <file>userId/${userId}.log</file>
+                            <encoder>
+                                <pattern>[%-5level] %d{yyyy-MM-dd HH:mm:ss} %logger %n%msg%n userId:%X{userId},clientIP:%X{remoteHost},requestURL:%X{requestURL}%n</pattern>
+                            </encoder>
+                        </appender>
+                    </sift>
+                </appender>
+            <]]><emphasis role="bold">/then</emphasis><![CDATA[>
+            <]]><emphasis role="bold">else</emphasis><![CDATA[>
+                <]]><emphasis role="bold">if condition='property("loggingCondition").equals("IP")'</emphasis><![CDATA[>
+                    <then>
+                    <!-- separate logging using client IP-->
+                    <appender name="file" class="ch.qos.logback.classic.sift.SiftingAppender">
+                        <discriminator>
+                            <key>remoteHost</key>
+                            <defaultValue>unknownHost</defaultValue>
+                        </discriminator>
+                        <sift>
+                            <appender name="ip-${remoteHost}" class="ch.qos.logback.core.FileAppender">
+                                <file>ip/${remoteHost}.log</file>
+                                <encoder>
+                                    <pattern>[%-5level] %d{yyyy-MM-dd HH:mm:ss} %logger %n%msg%n userId:%X{userId},clientIP:%X{remoteHost},requestURL:%X{requestURL}%n</pattern>
+                                </encoder>
+                            </appender>
+                        </sift>
+                    </appender>
+                </then>
+    			
+                <]]><emphasis role="bold">else</emphasis><![CDATA[>
+                    <!-- default daily rolling -->
+                    <appender name="file" class="ch.qos.logback.core.rolling.RollingFileAppender">
+                        <file>currentLog.log</file>
+                        <rollingPolicy class="ch.qos.logback.core.rolling.TimeBasedRollingPolicy">
+                            <fileNamePattern>logs/logFile.%d{yyyy-MM-dd HH.mm.ss}.log.zip</fileNamePattern>
+                            <maxHistory>30</maxHistory>
+                        </rollingPolicy>
+                        <encoder>
+                            <pattern>[%-5level] %d{yyyy-MM-dd HH:mm:ss} %logger %n%msg%n userId:%X{userId},clientIP:%X{remoteHost},requestURL:%X{requestURL}%n</pattern>
+                        </encoder>
+                    </appender>
+                <]]><emphasis role="bold">/else</emphasis><![CDATA[>
+            </if>
+        <]]><emphasis role="bold">/else</emphasis><![CDATA[>
+    </if>]]></programlisting>
+	</para>
+</chapter>

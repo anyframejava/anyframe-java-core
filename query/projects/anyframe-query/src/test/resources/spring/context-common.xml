@@ -1,0 +1,50 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-2.5.xsd">
+	
+    <bean id="dataSource" class="org.apache.commons.dbcp.BasicDataSource" destroy-method="close">
+        <property name="driverClassName" value="oracle.jdbc.driver.OracleDriver"/>
+        <property name="url" value="jdbc:oracle:thin:@server.ip:1521:xe"/>
+        <property name="username" value="athena"/>
+        <property name="password" value="athena"/>
+    </bean> 
+
+<!-- 
+    <bean id="dataSource" class="org.apache.commons.dbcp.BasicDataSource" destroy-method="close">
+        <property name="driverClassName" value="oracle.jdbc.driver.OracleDriver"/>
+        <property name="url" value="jdbc:oracle:thin:@localhost:1521:oracle"/>
+        <property name="username" value="system"/>
+        <property name="password" value="manager"/> 
+    </bean>   
+    
+	<bean id="dataSource" class="org.apache.commons.dbcp.BasicDataSource" destroy-method="close">
+        <property name="driverClassName" value="net.sf.log4jdbc.DriverSpy"/>
+        <property name="url" value="jdbc:log4jdbc:oracle:thin:@server.ip:1521:xe"/>
+        <property name="username" value="athena"/>
+        <property name="password" value="athena"/>
+    </bean>	      
+    
+    DB2
+    <bean id="dataSource" class="org.apache.commons.dbcp.BasicDataSource" destroy-method="close">
+        <property name="driverClassName" value="com.ibm.db2.jcc.DB2Driver"/>
+        <property name="url" value="jdbc:db2://trixie:50000/data"/>
+        <property name="username" value="admin"/>
+        <property name="password" value="trixie0"/>
+    </bean>     
+	  -->        	 
+	<bean class="org.springframework.context.support.ResourceBundleMessageSource"
+		id="messageSource">
+		<property name="basenames">
+			<list>
+				<value>org/anyframe/query/message/query</value>
+				<value>org/anyframe/util/properties/message/properties</value>
+			</list>
+		</property>
+		<!-- 
+		<property name="cacheSeconds">
+			<value>60</value>
+		</property>
+		 -->
+	</bean>	
+</beans>	

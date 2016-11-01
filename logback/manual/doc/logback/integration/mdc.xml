@@ -1,0 +1,61 @@
+<chapter id="logback_integration_mdc">
+	<title>MDC(Mapped Diagnostic Context)</title>
+	<para>Request 또는 사용자별로 특정한 정보를 로그로 남기기 위해서 사용할 수 있는것이 MDC이다. 
+	MDC는 Mapped Diagnostic Context의 약자로 쓰레드 별로 존재하는 Map과 유사한 객체이다. 
+	하나의 request를 처리하기 위해서 thread를 사용하므로 이 MDC를 이용함으로써 사용자정보를 남길 수 있고 Logback은 MDC를 이용한 다양한 기능을 제공한다.
+	일반적인 web 환경의 경우 ServeltFilter를 이용하여 해당 MDC의 정보를 관리하면 좀더 손쉽게 해당정보를 관리할 수 있다. 
+	</para>
+	
+	<para>
+	다음은 ServletFilter 를 이용하여 MDC의 정보를 기록하는 MDCServletFilter 클래스이다. 
+	요청처리전 requst와 session 정보를 이용하여 필요한 정보를 MDC에 넣고 요청이 처리가 완료되면 MDC의 값을 clear 한다. 
+	<programlisting language="java"><![CDATA[
+    public class MDCServletFilter implements Filter{
+
+        public void doFilter(ServletRequest request, ServletResponse response,
+            FilterChain chain) throws IOException, ServletException {
+            ]]><emphasis role="bold">insertIntoMDC(request)</emphasis><![CDATA[;
+            try{
+                chain.doFilter(request, response); 
+            }finally{
+                ]]><emphasis role="bold">clearMDC()</emphasis><![CDATA[;
+            }	
+        }	
+		
+        private void insertIntoMDC(ServletRequest request){
+            MDC.put(REMOTE_HOST_MDC_KEY, request.getRemoteHost());
+		
+            if (request instanceof HttpServletRequest){
+                HttpServletRequest httpServletRequest = (HttpServletRequest) request;
+			
+                StringBuffer requestURL = httpServletRequest.getRequestURL();
+                if (requestURL != null) {
+                    MDC.put(REQUEST_URL_MDC_KEY, requestURL.toString());
+		    	}
+                HttpSession session = httpServletRequest.getSession();
+		    
+                if (session != null && session.getAttribute(USER_ID_MDC_KEY) != null){
+                    MDC.put(USER_ID_MDC_KEY, (String)session.getAttribute(USER_ID_MDC_KEY));
+                }
+		    
+            }		
+        }
+    ...]]></programlisting>
+	<emphasis role="bold">
+      주의할 점은 필터를 이용하여 MDC에 기록한 값은 처리가 request 처리가 끝난 후 반드시 clear를 해줘야 한다는 점이다.
+	</emphasis>
+	</para>
+	
+	<para>
+	MDCServletFilter는 플러그인 설치시 web.xml에 등록이 된다.
+	<programlisting language="xml"><![CDATA[
+    <filter>
+        <filter-name>mdcServletFilter</filter-name>
+        <filter-class>....logback.filter.MDCServletFilter</filter-class>
+    </filter>
+    <filter-mapping>
+        <filter-name>mdcServletFilter</filter-name>
+        <url-pattern>*.do</url-pattern>
+    </filter-mapping>]]></programlisting> 	
+	</para>
+</chapter>

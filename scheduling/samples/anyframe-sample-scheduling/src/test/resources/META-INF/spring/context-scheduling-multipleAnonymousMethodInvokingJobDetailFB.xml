@@ -1,0 +1,62 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-2.5.xsd">
+
+	<bean id="scheduler" class="org.springframework.scheduling.quartz.SchedulerFactoryBean">
+		<property name="triggers">
+			<list>
+				<ref local="exportTrigger"/>
+				<ref local="importTrigger"/>
+			</list>
+		</property>
+		<property name="jobListeners">
+			<list>
+				<ref local="exportListener"/>
+				<ref local="importListener"/>
+			</list>		
+		</property>
+		<property name="triggerListeners">
+			<list>
+				<ref local="importTriggerListener"/>
+			</list>		
+		</property>		
+	</bean>
+
+	<bean id="exportTrigger" class="org.springframework.scheduling.quartz.SimpleTriggerBean">
+		<property name="jobDetail">
+			<bean class="org.springframework.scheduling.quartz.MethodInvokingJobDetailFactoryBean">
+				<property name="targetObject" ref="exportService"/>
+				<property name="targetMethod" value="doExport"/>
+				<property name="jobListenerNames"><value>exportListener</value></property>
+						<property name="group" value="test"/>
+			</bean>
+		</property>
+		<property name="repeatInterval" value="1000"/>
+		<property name="repeatCount" value="1"/>
+		<property name="group" value="test"/>
+	</bean>
+
+	<bean id="importTrigger" class="org.springframework.scheduling.quartz.SimpleTriggerBean">
+		<property name="jobDetail">
+			<bean class="org.springframework.scheduling.quartz.MethodInvokingJobDetailFactoryBean">
+				<property name="targetObject" ref="importService"/>
+				<property name="targetMethod" value="doImport"/>
+				<property name="jobListenerNames"><value>importListener</value></property>
+						<property name="group" value="test"/>
+			</bean>
+		</property>
+		<property name="repeatInterval" value="1000"/>
+		<property name="repeatCount" value="1"/>
+		<property name="group" value="test"/>
+		<property name="triggerListenerNames"><value>importTriggerListener</value></property>
+	</bean>
+
+	<bean id="exportService" class="org.anyframe.sample.scheduling.QuartzTestBean"/>
+	<bean id="importService" class="org.anyframe.sample.scheduling.QuartzTestBean"/>
+	
+	<bean id="exportListener" class="org.anyframe.sample.scheduling.QuartzListener"/>
+	<bean id="importListener" class="org.anyframe.sample.scheduling.QuartzListener"/>
+	<bean id="importTriggerListener" class="org.anyframe.sample.scheduling.TriggerListener"/>
+
+</beans>

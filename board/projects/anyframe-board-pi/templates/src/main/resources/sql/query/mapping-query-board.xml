@@ -1,0 +1,112 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<queryservice xmlns="http://www.anyframejava.org/schema/query/mapping" 
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" 
+	xsi:schemaLocation="http://www.anyframejava.org/schema/query/mapping http://www.anyframejava.org/schema/query/mapping/anyframe-query-mapping-1.0.xsd ">
+
+  <queries>
+	<query id="create${BoardName}">
+		<statement>
+		<![CDATA[
+			INSERT INTO ${tableName} (#foreach(${colInfo} in ${allFields})
+${esc.n}				${colInfo.columnId}#if($foreach.hasNext), #end
+			#end${esc.n}) 
+			VALUES (#foreach(${colInfo} in ${allFields})
+${esc.n}				:vo.${colInfo.fieldId}#if($foreach.hasNext), #end
+			#end${esc.n})
+		]]>
+		</statement>
+	</query>
+		
+	<query id="update${BoardName}">
+		<statement>
+		<![CDATA[
+			UPDATE ${tableName}
+			SET#foreach(${colInfo} in ${allFields})
+			#if(${colInfo.columnId} == "CREATE_DTTM"|| ${colInfo.columnId} == "CREATE_ID" ||${colInfo.columnId} == "VIEW_COUNT" )
+			#else
+${esc.n}				${colInfo.columnId} = :vo.${colInfo.fieldId}#if($foreach.hasNext), #end
+			#end
+			#end 
+${esc.n}	
+			WHERE
+				POST_ID = :vo.postId 
+		]]>
+		</statement>
+	</query>
+	
+	<query id="remove${BoardName}" isDynamic="false">
+		<statement>
+		<![CDATA[
+			DELETE FROM ${tableName} 
+			WHERE 
+				POST_ID = ?
+		]]>
+		</statement>
+		<param type="VARCHAR"/>
+	</query>
+	
+	<query id="find${BoardName}ByPk" isDynamic="false">
+		<statement>
+		<![CDATA[
+			SELECT#foreach(${colInfo} in ${allFields})
+${esc.n}				${colInfo.columnId}#if($foreach.hasNext), #end
+			#end
+${esc.n}	
+			FROM  ${tableName} 
+			WHERE 
+				POST_ID = ?
+		]]>
+		</statement>
+		<param type="VARCHAR"/>
+		<result class="${packageName}.${boardName.toLowerCase()}.domain.${BoardName}">		
+		</result>											
+	</query>
+
+	<query id="find${BoardName}List" isDynamic="true">
+		<statement>
+		<![CDATA[
+			SELECT
+			#if(${boardInfo.useComment} == 'Y')${esc.n}				(SELECT COUNT(POST_COMMENT.COMMENT_ID) FROM POST_COMMENT WHERE ${tableName}.POST_ID = POST_COMMENT.POST_ID) COMMENT_COUNT,#end
+			#foreach(${colInfo} in ${allFields})
+			${esc.n}				${colInfo.columnId}#if($foreach.hasNext), #end
+			#end
+${esc.n}	
+			FROM ${tableName}
+			${esc.h}if ($keywordNum != "")			
+				WHERE 1=1	
+				${esc.h}if ($condition == "All" || $condition == "")
+					AND (
+					  #if(${boardInfo.useAnonymous} == 'N')CREATE_ID like :keywordStr or#end POST_ID like :keywordStr or  POST_TITLE like :keywordStr
+					)	
+				${esc.h}elseif($condition == "postId")
+					AND POST_ID like :keywordStr			
+				#if(${boardInfo.useAnonymous} == 'N')${esc.h}elseif($condition == "createId")
+					AND CREATE_ID like :keywordStr#end			
+				${esc.h}elseif($condition == "postTitle")
+					AND POST_TITLE like :keywordStr			
+				${esc.h}end
+			${esc.h}end			
+				order by							
+								CREATE_DTTM desc
+		]]>
+		</statement>
+		<result class="${packageName}.${boardName.toLowerCase()}.domain.${BoardName}">		
+		</result>				
+	</query>
+#if(${boardInfo.boardType} == 'L')
+
+	<query id="increase${BoardName}ViewCount" isDynamic="false">
+		<statement>
+		<![CDATA[
+			UPDATE ${tableName}
+			SET 
+				VIEW_COUNT = VIEW_COUNT + 1
+			WHERE
+				POST_ID = ?
+		]]>
+		</statement>
+		<param type="VARCHAR"/>
+	</query>
+#end
+  </queries>
+</queryservice>

@@ -1,0 +1,379 @@
+	<chapter id="generic_implementation_use">
+	<title> Generic 서비스 사용 방법</title>
+		<para>Generic Service가 정의한 기능을 그대로 활용하는 방법과 원하는 기능을 추가로 구현해서 사용하는 두가지 방법을 제공한다.</para>
+	    
+		<section id="generic_implementation_use_bean">
+			<title>Generic 서비스 그대로 활용</title>
+			<para>제공되는 Generic 서비스를 재정의하지 않고 사용하는 방법이다. Container에 제공되는 설정 메타데이터 내에 정의해주고 사용하면 된다.</para>
+			<itemizedlist>
+		
+				<listitem>
+					<para>DAO 속성 정의</para>
+					<para>DAO Framework에 따른 정의 방식은 아래와 같다.</para>
+					<itemizedlist>
+		        		<listitem>
+		          			<para>다음은 Generic Plugin 설치로 추가된  Query Service DAO Framework 기반의 Spring 속성 정의 파일 context-generic.xml 의  일부이다.
+		          			      Query 서비스 기반의 경우 sessionFactory를 내부적으로 사용하기 때문에 inner bean으로 정의해준다.</para>
+		          			<programlisting language="java"><![CDATA[<bean id="genericGenreDao" ]]><emphasis role="bold">class="org.anyframe.generic.dao.query.GenericQueryDao</emphasis><![CDATA[">
+    <constructor-arg value="org.anyframe.plugin.generic.domain.GenericGenre" />
+    <property name="queryService" ref="queryService" />
+</bean>]]></programlisting>
+		        		</listitem>
+			
+		        		<listitem>
+		          			<para>Hibernate 기반의 경우
+		          			      sessionFactory와 dynamicHibernateService는 내부적으로 사용하기 때문에 inner bean으로 정의해준다.</para>
+		          			<programlisting language="java"><![CDATA[<bean id="genericHibernateGenreDao" ]]><emphasis role="bold">class="org.anyframe.generic.dao.hibernate.GenericHibernateDao</emphasis><![CDATA[">	
+    <constructor-arg value="org.anyframe.plugin.generic.domain.GenericGenre"/>   
+    <property name="sessionFactory" ref="sessionFactory"/>
+    <property name="dynamicHibernateService" ref="dynamicHibernateService" />
+</bean>]]></programlisting>
+		        		</listitem>
+		      		</itemizedlist>
+				</listitem>
+			
+				<listitem>
+					<para>Service 속성 정의</para> 
+					<para>다음은 Generic Plugin 설치로 추가된  Spring 속성 정의 파일 context-generic.xml 의  일부이다.
+						     정의해 놓은 DAO Bean을 inner bean으로 injection 한다.
+					</para>
+					<programlisting language="java"><![CDATA[<bean id="genericGenreService" ]]><emphasis role="bold">class="org.anyframe.generic.service.impl.GenericServiceImpl"</emphasis><![CDATA[>
+    <property name="genericDao" ref="genericGenreDao" />
+</bean>]]></programlisting>
+				</listitem>
+			
+			</itemizedlist>
+		</section>
+		
+		<section id="generic_implementation_use_extended">
+			<title>Generic 서비스 확장 활용</title>
+			<para>제공되는 Generic 서비스를 재정의해서 사용한다. DAO 와 Service 에 대해서 필요한 부분에 대해서 재정의해서 사용한다.</para>
+
+			<section id="generic_implementation_use_extended_dao">
+				<title>DAO 클래스</title>
+		
+				<para>도메인 객체를 기반으로 신규 생성, 단건 조회, 목록 조회, 삭제, 데이터 존재 여부 확인에 관한 데이터 접근 로직을 제공한다.</para>
+				
+				<informaltable>
+		        	<tgroup cols="3">
+		 				<colspec colnum="1" colname="col1" colwidth="1*"/>
+						<colspec colnum="2" colname="col2" colwidth="4*"/>
+						<colspec colnum="3" colname="col3" colwidth="5*"/>
+		          		<thead>
+							<row>
+								<entry align="center">리턴 값</entry>
+								<entry align="center">메소드</entry>
+								<entry align="center">역할</entry>
+								<entry align="center">지원여부</entry>
+							</row>
+			          	</thead>
+			
+			          	<tbody>
+			            	<row>
+			              		<entry>T</entry>
+			              		<entry>get(PK id)</entry>
+			              		<entry>단건조회</entry>
+								<entry>Query/Hibernate</entry>
+			            	</row> 
+			            	<row>
+			              		<entry>boolean</entry>
+			              		<entry>exists(PK id)</entry>
+			              		<entry>데이터 존재 여부 확인</entry>
+			              		<entry>Query/Hibernate</entry>
+			            	</row>
+			            	<row>
+			              		<entry>void</entry>
+			              		<entry>create(T object)</entry>
+			              		<entry>신규 생성</entry>
+			              		<entry>Query/Hibernate</entry>
+			            	</row>	
+			            	<row>
+			              		<entry>void</entry>
+			              		<entry>update(T object)</entry>
+			              		<entry>수정</entry>
+			              		<entry>Query/Hibernate</entry>
+			            	</row>	
+			            	<row>
+			              		<entry>void</entry>
+			              		<entry>remove(PK id)</entry>
+			              		<entry>삭제</entry>
+			              		<entry>Query/Hibernate</entry>
+			            	</row>	
+			            	<row>
+			              		<entry>Page</entry>
+			              		<entry>getPagingList(SearchVO searchVO)</entry>
+			              		<entry>페이징처리가 된 목록 조회</entry>
+			              		<entry>Query/Hibernate</entry>
+			            	</row>
+			            	<row>
+			              		<entry>Page</entry>
+			              		<entry>getPagingList(T object, int pageIndex)</entry>
+			              		<entry>페이징처리가 된 목록 조회</entry>
+			              		<entry>Query</entry>
+			            	</row>	
+			            	<row>
+			              		<entry>List</entry>
+			              		<entry>getList(SearchVO searchVO)</entry>
+			              		<entry>목록 조회</entry>
+			              		<entry>Query/Hibernate</entry>
+			            	</row>	
+			            	<row>
+			              		<entry>List</entry>
+			              		<entry>getList(T object, int pageIndex)</entry>
+			              		<entry>목록 조회</entry>
+			              		<entry>Query</entry>
+			            	</row>		
+						</tbody>
+					</tgroup>
+				</informaltable>  
+			
+				<itemizedlist>
+					<listitem>
+						<para><emphasis role="bold"><![CDATA[GenericDao]]></emphasis></para>
+						<para>DAO인터페이스로 <![CDATA[GenericDao<T, PK extends Serializable>]]>Class를 이용한다. 
+					                           여기서 T는 도메인 객체 타입으로 도메인 모델 클래스를 의미하고, PK는 도메인 객체의 Primary Key타입을 의미한다. 
+						                 다음은 GenericDao 클래스에 정의되어 있는 단건조회,데이터 존재여부 확인, 저장, 삭제, 목록 조회와 관련한 메소드이다.</para>
+					</listitem>
+					
+					<listitem>
+						<para><emphasis role="bold"><![CDATA[GenericQueryDao]]></emphasis></para>
+						<para>GenericDao 인터페이스 클래스를 구현하는 구현 클래스 중 하나로 QueryService를 DAO Framework으로 결정한 경우에 사용한다.
+						      DAO 구현 클래스에서 Query Service를 이용하기 위해 GenericQueryDao 클래스와 QueryDaoUtils 클래스를 사용한다.
+						      QueryDaoUtils는 Primary Key 정보를 알아내는 Utility 클래스다.
+						</para> 
+					</listitem>
+					
+					<listitem>
+						<para><emphasis role="bold"><![CDATA[GenericHibernateDao]]></emphasis></para>
+						<para>GenericDao 인터페이스 클래스를 구현하는 구현 클래스 중 하나로 Hibernate를 DAO Framework으로 결정한 경우에 사용한다.
+						      Hibernate Framework 사용 시 목록 조회의 경우 개별 인자들을 포함하고 있는 VO 유형의 객체를 전달하는 방식의 조회 서비스는 제공하지 않는다.
+						</para> 
+					</listitem>
+				</itemizedlist>
+
+			   <para><emphasis role="bold"><![CDATA[<Samples>]]></emphasis></para>
+	
+				<para>
+					DAO Framework으로 Query Service를 사용하기 위해 GenericQueryDao클래스를 상속받은 DAO 클래스를 생성한다.
+					Query Service를 사용하기 위한 configuration은 
+					<ulink url="http://dev.anyframejava.org/docs/anyframe/plugin/optional/query/1.0.0/reference/htmlsingle/query.html#query_configuration">Query Service 설정하기</ulink>를 
+					Hibernate Service를 사용하기 위한 configuration은 
+					<ulink url="http://dev.anyframejava.org/docs/anyframe/plugin/optional/hibernate/1.0.0/reference/htmlsingle/hibernate.html#hibernate_hibernate_configuration">Hibernate Service 설정하기</ulink>를 참조하도록 한다.
+				</para>
+				<itemizedlist>
+					<listitem>
+						<para>
+							다음은 Query Service를 이용한 DAO 구현 클래스의 일부분이다. 
+						          오버라이드 하지 않은 메소드(단건조회, 데이터 존재여부 확인, 수정, 삭제)의 기능은 GenericQueryDao에 구현된 형태 그대로 사용한다.
+						    create 메소드는 오버라이드는 했으나 GenericQueryDao의 구문을 그대로 사용하고 있다. getPagingList 메소드는 오버라이드해서 구현했다.
+						    GenericQueryDao에서 제공하지 않는 Genre별 Movie 건수 구하는 신규 데이터 접근 로직을 구현하고자 countMovieListByGenre메소드를 추가 작성하였다.
+							<programlisting language="java"><![CDATA[@Repository("genericMovieDao")
+public class MovieDao ]]><emphasis role="bold"><![CDATA[extends GenericQueryDao<GenericMovie,String>]]></emphasis><![CDATA[ {
+
+    @Inject
+    IQueryService queryService;
+
+    @PostConstruct
+    public void initialize() {
+    
+        //Domain객체에 대해서 persistentClass에 세팅
+        super.setPersistentClass(GenericMovie.class);
+        super.setQueryService(queryService);
+    }
+    
+    ]]><emphasis role="bold">public void create(GenericMovie genericMovie) throws Exception</emphasis><![CDATA[{
+    	genericMovie.setMovieId("MV-" + System.currentTimeMillis());
+        create("GenericMovie", genericMovie);
+    }
+
+    ]]><emphasis role="bold">public Page getPagingList(Movie movie, int pageIndex) throws Exception</emphasis><![CDATA[{
+        return this.findListWithPaging("Movie", movie, pageIndex, pageSize,
+            pageUnit);
+    }
+    
+    ]]><emphasis role="bold">public int countMovieListByGenre(String genreId) throws Exception</emphasis><![CDATA[{
+    중략...	
+    }
+    
+}]]></programlisting>
+							</para>
+						</listitem>
+					
+						<listitem>
+							<para>Hibernate Framework를 이용한 DAO 구현 클래스의 일부분이다. 
+							              오버라이드 하지 않은 메소드(단건조회, 데이터 존재여부 확인, 수정, 삭제)의 기능은 GenericHibernateDao에 구현된 형태 그대로 사용한다.
+							     create 메소드는 오버라이드해서 구현한 경우이며 
+						         GenericHibernateDao에서 제공하지 않는 Genre별 Movie 건수 구하는 신규 데이터 접근 로직을 구현하고자 countMovieListByGenre메소드를 추가작성하였다.
+								<programlisting language="java"><![CDATA[@Repository("genericHibernateMovieDao") 
+public class MovieDao ]]><emphasis role="bold"><![CDATA[extends GenericHibernateDao<GenericMovie,String>]]></emphasis><![CDATA[{
+	
+    @Inject
+    SessionFactory sessionFactory;
+	
+    @Inject
+    IDynamicHibernateService dynamicHibernateService;
+	
+    @PostConstruct
+    public void initialize(){
+        super.setSessionFactory(sessionFactory);
+        super.setPersistentClass(GenericMovie.class); 
+        super.setDynamicHibernateService(dynamicHibernateService);
+    }	
+	
+    ]]><emphasis role="bold">public void create(GenericMovie genericMovie) throws Exception</emphasis><![CDATA[ {
+        super.getHibernateTemplate().save(genericMovie); 
+    }	
+    
+    ]]><emphasis role="bold">public int countMovieListByGenre(String genreId) throws Exception</emphasis><![CDATA[{
+    중략...	
+    }
+}]]></programlisting>
+							</para>
+						</listitem>
+					</itemizedlist>
+				
+			</section>
+ 
+			
+			<section id="generic_implementation_service">
+				<title>Service 클래스 생성</title>
+				<para>
+					Service 클래스의 경우 Generic Service에서 제공하는 기본 CRUD 메소드 이외의 기능을 제공하는 경우나 
+					기본 CRUD 메소드를 확장하여 사용해야 하는 경우 Service 구현 클래스를 생성하여 사용하도록 하고 기본 CRUD
+					메소드를 그대로 사용하는 경우 Service 구현 클래스를 생성하지 않는다.
+				</para>
+				<para>제공하는 메소드</para>
+				<informaltable>
+		        	<tgroup cols="3">
+		 				<colspec colnum="1" colname="col1" colwidth="1*"/>
+						<colspec colnum="2" colname="col2" colwidth="4*"/>
+						<colspec colnum="3" colname="col3" colwidth="5*"/>
+		          		<thead>
+							<row>
+								<entry align="center">리턴 값</entry>
+								<entry align="center">메소드</entry>
+								<entry align="center">역할</entry>
+							</row>
+			          	</thead>
+			
+			          	<tbody>
+			            	<row>
+			              		<entry>T</entry>
+			              		<entry>get(PK id)</entry>
+			              		<entry>단건조회</entry>
+			            	</row>
+			            	<row>
+			              		<entry>boolean</entry>
+			              		<entry>exists(PK id)</entry>
+			              		<entry>데이터 존재 여부 확인</entry>
+			            	</row>
+			            	<row>
+			              		<entry>void</entry>
+			              		<entry>create(T object)</entry>
+			              		<entry>신규 생성</entry>
+			            	</row>	
+			            	<row>
+			              		<entry>void</entry>
+			              		<entry>update(T object)</entry>
+			              		<entry>수정</entry>
+			            	</row>	
+			            	<row>
+			              		<entry>void</entry>
+			              		<entry>remove(PK id)</entry>
+			              		<entry>삭제</entry>
+			            	</row>	
+			            	<row>
+			              		<entry>Page</entry>
+			              		<entry>getPagingList(SearchVO searchVO)</entry>
+			              		<entry>페이징처리가 된 목록 조회</entry>
+			            	</row>
+			            	<row>
+			              		<entry>Page</entry>
+			              		<entry>getPagingList(T object, int pageIndex)</entry>
+			              		<entry>페이징처리가 된 목록 조회</entry>
+			            	</row>	
+			            	<row>
+			              		<entry>List</entry>
+			              		<entry>getList(SearchVO searchVO)</entry>
+			              		<entry>목록 조회</entry>
+			            	</row>	
+			            	<row>
+			              		<entry>List</entry>
+			              		<entry>getList(T object, int pageIndex)</entry>
+			              		<entry>목록 조회</entry>
+			            	</row>		
+						</tbody>
+					</tgroup>
+				</informaltable> 
+				
+				<itemizedlist>
+					<listitem>
+						<para>서비스 인터페이스는 <![CDATA[GenericService<T, PK extends Serializable>]]>를 사용한다.
+						GenericService에는 신규 생성, 수정, 단건 조회, 목록 조회, 삭제, 데이터 존재 여부 확인에 관한 메소드가 선언되어 있다.
+						여기서 T는 도메인 객체 타입으로 도메인 모델 클래스를 의미하고, PK는 도메인 객체의 Primary Key 타입을 의미한다.</para>
+					</listitem>
+					
+					<listitem>
+						<para>정의된 도메인 객체를 기반으로 신규 생성, 단건 조회, 목록 조회, 삭제, 데이터 존재 여부 확인에 관한 비즈니스 로직을 구현한다.</para>
+					</listitem>
+					
+					<listitem>
+						<para>서비스 구현 클래스는 GenericServiceImpl을 사용하며 서비스 인터페이스를 상속받아 오버라이드한다.</para>
+					</listitem>
+				</itemizedlist>
+		
+	
+				<para><emphasis role="bold"><![CDATA[<Samples>]]></emphasis></para>
+	
+				<itemizedlist>
+					<listitem>
+						<para>
+							GenericService에 선언된 메소드 중 생성과 목록조회 메소드만 오버라이드 한 경우이다. 
+							나머지 단건 조회, 데이터 존재 여부 확인, 저장, 삭제, 목록 조회 기능은 GenericService에 정의된 그대로 사용한다.
+							GenericService에서 제공하지 않는 Genre별 Movie 건수 구하는 신규 비즈니스 로직을 구현하고자 countMovieListByGenre메소드를 추가하였다.
+							<programlisting language="java"><![CDATA[public interface MovieService ]]><emphasis role="bold"><![CDATA[extends GenericService<GenericMovie, String>]]></emphasis><![CDATA[ {
+	
+    public void create(GenericMovie movie) throws Exception;
+	  
+    public Page getPagingList(Movie movie, int pageIndex) throws Exception;
+	    
+    public int countMovieListByGenre(String genreId) throws Exception;
+	    
+    }]]></programlisting>
+						</para>
+					</listitem>
+					
+					<listitem>
+						<para>
+							GenericServiceImpl에 선언된 메소드 중 생성과 목록조회 메소드만 오버라이드 한 경우이다. 
+							나머지 단건 조회, 데이터 존재 여부 확인, 저장, 삭제, 목록 조회 기능은 GenericServiceImpl에 정의된 그대로 사용한다.
+							GenericServiceImpl에서 제공하지 않는 Genre별 Movie 건수 구하는 신규 비즈니스 로직을 구현하고자 countMovieListByGenre메소드를 추가 작성하였다.
+							<programlisting language="java"><![CDATA[@Service("genericMovieService")
+public class MovieServiceImpl ]]><emphasis role="bold"><![CDATA[extends GenericServiceImpl<GenericMovie , String>]]></emphasis><![CDATA[{
+    implements MovieService {
+    
+    @Inject
+    @Named("genericMovieDao")
+    MovieDao genericMovieDao;
+
+    @PostConstruct
+    public void initialize() { 
+        super.setGenericDao(MovieDao);
+    }
+
+    ]]><emphasis role="bold">public void create(GenericMovie genericMovie) throws Exception</emphasis><![CDATA[ {
+        genericMovieDao.create(genericMovie);
+    }
+
+    ]]><emphasis role="bold">public int countMovieListByGenre(String genreId) throws Exception</emphasis><![CDATA[ {
+        int count = genericMovieDao.countMovieListByGenre(genreId);
+        return count;
+    }
+
+}]]></programlisting>
+						</para>
+					</listitem>
+				</itemizedlist>
+			</section>
+		</section>
+</chapter>

@@ -1,0 +1,152 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE queryservice PUBLIC "-//ANYFRAME//DTD QUERYSERVICE//EN"
+"http://www.anyframejava.org/dtd/anyframe-core-query-mapping-3.1.dtd">
+
+<queryservice>
+	<table-mapping>
+		<!--  회원 테이블과 클래스 UserVO 매핑 -->
+		<table name="USERS"
+			class="org.anyframe.transaction.sample.user.service.UserVO">
+			<field-mapping>
+				<dbms-column>USER_ID</dbms-column>
+				<class-attribute>userId</class-attribute>
+			</field-mapping>
+			<field-mapping>
+				<dbms-column>USER_NAME</dbms-column>
+				<class-attribute>userName</class-attribute>
+			</field-mapping>			
+			<field-mapping>
+				<dbms-column>PASSWORD</dbms-column>
+				<class-attribute>password</class-attribute>
+			</field-mapping>
+			<field-mapping>
+				<dbms-column>SSN</dbms-column>
+				<class-attribute>ssn</class-attribute>
+			</field-mapping>
+			<field-mapping>
+				<dbms-column>SL_YN</dbms-column>
+				<class-attribute>slYn</class-attribute>
+			</field-mapping>										
+			<field-mapping>
+				<dbms-column>BIRTH_DAY</dbms-column>
+				<class-attribute>birthDay</class-attribute>
+			</field-mapping>
+			<field-mapping>
+				<dbms-column>AGE</dbms-column>
+				<class-attribute>age</class-attribute>
+			</field-mapping>
+			<field-mapping>
+				<dbms-column>CELL_PHONE</dbms-column>
+				<class-attribute>cellPhone</class-attribute>
+			</field-mapping>
+			<field-mapping>
+				<dbms-column>ADDR</dbms-column>
+				<class-attribute>addr</class-attribute>
+			</field-mapping>												
+			<field-mapping>
+				<dbms-column>EMAIL</dbms-column>
+				<class-attribute>email</class-attribute>
+			</field-mapping>
+			<field-mapping>
+				<dbms-column>EMAIL_YN</dbms-column>
+				<class-attribute>emailYn</class-attribute>
+			</field-mapping>
+			<field-mapping>
+				<dbms-column>IMAGE_FILE</dbms-column>
+				<class-attribute>imageFile</class-attribute>
+			</field-mapping>
+			<field-mapping>
+				<dbms-column>REG_DATE</dbms-column>
+				<class-attribute>regDate</class-attribute>
+			</field-mapping>												
+			<primary-key>
+				<dbms-column>USER_ID</dbms-column>
+			</primary-key>
+		</table>
+	</table-mapping>
+	<queries>
+		<!--  Query : 검색 조건에 기반하여 회원 목록 조회 -->
+		<query id="getUserList" isDynamic="true">
+			<statement>
+				SELECT USER_ID, USER_NAME, SSN, CELL_PHONE, EMAIL
+				FROM USERS
+				#if ($userId) 
+				WHERE USER_ID like :userId 
+				#else
+				WHERE USER_NAME like :userName 
+				#end  
+				ORDER BY USER_NAME
+			</statement>
+			<param name="userId" type="VARCHAR"/>
+			<param name="userName" type="VARCHAR"/>			
+			<result class="org.anyframe.sample.transaction.user.service.UserVO" />			
+		</query>
+		<query id="getUserList1" isDynamic="false">
+			<statement>
+				SELECT USER_ID, USER_NAME, SSN, CELL_PHONE, EMAIL
+				FROM USERS
+				WHERE USER_ID like ?
+				ORDER BY USER_NAME
+			</statement>
+			<param type="VARCHAR"/>			
+			<result class="org.anyframe.sample.transaction.user.service.UserVO" />			
+		</query>		
+		<!--  Query : 신규 회원 등록 -->
+		<query id="addUser" isDynamic="false">
+			<statement>
+				INSERT INTO USERS 
+				(USER_ID, USER_NAME, PASSWORD, ROLE, SSN, SL_YN, BIRTH_DAY, AGE, CELL_PHONE, ADDR, EMAIL, EMAIL_YN, IMAGE_FILE, REG_DATE) 
+				VALUES (?, ?, ?, 'user', ?, ?, ?, ?, ?, ?, ?, ?, ?, sysdate)
+			</statement>
+			<param type="VARCHAR" />
+			<param type="VARCHAR" />
+			<param type="VARCHAR" />
+			<param type="VARCHAR" />
+			<param type="CHAR" />
+			<param type="VARCHAR" />
+			<param type="NUMERIC" />
+			<param type="VARCHAR" />
+			<param type="VARCHAR" />
+			<param type="VARCHAR" />
+			<param type="CHAR" />
+			<param type="VARCHAR" />
+		</query>	
+		<!--  Query : 회원 정보 수정 -->	
+		<query id="updateUser" isDynamic="false">
+			<statement>
+				UPDATE USERS 
+				SET USER_NAME = ?, SSN = ?, SL_YN = ?, BIRTH_DAY = ?, AGE = ?, CELL_PHONE = ?, ADDR = ?, EMAIL = ?, EMAIL_YN = ?
+				WHERE USER_ID = ?
+			</statement>
+			<param type="VARCHAR" />
+			<param type="VARCHAR" />
+			<param type="CHAR" />
+			<param type="VARCHAR" />
+			<param type="NUMERIC" />
+			<param type="VARCHAR" />
+			<param type="VARCHAR" />
+			<param type="VARCHAR" />
+			<param type="CHAR" />
+			<param type="VARCHAR" />			
+		</query>	
+		<!--  Query : 회원 ID 중복 등록 여부 체크 -->	
+		<query id="checkDuplication" isDynamic="false">
+			<statement>
+				SELECT COUNT(*) rowcount
+				FROM USERS
+				WHERE USER_ID = ?
+			</statement>
+			<param type="VARCHAR" />
+		</query>	
+		<!--  Query : 회원 상세 정보 조회 -->
+		<query id="getUser" isDynamic="false">
+			<statement>
+				SELECT USER_ID, USER_NAME, PASSWORD, SSN, SL_YN, BIRTH_DAY, AGE, CELL_PHONE, ADDR, EMAIL, EMAIL_YN, IMAGE_FILE, REG_DATE
+				FROM USERS
+				WHERE USER_ID = ?
+			</statement>
+			<param type="VARCHAR" />
+			<result class="org.anyframe.sample.transaction.user.service.UserVO" />			
+		</query>						
+	</queries>
+</queryservice>

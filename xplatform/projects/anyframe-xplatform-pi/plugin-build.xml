@@ -1,0 +1,59 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<plugin name="xplatform"
+	description="XPLATFORM plugin consists of sample code that provides basic guidelines on how to use XPLATFORM connection modules with basic Spring MVC architecture.">
+	<groupId>org.anyframe.plugin</groupId>
+	<artifactId>anyframe-xplatform-pi</artifactId>
+	<version>1.0.0</version>
+	<dependent-plugins>
+		<dependent-plugin name="query" version="2.0.0&gt;*" />
+	</dependent-plugins>
+	<resources>
+		<resource dir="src/main/java" filtered="true" packaged="true">
+			<include name="**/*.java" />
+		</resource>
+		<resource dir="src/main/resources" filtered="true" packaged="false">
+			<include name="**/*.xml" />
+		</resource>
+		<resource dir="src/test/java" filtered="true" packaged="true">
+			<include name="**/*.java" />
+		</resource>
+		<resource dir="src/test/resources" filtered="true" packaged="false">
+			<include name="**/*.xml" />
+		</resource>
+		<resource dir="src/main/webapp/xplatform" filtered="false"
+			packaged="false">
+			<exclude name="**/default_typedef.xml" />
+		</resource>
+		<resource dir="src/main/webapp/xplatform" filtered="true"
+			packaged="false">
+			<include name="**/default_typedef.xml" />
+		</resource>
+	</resources>
+	<build>
+		<filesets>
+			<fileset dir="src/main/java" filtered="true" packaged="true">
+				<include name="**/org/anyframe/plugin/xplatform/**/*.java" />
+			</fileset>
+			<fileset dir="src/main/resources" filtered="true" packaged="false">
+				<include name="**/*xplatform*.xml" />
+			</fileset>
+			<fileset dir="src/main/webapp" filtered="false" packaged="false">
+				<include name="**/xplatform/**/*.*" />
+				<include name="**/anyframe.jsp" />
+				<exclude name="**/default_typedef.xml" />
+			</fileset>
+			<fileset dir="src/main/webapp/xplatform" filtered="true"
+				packaged="false">
+				<include name="**/default_typedef.xml" />
+			</fileset>
+			<fileset dir="db" filtered="false" packaged="false">
+				<include name="**/resources/**/*.xml" />
+			</fileset>
+		</filesets>
+	</build>
+	<samples>true</samples>
+	<interceptor>
+		<class></class>
+	</interceptor>
+	<essential>false</essential>
+</plugin>

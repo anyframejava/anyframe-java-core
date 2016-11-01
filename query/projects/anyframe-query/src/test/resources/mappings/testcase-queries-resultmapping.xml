@@ -1,0 +1,140 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE queryservice PUBLIC "-//ANYFRAME//DTD QUERYSERVICE//EN"
+"http://www.anyframejava.org/dtd/anyframe-core-query-mapping-3.2.dtd">
+<queryservice>
+	<table-mapping>
+		<table name="TB_CODE" class="org.anyframe.query.vo.CodeVO">
+			<field-mapping>
+				<dbms-column>GROUP_ID</dbms-column>
+				<class-attribute>groupId</class-attribute>
+			</field-mapping>		
+			<field-mapping>
+				<dbms-column>CODE_ID</dbms-column>
+				<class-attribute>codeId</class-attribute>
+			</field-mapping>
+			<field-mapping>
+				<dbms-column>CODE_NAME</dbms-column>
+				<class-attribute>codeNm</class-attribute>
+			</field-mapping>
+			<field-mapping>
+				<dbms-column>CODE_DESC</dbms-column>
+				<class-attribute>codeDescription</class-attribute>
+			</field-mapping>
+			<field-mapping>
+				<dbms-column>CODE_USE_YN</dbms-column>
+				<class-attribute>codeUsage</class-attribute>
+			</field-mapping>							
+			<primary-key>
+				<dbms-column>GROUP_ID</dbms-column>
+				<dbms-column>CODE_ID</dbms-column>
+			</primary-key>
+		</table>
+	</table-mapping>
+	<queries>
+		<query id="findCustomerWithResultMapping" isDynamic="false">
+			<statement>
+				<![CDATA[
+				select NAME, ADDRESS from TB_CUSTOMER where SSNO like ?
+				]]>
+			</statement>
+			<param type="VARCHAR" />
+			<result class="org.anyframe.query.vo.Customer">
+				<result-mapping column="NAME" attribute="nm" />
+				<result-mapping column="ADDRESS" attribute="addr" />
+			</result>
+		</query>
+		<query id="findCustomerWithResult" isDynamic="false">
+			<statement>
+				<![CDATA[
+				select * from TB_CUSTOMER where SSNO like ?
+				]]>
+			</statement>
+			<param type="VARCHAR" />
+			<result length="2" class="org.anyframe.query.vo.Customer" />
+		</query>
+		<query id="findCustomerWithZeroLength" isDynamic="false">
+			<statement>
+				<![CDATA[
+				select * from TB_CUSTOMER where SSNO like ?
+				]]>
+			</statement>
+			<param type="VARCHAR" />
+			<result class="org.anyframe.query.vo.Customer" />
+		</query>
+
+		<query id="findWithTableMapping" isDynamic="false">
+			<statement>
+				<![CDATA[
+				select * from TB_CODE
+				]]>
+			</statement>
+			<result class="org.anyframe.query.vo.CodeVO" />
+		</query>
+
+		<query id="findWithLocalResultMapping" isDynamic="false">
+			<statement>
+				<![CDATA[
+  				select grp.GROUP_ID, grp.GROUP_NAME, cd.CODE_ID, cd.CODE_NAME, cd.CODE_DESC, cd.CODE_USE_YN
+  				from TB_CODE_GROUP grp, TB_CODE cd
+  				where grp.GROUP_ID = cd.GROUP_ID and cd.GROUP_ID = ? 
+  				]]>
+			</statement>
+			<param type="VARCHAR" />
+			<result
+				class="org.anyframe.query.vo.LocalResultMappingVO">
+				<result-mapping attribute="groupID" column="GROUP_ID" />
+				<!-- result-mapping attribute="groupName"
+					column="GROUP_NAME" /-->
+				<result-mapping attribute="codeID" column="CODE_ID" />
+				<result-mapping attribute="codeName" column="CODE_NAME" />
+				<result-mapping attribute="codeDescription"
+					column="CODE_DESC" />
+				<result-mapping attribute="codeUseYn"
+					column="CODE_USE_YN" />
+			</result>
+		</query>
+		
+		<query id="findWithOnlyResultClass" isDynamic="false">
+			<statement>
+				<![CDATA[
+				select * from TB_CODE_GROUP
+				]]>
+			</statement>
+			<result class="org.anyframe.query.vo.GroupCodeVO" />
+		</query>
+		
+		<query id="findWithHashMapAndCamelCased" isDynamic="false" isCamelCase="true">
+			<statement>
+				<![CDATA[
+				select * from TB_CODE
+				]]>
+			</statement>
+		</query>
+		
+		<query id="findWithHashMapAndNonCamelCased" isDynamic="false" mappingStyle="none">
+			<statement>
+				<![CDATA[
+				select * from TB_CODE
+				]]>
+			</statement>
+		</query>
+		
+		<query id="findWithCompositeResultMapping" isDynamic="false">
+			<statement>
+				<![CDATA[
+  				select grp.GROUP_ID, grp.GROUP_NAME, cd.CODE_ID, cd.CODE_NAME, cd.CODE_DESC, cd.CODE_USE_YN
+  				from TB_CODE_GROUP grp, TB_CODE cd
+  				where grp.GROUP_ID = cd.GROUP_ID and cd.GROUP_ID = ? 
+  				]]>
+			</statement>
+			<param type="VARCHAR" />
+			<result
+				class="org.anyframe.query.vo.LocalResultMappingVO">
+				<result-mapping column="{ GROUP_ID, GROUP_NAME }" attribute="{ group.groupId, group.codeNm }" />
+				<result-mapping attribute="codeID" column="CODE_ID" />
+				<result-mapping attribute="codeDescription" column="CODE_DESC" />
+			</result>
+		</query>
+	</queries>
+
+</queryservice>

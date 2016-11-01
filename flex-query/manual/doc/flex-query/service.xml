@@ -1,0 +1,460 @@
+<chapter id="flex_query_service">
+	<title>FlexService</title>
+	<para>
+		FlexService는 Flex를 사용하여 Web Application을 개발 할 때 도메인 클래스
+		기반의 Service 인터페이스/구현 클래스, Dao
+		인터페이스/구현클래스 등 기본 CRUD 메소드 기능이 모두 구현된 클래스를
+		직접 이용하거나 상속받아서 사용할 수 있는 기능을 제공하고 있다.	
+	</para>
+
+	<para>FlexService를 이용하여 개발 시 다음과 같은 특징을 갖는다.</para>
+
+	<itemizedlist>
+		<listitem>
+			<para>도메인 모델 객체를 중심으로 기본 CRUD 코드들을 쉽게 작성할 수
+				있다.</para>
+		</listitem>
+		<listitem>
+			<para>개발자가 Business Layer, Data Access Layer 코드를 작성하지 않고 FlexService에서 제공하는
+				Service 클래스와 Dao 클래스들을 그대로 재사용하여 기본 CRUD 기능을 구현할 수 있다.
+			</para>
+		</listitem>
+		<listitem>
+			<para>기본 CRUD 외의 부가 기능이 필요한 경우 FlexService에서 제공하는 클래스를 상속받아서
+				부가 기능에 대해서만 추가 기능을 구현할 수 있다.</para>
+		</listitem>
+	</itemizedlist>
+
+	<para>다음은 FlexService 사용 방법이다.</para>
+
+	<itemizedlist>
+		<listitem>
+			<para>Domain Model 클래스 생성</para>
+		</listitem>
+
+		<listitem>
+			<para>Service 클래스 생성</para>
+		</listitem>
+
+		<listitem>
+			<para>Dao 클래스 생성</para>
+		</listitem>
+
+		<listitem>
+			<para>ActionScript 생성</para>
+		</listitem>
+	</itemizedlist>
+
+	<section id="tech_riaflex_sec001">
+		<title>Domain Model 클래스 생성</title>
+		<para>
+			Domain Model 클래스는 FlexDataGrid를 상속받은 클래스로 작성한다.
+		</para>
+		<section id="tech_riaflex_sec001_sec001">
+			<title>BaseObject</title>
+
+			<para>
+				도메인 클래스 작성 시 FlexDataGrid를 상속받아서 구현한다. Flex UI에서 ArrayCollection 형태로 
+				전달되는 객체들의 row status값을 세팅할 수 있도록
+				아래와 같이 row status를 선언하고 있다.
+				<programlisting language="java">final public static int NORMAL_ROW = 0;
+    final public static int INSERT_ROW = 1;
+    final public static int UPDATE_ROW = 2;
+    final public static int DELETE_ROW = 3;
+	
+    protected int status = this.NORMAL_ROW;
+
+    public int getStatus() {
+        return status;
+    }
+
+    public void setStatus(int status) {
+        this.status = status;
+    }</programlisting>
+			</para>
+		</section>
+	</section>
+
+	<section id="tech_riaflex_sec002">
+		<title>Service 클래스 생성</title>
+		<para>
+			Service 클래스의 경우 FlexService에서 제공하는 기본 CRUD 메소드 이외의 기능을 제공하는
+			경우나 기본
+			CRUD 메소드를 확장하여
+			사용해야 하는 경우 Service 구현 클래스를 생성하여 사용하도록 하고 기본 CRUD
+			메소드를 그대로 사용하는 경우
+			Service 구현 클래스를 생성하지 않는다.
+		</para>
+		<section id="tech_riaflex_sec002_sec001">
+			<title>FlexService</title>
+
+			<para>
+				서비스 인터페이스는 FlexService를 사용한다. FlexService에는 신규 생성, 수정, 페이징 조회, 목록 조회, 삭제에 관한 메소드가
+				선언되어 있고 수정,삭제,신규생성을 한번에 처리하는  메소드도 선언되어 있다.
+				<programlisting language="java"><![CDATA[public interface FlexService {
+	
+    Page getPagingList(FlexSearchVO searchVO) throws Exception;
+	
+    List getList(FlexSearchVO searchVO) throws Exception;
+	
+    int create(FlexDataGrid flexDataGrid) throws Exception;
+	
+    int update(FlexDataGrid flexDataGrid) throws Exception;
+	
+    int remove(FlexDataGrid flexDataGrid) throws Exception;
+	
+    Map saveAll(ArrayList arrayList) throws Exception;
+}]]></programlisting>
+			</para>
+		</section>
+
+		<section id="tech_riaflex_sec002_sec002">
+			<title>FlexServiceImpl</title>
+
+			<para>
+				서비스 구현 클래스는 FlexServiceImpl를 사용하며 다음과 같은 구조로 되어 있다.
+				<programlisting language="java"><![CDATA[@Service("flexService")
+@Transactional(readOnly = false, rollbackFor = { Exception.class })
+@RemotingDestination
+public class FlexServiceImpl implements FlexService{
+
+    @Resource
+    private FlexDao flexDao;
+	
+    @RemotingInclude
+    public int create(FlexDataGrid flexDataGrid) throws Exception {
+        return flexDao.create(flexDataGrid);
+    }
+
+    @RemotingInclude
+    public List getList(FlexSearchVO searchVO) throws Exception {
+        return flexDao.getList(searchVO);
+    }
+
+    @RemotingInclude
+    public Page getPagingList(FlexSearchVO searchVO) throws Exception {
+        return flexDao.getPagingList(searchVO);
+    }
+
+    @RemotingInclude
+    public int remove(FlexDataGrid flexDataGrid) throws Exception {
+        return flexDao.remove(flexDataGrid);
+    }
+
+    @RemotingInclude
+    public Map saveAll(ArrayList arrayList) throws Exception {
+        return flexDao.saveAll(arrayList);
+    }
+
+    @RemotingInclude
+    public int update(FlexDataGrid flexDataGrid) throws Exception {
+        return flexDao.update(flexDataGrid);
+    }
+}]]></programlisting>
+			</para>
+		</section>
+
+		<section id="tech_riaflex_sec002_sec003">
+			<title>FlexService의 상속</title>
+
+			<para>
+				다음은 FlexService, FlexServiceImpl 상속받은 Service, ServiceImpl클래스이다.
+			</para>
+			<para>
+				서비스 인터페이스 클래스 예제이다.
+				<programlisting language="java">public interface CategoryService extends FlexService{
+
+    List&lt;Category&gt; getTree(FlexSearchVO searchVO) throws Exception;
+}</programlisting>
+			</para>
+
+			<para>
+				서비스 구현 클래스 예제이다.
+				<programlisting language="java">@Service("categoryService")
+@Transactional(readOnly = false, rollbackFor = { Exception.class })
+@RemotingDestination
+public class CategoryServiceImpl extends FlexServiceImpl implements CategoryService {
+	
+    @Resource(name = "categoryDao")
+    private CategoryDao categoryDao;
+
+    @SuppressWarnings("unchecked")
+    @RemotingInclude
+    @Transactional(readOnly = true)
+    public List<![CDATA[<Category>]]> getTree(FlexSearchVO searchVO) throws Exception {
+        return this.categoryDao.getTree(searchVO);
+    }
+}</programlisting>
+			</para>
+		</section>
+	</section>
+
+	<section id="tech_riaflex_sec003">
+		<title>Dao 클래스 생성</title>
+
+		<section id="tech_riaflex_sec003_sec001">
+			<title>FlexDao</title>
+
+			<para>FlexDao 클래스에 정의되어 있는 페이징조회,
+				저장, 삭제, 목록 조회와 관련한 메소드이다.
+				<programlisting language="java">public interface FlexDao {
+    Page getPagingList(FlexSearchVO searchVO) throws Exception;
+	
+    List getList(FlexSearchVO searchVO) throws Exception;
+	
+    int create(FlexDataGrid flexDataGrid) throws Exception;
+	
+    int update(FlexDataGrid flexDataGrid) throws Exception;
+	
+    int remove(FlexDataGrid flexDataGrid) throws Exception;
+	
+    Map saveAll(ArrayList arrayList) throws Exception;
+}</programlisting>
+			</para>
+		</section>
+
+		<section id="tech_riaflex_sec003_sec002">
+			<title>FlexDaoQueryImpl</title>
+			<para>
+				FlexDao 인터페이스 클래스를 구현하는 구현 클래스로 QueryService를 Dao Framework으로 결정한 경우에 사용한다.
+				Dao 구현 클래스에서 Query Service를 이용하기 위해 AbstractDao를 상속받아 사용한다. 
+			</para>
+			<para>
+				다음은 FlexDaoQueryImpl 클래스의 모습이다.
+			</para>
+			<programlisting language="java">@Repository("flexDao")
+public class FlexDaoQueryImpl extends AbstractDao implements FlexDao {
+	
+    @Resource
+    private IPropertiesService propertiesService;
+
+    @Resource
+    private IQueryService queryService;
+
+    @PostConstruct
+    public void initialize() {
+        setQueryService(this.queryService);
+    }
+	
+    private String tableName;
+    
+    public int create(FlexDataGrid flexDataGrid) throws Exception {
+    //FlexDataGrid를 상속받은 Domain클래스 이름을 이용해 table name을 얻어온다.
+        tableName = flexDataGrid.getClass().getSimpleName();
+        return create(tableName, flexDataGrid);
+	}
+
+    public List getList(FlexSearchVO searchVO) throws Exception {
+        //FlexSearchVO의 tableName의 값은 Flex UI에서 세팅해 주어야한다.
+        return (List) this.findList(searchVO.getTableName(), searchVO);
+    }
+
+    public Page getPagingList(FlexSearchVO searchVO) throws Exception {
+        int pageIndex = searchVO.getPageIndex();
+        int pageSize = propertiesService.getInt("PAGE_SIZE");
+        int pageUnit = propertiesService.getInt("PAGE_UNIT");
+
+        return this.findListWithPaging(searchVO.getTableName(), searchVO,
+                pageIndex, pageSize, pageUnit);
+    }
+
+    public int remove(FlexDataGrid flexDataGrid) throws Exception {
+        //FlexDataGrid를 상속받은 Domain클래스 이름을 이용해 table name을 얻어온다.
+        tableName = flexDataGrid.getClass().getSimpleName();
+        return remove(tableName, flexDataGrid);
+    }
+
+    //Flex UI에서 전달된 삭제, 수정, 입력된 FlexDataGrid ArrayCollection을 Status값을 이용해
+    //각각 create, update, remove메소드를 호출한다.
+    public Map saveAll(ArrayList arrayList) throws Exception {
+        Map<![CDATA[<String, Integer>]]> resultCount = new HashMap<![CDATA[<String, Integer>]]>();
+		
+        int createRowCount = 0;
+        int updateRowCount = 0;
+        int removeRowCount = 0;
+		
+        for ( int i = 0 ; i <![CDATA[<]]> arrayList.size() ; i ++ ){
+            FlexDataGrid flexVO = (FlexDataGrid) arrayList.get(i);
+            int status = flexVO.getStatus();
+			
+            switch(status){
+                case FlexDataGrid.INSERT_ROW : createRowCount = createRowCount + this.create(flexVO); break;
+                case FlexDataGrid.UPDATE_ROW : updateRowCount = updateRowCount + this.update(flexVO); break;
+                case FlexDataGrid.DELETE_ROW : removeRowCount = removeRowCount + this.remove(flexVO); break;
+            }
+        }
+        //insert, update, delete된 row의 수를 Map형태로 리턴한다.
+        resultCount.put("INSERT", createRowCount );
+        resultCount.put("UPDATE", updateRowCount );
+        resultCount.put("DELETE", removeRowCount );
+        return resultCount;
+    }
+
+    public int update(FlexDataGrid flexDataGrid) throws Exception {
+        tableName = flexDataGrid.getClass().getSimpleName();
+        return update(tableName, flexDataGrid);
+    }
+}</programlisting>
+		</section>
+	</section>
+	<section id="tech_riaflex_sec004">
+	<title>MXML 생성</title>
+	<section id="tech_riaflex_sec004_sec001">
+	<title>Page 조회</title>
+	<para>다음은 BlazeDS의 RemotingService를 이용해 FlexService의 getList메소드를  호출하는 예이다.</para>
+	<programlisting language="xml">&lt;mx:Script&gt;
+&lt;![CDATA[
+...중략
+private function getBoardList(currentPage:int, pageClick:Boolean = false):void {
+				
+    var searchVO:FlexSearchVO = new FlexSearchVO("Board");
+    if ( pageClick ){
+        searchVO.searchCondition = condition;
+        searchVO.searchKeyword = keyword;
+    }else{
+        keyword = searchKeyword.text;
+        condition = searchCondition.selectedItem.data;
+        searchVO.searchKeyword = keyword;
+        searchVO.searchCondition = condition;
+    }
+        searchVO.pageIndex = currentPage;
+        boardService.getPagingList(searchVO);
+}
+private function getBoardListResultHandler(event:ResultEvent):void {
+				
+    page = event.result as Page;
+    plb.totalCount = page.totalCount;
+    plb.fetchSize = page.pagesize;
+    plb.numPages = page.pageunit;
+    plb.currentPage = page.currentPage;
+				
+    boardList = page.objects as ArrayCollection;
+			
+}
+...중략
+]]&gt;
+&lt;/mx:Script&gt;
+<![CDATA[
+<mx:RemoteObject id="boardService" destination="flexService" showBusyCursor="true">
+    <mx:method name="getPagingList" result="getBoardListResultHandler(event)" fault="ResultHandler.faultMessage(event)"/>
+    <mx:method name="saveAll" result="saveAllResultHandler(event)" fault="ResultHandler.faultMessage(event)"/>
+</mx:RemoteObject>]]></programlisting>
+	<para>boardService.getPagingList(searchVO)가 실행되면 
+	destination으로 등록된 flexService의 getPagingList메소드가 호출되고 id가 findBoardList인 query가 실행되어
+	결과 값은 Page객체로 리턴된다.</para>
+	
+	<para>다음은 Anyframe의 Page클래스와 매핑되는 Page.as클래스이다.</para>
+	<programlisting language="xml"><![CDATA[package org.anyframe.pagination
+{
+    import mx.collections.ArrayCollection;
+	
+    [RemoteClass(alias="org.anyframe.pagination.Page")]
+    public class Page
+	{
+		
+    public var objects:ArrayCollection;
+
+    public var currentPage:int;
+
+    public var totalCount:int;
+
+    public var pageunit:int;
+
+    public var pagesize:int;
+
+    public var maxPage:int;
+
+    public var beginUnitPage:int;
+
+    public var endUnitPage:int;
+	}
+}]]></programlisting>
+</section>
+<section id="tech_riaflex_sec004_sec002">
+<title>saveAll메소드</title>
+<para>FlexService의 saveAll메소드는 Flex의 DataGrid를 이용해 
+Data를 추가, 삭제, 수정 한 후 한번의 Service호출로 화면에서 작업했던 Data를 DB에 반영할 때 사용한다.</para>
+<para>DataGrid에서 수정, 삭제, 추가 이벤트가 발생할 경우 FlexBaseObjcet와 매핑되는 ASObject의 status값을 변경한다.</para>
+<programlisting language="java">
+//DataGrid의 Row가 추가 됐을 때 실행되는 메소드
+private function addCategory():void{
+    var addCategory:Category = new Category();
+    addCategory.status = 1;
+    addCategory.regDate = Util.getToday();
+    grdCategory.dataProvider.addItem(addCategory);
+}
+//DataGird의 Row가 수정 됐을 때 실행되는 메소드
+private function updateCategory(event:DataGridEvent):void{
+				
+    if (event.reason == DataGridEventReason.CANCELLED){
+        return;
+    }
+                
+    var updateCategory:Category = grdCategory.itemEditorInstance.data as Category;
+    var rowStatus:Number = updateCategory.status;
+	if( rowStatus == 0 ){
+		updateCategory.status = 2;
+	}
+}
+
+//DataGrid의 Row가 삭제 되었을 때 실행되는 메소드
+//삭제된 ASObject를 deleteCategoryList에 임시로 저장한다.
+private var deleteCategoryList:ArrayCollection = new ArrayCollection();
+private function deleteCategory():void{
+    if(grdCategory.selectedIndex != -1){
+        var deleteCategory:Category = grdCategory.selectedItem as Category;
+        var rowStatus:int = deleteCategory.status;
+					
+        if (rowStatus != 1){
+            deleteCategory.status = 3;
+            deleteCategoryList.addItem(deleteCategory)
+        }
+        grdCategory.dataProvider.removeItemAt(grdCategory.selectedIndex);
+    }else{
+        Alert.show("삭제할 Row를 선택해 주세요");
+    }
+}</programlisting>
+<para>다음은 flexService의 saveAll메소드를 호출한 후 결과를 처리하는 ActionScript이다.</para>
+<programlisting language="java"><![CDATA[//DataGrid에서 Binding Data중 status값이
+// 0이 아닌 것과 deleteCategoryList에 저장 된 DataGrid에서 삭제된 Data를
+// saveCategoryList에 추가해 FlexService의 saveAll메소드를 호출한다. 
+private function saveCategory():void{
+    var saveCategoryList:ArrayCollection = new ArrayCollection();
+    for ( var j:int = 0 ; j < deleteCategoryList.length ; j ++ ){
+        saveCategoryList.addItem(deleteCategoryList.getItemAt(j));
+    }
+    for ( var i:int = 0 ; i < categoryList.length ; i ++ ){
+        var category:Category = categoryList.getItemAt(i) as Category;
+        if(category.status != 0){
+            if ( category.categoryName == null || category.categoryName.length == 0 ){
+                Alert.show("카테고리 이름은 필수 항목입니다.\n 확인하고 다시 저장하세요");
+                return;
+            }
+            saveCategoryList.addItem(category);
+        }
+    }
+    if ( saveCategoryList.length == 0 ){
+        Alert.show("저장할 데이터가 없습니다.");
+    }else{
+        categoryService.saveAll(saveCategoryList);
+    }
+}
+// saveAll메소드의 호출 결과는 추가, 수정, 삭제된 Row수가 담긴 Map형태이다.
+// saveAllResultHandler에서는 saveAll메소드의 실행결과를 Alert창을 통해 보여준다.
+private function saveAllResultHandler(event:ResultEvent):void{
+    var resultArray:Array = ["INSERT", "UPDATE", "DELETE"];
+			
+    var message:String = "";
+    for ( var i:int = 0 ; i < 3 ; i ++ ){
+        var count:int = event.result[resultArray[i]];
+        message = message + count + " Row가 " + resultArray[i] + "\n";
+    }
+    message = message + "되었습니다.";
+
+    mx.controls.Alert.show(message);
+    deleteCategoryList.removeAll();
+    getCategoryList(1);
+}]]></programlisting>
+</section>
+	</section>
+</chapter>

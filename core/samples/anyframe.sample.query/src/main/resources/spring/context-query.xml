@@ -1,0 +1,36 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:config="http://www.anyframejava.org/schema/service"
+	xsi:schemaLocation="http://www.springframework.org/schema/beans 
+						http://www.springframework.org/schema/beans/spring-beans-2.5.xsd
+						http://www.anyframejava.org/schema/service 
+						http://www.anyframejava.org/schema/service/anyframe-core-service-2.0.xsd">
+	
+	<bean name="queryService" class="anyframe.core.query.impl.QueryServiceImpl">
+		<property name="jdbcTemplate" ref="jdbcTemplate"/>
+		<property name="pagingSQLGenerator" ref="pagingSQLGenerator"/>
+		<property name="sqlRepository" ref="sqlLoader"/>				
+	</bean>
+	
+	<bean name="sqlLoader" class="anyframe.core.query.impl.config.loader.SQLLoader">
+		<config:configuration>
+  		    <!-- xml files in classpath -->
+  		    <filename>classpath:query/mapping-query-*.xml</filename>
+			<nullcheck type="VARCHAR" default-value="" />
+			<sqlload dynamic="true" frequency="5" />
+			<skiperror>true</skiperror>
+		</config:configuration>
+	</bean>
+	
+	<!-- The original JdbcTemplate definition -->
+    <bean id="jdbcTemplate" class="anyframe.core.query.impl.jdbc.PagingJdbcTemplate">
+      <property name="dataSource" ref="dataSource" />
+      <property name="exceptionTranslator" ref="exceptionTranslator" />
+    </bean>
+    
+    <bean id="exceptionTranslator" class="anyframe.core.query.impl.util.RawSQLExceptionTranslator"/>
+    
+	<bean id="pagingSQLGenerator" class="anyframe.core.query.impl.jdbc.generator.HSQLPagingSQLGenerator"/>
+
+</beans>	

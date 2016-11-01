@@ -1,0 +1,146 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<queryservice xmlns="http://www.anyframejava.org/schema/query/mapping" 
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" 
+	xsi:schemaLocation="http://www.anyframejava.org/schema/query/mapping http://www.anyframejava.org/schema/query/mapping/anyframe-query-mapping-1.0.xsd ">
+
+  <queries>
+	<query id="findJqueryCommunityList" isDynamic="true">
+		<statement>
+			<!--jquery-findJqueryCommunityList-START-->
+			SELECT 
+				community.COMMUNITY_ID,
+				community.COMMUNITY_NAME,
+				community.COMMUNITY_DESC,
+				community.CATEGORY_ID,
+				community.REG_ID,
+				community.REG_DATE,
+				category.CATEGORY_NAME
+			FROM JQUERY_COMMUNITY community, JQUERY_CATEGORY category
+			WHERE community.CATEGORY_ID = category.CATEGORY_ID
+			<!--Velocity-Support-dynamicFindJqueryCommunityList-START-->
+			#if($vo.categoryId &amp;&amp; !$vo.categoryId.equals(""))
+				AND community.CATEGORY_ID = :vo.categoryId
+			#end		
+			#if ($vo.communityName &amp;&amp; !$vo.communityName.equals(""))
+				AND community.COMMUNITY_NAME like '%'|| :vo.communityName ||'%'	
+			#end
+			#if ($vo.communityDesc &amp;&amp; !$vo.communityDesc.equals(""))
+				AND community.COMMUNITY_DESC like '%'|| :vo.communityDesc ||'%'	
+			#end			
+			ORDER BY
+				#if($vo.sidx &amp;&amp; !$vo.sidx.equals(""))
+					#if($vo.sidx == "communityName")
+						community.COMMUNITY_NAME
+					#elseif($vo.sidx == "communityDesc")
+						community.COMMUNITY_DESC
+					#elseif($vo.sidx == "regId")
+						community.REG_ID
+					#elseif($vo.sidx == "regDate")
+						community.REG_DATE
+					#end
+					#if($vo.sord == "desc" || $vo.sord == "")
+						DESC
+					#else
+						ASC
+					#end
+				#else
+					community.COMMUNITY_ID DESC
+				#end
+			<!--Velocity-Support-dynamicFindJqueryCommunityList-END-->
+			<!--jquery-findJqueryCommunityList-END-->
+		</statement>
+		<result class="org.anyframe.plugin.jquery.domain.Community">		
+		</result>				
+	</query>
+	
+	<query id="updateJqueryCommunityCell" isDynamic="true">
+		<statement>
+			UPDATE JQUERY_COMMUNITY  			
+			SET 
+			<!--Velocity-Support-dynamicUpdateJqueryCommunityCell-START-->
+				#if(!$vo.communityName.equals(""))
+					COMMUNITY_NAME = :vo.communityName 
+				#end
+				#if(!$vo.communityDesc.equals(""))
+					COMMUNITY_DESC = :vo.communityDesc
+				#end 
+				#if(!$vo.regDate.equals(""))
+					REG_DATE = :vo.regDate
+				#end
+			<!--Velocity-Support-dynamicUpdateJqueryCommunityCell-END-->
+			WHERE
+				COMMUNITY_ID = :vo.communityId
+		</statement>
+	</query>
+	<query id="updateJqueryCommunity" isDynamic="true">
+		<statement>
+			UPDATE JQUERY_COMMUNITY  			
+			SET 
+				COMMUNITY_NAME = :vo.communityName,
+				COMMUNITY_DESC = :vo.communityDesc,
+				REG_DATE = :vo.regDate
+			WHERE
+				COMMUNITY_ID = :vo.communityId
+		</statement>
+	</query>
+	<query id="findJqueryCommunityForTreeList" isDynamic="true">
+		<statement>
+			SELECT 
+				COMMUNITY_ID,
+				COMMUNITY_NAME,
+				COMMUNITY_DESC,
+				CATEGORY_ID,
+				COMMUNITY_NAME label
+			FROM 
+				JQUERY_COMMUNITY
+			WHERE 
+				CATEGORY_ID = :vo.searchKeyword		
+			order by COMMUNITY_ID DESC
+		</statement>
+		<result class="org.anyframe.plugin.jquery.domain.Community">		
+		</result>				
+	</query>
+	<query id="findJqueryCommunityByPk" isDynamic="true">
+		<statement>
+			SELECT 
+				COMMUNITY_ID,
+				COMMUNITY_NAME,
+				COMMUNITY_DESC,
+				CATEGORY_ID,
+				REG_ID,
+				REG_DATE
+			FROM 
+				JQUERY_COMMUNITY
+			WHERE 
+				COMMUNITY_ID = :vo.communityId		
+		</statement>
+		<result class="org.anyframe.plugin.jquery.domain.Community">		
+		</result>				
+	</query>
+	<query id="removeJqueryCommunity">
+		<statement>
+			DELETE FROM JQUERY_COMMUNITY  			
+			WHERE
+				COMMUNITY_ID = :vo.communityId
+		</statement>
+	</query>
+	<query id="createJqueryCommunity">
+		<statement>
+			INSERT INTO JQUERY_COMMUNITY (
+				COMMUNITY_ID,
+				COMMUNITY_NAME,
+				COMMUNITY_DESC, 			
+				CATEGORY_ID, 
+				REG_ID,
+				REG_DATE) 
+			VALUES (
+				:vo.communityId,
+				:vo.communityName,
+				:vo.communityDesc,
+				:vo.categoryId, 
+				:vo.regId,
+				:vo.regDate)
+		</statement>
+	</query>
+  </queries>
+</queryservice>

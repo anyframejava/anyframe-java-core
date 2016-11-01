@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE queryservice PUBLIC "-//ANYFRAME//DTD QUERYSERVICE//EN"
+"http://www.anyframejava.org/dtd/anyframe-core-query-mapping-3.2.dtd">
+<queryservice>
+	<queries>
+		<query id="callFunction" isDynamic="false">
+			<statement>{? = call FUNC_RETURN_NUM(?)}</statement>
+			<param type="NUMERIC" binding="OUT" name="outVal" />
+			<param type="NUMERIC" binding="IN" name="inVal" />
+		</query>
+		<query id="callProcedure" isDynamic="false">
+			<statement>{call PROC_TOCHAR_SYSDATE (?,?)}</statement>			
+			<param type="VARCHAR" binding="OUT" name="outVal" />			
+			<param type="DATE" binding="IN" name="inVal" />			
+		</query>	
+		<query id="callPackage" isDynamic="false">
+			<statement>{call PKG_REFCURSOR_TEST.PROC_RECORD_SET(?, ?)}</statement>
+			<param type="VARCHAR" binding="IN" name="inVal" />
+			<param type="CURSOR" binding="OUT" name="outVal" />
+		</query>	
+	</queries>
+
+</queryservice>

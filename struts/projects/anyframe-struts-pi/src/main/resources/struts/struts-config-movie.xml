@@ -1,0 +1,26 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE struts-config PUBLIC
+          "-//Apache Software Foundation//DTD Struts Configuration 1.3//EN"
+          "http://struts.apache.org/dtds/struts-config_1_3.dtd">
+<struts-config>
+ 	<form-beans>
+    	<form-bean name="movieForm"  type="org.anyframe.plugin.struts.moviefinder.web.form.MovieForm" />
+    </form-beans>
+	<action-mappings>
+        <action
+        	input="/WEB-INF/jsp/struts/moviefinder/movie/list.jsp"
+            path="/strutsMovie"
+            type="org.anyframe.plugin.struts.moviefinder.web.MovieAction"
+            name="movieForm"
+            scope="request"
+            validate="false"
+            parameter="method">
+            <forward name="success_createView" path="/WEB-INF/jsp/struts/moviefinder/movie/form.jsp" />
+            <forward name="success_get" path="/WEB-INF/jsp/struts/moviefinder/movie/form.jsp" />
+            <forward name="success_list" path="/WEB-INF/jsp/struts/moviefinder/movie/list.jsp" />
+            <forward name="success_update" path="/strutsMovie.action?method=list" redirect="true" />
+            <forward name="success_create" path="/strutsMovie.action?method=list" redirect="true" />
+            <forward name="success_remove" path="/strutsMovie.action?method=list" redirect="true" />
+        </action>
+	</action-mappings>
+</struts-config>

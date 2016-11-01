@@ -1,0 +1,829 @@
+<chapter id="foundation_query_configuration">
+	<title>Configuration</title>
+	<para>
+		To use Query service, properties as the following must be defined.
+			Let's take a look at the meaning of each property.
+		
+		Query 서비스를 활용하기 위해서는 다음과 같은 속성들이 정의되어 있어야 한다. 다음에서 각 속성이 가지는 의미에 대해 알아보기로 하자.
+	</para>
+    <informaltable>
+		<tgroup cols="4">
+		<colspec colname="col1" colnum="1" colwidth="2.5*" />
+		<colspec colname="col2" colnum="2" colwidth="6*" />
+		<colspec colname="col3" colnum="3" colwidth="1*" />
+		<colspec colname="col4" colnum="4" colwidth="1*" />
+	
+		<thead>
+			<row>
+				<entry align="center">Property</entry>
+				<entry align="center">Description</entry>
+				<entry align="center">Required</entry>
+				<entry align="center">Default Value</entry>
+			</row>
+		</thead>
+	
+		<tbody>
+			<row>
+				<entry>
+					<link linkend="foundation_query_configuration_jdbctemplate">
+						<emphasis role="bold">jdbcTemplate</emphasis>
+					</link>
+				</entry>
+				<entry>
+					
+							Executes the defined SQL statement by using DataSource service and get java.sql.Connection from DB.
+							Defines bean id as PagingJdbcTemplate.
+							
+							DataSource 서비스를 이용하여 해당하는 DB로부터 java.sql.Connection을 얻어 정의된 쿼리문을 실행시킬 수 있도록 한다.
+			        PagingJdbcTemplate의 Bean Id를 값으로 정의한다.
+				</entry>
+				<entry align="center">Y</entry>
+				<entry align="center">N/A</entry>
+			</row>
+	
+			<row>
+				<entry>
+					<link linkend="foundation_query_configuration_sqlrepository"><emphasis role="bold">sqlRepository</emphasis>
+					</link>
+				</entry>
+				<entry>
+					Defines bean id of SQLLoader which performs mapping XML files
+							which define table mapping information and SQL statements.
+							
+							테이블 매핑 정보 및 쿼리문을 정의한 매핑 XML 파일들을 처리하는 역할을 수행하는 SQLLoader의 Bean Id를 정의한다.
+				</entry>
+				<entry align="center">Y</entry>
+				<entry align="center">N/A</entry>
+			</row>
+	
+			<row>
+				<entry>
+					<link linkend="foundation_query_configuration_generator"><emphasis role="bold">pagingSQLGenerator</emphasis>
+					</link>
+				</entry>
+				<entry>
+					
+						Defines bean id of PagingSQLGenerator which helps create SQL
+						appropriate for the DB pagination even not by defining SQL for DB-specialized pagination.
+						
+						DB에 특화된 형태의 페이징 처리를 위한 SQL을 정의하지 않더라도, 해당 DB에 따라 페이징 처리를 위해 알맞은 SQL을 생성할 수 
+					있도록 도와주는 PagingSQLGenerator의 Bean Id를 정의한다.
+				</entry>
+				<entry align="center">N</entry>
+				<entry align="center">N/A</entry>
+			</row>
+	
+			<row>
+				<entry>
+					<link linkend="foundation_query_configuration_lobhandler"><emphasis role="bold">lobHandler</emphasis>
+					</link>
+				</entry>
+				<entry>In the case of handling LOB type data,
+						defines bean if of LobHandler appropriate for the relevant DB.
+						LOB 유형의 데이터를 다루어야 하는 경우 해당하는 DB에 적합한 LobHandler의 Bean Id를 정의한다.</entry>
+				<entry align="center">N</entry>
+				<entry align="center">N/A</entry>
+			</row>
+	
+			<row>
+				<entry>velocityPropsFilename</entry>
+				<entry>
+						In the case of handling dynamic SQL statements, defines when trying to
+							change the path of the log file left by Velocity.
+							File path can be defined by using absolute/relative path(file:...)or classpath(classpath:...) as the following.
+							
+							Dynamic SQL 문을 다루어야 하는 경우 Velocity에 의해 남겨지는 Log 파일의 경로를 변경하고자 할 때 정의한다. Velocity Log 
+					파일의 경로는 다음과 같이 절대/상대 경로(file:...)나 클래스패스(classpath:...)를 이용하여 정의 가능하다. 
+					<itemizedlist>
+						<listitem>
+							<para>
+								file:./query/log/velocity.log
+							</para>
+						</listitem>
+						<listitem>
+							<para>
+								classpath:/anyframe/core/query/log/velocity.log
+							</para>
+						</listitem>
+					</itemizedlist> 
+					<para>
+						If value is not defined, Velocity log is not recorded.
+								If you want to record a log, note that the log file must be created in the defined path.
+								
+								값을 정의하지 않았을 경우에는 Velocity Log는 남겨지지 않는다. Log를 남기고자 하는 경우에는 정의된 경로에 지정된 로그 파일이 
+						생성되어 있어야 함에 유의하도록 한다.
+					</para>
+				</entry>
+				<entry align="center">N</entry>
+				<entry>Log not recorded.
+				Log를 남기지 않음.</entry>
+			</row>
+		</tbody>
+		</tgroup>
+    </informaltable>
+
+	<para>
+		Among the setting information requiring above-mentioned Query service,
+			let's take a close look at jdbcTemplate, sqlRepository,
+			pagingSQLGenerator and lobHandler.
+		
+		위에서 언급한 Query 서비스가 필요로 하는 설정 정보 중, jdbcTemplate, sqlRepository, pagingSQLGenerator, lobHandler에 대해 
+		좀 더 자세히 짚어보기로 하자.
+	</para>
+
+    <section id="foundation_query_configuration_jdbctemplate">
+    	<title>jdbcTemplate</title>
+	    <para>
+	      	To execute the defined SQL statement by accessing the DB and getting java.sql.Connection object
+				using DataSource service, Query service provides PagingJdbcTemplate, PagingNamedParamJdbcTemplate
+				and OraclePagingJdbcTemplate
+				which extended JdbcTemplate in Spring under anyframe.core.query.impl.jdbc package.
+				
+				Query 서비스에서는 DataSource 서비스를 이용하여 해당하는 DB에 접근하고, java.sql.Connection 객체를 얻어내어 정의된 쿼리문을 
+	      	실행시키기 위해 anyframe.core.query.impl.jdbc 패키지 하위에 Spring의 JdbcTemplate을 확장한 PagingJdbcTemplate, PagingNamedParamJdbcTemplate, 
+	      	OraclePagingJdbcTemplate를 제공하고 있다.
+	    </para>
+
+      	<itemizedlist>
+	        <listitem>
+	          	<para>
+	        	  	PagingJdbcTemplate : Using internal ResultSetExtractor,
+					perform mapping and pagination for the search result.
+					
+					PagingJdbcTemplate : 내부 ResultSetExtractor를 이용하여 조회 결과에 대한 매핑 처리 및 페이징 처리를 수행한다.
+	          	</para>
+	        </listitem>
+        	<listitem>
+	          	<para>
+	          		OraclePagingJdbcTemplate : If DBMS is Oracle, it can be used when checking the 
+						total number of modified data by batching.
+						There are two ways of batching for Insert, Update, Delete in Oracle.
+						The first is <emphasis role="bold">following JDBC 2.0 Spec.</emphasis>
+						and the other is <emphasis role="bold">Oracle-specified batching.</emphasis>																
+						Query service performs batching with the first method.
+						When performed successfully, '-2' will be set in the int arrangement as a execution result.
+						According to JDBC 2.0 Spec., '-2' means "processed successfully, but
+						the number of modified data is unknown."
+						Therefore, after batching, to know the total number of modified data,
+						the second bathing method must be performed, 
+						and the implementation provided for this is OraclePagingJdbcTemplate.
+						
+						OraclePagingJdbcTemplate : DBMS가 Oracle일 경우, batch 처리에 의해 변경된 데이터의 전체 건수를 알아야 하는 경우에
+	          		사용할 수 있다. Oracle에서는 Insert, Update, Delete에 대한 batch 처리를 위해 2가지 방법을 제공한다. 그 중 하나가
+	          		<emphasis role="bold">JDBC 2.0 Spec.을 준수하여 처리하는 방법</emphasis> 이며, 다른 하나는 <emphasis role="bold">Oracle
+	          		특화된 batch 처리 방법</emphasis> 이다. Query 서비스는 이 중 첫번째 방법으로 batch 작업을 수행하는데, 정상 처리되었을 경우
+	          		수행 결과로 전달되는 int 배열 내에는 -2 값이 셋팅되어 있게 된다. JDBC 2.0 Spec.에 의하면 결과값 -2가 의미하는 바는 "정상 처리되었으나
+	          		변경된 데이터의 건수를 알 수 없음."이다. 따라서, batch 처리 후, 변경된 데이터의 전체 건수를 알기 위해서는 두번째 방법으로 batch 작업을
+	          		수행해야 하며 이를 위해서 제공된 구현체가 OraclePagingJdbcTemplate이다.
+				</para>
+        	</listitem>
+
+		    <listitem>
+		        <para>
+		        	PagingNamedParamJdbcTemplate : As a class internally used in QueryServiceImpl without 
+						any special setting, it execute dynamic SQL statement with named parameter.
+						
+						PagingNamedParamJdbcTemplate : 별도 설정없이 QueryServiceImpl 클래스에서 내부적으로 사용하는 클래스로 
+		        	Named Parameter를 가진 Dynamic SQL 처리를 수행한다.
+		        </para>
+		    </listitem>
+      	</itemizedlist>
+
+      	<para>
+      		The following is main setting information for PagingJdbcTemplate.
+				(For other setting information, refer to the setting information in 
+				org.springframework.jdbc.core.JdbcTemplate.)
+				
+				다음은 PagingJdbcTemplate을 위해 필요한 주요 설정 정보들이다. 
+      		(이외 설정 정보에 대해서는 org.springframework.jdbc.core.JdbcTemplate의 설정 정보를 참고하도록 한다.)
+      	</para>
+
+		<informaltable>
+        	<tgroup cols="4">
+				<colspec colname="col1" colnum="1" colwidth="2.5*" />
+				<colspec colname="col2" colnum="2" colwidth="6*" />
+				<colspec colname="col3" colnum="3" colwidth="1*" />
+				<colspec colname="col4" colnum="4" colwidth="1*" />
+
+				<thead>
+					<row>
+						   <entry align="center">Property</entry>
+						   <entry align="center">Description</entry>
+						   <entry align="center">Required</entry>					
+						   <entry align="center">Default Value</entry>
+					</row>
+				</thead>
+
+         		<tbody>
+            		<row>
+						<entry>dataSource</entry>
+						<entry>Define bean id of dataSource to refer.
+						참조할 dataSource의 Bean Id를 정의한다.</entry>
+						<entry align="center">Y</entry>
+						<entry align="center">N/A</entry>
+            		</row>
+
+            		<row>
+              			<entry>exceptionTranslator</entry>
+						<entry>
+							Define bean id of ExceptionTranslator.
+								When SQLException occurs,
+								after setting SQL error code and error message at separate exception object,
+								and then throw.		
+								Query service provides anyframe.core.query.impl.util.RawSQLExceptionTranslator.
+								Therefore, if ExceptionTranslator is set,
+								when SQLException occurs,
+								SQL Error Code and 
+								Error Message information can be extracted from QueryServiceException
+								,which was thrown through Query service.
+								
+								ExceptionTranslator의 Bean Id를 정의한다. ExceptionTranslator는 DB 데이터 조작시 SQLException이 
+							발생한 경우 별도 Exception 객체에 해당하는 SQL Error Code와 Error Message 정보를 셋팅하여 throw하도록 
+							하는 역할을 수행하며, Query 서비스에서는 anyframe.core.query.impl.util.RawSQLExceptionTranslator를 
+							제공하고 있다. 따라서, ExceptionTranslator를 별도 셋팅하면, 데이터 조작으로 인한 오류가 발생한 경우
+							Query 서비스를 통해 throw된 QueryServiceException으로부터 SQL Error Code와 Error Message 정보를 
+							추출할 수 있게 된다.
+						</entry>
+              			<entry align="center">N</entry>
+              			<entry align="center">N/A</entry>
+            		</row>
+
+            		<row>
+              			<entry>maxFetchSize</entry>
+						<entry>
+							To prevent reduced performance that can occur when searching for heavyweight data,
+								maxFetchSize can be used.
+								If the number of searched result data is bigger than the defined maxFetchSize,
+								exception occurs.
+								다량의 데이터 전체 조회시 발생할 수 있는 성능 저하를 방지하기 위해, maxFetchSize를 활용할 수 있다. 조회된 
+							결과 데이터의 건수가 정의된 maxFetchSize보다 큰 경우 Exception 처리된다.
+						</entry>
+              			<entry align="center">N</entry>
+              			<entry align="center">N/A</entry>
+            		</row>
+
+            		<row>
+              			<entry>nativeJdbcExtractor</entry>
+						<entry>
+							This can be defined only when using OraclePagingJdbcTemplate.
+								It defines bean if of NativeJdbcExtractor which performs extracting 
+								original JDBC Connection object from connection object wrapped for
+								 the connection pool in use.
+								 
+								 OraclePagingJdbcTemplate을 사용하는 경우에만 정의할 수 있다. 사용중인 Connection Pool에 맞게 
+							Wrapping되어 있는 Connection 객체로부터 본래의 JDBC Connection 객체를 추출하는 역할을 수행하는 
+							NativeJdbcExtractor의 Bean Id를 정의한다.
+						</entry>
+              			<entry align="center">N</entry>
+              			<entry align="center">N/A</entry>
+            		</row>
+         		</tbody>
+        	</tgroup>
+      	</informaltable>
+	</section>
+     
+	<section id="foundation_query_configuration_sqlrepository">
+      	<title>sqlRepository</title>
+		<para>
+			Query service provides anyframe.core.query.impl.config.loader.SQLLoader
+				to perform mapping XML files which define table mapping information and SQL statements.
+				The following is the main setting information necessary for SQLLoader.
+				
+				Query 서비스에서는 테이블 매핑 정보 및 쿼리문을 정의한 매핑 XML 파일들을 처리하는 역할을 수행하기 위해 anyframe.core.query.impl.config.loader.SQLLoader를 
+			제공하고 있다. 다음은 SQLLoader를 위해 필요한 주요 설정 정보들이다.
+		</para>
+
+		<informaltable>
+			<tgroup cols="6">
+				<colspec colname="col1" colnum="1" colwidth="2*" />
+				<colspec colname="col2" colnum="2" colwidth="1*" />
+				<colspec colname="col3" colnum="3" colwidth="4*" />
+				<colspec colname="col4" colnum="4" colwidth="1*" />
+				<colspec colname="col5" colnum="5" colwidth="1*" />
+				<colspec colname="col6" colnum="6" colwidth="1*" />
+
+          		<thead>
+					<row>
+						<entry align="center">Tag Name</entry>
+			            <entry align="center">Attrubute Name</entry>
+			            <entry align="center">Description</entry>
+			            <entry align="center">Required</entry>
+			            <entry align="center">Default Value</entry>
+			            <entry align="center">Child Tag</entry>
+					</row>
+				</thead>
+
+          		<tbody>
+            		<row>
+              			<entry>config:configuration</entry>
+              			<entry />
+              			<entry />
+              			<entry />
+              			<entry />
+              			<entry>filename</entry>
+            		</row>
+
+            		<row>
+              			<entry>filename</entry>
+              			<entry />
+						<entry>
+							As an element defining mapping XML file name which defines table mapping information
+								and SQL statements, multiple definition is possible.
+								As defining the element of filename is same to defining Spring Configuration file path,
+								absolute/relative file path and classpath can be defined.
+								Pattern Matching using * is also available.
+								
+								테이블 매핑 정보와 사용할 쿼리문을 정의하고 있는 매핑 XML 파일명을 지정하는 요소로 복수 지정 가능하다.
+							filename 요소에 대한 지정은 Spring Configuration 파일 경로 지정 방식과 동일하므로, 절대/상대적인 파일 
+							경로 지정(file:...)과 클래스패스를 이용한 지정(classpath:...)이 가능하다. *를 활용한 Pattern 
+							Matching 역시 적용 가능하다.
+						</entry>
+              			<entry align="center">Y</entry>
+              			<entry align="center">N/A</entry>
+              			<entry />
+            		</row>
+
+					<row>
+						<entry>nullcheck</entry>
+						<entry />
+						<entry>
+							Converts to the assigned value when null value was returned due to no DB column value.
+								Currently, only columns in CHAR, VARCHAR, LONGVARCHAR type are supported.
+								
+								해당 DB Column의 값이 없어서 null value가 리턴되었을 때, 지정한 값으로 변환시켜준다. 
+							현재, CHAR, VARCHAR, LONGVARCHAR 타입의 칼럼에 대해서만 지원된다.
+						</entry>					
+						<entry align="center">N</entry>
+						<entry align="center">N/A</entry>
+						<entry />
+					</row>
+
+					<row>
+						<entry>sqlload</entry>
+						<entry>dynamic</entry>
+						<entry>Defines whether or not to set dynamic reload for mapping XML file.
+						매핑 XML 파일에 대한 동적 Reload 설정여부를 정의한다.</entry>
+						<entry align="center">N</entry>
+						<entry align="center">N</entry>
+						<entry />
+					</row>
+
+					<row>
+						<entry />
+						<entry>frequency</entry>
+						<entry>
+							This sets reload frequency.
+								It recognizes 10 if registered under 10 (unit: milliseconds),
+								and the input value if registered 10 or above.
+								
+								Reload 주기를 세팅한다.(milliseconds 단위) 10미만 입력시 10으로
+							인식하며, 10이상 입력시 입력값으로 인식한다.
+						</entry>
+						<entry align="center">N</entry>
+						<entry />
+						<entry />
+					</row>
+
+					<row>
+						<entry>skiperror</entry>
+						<entry />
+						<entry>
+							By reading mapping XML file, sets whether to skip error.
+							
+							매핑 XML 파일을 읽어들이면서, error가 발생한 경우 skip 여부를 셋팅한다.
+						</entry>
+						<entry align="center">N</entry>
+						<entry />
+						<entry />
+					</row>
+          		</tbody>
+        	</tgroup>
+      	</informaltable>
+	</section>
+      	    	
+	<section id="foundation_query_configuration_generator">
+      	<title>pagingSQLGenerator</title>
+      	<para>
+      		Even if not composed of DB-specified SQL for pagination, Query service provides
+				PagingSQLGenerator which makes sql that can handle pagination for the DB.
+				
+				Query 서비스에서는 페이징 처리를 위해 DB에 특화된 형태의 SQL을 구성하지 않더라도, 해당 DB에 적합한 페이징 처리 SQL을 
+      		구성할 수 있도록 도와주는 역할을 수행하기 위해 다음과 같은 PagingSQLGenerator를 제공한다.
+      	</para>
+
+      	<informaltable>
+        	<tgroup cols="2">
+          		<colspec colname="col1" colnum="1" colwidth="2*" />
+          		<colspec colname="col2" colnum="2" colwidth="8*" />
+
+				<thead>
+            		<row>
+              			<entry align="center">DB type</entry>
+              			<entry align="center">PagingSQLGenerator Class</entry>
+            		</row>
+            	</thead>
+
+          		<tbody>
+            		<row>
+              			<entry>Oracle</entry>
+              			<entry>anyframe.core.query.impl.jdbc.generator.OraclePagingSQLGenerator</entry>
+            		</row>
+
+            		<row>
+              			<entry>DB2</entry>
+              			<entry>anyframe.core.query.impl.jdbc.generator.DB2PagingSQLGenerator</entry>
+            		</row>
+
+            		<row>
+              			<entry>HSQLDB</entry>
+              			<entry>anyframe.core.query.impl.jdbc.generator.HSQLPagingSQLGenerator</entry>
+            		</row>
+
+            		<row>
+              			<entry>Altibase</entry>
+              			<entry>anyframe.core.query.impl.jdbc.generator.AltibasePagingSQLGenerator</entry>
+            		</row>
+          		</tbody>
+        	</tgroup>
+      	</informaltable>
+
+		<para>
+			On top of this, when PagingSQLGenerator is needed,
+				by extending anyframe.core.query.impl.jdbc.generator.AbstractPagingSQLGenerator, create
+				new PagingSQLGenerator and implement getPaginationSQL() method.				
+				getPaginationSQL() method defines the logic returning the sql modified to paginate registered sql.				
+				The following is a part of OraclePagingSQLGenerator class.
+				
+				이 외, PagingSQLGenerator가 필요한 경우에는 anyframe.core.query.impl.jdbc.generator.AbstractPagingSQLGenerator를 
+			확장하여 신규 PagingSQLGenerator를 생성하고, getPaginationSQL() 메소드를 구현해주면 된다. getPaginationSQL() 메소드에는 
+			입력받은 SQL을 기반으로 페이징 처리를 위해 변경된 SQL을 전달하는 로직을 정의하면 된다. 다음은 OraclePagingSQLGenerator 
+			클래스의 일부 내용이다.
+		</para>
+
+      	<programlisting language="java"><![CDATA[public class OraclePagingSQLGenerator ]]><emphasis
+        role="bold">extends AbstractPagingSQLGenerator</emphasis><![CDATA[ {
+public String getPaginationSQL(String originalSql, Object[] originalArgs,
+    int[] originalArgTypes, int pageIndex, int pageSize) {
+    ]]><emphasis role="bold">// To modify the defined SQL statement to ROWNUM-based format, /정의된 기본 쿼리문을 ROWNUM을 이용한 형태로 변경하기 위해 앞,뒤로 문자열 추가</emphasis><![CDATA[  
+    StringBuffer sql = new StringBuffer(
+        " SELECT * FROM ( SELECT   INNER_TABLE.* , ROWNUM AS ROW_SEQ FROM ( \n");
+        sql.append(originalSql);
+        sql.append(" ) INNER_TABLE WHERE ROWNUM <= ? ) "   
+        + " WHERE ROW_SEQ BETWEEN ? AND ?");
+
+    ]]><emphasis role="bold">// Other than the basic input parameter to be registered in the SQL statement, /쿼리문에 입력되어야 할 기본 입력 인자 외에</emphasis><![CDATA[ 
+    ]]><emphasis role="bold">// Setting pageIndex,
+				pageSize parameter value for pagination./페이징 처리를 위한 pageIndex, pageSize 인자값 셋팅</emphasis><![CDATA[
+    setQueryArgs(originalArgs, pageIndex, pageSize);
+    ]]><emphasis role="bold">// Other than the basic input parameter to be registered in the SQL statement, /쿼리문에 입력되어야 할 기본 입력 인자 외에</emphasis><![CDATA[ 
+    ]]><emphasis role="bold">// Setting pageIndex,
+				pageSize parameter type for pagination. /페이징 처리를 위한 pageIndex, pageSize 인자 타입 셋팅</emphasis><![CDATA[
+    setQueryArgTypes(originalArgTypes);
+    ]]><emphasis role="bold">// Transfer modified SQL statement /변경된 쿼리문 전달</emphasis><![CDATA[
+    return sql.toString();
+}
+
+protected void setQueryArgs(Object[] originalArgs, int pageIndex,
+        int pageSize) {
+    Object[] args = new Object[originalArgs.length + 3];
+
+    for (int i = 0; i < originalArgs.length; i++) {
+        args[i] = originalArgs[i];
+    }
+
+    args[originalArgs.length] = String.valueOf(new Long(pageIndex
+            * pageSize));
+    args[originalArgs.length + 1] = String.valueOf(new Long((pageIndex - 1)
+            * pageSize + 1));
+    args[originalArgs.length + 2] = String.valueOf(new Long(pageIndex
+            * pageSize));
+
+    setArgs(args);
+}
+
+protected void setQueryArgTypes(int[] originalArgTypes) {
+    int[] argTypes = new int[originalArgTypes.length + 3];
+
+    for (int i = 0; i < originalArgTypes.length; i++) {
+        argTypes[i] = originalArgTypes[i];
+    }
+
+    argTypes[originalArgTypes.length] = Types.VARCHAR;
+    argTypes[originalArgTypes.length + 1] = Types.VARCHAR;
+    argTypes[originalArgTypes.length + 2] = Types.VARCHAR;
+
+    setArgTypes(argTypes);
+}
+}]]></programlisting>
+
+		<para>
+			In addition, the SQL statement for searching the number of data relevant to the total search condition
+				is defined in AbstractPagingSQLGenerator, an upper class.
+				When DBMS does not support count(*),
+				override in the relevant PagingSQLGenerator.
+				
+				또한, 전체 조회 조건에 해당하는 데이터의 건수를 조회하기 위한 쿼리문은 상위 클래스인 AbstractPagingSQLGenerator 내에 
+			정의되어 있으며 해당 DBMS가 count(*)을 지원하지 않는 경우에는 해당하는 PagingSQLGenerator에서 오버라이드해 주도록 한다.
+		</para>
+		<para>
+			When PagingSQLGenerator is not defined and searching for a list in a specific page,
+				all list relevant to the Query service is searched in the beginning.
+				And then, by using cursor of ScrollableResultSet,
+				data in the relevant page will be extracted.
+				Therefore, compared to the PagingSQLGenerator which searches for the relevant data only,
+				the performance of this service is lower.
+				
+				PagingSQLGenerator가 정의되어 있지 않고 특정 페이지에 속한 목록을 조회할 경우 Query 서비스에서는 일단 해당되는 전체 목록을
+			모두 조회한다. 그리고 ScrollableResultSet의 Cursor를 이용하여 해당 페이지에 속한 데이터들을 추출하게 된다. 따라서, 
+			해당 페이지에 속한 데이터만을 조회하는 PagingSQLGenerator에 비해 성능이 저하된다는 점에 유의하도록 한다.
+		</para>
+	</section>      
+				
+	<section id="foundation_query_configuration_lobhandler">
+		<title>lobHandler</title>
+
+		<para>
+			uery service recommends to handle LOB type data using LobHandler provided in Spring.
+				The following is the LobHandler list provided in Spring. 
+				
+				Query 서비스에서는 Spring에서 제공하는 LobHandler를 사용하여 LOB 유형의 데이터를 다루도록 권장한다. 
+			다음은 Spring에서 제공하는 LobHandler 목록이다.
+		</para>
+
+		<itemizedlist>
+			<listitem>
+				<para>
+					Oracle(9i이상) : org.springframework.jdbc.support.lob.OracleLobHandler
+				</para>
+			</listitem>
+				
+			<listitem>
+				<para>
+					the Others : org.springframework.jdbc.support.lob.DefaultLobHandler
+				</para>
+			</listitem>
+		</itemizedlist>
+
+		<para>
+			단, Spring에서 제공하는 OracleLobHandler의 경우 Oracle 9i 이상에서만 사용 가능하므로 Oracle 8i 사용자를 위해
+			anyframe.core.query.impl.jdbc.lob.AnyframeOracle8iLobHandler를 추가로 제공하고 있다. OracleLobHandler나 
+			AnyframeOracle8iLobHandler의 경우 다음과 같은 설정 정보가 필요하다.
+		</para>
+
+      	<informaltable>
+        	<tgroup cols="4">
+          		<colspec colname="col1" colnum="1" colwidth="2*" />
+          		<colspec colname="col2" colnum="2" colwidth="6*" />
+          		<colspec colname="col3" colnum="3" colwidth="1*" />
+          		<colspec colname="col4" colnum="4" colwidth="1*" />
+
+          		<thead>
+            		<row>
+              			<entry align="center">Property</entry>
+              			<entry align="center">Description</entry>
+              			<entry align="center">Required</entry>
+              			<entry align="center">Default Value</entry>
+            		</row>
+          		</thead>
+
+          		<tbody>
+            		<row>
+              			<entry>nativeJdbcExtractor</entry>
+						<entry>
+							This defines bean id of NativeJdbcExtractor
+							which extracts the original JDBC object from connection object wrapped fitting to 
+							the connection pool in use.
+							(Define only when nativeJdbcExtractor is needed from the lobHandler)
+							
+							사용중인 Connection Pool에 맞게 Wrapping되어 있는 Connection 객체로부터 본래의 JDBC Connection 
+							객체를 추출하는 역할을 수행하는 NativeJdbcExtractor의 Bean Id를 정의한다. (해당 lobHandler에서 
+							nativeJdbcExtractor를 필요로 하는 경우에만 정의)
+							<para>
+								The following is JdbcExtractor classes provided in Spring.
+								다음은 Spring에서 제공하는 주요 JdbcExtractor 클래스들이다.
+							</para>
+							<itemizedlist>
+								<listitem>
+									<para>
+										Common DBCP                                   
+										: org.springframework.jdbc.support.nativejdbc.
+										CommonsDbcpNativeJdbcExtractor
+									</para>
+								</listitem>
+									
+								<listitem>
+									<para>
+									  	C3P0 
+									  	: org.springframework.jdbc.support.nativejdbc.
+									  	C3P0NativeJdbcExtractor
+									</para>
+								</listitem>
+									
+								<listitem>
+									<para>
+										WebLogic
+									  	: org.springframework.jdbc.support.nativejdbc.
+									  	WebLogicNativeJdbcExtractor
+									</para>
+								</listitem>
+									
+								<listitem>
+									<para>
+										WebSphere
+										: org.springframework.jdbc.support.nativejdbc.
+										WebSphereNativeJdbcExtractor
+									</para>
+								</listitem>
+							</itemizedlist> 
+                			<para>
+                				In other words, if Commons DBCP, an open source project, is selected as connection pool,
+									CommonsDbcpNativeJdbcExtractor can be used.
+									즉, 오픈소스 프로젝트인 Commons DBCP를 Connection Pool로 채택한 경우 CommonsDbcpNativeJdbcExtractor를 사용할 수 있다.
+              				</para>
+              			</entry>
+              			<entry align="center">N</entry>
+              			<entry align="center">N/A</entry>
+            		</row>
+          		</tbody>
+        	</tgroup>
+      	</informaltable>
+	</section>
+
+	<section id="foundation_query_configuration_samples">
+    	<title>Samples</title>
+      		
+		<para>
+			The following is a part of context-query.xml containing
+			the above-mentioned Query service properties definition.
+			
+			다음은 위에서 언급한 Query 서비스 속성 정의를 포함하고 있는 context-query.xml의 일부이다. 
+		</para>
+      		
+		<programlisting language="xml"><![CDATA[<bean id="queryService" class="anyframe.core.query.impl.QueryServiceImpl">
+    <property name="jdbcTemplate" ref="jdbcTemplate"/>
+    <property name="sqlRepository" ref="sqlLoader"/>
+    <property name="pagingSQLGenerator" ref="pagingSQLGenerator"/>
+    <property name="lobHandler" ref="lobHandler"/>
+    <!-- if you don't define velocityPropsFilename, 
+        queryservice doesn't make a velocity log file. -->
+    <property name="velocityPropsFilename" value="file:./testvelocity/velocity.log"/>
+</bean>
+
+<bean id="jdbcTemplate" class="anyframe.core.query.impl.jdbc.PagingJdbcTemplate">
+    <property name="dataSource" ref="dataSource" />
+</bean>
+
+<bean id="pagingSQLGenerator" 
+    class="anyframe.core.query.impl.jdbc.generator.OraclePagingSQLGenerator"/>
+
+<bean id="nativeJdbcExtractor" 
+    class="org.springframework.jdbc.support.nativejdbc.CommonsDbcpNativeJdbcExtractor" 
+    lazy-init="true"/>
+
+<bean id="lobHandler" class="org.springframework.jdbc.support.lob.OracleLobHandler"
+    lazy-init="true">
+    <property name="nativeJdbcExtractor" ref="nativeJdbcExtractor"/>
+</bean>]]></programlisting>
+
+		<para>
+			In addition, properties of sqlLoader can be defined like in the following 
+				context-query-sqlloader.xml file.
+				또한, sqlLoader의 속성은 다음 context-query-sqlloader.xml 파일에서와 같이 정의할 수 있다. 
+		</para>
+			
+		<programlisting language="xml"><![CDATA[<bean id="sqlLoader" class="anyframe.core.query.impl.config.loader.SQLLoader">
+    <config:configuration>
+        <!-- xml files in folder -->
+        <!--filename>file:./testmappings/**/testcase-*.xml</filename-->
+        <!-- xml files in classpath -->
+        <filename>
+            classpath:/query/mapping-query-general.xml
+        </filename>
+        중략...
+        <nullcheck type="VARCHAR" default-value="" />
+        <sqlload dynamic="true" frequency="5" />
+        <skiperror>true</skiperror>
+    </config:configuration>
+</bean>]]></programlisting>      		
+	</section>
+
+	<section id="foundation_query_configuration_testcase">
+    	<title>TestCase</title>
+
+		<para>
+			The following is a part of INSERT, SELECT, UPDATE, DELETE test source codes for sample data
+				in the relevant DB using Query service.
+				
+				다음은 Query 서비스를 사용하여 해당하는 DB에 샘플 데이터를 INSERT, SELECT, UPDATE, DELETE하는 
+			테스트 코드의 일부이다.
+		</para>
+            
+		<section id="foundation_query_configuration_testcase_insert">
+            <title>INSERT</title>
+            <para>
+				The following is an example of INSERT.
+				다음은 INSERT 예제이다.
+			</para>
+            	
+            <programlisting language="java"><![CDATA[public void insertQuery() throws Exception{
+    IQueryService queryService = (IQueryService) context.getBean("queryService");
+    //create() : By using sql query defined in XML mapping file, execute INSERT. /XML mapping파일에 정의되어 있는 SQL query를 이용하여 INSERT를 실행한다.
+    int rs = queryService.create
+            ("create", new Object[] { "1234567890123", "AAAAA" , "seoul"});
+    if ( rs == -1 ){
+        throw new Exception("Insert query failed");
+    }
+}]]></programlisting>            	
+		</section>
+
+		<section id="foundation_query_configuration_testcase_select">
+            <title>SELECT</title>
+            <para>
+				The following is an example of SELECT. 다음은 SELECT 예제이다.
+			</para>
+
+            <programlisting language="java"><![CDATA[public void selectQuery() throws Exception{
+    IQueryService queryService = (IQueryService) context.getBean("queryService");
+    ]]><emphasis role="bold">//find() : By using sql query defined in XML mapping, execute SELECT. /XML mapping파일에 정의되어 있는 SQL query를 이용하여 SELECT를 실행한다.</emphasis><![CDATA[
+
+    //In general cases (when not mapping table and class) /일반적인 경우(table과 class를 mapping하지 않은 경우)
+    ArrayList rsquery  = (ArrayList) queryService
+            .find("selectGeneral", new Object[] { "%12345%" });
+    Map hsRsquery = new HashMap();
+    for( int i = 0 ; i < rsquery.size() ; i ++ ){
+        hsRsquery = (Map) rsquery.get(i);
+        String name = (String) hsRsquery.get("name");
+    }
+    
+    ]]><emphasis role="bold">/*When not mapping table onto the class in Mapping XML, /매핑 XML에 해당 클래스와 매핑되는 테이블이 존재하지 않을 경우,</emphasis><![CDATA[
+    ]]><emphasis role="bold">* For the query execution result, put column name by row, 쿼리 수행 결과에 대해 하나의 Row별로 칼럼명,</emphasis><![CDATA[
+    ]]><emphasis role="bold">* and the relevant value in org.apache.commons.collections.map.ListOrderedMap in pair 해당값을 쌍으로 org.apache.commons.collections.map.ListOrderedMap에 put하고</emphasis><![CDATA[ 
+    ]]><emphasis role="bold">* return the result value with ListOrderedMap contained in ArrayList. /ListOrderedMap들을 ArrayList에 담은 형태로 결과값을 리턴하게 된다.</emphasis><![CDATA[
+    ]]><emphasis role="bold">*/</emphasis><![CDATA[
+
+    //Table - When mapping table onto class  /Class mapping을 사용한 경우
+    Collection rsqueryNotUsingResultMapping = queryService
+            .find("selectNotUsingResultMapping", new Object[] { "%12345%" });
+    Iterator rsqueryItr = rsqueryNotUsingResultMapping.iterator();
+    while (rsqueryItr.hasNext()) {
+        Customer customer = (Customer) rsqueryItr.next();
+        String name =  customer.getNm();
+    }
+
+    //When using result-mapping   /result-mapping을 사용한 경우
+    Collection rsqueryUsingResultMapping = queryService
+            .find("selectUsingResultMapping", new Object[] { "%12345%" });
+    Iterator rsqueryItr_01 = rsqueryUsingResultMapping.iterator();
+    while (rsqueryItr_01.hasNext()) {
+        CompositionCustomer compositionCustomer 
+                = (CompositionCustomer) rsqueryItr_01.next();
+        String name =  compositionCustomer.getCompositionName();
+    }
+
+    System.out.println("rsquery.size() : " 
+            + rsquery.size());
+    System.out.println("rsqueryNotUsingResultMapping.size() : " 
+            + rsqueryNotUsingResultMapping.size());
+    System.out.println("rsqueryUsingResultMapping.size( : " 
+            + rsqueryUsingResultMapping.size();
+}]]></programlisting>
+		</section>
+
+		<section id="foundation_query_configuration_testcase_update">
+            <title>UPDATE</title>
+            <para>
+            	The following is an example of UPDATE.   /다음은 UPDATE 예제이다.
+            </para>			
+
+            <programlisting language="java"><![CDATA[public void updateQuery() throws Exception {
+    IQueryService queryService = (IQueryService) context
+            .getBean("queryService");
+    //update() : By using query defined in XML mapping, execute UPDATE.  /XML mapping파일에 정의되어 있는 SQL query를 이용하여 UPDATE를 실행한다.
+    int rs = queryService.update("update"
+            , new Object[] { "9999999999999", "AAAAA" , "busan" , "1234567890123"});
+    if ( rs == -1 ){
+        throw new Exception("Update query failed");
+    }
+}]]></programlisting>
+		</section>
+
+		<section id="foundation_query_configuration_testcase_delete">
+			<title>DELETE</title>
+			<para>
+				The following is an example of DELETE.  /다음은 DELETE 예제이다.
+			</para>	
+
+			<programlisting language="java"><![CDATA[public void deleteQuery() throws Exception {
+    IQueryService queryService = (IQueryService) context
+            .getBean("queryService");
+    //remove() : By using query defined in XML mapping file, execute DELETE.  /XML mapping파일에 정의되어 있는 SQL query를 이용하여 DELETE를  실행한다.
+    int rs = queryService.remove("delete", new Object[] { "9999999999999" });
+    if ( rs == -1 ){
+        throw new Exception("Delete query failed");
+    }
+}]]></programlisting>
+		</section>
+    </section>
+</chapter>
+
+ 

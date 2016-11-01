@@ -1,0 +1,84 @@
+<?xml version="1.0" encoding="ISO-8859-1" standalone="no"?>
+<!DOCTYPE log4j:configuration SYSTEM "log4j.dtd">
+<log4j:configuration xmlns:log4j="http://jakarta.apache.org/log4j/" debug="false">
+    
+    <appender class="org.apache.log4j.ConsoleAppender" name="console">
+        <layout class="org.apache.log4j.PatternLayout">
+            <param name="ConversionPattern" value="[%-5p] %d{yyyy-MM-dd HH:mm:ss} %c %n%m%n"/>
+        </layout>   
+    </appender>
+   
+   <!--logmanager-configuration-START-->
+   <!-- mongodb appender -->
+    <appender class="org.anyframe.logmanager.log4mongo.MongoDbPatternLayoutAppender" name="mongodb">
+        <layout class="org.anyframe.logmanager.log4mongo.MongoDbPatternLayout">
+            <param name="ConversionPattern" value="level:%p,thread:%t,message:%m,className:%C,methodName:%M,lineNumber:%L,userId:%X{userId},userName:%X{userName},clientIp:%X{clientIp},serverId:%X{serverId},appName:%X{appName},category:%c"/>
+        </layout>
+        <param name="hostname" value="localhost"/>
+        <param name="port" value="27017"/>
+        <param name="userName" value=""/>
+        <param name="password" value=""/>
+        <param name="databaseName" value="logs"/>
+        <param name="collectionName" value="moviefinderlogs"/>
+        <param name="monitorLevel" value="0"/>
+    </appender>
+    	
+	<!-- logging for log manager -->
+	<logger additivity="false" name="org.anyframe.plugin.logmanager">	
+        <level value="DEBUG"/>
+        <appender-ref ref="mongodb"/>
+    </logger>
+    
+    <!--logmanager-configuration-END-->
+    
+	<logger additivity="false" name="org.anyframe.plugin">	
+        <level value="DEBUG"/>
+        <appender-ref ref="console"/>
+    </logger>  
+ 
+    <!--log SQL and replace SQL with the given pattern for preventing SQL Injection with jdbc-support plugin -->
+	<logger additivity="false" name="org.anyframe.jdbc.support.CompleteQueryPostProcessor">
+		<level value="INFO"/>
+		<appender-ref ref="console"/>
+	</logger>
+
+	<logger additivity="false" name="org.anyframe.jdbc.support.InjectionPatternPostProcessor">
+		<level value="WARN"/>
+		<appender-ref ref="console"/>
+	</logger>
+   
+    <!--log SQL (pre-execution) plus exceptions caused by SQL with logging-sql plugin,
+        it recommends to use jdbc-support plugin instead of logging-sql plugin for SQL logging. -->
+  	<logger additivity="false" name="jdbc.sqlonly">
+		<level value="DEBUG"/>
+		<appender-ref ref="console"/>
+	</logger>
+	
+	<!--log SQL with timing information, post execution, all jdbc calls except ResultSet calls, jdbc ResultSet calls  with logging-sql plugin -->
+	<logger additivity="false" name="jdbc">
+		<level value="OFF"/>
+		<appender-ref ref="console"/>
+	</logger>
+
+    <!--CXF IN/OUT Bound Message-->
+	<logger additivity="false" name="org.apache.cxf.interceptor.LoggingInInterceptor">	
+        <level value="DEBUG"/>
+        <appender-ref ref="console"/>
+    </logger>  
+    
+	<logger additivity="false" name="org.apache.cxf.interceptor.LoggingOutInterceptor">	
+        <level value="DEBUG"/>
+        <appender-ref ref="console"/>
+    </logger>
+    
+    <!--SimpleWeb BeanMethod Message-->
+	<logger additivity="false" name="org.anyframe.simpleweb.beans.support">	
+        <level value="WARN"/>
+        <appender-ref ref="console"/>
+    </logger>   
+        
+    <root>
+    	<level value="ERROR"/>
+    	<appender-ref ref="console"/>
+    </root>
+</log4j:configuration>

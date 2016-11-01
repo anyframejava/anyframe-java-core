@@ -1,0 +1,118 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<plugin name="flex-query" description="Flex-Query Plugin consists of BlazeDS installation for communicating Flex Client and Server, and libraries and configuration file for integrating Spring to BlazeDS.">
+	<groupId>org.anyframe.plugin</groupId>
+	<artifactId>anyframe-flex-query-pi</artifactId>
+	<version>1.0.0</version>
+	<dependent-plugins>
+		<dependent-plugin name="query" version="2.0.0&gt;*" />
+	</dependent-plugins>
+	<resources>
+		<resource dir="src/main/java" filtered="true" packaged="true">
+			<include name="**/*.java" />
+		</resource>
+		<resource dir="src/main/resources" filtered="true" packaged="false">
+			<include name="**/*.xml" />
+		</resource>
+		<resource dir="src/test/java" filtered="true" packaged="true">
+			<include name="**/*.java" />
+		</resource>
+		<resource dir="src/test/resources" filtered="true" packaged="false">
+			<include name="**/*.xml" />
+		</resource>
+		<resource dir="src/main/webapp/flex" filtered="false"
+			packaged="false">
+			<exclude name="**/**/Main.swf" />
+			<include name="**/**/*.*" />
+		</resource>
+		<resource dir="src/main/webapp/WEB-INF/jsp" filtered="false"
+			packaged="false">
+			<include name="**/*.jsp" />
+		</resource>
+		<resource dir="src/main/webapp/WEB-INF/flex/pjt" filtered="true"
+			packaged="false">
+			<include name="**/src/samples/**/*.mxml" />
+			<include name="**/src/samples/**/*.as" />
+		</resource>
+		<resource dir="src/main/webapp/WEB-INF/flex" filtered="false"
+			packaged="false">
+			<exclude name="**/src/samples/**/*.mxml" />
+			<exclude name="**/src/samples/**/*.as" />
+		</resource>
+		<resource dir="db" filtered="false" packaged="false">
+			<include name="**/*.sql" />
+		</resource>
+	</resources>
+	<build>
+		<filesets>
+			<fileset dir="src/main/java" filtered="true" packaged="true">
+				<include name="**/org/anyframe/plugin/flex/query/**/*.java" />
+			</fileset>
+			<fileset dir="src/main/resources" filtered="true" packaged="false">
+				<include name="**/spring/*flex*.xml" />
+				<include name="**/spring/context-transaction.xml" />
+				<include name="**/sql/**/*-flex-query-*.xml" />
+			</fileset>
+			<fileset dir="src/main/webapp" filtered="false" packaged="false">
+				<include name="**/*.jsp" />
+				<include name="**/*.html" />
+			</fileset>
+			<fileset dir="src/main/webapp/flex" filtered="false"
+				packaged="false">
+				<exclude name="**/**/Main.swf" />
+				<include name="**/**/*.*" />
+			</fileset>
+			<fileset dir="src/main/webapp/WEB-INF" filtered="true"
+				packaged="false">
+				<include name="**/web.xml" />
+			</fileset>
+			<fileset dir="src/main/webapp/WEB-INF/flex/fdk" filtered="false"
+				packaged="false">
+				<include name="**/**/*.*" />
+			</fileset>
+			<fileset dir="src/main/webapp/WEB-INF/flex/pjt" filtered="true"
+				packaged="false">
+				<include name="**/src/samples/**/*.mxml" />
+				<include name="**/src/samples/**/*.as" />
+			</fileset>
+			<fileset dir="src/main/webapp/WEB-INF/flex" filtered="false"
+				packaged="false">
+				<exclude name="**/src/samples/**/*.mxml" />
+				<exclude name="**/src/samples/**/*.as" />
+			</fileset>
+			<fileset dir="db" filtered="false" packaged="false">
+				<include name="**/*.sql" />
+				<include name="**/*flex*.xml" />
+			</fileset>
+		</filesets>
+	</build>
+	<samples>true</samples>
+	<interceptor>
+		<class>org.anyframe.plugin.interceptor.FlexPluginInterceptor</class>
+		<dependencies>
+			<dependency>
+				<groupId>commons-collections</groupId>
+				<artifactId>commons-collections</artifactId>
+				<version>3.2</version>
+			</dependency>
+			<dependency>
+				<groupId>commons-logging</groupId>
+				<artifactId>commons-logging</artifactId>
+				<version>1.1.1</version>
+			</dependency>
+			<dependency>
+				<groupId>ant</groupId>
+				<artifactId>ant</artifactId>
+				<version>1.8.1</version>
+				<scope>interceptor</scope>
+			</dependency>
+			<dependency>
+				<groupId>ant</groupId>
+				<artifactId>flex</artifactId>
+				<version>3.2.0</version>
+				<scope>interceptor</scope>
+			</dependency>
+		</dependencies>
+	</interceptor>
+	<essential>false</essential>
+	<checked>false</checked>
+</plugin>

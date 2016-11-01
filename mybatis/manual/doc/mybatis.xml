@@ -1,0 +1,109 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+
+<!DOCTYPE book PUBLIC "-//OASIS//DTD DocBook XML V4.5//EN" "http://www.oasis-open.org/docbook/xml/4.5/docbookx.dtd"
+[
+<!ENTITY mybatis_mybatis-spring SYSTEM "mybatis/mybatis-spring.xml">
+<!ENTITY mybatis_configuration SYSTEM "mybatis/configuration.xml">
+<!ENTITY mybatis_usage SYSTEM "mybatis/usage.xml">
+<!ENTITY mybatis_resources SYSTEM "mybatis/resources.xml">
+]
+>
+
+<!--
+		Licensed to the Apache Software Foundation (ASF) under one or more
+		contributor license agreements. See the NOTICE file distributed with
+		this work for additional information regarding copyright ownership.
+		The ASF licenses this file to you under the Apache License, Version
+		2.0 (the "License"); you may not use this file except in compliance
+		with the License. You may obtain a copy of the License at
+
+		http://www.apache.org/licenses/LICENSE-2.0 Unless required by
+		applicable law or agreed to in writing, software distributed under the
+		License is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR
+		CONDITIONS OF ANY KIND, either express or implied. See the License for
+		the specific language governing permissions and limitations under the
+		License.
+-->
+    
+<book lang="ko">
+	<title>Anyframe MyBatis Plugin</title>
+	
+	<bookinfo>
+		<copyright>
+			<year>2007-2012</year>
+			<holder>삼성SDS</holder>
+		</copyright>
+		<releaseinfo>Version 1.0.0</releaseinfo>
+
+		<productname>Anyframe MyBatis Plugin</productname>
+		
+		<authorgroup>
+			<corpauthor></corpauthor>
+		</authorgroup>
+		
+		<mediaobject>
+			<imageobject>
+				<imagedata fileref="../image/common/logo_pdf.jpg"/>
+			</imageobject>
+		</mediaobject>
+		<legalnotice>
+			<para>
+				본 문서의 저작권은 삼성SDS에 있으며 Anyframe 오픈소스 커뮤니티 활동의 목적하에서 자유로운 이용이 가능합니다.
+				본 문서를 복제, 배포할 경우에는 저작권자를 명시하여 주시기 바라며 본 문서를 변경하실 경우에는 원문과 변경된 내용을 표시하여 주시기 바랍니다. 
+				원문과 변경된 문서에 대한 상업적 용도의 활용은 허용되지 않습니다. 본 문서에 오류가 있다고 판단될 경우 이슈로 등록해 주시면 적절한 조치를 취하도록 하겠습니다.
+			</para>
+		</legalnotice>
+	</bookinfo>
+ 
+	<part id="mybatis_introduction_part">
+		<title>Installation</title>
+		<partintro id="mybatis_introduction_part_partintro">
+			<para>
+				MyBatis Plugin은 <ulink url="http://www.mybatis.org/">MyBatis</ulink>와 Anyframe과 연계를 가이드하기위한 샘플코드와 이 오픈소스들을 활용하는데 필요한 참조 라이브러리들로 구성되어 있다.
+			</para>
+			<para role="introduction_title"><emphasis role="bold">Installation</emphasis></para>
+			<para>Command 창에서 다음과 같이 명령어를 입력하여 MyBatis plugin을 설치한다.</para>
+			<programlisting language="java"><![CDATA[mvn anyframe:install -Dname=mybatis]]></programlisting>
+			<para>
+				installed(mvn anyframe:installed) 혹은 jetty:run(mvn clean jetty:run) command를 이용하여 설치 결과를 확인해볼 수 있다. 
+			</para>	
+			<para role="introduction_title"><emphasis role="bold">Dependent Plugins</emphasis></para>
+			<informaltable>
+				<tgroup cols="2">
+					<colspec colnum="1" colname="col1" colwidth="5*" />
+					<colspec colnum="2" colname="col2" colwidth="5*" />
+					<thead>
+						<row>
+							<entry align="center">Plugin Name</entry>
+							<entry align="center">Version Range</entry>
+						</row>
+					</thead>
+					<tbody>
+						<row>
+							<entry align="center"><ulink url="http://dev.anyframejava.org/docs/anyframe/plugin/essential/core/1.0.4/reference/htmlsingle/core.html">Core</ulink></entry>
+							<entry align="center">2.0.0 > *</entry>
+						</row>
+					</tbody>
+				</tgroup>
+			</informaltable>
+		</partintro>
+	</part>
+	
+	<part id="mybatis_part">
+		<title>MyBatis</title>
+		<partintro id="mybatis_mybatis_part_intro">
+			<para>
+				MyBatis Plugin은 object-oriented application에서 relational database 사용을 쉽게 해주는 Data Mapper Framework 이다. iBatis가 version 3이 되고 source repository를 Apache에서 google code로 이전 하면서 이름을 MyBatis로 변경 하였다.
+				MyBatis는 내부적으로 DataSource 서비스를 이용하고 있으므로, DataSource 서비스와 같이 배포되어야 함에 유의하도록 한다.
+			</para>
+			<para>
+				MyBatis 매뉴얼에서 제공하는 모든 테스트 코드는 HSQL DB를 기반으로 실행된다.
+			</para> 
+		</partintro>
+		&mybatis_mybatis-spring;
+		&mybatis_configuration;
+		&mybatis_usage;
+		&mybatis_resources;
+	</part>
+ 	 
+</book>

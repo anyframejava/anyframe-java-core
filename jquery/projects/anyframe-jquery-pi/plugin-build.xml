@@ -1,0 +1,68 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<plugin name="jquery" description="anyframe-jquery-pi plugin">
+  <groupId>org.anyframe.plugin</groupId>
+  <artifactId>anyframe-jquery-pi</artifactId>
+  <version>1.0.0</version>
+  <dependent-plugins>
+    <dependent-plugin name="query" version="2.0.0&gt;*"/>
+  </dependent-plugins>
+  <resources>
+    <resource dir="src/main/java" filtered="true" packaged="true">
+      <include name="**/*.java"/>
+    </resource>
+    <resource dir="src/main/resources" filtered="true" packaged="false">
+      <include name="**/*.xml"/>
+    </resource>
+    <resource dir="src/test/java" filtered="true" packaged="true">
+      <include name="**/*.java"/>
+    </resource>
+    <resource dir="src/test/resources" filtered="true" packaged="false">
+      <include name="**/*.xml"/>
+    </resource>
+    <resource dir="src/main/webapp/WEB-INF/jsp" filtered="false" packaged="false">
+      <include name="**/*.jsp"/>
+    </resource>
+    <resource dir="src/main/webapp" filtered="false" packaged="false">
+      <include name="**/jquery/**/*.*"/>
+      <include name="**/sample/**/admin_new.css"/>
+      <include name="**/sample/images/tree_types/*.*"/>
+      <include name="**/jquery-*.xml"/>
+    </resource>
+    <resource dir="db/scripts" filtered="false" packaged="false">
+        <include name="**/jquery-*.sql"/>
+    </resource>
+  </resources>
+  <build>
+    <filesets>
+      <fileset dir="src/main/java" filtered="true" packaged="true">
+        <include name="**/org/anyframe/plugin/jquery/**/*.java"/>
+      </fileset>
+      <fileset dir="src/main/resources" filtered="true" packaged="false">
+        <include name="**/*jquery*.xml"/>
+      </fileset>
+      <fileset dir="src/test/java" filtered="true" packaged="true">
+        <include name="**/org/anyframe/plugin/jquery/**/*.java"/>
+      </fileset>
+      <fileset dir="src/test/resources" filtered="true" packaged="false">
+        <include name="**/*jquery*.xml"/>
+      </fileset>
+      <fileset dir="src/main/webapp" filtered="false" packaged="false">
+        <include name="**/jquery/**/*.*"/>
+        <include name="**/sample/**/admin_new.css"/>
+        <include name="**/sample/images/tree_types/*.*"/>
+        <include name="**/jquery-views.xml"/>
+        <include name="**/web.xml"/>
+        <include name="**/*.jsp"/>
+      </fileset>
+       <fileset dir="db/scripts" filtered="false" packaged="false">
+        <include name="**/jquery-*.sql"/>
+      </fileset>
+      <fileset dir="db/resources" filtered="false" packaged="false">
+        <include name="**/*.*"/>
+      </fileset>
+    </filesets>
+  </build>
+  <samples>true</samples>
+  <essential>false</essential>
+  <checked>false</checked>
+</plugin>

@@ -1,0 +1,93 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE queryservice PUBLIC "-//ANYFRAME//DTD QUERYSERVICE//EN"
+"http://www.anyframejava.org/dtd/anyframe-core-query-mapping-3.2.dtd">
+<queryservice>
+  	<queries>
+  		<query id="insertCustomer" isDynamic="false">
+  			<statement>insert into TB_CUSTOMER values (?, ?, ?)</statement>
+			<param type="VARCHAR"/> 
+			<param type="VARCHAR"/> 
+			<param type="VARCHAR"/> 		
+  		</query> 
+  
+  		<query id="findCustomer" isDynamic="false">
+  			<statement>select NAME, ADDRESS from TB_CUSTOMER where SSNO = ?</statement>
+			<param type="VARCHAR"/> 
+  		</query> 
+  		
+  		<query id="updateCustomer" isDynamic="false">
+  			<statement>update TB_CUSTOMER set NAME=? where SSNO=? </statement>
+			<param type="VARCHAR"/> 
+			<param type="VARCHAR"/> 
+  		</query>   	
+  		
+  		<query id="removeCustomer" isDynamic="false">
+  			<statement>delete from TB_CUSTOMER where SSNO=? </statement>
+			<param type="VARCHAR"/> 	
+  		</query>
+  		
+  		<query id="insertLongVarchar" isDynamic="false">
+  			<statement>insert into TB_LONG_VARCHAR values(?,?,?)</statement>		
+  			<param type="INTEGER"/>
+  			<param type="VARCHAR"/>  			  			  			
+ 			<param type="LONGVARCHAR"/>  			  			  			
+  		</query> 
+  		<query id="findLongVarchar" isDynamic="false">
+  			<statement>select myvarchar, mylong from TB_LONG_VARCHAR where count = ?</statement>
+  			<param type="INTEGER"/>
+  		</query>  
+  		
+  		<query id="queryWithKoreanLanguage" isDynamic="false">
+  			<statement>select NAME, ADDRESS from TB_CUSTOMER 
+					   where NAME like '%테스트%'
+			</statement>
+  		</query>  
+  		
+		<query id="batchInsert" isDynamic="false">
+			<statement>
+				insert into TB_BATCH_TEST(col1, col2, col3) 
+				values (?,?,?)
+			</statement>
+			<param type="VARCHAR" />
+			<param type="VARCHAR" />
+			<param type="NUMERIC" />
+		</query>
+		<query id="batchInsertWithMap" isDynamic="true">
+			<statement>
+				insert into TB_BATCH_TEST(col1, col2, col3) 
+				values (:col1,:col2,:col3)
+			</statement>
+		</query>		
+		<query id="batchDelete" isDynamic="false">
+			<statement>delete TB_BATCH_TEST where col1 = ?</statement>
+			<param type="VARCHAR" />
+		</query>
+		<query id="findBatchTest" isDynamic="false">
+			<statement>
+				select col1,col2,col3 from TB_BATCH_TEST
+			</statement>
+		</query>
+
+		<query id="findCustomerWithKorean" isDynamic="true">
+			<statement>
+				select DECODE(NAME, '테스트', '테스트수정') as NAME
+				from TB_CUSTOMER 
+				#if(${ssno})
+				where SSNO = :ssno
+				#end
+			</statement>
+			<param name="ssno" type="VARCHAR"/>
+		</query>
+		
+		<query id="findWithConcurrent" isDynamic="true">
+	    	<statement>
+	        	SELECT COL1, COL2, CONDITION 
+	        	FROM TB_CONCURRENT
+	            	#if ("$!condition" != "")
+	                	WHERE CONDITION = :condition
+	                #end
+	        </statement>
+		</query>			  		  
+    </queries>
+    
+</queryservice>

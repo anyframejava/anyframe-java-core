@@ -1,0 +1,81 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:config="http://www.anyframejava.org/schema/service"
+	xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-2.5.xsd
+	http://www.anyframejava.org/schema/service http://www.anyframejava.org/schema/service/anyframe-core-service-2.0.xsd">
+	<bean name="Ids-TestNonExistingTableName" class="org.anyframe.idgen.impl.TableIdGenServiceImpl" destroy-method="destroy">
+		<property name="dataSource" ref="util_datasource"/>
+		<property name="blockSize" value="1"/>
+		<property name="table" value="idstest"/>
+		<property name="key" value="does-not-exist"/>		
+	</bean>
+	<bean name="Ids-TestSimpleRequestIdsSize1" class="org.anyframe.idgen.impl.TableIdGenServiceImpl" destroy-method="destroy">
+		<property name="dataSource" ref="util_datasource"/>
+		<property name="blockSize" value="1"/>
+		<property name="table" value="idstest"/>
+		<property name="key" value="test"/>			
+	</bean>
+	<bean name="Ids-TestSimpleRequestIdsSize10" class="org.anyframe.idgen.impl.TableIdGenServiceImpl" destroy-method="destroy">
+		<property name="dataSource" ref="util_datasource"/>
+		<property name="blockSize" value="10"/>
+		<property name="table" value="idstest"/>
+		<property name="key" value="test"/>
+	</bean>
+	<bean name="Ids-TestSimpleRequestIdsSize100" class="org.anyframe.idgen.impl.TableIdGenServiceImpl" destroy-method="destroy">
+		<property name="dataSource" ref="util_datasource"/>
+		<property name="blockSize" value="100"/>
+		<property name="table" value="idstest"/>
+		<property name="key" value="test"/>			
+	</bean>		
+	
+	<bean name="Ids-TestBigDecimalRequestIdsSize10" class="org.anyframe.idgen.impl.TableIdGenServiceImpl" destroy-method="destroy">
+		<property name="dataSource" ref="util_datasource"/>
+		<property name="useBigDecimals" value="true"/>
+		<property name="blockSize" value="10"/>
+		<property name="table" value="idstest"/>
+		<property name="key" value="test"/>			
+	</bean>
+	<bean name="Ids-TestMaxByteIds" class="org.anyframe.idgen.impl.TableIdGenServiceImpl" destroy-method="destroy">
+		<property name="dataSource" ref="util_datasource"/>
+		<property name="blockSize" value="10"/>
+		<property name="table" value="idstest"/>
+		<property name="key" value="test"/>			
+	</bean>
+	<bean name="Ids-TestMaxShortIds" class="org.anyframe.idgen.impl.TableIdGenServiceImpl" destroy-method="destroy">
+		<property name="dataSource" ref="util_datasource"/>
+		<property name="blockSize" value="10"/>
+		<property name="table" value="idstest"/>
+		<property name="key" value="test"/>			
+	</bean>
+	<bean name="Ids-TestMaxIntegerIds" class="org.anyframe.idgen.impl.TableIdGenServiceImpl" destroy-method="destroy">
+		<property name="dataSource" ref="util_datasource"/>
+		<property name="blockSize" value="10"/>
+		<property name="table" value="idstest"/>
+		<property name="key" value="test"/>				
+	</bean>		
+	<bean name="Ids-TestMaxLongIds" class="org.anyframe.idgen.impl.TableIdGenServiceImpl" destroy-method="destroy">
+		<property name="dataSource" ref="util_datasource"/>
+		<property name="blockSize" value="10"/>
+		<property name="table" value="idstest"/>
+		<property name="key" value="test"/>				
+	</bean>		
+	<bean name="Ids-TestNotDefinedTableInfo" class="org.anyframe.idgen.impl.TableIdGenServiceImpl" destroy-method="destroy">
+		<property name="dataSource" ref="util_datasource"/>
+		<property name="blockSize" value="1"/>
+	</bean>		
+	
+	<bean name="Ids-TestWithGenerationStrategy" class="org.anyframe.idgen.impl.TableIdGenServiceImpl" destroy-method="destroy">
+		<property name="dataSource" ref="util_datasource"/>
+		<property name="strategy" ref="mixPrefix"/>
+		<property name="blockSize" value="1"/>
+		<property name="table" value="idstest"/>
+		<property name="key" value="test"/>				
+	</bean>	
+	
+	<bean name="mixPrefix" class="org.anyframe.idgen.impl.strategy.MixPrefixStrategy">
+		<property name="prefix" value="TEST-"/>
+		<property name="cipers" value="5"/>
+		<property name="fillChar" value="*"/>
+	</bean>
+</beans>	

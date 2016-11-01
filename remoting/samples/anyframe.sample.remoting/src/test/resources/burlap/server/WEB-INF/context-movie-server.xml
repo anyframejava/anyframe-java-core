@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://www.springframework.org/schema/beans
+	 http://www.springframework.org/schema/beans/spring-beans-2.5.xsd">
+
+	<!-- MovieService -->
+	<bean id="org.anyframe.sample.remoting.movie.MovieService"
+		class="org.anyframe.sample.remoting.movie.impl.MovieServiceImpl">
+		<property name="movieDAO">
+			<ref bean="movieDAO" />
+		</property>
+	</bean>
+
+	<bean id="movieDAO" class="org.anyframe.sample.remoting.movie.impl.MovieDAODefaultImpl" />
+	
+	<!-- Add Burlap ServiceExporter -->
+	<bean id="burlapMovieService" class="org.springframework.remoting.caucho.BurlapServiceExporter">
+		<property name="service" ref="org.anyframe.sample.remoting.movie.MovieService" />
+		<property name="serviceInterface" value="org.anyframe.sample.remoting.movie.MovieService" />
+	</bean>
+
+</beans>
+
+
