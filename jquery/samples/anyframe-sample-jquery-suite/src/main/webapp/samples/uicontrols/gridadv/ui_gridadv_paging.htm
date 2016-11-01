@@ -1,0 +1,120 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN"
+"http://www.w3.org/TR/html4/loose.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+ 
+ <!-- Start of head-->
+<head>
+<meta http-equiv="content-type" content="text/html; charset=UTF-8" />
+<title>Paging </title>
+
+
+<!-- include required common files  ----------------------------------------------------->
+<script type="text/javascript" src="../../../common/exlibs/jquery-1.9.0.js" ></script>
+
+<script type="text/javascript" src="../../../common/exlibs/highlighter/scripts/shCore.js" ></script>
+<script type="text/javascript" src="../../../common/exlibs/highlighter/scripts/shBrushJScript.js" ></script>
+
+<script type="text/javascript" src="../../../common/js/template_common.js" ></script>
+
+<!--  stylesheet  -->
+<link type="text/css" rel="stylesheet" href="../../../common/exlibs/highlighter/styles/shCore.css"/>
+<link type="text/css" rel="stylesheet" href="../../../common/exlibs/highlighter/styles/shCoreDefault.css"/>
+<link rel="stylesheet" type="text/css" href="../../../common/css/style.css" /> 
+
+
+<!-- scripts to support sample page  ----------------------------------------------------->
+<script type="text/javascript">
+
+$(function() {
+	$("#common").load("../../../common/basicinfo.htm");			//common : basic informations	
+})
+
+
+$(function() {
+	JTemplate.load("ui_gridadv_paging_src.htm");					                  //{TODO} source url 수정
+	JTemplate.loadDemo2("ui_gridadv_paging_src.htm", {height:"350px"});			  //{TODO} source url 수정, show visaul demo sample
+}); 
+	
+</script> 
+</head>
+<!-- End of head -->
+
+<!-- Start of body -->
+<body>
+ 
+<!-- HEADER BAR -------------------------------------------------------------->
+	<div class="content-title">Grid Advanced - Pager</div>
+
+<!-- START OF PAGE ... -------------------------------------------------------->
+	<div id="page">
+		<p class="header-title">Pager 기본 기능</p>
+		<p class="header-desc">: 자체적으로 제공하는 기본적인 Pager 기능에 대한 예를 보여준다. </p>
+
+<!-- DEMO ----------------------------------------------------------------------->
+		<div class="demo">
+			<h3 >Demo</h3>
+			<div id="visualExample"></div>
+		</div>
+        
+<!-- DEMO DESCRIPTION----------------------------------------------------->
+		<div class="desc">
+			<h3>Demo Description</h3>
+			<hr>
+			<p class="desc-overall">
+            페이지 목록 보기 및 입력기능, Grid 에 보여질 최대 레코드 개수 선택 기능, 다음 페이지, 이전 페이지, 처음, 끝 페이지로 이동 등의 기능들을 구현하였다.
+			</p>
+		</div>
+                        
+<!-- CODE------------------------------------------------------------------------>
+		<div class="code">
+			<h3>Code Source</h3>
+			<pre id="codeExample" class="brush: js"></pre>
+        </div>
+        
+<!-- CODE DESCRIPTION------------------------------------------------------>
+		<div class="desc">
+			<h3>Code Description</h3>
+			<hr>
+
+            <p class="desc-title">초기화</p>
+            <span class="code-line">#56 ~ #59</span>
+            <div class="code-block">
+<pre>
+rowNum: 3,
+pager: ENV.ID_GRID_PAGER,
+viewrecords: true,
+rowList: [3, 5]
+</pre>
+            </div>
+			<p class="desc-overall">
+            Pager 구성을 위한 Option 들을 정의한다.
+
+                <ul class="desc-ul">
+                    <li><span>pager</span>Pager 가 표현될 Html Element 를 지정한다. 본 예제에서는 Div 의 id 를 지정하였다.</li>
+                    <li><span>rowNum</span>Grid 에 나타낼 최대 레코드 개수, 즉 한 페이지 당 나타낼 최대 레코드 개수를 지정한다. (기본값 : 20)</li>
+                    <li><span>viewrecords</span>조회된 전체 레코드 개수를 보여줄 지 여부를 지정한다. 본 예제에서 Grid 오른쪽 하단에 표현된다.</li>
+                    <li><span>rowList</span>Grid 에 나타낼 최대 레코드 개수의 목록을 지정한다. (Array형태) 결국, rowNum 의 값을 동적으로 변경하게 된다.</li>
+                </ul>
+            </p>
+         </div>
+
+
+<!-- RELATED LINKS ----------------------------------------------------------->
+        <div class="related">
+			<h3>Related Links</h3>
+			<hr>
+			<ul class="desc-hypl">
+				<li>
+					<span>Grid - Pager Doc</span>
+					<a href="http://www.trirand.com/jqgridwiki/doku.php?id=wiki:pager"></a>
+				</li>
+			</ul>
+		</div>
+
+	</div>      
+<!-- End of Page-->
+
+</body>
+<!-- End of body-->
+
+</html>

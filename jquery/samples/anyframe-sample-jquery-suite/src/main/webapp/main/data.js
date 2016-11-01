@@ -1,3 +1,30 @@
+/**
+ * Anyframe jQuery Sample Suite
+ *
+ * @author Sangjin,Nam(sangjiny.nam@samsung.com / poethera@gmail.com)
+ *
+ * @version 1.0.4
+ *
+ *
+ * @since version  1.0.4 on 2013.09.13
+ * change json format
+ * - added "disable" to "SampleArray". default is false.
+ *
+ * @since version 1.0.3 on 2013.09.10
+ * change json format
+ * - added "aui" type into "sampleType". so, it can be selectable ["local", "server", "ux", "aui"].
+ *
+ * @since version 1.0.2  on 2013.08.19
+ * changed json format.
+ *  - added "sampleType" to "sampleArray". it can be selectable ["local", "server", "ux"]. default is "local".
+ *
+ * @since  version 1.0.1  on 2013.05.31
+ * changed json format.
+ *  - added "disable" to "Category". if it's "true", it show you the message "it's in preparation". default is "false".
+ *  - added "visible" to "sampleArray". [true/false] default is "true". if it's false, that sample will be hide on the menu.
+ *
+ */
+
 (function(global) {
 	
 	var isjQueryReady = !(!window.jQuery);
@@ -100,7 +127,8 @@
 			var sampleone = sampleArry[ax],
 				catone = tdata[sampleone.catName],
 				newSample = {};
-			
+
+            // skip invisible sample
 			if (sampleone.visible !== undefined && sampleone.visible == false)
 				continue;
 			
@@ -113,7 +141,9 @@
 			// build each sample			
 			newSample.name = sampleone.sampleName;
 			newSample.link = prePath + sampleone.sampleLink;
-			
+            newSample.type = sampleone.sampleType || "local";
+            newSample.disable = sampleone.disable || false;
+
 			catone[sampleone.sampleSetName].list.push( newSample );
 		}
 	}

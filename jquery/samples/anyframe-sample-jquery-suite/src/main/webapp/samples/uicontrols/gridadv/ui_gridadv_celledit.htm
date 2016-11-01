@@ -1,0 +1,139 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN"
+"http://www.w3.org/TR/html4/loose.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+ 
+ <!-- Start of head-->
+<head>
+<meta http-equiv="content-type" content="text/html; charset=UTF-8" />
+<title>Cell Editing</title>
+
+
+<!-- include required common files  ----------------------------------------------------->
+<script type="text/javascript" src="../../../common/exlibs/jquery-1.9.0.js" ></script>
+
+<script type="text/javascript" src="../../../common/exlibs/highlighter/scripts/shCore.js" ></script>
+<script type="text/javascript" src="../../../common/exlibs/highlighter/scripts/shBrushJScript.js" ></script>
+
+<script type="text/javascript" src="../../../common/js/template_common.js" ></script>
+
+<!--  stylesheet  -->
+<link type="text/css" rel="stylesheet" href="../../../common/exlibs/highlighter/styles/shCore.css"/>
+<link type="text/css" rel="stylesheet" href="../../../common/exlibs/highlighter/styles/shCoreDefault.css"/>
+<link rel="stylesheet" type="text/css" href="../../../common/css/style.css" /> 
+
+
+<!-- scripts to support sample page  ----------------------------------------------------->
+<script type="text/javascript">
+
+$(function() {
+	$("#common").load("../../../common/basicinfo.htm");			//common : basic informations	
+})
+
+
+$(function() {
+	JTemplate.load("ui_gridadv_celledit_src.htm");					                  //{TODO} source url 수정
+	JTemplate.loadDemo2("ui_gridadv_celledit_src.htm", {height:"450px"});			  //{TODO} source url 수정, show visaul demo sample
+}); 
+	
+</script> 
+</head>
+<!-- End of head -->
+
+<!-- Start of body -->
+<body>
+ 
+<!-- HEADER BAR -------------------------------------------------------------->
+	<div class="content-title">Grid Advanced - Cell Editing</div>
+
+<!-- START OF PAGE ... -------------------------------------------------------->
+	<div id="page">
+		<p class="header-title">Cell Editing</p>
+		<p class="header-desc">: Cell Editing 처리에 대한 예를 보여준다.</p>
+
+<!-- DEMO ----------------------------------------------------------------------->
+		<div class="demo">
+			<h3 >Demo</h3>
+			<div id="visualExample"></div>
+		</div>
+        
+<!-- DEMO DESCRIPTION----------------------------------------------------->
+    <div class="desc">
+			<h3>Demo Description</h3>
+			<hr>
+			<p class="desc-overall">
+            기본적인 골격은 inline editing 데모와 유사하며, 특히 cell editing 시 고려되어야 할 부분에 대하여 구현 되었다. <br>
+            Cell Editing 적용을 위해, Add Row 실행 시 빈 데이타로 한 레코드가 추가되어 저장된다.
+                <ul class="desc-ul">
+                    <li><span>Edit Cell</span>편집가능한 첫번째 레코드의 첫번째 컬럼의 셀 또는 마지막 편집했던 셀을 Editing 가능하게 변경한다. <span class="noted-color">마우스 클릭과 같은 효과.</span></li>
+                    <li><span>Save Cell</span>편집 중인 셀의 값을 저장하게 한다. <span class="noted-color">Enter Key 를 실행한 것과 같은 효과.</span></li>
+                    <li><span>Restore Cell</span>편집 중인 셀의 값을, 원래 값으로 변경한다. <span class="noted-color">ESC Key 를 실행한 것과 같은 효과.</span></li>
+                </ul>
+			</p>
+		</div>
+                        
+<!-- CODE------------------------------------------------------------------------>
+		<div class="code">
+			<h3>Code Source</h3>
+			<pre id="codeExample" class="brush: js"></pre>
+        </div>
+        
+<!-- CODE DESCRIPTION------------------------------------------------------>
+		<div class="desc">
+			<h3>Code Description</h3>
+			<hr>
+
+            <p class="desc-title">초기화</p>
+            <span class="code-line">#66 ~ #71</span>
+			<p class="desc-overall">
+            Cell Editing 관련 초기화 시 필요한 설정값과 기타 Cell 편집 시 필요한 cell position 정보를 얻기 위하여 이벤트 핸들러를 구현하였다.
+                <ul class="desc-ul">
+                    <li><span class="alert-color">cellEdit</span>Cell 편집의 가능여부를 지정한다. (true/false) 기본값은 false 이다.</li>
+                    <li><span>cellsubmit</span>Cell 의 데이타가 저장될 위치를 지정한다. ('remote' / 'clientArray') 본 예제에서는 로컬데이타를 기준으로 구현되었다.</li>
+                    <li><span>formatCell</span>Cell 이 Editing 가능하게 될 때마다 해당 이벤트가 발생된다. 이 이벤트를 이용하여 현재 작업중인 Cell 의 position 정보를 얻는다.</li>
+                </ul>
+            </p>
+
+            <p class="desc-title">Edit, Save, Restore</p>
+            <p class="desc-overall">
+                <ul class="desc-ul">
+                    <li><span>Edit</span>마지막으로 편집했던 Cell 을 편집 가능하게 한다. 기존 정보가 없다면 지정된 위치의 Cell 을 편집가능하게 한다.
+                        <span class="code-line">#116</span><span class="code-line">#119</span>
+                    </li>
+                    <li><span>Save</span>지정된 Cell 의 값을 저장한다.
+                        <span class="code-line">#125</span>
+                    </li>
+                    <li><span>Restore</span>지정된 Cell 의 값을 편집 전의 값으로 변경한다.
+                        <span class="code-line">#131</span>
+                    </li>
+                </ul>
+            </p>
+
+            <p class="desc-title">편집 중인 Cell Focus-Out 처리</p>
+            <span class="code-line">#75 ~ #90</span>
+            <p class="desc-overall">
+            Cell Editing 중, 다른 UI Control 들을 선택했을 때에 대한 처리를 구현하였다. 본 예제에서는 다른 Control 로 Focus 이동 시, 기존 편집 중인 Cell 은 Restore 하도록 구현하였다. <br>
+            실제로, 화면영역을 벗어나는 Focus-Out 이 아니라면(url 이동), 본 예제의 구조를 이용하여 다양한 메세지 처리가 가능할 것이다.
+            </p>
+
+         </div>
+
+
+<!-- RELATED LINKS ----------------------------------------------------------->
+        <div class="related">
+			<h3>Related Links</h3>
+			<hr>
+			<ul class="desc-hypl">
+				<li>
+					<span>Grid - Cell Editing Doc</span>
+					<a href="http://www.trirand.com/jqgridwiki/doku.php?id=wiki:cell_editing"></a>
+				</li>
+			</ul>
+		</div>
+
+	</div>      
+<!-- End of Page-->
+
+</body>
+<!-- End of body-->
+
+</html>

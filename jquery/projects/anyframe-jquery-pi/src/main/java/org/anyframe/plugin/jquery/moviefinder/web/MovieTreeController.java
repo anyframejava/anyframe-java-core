@@ -22,8 +22,8 @@ import java.util.List;
 import javax.inject.Inject;
 import javax.inject.Named;
 
-import org.anyframe.plugin.jquery.domain.Genre;
-import org.anyframe.plugin.jquery.domain.Movie;
+import org.anyframe.plugin.jquery.moviefinder.domain.Genre;
+import org.anyframe.plugin.jquery.moviefinder.domain.Movie;
 import org.anyframe.plugin.jquery.jstree.Attributes;
 import org.anyframe.plugin.jquery.jstree.JSTreeNode;
 import org.anyframe.plugin.jquery.moviefinder.service.GenreService;

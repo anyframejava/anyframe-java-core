@@ -1,0 +1,71 @@
+/*
+ * Anyframe UI (AUI)
+ *
+ * @author      sangjin.nam(sangjiny.nam@samsung.com)
+ *
+ * it's modified to be applicable to Anyframe UI (jquery.ui.datepicker.aui.js).
+ * the original source is from the below description.
+ */
+
+/*
+ * Selecter Plugin [Formstone Library]
+ * @author Ben Plum
+ * @version 2.1.4
+ *
+ * Copyright © 2013 Ben Plum <mr@benplum.com>
+ * Released under the MIT License <http://www.opensource.org/licenses/mit-license.php>
+ */
+ 
+.selecter-element { *left: -999999px; position: absolute; opacity: 0; left: -999999px;}
+
+.selecter { display: inline-block; margin: 1px 0; width: 49%; z-index: 1; zoom: 1; *display: inline; vertical-align: middle;}
+
+.selecter .selecter-selected { background: url(datepicker.title.arrow.png) no-repeat right center; cursor: pointer; display: block; margin: 0; padding: 0; position: relative; z-index: 1;}
+
+.selecter .selecter-options { display: none; top: 95%; width: 40%; position: absolute; z-index: 50; overflow: hidden;}
+.selecter.open .selecter-options { display: block; *margin-left: -20%;} /* support ie7 compatibility */
+
+.selecter .selecter-item { background: #fff; cursor: pointer; display: block; margin: 0; padding: 0; width: 5.1em; line-height: 1.6em;}    /* no use percentage width, because of the change of width on show dynamically */
+
+.selecter .selecter-item.selected { background: #F9F9F9; }
+
+@media screen and (min-width: 740px) {
+    .selecter .selecter-item:hover,
+    .selecter .selecter-item.selected:hover { background-color: #eeeeee; }
+    .selecter:hover .selecter-selected { background-color: #eeeeee; }
+    .selecter.disabled .selecter-item:hover { background: #eeeeee; }
+}
+
+.selecter.open { z-index: 5; }
+.selecter.open .selecter-selected { background-color: #f3f3f3; z-index: 51; }
+
+.selecter.open .selecter-selected,
+.selecter.focus .selecter-selected { background-color:  #f3f3f3; }
+
+
+.selecter.disabled .selecter-selected { background: #fff; border-color: #eee; color: #ccc; cursor: default; }
+.selecter.disabled .selecter-options { background: #fff; border-color: #eee; }
+
+.scroller-content { width: 100%; height: 100%; padding: 0; margin: 0 10px;overflow: auto; overflow-x: hidden; overflow-y: auto; position: relative; z-index: 1; border: 1px solid #ccc; max-height: 15em;}  /* width: 70px; */
+
+
+.scroller-bar { margin:0; padding:0; border-left: 0px solid #EEEEEE; height: 100%; position: absolute; right: 0; top: 1px; width: 0.8em; z-index: 2; }
+.scroller-track { background: #4a4a4a; height: 100%; overflow: hidden; position: relative; width: 100%; z-index:3}
+.scroller-handle { background: #e4e4e4; cursor: pointer; height: 20px; overflow: hidden; position: absolute; right: 0px; top: 0; width: 100%; z-index: 4;
+    -webkit-transition: right 0.1s linear, width 0.1s linear;
+    -moz-transition: right 0.1s linear, width 0.1s linear;
+    -ms-transition: right 0.1s linear, width 0.1s linear;
+    -o-transition: right 0.1s linear, width 0.1s linear;
+    transition: right 0.1s linear, width 0.1s linear;
+}
+
+/* Webkit Fix */
+.scroller-content::-webkit-scrollbar,
+.scroller-content::-webkit-scrollbar-button,
+.scroller-content::-webkit-scrollbar-track,
+.scroller-content::-webkit-scrollbar-track-piece,
+.scroller-content::-webkit-scrollbar-thumb,
+.scroller-content::-webkit-scrollbar-corner,
+.scroller-content::-webkit-resizer { background: transparent; opacity: 0; }
+
+

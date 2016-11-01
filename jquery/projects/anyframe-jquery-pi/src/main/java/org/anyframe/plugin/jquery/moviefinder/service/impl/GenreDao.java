@@ -19,7 +19,7 @@ import java.util.List;
 
 import javax.inject.Inject;
 
-import org.anyframe.plugin.jquery.domain.Genre;
+import org.anyframe.plugin.jquery.moviefinder.domain.Genre;
 import org.anyframe.plugin.jquery.moviefinder.service.MovieSearchVO;
 import org.anyframe.query.QueryService;
 import org.anyframe.query.dao.QueryServiceDaoSupport;

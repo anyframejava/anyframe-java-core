@@ -12,7 +12,7 @@
 
 <script type="text/javascript">
 
-	var frameglobal = parent.frameglobal;
+    var frameglobal = parent.frameglobal;
 	
 	var ENV = {
 			ID_NAV_MENU : "#nav-left-menu",
@@ -82,7 +82,15 @@
 			
 			// register event-handlers
 			$(ENV.SELECT_MENU_CONTENT_LIST).click(function(evt) {
-				owner.selectAccordionItemContent(evt.target);
+                if ( $(evt.target).hasClass('disable') )
+                {
+                    evt.preventDefault();
+                    evt.stopPropagation();
+
+                    alert('준비 중 입니다.');
+                }
+                else
+				    owner.selectAccordionItemContent(evt.target);
 			});
 			
 			$(ENV.ID_NAV_MENU).on("accordionactivate", function(evt, ui) {
@@ -102,8 +110,23 @@
 			rhtml += "<div>\n<ul>\n";
 			for (var dx = 0, len = datalist.length; dx < len; dx++)		// data { link: "xxx", name: "xxx" }
 			{
-				var dataone = datalist[dx];
-				rhtml += "<li><a target='" + target + "' href='" + dataone.link + "'>" + dataone.name + "</a></li>\n";
+				var dataone = datalist[dx],
+                    typeDisp = "";
+
+                switch (dataone.type.toLowerCase()) {
+                    case "ux":
+                            typeDisp = "<span style='font-weight:bold;color:red; '><img style='vertical-align: middle; margin-right: 3px;' src= '../common/css/icons/ux_square.png' width='30' height='18' ></span>";
+                        break;
+                    case "aui":
+                            typeDisp = "<span style='font-weight:bold;color:blue'><img style='vertical-align: middle; margin-right: 3px;' src= '../common/css/icons/aui_square.png' width='30' height='18' ></span>";
+                        break;
+                    case "local":
+                    case "server":
+                            //TODO: will be implemented in future.
+                        break;
+                }
+
+				rhtml += "<li>"+typeDisp+"<a target='" + target + "'" + (dataone.disable ? (" class='disable' ") : ("") ) + " href='" + dataone.link + "'>" + dataone.name + "</a></li>\n";
 			}
 			rhtml += "</ul>\n</div>\n";
 			

@@ -1,0 +1,54 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<queryservice xmlns="http://www.anyframejava.org/schema/query/mapping" 
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" 
+	xsi:schemaLocation="http://www.anyframejava.org/schema/query/mapping http://www.anyframejava.org/schema/query/mapping/anyframe-query-mapping-1.0.xsd ">
+
+	<queries>
+		<query id="findJqueryBoardList" isDynamic="true">
+			<statement>
+			SELECT
+			TITLE, CONTENTS, REG_ID, REG_DATE, COMMUNITY_ID, POST_ID
+			FROM JQUERY_BOARD
+
+            #if ($vo.searchCondition == "title")
+				WHERE TITLE like '%' || :vo.searchKeyword || '%'
+			#elseif ($vo.searchCondition == "regId")
+			    WHERE REG_ID like '%' || :vo.searchKeyword || '%'
+			#end
+
+			ORDER BY REG_DATE DESC
+			</statement>
+            <result class="org.anyframe.plugin.jquery.boardfinder.domain.Board"/>
+		</query>
+		<query id="createJqueryBoard" isDynamic="true">
+			<statement>
+			INSERT INTO JQUERY_BOARD
+			(POST_ID, TITLE, CONTENTS, REG_ID, REG_DATE, COMMUNITY_ID)
+			VALUES ('POST-'|| NEXT VALUE FOR JQUERY_POST_ID_SEQ, :vo.title, :vo.contents, :vo.regId, sysdate, :vo.communityId)
+
+			</statement>
+		</query>
+		<query id="updateJqueryBoard" isDynamic="true">
+			<statement>
+				UPDATE JQUERY_BOARD
+				SET
+				TITLE = :vo.title, CONTENTS = :vo.contents, REG_ID =:vo.regId, COMMUNITY_ID = :vo.communityId
+				WHERE POST_ID = :vo.postId
+			</statement>
+		</query>
+		<query id="removeJqueryBoard" isDynamic="true">
+			<statement>
+				DELETE FROM JQUERY_BOARD
+				WHERE POST_ID = :vo.postId
+			</statement>
+		</query>
+		<query id="findJqueryBoardByPk" isDynamic="true" mappingStyle="upper">
+			<statement>
+				SELECT
+				TITLE, CONTENTS, REG_ID, REG_DATE, COMMUNITY_ID, POST_ID
+				FROM JQUERY_BOARD
+				WHERE POST_ID = :vo.postId
+			</statement>
+		</query>
+	</queries>
+</queryservice>

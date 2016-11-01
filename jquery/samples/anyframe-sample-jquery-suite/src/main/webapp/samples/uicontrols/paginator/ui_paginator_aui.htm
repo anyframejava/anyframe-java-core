@@ -1,0 +1,260 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN"
+"http://www.w3.org/TR/html4/loose.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+
+<!-- Start of head-->
+<head>
+<meta http-equiv="content-type" content="text/html; charset=UTF-8" />
+<title>Paginator (Anyframe UI)</title>
+<!-- TODO: 타이틀 작성 -->
+
+<!-- include required common files  ----------------------------------------------------->
+<script type="text/javascript" src="../../../common/exlibs/jquery-1.9.0.js" ></script>
+
+<script type="text/javascript" src="../../../common/exlibs/highlighter/scripts/shCore.js" ></script>
+<script type="text/javascript" src="../../../common/exlibs/highlighter/scripts/shBrushJScript.js" ></script>
+
+<script type="text/javascript" src="../../../common/js/template_common.js" ></script>
+
+<!--  stylesheet  -->
+<link type="text/css" rel="stylesheet" href="../../../common/exlibs/highlighter/styles/shCore.css"/>
+<link type="text/css" rel="stylesheet" href="../../../common/exlibs/highlighter/styles/shCoreDefault.css"/>
+<link type="text/css" rel="stylesheet" href="../../../common/css/style.css"/>
+
+
+<!-- scripts to support sample page  ----------------------------------------------------->
+<script type="text/javascript">
+
+$(function() {
+	JTemplate.load("../../../jquery.aui/ui/aui.paginator/aui.paginator.test.html");
+	JTemplate.loadDemo2("../../../jquery.aui/ui/aui.paginator/aui.paginator.test.html", {height: "350px"});
+});  
+
+</script>
+
+</head>
+<!-- End of head -->
+
+<!-- Start of body -->
+<body >
+
+<!-- HEADER BAR -------------------------------------------------------------->
+<div class="content-title">Component - Paginator</div>
+ 
+ <!-- START OF PAGE ... -------------------------------------------------------->
+<div id="page">
+	<p class = "header-title">Paginator (Anyframe UI)</p>
+	<p class="header-desc"></p>
+<!-- DEMO ----------------------------------------------------------------------->
+	<div class="demo">
+		<h3 >Demo</h3>
+		<div id="visualExample"></div>
+	</div>
+
+
+<!-- DEMO DESCRIPTION----------------------------------------------------->
+	<div class="desc">
+		<h3>Demo Description </h3>
+		<hr>
+		<p class="desc-overall">
+		</p>
+	</div>
+			
+<!-- CODE------------------------------------------------------------------------>
+	<div class="code">
+		<h3>Code Source </h3>
+		<pre id="codeExample" class="brush: js"></pre>
+	</div>
+	
+	
+<!-- CODE DESCRIPTION------------------------------------------------------>
+	<div class="desc">
+		<h3>Code Description </h3>
+		<hr>
+        <p class="desc-title">Version</p>
+        <p class="desc-overall">0.9.4</p>
+
+		<p class="desc-title">Download</p>
+        <p class="desc-overall">
+            <a href="../../../jquery.aui/ui/aui.paginator.zip">Compressed Source (.zip)</a>
+        </p>
+
+        <p class="desc-title">Options</p>
+        <p class="desc-overall">
+            <ul class ="desc-ul">
+
+                <li><span class="exbold">itemsTotalCount</span><span class="alert-color">Number Type</span></li>
+                <p>전체 데이타(레코드) 개수를 지정한다. itemsTotalCount 와 itemsPerPage 값에 의해 화면에 보여질 페이지 개수가 결정된다.</p>
+                <div class="code-block">
+<pre>
+// initialize
+$(".selector").paginator({itemsTotalCount: 100});
+
+// getter
+var totalCount = $(".selector").paginator("option", "itemsTotalCount");
+
+// setter
+$(".selector").paginator("option", "itemsTotalCount", 100);
+</pre>
+                </div>
+
+                <li><span class="exbold">itemsPerPage</span><span class="alert-color">Number Type</span></li>
+                <p>각 페이지에 표현될 데이타(레코드) 개수를 지정한다. </p>
+                <div class="code-block">
+<pre>
+// initialize
+$(".selector").paginator({itemsPerPage: 10});
+
+// getter
+var itemCount = $(".selector").paginator("option", "itemsPerPage");
+
+// setter
+$(".selector").paginator("option", "itemsPerPage", 10);
+</pre>
+                </div>
+
+                <li><span class="exbold">ellipsisText</span><span class="alert-color">String Type</span></li>
+                <p>페이지 개수가 10개를 넘는 경우, 첫 페이지 또는 마지막 페이지를 구분 지어주는 문자. 일반적으로 "..." 또는 "~" 형태로 표현된다.</p>
+                <div class="code-block">
+<pre>
+// initialize
+$(".selector").paginator({ellipsisText: 10});
+
+// getter
+var oldText = $(".selector").paginator("option", "ellipsisText");
+
+// setter
+$(".selector").paginator("option", "ellipsisText", "~");
+</pre>
+                </div>
+
+
+                <li><span class="exbold">isFirstPageZero</span><span class="alert-color">Boolean Type</span></li>
+                <p>첫번째 페이지번호를 0 (Zero) 부터 시작하게 할 지를 결정한다. 기본값은 false.</p>
+                <div class="code-block">
+<pre>
+// initialize
+$(".selector").paginator({isFirstPageZero: true});
+
+// getter
+var oldFlag = $(".selector").paginator("option", "isFirstPageZero");
+
+// setter
+$(".selector").paginator("option", "isFirstPageZero", true);
+</pre>
+                </div>
+
+
+                <li><span class="exbold">buttonText</span><span class="alert-color">Object Type</span></li>
+                <p>아래와 같은 형태로 값을 설정하여, 각 4개의 버튼 레이블을 변경할 수 있다. <br>
+                { first: "first레이블", prev: "prev레이블", next: "next레이블", last: "last레이블" }
+                </p>
+                <div class="code-block">
+<pre>
+// initialize
+$(".selector").paginator({buttonText: { first: "first", prev: "prev", next: "next", last: "last"}});
+
+// getter
+var oldLabelObject = $(".selector").paginator("option", "buttonText");
+
+// setter
+$(".selector").paginator("option", "buttonText", true, { first: "처음", prev: "이전", next: "다음", last: "마지막"});
+</pre>
+                </div>
+
+
+                <li><span class="exbold">buttonStyleMode</span><span class="alert-color">Number Type</span></li>
+                <p>buttonText 로 설정되는 4개의 버튼은, 이미지 또는 텍스트 또는 이미지+텍스트 형태로 표현되며, 아래 숫자값 중 하나를 선택하여 결정된다. 기본값은 0.<br>
+                   0 : 텍스트 <br>
+                   1 : 이미지 <br>
+                   2 : 이미지 + 텍스트 <br>
+                </p>
+                <div class="code-block">
+<pre>
+// initialize
+$(".selector").paginator({buttonStyleMode: 1});
+
+// getter
+var oldValue = $(".selector").paginator("option", "buttonStyleMode");
+
+// setter
+$(".selector").paginator("option", "buttonStyleMode", 2);
+</pre>
+                </div>
+
+                <li><span class="exbold">isAlwaysShowButton</span><span class="alert-color">Boolean Type</span></li>
+                <p> first, prev, next,last 버튼을 항상 보이게 할 지를 결정한다. 내부적으로 페이지 버튼을 보여주는 개수에 대하여 제한을 두고 있으며, <br>
+                    그 값을 초과하여 페이지가 구성될 때 자동으로 4개의 버튼이 보이게 되는데 isAlwaysShowButton 값이 true 인 경우에는 예외적으로 항상 보이도록 한다. <br>
+                    기본값은 false.</p>
+                <div class="code-block">
+<pre>
+// initialize
+$(".selector").paginator({isFirstPageZero: true});
+
+// getter
+var oldFlag = $(".selector").paginator("option", "isFirstPageZero");
+
+// setter
+$(".selector").paginator("option", "isFirstPageZero", true);
+</pre>
+                </div>
+
+                <li><span class="exbold">change</span><span class="alert-color">Function Type</span></li>
+                <p>function(pageNum), 페이지 변경이 일어날때 호출되는 함수이다. 기본값은 null.<br>
+                pageNum: 선택된 페이지 값. (Number Type)
+                </p>
+                <div class="code-block">
+<pre>
+// code example
+$(".selector").paginator({ change: function(pageNum} {...} });
+</pre>
+                </div>
+
+
+        </ul>
+        </p>
+
+        <p class="desc-title">Methods</p>
+        <p class="desc-overall">
+
+            <ul class ="desc-ul">
+
+                <li><span class="exbold">getCurrentPage()</span><span class="alert-color">return : Number Type</span></li>
+                <p>선택된 페이지 번호를 반환한다.</p>
+        <div class="code-block">
+<pre>
+// code example
+var curPageNum = $(".selector").paginator("getCurrentPage");
+</pre>
+        </div>
+
+                <li><span class="exbold">setCurrentPage( Number newPage )</span></li>
+                <p>입력된 페이지를 선택하여 보여준다.</p>
+        <div class="code-block">
+<pre>
+// code example
+$(".selector").paginator("setCurrentPage", 5);
+</pre>
+        </div>
+
+            </ul>
+
+
+        </p>
+
+	</div>
+	</div>
+
+<!-- RELATED LINKS ----------------------------------------------------------->
+	<div class="related">
+		<h3>Related Links</h3>
+		<hr>
+	</div>
+
+</div>
+
+<!-- End of Page-->
+</body>
+<!-- End of body-->
+
+</html>

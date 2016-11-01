@@ -1,9 +1,10 @@
 <%@ page language="java" errorPage="/sample/common/error.jsp" pageEncoding="UTF-8" contentType="text/html;charset=utf-8" %>
 <%@ include file="/sample/common/top.jsp"%>
-		<div class="location"><a href="<c:url value='/anyframe.jsp'/>">Home</a> &gt; <a href="<c:url value='/jqueryMovieFinder.do?method=listView'/>">jQuery 1.0.5</a></div>
+		<div class="location"><a href="<c:url value='/anyframe.jsp'/>">Home</a> &gt; <a href="<c:url value='/jqueryMovieFinder.do?method=listView'/>">jQuery 1.0.6</a></div>
     </div>
     <hr />
-<%@ include file="menu.jsp"%>	
+<link rel="stylesheet" href="<c:url value='/jquery/css/jquery.css'/>" type="text/css" />
+<%@ include file="/WEB-INF/jsp/jquery/menu.jsp"%>	
 
 <script type="text/javascript">
 <!--
@@ -369,7 +370,7 @@ function uploadFile(){
 
 
 
-<div id="content" style="height:100%;width:800px;margin-left:240px;">
+<div id="content" style="height:500px;width:800px;margin-left:240px;">
   	<form:form modelAttribute="search" method="post" id="searchForm" name="searchForm">
     	<div id="hiddenDiv"></div>
     	<div class="cont_top">

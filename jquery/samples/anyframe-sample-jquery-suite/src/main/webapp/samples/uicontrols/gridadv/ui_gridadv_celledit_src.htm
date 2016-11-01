@@ -1,0 +1,204 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
+<html>
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+<title>Grid Advanced Sample - Cell editing</title>
+
+<link href="../../../common/css/smoothness/jquery-ui-1.10.0.custom.css" rel="stylesheet">
+<link href="../../../common/css/smoothness/jquery.jqgrid.css" rel="stylesheet">
+<script src="../../../common/exlibs/jquery-1.9.0.js"></script>
+<script src="../../../common/exlibs/jquery-ui-1.10.0.custom.js"></script>
+<script src="../../../common/exlibs/jquery.jqGrid.src.js"></script>
+
+<link href="sub_css/basic.css" rel="stylesheet">
+
+<script type="text/javascript">
+
+	var ENV = {
+			ID_GRID : "#grid"
+	};
+	
+	var GRID_DATA = [ 
+	                	{id:"1", date:"2013-02-01", name:"client1", balance:120000, deposit:20000, notes:"note0"},
+	                	{id:"2", date:"2013-02-01", name:"client2", balance:120000, deposit:20000, notes:"note0"},	                 
+	                	{id:"3", date:"2013-02-01", name:"client3", balance:120000, deposit:20000, notes:"note0"},
+	                	{id:"4", date:"2013-02-02", name:"client4", balance:120000, deposit:20000, notes:"note0"},
+	                	{id:"5", date:"2013-02-02", name:"client5", balance:120000, deposit:20000, notes:"note0"},
+	                	{id:"6", date:"2013-02-03", name:"client6", balance:120000, deposit:20000, notes:"note0"},
+	                	{id:"7", date:"2013-02-03", name:"client7", balance:120000, deposit:20000, notes:"note0"},
+	                	{id:"8", date:"2013-02-03", name:"client8", balance:120000, deposit:20000, notes:"note0"},
+	                	{id:"9", date:"2013-02-04", name:"client1", balance:140000, deposit:20000, notes:"note0"},
+	                	{id:"10", date:"2013-02-05", name:"client1", balance:160000, deposit:20000, notes:"note0"}
+	                ];
+
+	var mainView = {
+			
+			_grid : null,
+			_maxrowid : 10,
+            _lastiRow : -1,
+            _lastiCol : -1,
+            _preserveAction : false,
+
+			init : function()
+			{
+                var owner = this;
+
+				this._grid = $(ENV.ID_GRID);
+				
+				this._grid.jqGrid({
+					
+					datatype: "local",
+					data: GRID_DATA,
+					width: 700,
+					height: 300,	
+					caption: "Grid Cell 편집",
+					colNames: [ "아이디", "일시", "고객", "잔액", "입금액", "기타" ],						
+					colModel: [
+					          	{name:"id", sortable:false, editable:false },
+					          	{name:"date", editable:true },
+					          	{name:"name", editable:true },
+					          	{name:"balance", editable:true },
+					          	{name:"deposit", editable:true },
+					          	{name:"notes", editable:true }					          	
+					          ],
+
+                    //Define Cell Editing Variables
+                    cellEdit: true,
+                    cellsubmit: "clientArray",      // remote or clientArray
+                    formatCell: function(rowid, cellname, value, iRow, iCol) {      // backup last edited cell
+                        owner._lastiRow = iRow;
+                        owner._lastiCol = iCol;
+                    }
+				});
+
+                // Check incomplete focus and Restore Cell
+                this._grid.focusout(function(e) {
+                    if ( e.target.tagName.toUpperCase() == "INPUT") {
+
+                        owner._preserveAction = false;
+
+                        var cl_param1 = $(this),                      // use the closure variables to pass IE Compatible Issue related parameter passing in setTimeout
+                            cl_param2 = e.target,
+                            cl_param3 = owner;
+
+                        var chkTimer = window.setTimeout( function(){
+                            clearTimeout(chkTimer);
+                            if ( cl_param1.find(cl_param2).length > 0 && !cl_param3._preserveAction )
+                                cl_param3.restoreCell();
+                        }, 100);
+                    }
+                });
+            },
+
+			addRow : function()
+			{
+				var addparams = {},
+					newrowid = this._getNextNewRowId();
+				
+				addparams.rowID = newrowid;
+				addparams.initdata = { id: newrowid };
+				addparams.position = "last";
+				addparams.useDefValues = false;
+				addparams.useFormatter = false;
+				addparams.addRowParams = { extraparam : {} };
+				
+				this._grid.jqGrid('addRow', addparams);
+
+                // must be saved the row data to do cell editing..
+                this._grid.saveRow(newrowid);
+                this._saveOriginalData( this._grid.jqGrid('getRowData', newrowid) );
+                this._grid.trigger('reloadGrid');
+			},
+			
+			editCell : function()
+			{
+                if (this._lastiRow < 0 || this._lastiCol < 0)
+                    this._grid.jqGrid('editCell', 1, 1, true);
+                else {
+                    this.restoreCell();         // to remove current edited status and value
+                    this._grid.jqGrid('editCell', this._lastiRow, this._lastiCol, true);
+                }
+			},
+			
+			saveCell : function()
+			{
+                this._grid.jqGrid('saveCell', this._lastiRow, this._lastiCol);
+                this._preserveAction = true;
+			},
+			
+			restoreCell : function()
+			{
+                this._grid.jqGrid('restoreCell', this._lastiRow, this._lastiCol);
+			},
+
+			_getNextNewRowId : function()
+			{
+				this._maxrowid++;
+				return ("" + this._maxrowid);
+			},
+			
+			_saveOriginalData : function(rowdata)
+			{
+				var bExist = false,
+					targetax = 0;
+				
+				for(var ax = 0, len = GRID_DATA.length; ax < len; ax++)
+				{
+					if (GRID_DATA[ax].id == rowdata.id)
+					{
+						bExist = true;
+						targetax = ax;
+						break;
+					}
+				}
+				
+				if (!bExist)
+				{
+					GRID_DATA.push( rowdata );
+				}
+				else 
+				{
+					for (var prop in GRID_DATA[targetax])
+					{
+						GRID_DATA[targetax][prop] = rowdata[prop];
+					}
+				}
+			}
+	};
+
+	$(document).ready(function() {
+		
+		mainView.init();
+		
+		$('button').click(function(evt) {
+
+			var cmdWhat = ($(this).text()).toLowerCase();
+			
+			if (cmdWhat.indexOf("add") >= 0) mainView.addRow();
+			else if (cmdWhat.indexOf("edit") >= 0) mainView.editCell();
+			else if (cmdWhat.indexOf("save") >= 0) mainView.saveCell();
+			else if (cmdWhat.indexOf("restore") >= 0) mainView.restoreCell();
+		});
+		
+	});
+	
+</script>
+
+</head>
+<body class="grid_demo">
+	<div>
+		<ul>
+			<li><label>Cell Editing : </label>
+				<button style="width:100px">Add Row</button>
+				<button style="width:100px">Edit Cell</button>
+				<button style="width:100px">Save Cell</button>
+				<button style="width:100px">Restore Cell</button>
+			</li>						
+		</ul>	
+	</div>
+	
+	<div id="grid_container">
+		<table id="grid"></table>
+	</div>
+</body>
+</html>

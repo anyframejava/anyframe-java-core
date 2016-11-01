@@ -18,7 +18,7 @@ package org.anyframe.plugin.jquery.moviefinder.service;
 import java.util.List;
 
 import org.anyframe.pagination.Page;
-import org.anyframe.plugin.jquery.domain.Movie;
+import org.anyframe.plugin.jquery.moviefinder.domain.Movie;
 
 /**
  * This class is a Interface class to provide movie list functionality.

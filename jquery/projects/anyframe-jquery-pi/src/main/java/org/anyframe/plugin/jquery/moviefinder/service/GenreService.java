@@ -17,7 +17,7 @@ package org.anyframe.plugin.jquery.moviefinder.service;
 
 import java.util.List;
 
-import org.anyframe.plugin.jquery.domain.Genre;
+import org.anyframe.plugin.jquery.moviefinder.domain.Genre;
 
 /**
  * This class is a Interface class to provide genre list functionality.

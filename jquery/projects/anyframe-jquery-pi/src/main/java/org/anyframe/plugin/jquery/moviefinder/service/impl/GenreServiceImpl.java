@@ -20,7 +20,7 @@ import java.util.List;
 import javax.inject.Inject;
 import javax.inject.Named;
 
-import org.anyframe.plugin.jquery.domain.Genre;
+import org.anyframe.plugin.jquery.moviefinder.domain.Genre;
 import org.anyframe.plugin.jquery.moviefinder.service.GenreService;
 import org.anyframe.plugin.jquery.moviefinder.service.MovieSearchVO;
 import org.springframework.stereotype.Service;

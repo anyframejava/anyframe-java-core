@@ -21,7 +21,7 @@ import javax.inject.Inject;
 import javax.inject.Named;
 
 import org.anyframe.pagination.Page;
-import org.anyframe.plugin.jquery.domain.Movie;
+import org.anyframe.plugin.jquery.moviefinder.domain.Movie;
 import org.anyframe.plugin.jquery.moviefinder.service.MovieFinder;
 import org.anyframe.plugin.jquery.moviefinder.service.MovieSearchVO;
 import org.springframework.stereotype.Service;
