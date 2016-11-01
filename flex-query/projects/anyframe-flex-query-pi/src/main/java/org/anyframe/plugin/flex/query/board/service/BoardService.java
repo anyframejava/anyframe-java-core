@@ -15,7 +15,6 @@
  */
 package org.anyframe.plugin.flex.query.board.service;
 
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
@@ -24,6 +23,7 @@ import org.anyframe.plugin.flex.query.domain.Board;
 import org.anyframe.plugin.flex.query.domain.SearchVO;
 
 public interface BoardService {
+	
 	Page getPagingList(SearchVO searchVO) throws Exception;
 	
 	int create(Board board) throws Exception;
@@ -32,7 +32,8 @@ public interface BoardService {
 	
 	int remove(Board board) throws Exception;
 	
-	Map<String, Integer> saveAll(ArrayList<Board> arrayList) throws Exception;
+	Map<String, Integer> saveAll(List<Board> list) throws Exception;
 	
 	List<Board> getList(SearchVO searchVO) throws Exception;
+	
 }

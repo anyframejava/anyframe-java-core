@@ -1,0 +1,220 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<FDL version="1.4">
+  <TypeDefinition url="..\default_typedef.xml"/>
+  <Form id="frmSAMPLE012_POPUP" classname="SAMPLE012_POPUP" inheritanceid="" position="absolute 0 0 379 245" titletext="일정 정보" onload="SAMPLE012_POPUP_onload" style="background:#f2f2efff;">
+    <Layouts>
+      <Layout>
+        <Div id="divSchdForm" taborder="0" text="divBoardForm" position="absolute 0 0 379 217">
+          <Layouts>
+            <Layout>
+              <Static id="stTitle" text="global.domain.title" position="absolute 0 0 85 26" style="background:#edeee6ff;border:1 solid #c6c6c5ff ;"/>
+              <Static id="stContents" text="global.domain.contents" position="absolute 0 75 85 217" style="background:#edeee6ff;border:1 solid #c6c6c5ff ;"/>
+              <Static id="stDate" text="global.domain.date" position="absolute 0 25 85 51" style="background:#edeee6ff;border:1 solid #c6c6c5ff ;"/>
+              <Static id="stPlace" text="global.domain.schdplace" position="absolute 0 50 85 76" style="background:#edeee6ff;border:1 solid #c6c6c5ff ;"/>
+              <Static id="Static00" position="absolute 84 0 378 26" style="background:#ffffffff; border:1 solid #c6c6c5ff ; align:center middle; " text=""/>
+              <Edit id="edtTitle" taborder="5" position="absolute 86 2 376 24"/>
+              <Static id="Static01" position="absolute 84 25 378 51" style="background:#ffffffff; border:1 solid #c6c6c5ff ; align:center middle; " text=""/>
+              <Calendar id="calFromDate" taborder="6" dateformat="yyyy-MM-dd" onchanged="divBoardForm_calFromDate_onchanged" position="absolute 86 27 216 49" style="align:left middle; "/>
+              <Static id="stDash" text="~" position="absolute 227 27 246 49"/>
+              <Calendar id="calToDate" taborder="7" dateformat="yyyy-MM-dd" onchanged="divBoardForm_calToDate_onchanged" position="absolute 246 27 376 49" style="align:left middle; "/>
+              <Static id="Static02" position="absolute 84 50 378 76" style="background:#ffffffff; border:1 solid #c6c6c5ff ; align:center middle; " text=""/>
+              <Edit id="edtPlace" taborder="8" position="absolute 86 52 376 74"/>
+              <Static id="Static03" position="absolute 84 75 378 217" style="background:#ffffffff; border:1 solid #c6c6c5ff ; align:center middle; " text=""/>
+              <TextArea id="txaContents" taborder="9" wordwrap="char" position="absolute 86 77 376 215"/>
+            </Layout>
+          </Layouts>
+        </Div>
+        <Button id="btSave" taborder="2" text="global.domain.save" onclick="btSave_onclick" position="absolute 201 218 291 245"/>
+        <Button id="btCancel" taborder="3" text="global.domain.cancle" onclick="btCancel_onclick" position="absolute 293 218 379 245"/>
+        <Button id="btDelete" taborder="1" text="global.domain.delete" position="absolute 109 218 199 245" onclick="btDelete_onclick"/>
+      </Layout>
+    </Layouts>
+    <Objects>
+      <Dataset id="dsSchedule" firefirstcount="0" firenextcount="0" useclientlayout="false" updatecontrol="true" enableevent="true" loadkeymode="keep" loadfiltermode="keep" reversesubsum="false">
+        <ColumnInfo>
+          <Column id="SCHD_ID" type="STRING" size="256"/>
+          <Column id="SCHD_STARTDATE" type="DATE" size="256"/>
+          <Column id="SCHD_ENDDATE" type="DATE" size="256"/>
+          <Column id="SCHD_TITLE" type="STRING" size="256"/>
+          <Column id="SCHD_CONTENTS" type="STRING" size="256"/>
+          <Column id="SCHD_PLACE" type="STRING" size="256"/>
+          <Column id="USER_ID" type="STRING" size="16"/>
+        </ColumnInfo>
+      </Dataset>
+      <Dataset id="dsService" firefirstcount="0" firenextcount="0" useclientlayout="false" updatecontrol="true" enableevent="true" loadkeymode="keep" loadfiltermode="keep" reversesubsum="false">
+        <ColumnInfo>
+          <Column id="SVC_ID" type="STRING" size="100"/>
+          <Column id="QUERY_LIST" type="STRING" size="256"/>
+          <Column id="SERVICE" type="STRING" size="100"/>
+          <Column id="IN_DATASET_LIST" type="STRING" size="256"/>
+          <Column id="OUT_DATASET_LIST" type="STRING" size="256"/>
+          <Column id="CONTROLLER" type="STRING" size="512"/>
+          <Column id="CALLBACK" type="STRING" size="100"/>
+          <Column id="SYNC_YN" type="STRING" size="1"/>
+        </ColumnInfo>
+        <Rows>
+          <Row>
+            <Col id="SVC_ID">create</Col>
+            <Col id="QUERY_LIST">querySet1=createXPSchedule</Col>
+            <Col id="OUT_DATASET_LIST"/>
+            <Col id="IN_DATASET_LIST">querySet1=dsSchedule:U</Col>
+          </Row>
+          <Row>
+            <Col id="SVC_ID">update</Col>
+            <Col id="QUERY_LIST">querySet1=updateXPSchedule</Col>
+            <Col id="IN_DATASET_LIST">querySet1=dsSchedule:U</Col>
+          </Row>
+          <Row>
+            <Col id="SVC_ID">remove</Col>
+            <Col id="QUERY_LIST">querySet1=removeXPSchedule</Col>
+            <Col id="IN_DATASET_LIST">querySet1=dsSchedule:U</Col>
+          </Row>
+        </Rows>
+      </Dataset>
+      <Dataset id="dsScheduleValid" firefirstcount="0" firenextcount="0" useclientlayout="false" updatecontrol="true" enableevent="true" loadkeymode="keep" loadfiltermode="keep" reversesubsum="false">
+        <ColumnInfo>
+          <Column id="SCHD_ID" type="STRING" size="256"/>
+          <Column id="SCHD_STARTDATE" type="STRING" size="256"/>
+          <Column id="SCHD_ENDDATE" type="STRING" size="256"/>
+          <Column id="SCHD_TITLE" type="STRING" size="256"/>
+          <Column id="SCHD_CONTENTS" type="STRING" size="256"/>
+          <Column id="SCHD_PLACE" type="STRING" size="256"/>
+          <Column id="USER_ID" type="STRING" size="16"/>
+        </ColumnInfo>
+        <Rows>
+          <Row>
+            <Col id="SCHD_STARTDATE">title:startdate,required:true</Col>
+            <Col id="SCHD_ENDDATE">title:enddate,required:true</Col>
+            <Col id="SCHD_TITLE">title:title,required:true,maxlength:150</Col>
+            <Col id="SCHD_CONTENTS">title:contents,maxlength:300</Col>
+            <Col id="SCHD_PLACE">title:schdplace,maxlength:150</Col>
+          </Row>
+        </Rows>
+      </Dataset>
+    </Objects>
+    <Bind>
+      <BindItem id="item5" compid="divSchdForm.edtTitle" propid="value" datasetid="dsSchedule" columnid="SCHD_TITLE"/>
+      <BindItem id="item0" compid="divSchdForm.calFromDate" propid="value" datasetid="dsSchedule" columnid="SCHD_STARTDATE"/>
+      <BindItem id="item1" compid="divSchdForm.calToDate" propid="value" datasetid="dsSchedule" columnid="SCHD_ENDDATE"/>
+      <BindItem id="item2" compid="divSchdForm.edtPlace" propid="value" datasetid="dsSchedule" columnid="SCHD_PLACE"/>
+      <BindItem id="item3" compid="divSchdForm.txaContents" propid="value" datasetid="dsSchedule" columnid="SCHD_CONTENTS"/>
+    </Bind>
+    <Script type="xscript4.0"><![CDATA[include "lib::commonScript.xjs";
+
+// Form onload 이벤트 처리
+function SAMPLE012_POPUP_onload(obj:Form, e:LoadEventInfo)
+{
+	// 부모창으로부터 전송받은 파라미터 설정
+	var strMode = this.getOwnerFrame().paramMode;
+	
+	dsSchedule.clearData();
+	dsSchedule.addRow();
+	
+	// strMode : C - 새로운 일정 추가
+	// strMode : U - 기존의 일정 수정
+	if(strMode == "C"){
+		var strDate = this.getOwnerFrame().paramDate;
+		btDelete.visible = false;
+		
+		dsSchedule.setColumn(dsSchedule.rowposition, "SCHD_ENDDATE", strDate);
+		dsSchedule.setColumn(dsSchedule.rowposition, "SCHD_STARTDATE", strDate);
+		dsSchedule.setColumn(dsSchedule.rowposition, "SCHD_ENDDATE", strDate);
+		
+		if(!gfnIsNull(gfnGetUserId())){
+			dsSchedule.setColumn(dsSchedule.rowposition, "USER_ID", gfnGetUserId());
+		}
+	} else if(strMode == "U"){
+		dsSchedule.copyRow(dsSchedule.rowposition, dsArg, dsArg.rowposition);
+		dsSchedule.applyChange();
+	}
+	gfnSetTitle();
+}
+
+// 날짜 변경 이벤트
+function divBoardForm_calFromDate_onchanged(obj:Calendar, e:ChangeEventInfo)
+{
+	fnChangeDate(obj, e);
+}
+
+// 날짜 변경 이벤트
+function divBoardForm_calToDate_onchanged(obj:Calendar, e:ChangeEventInfo)
+{
+	fnChangeDate(obj, e);
+}
+
+// 일정의 시작일보다 종료일이 빠른 경우 알림창 생성
+function fnChangeDate(obj, e){
+	var startDate = divSchdForm.calFromDate.value;
+	var endDate = divSchdForm.calToDate.value;
+	
+	if(startDate < 20000101 || startDate >= 20310101 || endDate >= 20310101 || endDate < 20000101){
+		gfnAlertMsg("msg.gt.maxdate", "ERR");
+		obj.value = e.prevalue;
+		obj.setFocus();
+		return false;
+	}
+	
+	if(gfnGetDiffDay(startDate, endDate) < 0){
+		gfnAlertMsg("msg.startdate.greatthan.enddate.ko", "WARN");
+		obj.value = e.prevalue;
+		obj.setFocus();
+		return false;
+	}
+	
+	return true;	
+}
+
+// 취소 버튼 클릭 이벤트 처리
+function btCancel_onclick(obj:Button,  e:ClickEventInfo)
+{
+	// 팝업창 종료 후 부모창으로 데이터 전송
+	close("N");
+}
+
+// 삭제 버튼 클릭 이벤트 처리
+function btDelete_onclick(obj:Button,  e:ClickEventInfo)
+{
+	var rtVal = gfnConfirm("msg.before.delete", "YN");
+
+	if(rtVal == "Y"){
+		dsSchedule.deleteRow(dsSchedule.rowposition);
+		gfnService("remove");
+	} else {
+		return;
+	}	
+}
+
+// 저장 버튼 클릭 이벤트 처리
+function btSave_onclick(obj:Button,  e:ClickEventInfo)
+{
+	// 유효성 검사
+	if(gfnDsCheckValid(dsSchedule)){
+		var strScheduleId = dsSchedule.getColumn(dsSchedule.rowposition, "SCHD_ID");
+		
+		if(gfnIsNull(strScheduleId)){
+			gfnService("create");
+		} else {
+			gfnService("update");
+		}
+	}
+}
+
+// gfnService 실행 후 공통 Callback 처리
+function fnCallback(strServiceId, strErrorCode, strErrorMsg){
+	if(strErrorCode == -1){
+		gfnAlertMsg(strErrorMsg, "ERR");
+	} else {
+		if(strServiceId == "create") {
+			gfnAlertMsg("msg.save.success");
+		} else if(strServiceId == "update") {
+			gfnAlertMsg("msg.update.success");
+		} else if(strServiceId == "delete") {
+			gfnAlertMsg("msg.delete.success");
+		}
+		close("Y");
+	}
+}
+
+]]></Script>
+  </Form>
+</FDL>

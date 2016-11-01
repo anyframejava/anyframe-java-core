@@ -1,0 +1,32 @@
+<?xml version="1.0"?>
+<!DOCTYPE hibernate-mapping PUBLIC "-//Hibernate/Hibernate Mapping DTD 3.0//EN"
+"http://hibernate.sourceforge.net/hibernate-mapping-3.0.dtd">
+<!-- Generated 2008. 9. 1 ???? 1:00:43 by Hibernate Tools 3.2.1.GA -->
+<hibernate-mapping>
+    <class name="org.anyframe.sample.hibernate.model.bidirection.Movie" table="MOVIE" lazy="true" schema="PUBLIC">
+        <id name="movieId" type="string">
+            <column name="MOVIE_ID" />
+            <generator class="assigned" />
+        </id>
+        <many-to-one name="country" class="org.anyframe.sample.hibernate.model.bidirection.Country" fetch="select">
+            <column name="COUNTRY_CODE" length="12" />
+        </many-to-one>
+        <property name="title" type="string">
+            <column name="TITLE" length="100" not-null="true" />
+        </property>
+        <property name="director" type="string">
+            <column name="DIRECTOR" length="10" not-null="true" />
+        </property>
+        <property name="releaseDate" type="date">
+            <column name="RELEASE_DATE" length="0" />
+        </property>
+        <set name="categories" inverse="false" table="MOVIE_CATEGORY" cascade="save-update" fetch="subselect">
+            <key>
+                <column name="MOVIE_ID" length="8" not-null="true" />
+            </key>
+            <many-to-many entity-name="org.anyframe.sample.hibernate.model.bidirection.Category">
+                <column name="CATEGORY_ID" length="9" not-null="true" />
+            </many-to-many>
+        </set>
+    </class>         
+</hibernate-mapping>

@@ -1,0 +1,84 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<queryservice xmlns="http://www.anyframejava.org/schema/query/mapping" 
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" 
+	xsi:schemaLocation="http://www.anyframejava.org/schema/query/mapping http://www.anyframejava.org/schema/query/mapping/anyframe-query-mapping-1.0.xsd ">
+
+  <queries>
+	<query id="createMessageSource">
+		<statement>
+		<![CDATA[
+			INSERT INTO MESSAGE_SOURCE ( 			
+				COUNTRY, 
+				TEXT, 
+				KEY, 
+				LANGUAGE) 
+			VALUES (:vo.country, 
+				:vo.text, 
+				:vo.key, 
+				:vo.language)
+		]]>
+		</statement>
+	</query>
+		
+	<query id="updateMessageSource">
+		<statement>
+		<![CDATA[
+			UPDATE MESSAGE_SOURCE
+			SET 
+				TEXT = :vo.text
+				
+			WHERE
+				COUNTRY = :vo.country AND KEY = :vo.key AND LANGUAGE = :vo.language 
+		]]>
+		</statement>
+	</query>
+	
+	<query id="removeMessageSource">
+		<statement>
+		<![CDATA[
+			DELETE FROM MESSAGE_SOURCE 
+			WHERE 
+				COUNTRY = :vo.country AND KEY = :vo.key AND LANGUAGE = :vo.language
+		]]>
+		</statement>
+	</query>
+	
+	<query id="findMessageSourceByPk">
+		<statement>
+		<![CDATA[
+			SELECT 
+				messageSource.COUNTRY, messageSource.TEXT, messageSource.KEY, messageSource.LANGUAGE
+			FROM MESSAGE_SOURCE messageSource
+			WHERE 
+				messageSource.COUNTRY = :vo.country AND messageSource.KEY = :vo.key AND messageSource.LANGUAGE = :vo.language
+		]]>
+		</statement>
+		<result class="org.anyframe.sample.messagesource.domain.MessageSource"/>		
+	</query>
+
+	<query id="findMessageSourceList" isDynamic="true">
+		<statement>
+		<![CDATA[
+			SELECT 
+				messageSource.COUNTRY, messageSource.KEY, messageSource.LANGUAGE, messageSource.TEXT 
+			FROM MESSAGE_SOURCE messageSource 
+			WHERE 		
+				#if ($condition == "All" || $condition == "")
+					messageSource.COUNTRY like '%' 
+				#elseif($condition == "country")
+					messageSource.COUNTRY like {{keywordStr}}	
+				#elseif($condition == "key")
+					messageSource.KEY like {{keywordStr}}	
+				#elseif($condition == "language")
+					messageSource.LANGUAGE like {{keywordStr}}	
+				#elseif($condition == "text")
+					messageSource.TEXT like {{keywordStr}}	
+				#end
+			order by							
+				messageSource.KEY 
+		]]>
+		</statement>
+		<result class="org.anyframe.sample.messagesource.domain.MessageSource"/>		
+	</query>
+  </queries>
+</queryservice>

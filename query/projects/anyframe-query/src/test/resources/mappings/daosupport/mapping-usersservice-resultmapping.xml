@@ -1,0 +1,93 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<queryservice xmlns="http://www.anyframejava.org/schema/query/mapping" 
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" 
+	xsi:schemaLocation="http://www.anyframejava.org/schema/query/mapping http://www.anyframejava.org/schema/query/mapping/anyframe-query-mapping-1.0.xsd ">
+
+	<queries>
+		<query id="createUsers">
+			<statement>
+				<![CDATA[
+				insert into USERS 
+				( USER_ID, USER_NAME, PASSWORD, SSN, SL_YN, 				
+				BIRTH_DAY, AGE, CELL_PHONE, ADDR, EMAIL, 				
+				EMAIL_YN, IMAGE_FILE, REG_DATE )
+				values ( :vo.userId, :vo.userName, :vo.password, :vo.ssn, :vo.slYn, 				
+				:vo.birthDay, :vo.age, :vo.cellPhone, :vo.addr, :vo.email, 				
+				:vo.emailYn, :vo.imageFile, :vo.regDate  )
+				]]>
+			</statement>
+		</query>
+		<query id="updateUsers">
+			<statement>
+				<![CDATA[
+				update USERS 
+				SET USER_NAME= :vo.userName, PASSWORD= :vo.password, SSN= :vo.ssn, SL_YN= :vo.slYn, 				
+				BIRTH_DAY= :vo.birthDay, AGE= :vo.age, CELL_PHONE= :vo.cellPhone, ADDR= :vo.addr, EMAIL= :vo.email, 				
+				EMAIL_YN= :vo.emailYn, IMAGE_FILE= :vo.imageFile, REG_DATE= :vo.regDate
+				where USER_ID= :vo.userId
+				]]>				
+			</statement>
+		</query>
+		<query id="removeUsers">
+			<statement>
+				<![CDATA[
+				delete from USERS 
+				where USER_ID= :vo.userId
+				]]>				
+			</statement>
+		</query>
+		<query id="findUsersByPk">
+			<statement>
+				<![CDATA[
+				select
+				USER_ID, USER_NAME, PASSWORD, SSN, SL_YN, 				
+				BIRTH_DAY, AGE, CELL_PHONE, ADDR, EMAIL, 				
+				EMAIL_YN, IMAGE_FILE, REG_DATE				
+				from USERS
+				where USER_ID = :vo.userId
+				]]>				
+			</statement>
+			<result class="org.anyframe.query.vo.UsersVO">
+				<result-mapping column="USER_ID" attribute="userId"/>
+				<result-mapping column="USER_NAME" attribute="userName"/>
+				<result-mapping column="PASSWORD" attribute="password"/>
+				<result-mapping column="SSN" attribute="ssn"/>
+				<result-mapping column="SL_YN" attribute="slYn"/>
+				<result-mapping column="BIRTH_DAY" attribute="birthDay"/>
+				<result-mapping column="AGE" attribute="age"/>
+				<result-mapping column="CELL_PHONE" attribute="cellPhone"/>
+				<result-mapping column="ADDR" attribute="addr"/>
+				<result-mapping column="EMAIL" attribute="email"/>
+				<result-mapping column="EMAIL_YN" attribute="emailYn"/>
+				<result-mapping column="IMAGE_FILE" attribute="imageFile"/>
+				<result-mapping column="REG_DATE" attribute="regDate"/>
+			</result>
+		</query>		
+		<query id="findUsersList">
+			<statement>
+				<![CDATA[
+				select
+				USER_ID, USER_NAME, PASSWORD, SSN, SL_YN, 				
+				BIRTH_DAY, AGE, CELL_PHONE, ADDR, EMAIL, 				
+				EMAIL_YN, IMAGE_FILE, REG_DATE				
+				from USERS
+				]]>
+			</statement>
+			<result class="org.anyframe.query.vo.UsersVO">
+				<result-mapping column="USER_ID" attribute="userId"/>
+				<result-mapping column="USER_NAME" attribute="userName"/>
+				<result-mapping column="PASSWORD" attribute="password"/>
+				<result-mapping column="SSN" attribute="ssn"/>
+				<result-mapping column="SL_YN" attribute="slYn"/>
+				<result-mapping column="BIRTH_DAY" attribute="birthDay"/>
+				<result-mapping column="AGE" attribute="age"/>
+				<result-mapping column="CELL_PHONE" attribute="cellPhone"/>
+				<result-mapping column="ADDR" attribute="addr"/>
+				<result-mapping column="EMAIL" attribute="email"/>
+				<result-mapping column="EMAIL_YN" attribute="emailYn"/>
+				<result-mapping column="IMAGE_FILE" attribute="imageFile"/>
+				<result-mapping column="REG_DATE" attribute="regDate"/>
+			</result>
+		</query>	
+	</queries>
+</queryservice>

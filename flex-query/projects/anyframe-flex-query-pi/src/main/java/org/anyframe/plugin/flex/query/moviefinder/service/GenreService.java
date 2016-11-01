@@ -26,5 +26,7 @@ import org.anyframe.plugin.flex.query.domain.Genre;
  * @author Sooyeon Park
  */
 public interface GenreService {
+	
 	List<Genre> getList() throws Exception;
+	
 }

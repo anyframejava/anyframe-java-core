@@ -16,8 +16,10 @@
 package org.anyframe.plugin.flex.query.httpservice.service;
 
 import java.util.List;
+import java.util.Map;
 
-@SuppressWarnings("unchecked")
 public interface CatalogService {
-	List getProduct() throws Exception;
+	
+	List<Map<String, Object>> getProduct() throws Exception;
+	
 }

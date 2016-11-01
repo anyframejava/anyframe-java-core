@@ -42,4 +42,5 @@ public class GenreServiceImpl implements GenreService {
 	public List<Genre> getList() throws Exception {
 		return genreDao.getList();
 	}
+	
 }

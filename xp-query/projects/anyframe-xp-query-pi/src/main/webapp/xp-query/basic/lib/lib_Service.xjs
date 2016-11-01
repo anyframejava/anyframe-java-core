@@ -1,0 +1,167 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Script type="xscript4.0"><![CDATA[
+include "lib::lib_String.xjs";
+
+/********************************************************************************
+ * Function Name	: gfnDsGetUpdate											*
+ * Desc				: DataSet의 Row 중에서 변경된 내용이 있는지 여부를		*
+ *					  판단하는 함수											*
+ * Parameter		: obj(DataSet)												*
+ * Return 			: true = 변경 된 데이터가 존재							*
+ *					  false = 변경 된 데이터가 없음							*
+ ********************************************************************************/
+function gfnDsGetUpdate(obj){
+	
+	var bUpdateYn = false;
+	
+	if(obj.getDeletedRowCount() > 0){
+		bUpdateYn = true;
+		return bUpdateYn;
+	}
+	
+	for(var i = 0 ; i < obj.rowcount ; i++){
+		if(obj.getRowType(i) == 2 || obj.getRowType(i) == 4 || obj.getRowType(i) == 8){
+			bUpdateYn = true;
+			break;
+		}
+	}
+	return bUpdateYn;
+}
+
+/********************************************************************************
+ * Function Name	: gfnSetUserName											*
+ * Desc				: Dataset에 Row 추가시 Global Dataset의 User Name을 		*
+ *					  해당 Dataset의 필드에 추가한다.						*
+ * Parameter		: obj(DataSet), strColumnName(User Name이 들어갈 컬럼명)	*
+ * Return 			: 															*
+ ********************************************************************************/
+ function gfnSetUserName(obj, strColumnName){
+	var strUserName = gdsUser.getColumn(0, "USER_NAME");
+	if(!gfnIsNull(strUserName)){
+		obj.setColumn(obj.rowposition, strColumnName, strUserName);
+	}
+ }
+
+/********************************************************************************
+ * Function Name	: gfnSetUserId												*
+ * Desc				: Dataset에 Row 추가시 Global Dataset의 User Id를 		*
+ *					  해당 Dataset의 필드에 추가한다.						*
+ * Parameter		: obj(DataSet), strColumnName(User Id가 들어갈 컬럼명)	*
+ * Return 			: 															*
+ ********************************************************************************/
+ function gfnSetUserId(obj, strColumnName){
+	var strUserId = gdsUser.getColumn(0, "USER_ID");
+	if(!gfnIsNull(strUserId)){
+		obj.setColumn(obj.rowposition, strColumnName, strUserId);
+	}
+ } 
+ 
+/********************************************************************************
+ * Function Name	: gfnGetUserId												*
+ * Desc				: 세션의 USER_ID 값을 반환한다							*
+ * Parameter		: 															*
+ * Return 			: String													*
+ ********************************************************************************/
+ function gfnGetUserId(){
+	return gdsUser.getColumn(0, "USER_ID");
+ } 
+ 
+/********************************************************************************
+ * Function Name	: gfnGetUserName											*
+ * Desc				: 세션의 USER_NAME 값을 반환한다							*
+ * Parameter		: 															*
+ * Return 			: String													*
+ ********************************************************************************/
+ function gfnGetUserName(){
+	return gdsUser.getColumn(0, "USER_NAME");
+ } 
+  
+/********************************************************************************
+ * Function Name	: gfnGetUserEnName											*
+ * Desc				: 세션의 EN_NAME 값을 반환한다							*
+ * Parameter		: 															*
+ * Return 			: String													*
+ ********************************************************************************/
+ function gfnGetUserEnName(){
+	return gdsUser.getColumn(0, "EN_NAME");
+ } 
+
+var nRowTotal = 0;
+
+/********************************************************************************
+ * Function Name	: gfnExportExcelEx											*
+ * Desc				: Grid 내용을 Excel의 WorkSheet로 Export 하는 함수		*
+ * Parameter		: objGrid - Grid Object										*
+ *					  strSheetName - Excel Sheet Name							*
+ *					  strCell - Excel Sheet에서 시작위치(기본값 A1)			*
+ * Return 			: 															*
+ ********************************************************************************/
+function gfnExportExcelEx(objGrid, strSheetName, strCell) {
+	// strSheetName : 기본값 처리
+	if(strSheetName == null)
+		strSheetName = "Sheet1";
+
+	// strCell : 기본값 처리
+	if(strCell == null) 
+		strCell = "A1";
+
+	nRowTotal = eval(objGrid.binddataset).getRowCount();
+
+	var objExport = new ExportObject(); // Export할 Object생성
+	objExport.exporttype = ExportTypes.EXCEL; // Export할 타겟 지정
+	objExport.activepagename = strSheetName; // 엑셀시트명을 지정
+	objExport.addExportItem(ExportItemTypes.GRID, objGrid, strSheetName+"!"+strCell);
+	objExport.exportopenmode = "noopen"; // File을 Open하지 않고 항상 새문서에 Export 합니다
+	
+
+	objExport.exportactivemode = "active";
+	objExport.exporteventtype = "itemrecord";
+//	objExport.exportuitype = "exportprogress";
+	objExport.exportmessageprocess = "0 / " + nRowTotal;	
+
+	objExport.onexport.insertHandler(0, gfn_ExportObject_onexport);
+
+	//엑셀 다운 실행
+	var rtn = objExport.export();
+	objExport.clear();
+	objExport = null;
+
+
+	return rtn;
+}
+
+function gfn_ExportObject_onexport(obj:ExportObject, e:ExportEventInfo)
+{
+	obj.exportmessageprocess = (e.recordindex + 2) + " / " + nRowTotal;
+}
+
+/********************************************************************************
+ * Function Name	: gfnExportSaveAsExcel										*
+ * Desc				: Grid 내용을 Excel의 WorkSheet로 Export 하는 함수		*
+ *					  사용자가 입력한 경로에 xx.xls 파일로 저장한다		*
+ * Parameter		: objGrid - Grid Object										*
+ * Return 			: 															*
+ ********************************************************************************/
+function gfnExportSaveAsExcel(objGrid){
+	var objExport = new ExportObject();
+	
+	var objFileDialog = new FileDialog;
+	var fileName = objFileDialog.open("파일 다운로드", FileDialog.SAVE, "%DOCUMENT%", "export00.xls");
+	
+	objExport.exporttype = ExportTypes.EXCEL;
+	objExport.exportfilename 	= fileName.fullpath + "_temp";
+	objExport.exportactivemode 	= "noactive";
+	objExport.exportsavemode 	= "save";
+	objExport.addExportItem(ExportItemTypes.GRID, objGrid, "Sample!A0" );
+	var rtn = objExport.export();
+	
+	objExport = null;
+	
+	var objExtComm = new ExtCommon();
+	
+	var name2=fileName.fullpath;
+	name2 = name2.replace(fileName + "_temp", fileName);
+
+	var v_Ret = objExtComm.excelSaveAs(fileName.fullpath + "_temp", name2, "xls"); 
+	v_Ret = objExtComm.DeleteFile(fileName.fullpath + "_temp");
+}]]></Script>

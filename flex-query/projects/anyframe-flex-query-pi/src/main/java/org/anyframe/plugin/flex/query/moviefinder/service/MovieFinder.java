@@ -26,5 +26,7 @@ import org.anyframe.plugin.flex.query.domain.Movie;
  * @author Sooyeon Park
  */
 public interface MovieFinder {
+	
 	List<Movie> getList(Movie movie) throws Exception;
+	
 }

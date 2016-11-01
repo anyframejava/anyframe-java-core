@@ -14,10 +14,10 @@
  * limitations under the License.
  */
 package org.anyframe.plugin.flex.query.moviefinder.service.impl;
+
 import java.util.List;
 
 import javax.inject.Inject;
-import javax.inject.Named;
 
 import org.anyframe.plugin.flex.query.domain.Genre;
 import org.anyframe.query.QueryService;
@@ -33,14 +33,12 @@ import org.springframework.stereotype.Repository;
 public class GenreDao extends QueryServiceDaoSupport {
 
 	@Inject
-	@Named("queryService")
 	public void setQueryService(QueryService queryService) {
 		super.setQueryService(queryService);
 	}
 
-	@SuppressWarnings("unchecked")
-	public List<Genre> getList() throws Exception {
-		return (List<Genre>) this.findList("findFlexQueryGenreList", new Object[] {});
+	public List<Genre> getList() {
+		return super.findList("findFlexQueryGenreList", new Object[] {});
 	}
 
 }

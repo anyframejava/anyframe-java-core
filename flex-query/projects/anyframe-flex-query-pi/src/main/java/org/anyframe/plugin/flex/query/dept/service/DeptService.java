@@ -15,7 +15,6 @@
  */
 package org.anyframe.plugin.flex.query.dept.service;
 
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
@@ -35,7 +34,8 @@ public interface DeptService {
 
 	int remove(Dept dept) throws Exception;
 
-	Map<String, Integer> saveAll(ArrayList<Dept> arrayList) throws Exception;
+	Map<String, Integer> saveAll(List<Dept> list) throws Exception;
 	
 	List<Dept> getList(SearchVO searchVO) throws Exception;
+	
 }

@@ -18,7 +18,6 @@ package org.anyframe.plugin.flex.query.attach.service.impl;
 import java.util.List;
 
 import javax.inject.Inject;
-import javax.inject.Named;
 
 import org.anyframe.plugin.flex.query.domain.Attached;
 import org.anyframe.query.QueryService;
@@ -26,26 +25,25 @@ import org.anyframe.query.dao.QueryServiceDaoSupport;
 import org.springframework.stereotype.Repository;
 
 @Repository("flexQueryUploadInfoDao")
-public class UploadInfoDao extends QueryServiceDaoSupport{
-	
+public class UploadInfoDao extends QueryServiceDaoSupport {
+
 	@Inject
-	@Named("queryService")
 	public void setQueryService(QueryService queryService) {
 		super.setQueryService(queryService);
 	}
-	
-	public int create(Attached attached) throws Exception {
-		return create("createFlexQueryAttached", attached);
+
+	public int create(Attached attached) {
+		return super.create("createFlexQueryAttached", attached);
 	}
-	
-	@SuppressWarnings("unchecked")
-	public List<Attached> getList(String refId) throws Exception {
+
+	public List<Attached> getList(String refId) {
 		Attached attached = new Attached();
 		attached.setRefId(refId);
-		return (List<Attached>) this.findList("findFlexQueryAttachedList", attached);
+		return super.findList("findFlexQueryAttachedList", attached);
 	}
-	
-	public int remove(Attached attached) throws Exception {
-		return remove("removeFlexQueryAttached", attached);
+
+	public int remove(Attached attached) {
+		return super.remove("removeFlexQueryAttached", attached);
 	}
+
 }

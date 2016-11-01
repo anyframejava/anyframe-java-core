@@ -15,7 +15,6 @@
  */
 package org.anyframe.plugin.flex.query.category.service.impl;
 
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
@@ -41,7 +40,7 @@ public class CategoryServiceImpl implements CategoryService {
 	private CategoryDao categoryDao;
 
 	public List<Category> getTree(SearchVO searchVO) throws Exception {
-		return this.categoryDao.getTree(searchVO);
+		return categoryDao.getTree(searchVO);
 	}
 
 	public Page getPagingList(SearchVO searchVO) throws Exception {
@@ -60,7 +59,7 @@ public class CategoryServiceImpl implements CategoryService {
 		return categoryDao.remove(category);
 	}
 
-	public Map<String, Integer> saveAll(ArrayList<Category> arrayList) throws Exception {
-		return categoryDao.saveAll(arrayList);
+	public Map<String, Integer> saveAll(List<Category> list) throws Exception {
+		return categoryDao.saveAll(list);
 	}
 }

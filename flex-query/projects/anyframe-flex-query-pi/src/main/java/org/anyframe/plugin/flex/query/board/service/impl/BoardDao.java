@@ -15,13 +15,11 @@
  */
 package org.anyframe.plugin.flex.query.board.service.impl;
 
-import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
 import javax.inject.Inject;
-import javax.inject.Named;
 
 import org.anyframe.pagination.Page;
 import org.anyframe.plugin.flex.query.domain.Board;
@@ -34,47 +32,46 @@ import org.springframework.stereotype.Repository;
 @Repository("boardDao")
 public class BoardDao extends QueryServiceDaoSupport {
 
-	@Inject
-	@Named("queryService")
-	public void setQueryService(QueryService queryService) {
-		super.setQueryService(queryService);
-	}
-
+	//Velocity-Support-contextProperties-START
 	@Value("#{contextProperties['pageSize'] ?: 10}")
 	int pageSize;
 
 	@Value("#{contextProperties['pageUnit'] ?: 10}")
 	int pageUnit;
-
-	public int create(Board board) throws Exception {
-		return create("flex.createBoard", board);
+	//Velocity-Support-contextProperties-END
+	
+	@Inject
+	public void setQueryService(QueryService queryService) {
+		super.setQueryService(queryService);
 	}
 
-	@SuppressWarnings("unchecked")
-	public List getList(SearchVO searchVO) throws Exception {
-
-		return (List) this.findList("flex.findBoardList", searchVO);
+	public int create(Board board) {
+		return super.create("flex.createBoard", board);
 	}
 
-	public Page getPagingList(SearchVO searchVO) throws Exception {
+	public List<Board> getList(SearchVO searchVO) {
+		return super.findList("flex.findBoardList", searchVO);
+	}
+
+	public Page getPagingList(SearchVO searchVO) {
 		int pageIndex = searchVO.getPageIndex();
-
-		return this.findListWithPaging("flex.findBoardList", searchVO, pageIndex, pageSize, pageUnit);
+		return super.findListWithPaging("flex.findBoardList", searchVO,
+				pageIndex, pageSize, pageUnit);
 	}
 
-	public int remove(Board board) throws Exception {
-		return remove("flex.removeBoard", board);
+	public int remove(Board board) {
+		return super.remove("flex.removeBoard", board);
 	}
 
-	public Map<String, Integer> saveAll(ArrayList<Board> arrayList) throws Exception {
+	public Map<String, Integer> saveAll(List<Board> list) {
 		Map<String, Integer> resultCount = new HashMap<String, Integer>();
 
 		int createRowCount = 0;
 		int updateRowCount = 0;
 		int removeRowCount = 0;
 
-		for (int i = 0; i < arrayList.size(); i++) {
-			Board board = (Board) arrayList.get(i);
+		for (int i = 0; i < list.size(); i++) {
+			Board board = list.get(i);
 			int status = board.getStatus();
 
 			switch (status) {
@@ -92,10 +89,12 @@ public class BoardDao extends QueryServiceDaoSupport {
 		resultCount.put("INSERT", createRowCount);
 		resultCount.put("UPDATE", updateRowCount);
 		resultCount.put("DELETE", removeRowCount);
+		
 		return resultCount;
 	}
 
-	public int update(Board board) throws Exception {
-		return update("flex.updateBoard", board);
+	public int update(Board board) {
+		return super.update("flex.updateBoard", board);
 	}
+	
 }

@@ -1,0 +1,150 @@
+<chapter id="idgen_tableid">
+    <title>TableIdGenService</title>
+
+	    <para>
+	    	TableIdGenService gets the unique ID using a specific table that manages ID. 
+	    	This table for ID management requires two columns such as table_name (CHAR or VARCHAR type) and next_id (integer type). 
+	    	Input the name of the table to receive the ID in the table_name column, 
+	    	and input the sequence to be used for ID generation in the next_id column. 
+    		The value of the next_id column will be changed to the new id value through TableIdGenService after the new id is assigned.  
+    		(Yet, if the sequence related to the table to receive the ID is not saved in the ID management table when you want to receive the new id, 
+    		TableIdGenService will carries out the task of adding the name of the table to receive the ID and the sequence '1' to the ID management table.)
+    		Also, when <link linkend="idgen_idgenstrategy">Generation Strategy</link> is applied, 
+    		TableIdGenSimple Service delivers the result of applying the defined Strategy to the new id.
+    		TableIdGenSimple Service can have the following configuration.
+	        	</para>
+
+		<informaltable>
+	      <tgroup cols="4">
+	        <colspec colnum="1" colname="col1" colwidth="2*"/>
+	        <colspec colnum="2" colname="col2" colwidth="6*"/>
+	        <colspec colnum="3" colname="col3" colwidth="1*"/>
+	        <colspec colnum="4" colname="col4" colwidth="1*"/>
+	        <thead>
+	          <row>
+	            <entry align="center">Property Name</entry>
+	            <entry align="center">Description</entry>
+	            <entry align="center">Required</entry>
+	            <entry align="center">Default Value</entry>
+	          </row>
+	        </thead>
+	        <tbody>
+	          <row>
+	            <entry>dataSource</entry>
+	            <entry>This is needed when using TableIdGenerationService.
+							Defines DataSourceService to connect to DB.
+						</entry>
+	            <entry align="center">Y</entry>
+	            <entry align="center">N/A</entry>
+	          </row>
+	          <row>
+	            <entry>strategy</entry>
+	            <entry>Defines ID Generation Strategy. Basically,
+							this uses MixPrefix which returns id combining prefix, new id and
+							paddingChar.
+	           </entry>
+	            <entry align="center">N</entry>
+	            <entry align="center">N/A</entry>
+	          </row>
+	          <row>
+	            <entry>blockSize</entry>
+	            <entry>
+	            	If access is made to DB every time id is issued, system performance will be
+							reduced.
+							Therefore, you can set the number of id to be issued at once in
+							TableIdGenService.	           
+	            </entry>
+	            <entry align="center">N</entry>
+	            <entry align="center">10</entry>
+	          </row>
+	          <row>
+	            <entry>config:configuration</entry>
+	            <entry>table</entry>
+	            <entry>Name of the table to manage the generated ID</entry>
+	            <entry align="center">N</entry>
+	          </row>
+	          <row>
+	            <entry>key</entry>
+	            <entry>
+	            	Name of the key to save where the ID is given.  
+	            	For example, to give the ID to Order and Product, one can be assigned with the key property value “order”, 
+	            	and the other with the value "product".
+	            	In this case, two different beans should be defined with TableIdGenService as their implementation class. 
+	            	Thus, to simplify the property definition, which will be given the ID can be delivered as a parameter to be entered when the related method is called.					
+	            </entry>
+	            <entry align="center">N</entry>
+	            <entry align="center"></entry>
+	          </row>
+	          <row>
+	            <entry>useBigDecimals</entry>
+	            <entry>This can be used when trying to use BigDecimal type id
+							rather than long type id.
+							</entry>
+	            <entry align="center">N</entry>
+	            <entry align="center">false</entry>
+	          </row>
+	        </tbody>
+	      </tgroup>
+		</informaltable>
+
+	<section id="idgen_tableid_samples">
+	<title>Implementation</title>
+
+		<itemizedlist>
+			<listitem>
+				<para><emphasis role="bold">Configuration</emphasis></para>
+
+				<para>
+					The following is part of context-idgen.xml that defines the property of TableIdGenService.
+          			TableIdGenService applies mixPrefix Strategy as the default, 
+          			and to provide the unique id to Genre table, ID management table named IDS will be used.
+          			Let us assume that to execute TableIdGenService based on the following property, 
+          			the information [TABLE_NAME:<emphasis role="bold">IDGEN_MOVIE</emphasis>, NEXT_ID:default] is added in the table named IDS.
+          			<programlisting language="xml"><![CDATA[<bean name="TableIdGenService" class="org.anyframe.idgen.impl.TableIdGenServiceImpl"				
+    destroy-method="destroy">
+    <property name="dataSource" ref="dataSource" />
+    <property name="strategy" ref="mixPrefixProduct" />
+    <config:configuration block-size="1" table="ids" key-table="PRODUCT" />
+</bean>]]></programlisting>
+				</para>
+        	</listitem>
+
+        	<listitem>
+          		<para><emphasis role="bold">TestCase</emphasis></para>
+
+          		<para>
+          			The following is a part of Main.java to test ProductService which uses tableIdgenerationService.
+          			
+					
+          			<programlisting language="java">
+@Test
+public void testSimpleTableId() {
+    // 1. get id twice to compare with each other
+    String id1 = tableidSimple.getNextStringId(<emphasis role="bold">"IDGEN_MOVIE</emphasis>);
+    String id2 = tableidSimple.getNextStringId(<emphasis role="bold">"IDGEN_MOVIE</emphasis>);
+    assertEquals("fail to get differenct id", true, !id1.equals(id2));
+}</programlisting>
+				</para>
+
+        		<para>
+        			The following is a part of ProductServiceImpl.java code which
+						extracts unique id
+						by using idGenerationService called from Main.java.
+					
+          			<programlisting language="java">@Resource
+IIdGenerationService idGenerationService;
+   
+/**
+ * Create product using idGenerationService.
+ 
+ */
+public void create(Product product) {
+    // Get new ID and set prodNo.	
+    product.setProdNo(<emphasis role="bold">idGenerationService.getNextStringId()</emphasis>);
+    productDao.create(product);
+}        </programlisting>
+				</para>
+        	</listitem>
+      	</itemizedlist>
+	</section>
+</chapter>

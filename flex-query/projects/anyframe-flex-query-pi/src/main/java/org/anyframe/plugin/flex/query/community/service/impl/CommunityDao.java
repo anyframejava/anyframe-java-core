@@ -15,7 +15,6 @@
  */
 package org.anyframe.plugin.flex.query.community.service.impl;
 
-import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -31,65 +30,71 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Repository;
 
 @Repository("communityDao")
-public class CommunityDao extends QueryServiceDaoSupport{
-	
-	@Inject
-	public void setQueryService(QueryService queryService) {
-		super.setQueryService(queryService);
-	}
-	
-	
+public class CommunityDao extends QueryServiceDaoSupport {
+
+	//Velocity-Support-contextProperties-START
 	@Value("#{contextProperties['pageSize'] ?: 10}")
 	int pageSize;
 
 	@Value("#{contextProperties['pageUnit'] ?: 10}")
 	int pageUnit;
+	//Velocity-Support-contextProperties-END
 
-	public int create(Community community) throws Exception {
-		return create("flex.createCommunity", community);
+	@Inject
+	public void setQueryService(QueryService queryService) {
+		super.setQueryService(queryService);
 	}
 
-	@SuppressWarnings("unchecked")
-	public List getList(SearchVO searchVO) throws Exception {
-        
-        return (List) this.findList("flex.findCommunityList", searchVO);
+	public int create(Community community) {
+		return super.create("flex.createCommunity", community);
 	}
 
-	public Page getPagingList(SearchVO searchVO) throws Exception {
+	public List<Community> getList(SearchVO searchVO) {
+		return super.findList("flex.findCommunityList", searchVO);
+	}
+
+	public Page getPagingList(SearchVO searchVO) {
 		int pageIndex = searchVO.getPageIndex();
-
-		return this.findListWithPaging("flex.findCommunityList", searchVO,
+		return super.findListWithPaging("flex.findCommunityList", searchVO,
 				pageIndex, pageSize, pageUnit);
 	}
 
-	public int remove(Community community) throws Exception {
-		return remove("flex.removeCommunity", community);
+	public int remove(Community community) {
+		return super.remove("flex.removeCommunity", community);
 	}
 
-	public Map<String, Integer> saveAll(ArrayList<Community> arrayList) throws Exception {
+	public Map<String, Integer> saveAll(List<Community> list) {
 		Map<String, Integer> resultCount = new HashMap<String, Integer>();
-		
+
 		int createRowCount = 0;
 		int updateRowCount = 0;
 		int removeRowCount = 0;
-		
-		for ( int i = 0 ; i < arrayList.size() ; i ++ ){
-			Community community = (Community) arrayList.get(i);
+
+		for (int i = 0; i < list.size(); i++) {
+			Community community = list.get(i);
 			int status = community.getStatus();
-			
-			switch(status){
-				case Community.INSERT_ROW : createRowCount = createRowCount + this.create(community); break;
-				case Community.UPDATE_ROW : updateRowCount = updateRowCount + this.update(community); break;
-				case Community.DELETE_ROW : removeRowCount = removeRowCount + this.remove(community); break;
+
+			switch (status) {
+			case Community.INSERT_ROW:
+				createRowCount = createRowCount + this.create(community);
+				break;
+			case Community.UPDATE_ROW:
+				updateRowCount = updateRowCount + this.update(community);
+				break;
+			case Community.DELETE_ROW:
+				removeRowCount = removeRowCount + this.remove(community);
+				break;
 			}
 		}
-		resultCount.put("INSERT", createRowCount );
-		resultCount.put("UPDATE", updateRowCount );
-		resultCount.put("DELETE", removeRowCount );
+		resultCount.put("INSERT", createRowCount);
+		resultCount.put("UPDATE", updateRowCount);
+		resultCount.put("DELETE", removeRowCount);
+
 		return resultCount;
 	}
 
-	public int update(Community community) throws Exception {
-		return update("flex.updateCommunity", community);
+	public int update(Community community) {
+		return super.update("flex.updateCommunity", community);
 	}
+
 }

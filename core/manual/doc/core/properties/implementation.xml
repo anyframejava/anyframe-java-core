@@ -1,0 +1,108 @@
+<chapter id="core_properties_implementation">
+	<title>PropertiesServiceImpl</title>
+	<para>다음은 Properties 서비스를 사용하기 위해 필요한 설정 정보들이다.</para>
+    <informaltable>
+    	<caption>Properties 서비스 속성 목록</caption>
+		<tgroup cols="4">
+			<colspec colname="col1" colnum="1" colwidth="1*" />
+			<colspec colname="col2" colnum="2" colwidth="6*" />
+			<colspec colname="col3" colnum="3" colwidth="1*" />
+			<colspec colname="col4" colnum="4" colwidth="1*" />
+	
+			<thead>
+				<row>
+					<entry align="center">Property Name</entry>
+					<entry align="center">Description</entry>
+					<entry align="center">Required</entry>
+					<entry align="center">Default Value</entry>
+				</row>
+			</thead>
+	
+			<tbody>
+				<row>
+					<entry>dynamicReload</entry>
+					<entry>
+						PropertiesService를 통해 관리되는 파일들에 대한 변경 여부를 감지하는 주기 (millisecond 단위)
+						이 속성이 정의되어 있지 않은 경우 Dynamic Reload를 수행하지 않음
+						(이 속성에 대한 자세한 내용은 본 장의 <link linkend="core_properties_dynamic">Dynamic Reloading</link>을 참고하도록 한다.)
+					</entry>
+					<entry>N</entry>
+					<entry>-1</entry>
+				</row>
+				<row>
+					<entry>encoding</entry>
+					<entry>
+						property file의 encoding 정보를 정의한다.
+					</entry>
+					<entry>N</entry>
+					<entry>Empty String</entry>
+				</row>	
+				<row>
+					<entry>filenames</entry>
+					<entry>
+						key, value의 쌍이 외부 별도 파일에 존재하는 경우 해당 파일명을 경로와 함께 표시한다. 
+						절대 / 상대 물리적인 파일 경로 지정 방법과 Classpath를 이용한 지정 방법 2가지가 있다. 
+						둘 이상의 파일의 경우, 콤마(,)로 구분한다.
+					</entry>
+					<entry>N</entry>
+					<entry>Empty String</entry>
+				</row>
+			</tbody>
+		</tgroup>
+	</informaltable>
+
+	<section id="core_properties_implementation_samples">
+		<title>Samples</title>
+		<itemizedlist>
+			<listitem>
+				<para>
+					<emphasis role="bold">Configuration </emphasis>
+				</para>
+				<para>
+					다음은 Properties 서비스의 속성을 정의한 context-properties.xml 의 일부이다. 아래 PropertiesService는 클래스패스 상에 존재하는
+					sample-resource.properties 파일에 정의된 property들과 개별 정의된 property들을 관리하게 된다.
+				</para>
+				<programlisting language="xml"><![CDATA[<bean name="propertiesService" class="org.anyframe.util.properties.impl.PropertiesServiceImpl"
+    destroy-method="destroy">
+    <properties name=dynamicReload" value="1000"/>
+    <properties name=encoding" value="UTF-8"/>
+    <properties name="filenames">
+        <value>
+            classpath:/sample-resource.properties
+        </value>
+    </properties>
+</bean>]]></programlisting>
+				</listitem>
+				<listitem>
+					<para>
+						<emphasis role="bold">TestCase</emphasis>
+					</para>
+					<para>
+						다음은 앞서 정의한 속성 설정을 기반으로 Properties 서비스를 사용하는MovieDao.java 코드의 일부이다.
+					</para>
+					<programlisting language="java">@Inject
+@Named("propertiesService") 
+PropertiesService propertiesService;
+
+public Page getPagingList(Movie movie){
+    // try to paging list based on properties (PAGE_SIZE, PAGE_UNIT)
+    int page_unit = <emphasis role="bold">propertiesService.getInt("pageUnit");</emphasis>
+    int page_size = <emphasis role="bold">propertiesService.getInt("pageSize");</emphasis>
+		
+    System.out.println("value of PAGE_UNIT property is a '" + page_unit + "'.");
+    System.out.println("value of PAGE_SIZE property is a '" + page_size + "'.");
+    return new Page();
+}</programlisting>
+					<para>다음은 앞서 정의한 속성 설정을 기반으로 Properties 서비스를 사용하여 message 를 추출하는 Main.java 코드의 일부이다.</para>
+					<programlisting language="java">public void getProperty() {
+    // 1. lookup propertiesService
+    PropertiesService service = (PropertiesService) context
+        .getBean("propertiesService");
+    // 2. try to get a property
+    System.out.println("value of message property is a '"
+        + <emphasis role="bold">service.getString("message")</emphasis> + "'.");
+}</programlisting>
+			</listitem>
+		</itemizedlist>
+	</section>
+</chapter>

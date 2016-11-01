@@ -1,0 +1,38 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-3.1.xsd">
+
+
+	<!-- START -->
+	<bean class="org.anyframe.scheduling.impl.SchedulingServiceImpl"
+		destroy-method="destroy" id="schedulingService" init-method="init">
+		<property name="scheduler" ref="schedulerFactoryBean" />
+		<property name="jobResultCollector" ref="schedulingJobListener" />
+		<property name="jobRepository" value="file" />
+		<property name="jobResultPath" value="C:/temp" />
+	</bean>
+
+	<bean class="org.anyframe.scheduling.impl.listener.SchedulingJobListener"
+		id="schedulingJobListener" />
+	<!-- END -->
+
+	<bean id="printCommentJob" class="org.springframework.scheduling.quartz.JobDetailFactoryBean">
+		<property name="jobClass" value="org.anyframe.scheduling.job.PrintCommentJob" />
+	</bean>
+
+	<bean id="printCommentCronTrigger"
+		class="org.springframework.scheduling.quartz.SimpleTriggerFactoryBean">
+		<property name="jobDetail" ref="printCommentJob" />
+		<property name="repeatInterval" value="10000" />
+	</bean>
+
+	<bean id="schedulerFactoryBean"
+		class="org.springframework.scheduling.quartz.SchedulerFactoryBean">
+		<property name="triggers">
+			<list>
+				<ref bean="printCommentCronTrigger" />
+			</list>
+		</property>
+	</bean>
+</beans>

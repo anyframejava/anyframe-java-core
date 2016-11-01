@@ -1,0 +1,363 @@
+<chapter id="xp_query_integration_simplification">
+	<title>Anyframe XP Query</title>
+	
+	<para>
+		어플리케이션의 UI를 XPLATFORM을 사용해 개발 할 경우, XPLATFORM 고유의 데이터 형태를 DB에 반영하기에는 많은 어려움이 있다.
+	</para>
+	
+	<para>
+		예를 들어 DataSet에 10개의 Column과 10개의 Insert 할 Record가 있는 경우, 개발자가 일반적인 JDBC 코딩을 하기 위해서는
+		DataSet의 10개의 Column을 일일이 꺼내야 하고, 10번의 반복문을 실행 시키면서 Insert 동작을 수행하는 로직을 작성 해야 한다.
+	</para>
+	
+	<para>
+		또 DB에서 값을 조회 하고자 할 경우에는 ResultSet의 메타 정보를 이용해 DataSet의 Column을 설정하고,
+		반복문을 수행 하면서 ResultSet에 저장된 값들을 DataSet에 추가하는 로직을 작성 해야 한다.
+	</para>
+	
+	<para>
+		<emphasis role="bold">
+			Anyframe XP Query는 XPLATFORM의 고유한  데이터 형태를 사용해서 DB에 조회/입력/수정/삭제 동작을 수행하기 위한 
+			공통 비즈니스 서비스와 컨트롤러 클래스를 제공한다.
+		</emphasis>
+	</para>
+	
+	<para>
+		Anyframe XP Query의 장점은 아래와 같다.
+	</para>
+	<itemizedlist>
+    	<listitem>
+      		<para>
+      			DataSet, VariableList와 같은 XPLATFORM 고유의 데이터 형태를 변환하지 않고 비즈니스 서비스 개발을 할 수 있다.
+      		</para>
+    	</listitem>
+
+    	<listitem>
+      		<para>
+      			추가적인 비즈니스 로직이 필요 없는 CRUD에 대해서는 비즈니스 서비스 개발 없이 Query Mapping File에 필요한 Query만 작성하면 된다.
+      		</para>
+    	</listitem>
+    
+     	<listitem>
+      		<para>
+      			확장이 필요한 부분만 오버라이드 해서 사용할 수 있기 때문에 비즈니스 서비스 개발이 쉽다.
+      		</para>
+    	</listitem>
+    
+    	<listitem>
+      	<para>
+      		기능이 중복되거나 불필요한 클래스를 생성하지 않기 때문에 전체 클래스 수가 줄어 들고 유지보수 또한 용이하다.
+      	</para>
+    	</listitem>
+  	</itemizedlist>
+  	
+  	<para>
+  		Anyframe XP Query는 크게 Controller, Service, Dao로 구성 되어 있다.
+  	</para>
+  	
+	<itemizedlist>
+      	<listitem>
+      		<para>
+      			<emphasis role="bold">Controller</emphasis> – XPController : 사용자 요청에 따라 비즈니스 서비스의 메소드를 호출하고 결과값을 화면으로 전달하는 공통 컨트롤러 역할을 담당한다.
+      		</para>
+      	</listitem>
+      	<listitem>
+      		<para>
+      			<emphasis role="bold">Service 인터페이스</emphasis> – XPService : DataSetList, VariableList를 이용해 DB에서 데이터를 조회, 추가, 삭제, 수정 등을 할 수 있는 API를 제공한다.
+      		</para>
+      	</listitem>
+      	<listitem>
+      		<para>
+      			<emphasis role="bold">Service 구현 클래스</emphasis> – XPServiceImpl : XPService의 구현 클래스로 DataSet과 실행 하고자 하는 Query Id를 짝지은 후 XPDao의 메소드를 호출하고 Query실행 결과를 DataSetList에 추가한다.
+      		</para>
+      	</listitem>
+      	<listitem>
+      		<para>
+      			<emphasis role="bold">Dao 클래스</emphasis> – XPDao : 파라미터의 형태에 따라 적절한 XPQueryService의 메소드를 호출해 쿼리를 실행한다.
+      		</para>
+      	</listitem>
+ 	 </itemizedlist>
+ 	 
+ 	 <section id="xp_query_simplification_xpservice_controller">
+ 	 	<title>Controller</title>
+ 	 	<para>
+			일반적인 Spring MVC 형태의 Controller 클래스를 구현하려면 사용자의 요청 별로 Controller 클래스를 구현해야
+			하므로 개발해야 할 Controller 클래스 수가 많아지고 유지보수 또한 어려워지는 단점이 있다.
+    		Anyframe에서는 이러한 단점을 보완하기 위해서 XPLATFORM 기반의 UI를 통한 사용자 요청을 처리할 수 있도록 Spring
+			MVC의 AbstractController를 구현한 공통 컨트롤러 클래스인 XPController를 제공한다.
+ 	 	</para>
+ 	 	
+ 	 	<section id="xp_query_simplification_controller_xpcontroller">
+ 	 		<title>XPController</title>
+ 	 		<para>
+      			JSP 기반의 UI일 경우, 사용자 요청에 따라 Controller가 호출되고, Controller에서는 비즈니스 서비스 호출 결과
+				값을 결과 페이지에 전달하는 로직이 필요하다. 그러나 XPLATFORM 기반의 UI에서는 화면과 서버간의 주고받는 데이터의
+				유형(DataSetList, VariableList)이 동일하고, 요청 화면과 결과 화면이 같으므로 공통화 처리가 가능해진다.
+				따라서, 비즈니스 서비스 호출 외에 별도 로직이 없을 때는 XPController를 공통 Controller로 사용할 수
+				있다.
+ 	 		</para>
+ 	 		
+			<para>
+				아래는 XPController의 handleRequestInternal()의 일부로, 화면에서 전달받은 비즈니스 서비스의 Bean Id 를
+				이용해 WebApplicationContext에서 비즈니스 서비스 객체를 얻어온다. 실행할 비즈니스 서비스의 Bean Id와
+				메소드 이름은 Client에서 선언한 dsService DataSet의 SERVICE Column 값(예: movieService.getPagingList)에 의해 결정된다.
+			</para>
+			
+			<programlisting language="java"><![CDATA[public class XPController extends AbstractController {
+	
+	public ModelAndView handleRequestInternal(HttpServletRequest request, HttpServletResponse response)
+			throws Exception {
+
+		HttpInputMessage inputMessage = new ServletServerHttpRequest(request);
+		HttpOutputMessage outputMessage = new ServletServerHttpResponse(response);
+
+		XPRequestHandler requestHandler = (XPRequestHandler) messageConverter
+				.read(XPRequestHandler.class, inputMessage);
+		XPResponseHandler responseHandler = null;
+
+		VariableList inputVariableList = requestHandler.getInputVariableList();
+		DataSetList inputDataSetList = requestHandler.getInputDataSetList();
+		
+		// ... 중략
+		
+		String serviceName = inputVariableList.getString(SERVICE_NAME);
+		Object bean = getApplicationContext().getBean(serviceName);
+		Method method = getMethod(bean, inputVariableList.getString(METHOD_NAME));
+		
+		DataSetList outputDataSetList = new DataSetList();
+		VariableList outputVariableList = new VariableList();
+		try {
+			method.invoke(bean,
+					new Object[] { requestHandler.getInputVariableList(), requestHandler.getInputDataSetList(),
+							outputVariableList, outputDataSetList });
+
+			// ...중략
+				// in case of using general PlatformResponse
+				responseHandler = new XPResponseHandler(outputDataSetList, outputVariableList);
+				responseHandler.setResultMessage(0, "Success");
+		} catch (Exception e) {
+			logger.error("Can not invoke a dispatch method name", e);
+
+			String msg = e.getMessage();
+
+			if (msg == null)
+				msg = "Fail to process client request.";
+
+			responseHandler = new XPResponseHandler(outputDataSetList, outputVariableList);
+			responseHandler.setResultMessage(-1, msg);
+		}
+		messageConverter.write(responseHandler, MediaType.APPLICATION_XML, outputMessage);
+		return null;
+	}
+..중략]]></programlisting>
+			<para>
+				만약 아래 그림의 설정처럼 SERVICE의 값이 없을 경우에는 비즈니스 서비스의 Bean ID는 xpService이고,
+				메소드 이름은 dsService의 SVC_ID값의 prefix로 결정된다.
+			</para>
+		 	<mediaobject>
+		 		<imageobject>
+          			<imagedata align="center"
+                     	fileref="../image/xp-query/simplification/riaxp-exampleofdsservice.png" />
+        		</imageobject>
+        		<textobject>
+					<phrase>dsService 설정</phrase>
+		  		</textobject>
+        	</mediaobject>
+        	<para>
+        		prefix로는 get, getList, getPagingList, create, update, remove, saveAll이 올 수 있다.
+        		prefix가 getList일 경우에는 XPService의 getList()가 실행된다.
+        	</para>
+ 	 	</section>
+ 	 </section>
+ 	 
+ 	 <section id="xp_query_simplification_xpservice_service">
+ 	 	<title>Service</title>
+ 	 	<para>
+ 	 		Anyframe XP Query의 Service는 Interface인 XPService와 구현 클래스인 XPServiceImpl로 구성 되어있다.
+ 	 	</para>
+ 	 	
+ 	 	<section id="xp_query_simplification_xpservice_service_xpservice">
+ 	 		<title>XPService</title>
+ 	 		<para>
+ 	 			XPService는 XPLATFORM의 고유 데이터 형태인 VariableList와 DataSetList를 이용하여 외부에 제공할 수 있는
+ 	 			일반적인 기능을 정의하고 있는 인터페이스 클래스이다. 아래는 XPService 클래스의 소스코드로,
+ 	 			모든 메소드의 입력 파라미터는 VariableList inVl, DataSetList inDl, VariableList outVl, DataSetList outDl이며,
+ 	 			Return Type은 void인 것을 확인 할 수 있다.
+ 	 		</para>
+    		<programlisting language="java"><![CDATA[public interface XPService {
+    ..중략
+
+	void getList(VariableList inVl, DataSetList inDl, VariableList outVl, DataSetList outDl) throws Exception;
+
+	void getPagingList(VariableList inVl, DataSetList inDl, VariableList outVl, DataSetList outDl) throws Exception;
+
+	void create(VariableList inVl, DataSetList inDl, VariableList outVl, DataSetList outDl) throws Exception;
+    ..중략
+}]]></programlisting>
+ 	 	</section>
+ 	 	
+ 	 	<section id="xp_query_simplification_xpservice_service_xpserviceimpl">
+ 	 		<title>XPServiceImpl</title>
+ 	 		<para>
+ 	 			XPServiceImpl은 XPService의 구현 클래스로 dsService에 설정된 정보를 기반으로 XPDao의 메소드를 호출하도록 구성 되어있다.
+ 	 		</para>
+		 	<mediaobject>
+		 		<imageobject>
+          			<imagedata align="center"
+                     	fileref="../image/xp-query/simplification/riaxp-exampleofdsservice.png" />
+        		</imageobject>
+        		<textobject>
+					<phrase>dsService 설정</phrase>
+		  		</textobject>
+        	</mediaobject>
+        	<para>
+        		위의 2번 Row와 같이 dsService를 설정 했다면 VariableList에 아래 그림과 같이 값이 서버로 전달된다.
+        	</para>
+        	<mediaobject>
+        		 <imageobject>
+          			<imagedata align="center"
+                     	fileref="../image/xp-query/simplification/riaxp-xpserviceimpl.PNG" />
+        		</imageobject>
+        		<textobject>
+					<phrase>VariableList</phrase>
+		  		</textobject>
+        	</mediaobject>
+        	<para>
+        		아래는 XPServiceImpl의 getPagingList() 메소드의 코드중 일부분이다. 이 메소드는 특정 페이지에 속한 데이터를 조회 하는 기능을 제공한다.
+        	</para>
+        	
+        	<para>
+        		getPagingList() 메소드에서는 위의 그림에서와 같이 입력 파라미터로 전달된 DataSetList에서 DataSet의 이름이 "querySet1"인 DataSet을 얻어와 inDs 변수에 담는다.
+        		그 후 VariableList에서 querySet1이라는 KEY에 해당하는 값을 변수 queryId에 할당한다. 주어진 queryId와 inDs 변수를 이용하여 XPDao의 메소드를 호출한 후 결과값을
+        		다시 화면으로 전달하기 위해서 outDs에 "querySet1" 이라는 이름으로 담는다.
+        	</para>
+        	<programlisting language="java"><![CDATA[public void getPagingList(VariableList inVl, DataSetList inDl, VariableList outVl, DataSetList outDl)
+		throws Exception {
+
+	int querySetCount = getQuerySetCount(inVl, outVl);
+
+	String queryId = null;
+	DataSet inDs = null;
+	DataSet outDs = null;
+
+	for (int i = 1; i <= querySetCount; i++) {
+		queryId = inVl.getString("querySet" + i);
+		inDs = inDl.get("querySet" + i);
+		if (inDs != null) {
+			outDs = xpDao.getPagingList(queryId, inDs);
+		}
+		outDs.setName("querySet" + i);
+		outDl.add(outDs);
+	}
+}]]></programlisting>
+				<para>
+					XPServiceImpl의 다른 메소드들도 이와 같이 입력 파라미터로부터 추출한 DataSet과 Query ID를 이용하여 사용자의 요청을 처리한다.
+				</para>
+				<para>
+					아래의 그림은 XPService를 이용하기 위해 dsService DataSet을 설정한 모습이다.
+				</para>
+			<mediaobject>
+ 				<imageobject>
+        			<imagedata align="center"
+                    	fileref="../image/xp-query/simplification/riaxp-exampleofdsservice.png" />
+        		</imageobject>
+        		<textobject>
+					<phrase>dsService DataSet을 설정</phrase>
+		  		</textobject>
+        	</mediaobject>
+        	<para>
+        		dsService의 값을 정의할 때 SVC_ID의 prefix에 따라 querySet에 정의할 수 있는 queryId의 갯수가 달라진다.
+        		prefix가 get, getList, getPagingList, create, update, remove인 경우에는 하나의 querySet에 하나의 queryId가 정의 되어야 한다.
+        		하지만 prefix가 saveAll 인 경우에는 QUERY_LIST에 "querySet1=createXPBoard,updateXPBoard,removeXPBoard" 와 같이 추가/수정/삭제 작업을 수행 할
+        		3개의 Query ID가 순서대로 정의 되어 있어야 한다.
+        		조회 메소드의 경우(get, getList, getPagingList) 서버에서 처리 후, DataSet의 이름을 검색 조건으로 사용했던 DataSet ID(querySet + 번호)로 설정해서
+        		화면으로 넘겨주도록 되어있다.
+        	</para>
+ 	 	</section>
+ 	 </section>
+ 	 
+ 	 <section id="xp_query_simplification_xpservice_dao">
+ 	 	<title>XPDao</title>
+ 	 	<para>
+ 	 		XPDao는 XPQueryService를 이용해 Query를 실행 시키는 Class이다.
+ 	 	</para>
+ 	 	<para>
+ 	 		아래의 Java 코드는 서버로 전송된 DataSet Record를 DB Table에 저장(추가, 수정, 삭제) 하는 saveAll() 메소드 구현 부분이다.
+ 	 	</para>
+    		<programlisting language="java"><![CDATA[public int saveAll(Map<String, String> queryMap, DataSet inDs, XPActionCommand actionCommand) throws QueryException {
+	if (actionCommand == null) {
+		return xpQueryService.update(queryMap, inDs);
+	}
+	else {
+		return xpQueryService.update(queryMap, inDs, actionCommand);
+	}
+}	
+]]></programlisting>
+			<para>
+				insert, update, delete를 수행할 Query ID를 담은 Map객체와, 각 Row Record를 담고있는 DataSet을 이용해 XPQueryService의 update()를 호출 하도록 구현 되어있다.
+			</para>
+			<para>
+				XPLATFORM과 Anyframe의 연계 구조에서 DAO를 구현할 경우 XPDao를 사용할 것을 추천하고, 꼭 필요한 경우에 한해 확장해서 사용하도록 한다. 
+			</para>
+ 	 </section>
+ 	 
+ 	 <section id="xp_query_simplification_xpservice_extension">
+ 	 	<title>Extension of XPServiceImpl</title>
+ 	 	<para>
+ 	 		XPService에서 제공하는 기능 외에 추가적인 기능이 필요한 경우에는 API를 추가로 정의 하거나 해당 메소드를 오버라이드 할 수 있다.
+ 	 	</para>
+ 	 	<para>
+ 	 		아래의 코드는 DataSet의 Record를 DB에 Insert 하기 전 "MOVIE_ID" Column에 유일한 아이디 값을 셋팅하기 위해 saveAll() 메소드를
+ 	 		오버라이드 해 기능을 확장 구현한 예제이다.
+ 	 	</para>
+		<programlisting language="java"><![CDATA[@Service("xpQueryMovieService")
+@Transactional(rollbackFor = {Exception.class}, propagation = Propagation.REQUIRED)
+public class MovieServiceImpl extends XPServiceImpl implements MovieService{
+
+	@Inject
+	public MovieServiceImpl(XPDao xpDao){
+		super.xpDao = xpDao;
+	}
+	
+    ..중략
+	public void saveAll(VariableList inVL, DataSetList inDl, VariableList outVl, DataSetList outDl) throws Exception{
+		Map<String, String> sqlMap = new HashMap<String, String>();
+		sqlMap.put(XPQueryServiceImpl.QUERY_INSERT, "createXPMovie");
+		sqlMap.put(XPQueryServiceImpl.QUERY_UPDATE, "updateXPMovie");
+		sqlMap.put(XPQueryServiceImpl.QUERY_DELETE, "removeXPMovie");
+		
+		xpDao.saveAll(sqlMap, inDl.get("dsSave"), new MovieActionCommand());
+	}
+	
+}]]></programlisting>
+		<para>
+			위 예제에서는 XPDao의 saveAll() 메소드 호출 시  Anyframe에서 제공하는 XPActionCommand를 구현한 MovieActionCommand를 추가 파라미터로 전달하고 있다.
+			XPActionCommand를 이용하면 특정 쿼리문의 수행 전/후에 필요한 비즈니스 로직을 수행 하도록 구현 할 수 있다. 
+		</para>
+			
+		<section id="xp_query_simplification_xpservice_extension_command">
+			<title>[참고] XPActionCommand</title>
+			<para>
+				XPActionCommand는 XPQueryService의 save() 메소드가 호출 됐을 때 Insert, Update, Delete Query를 실행 하기
+				전/후 필요한 비즈니스 로직을 추가할 수 있도록 제공되는 인터페이스이다. XPActionCommand 인터페이스를 구현한 별도의
+				클래스를 정의하고 해당 메소드에 비즈니스 로직을 추가하면 된다.
+			</para>
+			<para>
+				아래의 코드는 앞서 언급한 MovieActionCommand 클래스의 preInsert() 메소드 구현부분이다. 
+				DataSet을 특정 Table에 Insert 하기 전에 Primary Key에 해당하는 MOVIE_ID Column에 값을 셋팅 하도록 구현되어 있다. 
+			</para>
+    		<programlisting language="java"><![CDATA[public class MovieActionCommand implements XPActionCommand {
+
+	public void preInsert(DataSet dataSet, int currentRow) {
+		String id = "MV-" + System.currentTimeMillis();
+		dataSet.set(currentRow, "MOVIE_ID", id);
+	}
+}]]></programlisting>
+			<para>
+				따라서, XPQueryService의 save() 메소드에서는 DataSet의 Status가 'INSERT"인 Record를 DB에 저장하기 전
+				MovieActionCommand의 preInsert를 호출해서 앞서 정의해둔 추가 로직을 실행 한다.
+			</para>
+		</section>
+	</section>
+</chapter>
+    

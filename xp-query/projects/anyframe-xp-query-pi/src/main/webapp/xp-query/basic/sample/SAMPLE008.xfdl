@@ -1,0 +1,423 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<FDL version="1.4">
+  <TypeDefinition url="..\default_typedef.xml"/>
+  <Form id="frmSAMPLE008" classname="SAMPLE008" inheritanceid="" position="absolute 0 0 765 540" titletext="SAMPLE008" onload="SAMPLE008_onload" onbeforeclose="SAMPLE008_onbeforeclose" style="background:#f2f2efff;">
+    <Layouts>
+      <Layout>
+        <Div id="divSearch" taborder="4" text="search" position="absolute 0 40 765 80" style="background:#fff0f5ff;border:1 solid #906d3bff ;" anchor="left top right">
+          <Layouts>
+            <Layout>
+              <Static id="Static00" text="global.domain.departmentname" position="absolute 2 5 57 36"/>
+              <Edit id="edtSearchKeyword" taborder="14" position="absolute 59 9 216 31" onkeydown="divSearch_edtSearchKeyword_onkeydown" ontextchanged="divSearch_edtSearchKeyword_ontextchanged" imemode="hangul"/>
+              <Button id="btDoSearch" taborder="15" position="absolute 218 9 241 31" onclick="divSearch_btDoSearch_onclick" style="background:URL('image::btn_TP_SearchDrop_N.png') left middle;cursor:hand;"/>
+            </Layout>
+          </Layouts>
+        </Div>
+        <Grid id="grdTrvDept" taborder="5" useinputpanel="false" position="absolute 0 82 284 540" binddataset="dsTrvDept" formats="&lt;Formats&gt;&#10;  &lt;Format id=&quot;default&quot;&gt;&#10;    &lt;Columns&gt;&#10;      &lt;Col size=&quot;80&quot;/&gt;&#10;      &lt;Col size=&quot;80&quot;/&gt;&#10;      &lt;Col size=&quot;80&quot;/&gt;&#10;    &lt;/Columns&gt;&#10;    &lt;Rows&gt;&#10;      &lt;Row band=&quot;head&quot; size=&quot;24&quot;/&gt;&#10;      &lt;Row band=&quot;body&quot; size=&quot;24&quot;/&gt;&#10;    &lt;/Rows&gt;&#10;    &lt;Band id=&quot;head&quot;&gt;&#10;      &lt;Cell col=&quot;0&quot; disptype=&quot;normal&quot; text=&quot;DEPT_ID&quot;/&gt;&#10;      &lt;Cell col=&quot;1&quot; disptype=&quot;normal&quot; text=&quot;DEPT_LEVEL&quot;/&gt;&#10;      &lt;Cell col=&quot;2&quot; disptype=&quot;normal&quot; text=&quot;DEPT_NAME&quot;/&gt;&#10;    &lt;/Band&gt;&#10;    &lt;Band id=&quot;body&quot;&gt;&#10;      &lt;Cell col=&quot;0&quot; disptype=&quot;normal&quot; text=&quot;bind:DEPT_ID&quot;/&gt;&#10;      &lt;Cell col=&quot;1&quot; disptype=&quot;normal&quot; text=&quot;bind:DEPT_LEVEL&quot;/&gt;&#10;      &lt;Cell col=&quot;2&quot; disptype=&quot;normal&quot; text=&quot;bind:DEPT_NAME&quot;/&gt;&#10;    &lt;/Band&gt;&#10;  &lt;/Format&gt;&#10;&lt;/Formats&gt;&#10;" treeinitstatus="collapse,all" treeusecheckbox="false" oncelldblclick="grdTrvDept_oncelldblclick" autofittype="col" treeuseline="false" selecttype="treecell" scrollpixel="default" anchor="left top bottom">
+          <Formats>
+            <Format id="default">
+              <Columns>
+                <Column size="263"/>
+              </Columns>
+              <Rows>
+                <Row size="24"/>
+              </Rows>
+              <Band id="body">
+                <Cell displaytype="tree" edittype="tree" text="bind:DEPT_NAME" treelevel="bind:DEPT_LEVEL" treestate="0"/>
+              </Band>
+            </Format>
+          </Formats>
+        </Grid>
+        <Grid id="grdUser" taborder="6" useinputpanel="false" position="absolute 289 82 765 540" binddataset="dsGrdUser" formats="&lt;Formats&gt;&#10;  &lt;Format id=&quot;default&quot;&gt;&#10;    &lt;Columns&gt;&#10;      &lt;Col size=&quot;80&quot;/&gt;&#10;      &lt;Col size=&quot;80&quot;/&gt;&#10;      &lt;Col size=&quot;80&quot;/&gt;&#10;      &lt;Col size=&quot;80&quot;/&gt;&#10;      &lt;Col size=&quot;80&quot;/&gt;&#10;      &lt;Col size=&quot;80&quot;/&gt;&#10;      &lt;Col size=&quot;80&quot;/&gt;&#10;      &lt;Col size=&quot;80&quot;/&gt;&#10;      &lt;Col size=&quot;80&quot;/&gt;&#10;      &lt;Col size=&quot;80&quot;/&gt;&#10;      &lt;Col size=&quot;80&quot;/&gt;&#10;      &lt;Col size=&quot;80&quot;/&gt;&#10;      &lt;Col size=&quot;80&quot;/&gt;&#10;      &lt;Col size=&quot;80&quot;/&gt;&#10;      &lt;Col size=&quot;80&quot;/&gt;&#10;      &lt;Col size=&quot;80&quot;/&gt;&#10;      &lt;Col size=&quot;80&quot;/&gt;&#10;      &lt;Col size=&quot;80&quot;/&gt;&#10;    &lt;/Columns&gt;&#10;    &lt;Rows&gt;&#10;      &lt;Row band=&quot;head&quot; size=&quot;24&quot;/&gt;&#10;      &lt;Row band=&quot;body&quot; size=&quot;24&quot;/&gt;&#10;    &lt;/Rows&gt;&#10;    &lt;Band id=&quot;head&quot;&gt;&#10;      &lt;Cell col=&quot;0&quot; disptype=&quot;normal&quot; text=&quot;USER_ID&quot;/&gt;&#10;      &lt;Cell col=&quot;1&quot; disptype=&quot;normal&quot; text=&quot;USER_NAME&quot;/&gt;&#10;      &lt;Cell col=&quot;2&quot; disptype=&quot;normal&quot; text=&quot;EN_NAME&quot;/&gt;&#10;      &lt;Cell col=&quot;3&quot; disptype=&quot;normal&quot; text=&quot;COMP_PHONE&quot;/&gt;&#10;      &lt;Cell col=&quot;4&quot; disptype=&quot;normal&quot; text=&quot;PHONE&quot;/&gt;&#10;      &lt;Cell col=&quot;5&quot; disptype=&quot;normal&quot; text=&quot;CELL_PHONE&quot;/&gt;&#10;      &lt;Cell col=&quot;6&quot; disptype=&quot;normal&quot; text=&quot;COMPANY&quot;/&gt;&#10;      &lt;Cell col=&quot;7&quot; disptype=&quot;normal&quot; text=&quot;DEPT_ID&quot;/&gt;&#10;      &lt;Cell col=&quot;8&quot; disptype=&quot;normal&quot; text=&quot;JOB_POSITION&quot;/&gt;&#10;      &lt;Cell col=&quot;9&quot; disptype=&quot;normal&quot; text=&quot;ASSIGNMENT&quot;/&gt;&#10;      &lt;Cell col=&quot;10&quot; disptype=&quot;normal&quot; text=&quot;OFFICER_YN&quot;/&gt;&#10;      &lt;Cell col=&quot;11&quot; disptype=&quot;normal&quot; text=&quot;FAX&quot;/&gt;&#10;      &lt;Cell col=&quot;12&quot; disptype=&quot;normal&quot; text=&quot;EMAIL&quot;/&gt;&#10;      &lt;Cell col=&quot;13&quot; disptype=&quot;normal&quot; text=&quot;ZIP_CODE&quot;/&gt;&#10;      &lt;Cell col=&quot;14&quot; disptype=&quot;normal&quot; text=&quot;ADDRESS&quot;/&gt;&#10;      &lt;Cell col=&quot;15&quot; disptype=&quot;normal&quot; text=&quot;COMP_ZIP_CODE&quot;/&gt;&#10;      &lt;Cell col=&quot;16&quot; disptype=&quot;normal&quot; text=&quot;COMP_ADDRESS&quot;/&gt;&#10;      &lt;Cell col=&quot;17&quot; disptype=&quot;normal&quot; text=&quot;PASSWORD&quot;/&gt;&#10;    &lt;/Band&gt;&#10;    &lt;Band id=&quot;body&quot;&gt;&#10;      &lt;Cell col=&quot;0&quot; disptype=&quot;normal&quot; text=&quot;bind:USER_ID&quot;/&gt;&#10;      &lt;Cell col=&quot;1&quot; disptype=&quot;normal&quot; text=&quot;bind:USER_NAME&quot;/&gt;&#10;      &lt;Cell col=&quot;2&quot; disptype=&quot;normal&quot; text=&quot;bind:EN_NAME&quot;/&gt;&#10;      &lt;Cell col=&quot;3&quot; disptype=&quot;normal&quot; text=&quot;bind:COMP_PHONE&quot;/&gt;&#10;      &lt;Cell col=&quot;4&quot; disptype=&quot;normal&quot; text=&quot;bind:PHONE&quot;/&gt;&#10;      &lt;Cell col=&quot;5&quot; disptype=&quot;normal&quot; text=&quot;bind:CELL_PHONE&quot;/&gt;&#10;      &lt;Cell col=&quot;6&quot; disptype=&quot;normal&quot; text=&quot;bind:COMPANY&quot;/&gt;&#10;      &lt;Cell col=&quot;7&quot; disptype=&quot;normal&quot; text=&quot;bind:DEPT_ID&quot;/&gt;&#10;      &lt;Cell col=&quot;8&quot; disptype=&quot;normal&quot; text=&quot;bind:JOB_POSITION&quot;/&gt;&#10;      &lt;Cell col=&quot;9&quot; disptype=&quot;normal&quot; text=&quot;bind:ASSIGNMENT&quot;/&gt;&#10;      &lt;Cell col=&quot;10&quot; disptype=&quot;normal&quot; text=&quot;bind:OFFICER_YN&quot;/&gt;&#10;      &lt;Cell col=&quot;11&quot; disptype=&quot;normal&quot; text=&quot;bind:FAX&quot;/&gt;&#10;      &lt;Cell col=&quot;12&quot; disptype=&quot;normal&quot; text=&quot;bind:EMAIL&quot;/&gt;&#10;      &lt;Cell col=&quot;13&quot; disptype=&quot;normal&quot; text=&quot;bind:ZIP_CODE&quot;/&gt;&#10;      &lt;Cell col=&quot;14&quot; disptype=&quot;normal&quot; text=&quot;bind:ADDRESS&quot;/&gt;&#10;      &lt;Cell col=&quot;15&quot; disptype=&quot;normal&quot; text=&quot;bind:COMP_ZIP_CODE&quot;/&gt;&#10;      &lt;Cell col=&quot;16&quot; disptype=&quot;normal&quot; text=&quot;bind:COMP_ADDRESS&quot;/&gt;&#10;      &lt;Cell col=&quot;17&quot; disptype=&quot;normal&quot; text=&quot;bind:PASSWORD&quot;/&gt;&#10;    &lt;/Band&gt;&#10;  &lt;/Format&gt;&#10;&lt;/Formats&gt;&#10;" oncelldblclick="grdUser_oncelldblclick" selecttype="multirow" onheadclick="grdUser_onheadclick" autofittype="col" cellsizingtype="col" onrbuttonup="grdUser_onrbuttonup" anchor="all">
+          <Formats>
+            <Format id="default">
+              <Columns>
+                <Column size="92"/>
+                <Column size="80"/>
+                <Column size="138"/>
+                <Column size="151"/>
+              </Columns>
+              <Rows>
+                <Row size="24" band="head"/>
+                <Row size="24"/>
+              </Rows>
+              <Band id="head">
+                <Cell text="global.domain.username"/>
+                <Cell col="1" text="global.domain.position"/>
+                <Cell col="2" text="global.domain.phone"/>
+                <Cell col="3" text="global.domain.cellphone"/>
+              </Band>
+              <Band id="body">
+                <Cell style="align:left;" text="bind:USER_NAME"/>
+                <Cell col="1" text="bind:JOB_POSITION"/>
+                <Cell col="2" style="align:left;" text="bind:PHONE"/>
+                <Cell col="3" style="align:left;" text="bind:CELL_PHONE"/>
+              </Band>
+            </Format>
+          </Formats>
+        </Grid>
+        <ListBox id="lboxDeptName" taborder="7" position="absolute 59 70 216 159" innerdataset="@fdsTrvDept" codecolumn="DEPT_NAME" datacolumn="DEPT_NAME" visible="false" onitemclick="lboxDeptName_onitemclick" onkeydown="lboxDeptName_onkeydown"/>
+        <PopupMenu id="popupMenuGrd" position="absolute 320 136 468 193"/>
+        <Div id="Div00" taborder="8" text="Div00" position="absolute 0 0 765 40">
+          <Layouts>
+            <Layout>
+              <Static id="stTitle" text="global.domain.userlist" position="absolute 18 10 219 32"/>
+              <Button id="btAddCategory" taborder="1" text="global.domain.add" onclick="btAddCategory_onclick" position="absolute 542 7 615 32"/>
+              <Button id="btDeleteCategory" taborder="2" text="global.domain.delete" onclick="btDeleteCategory_onclick" position="absolute 617 7 690 32"/>
+              <Button id="btSaveAll" taborder="3" text="global.domain.save" onclick="btSaveAll_onclick" position="absolute 692 7 765 32"/>
+            </Layout>
+          </Layouts>
+        </Div>
+        <Static id="Static00" position="absolute 2 10 16 32" style="background:URL('image::bullet_WF_Lev1.png') left middle; " text=""/>
+      </Layout>
+    </Layouts>
+    <Objects>
+      <Dataset id="dsTrvDept" firefirstcount="0" firenextcount="0" useclientlayout="false" updatecontrol="true" enableevent="true" loadkeymode="keep" loadfiltermode="keep" reversesubsum="false" onrowposchanged="dsTrvDept_onrowposchanged" canrowposchange="dsTrvDept_canrowposchange">
+        <ColumnInfo>
+          <Column id="DEPT_ID" type="STRING" size="256"/>
+          <Column id="DEPT_LEVEL" type="STRING" size="256"/>
+          <Column id="DEPT_NAME" type="STRING" size="256"/>
+        </ColumnInfo>
+      </Dataset>
+      <Dataset id="dsService" firefirstcount="0" firenextcount="0" useclientlayout="false" updatecontrol="true" enableevent="true" loadkeymode="keep" loadfiltermode="keep" reversesubsum="false">
+        <ColumnInfo>
+          <Column id="SVC_ID" type="STRING" size="100"/>
+          <Column id="QUERY_LIST" type="STRING" size="256"/>
+          <Column id="SERVICE" type="STRING" size="100"/>
+          <Column id="IN_DATASET_LIST" type="STRING" size="256"/>
+          <Column id="OUT_DATASET_LIST" type="STRING" size="256"/>
+          <Column id="CONTROLLER" type="STRING" size="512"/>
+          <Column id="CALLBACK" type="STRING" size="100"/>
+          <Column id="SYNC_YN" type="STRING" size="1"/>
+        </ColumnInfo>
+        <Rows>
+          <Row>
+            <Col id="SVC_ID">getListTree</Col>
+            <Col id="QUERY_LIST">querySet1=findXPDeptListForTree</Col>
+            <Col id="OUT_DATASET_LIST">dsTrvDept=querySet1</Col>
+          </Row>
+          <Row>
+            <Col id="SVC_ID">getListUserByDept</Col>
+            <Col id="QUERY_LIST">querySet1=findXPUserListByDept</Col>
+            <Col id="OUT_DATASET_LIST">dsGrdUser=querySet1</Col>
+          </Row>
+          <Row>
+            <Col id="SVC_ID">saveAll</Col>
+            <Col id="OUT_DATASET_LIST"/>
+            <Col id="IN_DATASET_LIST">querySet1=dsGrdUser:U</Col>
+            <Col id="QUERY_LIST">querySet1=createXPUser,updateXPUser,removeXPUser</Col>
+          </Row>
+        </Rows>
+      </Dataset>
+      <Dataset id="dsGrdUser" firefirstcount="0" firenextcount="0" useclientlayout="false" updatecontrol="true" enableevent="true" loadkeymode="keep" loadfiltermode="keep" reversesubsum="false">
+        <ColumnInfo>
+          <Column id="USER_ID" type="STRING" size="256"/>
+          <Column id="USER_NAME" type="STRING" size="256"/>
+          <Column id="EN_NAME" type="STRING" size="256"/>
+          <Column id="COMP_PHONE" type="STRING" size="256"/>
+          <Column id="PHONE" type="STRING" size="256"/>
+          <Column id="CELL_PHONE" type="STRING" size="256"/>
+          <Column id="COMPANY" type="STRING" size="256"/>
+          <Column id="DEPT_ID" type="STRING" size="256"/>
+          <Column id="JOB_POSITION" type="STRING" size="256"/>
+          <Column id="ASSIGNMENT" type="STRING" size="256"/>
+          <Column id="OFFICER_YN" type="STRING" size="1"/>
+          <Column id="FAX" type="STRING" size="256"/>
+          <Column id="EMAIL" type="STRING" size="256"/>
+          <Column id="ZIP_CODE" type="STRING" size="256"/>
+          <Column id="ADDRESS" type="STRING" size="256"/>
+          <Column id="COMP_ZIP_CODE" type="STRING" size="256"/>
+          <Column id="COMP_ADDRESS" type="STRING" size="256"/>
+          <Column id="PASSWORD" type="STRING" size="256"/>
+        </ColumnInfo>
+      </Dataset>
+      <Dataset id="dsSearch" firefirstcount="0" firenextcount="0" useclientlayout="false" updatecontrol="true" enableevent="true" loadkeymode="keep" loadfiltermode="keep" reversesubsum="false">
+        <ColumnInfo>
+          <Column id="seachCondition" type="STRING" size="256"/>
+          <Column id="searchKeyword" type="STRING" size="256"/>
+        </ColumnInfo>
+      </Dataset>
+      <FilteredDataset id="fdsTrvDept" enableevent="true" loadkeymode="keep" loadfiltermode="keep" reversesubsum="false" binddataset="@dsTrvDept"/>
+    </Objects>
+    <Script type="xscript4.0"><![CDATA[include "lib::commonScript.xjs";
+var objFocusedGrd;
+var treeStatus = 0;
+
+// Form onload 이벤트 처리
+function SAMPLE008_onload(obj:Form, e:LoadEventInfo)
+{
+	// Tree 데이터 수신
+	gfnService("getListTree");
+	gfnSetTitle();
+	
+	var nCount = dsTrvDept.getRowCount();
+	var i;
+	
+	// 검색어 입력창 자동완성 기능 추가
+	dsTrvDept.addColumn("PSEUDOCODE", "string", 256);
+	for(i = 0 ; i < nCount ; i++){
+		var strDeptName = dsTrvDept.getColumn(i, "DEPT_NAME");
+		var code = GetSpliceTextE(strDeptName);
+		dsTrvDept.setColumn(i, "PSEUDOCODE", code);
+	}
+		
+	// 팝업 메뉴 초기화
+	popupMenuGrd.innerdataset = gdsPopupMenu;
+	popupMenuGrd.captioncolumn = "CAPTION";
+	popupMenuGrd.idcolumn = "ID";
+	popupMenuGrd.levelcolumn = "LEVEL";
+	
+	popupMenuGrd.onmenuclick.addHandler(fnPopupMenu_onmenuclick);
+}
+
+// 팝업 메뉴 클릭 이벤트
+function fnPopupMenu_onmenuclick(obj:PopupMenu, e:MenuClickEventInfo){
+	switch(e.id){
+		case "find":
+			fnFindForm();
+			break;
+		case "excelexport":
+			fnExcelExport();
+			break;
+		default:
+			break;
+	}
+}
+
+// "검색" 메뉴 클릭 이벤트 처리
+function fnFindForm(){
+	popupMenuGrd.closePopup();
+	var resultForm = gfnShowModal("includes::GRDFIND.xfdl", {objGrd:objFocusedGrd}, "global.domain.popupmenu.find", 525, 300);
+}
+
+// "엑셀 다운로드" 메뉴 클릭 이벤트 처리
+function fnExcelExport(){
+	popupMenuGrd.closePopup();
+	
+	// 엑셀 파일을 '열기', '저장', '취소' 선택 팝업 생성
+	var resultForm = gfnConfirm(gfnGetMessage("global.domain.popup.excelsave"), "OSC");
+	
+	if(resultForm == "S"){
+		// 사용자가 지정한 폴더 위치에 xls 파일 생성
+		gfnExportSaveAsExcel(objFocusedGrd);
+	} else if(resultForm == "Y"){
+		// Excel 프로그램 실행
+		gfnExportExcelEx(objFocusedGrd);
+	}
+}
+
+// Tree Grid 더블 클릭 이벤트 처리
+function grdTrvDept_oncelldblclick(obj:Grid, e:GridClickEventInfo)
+{
+	var objDs = this[obj.binddataset];
+	
+	if(treeStatus == 1){
+		treeStatus = 0;
+		return;
+	}
+	
+	var childRow = obj.getTreeChildRow(objDs.rowposition, 0, true);
+	
+	// 자식 노드가 있는 경우
+	if(childRow >= 0) {
+		var gridRow = obj.getTreeRow(objDs.rowposition);
+		if(obj.isTreeCollapsedRow(childRow, true)) {
+			obj.setTreeStatus(gridRow, true);
+		} else {
+			obj.setTreeStatus(gridRow, false);
+		}
+	}
+	treeStatus = 0;
+}
+
+// 사용자 그리드 더블 클릭 이벤트 처리
+function grdUser_oncelldblclick(obj:Grid, e:GridClickEventInfo)
+{
+	// 사용자 상세 정보 팝업 생성
+	var resultForm = gfnShowModal("sample::SAMPLE008_POPUP.xfdl", {paramMode:"U", dsArg:dsGrdUser, dsDept:dsTrvDept}, "global.domain.user.detailinfo", 525, 300);
+	
+	fnAfterPopup(resultForm, "U");
+}
+
+// 팝업을 닫은 후 처리
+function fnAfterPopup(obj, paramStr){
+	if(!gfnIsNull(obj)){
+		if(obj != "N"){
+			// 새로운 데이터 생성
+			if(paramStr == "C"){
+				dsGrdUser.addRow();
+				dsGrdUser.copyRow(dsGrdUser.rowposition, obj, obj.rowposition);
+			// 기존의 데이터 수정
+			} else if(paramStr == "U"){
+				dsGrdUser.copyRow(dsGrdUser.rowposition, obj, obj.rowposition);
+			}
+		}
+	}
+}
+
+// 추가 버튼 클릭 이벤트 처리
+function btAddCategory_onclick(obj:Button,  e:ClickEventInfo)
+{
+	// 사용자 정보 입력 팝업 생성
+	var resultForm = gfnShowModal("sample::SAMPLE008_POPUP.xfdl", {paramMode:"C", dsArg:dsGrdUser, dsDept:dsTrvDept}, "global.domain.user.detailinfo", 525, 300);
+	
+	// 팝업 닫은 후 처리
+	fnAfterPopup(resultForm, "C");
+}
+
+// 삭제 버튼 클릭 이벤트
+function btDeleteCategory_onclick(obj:Button,  e:ClickEventInfo)
+{
+	dsGrdUser.deleteSelectedRows();
+}
+
+// Tree Grid Row Position 변경 이벤트 처리
+function dsTrvDept_onrowposchanged(obj:Dataset, e:DSRowPosChangeEventInfo)
+{
+	var strDeptId, strParam;
+	
+	strDeptId = obj.getColumn(e.newrow, "DEPT_ID");
+	
+	// 선택한 부서에 속하는 사용자를 검색
+	if(!gfnIsNull(strDeptId)){
+		strParam = "DEPT_ID=" + strDeptId;
+		gfnService("getListUserByDept", strParam);
+	}
+}
+
+// Tree Grid Row Position 변경 이벤트 처리
+function dsTrvDept_canrowposchange(obj:Dataset, e:DSRowPosChangeEventInfo)
+{
+	// 변경된 데이터가 있는 경우
+	if(gfnDsGetUpdate(dsGrdUser)){
+		var resultValue = gfnConfirm("msg.before.movepage", "YN");
+		
+		if(resultValue == "N") {
+			return false;
+		}
+	}
+}
+
+// 저장 버튼 클릭 이벤트
+function btSaveAll_onclick(obj:Button,  e:ClickEventInfo)
+{
+	gfnService("saveAll");
+}
+
+// 검색 버튼 클릭 이벤트
+function divSearch_btDoSearch_onclick(obj:Button,  e:ClickEventInfo)
+{
+	var nRow = dsTrvDept.findRow("DEPT_NAME", divSearch.edtSearchKeyword.text);
+	
+	if(nRow >= 0) {
+		var gridRow = grdTrvDept.getTreeParentRow(nRow);
+		var parentRow = 0;
+		
+		for(var i = 0 ; i < gridRow ; i++) {
+			if(!grdTrvDept.isTreeCollapsedRow(i)){
+				parentRow++;
+			}
+		}
+		var bGrd = grdTrvDept.setTreeStatus(parentRow, true);
+		dsTrvDept.rowposition = nRow;
+	} else {
+		gfnAlertMsg("msg.search.nodata");
+	}
+}
+
+// 사용자 그리드 헤더 클릭 이벤트
+function grdUser_onheadclick(obj:Grid, e:GridClickEventInfo)
+{
+	// 그리드 정렬
+	gfnGridSort(obj, e);
+}
+
+// 검색어 입력 후 엔터키 입력 이벤트 처리
+function divSearch_edtSearchKeyword_onkeydown(obj:Edit, e:KeyEventInfo)
+{
+	if(e.keycode == 13){
+		divSearch_btDoSearch_onclick();
+	} else if(e.keycode == 40){
+		lboxDeptName.setFocus();
+	}
+}
+
+
+function lboxDeptName_onkeydown(obj:ListBox, e:KeyEventInfo)
+{
+	if(e.keycode == 13){
+		divSearch.edtSearchKeyword.value = obj.text;
+		obj.visible = false;
+		divSearch.edtSearchKeyword.setFocus();
+	}
+}
+
+// Form을 닫기 전 변경된 데이터 있는 경우 처리
+function SAMPLE008_onbeforeclose(obj:Form, e:CloseEventInfo)
+{
+	if(gfnDsGetUpdate(dsGrdUser)){
+		var resultValue = gfnConfirm("msg.before.movepage", "YN");
+		
+		if(resultValue == "N") {
+			return;
+		} else if(resultValue == "Y") {
+			btSaveAll_onclick();
+		}
+	}
+}
+
+// 검색어 입력 이벤트 처리
+function divSearch_edtSearchKeyword_ontextchanged(obj:Edit,  e:TextChangedEventInfo)
+{
+	var text = e.posttext;
+	
+	// 입력된 검색어에 따른 자동완성 기능
+	if(text.length > 0){
+		var etext = GetSpliceTextE(text);
+		fdsTrvDept.filter("PSEUDOCODE.toString().indexOf('"+etext+"') == 0");
+		lboxDeptName.visible = true;
+	} else {
+		fdsTrvDept.filter("PSEUDOCODE == 0");
+		lboxDeptName.visible = false;
+	}
+}
+
+// 검색어 입력창 하단의 콤보박스 클릭 이벤트
+function lboxDeptName_onitemclick(obj:ListBox, e:ListBoxClickEventInfo)
+{
+	// 자동완성 기능을 이용하여 아이템 선택한 경우
+	// 검색어를 해당 키워드로 변경
+	divSearch.edtSearchKeyword.value = e.itemtext;
+	lboxDeptName.visible = false;
+}
+
+// 사용자 목록 화면에서 우클릭 이벤트 발생
+function grdUser_onrbuttonup(obj:Grid, e:GridMouseEventInfo)
+{
+	nSelectedCol = e.col;
+	nSelectedRow = e.row;
+	objFocusedGrd = obj;
+	var nGridX = system.cursorx;
+	var nGridY = system.cursory;
+	
+	// 현재 마우스 위치에 팝업 메뉴 생성
+	popupMenuGrd.trackPopup(nGridX, nGridY);
+}
+
+// gfnService 실행 후 Callback 처리
+function fnCallback(strServiceId, strErrorCode, strErrorMsg) {
+	if ( strErrorCode == -1 ) {
+		gfnAlertMsg(strErrorMsg, "ERR");
+	} else {
+		if(strServiceId == "saveAll"){
+			gfnAlertMsg("msg.save.success");
+		} else if(strServiceId == "getListTree"){
+			var strDeptId = dsTrvDept.getColumn(0, "DEPT_ID");
+			gfnService("getListUserByDept", "DEPT_ID=" + strDeptId);
+		}
+	}
+}
+
+]]></Script>
+  </Form>
+</FDL>

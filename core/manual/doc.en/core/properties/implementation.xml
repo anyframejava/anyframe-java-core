@@ -1,0 +1,107 @@
+<chapter id="core_properties_implementation">
+	<title>PropertiesServiceImpl</title>
+	<para>The following is setup information needed to use PropertiesService.</para>
+    <informaltable>
+		<tgroup cols="4">
+			<colspec colname="col1" colnum="1" colwidth="1*" />
+			<colspec colname="col2" colnum="2" colwidth="6*" />
+			<colspec colname="col3" colnum="3" colwidth="1*" />
+			<colspec colname="col4" colnum="4" colwidth="1*" />
+	
+			<thead>
+				<row>
+					<entry align="center">Property Name</entry>
+					<entry align="center">Description</entry>
+					<entry align="center">Required</entry>
+					<entry align="center">Default Value</entry>
+				</row>
+			</thead>
+	
+			<tbody>
+				<row>
+						<entry>dynamicReload</entry>
+						<entry>
+							Cycle that checks the changes in files managed by PropertiesService (by millisecond). 
+							When this property is not defined, Dynamic Reload is not executed. 
+							(For more information, refer to <link linkend="core_properties_dynamic">Dynamic Reloading</link> in this chapter.)
+						</entry>
+						<entry>N</entry>
+						<entry>-1</entry>
+				</row>
+				<row>
+					<entry>encoding</entry>
+					<entry>
+						Defines the encoding information of the property file.
+					</entry>
+					<entry>N</entry>
+					<entry>Empty String</entry>
+				</row>	
+				<row>
+					<entry>filenames</entry>
+					<entry>
+						When the key and value set exists in a separate external file, the file name is written together with the path. 
+						There are two types of setting file paths, one using absolute/relative physical file paths and the other using Classpath. 
+						When there are two or more files, they are divided by comma.
+					</entry>
+					<entry>N</entry>
+					<entry>Empty String</entry>
+				</row>
+			</tbody>
+		</tgroup>
+	</informaltable>
+
+	<section id="core_properties_implementation_samples">
+		<title>Samples</title>
+		<itemizedlist>
+			<listitem>
+				<para>
+					<emphasis role="bold">Configuration </emphasis>
+				</para>
+				<para>
+					The following is part of context-properties.xml that defines the property of PropertiesService. The PropertiesService hereunder manages the properties that are defined 
+					in the sample-resource.properties file that exists in Classpath and individually defined properties.
+				</para>
+				<programlisting language="xml"><![CDATA[<bean name="propertiesService" class="org.anyframe.util.properties.impl.PropertiesServiceImpl"
+    destroy-method="destroy">
+    <properties name=dynamicReload" value="1000"/>
+    <properties name=encoding" value="UTF-8"/>
+    <properties name="filenames">
+        <value>
+            classpath:/sample-resource.properties
+        </value>
+    </properties>
+</bean>]]></programlisting>
+				</listitem>
+				<listitem>
+					<para>
+						<emphasis role="bold">TestCase</emphasis>
+					</para>
+					<para>
+						The following is part of MovieDao.java code that uses PropertiesService based on the previously defined property setup.
+					</para>
+					<programlisting language="java">@Inject
+@Named("propertiesService") 
+PropertiesService propertiesService;
+
+public Page getPagingList(Movie movie){
+    // try to paging list based on properties (PAGE_SIZE, PAGE_UNIT)
+    int page_unit = <emphasis role="bold">propertiesService.getInt("pageUnit");</emphasis>
+    int page_size = <emphasis role="bold">propertiesService.getInt("pageSize");</emphasis>
+		
+    System.out.println("value of PAGE_UNIT property is a '" + page_unit + "'.");
+    System.out.println("value of PAGE_SIZE property is a '" + page_size + "'.");
+    return new Page();
+}</programlisting>
+					<para>The following part of Main.java code that extracts messages using PropertiesService based on the previously defined property setup.</para>
+					<programlisting language="java">public void getProperty() {
+    // 1. lookup propertiesService
+    PropertiesService service = (PropertiesService) context
+        .getBean("propertiesService");
+    // 2. try to get a property
+    System.out.println("value of message property is a '"
+        + <emphasis role="bold">service.getString("message")</emphasis> + "'.");
+}</programlisting>
+			</listitem>
+		</itemizedlist>
+	</section>
+</chapter>

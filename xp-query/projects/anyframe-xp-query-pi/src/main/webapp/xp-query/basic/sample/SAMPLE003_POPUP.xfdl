@@ -1,0 +1,196 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<FDL version="1.4">
+  <TypeDefinition url="..\default_typedef.xml"/>
+  <Form id="frmSAMPLE003_POPUP" classname="SAMPLE003_POPUP" inheritanceid="" position="absolute 0 0 336 219" onload="SAMPLE003_POPUP_onload" style="background:#f2f2efff;align:center middle;">
+    <Layouts>
+      <Layout>
+        <Div id="divBoardForm" taborder="0" text="divBoardForm" position="absolute 0 0 336 187" anchor="left top right">
+          <Layouts>
+            <Layout>
+              <Static id="stPostId" text="global.domain.boardid" position="absolute 0 0 85 26" style="background:#edeee6ff;border:1 solid #c6c6c5ff ;align:center middle;"/>
+              <Static id="stTitle" text="global.domain.title" position="absolute 0 25 85 51" style="background:#edeee6ff;border:1 solid #c6c6c5ff ;align:center middle;"/>
+              <Static id="stContents" text="global.domain.contents" position="absolute 0 50 85 112" style="background:#edeee6ff;border:1 solid #c6c6c5ff ;align:center middle;"/>
+              <Static id="stRegId" text="global.domain.regid" position="absolute 0 111 85 137" style="background:#edeee6ff;border:1 solid #c6c6c5ff ;align:center middle;"/>
+              <Static id="stRegDate" text="global.domain.regdate" position="absolute 0 136 85 162" style="background:#edeee6ff;border:1 solid #c6c6c5ff ;align:center middle;"/>
+              <Static id="stCommunityId" text="global.domain.community" position="absolute 0 161 85 187" style="background:#edeee6ff;border:1 solid #c6c6c5ff ;align:center middle;"/>
+              <Static id="Static01" position="absolute 84 25 336 51" style="background:#ffffffff; border:1 solid #c6c6c5ff ; align:center middle; " text="" anchor="left top right"/>
+              <Edit id="edtTitle" taborder="6" position="absolute 86 28 334 50" anchor="left top right"/>
+              <Static id="Static02" position="absolute 84 50 336 112" style="background:#ffffffff; border:1 solid #c6c6c5ff ; align:center middle; " text="" anchor="left top right"/>
+              <TextArea id="txaContents" taborder="7" wordwrap="char" position="absolute 86 52 334 110" anchor="left top right"/>
+              <Static id="Static03" position="absolute 84 111 336 137" style="background:#ffffffff; border:1 solid #c6c6c5ff ; align:center middle; " text="" anchor="left top right"/>
+              <Edit id="edtRegId" taborder="8" enable="false" position="absolute 86 113 334 135" anchor="left top right"/>
+              <Static id="Static04" position="absolute 84 136 336 162" style="background:#ffffffff; border:1 solid #c6c6c5ff ; align:center middle; " text="" anchor="left top right"/>
+              <Calendar id="calRegDate" taborder="9" readonly="true" dateformat="yyyy-MM-dd" enable="false" position="absolute 86 138 334 160" style="align:left middle; " anchor="left top right"/>
+              <Static id="Static00" position="absolute 84 0 336 26" style="background:#ffffffff; border:1 solid #c6c6c5ff ; align:center middle; " text="" anchor="left top right"/>
+              <Edit id="edtPostId" taborder="10" enable="false" position="absolute 86 2 334 24" anchor="left top right"/>
+              <Static id="Static05" position="absolute 84 161 336 187" style="background:#ffffffff; border:1 solid #c6c6c5ff ; align:center middle; " text="" anchor="left top right"/>
+              <Combo id="cmbCommunityId" taborder="11" innerdataset="@dsCboCommunityPopup" codecolumn="COMMUNITY_ID" datacolumn="COMMUNITY_NAME" position="absolute 86 163 334 185" anchor="left top right"/>
+            </Layout>
+          </Layouts>
+        </Div>
+        <Button id="btSaveTemp" taborder="1" text="global.domain.save" position="absolute 158 189 248 217" onclick="btSaveTemp_onclick"/>
+        <Button id="btCancel" taborder="2" text="global.domain.cancle" position="absolute 250 189 336 217" onclick="btCancel_onclick"/>
+        <Button id="btDelete" taborder="1" text="global.domain.delete" position="absolute 66 189 156 217" onclick="btDelete_onclick"/>
+      </Layout>
+    </Layouts>
+    <Objects>
+      <Dataset id="dsBoard" firefirstcount="0" firenextcount="0" useclientlayout="false" updatecontrol="true" enableevent="true" loadkeymode="keep" loadfiltermode="keep" reversesubsum="false">
+        <ColumnInfo>
+          <Column id="TITLE" type="STRING" size="256"/>
+          <Column id="CONTENTS" type="STRING" size="256"/>
+          <Column id="REG_ID" type="STRING" size="256"/>
+          <Column id="REG_DATE" type="STRING" size="256"/>
+          <Column id="POST_ID" type="STRING" size="256"/>
+          <Column id="COMMUNITY_ID" type="STRING" size="256"/>
+        </ColumnInfo>
+      </Dataset>
+      <Dataset id="dsCboCommunityPopup" firefirstcount="0" firenextcount="0" useclientlayout="false" updatecontrol="true" enableevent="true" loadkeymode="keep" loadfiltermode="keep" reversesubsum="false">
+        <ColumnInfo>
+          <Column id="COMMUNITY_ID" type="STRING" size="256"/>
+          <Column id="COMMUNITY_NAME" type="STRING" size="256"/>
+          <Column id="COMMUNITY_DESC" type="STRING" size="256"/>
+          <Column id="CATEGORY_ID" type="STRING" size="256"/>
+          <Column id="REG_ID" type="STRING" size="256"/>
+          <Column id="RED_DATE" type="STRING" size="256"/>
+        </ColumnInfo>
+      </Dataset>
+      <Dataset id="dsBoardValid" firefirstcount="0" firenextcount="0" useclientlayout="false" updatecontrol="true" enableevent="true" loadkeymode="keep" loadfiltermode="keep" reversesubsum="false">
+        <ColumnInfo>
+          <Column id="TITLE" type="STRING" size="256"/>
+          <Column id="CONTENTS" type="STRING" size="256"/>
+          <Column id="REG_ID" type="STRING" size="256"/>
+          <Column id="REG_DATE" type="DATE" size="8"/>
+          <Column id="POST_ID" type="STRING" size="256"/>
+          <Column id="COMMUNITY_ID" type="STRING" size="256"/>
+        </ColumnInfo>
+        <Rows>
+          <Row>
+            <Col id="TITLE">title:title,required:true,maxlength:150</Col>
+            <Col id="CONTENTS">title:contents,maxlength:360</Col>
+          </Row>
+        </Rows>
+      </Dataset>
+      <Dataset id="dsService" firefirstcount="0" firenextcount="0" useclientlayout="false" updatecontrol="true" enableevent="true" loadkeymode="keep" loadfiltermode="keep" reversesubsum="false">
+        <ColumnInfo>
+          <Column id="SVC_ID" type="STRING" size="100"/>
+          <Column id="QUERY_LIST" type="STRING" size="256"/>
+          <Column id="SERVICE" type="STRING" size="100"/>
+          <Column id="IN_DATASET_LIST" type="STRING" size="256"/>
+          <Column id="OUT_DATASET_LIST" type="STRING" size="256"/>
+          <Column id="CONTROLLER" type="STRING" size="512"/>
+          <Column id="CALLBACK" type="STRING" size="100"/>
+          <Column id="SYNC_YN" type="STRING" size="1"/>
+        </ColumnInfo>
+        <Rows>
+          <Row>
+            <Col id="SVC_ID">createBoard</Col>
+            <Col id="QUERY_LIST">querySet1=createXPBoard</Col>
+            <Col id="OUT_DATASET_LIST"></Col>
+          </Row>
+          <Row>
+            <Col id="SVC_ID">updateBoard</Col>
+            <Col id="QUERY_LIST">querySet1=updateXPBoard</Col>
+            <Col id="SERVICE"/>
+            <Col id="IN_DATASET_LIST"/>
+            <Col id="OUT_DATASET_LIST"/>
+            <Col id="CONTROLLER"/>
+            <Col id="CALLBACK"/>
+            <Col id="SYNC_YN"/>
+          </Row>
+          <Row>
+            <Col id="SVC_ID">removeBoard</Col>
+            <Col id="QUERY_LIST">querySet1=removeXPBoard</Col>
+            <Col id="SERVICE"/>
+            <Col id="IN_DATASET_LIST"/>
+            <Col id="OUT_DATASET_LIST"/>
+            <Col id="CONTROLLER"/>
+            <Col id="CALLBACK"/>
+            <Col id="SYNC_YN"/>
+          </Row>
+        </Rows>
+      </Dataset>
+    </Objects>
+    <Bind>
+      <BindItem id="item1" compid="divBoardForm.edtTitle" propid="value" datasetid="dsBoard" columnid="TITLE"/>
+      <BindItem id="item2" compid="divBoardForm.txaContents" propid="value" datasetid="dsBoard" columnid="CONTENTS"/>
+      <BindItem id="item3" compid="divBoardForm.edtRegId" propid="value" datasetid="dsBoard" columnid="REG_ID"/>
+      <BindItem id="item4" compid="divBoardForm.calRegDate" propid="value" datasetid="dsBoard" columnid="REG_DATE"/>
+      <BindItem id="item0" compid="divBoardForm.edtPostId" propid="value" datasetid="dsBoard" columnid="POST_ID"/>
+      <BindItem id="item5" compid="divBoardForm.cmbCommunityId" propid="value" datasetid="dsBoard" columnid="COMMUNITY_ID"/>
+    </Bind>
+    <Script type="xscript4.0"><![CDATA[include "lib::commonScript.xjs";
+
+var strMode;
+
+// Form onload 이벤트 처리
+function SAMPLE003_POPUP_onload(obj:Form, e:LoadEventInfo)
+{
+	// 부모창으로부터 전송받은 파라미터 설정
+	strMode = this.getOwnerFrame().paramMode;
+	dsBoard.clearData();
+	dsBoard.addRow();
+	dsCboCommunityPopup.copyData(dsCboCommunity);
+	
+	// strMode : C - 새로운 데이터 생성
+	// 		   : U - 기존의 데이터 수정
+	if(strMode == "C") {
+		if(!gfnIsNull(gfnGetUserId())){
+			dsBoard.setColumn(dsBoard.rowposition, "REG_ID", gfnGetUserId());
+		}
+		dsBoard.setColumn(dsBoard.rowposition, "REG_DATE", gfnToday());
+		divBoardForm.cmbCommunityId.index = 0;
+		// 삭제 버튼 감춤
+		btDelete.visible = false;
+	} else{
+		// 삭제 버튼 보임
+		btDelete.visible = true;
+		dsBoard.copyRow(0, dsArg, dsArg.rowposition);
+	}
+	
+	// 각 컴포넌트 타이틀 국제화 기능 적용
+	gfnSetTitle();
+}
+
+// 취소 버튼 클릭 이벤트
+function btCancel_onclick(obj:Button,  e:ClickEventInfo)
+{
+	// 팝업을 닫고 부모창으로 리턴
+	close("N");
+}
+
+// 임시 저장 버튼 클릭 이벤트
+function btSaveTemp_onclick(obj:Button,  e:ClickEventInfo)
+{
+	// 유효성 검사 후 이상 없는 경우 팝업을 닫고 부모창으로 리턴
+	if(gfnDsCheckValid(dsBoard)){
+		var postId = divBoardForm.edtPostId.value;
+
+		// 공통 Service를 DataSet이 아닌 VariableList를 이용하여 처리하고 있음(" key=value" 형태의 String parameter로 전송)
+		if(postId == "" || postId == null){
+			gfnService("createBoard", "TITLE=" + divBoardForm.edtTitle.value + " CONTENTS=" + divBoardForm.txaContents.value + " REG_ID=" + divBoardForm.edtRegId.value + " COMMUNITY_ID=" + divBoardForm.cmbCommunityId.value);
+		} else {
+			gfnService("updateBoard", "TITLE=" + divBoardForm.edtTitle.value + " CONTENTS=" + divBoardForm.txaContents.value + " REG_ID=" + divBoardForm.edtRegId.value + " COMMUNITY_ID=" + divBoardForm.cmbCommunityId.value + " POST_ID=" + postId);
+		}
+		
+		// 팝업을 닫고 부모창에서 List 다시 조회
+		close("Y");
+	}
+}
+
+function btDelete_onclick(obj:Button,  e:ClickEventInfo)
+{	
+	var rtVal = gfnConfirm("msg.before.delete", "YN");
+	var postId = divBoardForm.edtPostId.value;
+	
+	if(rtVal == "Y"){
+		gfnService("removeBoard", "POST_ID=" + postId);
+	} else {
+		return;
+	}
+	
+	// 팝업을 닫고 부모창에서 List 다시 조회	
+	close("Y");
+}
+]]></Script>
+  </Form>
+</FDL>

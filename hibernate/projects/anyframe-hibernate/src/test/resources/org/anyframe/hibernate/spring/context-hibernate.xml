@@ -1,0 +1,45 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE beans PUBLIC "-//SPRING//DTD BEAN//EN"
+    "http://www.springframework.org/dtd/spring-beans.dtd">
+
+<beans>
+	<!-- Hibernate SessionFactory -->
+	<bean id="sessionFactory"
+		class="org.springframework.orm.hibernate3.LocalSessionFactoryBean">
+		<property name="dataSource" ref="dataSource" />
+		<property name="mappingLocations">
+			<list>
+				<value>
+					classpath:org/anyframe/hibernate/sample/model/bidirection/Category.hbm.xml
+				</value>
+				<value>
+					classpath:org/anyframe/hibernate/sample/model/bidirection/Country.hbm.xml
+				</value>
+				<value>
+					classpath:org/anyframe/hibernate/sample/model/bidirection/Movie.hbm.xml
+				</value>
+			</list>
+		</property>
+		<property name="hibernateProperties">
+			<props>
+				<prop key="hibernate.hbm2ddl.auto">create</prop>
+				<prop key="hibernate.dialect">org.hibernate.dialect.HSQLDialect</prop>
+				<prop key="hibernate.show_sql">true</prop>
+				<prop key="hibernate.format_sql">true</prop>
+				<prop key="hibernate.jdbc.batch_size">10</prop>
+			</props>
+		</property>
+	</bean>
+
+	<bean id="dynamicHibernateService"
+		class="org.anyframe.hibernate.impl.DynamicHibernateServiceImpl">
+		<property name="sessionFactory" ref="sessionFactory" />
+		<property name="fileNames">
+			<list>
+				<value>
+					classpath*:org/anyframe/hibernate/spring/dynamic-*.xml
+				</value>
+			</list>
+		</property>
+	</bean>
+</beans>

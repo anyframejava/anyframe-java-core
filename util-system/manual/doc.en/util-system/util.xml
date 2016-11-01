@@ -1,0 +1,746 @@
+<chapter id="utilsystem_util">
+	<title> Utility</title>
+	<para>Anyframe provides related utilities for easy access to system, network, and file.</para>
+
+	<section id="utilsystem_util_system">
+		<title> SystemInfo Utility</title>
+		<para>
+			System information is available through SystemInfoUtil class.
+		</para>
+		<informaltable>
+		<tgroup cols="3">
+			<colspec colnum="1" colname="col1" colwidth="2*" />
+			<colspec colnum="2" colname="col2" colwidth="5*" />
+			<colspec colnum="2" colname="col2" colwidth="3*" />
+			<thead>
+				<row>
+					<entry align="center">Method</entry>
+					<entry align="center">Description</entry>
+					<entry align="center">Return</entry>
+				</row>
+			</thead>
+			<tbody>
+				<row>
+					<entry><emphasis role="bold">getDiskProperty</emphasis>()</entry>
+					<entry>Check file system list - directory, file name, etc.</entry>
+					<entry>List&lt;FileSystemInfo&gt;</entry>
+				</row>
+				<row>
+					<entry><emphasis role="bold">getDiskProperty</emphasis>(final String name)</entry>
+					<entry>Search a specific file system - directory, file name, etc.</entry>
+					<entry>FileSystemInfo</entry>
+				</row>
+				<row>
+					<entry><emphasis role="bold">getDiskCapacity</emphasis>()</entry>
+					<entry>Check the total file system capacity - total memory size, used memory size, percentage, available memory size, etc.</entry>
+					<entry>Map&lt;String, FileSystemUsageInfo&gt;</entry>
+				</row>
+				<row>
+					<entry><emphasis role="bold">getDiskCapacity</emphasis>(final String name)</entry>
+					<entry>Check a specific file system capacity - total memory size, used memory size, percentage, available memory size, etc.</entry>
+					<entry>FileSystemUsageInfo</entry>
+				</row>
+				<row>
+					<entry><emphasis role="bold">getMountedDiskCapacity</emphasis>()</entry>
+					<entry>Check a specific mounted file system capacity - total memory size, used memory size, percentage, available memory size, etc.</entry>
+					<entry>FileSystemUsageInfo</entry>
+				</row>
+				<row>
+					<entry><emphasis role="bold">replacePath</emphasis>(final String path)</entry>
+					<entry>Change the drive route in line with OS</entry>
+					<entry>String</entry>
+				</row>
+				<row>
+					<entry><emphasis role="bold">getSystemInfo</emphasis>()</entry>
+					<entry>OS information</entry>
+					<entry>OsInfo</entry>
+				</row>
+				<row>
+					<entry><emphasis role="bold">getProcessStat</emphasis>()</entry>
+					<entry>System process status information - process information, total number, number of processes being executed, number of processes in each state, number of threads, etc.</entry>
+					<entry>ProcessStatInfo</entry>
+				</row>
+				<row>
+					<entry><emphasis role="bold">getProcessList</emphasis>(final String[] args)</entry>
+					<entry>Get process execution information</entry>
+					<entry>Map&lt;Long, ProcessInfo&gt;</entry>
+				</row>
+				<row>
+					<entry><emphasis role="bold">getPs</emphasis>()</entry>
+					<entry>Same information as the result of executing ps - state of the process currently being executed</entry>
+					<entry>List&lt;String&gt;</entry>
+				</row>
+				<row>
+					<entry><emphasis role="bold">getWho</emphasis>()</entry>
+					<entry>Same information as the result of executing who - check the user currently using the system</entry>
+					<entry>List&lt;String&gt;</entry>
+				</row>
+				<row>
+					<entry><emphasis role="bold">getMemoryCapacity</emphasis>(final MemRegion memRegion)</entry>
+					<entry>Show one out of the total memory size, used memory size and available memory size depending on the input memRegion value.</entry>
+					<entry>long</entry>
+				</row>
+				<row>
+					<entry><emphasis role="bold">getLs</emphasis>(final String name)</entry>
+					<entry>Same information as the result of executing ls - ls information of the relevant directory and file</entry>
+					<entry>String</entry>
+				</row>
+				<row>
+					<entry><emphasis role="bold">getLsList</emphasis>(final String name)</entry>
+					<entry>Get ls list of files under the the relevant directory</entry>
+					<entry>List&lt;String&gt;</entry>
+				</row>
+				<row>
+					<entry><emphasis role="bold">getCpuInfo</emphasis>()</entry>
+					<entry>Get the Cpu information of the relevant system</entry>
+					<entry>CpuInfo</entry>
+				</row>
+				<row>
+					<entry><emphasis role="bold">getClientIP</emphasis>(final HttpServletRequest request)</entry>
+					<entry>Get the IP address information of the client</entry>
+					<entry>String</entry>
+				</row>
+				<row>
+					<entry><emphasis role="bold">getClientOS</emphasis>(final HttpServletRequest request)</entry>
+					<entry>Get the OS information of the client</entry>
+					<entry>String</entry>
+				</row>
+				<row>
+					<entry><emphasis role="bold">getClientBrowser</emphasis>(final HttpServletRequest request)</entry>
+					<entry>Get the browser and version information of the client</entry>
+					<entry>String</entry>
+				</row>
+			</tbody>
+		</tgroup>
+	</informaltable>
+	</section>
+
+	<section id="utilsystem_util_network">
+		<title> Network Utility</title>
+		<para>
+			The NetworkStateUtil class provides information on the network status, and IP and Mac address.
+		</para>
+		<informaltable>
+		<tgroup cols="3">
+			<colspec colnum="1" colname="col1" colwidth="2*" />
+			<colspec colnum="2" colname="col2" colwidth="5*" />
+			<colspec colnum="2" colname="col2" colwidth="3*" />
+			<thead>
+				<row>
+					<entry align="center">Method</entry>
+					<entry align="center">Description</entry>
+					<entry align="center">Return</entry>
+				</row>
+			</thead>
+			<tbody>
+				<row>
+					<entry><emphasis role="bold">testPing</emphasis>(final String destHost, final int timeout)</entry>
+					<entry>Check the network status</entry>
+					<entry>boolean</entry>
+				</row>
+				<row>
+					<entry><emphasis role="bold">getNetworkInfoList</emphasis>()</entry>
+					<entry>Get ip, mac, network mask, etc. on the total network list</entry>
+					<entry>Map&lt;String, NetworkInfo&gt;</entry>
+				</row>
+				<row>
+					<entry><emphasis role="bold">getMyIPInfo</emphasis>()</entry>
+					<entry>Get the information of the same type as the result of executing NetInfo</entry>
+					<entry>NetworkInfo</entry>
+				</row>
+				<row>
+					<entry><emphasis role="bold">getMyIPList</emphasis>()</entry>
+					<entry>Get the ip list on the total network list</entry>
+					<entry>List&lt;String&gt;</entry>
+				</row>
+				<row>
+					<entry><emphasis role="bold">getMyMacAddressList</emphasis>()</entry>
+					<entry>Get the Mac address list on the total network list</entry>
+					<entry>List&lt;String&gt;</entry>
+				</row>
+				<row>
+					<entry><emphasis role="bold">getPortScan</emphasis>()</entry>
+					<entry>Get the information of the same type of the result of executing netstat. Use "a" and "p" as command options.</entry>
+					<entry>List&lt;String&gt;</entry>
+				</row>
+				<row>
+					<entry><emphasis role="bold">getPortScan</emphasis>(final String[] args)</entry>
+					<entry>Get the information of the same type of executing netstat. Use Netstat options ("l", "a", "n", "p", "s", "t", "u", "w", "x") supported by Sigar</entry>
+					<entry>List&lt;String&gt;</entry>
+				</row>
+				<row>
+					<entry><emphasis role="bold">getRoute</emphasis>()</entry>
+					<entry>Get information of the same type as the result of executing route.</entry>
+					<entry>List&lt;String&gt;</entry>
+				</row>
+			</tbody>
+		</tgroup>
+		</informaltable>
+	</section>
+
+	<section id="utilsystem_util_filesystem">
+		<title> FileSystem Utility</title>
+		<para>
+			The FileSystemUtil class provides functions such as file and directory property information, authority check, copy, deletion, and generation.
+		</para>
+		<informaltable>
+		<tgroup cols="3">
+			<colspec colnum="1" colname="col1" colwidth="4*" />
+			<colspec colnum="2" colname="col2" colwidth="4*" />
+			<colspec colnum="2" colname="col2" colwidth="2*" />
+			<thead>
+				<row>
+					<entry align="center">Method</entry>
+					<entry align="center">Description</entry>
+					<entry align="center">Return</entry>
+				</row>
+			</thead>
+			<tbody>
+				<row>
+					<entry><emphasis role="bold">canRead</emphasis>(String file)</entry>
+					<entry>Check whether the object file or directory can be read</entry>
+					<entry>boolean</entry>
+				</row>
+				<row>
+					<entry><emphasis role="bold">canWrite</emphasis>(String file)</entry>
+					<entry>Check whether the object file or directory can be written</entry>
+					<entry>boolean</entry>
+				</row>
+				<row>
+					<entry><emphasis role="bold">copyDirectory</emphasis>(final String srcDir, final String destDir)</entry>
+					<entry>Copy the original directory to the destination directory</entry>
+					<entry>void</entry>
+				</row>
+				<row>
+					<entry><emphasis role="bold">copyDirectory</emphasis>(final String srcDir, final String destDir, final boolean preserveFileDate)</entry>
+					<entry>Copy the original directory to the destination directory. If preserveFileDate is true, the final revision date of the file in the original directory is used, and if false, the current date is set as the final revision date.</entry>
+					<entry>void</entry>
+				</row>
+				<row>
+					<entry><emphasis role="bold">copyDirectory</emphasis>(final String srcDir, final String destDir, final FileDir filedir)</entry>
+					<entry>Copy the original directory to the destination directory. If fileDir is 'file,' only the file is copied, and if 'directory,' only the directory is copied.</entry>
+					<entry>void</entry>
+				</row>
+				<row>
+					<entry><emphasis role="bold">copyDirectory</emphasis>(final String srcDir, final String destDir, final FileDir filedir, final boolean preserveFileDate)</entry>
+					<entry>
+						Copy the original directory to the destination directory. If fileDir is 'file,' only the file is copied, and if 'directory,' only the directory is copied.
+						If preserveFileDate is true, the final revision date of the file in the original directory is used, and if false, the current date is used as the final revision date.
+					</entry>
+					<entry>void</entry>
+				</row>
+				<row>
+					<entry><emphasis role="bold">copyDirectory</emphasis>(final String srcDir, final String destDir, final String extension)</entry>
+					<entry>Copy the original directory to the destination directory. Only the files that match the input filename extension are copied.</entry>
+					<entry>void</entry>
+				</row>
+				<row>
+					<entry><emphasis role="bold">copyDirectory</emphasis>(final String srcDir, final String destDir, final String extension, final boolean preserveFileDate)</entry>
+					<entry>
+						Copy the original directory to the destination directory. Only the files that match the input filename extension are copied.
+						If preserveFileDate is true, the final revision date of the file in the original directory is used, and if false, the current date is set as the final revision date.
+					</entry>
+					<entry>void</entry>
+				</row>
+				<row>
+					<entry><emphasis role="bold">copyDirectory</emphasis>(final String srcDir, final String destDir, final Date cutoffDate, final boolean acceptOlder)</entry>
+					<entry>
+						Copy the original directory to the destination directory. Only the files that match the input filename extension are copied.
+						Only the files of which the final revision date is earlier or later than the input date are copied.
+					</entry>
+					<entry>void</entry>
+				</row>
+				<row>
+					<entry><emphasis role="bold">copyDirectory</emphasis>(final String srcDir, final String destDir, final Date cutoffDate,
+							final boolean acceptOlder, final boolean preserveFileDate)</entry>
+					<entry>
+						Copy the original directory to the destination directory. Only the files that match the input filename extension are copied.
+						Only the files of which the final revision date is earlier or later than the input date.
+						If preserveFileDate is true, the final revision date of the file in the original directory is used, and if false, the current date is set as the final revision date.
+					</entry>
+					<entry>void</entry>
+				</row>
+				<row>
+					<entry><emphasis role="bold">copyDirectory</emphasis>(final String srcDir, final String destDir, final long threshold, final boolean acceptLarger)</entry>
+					<entry>
+						Copy the original directory to the destination directory.
+						Only the files of which the size is less or bigger than the input size are copied.
+					</entry>
+					<entry>void</entry>
+				</row>
+				<row>
+					<entry><emphasis role="bold">copyDirectory</emphasis>(final String srcDir, final String destDir, final long threshold,
+							final boolean acceptLarger, final boolean preserveFileDate)</entry>
+					<entry>
+						Copy the original directory to the destination directory.
+						Only the files of which the size is smaller or bigger than the input size are copied.
+						If preserveFileDate is true, the final revision date of the file in the original directory is used, and if false, the current date is used as the final revision date.
+					</entry>
+					<entry>void</entry>
+				</row>
+				<row>
+					<entry><emphasis role="bold">copyDirectory</emphasis>(final String srcDir, final String destDir, final long minSize, final long maxSize)</entry>
+					<entry>
+						Copy the original directory to the destination directory. The list of files with the size between the minimum and the maximum size input is copied.
+					</entry>
+					<entry>void</entry>
+				</row>
+				<row>
+					<entry><emphasis role="bold">copyDirectory</emphasis>(final String srcDir, final String destDir, final long minSize, final long maxSize,
+							final boolean preserveFileDate)</entry>
+					<entry>
+						Copy the original directory to the destination directory. The list of files with the size between the minimum and the maximum size input is copied.
+						If preserveFileDate is true, the final revision date of the original directory is used, and if false, the current date is set as the final revision date.
+					</entry>
+					<entry>void</entry>
+				</row>
+				<row>
+					<entry><emphasis role="bold">copyDirectory</emphasis>(final String srcDir, final String destDir, final String name,
+							final FileNameSearch fileNameSearch)</entry>
+					<entry>
+						Copy the original directory to the destination directory according to the search conditions of the file name such as the file name to be searched, prefix and suffix.
+					</entry>
+					<entry>void</entry>
+				</row>
+				<row>
+					<entry><emphasis role="bold">copyDirectory</emphasis>(final String srcDir, final String destDir, final String name,
+							final FileNameSearch fileNameSearch, final boolean preserveFileDate)</entry>
+					<entry>
+						Copy the original directory to the destination directory according to the search conditions of the file name such as the file name to be searched, prefix and suffix.
+						If preserveFileDate is true, the final revision date of the original directory is used, and if false, the current date is set as the final revision date.
+					</entry>
+					<entry>void</entry>
+				</row>
+				<row>
+					<entry><emphasis role="bold">copyDirectoryToDirectory</emphasis>(final String srcDir, final String destDir)</entry>
+					<entry>
+						Copy the original directory under the destination directory.
+					</entry>
+					<entry>void</entry>
+				</row>
+				<row>
+					<entry><emphasis role="bold">moveDirectory</emphasis>(final String srcDir, final String destDir)</entry>
+					<entry>
+						Move the directory - the original directory is moved to the destination directory.
+					</entry>
+					<entry>void</entry>
+				</row>
+				<row>
+					<entry><emphasis role="bold">moveDirectoryToDirectory</emphasis>(final String src, final String destDir, final boolean createDestDir)</entry>
+					<entry>
+						Move the directory - the original directory is moved under the destination directory.
+					</entry>
+					<entry>void</entry>
+				</row>
+				<row>
+					<entry><emphasis role="bold">makeDirectory</emphasis>(final String directory)</entry>
+					<entry>
+						Make a directory
+					</entry>
+					<entry>void</entry>
+				</row>
+				<row>
+					<entry><emphasis role="bold">deleteFileDirectory</emphasis>(final String src)</entry>
+					<entry>
+						Delete the relevant directory and the files
+					</entry>
+					<entry>void</entry>
+				</row>
+				<row>
+					<entry><emphasis role="bold">copyFile</emphasis>(final String srcFile, final String destFile)</entry>
+					<entry>
+						Copy files
+					</entry>
+					<entry>void</entry>
+				</row>
+				<row>
+					<entry><emphasis role="bold">copyFile</emphasis>(final String srcFile, final String destFile, final boolean preserveFileDate)</entry>
+					<entry>
+						Copy files. If preserveFileDate is true, the final revision date of the file in the original directory is used, and if false, the current date is set as the final revision date.
+					</entry>
+					<entry>void</entry>
+				</row>
+				<row>
+					<entry><emphasis role="bold">copyFileToDirectory</emphasis>(final String srcFile, final String destDir)</entry>
+					<entry>
+						Copy the file to the destination directory
+					</entry>
+					<entry>void</entry>
+				</row>
+				<row>
+					<entry><emphasis role="bold">copyFileToDirectory</emphasis>(final String srcFile, final String destDir, final boolean preserveFileDate)</entry>
+					<entry>
+						Copy the file to the destination directory. If preserveFileDate is true, the final revision date of the file in the original directory is used, and if false, the current date is set as the final revision date.
+					</entry>
+					<entry>void</entry>
+				</row>
+				<row>
+					<entry><emphasis role="bold">moveFile</emphasis>(final String srcFile, final String destFile)</entry>
+					<entry>
+						Move the file
+					</entry>
+					<entry>void</entry>
+				</row>
+				<row>
+					<entry><emphasis role="bold">moveFileToDirectory</emphasis>(final String srcFile, final String destDir, final boolean createDestDir)</entry>
+					<entry>
+						Move the file under the destination directory
+					</entry>
+					<entry>void</entry>
+				</row>
+				<row>
+					<entry><emphasis role="bold">getInformation</emphasis>(final String name)</entry>
+					<entry>
+						Return the information on the properties of the relevant file or directory (size, authority, type, etc.)
+					</entry>
+					<entry>FileInfo</entry>
+				</row>
+				<row>
+					<entry><emphasis role="bold">getFileList</emphasis>(final String directory, final String[] extensions, final boolean recursive)</entry>
+					<entry>
+						Get the list of files under the relevant directory
+					</entry>
+					<entry>File[]</entry>
+				</row>
+				<row>
+					<entry><emphasis role="bold">getFileList</emphasis>(final String directory, final Date date, final boolean acceptOlder)</entry>
+					<entry>
+						Get the list of files of which the final revision date is earlier or later than the input date in the destination directory
+					</entry>
+					<entry>File[]</entry>
+				</row>
+				<row>
+					<entry><emphasis role="bold">getFileList</emphasis>(final String directory, final long size, final boolean acceptLarger)</entry>
+					<entry>
+						Get the list of files with the size smaller or bigger than the input size in the destination directory
+					</entry>
+					<entry>File[]</entry>
+				</row>
+				<row>
+					<entry><emphasis role="bold">getFileList</emphasis>(final String directory, final long minSizeInclusive, final long maxSizeInclusive)</entry>
+					<entry>
+						Get the list of files with the size between the minimum and the maximum size input in the destination directory
+					</entry>
+					<entry>File[]</entry>
+				</row>
+				<row>
+					<entry><emphasis role="bold">getFileList</emphasis>(final String directory, final String name, final FileNameSearch fileNameSearch)</entry>
+					<entry>
+						Search the files in the destination directory according to the file name such as the file name to be searched, prefix and suffix
+					</entry>
+					<entry>File[]</entry>
+				</row>
+				<row>
+					<entry><emphasis role="bold">existsFile</emphasis>(final String filepath)</entry>
+					<entry>
+						Check whether the destination file exists.
+					</entry>
+					<entry>boolean</entry>
+				</row>
+				<row>
+					<entry><emphasis role="bold">existsDir</emphasis>(final String dirpath)</entry>
+					<entry>
+						Check whether the destination directory exists.
+					</entry>
+					<entry>boolean</entry>
+				</row>
+				<row>
+					<entry><emphasis role="bold">existsDir</emphasis>(final String srcDir, final String fromDate, final String toDate)</entry>
+					<entry>
+						Check whether the last revision date of the relevant directory exists between the input dates					</entry>
+					<entry>boolean</entry>
+				</row>
+			</tbody>
+		</tgroup>
+	</informaltable>
+	</section>
+
+	<section id="utilsystem_util_filemonitor">
+		<title> FileMonitor</title>
+		<para>
+			The FileMonitor class provides the directory monitoring function, 
+			and the information on the added/modified/deleted files in the monitored directory can be logged.
+                        When there are many files in the directory, the performance can be slowed down, and there can arise a problem in Windows when there is a file name in Korean in the monitored directory in Windows.
+		</para>
+		<itemizedlist>
+			<listitem>
+				<para>
+					The following is an example of log4j setup for writing in files.
+					<programlisting language="xml"><![CDATA[<appender name="file"
+	class="org.apache.log4j.DailyRollingFileAppender">
+	<param name="File"
+		value="logs/fileMonitor.log" />
+	<param name="Append" value="true" />
+	<param name="DatePattern" value="'.'yyyy-MM-dd" />
+	<layout class="org.apache.log4j.PatternLayout">
+		<param name="ConversionPattern"
+			value="%d %5p [%c] %m%n" />
+	</layout>
+</appender>
+..
+<logger name="fileMonitor" additivity="false">
+	<level value="INFO"/>
+	<appender-ref ref="file"/>
+</logger>]]></programlisting>
+				</para>
+			</listitem>
+			<listitem>
+				<para>
+					The example in actual use is as follows.
+					<programlisting language="java">Logger logger = LoggerFactory.getLogger("fileMonitor");
+FileWatcherThread fileWatcherThread = FileMonitor.start(log, targetDir, 5000);</programlisting>
+				</para>
+			</listitem>
+			<listitem>
+				<para>
+					The following is an example of the file log between the start and stop of directory monitoring with monitoring cycle of five seconds. It can be seen that generation/modification/deletion of files is shown in prefix(NEW/MOD/DEL) and 
+					file names, and the changed time (Mtime) and the changed size are shown in the before|after type.
+					<programlisting language="java"><![CDATA[ 2011-01-19 10:13:01,625  INFO [anyframe.core.util.system.FileMonitor] FileWatcherThread started.
+ 2011-01-19 10:13:06,718  INFO [anyframe.core.util.system.FileMonitor] NEW$D:\workspace_neis_helios\local.common-component.system\test\default2.txt${Mtime: 1월 19 10:13}{Size: 52}
+ 2011-01-19 10:13:11,750  INFO [anyframe.core.util.system.FileMonitor] NEW$D:\workspace_neis_helios\local.common-component.system\test\default3.txt${Mtime: 1월 19 10:13}{Size: 52}
+ 2011-01-19 10:13:11,765  INFO [anyframe.core.util.system.FileMonitor] NEW$D:\workspace_neis_helios\local.common-component.system\test\default4.txt${Mtime: 1월 19 10:13}{Size: 16}
+ 2011-01-19 10:13:11,765  INFO [anyframe.core.util.system.FileMonitor] NEW$D:\workspace_neis_helios\local.common-component.system\test\default5.txt${Mtime: 1월 19 10:13}{Size: 16}
+ 2011-01-19 10:13:11,812  INFO [anyframe.core.util.system.FileMonitor] MOD$D:\workspace_neis_helios\local.common-component.system\test\default2.txt${Mtime: 1월 19 10:13|1월 19 10:13}{Size: 52|16}
+ 2011-01-19 10:13:16,828  INFO [anyframe.core.util.system.FileMonitor] DEL$D:\workspace_neis_helios\local.common-component.system\test\default5.txt
+ 2011-01-19 10:13:16,843  INFO [anyframe.core.util.system.FileMonitor] MOD$D:\workspace_neis_helios\local.common-component.system\test\default4.txt${Mtime: 1월 19 10:13|1월 19 10:13}{Size: 16|24}
+ 2011-01-19 10:13:16,859  INFO [anyframe.core.util.system.FileMonitor] DEL$D:\workspace_neis_helios\local.common-component.system\test\default3.txt
+ 2011-01-19 10:13:21,625  INFO [anyframe.core.util.system.FileMonitor] FileWatcherThread stopped.]]></programlisting>
+				</para>
+			</listitem>
+			<listitem>
+				<para>
+					For FileMonitor, two types of methods such as the singleton type startSingleton()/stopSingleton and the multi-thred type start()/stop are supported.
+				</para>
+				<itemizedlist>
+		        	<listitem>
+						<para>
+							The example of the singleton method is as follows.
+							<programlisting language="java">String targetDir = "test";
+init(targetDir);
+
+//Start file monitoring
+FileMonitor.startSingleton(targetDir, 5000);
+
+...
+
+Thread.sleep(20 * 1000);
+
+//Stop file monitoring
+FileMonitor.stopSingleton();</programlisting>
+						</para>
+					</listitem>
+					<listitem>
+						<para>
+							The example of the multi-thread method is as follows.
+							<programlisting language="java">String targetDir = "test4";
+init(targetDir);
+
+Log log = LogFactory.getLog("fileMonitor");
+//Start file monitoring
+FileWatcherThread fileWatcherThread = FileMonitor.start(log, targetDir, 5000);
+
+...
+
+//Stop file monitoring
+FileMonitor.stop(log, fileWatcherThread);</programlisting>
+						</para>
+					</listitem>
+				</itemizedlist>
+			</listitem>
+		</itemizedlist>
+	</section>
+
+	<section id="utilsystem_util_zip">
+		<title> Zip Utility</title>
+		<para>
+			The ZipUtil class provides the function of compressing/decompressing files and directories. Java JDK and Apache Commons Compress are used.
+			For Zip files, encoding can be additionally set, and when compressed files that include file names in Korean are decompressed, it should be set considering the original encoding.
+		</para>
+
+		<itemizedlist>
+			<listitem>
+				<para>Compression of files and directories</para>
+				<informaltable>
+				<tgroup cols="2">
+					<colspec colnum="1" colname="col1" colwidth="3*" />
+					<colspec colnum="2" colname="col2" colwidth="7*" />
+					<thead>
+						<row>
+							<entry align="center">Method</entry>
+							<entry align="center">Description</entry>
+						</row>
+					</thead>
+					<tbody>
+						<row>
+							<entry><emphasis role="bold">compressZip</emphasis>(String targetDir)</entry>
+							<entry>Process zip compression receiving the path for compression of the directory or the file as a parameter.</entry>
+						</row>
+						<row>
+							<entry><emphasis role="bold">compressZip</emphasis>(String targetDir, String destArchiveStr)</entry>
+							<entry>
+								Process zip compression receiving the path for compression of the directory or the file as a parameter.
+								The compressed file is generated in the destArchiveStr path received as a parameter.
+							</entry>
+						</row>
+						<row>
+							<entry><emphasis role="bold">compressZip</emphasis>(String targetDir, String destArchiveStr, final String encoding)</entry>
+							<entry>
+								Process zip compression receiving tha path for compression of the directory of the file as a parameter.
+								The compressed file is made in the destArchiveStr path received as a parameter, and applying the encoding received as a parameter the Entry filename is written within the compressed file.
+							</entry>
+						</row>
+						<row>
+							<entry><emphasis role="bold">compressJar</emphasis>(String targetDir)</entry>
+							<entry>Process Jar compression (similar to Zip compression) receiving the path for compression of the directory or the file as a parameter.</entry>
+						</row>
+						<row>
+							<entry><emphasis role="bold">compressJar</emphasis>(String targetDir, String destArchiveStr)</entry>
+							<entry>
+								Process Jar compression (similar to Zip compression) receiving the path for compression of the directory or the file as a parameter.
+								The compressed file is made in the destArchiveStr path received as a parameter.
+							</entry>
+						</row>
+						<row>
+							<entry><emphasis role="bold">compressJar</emphasis>(String targetDir, String destArchiveStr, final String encoding)</entry>
+							<entry>
+								Process Jar compression (similar to Zip compression) receiving the path for compression of the directory or the file as a parameter.
+								The compressed file is made in the destArchiveStr path received as a parameter,
+								and the Entry filename is written within the compressed file applying the encoding received as a parameter.
+		 					</entry>
+						</row>
+						<row>
+							<entry><emphasis role="bold">compressTar</emphasis>(String targetDir)</entry>
+							<entry>
+								Process Tar compression (binding into one file) receiving the path for compression of the directory or the file as a parameter.
+		 					</entry>
+						</row>
+						<row>
+							<entry><emphasis role="bold">compressTar</emphasis>(String targetDir, String destArchiveStr)</entry>
+							<entry>
+								Process Tar compression (binding into one file) receiving the path for compression of the directory or the file as a parameter.
+								The compressed file is made in the destArchiveStr path received as a parameter.
+		 					</entry>
+						</row>
+						<row>
+							<entry><emphasis role="bold">compressGzip</emphasis>(File targetArchiveOrFile, String destArchiveStr)</entry>
+							<entry>
+								Process Gzip compression. The Gzip compression target is mostly tar compression file, and the relevant method will be called internally in the compressTarGz method.
+		 					</entry>
+						</row>
+						<row>
+							<entry><emphasis role="bold">compressTarGz</emphasis>(String targetDir)</entry>
+							<entry>
+								Process tar.gz compression receiving the path for compression of the directory or the file as a parameter.
+		 					</entry>
+						</row>
+						<row>
+							<entry><emphasis role="bold">compressTarGz</emphasis>(final String targetDir, final String destTarGzStr)</entry>
+							<entry>
+								Process the tar.gz compression receiving the path for compression of the directory or the file as a parameter.
+								The compressed file is made in the destTarGzStr path received as a parameter.
+								After the internal compressTar compression first, the generated Tar file is again Gzip compressed by calling the compressGzip method.
+								It should be noted that a tar file is also made in the same location as the final tar.gz compression file.
+		 					</entry>
+						</row>
+						<row>
+							<entry><emphasis role="bold">compressAr</emphasis>(String targetDir)</entry>
+							<entry>
+								Process Ar compression receiving the path for compression of the directory or the file as a parameter.
+		 					</entry>
+						</row>
+						<row>
+							<entry><emphasis role="bold">compressAr</emphasis>(String targetDir, String destArchiveStr)</entry>
+							<entry>
+								Process Ar compression receiving the path for compression of the directory or the file as a parameter.
+								The compressed file is made in the destArchiveStr path received as a parameter. It should be noted that the length of the filename is limited to 16 bytes.
+		 					</entry>
+						</row>
+						<row>
+							<entry><emphasis role="bold">compressCpio</emphasis>(String targetDir)</entry>
+							<entry>
+								Process Cpio compression receiving the path for compression of the directory or the file as a parameter.
+		 					</entry>
+						</row>
+						<row>
+							<entry><emphasis role="bold">compressCpio</emphasis>(String targetDir, String destArchiveStr)</entry>
+							<entry>
+								Process Cpio compression receiving the path for compression of the directory or the file as a parameter.
+								The compressed file is made in the destArchiveStr path received as a parameter.
+		 					</entry>
+						</row>
+					</tbody>
+				</tgroup>
+				</informaltable>
+			</listitem>
+
+			<listitem>
+				<para>Decompression of files and directories</para>
+				<informaltable>
+				<tgroup cols="2">
+					<colspec colnum="1" colname="col1" colwidth="3*" />
+					<colspec colnum="2" colname="col2" colwidth="7*" />
+					<thead>
+						<row>
+							<entry align="center">Method</entry>
+							<entry align="center">Description</entry>
+						</row>
+					</thead>
+					<tbody>
+						<row>
+							<entry><emphasis role="bold">decompressZip</emphasis>(String targetZipFileStr)</entry>
+							<entry>Decompress the relevant compressed file with the path of the Zip compressed file as a parameter. The file is decompressed in the same path as the compressed file.</entry>
+						</row>
+						<row>
+							<entry><emphasis role="bold">decompressZip</emphasis>(String targetZipFileStr, String destDirStr)</entry>
+							<entry>
+								Decompress the Zip compressed file. The file is decompressed in the target path received as a parameter.
+							</entry>
+						</row>
+						<row>
+							<entry><emphasis role="bold">decompressZip</emphasis>(String targetZipFileStr, String destDirStr, final String encoding)</entry>
+							<entry>
+								Decompress the Zip compressed file. It is processed receiving the target path and encoding as parameters.
+							</entry>
+						</row>
+						<row>
+							<entry><emphasis role="bold">decompressGzip</emphasis>(String gzipFile)</entry>
+							<entry>Decompress the Gzip file and return the file.</entry>
+						</row>
+						<row>
+							<entry><emphasis role="bold">decompressArchive</emphasis>(String targetCompressFileStr)</entry>
+							<entry>
+								Decompress compressed files (Zip/Jar/Tar/Ar/Cpio) using ArchiveStreamFactory of Commons Compress.
+							</entry>
+						</row>
+						<row>
+							<entry><emphasis role="bold">decompressArchive</emphasis>(String targetCompressFileStr, String destDirStr)</entry>
+							<entry>
+								Decompress compressed files (Zip/Jar/Tar/Ar/Cpio) using ArchiveStreamFactory of Commons Compress.
+								The files are decompressed in the target path received as a parameter.
+							</entry>
+						</row>
+						<row>
+							<entry><emphasis role="bold">decompressJavaZip</emphasis>(String targetZipFileStr)</entry>
+							<entry>
+								Decompress Zip compressed files using basic Java function (java.util.zip). It should be noted that filenames in the compressed file should be UTF-8.
+		 					</entry>
+						</row>
+						<row>
+							<entry><emphasis role="bold">decompressJavaZip</emphasis>(String targetZipFileStr, String destDirStr)</entry>
+							<entry>
+								Decompress Zip compressed files using the basic Java function (java.util.zip). It should be noted that filenames in the compressed file should be UTF-8.
+								The files are decompressed in the target path received as a parameter.
+		 					</entry>
+						</row>
+					</tbody>
+				</tgroup>
+				</informaltable>
+
+				<para>
+					Since in general the zip compressed files generated by users using a compression program in the Windows environment in a local PC are encoded by EUC-KR, in this case the decompressZip method of ZipUtil should be executed after designating EUC-KR.
+					When Zip compresssion is generated in the Application in a server, processing it by designating UTF-8 encoding has more flexibility in the linkage with other systems, and errors do not arise when decompressZip is executed with EUC-KR.
+				</para>
+			</listitem>
+		</itemizedlist>
+	</section>
+</chapter>

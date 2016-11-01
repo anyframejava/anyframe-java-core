@@ -1,0 +1,31 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-3.1.xsd">
+
+	
+	<!-- START -->
+	<bean id="schedulingService" class="org.anyframe.scheduling.impl.SchedulingServiceImpl" init-method="init" destroy-method="destroy">
+		<property name="scheduler" ref="schedulerFactoryBean"/>
+		<property name="jobResultCollector" ref="schedulingJobListener"/>
+		<property name="jobRepository" value="database"/>
+		<property name="jobResultPath" value="C:/temp"/>
+	</bean>
+	
+	<bean id="schedulingJobListener" class="org.anyframe.scheduling.impl.listener.SchedulingJobListener"/>
+	
+	<bean id="jobDBManager" class="org.anyframe.scheduling.impl.JobDBManager">
+		<property name="jdbcDaoDataSource" ref="dataSource"/>
+	</bean>
+	<!-- END -->
+	
+	<bean id="schedulerFactoryBean" class="org.springframework.scheduling.quartz.SchedulerFactoryBean"/>
+	
+	<bean id="dataSource" class="org.apache.commons.dbcp.BasicDataSource" destroy-method="close">
+        <property name="driverClassName" value="oracle.jdbc.driver.OracleDriver"/>
+        <property name="url" value="jdbc:oracle:thin:@server.ip:1521:xe"/>
+        <property name="username" value="athena"/>
+        <property name="password" value="athena"/>
+    </bean>
+    
+</beans>

@@ -26,4 +26,5 @@ public interface UploadInfoService {
 	public int remove(List<Attached> attachedList) throws Exception;
 	
 	public List<Attached> getList(String refId) throws Exception;
+	
 }

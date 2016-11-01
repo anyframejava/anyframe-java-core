@@ -15,7 +15,6 @@
  */
 package org.anyframe.plugin.flex.query.dept.service.impl;
 
-import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -32,49 +31,50 @@ import org.anyframe.util.StringUtil;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Repository;
 
-@Repository
+@Repository("deptDao")
 public class DeptDao extends QueryServiceDaoSupport {
+
+	//Velocity-Support-contextProperties-START
+	@Value("#{contextProperties['pageSize'] ?: 10}")
+	int pageSize;
+
+	@Value("#{contextProperties['pageUnit'] ?: 10}")
+	int pageUnit;
+	//Velocity-Support-contextProperties-END
 
 	@Inject
 	public void setQueryService(QueryService queryService) {
 		super.setQueryService(queryService);
 	}
 
-	@Value("#{contextProperties['pageSize'] ?: 10}")
-	int pageSize;
-
-	@Value("#{contextProperties['pageUnit'] ?: 10}")
-	int pageUnit;
-
-	public int create(Dept dept) throws Exception {
-		return create("flex.createDept", dept);
+	public int create(Dept dept) {
+		return super.create("flex.createDept", dept);
 	}
 
-	@SuppressWarnings("unchecked")
-	public List<Dept> getList(SearchVO searchVO) throws Exception {
-		return (List<Dept>) this.findList("flex.find" + searchVO.getTableName()
-				+ "List", searchVO);
+	public List<Dept> getList(SearchVO searchVO) {
+		return super.findList("flex.find" + searchVO.getTableName() + "List",
+				searchVO);
 	}
 
-	public Page getPagingList(SearchVO searchVO) throws Exception {
+	public Page getPagingList(SearchVO searchVO) {
 		int pageIndex = searchVO.getPageIndex();
-
-		return this.findListWithPaging("flex.find" + searchVO.getTableName() + "List", searchVO, pageIndex, pageSize, pageUnit);
+		return super.findListWithPaging("flex.find" + searchVO.getTableName()
+				+ "List", searchVO, pageIndex, pageSize, pageUnit);
 	}
 
-	public int remove(Dept dept) throws Exception {
-		return remove("flex.removeDept", dept);
+	public int remove(Dept dept) {
+		return super.remove("flex.removeDept", dept);
 	}
 
-	public Map<String, Integer> saveAll(ArrayList<Dept> arrayList) throws Exception {
+	public Map<String, Integer> saveAll(List<Dept> list) {
 		Map<String, Integer> resultCount = new HashMap<String, Integer>();
 
 		int createRowCount = 0;
 		int updateRowCount = 0;
 		int removeRowCount = 0;
 
-		for (int i = 0; i < arrayList.size(); i++) {
-			Dept dept = (Dept) arrayList.get(i);
+		for (int i = 0; i < list.size(); i++) {
+			Dept dept = list.get(i);
 			int status = dept.getStatus();
 
 			switch (status) {
@@ -92,18 +92,17 @@ public class DeptDao extends QueryServiceDaoSupport {
 		resultCount.put("INSERT", createRowCount);
 		resultCount.put("UPDATE", updateRowCount);
 		resultCount.put("DELETE", removeRowCount);
+
 		return resultCount;
 	}
 
-	public int update(Dept dept) throws Exception {
-		return update("flex.updateDept", dept);
+	public int update(Dept dept) {
+		return super.update("flex.updateDept", dept);
 	}
 
-	@SuppressWarnings("unchecked")
-	public List<Dept> getTree(SearchVO searchVO) throws Exception {
-		String queryId = StringUtil.null2str(searchVO.getSearchCondition());
-
-		return (List<Dept>) this.findList("flex.find" + queryId + "List", searchVO);
+	public List<Dept> getTree(SearchVO searchVO) {
+		String queryId = StringUtil.nullToString(searchVO.getSearchCondition());
+		return super.findList("flex.find" + queryId + "List", searchVO);
 	}
 
 }

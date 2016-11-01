@@ -25,7 +25,7 @@ import org.anyframe.flex.query.data.DataSet;
  * This interface is a common biz. service in developing the
  * presentation layer using Flex which is the RIA solution of the
  * Adobe.
- * @author Jonghoon, Kim
+ * @author Jonghoon Kim
  *
  */
 public interface FlexService {
@@ -38,10 +38,9 @@ public interface FlexService {
 	 * @param param
 	 * 		param including query condition.
 	 * @throws Exception
-	 *		if there is any problem executing the query
+	 *		if there is any problem getting the DataSet list
      */ 
-	@SuppressWarnings("unchecked")
-	public List<DataSet> findList(List<DataSet> dataSetList, Map param) throws Exception ;
+	public List<DataSet> findList(List<DataSet> dataSetList, Map<String, Object> param) throws Exception ;
 
 	/**
 	 * This is a method for querying at developing the
@@ -51,10 +50,9 @@ public interface FlexService {
 	 * @param param
 	 * 		param including query condition.
 	 * @throws Exception
-	 *		if there is any problem executing the query
+	 *		if there is any problem getting the DataSet list
      */ 
-	@SuppressWarnings("unchecked")
-	public List<DataSet> findPagingList(List<DataSet> dataSetList, Map param) throws Exception ;
+	public List<DataSet> findPagingList(List<DataSet> dataSetList, Map<String, Object> param) throws Exception ;
 	
 	/**
      * This is the method for inserting, updating and deleting using DataSet.
@@ -63,10 +61,9 @@ public interface FlexService {
 	 * @param param
 	 * 		param including query condition.
 	 * @throws Exception
-	 *		if there is any problem executing the query
+	 *		if there is any problem inserting, updating, and deleting using DataSet
      */   
-	@SuppressWarnings("unchecked")
-	public Map saveAll(List<DataSet> dataSetList, Map param) throws Exception ;
+	public Map<String, Map<String,Integer>> saveAll(List<DataSet> dataSetList, Map<String, Object> param) throws Exception ;
 	
 	/**
 	 * This method execute an update query defined into DataSet.
@@ -75,10 +72,9 @@ public interface FlexService {
 	 * @param param
 	 * 		parameters including query condition.
 	 * @throws Exception
-	 *		if there is any problem executing the query
+	 *		if there is any problem updating the data
 	 */
-	@SuppressWarnings("unchecked")
-	public Map updateRows(List<DataSet> dataSetList, Map param) throws Exception ;
+	public Map<String, Integer> updateRows(List<DataSet> dataSetList, Map<String, Object> param) throws Exception ;
 	
 	/**
 	 * This method execute a delete query defined into DataSet.
@@ -87,10 +83,9 @@ public interface FlexService {
 	 * @param param
 	 * 		parameters including query condition.
 	 * @throws Exception
-	 *		if there is any problem executing the query
+	 *		if there is any problem deleting the data
 	 */	
-	@SuppressWarnings("unchecked")
-	public Map removeRows(List<DataSet> dataSetList, Map param) throws Exception;
+	public Map<String, Integer> removeRows(List<DataSet> dataSetList, Map<String, Object> param) throws Exception;
 	
 	/**
 	 * This method execute an insert query defined into DataSet.
@@ -99,10 +94,9 @@ public interface FlexService {
 	 * @param param
 	 * 		parameters including query condition.
 	 * @throws Exception
-	 *		if there is any problem executing the query
+	 *		if there is any problem inserting the data
 	 */
-	@SuppressWarnings("unchecked")
-	public Map insertRows(List<DataSet> dataSetList, Map param) throws Exception;
+	public Map<String, Integer> insertRows(List<DataSet> dataSetList, Map<String, Object> param) throws Exception;
 	
 	/**
 	 * This method is for using user defined business logic.
@@ -112,10 +106,9 @@ public interface FlexService {
 	 * @param param
 	 * 		parameters including query condition.
 	 * @throws Exception
-	 *		if there is any problem executing the query
+	 *		if there is any problem
 	 */
-	@SuppressWarnings("unchecked")
-	public Map doService(List<DataSet> dataSetList, Map param) throws Exception;
+	public Map<String, Object> doService(List<DataSet> dataSetList, Map<String, Object> param) throws Exception;
 	
 	/**
      * This is the method for inquiring using DataSet.
@@ -126,11 +119,9 @@ public interface FlexService {
 	 * @param param
 	 * 		param including query condition.
 	 * @throws Exception
-	 *		if there is any problem executing the
-	 *		query
+	 *		if there is any problem getting the data
      */  
-	@SuppressWarnings("unchecked")
-	public Map find(String queryId, DataRow dataRow, Map param )throws Exception;
+	public Map<String, Object> find(String queryId, DataRow dataRow, Map<String, Object> param) throws Exception;
 	
 	/**
      * This is a method for querying using the Dataset for insert.
@@ -141,11 +132,9 @@ public interface FlexService {
 	 * @param param
 	 * 		param including query condition.
 	 * @throws Exception
-	 *		if there is any problem executing the
-	 *		query
+	 *		if there is any problem inserting the data
      */   
-	@SuppressWarnings("unchecked")
-	public Map create(String queryId, DataRow dataRow, Map param )throws Exception;
+	public Map<String, Integer> create(String queryId, DataRow dataRow, Map<String, Object> param) throws Exception;
 	
 	/**
      * This is the method for updating using VariableList and Dataset.
@@ -156,11 +145,9 @@ public interface FlexService {
 	 * @param param
 	 * 		param including query condition.
 	 * @throws Exception
-	 *		if there is any problem executing the
-	 *		query
+	 *		if there is any problem updating the data
      */  
-	@SuppressWarnings("unchecked")
-	public Map update(String queryId, DataRow dataRow, Map param )throws Exception;
+	public Map<String, Integer> update(String queryId, DataRow dataRow, Map<String, Object> param) throws Exception;
 	
 	/**
      * This is the method for deleting using VariableList and Dataset.
@@ -171,9 +158,7 @@ public interface FlexService {
 	 * @param param
 	 * 		param including query condition.
 	 * @throws Exception
-	 *		if there is any problem executing the
-	 *		query
+	 *		if there is any problem deleting the data
      */   
-	@SuppressWarnings("unchecked")
-	public Map remove(String queryId, DataRow dataRow, Map param )throws Exception;
+	public Map<String, Integer> remove(String queryId, DataRow dataRow, Map<String, Object> param) throws Exception;
 }

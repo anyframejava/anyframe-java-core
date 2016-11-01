@@ -37,7 +37,6 @@ public class UploadInfoServiceImpl implements UploadInfoService {
 	private UploadInfoDao uploadInfoDao;
 	
 	public int create(List<Attached> attachedList) throws Exception {
-
 		int countAttachedList = attachedList.size();
 		
 		int countCreateAttached = 0;
@@ -45,6 +44,7 @@ public class UploadInfoServiceImpl implements UploadInfoService {
 			countCreateAttached = countCreateAttached
 					+ uploadInfoDao.create(attachedList.get(i));
 		}
+		
 		return countCreateAttached;
 	}
 	
@@ -52,9 +52,7 @@ public class UploadInfoServiceImpl implements UploadInfoService {
 		return uploadInfoDao.getList(refId);
 	}
 
-
 	public int remove(List<Attached> attachedList) throws Exception {
-		
 		int countAttachedList = attachedList.size();
 
 		int countRemoveAttached = 0;
@@ -62,6 +60,8 @@ public class UploadInfoServiceImpl implements UploadInfoService {
 			countRemoveAttached = countRemoveAttached
 					+ uploadInfoDao.remove(attachedList.get(i));
 		}
+		
 		return countRemoveAttached;
 	}
+	
 }

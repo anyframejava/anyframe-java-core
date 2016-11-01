@@ -15,13 +15,11 @@
  */
 package org.anyframe.plugin.flex.query.user.service.impl;
 
-import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
 import javax.inject.Inject;
-import javax.inject.Named;
 
 import org.anyframe.pagination.Page;
 import org.anyframe.plugin.flex.query.domain.Category;
@@ -33,50 +31,49 @@ import org.anyframe.util.StringUtil;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Repository;
 
-@Repository
+@Repository("userDao")
 public class UserDao extends QueryServiceDaoSupport {
 
-	@Inject
-	@Named("queryService")
-	public void setQueryService(QueryService queryService) {
-		super.setQueryService(queryService);
-	}
-
+	//Velocity-Support-contextProperties-START
 	@Value("#{contextProperties['pageSize'] ?: 10}")
 	int pageSize;
 
 	@Value("#{contextProperties['pageUnit'] ?: 10}")
 	int pageUnit;
+	//Velocity-Support-contextProperties-END
 
-	public int create(User user) throws Exception {
-		return create("flex.createUser", user);
+	@Inject
+	public void setQueryService(QueryService queryService) {
+		super.setQueryService(queryService);
 	}
 
-	@SuppressWarnings("unchecked")
-	public List<User> getList(SearchVO searchVO) throws Exception {
-
-		return (List<User>) this.findList("flex.findUserList", searchVO);
+	public int create(User user) {
+		return super.create("flex.createUser", user);
 	}
 
-	public Page getPagingList(SearchVO searchVO) throws Exception {
+	public List<User> getList(SearchVO searchVO) {
+		return super.findList("flex.findUserList", searchVO);
+	}
+
+	public Page getPagingList(SearchVO searchVO) {
 		int pageIndex = searchVO.getPageIndex();
-
-		return this.findListWithPaging("flex.findUserList", searchVO, pageIndex, pageSize, pageUnit);
+		return super.findListWithPaging("flex.findUserList", searchVO, pageIndex,
+				pageSize, pageUnit);
 	}
 
-	public int remove(User user) throws Exception {
-		return remove("flex.removeUser", user);
+	public int remove(User user) {
+		return super.remove("flex.removeUser", user);
 	}
 
-	public Map<String, Integer> saveAll(ArrayList<User> arrayList) throws Exception {
+	public Map<String, Integer> saveAll(List<User> list) {
 		Map<String, Integer> resultCount = new HashMap<String, Integer>();
 
 		int createRowCount = 0;
 		int updateRowCount = 0;
 		int removeRowCount = 0;
 
-		for (int i = 0; i < arrayList.size(); i++) {
-			User user = (User) arrayList.get(i);
+		for (int i = 0; i < list.size(); i++) {
+			User user = list.get(i);
 			int status = user.getStatus();
 
 			switch (status) {
@@ -94,18 +91,17 @@ public class UserDao extends QueryServiceDaoSupport {
 		resultCount.put("INSERT", createRowCount);
 		resultCount.put("UPDATE", updateRowCount);
 		resultCount.put("DELETE", removeRowCount);
+
 		return resultCount;
 	}
 
-	public int update(User user) throws Exception {
-		return update("flex.updateUser", user);
+	public int update(User user) {
+		return super.update("flex.updateUser", user);
 	}
 
-	@SuppressWarnings("unchecked")
-	public List<User> getTree(SearchVO searchVO) throws Exception {
-		String queryId = StringUtil.null2str(searchVO.getSearchCondition());
-
-		return (List<User>) this.findList("find" + queryId + "List", searchVO);
+	public List<User> getTree(SearchVO searchVO) {
+		String queryId = StringUtil.nullToString(searchVO.getSearchCondition());
+		return super.findList("find" + queryId + "List", searchVO);
 	}
 
 }

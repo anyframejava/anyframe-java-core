@@ -1,0 +1,64 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<queryservice xmlns="http://www.anyframejava.org/schema/query/mapping" 
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" 
+	xsi:schemaLocation="http://www.anyframejava.org/schema/query/mapping http://www.anyframejava.org/schema/query/mapping/anyframe-query-mapping-1.0.xsd ">
+
+	<queries>
+		<query id="findUserList" isDynamic="true" mappingStyle="upper">
+			<statement>
+			<!--mip-query-findUserList-START-->
+				SELECT USER_ID, USER_NAME, EN_NAME, COMP_PHONE, PHONE, CELL_PHONE, COMPANY
+				       , JOB_POSITION, ASSIGNMENT, OFFICER_YN , FAX, ZIP_CODE, ADDRESS
+				       , COMP_ZIP_CODE, COMP_ADDRESS, EMAIL, DEPT_ID, PASSWORD
+				FROM MIP_USER
+				<!--Velocity-Support-findUserList-START-->
+				#if ($SEARCH_CONDITION.length() &gt; 0 &amp;&amp; "0" == $SEARCH_CONDITION)
+					WHERE USER_NAME like '%' || :SEARCH_KEYWORD || '%'
+				#elseif ($SEARCH_CONDITION.length() &gt; 0 &amp;&amp; "1" == $SEARCH_CONDITION)
+				    WHERE USER_ID like '%' || :SEARCH_KEYWORD || '%'
+				#end
+				<!--Velocity-Support-findUserList-END-->
+				ORDER BY USER_ID
+			<!--mip-query-findUserList-END-->
+			</statement>
+		</query>
+		<query id="createUser" isDynamic="true" mappingStyle="upper">
+			<statement>
+			<!--mip-query-createUser-START-->
+				INSERT INTO MIP_USER
+				(USER_ID, USER_NAME, EN_NAME, COMP_PHONE, PHONE, CELL_PHONE, COMPANY
+				       , JOB_POSITION, ASSIGNMENT, OFFICER_YN , FAX, ZIP_CODE, ADDRESS
+				       , COMP_ZIP_CODE, COMP_ADDRESS, EMAIL, DEPT_ID, PASSWORD)
+				VALUES('USER-'|| NEXT VALUE FOR USER_ID_SEQ,:USER_NAME, :EN_NAME, :COMP_PHONE, :PHONE, :CELL_PHONE, :COMPANY
+				       , :JOB_POSITION, :ASSIGNMENT, :OFFICER_YN, :FAX, :ZIP_CODE, :ADDRESS
+				       , :COMP_ZIP_CODE, :COMP_ADDRESS, :EMAIL, :DEPT_ID, :PASSWORD)
+			<!--mip-query-createUser-END-->
+			</statement>
+		</query>
+		<query id="updateUser" isDynamic="true" mappingStyle="upper">
+			<statement>
+				UPDATE MIP_USER
+				SET
+				USER_NAME =:USER_NAME, EN_NAME =:EN_NAME, COMP_PHONE =:COMP_PHONE, PHONE =:PHONE, CELL_PHONE =:CELL_PHONE, COMPANY =:COMPANY
+				       , JOB_POSITION =:JOB_POSITION, ASSIGNMENT =:ASSIGNMENT, OFFICER_YN =:OFFICER_YN, FAX =:FAX, ZIP_CODE =:ZIP_CODE, ADDRESS =:ADDRESS
+				       , COMP_ZIP_CODE =:COMP_ZIP_CODE, COMP_ADDRESS =:COMP_ADDRESS, EMAIL =:EMAIL, DEPT_ID =:DEPT_ID, PASSWORD = :PASSWORD
+				WHERE USER_ID=:USER_ID
+			</statement>
+		</query>
+		<query id="removeUser" isDynamic="true" mappingStyle="upper">
+			<statement>
+				DELETE FROM MIP_USER
+				WHERE USER_ID=:USER_ID
+			</statement>
+		</query>
+		<query id="findUserListByDept" isDynamic="true" mappingStyle="upper">
+			<statement>
+				SELECT USER_ID, USER_NAME, EN_NAME, COMP_PHONE, PHONE, CELL_PHONE, COMPANY
+				       , JOB_POSITION, ASSIGNMENT, OFFICER_YN , FAX, ZIP_CODE, ADDRESS
+				       , COMP_ZIP_CODE, COMP_ADDRESS, EMAIL, DEPT_ID, PASSWORD
+				FROM MIP_USER
+				WHERE DEPT_ID = :DEPT_ID
+			</statement>
+		</query>
+	</queries>
+</queryservice>

@@ -1,0 +1,526 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Script type="xscript4.0"><![CDATA[/********************************************************************************
+ * Function Name	: gfnRight													*
+ * Desc				: 문자열의 오른쪽부분을 지정한 길이만큼 반환			*
+ * Parameter		: strString(String - 오른쪽 부분을 얻어올 원본 문자열)	*
+ *					  nSize(얻어올 크기)										*
+ * Return 			: String
+ ********************************************************************************/
+function gfnRight(strString, nSize)
+{
+    var nStart = String(strString).length;
+    var nEnd   = Number(nStart) - Number(nSize);
+    var rtnVal = strString.substring(nStart, nEnd);
+
+    return rtnVal;
+}
+
+/********************************************************************************
+ * Function Name	: gfnLeft													*
+ * Desc				: 문자열의 왼쪽 부분을 지정한 길이만큼 반환			*
+ * Parameter		: strString(String - 왼쪽 부분을 얻어올 원본 문자열)	*
+ *					  nSize(얻어올 크기)										*
+ * Return 			: String
+ ********************************************************************************/
+function gfnLeft(strString, nSize)
+{
+    var rtnVal = "";
+    if (nSize > String(strString).length || nSize == null)
+        rtnVal = strString;
+    else
+        rtnVal = strString.substring(0, nSize);
+
+    return rtnVal;
+}
+  
+/********************************************************************************
+ * Function Name	: gfnBlankStr												*
+ * Desc				: 입력값이 undefined일 경우 ""를 반환하는 함수			*
+ * Parameter		: oParam(String)											*
+ * Return 			: String													*
+ ********************************************************************************/
+function gfnBlankStr(oParam)
+{
+	var strParam = new String(oParam);
+ 	if(strParam.valueOf() == "undefined") {
+		return "";
+	}
+
+	return oParam;
+}
+
+/********************************************************************************
+ * Function Name	: gfnTrim													*
+ * Desc				: 입력된 문자열의 좌우측 공백을 제거한 문자열을 반환	*
+ * Parameter		: arg(String)												*
+ * Return 			: String													*
+ ********************************************************************************/
+function gfnTrim(arg)
+{
+	if (arg == null) { return ""; }
+	var sArg = arg.toString();
+	return sArg.replace(/(^\s*)|(\s*$)/g, "");
+}
+
+/********************************************************************************
+ * Function Name	: gfnLtrim													*
+ * Desc				: 입력된 문자열의 좌측 공백을 제거한 문자열을 반환	*
+ * Parameter		: arg(String)												*
+ * Return 			: String													*
+ ********************************************************************************/
+function gfnLtrim(arg)
+{
+	var sArg = arg.toString();
+	return sArg.replace(/(^\s*)/, "");
+}
+
+/********************************************************************************
+ * Function Name	: gfnRtrim													*
+ * Desc				: 입력된 문자열의 우측 공백을 제거한 문자열을 반환	*
+ * Parameter		: arg(String)												*
+ * Return 			: String													*
+ ********************************************************************************/
+function gfnRtrim(arg)
+{
+	var sArg = arg.toString();
+	return sArg.replace(/(\s*$)/, "");    
+}
+
+/********************************************************************************
+ * Function Name	: gfnLength													*
+ * Desc				: 입력값 형태에 따라서 길이 또는 범위를 구하는 함수	*
+ * Parameter		: 객체, 문자열, 배열										*
+ * Return 			: Type에 따라 구해진 길이 또는 범위						*
+ ********************************************************************************/
+function gfnLength()
+{	
+	var varRtnValue = 0;
+	var arrArgument = gfnLength.arguments;
+	if (arrArgument.length < 1) { return 0; }
+
+	if (!gfnIsEmpty(arrArgument[0]))
+		varRtnValue = arrArgument[0].toString().length;
+	
+	return varRtnValue;
+}
+
+/********************************************************************************
+ * Function Name	: gfnReplace												*
+ * Desc				: 입력된 문자열의 일부분을 다른 문자열로 치환			*
+ *					  ex) gfnReplace("abc", "b", "*")							*
+ * Parameter		: strString(원본 String)									*
+ *					  strOld(새로 바꿀 문자열)								*
+ * Return 			: String(대체 된 문자열)									*
+ ********************************************************************************/
+function gfnReplace()
+{
+	var varRtnValue = "";
+	var arrArgument = gfnReplace.arguments;
+
+	if (arrArgument.length < 3) {
+		varRtnValue = arrArgument[0];
+	} else {
+		if (gfnIsEmpty(arrArgument[0])) {
+			return varRtnValue;
+		}
+		varRtnValue = arrArgument[0].toString().replace(arrArgument[1], arrArgument[2]);
+	}
+
+	return varRtnValue;
+}
+
+/********************************************************************************
+ * Function Name	: gfnIndexOf												*
+ * Desc				: 전체 문자열 중 특정 문자열이 포함된 위치를 반납		*
+ *					  ex) gfnIndexOf("abc", "b")								*
+ * Parameter		: strString(원본 문자열)									*
+ *					  strOld(검사할 문자열)									*
+ *					  index(시작순서)											*
+ * Return 			: 문자열이 포함된 위치의 index값							*
+ ********************************************************************************/
+function gfnIndexOf()
+{
+	var varRtnValue = null;
+	var arrArgument = gfnIndexOf.arguments;
+
+	if (arrArgument.length < 2) {
+		varRtnValue = -1;
+	} else {
+		var nOffset = 0;
+		if (gfnIsEmpty(arrArgument[0]) || gfnIsEmpty(arrArgument[1])) {
+			return varRtnValue;
+		}
+
+		if (!gfnIsEmpty(arrArgument[2])) nOffset = parseInt(arrArgument[2]);
+		varRtnValue = arrArgument[0].toString().indexOf(arrArgument[1], nOffset);
+	}
+
+	return varRtnValue;
+}
+
+/********************************************************************************
+ * Function Name	: gfnCharAt													*
+ * Desc				: 전체 문자열 중 특정 위치에 존재하는 문자를 반납		*
+ *					  ex) gfnCharAt("abc", 2)									*
+ * Parameter		: strString(원본 문자열)									*
+ *					  index(인덱스)											*
+ * Return 			: index에 해당하는 문자									*
+ ********************************************************************************/
+function gfnCharAt()
+{
+	var varRtnValue = null;
+	var arrArgument = gfnCharAt.arguments;
+
+	if (arrArgument.length < 2) {
+		varRtnValue = "";
+	} else {
+		var nIndex = parseInt(arrArgument[1]);
+		varRtnValue = arrArgument[0].toString().charAt(nIndex);
+	}
+
+	return varRtnValue;
+}
+
+/********************************************************************************
+ * Function Name	: gfnLPad													*
+ * Desc				: 문자열이 지정된 길이가 되도록 왼쪽을 채우는 함수	*
+ *					  ex) gfnLPad("abc", "*", 5)								*
+ * Parameter		: strString(원본 문자열)									*
+ *					  strPadChar(왼쪽을 채울 문자열)							*
+ *					  nCount(문자열의 최종 길이)								*
+ * Return 			: String													*
+ ********************************************************************************/
+function gfnLPad(strString, strPadChar, nCount) {
+	var rtnStr = "";
+	nCount = parseInt(nCount);
+	
+	if(gfnLength(strString) < nCount) {
+		var tmpStrPad = "";
+		var cnt = nCount - gfnLength(strString);
+		for(var i=0; i<cnt; i++) {
+			tmpStrPad += strPadChar;
+		}
+		
+		rtnStr = tmpStrPad + strString;
+	} else {
+		rtnStr = strString
+	}
+	
+	return rtnStr;
+}
+
+/********************************************************************************
+ * Function Name	: gfnRPad													*
+ * Desc				: 문자열이 지정된 길이가 되도록 오른쪽을 채우는 함수	*
+ *					  ex) gfnRPad("abc", "*", 5)								*
+ * Parameter		: strString(원본 문자열)									*
+ *					  strPadChar(오른쪽을 채울 문자열)						*
+ *					  nCount(문자열의 최종 길이)								*
+ * Return 			: String													*
+ ********************************************************************************/
+ function gfnRPad(strString, strPadChar, nCount) {
+	var rtnStr = "";
+	nCount = parseInt(nCount);
+	if(strString.length < nCount) {
+		var tmpStrPad = "";
+		var cnt = nCount - strString.length;
+		for(var i=0; i<cnt; i++) {
+			tmpStrPad += strPadChar;
+		}
+		
+		rtnStr = strString + tmpStrPad;
+	} else {
+		rtnStr = strString
+	}
+	
+	return rtnStr;
+}
+
+/********************************************************************************
+ * Function Name	: gfnSplit													*
+ * Desc				: 특정 문자열을 기준으로 전체 문자열을 나누어서 	 	*
+ *					  하나의 배열(Array)로 만들어 반납하는 함수				*
+ *					  ex) gfnSplit("aa::bb::cc::dd", "::")						*
+ * Parameter		: strString(원본 문자열)									*
+ *					  strChar(나눌 기준이 되는 문자)							*
+ * Return 			: Array														*
+ ********************************************************************************/
+function gfnSplit() {
+	var rtnArr = new Array();
+	var arrArgument = gfnSplit.arguments;
+
+	if (arrArgument.length < 1) {
+	} else if (arrArgument.length < 2) {
+		if (!gfnIsEmpty(arrArgument[0])) {
+			rtnArr[0] = arrArgument[0];
+		}
+	} else {
+		if (!gfnIsEmpty(arrArgument[0])) {
+			rtnArr = arrArgument[0].toString().split(arrArgument[1]);
+		}
+	}
+	
+	return rtnArr;
+}
+
+/********************************************************************************
+ * Function Name	: gfnNumFormat												*
+ * Desc				: 입력된 실수를 문자열 표현법으로 표현하는 함수 	 	*
+ * Parameter		: dNumber(문자열로 출력할 실수)							*
+ *					  nDetail(출력시 소숫점 이하의 자릿수(Default : 0))		*
+ * Return 			: 문자열로 바뀐 실수										*
+ *					  출력되는 실수는 정수부분에 3자리마다 ',' 가 삽입		*
+ ********************************************************************************/
+function gfnNumFormat(dNumber, nDetail) {
+	var rtnStr;
+    if (gfnIsEmpty(nDetail) != false) { nDetail = 0; }
+
+	rtnStr = dNumber.toFixedLocaleString(nDetail);
+
+	return rtnStr;
+}
+
+/********************************************************************************
+ * Function Name	: gfnStripBlank												*
+ * Desc				: 문자열 중 "=" 좌우의 빈공백을 제거하는 함수	 	 	*
+ * Parameter		: strArg(String)											*
+ *					  gfnStripBlank("a = \" b = d \" c='1'  d = \"b = d ")		*
+ * Return 			: String("=" 좌우의 빈공백 제거된 문자열)				*
+ ********************************************************************************/
+function gfnStripBlank(strArg) {
+	var nChrPos;
+	var strLeft;
+	var strRight = strArg;
+	var strChr;
+	var retVal = "";
+
+	while(true) {
+		nChrPos = strRight.indexOf("=");
+		if (nChrPos == -1) { 
+			retVal += strRight;
+			break;
+		}
+
+		strLeft  = strRight.substr(0, nChrPos).trimRight();
+		strRight = strRight.substr(nChrPos + 1).trimLeft();
+		strChr   = strRight.charAt(0);
+
+		retVal += strLeft + "=";
+		if (strChr != "\"" && strChr != "'") { strChr = " "; }
+
+		nChrPos = strRight.indexOf(strChr, 1);
+		if (nChrPos > -1) {
+			retVal  += strRight.slice(0, nChrPos + 1);
+			strRight = strRight.substr(nChrPos + 1);
+		} else {
+			retVal  += strRight;
+			strRight = "";
+		}
+	}
+
+	return retVal;
+}
+
+/********************************************************************************
+ * Function Name	: gfnQuote													*
+ * Desc				: 입력된 문자열의 양쪽에 쌍따옴표를 붙여 반환	 	 	*
+ * Parameter		: strString(String 대상 문자열)							*
+ *					  gfnStripBlank("a = \" b = d \" c='1'  d = \"b = d ")		*
+ * Return 			: String(쌍따옴표가 붙여진 문자열)						*
+ ********************************************************************************/
+function gfnQuote()
+{
+	var retVal = '""';
+	var arrArgument = gfnQuote.arguments;
+
+	if ((arrArgument != null) && (arrArgument.length >= 1) && (!gfnIsEmpty(arrArgument[0]))) {
+		retVal = wrapQuote(new String(arrArgument[0]));
+	}
+
+	return retVal;
+}
+
+/********************************************************************************
+ * Function Name	: gfnSubStr													*
+ * Desc				: 입력된 문자열에서 특정 위치 안에 있는 문자열 반환	*
+ * Parameter		: strString(String 문자열)									*
+ *					  nIndex(얻어올 첫 글자의 Index)							*
+ *					  nSize(얻어올 글자수, Default length(해당 객체의 길이)	*
+ * Return 			: String(지정 위치 안의 문자열)							*
+ ********************************************************************************/
+function gfnSubStr()
+{
+	var retVal    = "";
+	var strString = "";
+	var nIndex    = 0;
+	var nSize     = 0;
+	var arrArgument = gfnSubStr.arguments;
+
+	if (arrArgument.length >= 1) { strString = arrArgument[0]; }
+	if (arrArgument.length >= 2) { nIndex    = parseInt(arrArgument[1]); }
+	if (arrArgument.length >= 3) { nSize     = parseInt(arrArgument[2]); }
+                            else { nSize     = gfnLength(arrArgument[0]); }
+	if (!gfnIsEmpty(strString)) {
+		retVal = strString.substr(nIndex, nSize);
+	}
+
+	return retVal;
+}
+
+/********************************************************************************
+ * Function Name	: gfnNvl													*
+ * Desc				: 입력값이 존재하는지를 판단하여						*
+ *					  존재하는 경우 입력값을 그대로 반환, 그렇지 않으면	*
+ *					  두 번째 파라미터를 반환하는 함수						*
+ * Parameter		: arrArgument[0](입력값)									*
+ *					  arrArgument[1](arrArgument[0]이 Null일 경우 대체할 값)	*
+ * Return 			: String													*
+ ********************************************************************************/
+function gfnNvl()
+{
+	var retVal    = "";
+	var arrArgument = gfnNvl.arguments;
+
+	if (arrArgument.length == 1) {
+		if (!gfnIsEmpty(arrArgument[0])) { retVal = arrArgument[0]; }
+	} else if (arrArgument.length == 2) {
+		if (gfnIsEmpty(arrArgument[0]))  {
+			retVal = arrArgument[1];
+		} else {
+			retVal = arrArgument[0];
+		}
+	}
+
+	return retVal;
+}
+
+/********************************************************************************
+ * Function Name	: gfnIsEmpty												*
+ * Desc				: 값이 존재하는지 여부 체크								*
+ * Parameter		: val(입력값)												*
+ * Return 			: false = 입력값이 null, 빈 스트링(""), undefined일 경우	*
+ *					  true = 그 외 값이 존재하는 경우						*
+ ********************************************************************************/
+function gfnIsEmpty(val) {
+	
+	var sVal = new String(val);
+	val = new String(val);
+    if (val == null || val == "null" || sVal.trim().length <= 0 || escape(val) == "undefined") {
+        return true;
+    } else {
+        return false;
+    }
+}
+
+
+// 한글 자소를 분리하여 리턴한다.
+var arrFirst = [12593,12594,12596,12599,12600,12601,12609,12610,12611,12613,12614,12615,12616,12617,12618,12619,12620,12621,12622];
+var arrSecond = [12623,12624,12625,12626,12627,12628,12629,12630,12631,12632,12633,12634,12635,12636,12637,12638,12639,12640,12641,12642,12643];
+var arrThird = [0,12593,12594,12595,12596,12597,12598,12599,12601,12602,12603,12604,12605,12606,12607,12608,12609,12610,12612,12613,12614,12615,12616,12618,12619,12620,12621,12622];
+function GetSpliceTextK(strInput)
+{
+	var i;
+	var strOut = "";
+	for(i=0;i<strInput.length;i++)
+	{
+		var nCode = strInput.charCodeAt(i);
+		if(nCode>=44032 && nCode <= 55203)
+		{
+			var nFirst = Math.floor((nCode - 44032) / 588);
+			strOut += String.fromCharCode(arrFirst[nFirst]);
+			var nSecond = Math.floor(((nCode - 44032) % 588) / 28) ;
+			strOut += String.fromCharCode(arrSecond[nSecond]);
+			var nThird = Math.floor((nCode - 44032) % 28) ;
+			if(nThird > 0)
+				strOut += String.fromCharCode(arrThird[nThird]);
+		}
+		else
+			strOut += String.fromCharCode(nCode);
+	}
+	return strOut;
+}
+
+// 한글 자소를 분리하고 키보드에 매치되는 영문으로 리턴한다.
+var arrFirstE = ["r","R","s","e","E","f","a","q","Q","t","T","d","w","W","c","z","x","v","g"];
+var arrSecondE = ["k","o","i","O","j","p","u","P","h","hk","ho","hl","y","n","nj","np","nl","b","m","ml","l"];
+var arrThirdE = ["","r","R","rt","s","sw","sg","e","f","fr","fa","fq","ft","fx","fv","fg","a","q","qt","t","T","d","w","c","z","x","v","g"];
+var arrAllE = ["r","R","rt","s","sw","sg","e","E","f","fr","fa","fq","ft","fx","fv","fg","a","q","Q","qt","t","T","d","w","W","c","z","x","v","g","k","o","i","O","j","p","u","P","h","hk","ho","hl","y","n","nj","np","nl","b","m","ml","l"];
+function GetSpliceTextE(strInput)
+{
+	var i;
+	var strOutE = "";
+	for(i=0;i<strInput.length;i++)
+	{
+		var nCode = strInput.charCodeAt(i);
+		if(nCode>=44032 && nCode <= 55203)
+		{
+			var nFirst = Math.floor((nCode - 44032) / 588);
+			strOutE += arrFirstE[nFirst];
+			var nSecond = Math.floor(((nCode - 44032) % 588) / 28) ;
+			strOutE += arrSecondE[nSecond];
+			var nThird = Math.floor((nCode - 44032) % 28) ;
+			if(nThird > 0)
+				strOutE += arrThirdE[nThird];
+		}
+		else if(nCode>=12593 && nCode <= 12643)
+		{
+			strOutE += arrAllE[nCode-12593];
+		}
+		else
+		{
+			strOutE += String.fromCharCode(nCode);
+		}
+	}
+	return strOutE;
+}
+
+
+/***********************************************************************************************************************
+ * Prototype 함수
+ **********************************************************************************************************************/
+/**
+ * @type : prototype_function
+ * @access : public
+ * @desc : 자바스크립트의 내장 객체인 String 객체에 simpleReplace 메소드를 추가한다. simpleReplace 메소드는 스트링 내에 있는 특정 스트링을 다른 스트링으로 모두 변환한다.
+ *       String 객체의 replace 메소드와 동일한 기능을 하지만 간단한 스트링의 치환시에 보다 유용하게 사용할 수 있다.
+ *
+ * <pre>
+ * var str = &quot;abcde&quot;
+ * str = str.simpleReplace(&quot;cd&quot;, &quot;xx&quot;);
+ * </pre>
+ *
+ * 위의 예에서 str는 "abxxe"가 된다.
+ * @sig : oldStr, newStr
+ * @param :
+ *            oldStr required 바뀌어야 될 기존의 스트링
+ * @param :
+ *            newStr required 바뀌어질 새로운 스트링
+ * @return : replaced String.
+ * @author :
+ */
+String.prototype.simpleReplace = function(oldStr, newStr) {
+	var rStr = oldStr;
+	rStr = rStr.replace(/\\/g, "\\\\");
+	rStr = rStr.replace(/\^/g, "\\^");
+	rStr = rStr.replace(/\$/g, "\\$");
+	rStr = rStr.replace(/\*/g, "\\*");
+	rStr = rStr.replace(/\+/g, "\\+");
+	rStr = rStr.replace(/\?/g, "\\?");
+	rStr = rStr.replace(/\./g, "\\.");
+	rStr = rStr.replace(/\(/g, "\\(");
+	rStr = rStr.replace(/\)/g, "\\)");
+	rStr = rStr.replace(/\|/g, "\\|");
+	rStr = rStr.replace(/\,/g, "\\,");
+	rStr = rStr.replace(/\{/g, "\\{");
+	rStr = rStr.replace(/\}/g, "\\}");
+	rStr = rStr.replace(/\[/g, "\\[");
+	rStr = rStr.replace(/\]/g, "\\]");
+	rStr = rStr.replace(/\-/g, "\\-");
+	var re = new RegExp(rStr, "g");
+	return this.replace(re, newStr);
+}
+
+
+String.prototype.trim = function() {
+	return this.replace(/(^\s*)|(\s*$)/g, "");
+}]]></Script>

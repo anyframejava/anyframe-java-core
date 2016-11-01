@@ -1,0 +1,15 @@
+		<!--xp-query-findXPScheduleList-START-->
+			SELECT SCHD_ID, USER_ID, SCHD_TITLE, SCHD_CONTENTS, SCHD_STARTDATE, SCHD_ENDDATE, SCHD_PLACE
+			FROM XP_SCHD
+			<!--Velocity-Support-findXPScheduleList-START-->
+			#if ($SEARCH_CONDITION.length() &gt; 0 &amp;&amp; "0" == $SEARCH_CONDITION)
+				WHERE SCHD_TITLE like '%' + :SEARCH_KEYWORD + '%'
+			#end
+			<!--Velocity-Support-findXPScheduleList-END-->
+		<!--xp-query-findXPScheduleList-END-->
+		<!--xp-query-createXPSchedule-START-->
+			INSERT INTO XP_SCHD
+			(SCHD_ID, USER_ID, SCHD_TITLE, SCHD_CONTENTS, SCHD_STARTDATE, SCHD_ENDDATE, SCHD_PLACE)
+			VALUES('SCHD-'+ CAST(IDENT_CURRENT('XP_SCHD') AS VARCHAR(16)), :USER_ID, :SCHD_TITLE, :SCHD_CONTENTS, :SCHD_STARTDATE, :SCHD_ENDDATE, :SCHD_PLACE)		
+		<!--xp-query-createXPSchedule-END-->
+		

@@ -1,0 +1,388 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<FDL version="1.4">
+  <TypeDefinition url="..\default_typedef.xml"/>
+  <Form id="frmSAMPLE001" classname="SAMPLE001" inheritanceid="" position="absolute 0 0 765 540" titletext="GRDBASIC" onload="SAMPLE001_onload" style="background:#f2f2efff;font:arial,11,underline;" onbeforeclose="SAMPLE001_onbeforeclose" scrollbars="none">
+    <Layouts>
+      <Layout>
+        <Div id="divSearch" taborder="4" text="search" position="absolute 0 40 765 80" style="background:#fff0f5ff;border:1 solid #906d3bff ;" anchor="left top right">
+          <Layouts>
+            <Layout>
+              <Static id="stSearchCondition" text="global.domain.searchcondition" position="absolute 2 5 57 36"/>
+              <Edit id="edtSearchKeyword" taborder="1" position="absolute 169 9 328 31" onkeydown="divSearch_edtSearchKeyword_onkeydown"/>
+              <Button id="btDoSearch" taborder="2" position="absolute 330 9 353 31" onclick="divSearch_btDoSearch_onclick" style="background:URL('image::btn_TP_SearchDrop_N.png') left middle;cursor:hand;"/>
+              <Combo id="cmbSearchCondition" taborder="0" innerdataset="@dsSearchComboBox" codecolumn="CODE" datacolumn="DATA" position="absolute 59 9 167 31" index="0" value="0" text="카테고리 이름"/>
+            </Layout>
+          </Layouts>
+        </Div>
+        <Div id="divGrd" taborder="5" text="divGrid" position="absolute 0 110 765 512" anchor="left top right">
+          <Layouts>
+            <Layout>
+              <Grid id="grdCategory" taborder="6" useinputpanel="false" position="absolute 0 0 765 394" formats="&lt;Formats&gt;&#10;  &lt;Format id=&quot;default&quot;&gt;&#10;    &lt;Columns&gt;&#10;      &lt;Col size=&quot;80&quot;/&gt;&#10;      &lt;Col size=&quot;80&quot;/&gt;&#10;      &lt;Col size=&quot;80&quot;/&gt;&#10;      &lt;Col size=&quot;80&quot;/&gt;&#10;      &lt;Col size=&quot;80&quot;/&gt;&#10;      &lt;Col size=&quot;80&quot;/&gt;&#10;      &lt;Col size=&quot;80&quot;/&gt;&#10;      &lt;Col size=&quot;80&quot;/&gt;&#10;    &lt;/Columns&gt;&#10;    &lt;Rows&gt;&#10;      &lt;Row band=&quot;head&quot; size=&quot;24&quot;/&gt;&#10;      &lt;Row band=&quot;body&quot; size=&quot;24&quot;/&gt;&#10;    &lt;/Rows&gt;&#10;    &lt;Band id=&quot;head&quot;&gt;&#10;      &lt;Cell col=&quot;0&quot; disptype=&quot;normal&quot; text=&quot;CATEGORY_ID&quot;/&gt;&#10;      &lt;Cell col=&quot;1&quot; disptype=&quot;normal&quot; text=&quot;CATEGORY_DESC&quot;/&gt;&#10;      &lt;Cell col=&quot;2&quot; disptype=&quot;normal&quot; text=&quot;CATEGORY_NAME&quot;/&gt;&#10;      &lt;Cell col=&quot;3&quot; disptype=&quot;normal&quot; text=&quot;REG_DATE&quot;/&gt;&#10;      &lt;Cell col=&quot;4&quot; disptype=&quot;normal&quot; text=&quot;pageCount&quot;/&gt;&#10;      &lt;Cell col=&quot;5&quot; disptype=&quot;normal&quot; text=&quot;pageIndex&quot;/&gt;&#10;      &lt;Cell col=&quot;6&quot; disptype=&quot;normal&quot; text=&quot;pageSize&quot;/&gt;&#10;      &lt;Cell col=&quot;7&quot; disptype=&quot;normal&quot; text=&quot;totalCount&quot;/&gt;&#10;    &lt;/Band&gt;&#10;    &lt;Band id=&quot;body&quot;&gt;&#10;      &lt;Cell col=&quot;0&quot; disptype=&quot;normal&quot; text=&quot;bind:CATEGORY_ID&quot;/&gt;&#10;      &lt;Cell col=&quot;1&quot; disptype=&quot;normal&quot; text=&quot;bind:CATEGORY_DESC&quot;/&gt;&#10;      &lt;Cell col=&quot;2&quot; disptype=&quot;normal&quot; text=&quot;bind:CATEGORY_NAME&quot;/&gt;&#10;      &lt;Cell col=&quot;3&quot; disptype=&quot;normal&quot; text=&quot;bind:REG_DATE&quot;/&gt;&#10;      &lt;Cell col=&quot;4&quot; disptype=&quot;normal&quot; text=&quot;bind:pageCount&quot;/&gt;&#10;      &lt;Cell col=&quot;5&quot; disptype=&quot;normal&quot; text=&quot;bind:pageIndex&quot;/&gt;&#10;      &lt;Cell col=&quot;6&quot; disptype=&quot;normal&quot; text=&quot;bind:pageSize&quot;/&gt;&#10;      &lt;Cell col=&quot;7&quot; disptype=&quot;normal&quot; text=&quot;bind:totalCount&quot;/&gt;&#10;    &lt;/Band&gt;&#10;  &lt;/Format&gt;&#10;&lt;/Formats&gt;&#10;" binddataset="dsGrdCategory" nodatatext="조회된 데이터가 없습니다." selecttype="multirow" onheadclick="divGrd_grdCategory_onheadclick" userData="" autofittype="col" cellsizingtype="col" onrbuttonup="divGrd_grdCategory_onrbuttonup" style="align:center middle;" autoenter="select" anchor="left top right">
+                <Formats>
+                  <Format id="default">
+                    <Columns>
+                      <Column size="147"/>
+                      <Column size="434"/>
+                      <Column size="164"/>
+                    </Columns>
+                    <Rows>
+                      <Row size="24" band="head"/>
+                      <Row size="24"/>
+                    </Rows>
+                    <Band id="head">
+                      <Cell text="global.domain.name"/>
+                      <Cell col="1" text="global.domain.desc"/>
+                      <Cell col="2" text="global.domain.regdate"/>
+                    </Band>
+                    <Band id="body">
+                      <Cell edittype="text" style="align:left;" text="bind:CATEGORY_NAME"/>
+                      <Cell col="1" edittype="text" style="align:left;" text="bind:CATEGORY_DESC"/>
+                      <Cell col="2" displaytype="date" edittype="none" style="align:center;" text="bind:REG_DATE"/>
+                    </Band>
+                  </Format>
+                </Formats>
+              </Grid>
+            </Layout>
+          </Layouts>
+        </Div>
+        <Div id="divPage" taborder="6" text="divPage" url="includes::LISTPAGE.xfdl" position="absolute 0 508 765 540" anchor="left top right"/>
+        <Div id="divGrdStatus" taborder="7" url="includes::GRDSTATUS.xfdl" text="divPage" position="absolute 0 80 765 110"/>
+        <PopupMenu id="popupMenuGrd" position="absolute 64 304 212 361"/>
+        <Div id="divBtnArea" taborder="8" text="Div00" position="absolute 0 0 765 40">
+          <Layouts>
+            <Layout>
+              <Static id="stTitle" text="global.domain.listcategory" position="absolute 18 10 219 32"/>
+              <Button id="btAddCategory" taborder="1" text="global.domain.add" onclick="btAddCategory_onclick" position="absolute 542 7 615 32"/>
+              <Button id="btDeleteCategory" taborder="2" text="global.domain.delete" onclick="btDeleteCategory_onclick" position="absolute 617 7 690 32"/>
+              <Button id="btSaveAll" taborder="3" text="global.domain.save" onclick="btSaveAll_onclick" position="absolute 692 7 765 32"/>
+            </Layout>
+          </Layouts>
+        </Div>
+        <Static id="Static00" position="absolute 2 10 16 32" style="background:URL('image::bullet_WF_Lev1.png') left middle;" text=""/>
+      </Layout>
+    </Layouts>
+    <Objects>
+      <Dataset id="dsSearch" firefirstcount="0" firenextcount="0" useclientlayout="false" updatecontrol="true" enableevent="true" loadkeymode="keep" loadfiltermode="keep" reversesubsum="false">
+        <ColumnInfo>
+          <ConstColumn id="pageIndex" type="INT" size="30" value="1"/>
+          <ConstColumn id="pageSize" type="INT" size="30" value="5"/>
+          <ConstColumn id="pageUnit" type="INT" size="30" value="5"/>
+          <Column id="SEARCH_CONDITION" type="STRING" size="100"/>
+          <Column id="SEARCH_KEYWORD" type="STRING" size="100"/>
+        </ColumnInfo>
+        <Rows>
+          <Row>
+            <Col id="SEARCH_KEYWORD"/>
+            <Col id="SEARCH_CONDITION"/>
+          </Row>
+        </Rows>
+      </Dataset>
+      <Dataset id="dstPopupMenu" firefirstcount="0" firenextcount="0" useclientlayout="false" updatecontrol="true" enableevent="true" loadkeymode="keep" loadfiltermode="keep" reversesubsum="false">
+        <ColumnInfo>
+          <Column id="caption" type="STRING" size="256"/>
+          <Column id="level" type="STRING" size="256"/>
+          <Column id="enable" type="STRING" size="256"/>
+          <Column id="icon" type="STRING" size="256"/>
+          <Column id="id" type="STRING" size="256"/>
+          <Column id="gubn" type="STRING" size="256"/>
+          <Column id="objId" type="STRING" size="256"/>
+        </ColumnInfo>
+        <Rows>
+          <Row>
+            <Col id="caption">검색(Ctrl+F, F3)</Col>
+            <Col id="level">1</Col>
+            <Col id="enable"/>
+            <Col id="icon"/>
+            <Col id="id">IDX1</Col>
+            <Col id="gubn">H</Col>
+            <Col id="objId"/>
+          </Row>
+          <Row>
+            <Col id="caption">엑셀 다운로드</Col>
+            <Col id="level">1</Col>
+            <Col id="enable"/>
+            <Col id="icon"/>
+            <Col id="id">IDX2</Col>
+            <Col id="gubn">H</Col>
+            <Col id="objId"/>
+          </Row>
+        </Rows>
+      </Dataset>
+      <Dataset id="dsService" firefirstcount="0" firenextcount="0" useclientlayout="false" updatecontrol="true" enableevent="true" loadkeymode="keep" loadfiltermode="keep" reversesubsum="false">
+        <ColumnInfo>
+          <Column id="SVC_ID" type="STRING" size="100"/>
+          <Column id="QUERY_LIST" type="STRING" size="256"/>
+          <Column id="SERVICE" type="STRING" size="100"/>
+          <Column id="IN_DATASET_LIST" type="STRING" size="256"/>
+          <Column id="OUT_DATASET_LIST" type="STRING" size="256"/>
+          <Column id="CONTROLLER" type="STRING" size="512"/>
+          <Column id="CALLBACK" type="STRING" size="100"/>
+          <Column id="SYNC_YN" type="STRING" size="1"/>
+        </ColumnInfo>
+        <Rows>
+          <Row>
+            <Col id="SVC_ID">getPagingListCategory</Col>
+            <Col id="QUERY_LIST">querySet1=findXPCategoryList</Col>
+            <Col id="IN_DATASET_LIST">querySet1=dsSearch</Col>
+            <Col id="OUT_DATASET_LIST">dsGrdCategory=querySet1</Col>
+          </Row>
+          <Row>
+            <Col id="SVC_ID">batchSaveAllCategory</Col>
+            <Col id="QUERY_LIST">querySet1=createXPCategory,updateXPCategory,removeXPCategory</Col>
+            <Col id="IN_DATASET_LIST">querySet1=dsGrdCategory:U</Col>
+            <Col id="OUT_DATASET_LIST"/>
+          </Row>
+        </Rows>
+      </Dataset>
+      <Dataset id="dsGrdCategory" firefirstcount="0" firenextcount="0" useclientlayout="false" updatecontrol="true" enableevent="true" loadkeymode="keep" loadfiltermode="keep" reversesubsum="false">
+        <ColumnInfo>
+          <ConstColumn id="pageCount" type="INT" size="30" value="0"/>
+          <ConstColumn id="pageIndex" type="INT" size="30" value="0"/>
+          <ConstColumn id="pageSize" type="INT" size="30" value="0"/>
+          <ConstColumn id="totalCount" type="INT" size="30" value="0"/>
+          <Column id="CATEGORY_ID" type="STRING" size="256"/>
+          <Column id="CATEGORY_NAME" type="STRING" size="256"/>
+          <Column id="CATEGORY_DESC" type="STRING" size="256"/>
+          <Column id="REG_DATE" type="STRING" size="256"/>
+        </ColumnInfo>
+      </Dataset>
+      <Dataset id="dsGrdCategoryValid" firefirstcount="0" firenextcount="0" useclientlayout="false" updatecontrol="true" enableevent="true" loadkeymode="keep" loadfiltermode="keep" reversesubsum="false">
+        <ColumnInfo>
+          <Column id="CATEGORY_ID" type="STRING" size="256"/>
+          <Column id="CATEGORY_DESC" type="STRING" size="256"/>
+          <Column id="CATEGORY_NAME" type="STRING" size="256"/>
+          <Column id="REG_DATE" type="STRING" size="256"/>
+        </ColumnInfo>
+        <Rows>
+          <Row>
+            <Col id="CATEGORY_ID"/>
+            <Col id="CATEGORY_DESC">title:desc,minlength:1,maxlength:300</Col>
+            <Col id="CATEGORY_NAME">title:name,required:true,maxlength:150</Col>
+            <Col id="REG_DATE"/>
+          </Row>
+        </Rows>
+      </Dataset>
+      <Dataset id="dsSearchComboBox" firefirstcount="0" firenextcount="0" useclientlayout="false" updatecontrol="true" enableevent="true" loadkeymode="keep" loadfiltermode="keep" reversesubsum="false">
+        <ColumnInfo>
+          <Column id="CODE" type="STRING" size="100"/>
+          <Column id="DATA" type="STRING" size="100"/>
+        </ColumnInfo>
+        <Rows>
+          <Row>
+            <Col id="CODE">0</Col>
+            <Col id="DATA"/>
+          </Row>
+          <Row>
+            <Col id="CODE">1</Col>
+            <Col id="DATA"/>
+          </Row>
+        </Rows>
+      </Dataset>
+    </Objects>
+    <Bind>
+      <BindItem id="item1" compid="divSearch.cmbSearchCondition" propid="value" datasetid="dsSearch" columnid="SEARCH_CONDITION"/>
+      <BindItem id="item0" compid="divSearch.edtSearchKeyword" propid="value" datasetid="dsSearch" columnid="SEARCH_KEYWORD"/>
+    </Bind>
+    <Script type="xscript4.0"><![CDATA[include "lib::commonScript.xjs";
+
+//검색 조건 
+var searchKeyword = "";
+var searchCondition = 0;
+var nCurrentPage = 1;
+var objFocusedGrd;
+
+// Form onload시 초기화
+function SAMPLE001_onload(obj:Form, e:LoadEventInfo)
+{
+	// Div의 UserData 전송 문제가 있어서
+	// div의 함수를 직접 호출 하고, 인자값으로 Grid Name을 넘겨주도록 로직을 변경
+	divGrdStatus.fnSetUserData("GRD_STATUS=grdCategory");
+	// 검색 combo box message 처리
+	dsSearchComboBox.setColumn(0, "DATA", gfnGetMessage("global.domain.categoryname"));
+	dsSearchComboBox.setColumn(1, "DATA", gfnGetMessage("global.domain.categorydesc"));
+	dsSearch.setColumn(0, "SEARCH_CONDITION", searchCondition);
+	dsSearch.setConstColumn("pageIndex", nCurrentPage);
+	
+	// 서버로부터 Grid Data 받아옴
+	gfnService("getPagingListCategory");
+	
+	// 각 컴포넌의 Text Message 처리
+	gfnSetTitle();
+	
+	// 팝업메뉴 처리
+	popupMenuGrd.innerdataset = gdsPopupMenu;
+	popupMenuGrd.captioncolumn = "CAPTION";
+	popupMenuGrd.idcolumn = "ID";
+	popupMenuGrd.levelcolumn = "LEVEL";
+	
+	popupMenuGrd.onmenuclick.addHandler(fnPopupMenu_onmenuclick);
+}
+
+// 팝업 메뉴 클릭시 이벤트 처리
+function fnPopupMenu_onmenuclick(obj:PopupMenu, e:MenuClickEventInfo){
+	switch(e.id){
+		case "find":
+			fnFindForm();
+			break;
+		case "excelexport":
+			fnExcelExport();
+			break;
+		default:
+			break;
+	}
+}
+
+// 팝업 메뉴 중 "검색" 클릭시
+function fnFindForm(){
+	popupMenuGrd.closePopup();
+	var resultForm = gfnShowModal("includes::GRDFIND.xfdl", {objGrd:objFocusedGrd}, "global.domain.popupmenu.find", 525, 300);
+}
+
+// 팝업 메뉴 중 "엑셀 다운로드" 클릭시
+function fnExcelExport(){
+	popupMenuGrd.closePopup();
+	var resultForm = gfnConfirm(gfnGetMessage("global.domain.popup.excelsave"), "OSC");
+	
+	if(resultForm == "S"){
+		// Excel 파일로 저장
+		gfnExportSaveAsExcel(objFocusedGrd);
+	} else if(resultForm == "Y"){
+		// Excel Programe 실행
+		gfnExportExcelEx(objFocusedGrd);
+	}
+}
+
+// 추가 버튼 클릭시 이벤트 처리
+function btAddCategory_onclick(obj:Button,  e:ClickEventInfo)
+{
+	dsGrdCategory.addRow();
+	dsGrdCategory.setColumn(dsGrdCategory.rowposition, "REG_DATE", gfnToday());
+}
+
+// 삭제 버튼 클릭시 이벤트 처리
+function btDeleteCategory_onclick(obj:Button,  e:ClickEventInfo)
+{
+	var nRow = dsGrdCategory.rowposition;
+	
+	
+	if(!dsGrdCategory.getSelect(nRow)){
+		gfnAlertMsg("err.grid.noselect");
+	} else{
+		var rtVal = gfnConfirm("msg.before.delete", "YN");
+
+		if(rtVal == "Y"){
+			dsGrdCategory.deleteSelectedRows();
+		} else {
+			return;
+		}
+	}
+	
+}
+
+// 저장 버튼 클릭시 이벤트 처리
+function btSaveAll_onclick(obj:Button,  e:ClickEventInfo)
+{
+	// 유효성 검사 후 이상 없는 경우 Grid 내의 모든 변경 내용 저장
+	if(gfnDsCheckValid(dsGrdCategory)){
+		gfnService("batchSaveAllCategory");
+	}
+}
+
+// Grid Head 클릭시 정렬
+function divGrd_grdCategory_onheadclick(obj:Grid, e:GridClickEventInfo)
+{
+	gfnGridSort(obj, e);
+}
+
+// 검색 버튼 클릭시 이벤트 처리
+function divSearch_btDoSearch_onclick(obj:Button,  e:ClickEventInfo)
+{
+	if(gfnDsGetUpdate(dsGrdCategory)){
+		var resultValue = gfnConfirm("msg.before.search", "YN");
+		
+		if(resultValue == "N") {
+			return;
+		} else if(resultValue == "Y") {
+			searchKeyword = divSearch.edtSearchKeyword.text;
+			searchCondition = divSearch.cmbSearchCondition.index;
+			divPage.nCurrentPage = 1;
+			nCurrentPage = 1;
+			dsSearch.setConstColumn("pageIndex", 1);
+			
+			gfnService("getPagingListCategory");
+		}
+	} else {
+		searchKeyword = divSearch.edtSearchKeyword.text;
+		searchCondition = divSearch.cmbSearchCondition.index;
+		divPage.nCurrentPage = 1;
+		nCurrentPage = 1;
+		dsSearch.setConstColumn("pageIndex", 1);
+		
+		gfnService("getPagingListCategory");
+	}
+
+}
+
+// Paging 처리를 위한 메소드
+function fnGetPagingList(obj){
+	dsSearch.setColumn("SEARCH_KEYWORD", searchKeyword);
+	dsSearch.setColumn("SEARCH_CONDITION", searchCondition);
+	nCurrentPage = dsSearch.getConstColumn("pageIndex");
+	gfnService("getPagingListCategory");
+}
+
+// 검색 조건 창에서 엔터키 입력 이벤트 처리
+function divSearch_edtSearchKeyword_onkeydown(obj:Edit, e:KeyEventInfo)
+{
+	if(e.keycode == 13){
+		dsSearch.setColumn(0, "SEARCH_KEYWORD", divSearch.edtSearchKeyword.text);
+		divSearch_btDoSearch_onclick();
+	}
+}
+
+// Form이 닫혀지기 전 변경 내용이 있는 경우 저장할 것인지 물어보는 팝업 생성
+function SAMPLE001_onbeforeclose(obj:Form, e:CloseEventInfo)
+{
+	if(gfnDsGetUpdate(dsGrdCategory)){
+		var resultValue = gfnConfirm("msg.before.movepage", "YN");
+		
+		if(resultValue == "N") {
+			return;
+		} else if(resultValue == "Y") {
+			btSaveAll_onclick();
+		}
+	}
+}
+
+// Grid Component에서 우클릭시 Popup Menu를 마우스 위치에 보여주는 이벤트 처리
+function divGrd_grdCategory_onrbuttonup(obj:Grid, e:GridMouseEventInfo)
+{
+	nSelectedCol = e.col;
+	nSelectedRow = e.row;
+	objFocusedGrd = obj;
+	var nGridX = system.cursorx;
+	var nGridY = system.cursory;
+	popupMenuGrd.trackPopup(nGridX, nGridY);
+}
+
+// gfnService 처리 후 callback 처리
+function fnCallback(strServiceId, strErrorCode, strErrorMsg){
+	if(strErrorCode == -1){
+		gfnAlertMsg(strErrorMsg, "ERR");
+	} else {
+		if(strServiceId == "batchSaveAllCategory"){
+			gfnAlertMsg("msg.save.success");
+			SAMPLE001_onload();
+		} else if(strServiceId == "getPagingListCategory"){
+			dsSearch.setColumn("SEARCH_CONDITION", searchCondition);
+			divPage.objListDataset = dsGrdCategory;
+			divPage.objPageDataset = dsSearch;
+			divPage.fnMakePage();
+		}
+	}
+}
+
+
+]]></Script>
+  </Form>
+</FDL>

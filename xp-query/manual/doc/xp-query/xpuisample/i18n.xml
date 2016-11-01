@@ -1,0 +1,57 @@
+<chapter id="xp_query_xpuisample_i18n">
+	<title>Internationalization (i18n)</title>
+	
+	<section id="xp_query_xpuisample_i18n_domain">
+		<title>국제화</title>
+		<para>
+			본 절에서는 XPLATFORM을 이용하여 어플리케이션 개발 시 국제화 기능 구현 예제를 설명한다. 
+		</para>
+		<para>
+			XPLATFORM 기반의 UI 개발시  국제화 기능을 구현 하기 위한 여러 방법 중 본 샘플에서 제공하는 방법은
+			global DataSet에 필요한 메세지를 저장해두고 메세지 id값에 따라 해당하는 key값으로 컴포넌트 text를 대체하는
+			스크립트를 만들어서 사용하는 방법이다. 이 방법 외에 메세지 정보를 서버 properties 파일로 만들거나 DB에 저장하는
+			방법도 존재하는데, 추후 버전에서 이런 방법들에 대한 가이드를 제공할 예정이다.  
+		</para>
+		
+		<mediaobject>
+          	<imageobject>
+           		<imagedata align="center"
+					fileref="../image/xp-query/xpuisample/i18n_form.png" />
+          	</imageobject>
+          	<textobject>
+				<phrase>다국어 처리 예제 화면</phrase>
+			</textobject>
+        </mediaobject>
+        
+        <para>
+        	위 그림에서 각 컴포넌트들의 Title 속성은 message id로 작성 되어 있다. 
+        </para>
+        
+		<mediaobject>
+          	<imageobject>
+           		<imagedata align="center"
+					fileref="../image/xp-query/xpuisample/i18n_gdsmessage.png" />
+          	</imageobject>
+          	<textobject>
+				<phrase>다국어 작성 화면</phrase>
+			</textobject>
+        </mediaobject>
+        <para>
+        	각 msgId에 해당하는 msg key값을 저장하고 있는 변수는 Global DataSet으로 선언된 gdsMessage이다.
+        	위 그림처럼 "msgId" + ".locale" 형태로 msgId를 지정하고, msg값으로 실제 msg값을 저장하면 된다.
+        </para>
+        
+        <para>
+        	각 컴포넌트들의 표현 text를 message 처리 하는 함수는 gfnSetTitle() 함수이다.
+        	Form onload 이벤트 처리 함수에 gfnSetTitle() 메소드를 호출하면 
+        	Form에 속해있는 각각의 component들에 접근해서 해당 컴포넌트의 title text에 해당하는 message key값이 
+        	있는 경우 이 값으로 대체 해준다.
+        	사용자의 Locale 정보는 로그인 시 layout/Login.xfdl의 스크립트에서 서버에서 전달한 Language 값을 gvLanguage에 저장하도록 구현 되어 있다.
+        </para>
+        
+        <para>
+        	
+        </para>
+	</section>
+</chapter>
+    

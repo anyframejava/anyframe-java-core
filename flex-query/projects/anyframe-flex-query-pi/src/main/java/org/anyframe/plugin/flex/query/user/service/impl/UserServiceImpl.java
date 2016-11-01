@@ -15,7 +15,6 @@
  */
 package org.anyframe.plugin.flex.query.user.service.impl;
 
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
@@ -51,8 +50,8 @@ public class UserServiceImpl implements UserService {
 		return userDao.remove(user);
 	}
 
-	public Map<String, Integer> saveAll(ArrayList<User> arrayList) throws Exception {
-		return userDao.saveAll(arrayList);
+	public Map<String, Integer> saveAll(List<User> list) throws Exception {
+		return userDao.saveAll(list);
 	}
 
 	public List<User> getList(SearchVO searchVO) throws Exception {

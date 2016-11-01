@@ -1,0 +1,56 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<queryservice xmlns="http://www.anyframejava.org/schema/query/mapping" 
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" 
+	xsi:schemaLocation="http://www.anyframejava.org/schema/query/mapping http://www.anyframejava.org/schema/query/mapping/anyframe-query-mapping-1.0.xsd ">
+
+	<queries>
+		<query id="findBoardList" isDynamic="true" mappingStyle="upper">
+			<statement>
+			<!--mip-query-findBoardList-START-->
+				SELECT
+				TITLE, CONTENTS, REG_ID, REG_DATE, COMMUNITY_ID, POST_ID
+				FROM MIP_BOARD
+				<!--Velocity-Support-findBoardList-START-->
+				#if ($SEARCH_CONDITION.length() &gt; 0 &amp;&amp; "0" == $SEARCH_CONDITION)
+					WHERE TITLE like '%' || :SEARCH_KEYWORD || '%'
+				#elseif ($SEARCH_CONDITION.length() &gt; 0 &amp;&amp; "1" == $SEARCH_CONDITION)
+				    WHERE REG_ID like '%' || :SEARCH_KEYWORD || '%'
+				#end
+				<!--Velocity-Support-findBoardList-END-->
+				ORDER BY REG_DATE DESC
+			<!--mip-query-findBoardList-END-->
+			</statement>
+		</query>
+		<query id="createBoard" isDynamic="true" mappingStyle="upper">
+			<statement>
+			<!--mip-query-createBoard-START-->
+				INSERT INTO MIP_BOARD
+				(TITLE, CONTENTS, REG_ID, REG_DATE, COMMUNITY_ID, POST_ID)
+				VALUES (:TITLE, :CONTENTS, :REG_ID, sysdate, :COMMUNITY_ID, 'POST-'|| NEXT VALUE FOR POST_ID_SEQ)
+			<!--mip-query-createBoard-END-->
+			</statement>
+		</query>
+		<query id="updateBoard" isDynamic="true" mappingStyle="upper">
+			<statement>
+				UPDATE MIP_BOARD
+				SET
+				TITLE = :TITLE, CONTENTS = :CONTENTS, REG_ID =:REG_ID, COMMUNITY_ID = :COMMUNITY_ID
+				WHERE POST_ID = :POST_ID
+			</statement>
+		</query>
+		<query id="removeBoard" isDynamic="true" mappingStyle="upper">
+			<statement>
+				DELETE FROM MIP_BOARD
+				WHERE POST_ID = :POST_ID
+			</statement>
+		</query>
+		<query id="findBoardByPk" isDynamic="true" mappingStyle="upper">
+			<statement>
+				SELECT
+				TITLE, CONTENTS, REG_ID, REG_DATE, COMMUNITY_ID, POST_ID
+				FROM MIP_BOARD
+				WHERE POST_ID = :POST_ID
+			</statement>
+		</query>
+	</queries>
+</queryservice>

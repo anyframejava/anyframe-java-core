@@ -1,0 +1,924 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Script type="xscript4.0"><![CDATA[
+/********************************************************************************
+ * Function Name	: gfnToday													*
+ * Desc				: 오늘 날짜를 String 형태로 반납							*
+ * Parameter		: 															*
+ * Return 			: String													*
+ ********************************************************************************/
+function gfnToday()
+{
+    var strToday = "";
+    var objDate   = new Date();
+
+    var strToday  = objDate.getFullYear() + "";
+    strToday += gfnRight("0" + (objDate.getMonth() + 1), 2);
+    strToday += gfnRight("0" + objDate.getDate(), 2);
+
+    return strToday;
+}    
+
+/********************************************************************************
+ * Function Name	: gfnTodayTime												*
+ * Desc				: 오늘 날짜와 시간을 String 형태로 반납					*
+ * Parameter		: 															*
+ * Return 			: String													*
+ ********************************************************************************/
+function gfnTodayTime()
+{
+    var strToday = "";
+    var objDate = new Date();
+
+    var strToday  = objDate.getFullYear() + "";
+    strToday += gfnRight("0" + (objDate.getMonth() + 1), 2);
+    strToday += gfnRight("0" + objDate.getDate(), 2);
+    strToday += gfnRight("0" + objDate.getHours(), 2);
+    strToday += gfnRight("0" + objDate.getMinutes(), 2);
+    strToday += gfnRight("0" + objDate.getSeconds(), 2);
+
+    return strToday;
+}
+
+/********************************************************************************
+ * Function Name	: gfnAddDate												*
+ * Desc				: 입력된 날짜에 파라미터로 입력된 숫자만큼 일을 더해	*
+ *					  yyyyMMdd 형태로 리턴한다.								*
+ * Parameter		: date('yyyyMMdd' 형태의 날짜 String)						*
+ *					  nOffSet(날짜로부터 증가,감소값)						*
+ * Return 			: String(yyyyMMdd)											*
+ ********************************************************************************/
+function gfnAddDate(date, nOffSet)
+{
+    var nYear  = parseInt(date.substr(0, 4));
+    var nMonth = parseInt(date.substr(4, 2));
+    var nDate  = parseInt(date.substr(6, 2)) + nOffSet;
+
+    return gfnDateTime(nYear, nMonth, nDate);
+}
+
+/********************************************************************************
+ * Function Name	: gfnAddMonth												*
+ * Desc				: 입력된 날짜에 파라미터로 입력된 숫자만큼 달을 더해	*
+ *					  yyyyMMdd 형태로 리턴한다.								*
+ * Parameter		: date('yyyyMMdd' 형태의 날짜 String)						*
+ *					  nOffSet(달로부터 증가,감소값)							*
+ * Return 			: String(yyyyMMdd)											*
+ ********************************************************************************/
+function gfnAddMonth(date, nOffSet)
+{
+    var nYear  = parseInt(date.substr(0, 4));
+    var nMonth = parseInt(date.substr(4, 2)) + nOffSet;
+    var nDate  = parseInt(date.substr(6, 2));
+    
+    return gfnDateTime(nYear, nMonth, nDate);
+}
+
+
+/********************************************************************************
+ * Function Name	: gfnDateTime												*
+ * Desc				: String 형태의 Date Time을 반환							*
+ * Parameter		: nYear (년도)												*
+ *					  nMonth (월)												*
+ *					  nDate (일)												*
+ * Return 			: String													*
+ ********************************************************************************/
+function gfnDateTime(nYear, nMonth, nDate)
+{
+    if (nYear.toString().trim().length >= 5) {
+        var sDate    = new String(nYear);
+        var nYear    = sDate.substr(0,4);
+        var nMonth   = sDate.substr(4,2);
+        var nDate    = ((sDate.substr(6,2) == "") ? 1 : sDate.substr(6,2));
+        var nHours   = ((sDate.substr(8,2) == "") ? 0 : sDate.substr(8,2));
+        var nMinutes = ((sDate.substr(10,2) == "") ? 0 : sDate.substr(10,2));
+        var nSeconds = ((sDate.substr(12,2) == "") ? 0 : sDate.substr(12,2));
+        
+        var objDate = new Date(parseInt(nYear), parseInt(nMonth)-1, parseInt(nDate), parseInt(nHours), parseInt(nMinutes), parseInt(nSeconds));
+    } else {
+        var objDate = new Date(parseInt(nYear), parseInt(nMonth)-1, parseInt(((nDate == null) ? 1 : nDate)));
+    }
+
+    var strYear  = objDate.getYear().toString();
+    var strMonth = (objDate.getMonth() + 1).toString();
+    var strDate  = objDate.getDate().toString();
+
+    if (strMonth.length == 1)  strMonth  = "0" + strMonth;
+    if (strDate.length == 1)   strDate   = "0" + strDate;
+
+    return strYear + strMonth + strDate;
+}
+
+/********************************************************************************
+ * Function Name	: gfnGetDiffDay												*
+ * Desc				: gfnGetDiffDay("20110808", "20111001")						*
+ *					  두 날짜간의 일수를 계산해서 반납						*
+ * Parameter		: sFdate (시작 일자)										*
+ *					  sTdate (종료 일자)										*
+ * Return 			: 양일간의 Day Count										*
+ ********************************************************************************/
+ function gfnGetDiffDay(sFdate, sTdate) {
+	sFdate = new String(sFdate);
+    sFdate = sFdate.replace(" ", "").replace("-", "").replace("/", "");
+    sTdate = new String(sTdate);
+    sTdate = sTdate.replace(" ", "").replace("-", "").replace("/", "");
+
+    sFdate = gfnLeft(sFdate, 8);
+    sTdate = gfnLeft(sTdate, 8);
+    
+    if (sFdate.length != 8 || sTdate.length != 8 
+         || isNumeric(sFdate) == false || isNumeric(sTdate) == false
+         || gfnGetDay(sFdate) == -1 || gfnGetDay(sTdate) == -1) {
+        return null;
+    }
+
+    var nDiffDate = gfnStrToDate(sTdate) - gfnStrToDate(sFdate);
+    var nDay      = 1000*60*60*24;
+    
+    nDiffDate = parseInt(nDiffDate/nDay);
+    if (nDiffDate < 0) {
+        nDiffDate = nDiffDate - 1;
+    } else {
+        nDiffDate = nDiffDate + 1;
+    }
+
+    return nDiffDate;
+}
+
+/********************************************************************************
+ * Function Name	: gfnGetDiffDay												*
+ * Desc				: gfnGetDiffDay("20110808", "20111001")						*
+ *					  두 날짜간의 일수를 계산해서 반납						*
+ * Parameter		: sFdate (시작 일자)										*
+ *					  sTdate (종료 일자)										*
+ * Return 			: 양일간의 Day Count										*
+ ********************************************************************************/
+ function gfnDateCheck(sDate) {
+	sDate = sDate.replace(" ", "").replace("-", "").replace("/", "");
+	
+	if (isNumeric(sDate) == false || gfnGetDay(sDate) == -1) {
+		return false;
+	}
+	var df = "^[0-9]{4}([0]?[1-9]|1[0-2])([0-2]?[1-9]|[3][0-1])$";
+	return sDate.match(df);
+ }
+ 
+/********************************************************************************
+ * Function Name	: gfnGetDay													*
+ * Desc				: 입력된 날짜의 요일을 반납								*
+ * Parameter		: sDate (yyyyMMdd 형태의 날짜 String)						*
+ * Return 			: 0 = 일요일, 1 = 월요일, ..., 6 = 토요일					*
+ *					  -1 = 오류 발생시											*
+ ********************************************************************************/
+function gfnGetDay(sDate) {
+	var objDate = gfnStrToDate(sDate);
+	return objDate.getDay();
+}
+
+/********************************************************************************
+ * Function Name	: gfnStrToDate												*
+ * Desc				: yyyyMMdd 형태의 String을 Date 객체로 변환하는 함수	*
+ * Parameter		: sDate (yyyyMMdd 형태의 날짜 String)						*
+ * Return 			: Date														*
+ ********************************************************************************/
+function gfnStrToDate(sDate) {
+    var nYear  = parseInt(sDate.substr(0, 4));
+    var nMonth = parseInt(sDate.substr(4, 2)) - 1;
+    var nDate  = parseInt(sDate.substr(6, 2));
+
+	return new Date(nYear, nMonth, nDate);
+}
+
+/********************************************************************************
+ * Function Name	: gfnGetDayName												*
+ * Desc				: 입력된 날짜에 해당하는 요일명을 반납					*
+ * Parameter		: sDate (yyyyMMdd 형태의 날짜 String)						*
+ * Return 			: String("일요일, "월요일", ...., "토요일")				*
+ ********************************************************************************/ 
+function gfnGetDayName(sDate) 
+{
+	var objDayName = new Array("일요일", "월요일", "화요일","수요일","목요일", "금요일","토요일");
+	var objDate = gfnGetDay(sDate);
+	
+	return objDayName[objDate];
+}
+
+/********************************************************************************
+ * Function Name	: gfnIsLeapYear												*
+ * Desc				: 윤년 여부를 확인하는 함수								*
+ * Parameter		: sDate (yyyyMMdd 형태의 날짜 String)						*
+ * Return 			: true  = 윤년												*
+ *					  false = 윤년이 아님 or 입력값이 없음					*
+ ********************************************************************************/ 
+function gfnIsLeapYear(sDate)
+{
+    var ret;
+    var nY;
+    
+    if( gfnIsEmpty(sDate) )		return false;
+    
+    nY = parseInt(sDate.substring(0,4), 10);
+
+    if ((nY % 4) == 0) 
+    {
+        if ((nY % 100) != 0 || (nY % 400) == 0) 
+            ret = true;
+        else 
+            ret = false;
+    } 
+    else 
+        ret = false;
+  
+    return ret;
+}
+
+/********************************************************************************
+ * Function Name	: gfnLastDateNum											*
+ * Desc				: 해당 월의 마지막 날짜를 반환							*
+ * Parameter		: sDate (yyyyMMdd 형태의 날짜 String)						*
+ * Return 			: 1, 3, 5, 7, 8, 10, 12월 = 31								*
+ *					  4, 6, 9, 11월 = 30										*
+ *					  2월 = 28 or 29(윤년)										*
+ ********************************************************************************/ 
+function gfnLastDateNum(sDate)
+{
+    var nMonth, nLastDate;
+
+	if( gfnIsEmpty(sDate) )		return -1;
+	
+	nMonth = parseInt(sDate.substr(4,2), 10);
+    if( nMonth == 1 || nMonth == 3 || nMonth == 5 || nMonth == 7  || nMonth == 8 || nMonth == 10 || nMonth == 12 )
+		nLastDate = 31;
+    else if( nMonth == 2 )  
+    {
+        if( gfnIsLeapYear(sDate) == true )
+			nLastDate = 29;
+        else
+			nLastDate = 28;
+    } 
+    else 
+		nLastDate = 30;
+		
+	return nLastDate;
+}
+
+/********************************************************************************
+ * Function Name	: gfnLastDate												*
+ * Desc				: 해당 월의 마지막 날짜를 yyyyMMdd 형태로 반납			*
+ * Parameter		: sDate (yyyyMMdd 형태의 날짜 String)						*
+ * Return 			: String(yyyyMMdd)											*
+ ********************************************************************************/ 
+function gfnLastDate(sDate)
+{
+	if( gfnIsEmpty(sDate) )		return "";
+	
+	var nLastDate = gfnLastDateNum(sDate);
+	
+	return sDate.substr(0,6) + nLastDate.toString();
+}
+
+/********************************************************************************
+ * Function Name	: gfnSolar2Lunar											*
+ * Desc				: 입력일에 해당하는 음력 날짜를 반납하는 함수			*
+ *					  (처리 가능 기간 : 1841 ~ 2043년)						*
+ * Parameter		: sDate (yyyyMMdd 형태의 날짜 String)						*
+ * Return 			: 성공 = Flag(1 Byte) + (yyyyMMdd형태의 음력일자)			*
+ *					  ( Flag : 평달 = "0", 윤달 = "1" )						*
+ *					  실패 = "" ( 1841 ~ 2043 범위 오류시 )					*
+ ********************************************************************************/ 
+function gfnSolar2Lunar(sDate)
+{
+	var sMd = "31,0,31,30,31,30,31,31,30,31,30,31";
+	var aMd = new Array();
+
+	var aBaseInfo = new Array();
+	var aDt = new Array();		// 매년의 음력일수를 저장할 배열 변수
+	var td;					// 음력일을 계산하기 위해 양력일과의 차이를 저장할 변수
+	var td1;					// 1840년까지의 날수
+	var td2;					// 현재까지의 날수
+	var mm;					// 임시변수
+	var nLy, nLm, nLd;			// 계산된 음력 년, 월, 일을 저장할 변수
+	var sLyoon;					// 현재월이 윤달임을 표시
+
+	if( gfnIsEmpty(sDate) )		return "";
+	
+	sY = parseInt(sDate.substr(0,4), 10);
+	sM = parseInt(sDate.substr(4,2), 10);
+	sD = parseInt(sDate.substr(6,2), 10);
+	if( sY < 1841 || sY > 2043 )	return "";
+
+	aBaseInfo = _SolarBase();
+	aMd = sMd.split(",");
+	if( gfnIsLeapYear(sDate) == true )					
+		aMd[1] = 29;
+	else
+		aMd[1] = 28;	
+	
+	td1 = 672069; 				 // 672069 = 1840 * 365 + 1840/4 - 1840/100 + 1840/400 + 23  //1840년까지 날수
+		
+	// 1841년부터 작년까지의 날수
+	td2 = (sY - 1) * 365 + parseInt((sY - 1)/4) - parseInt((sY - 1)/100) + parseInt((sY - 1)/400);
+		
+	// 전월까지의 날수를 더함
+	for( i = 0 ; i <= sM - 2 ; i++ )
+		td2 = td2 + parseInt(aMd[i]);
+
+	// 현재일까지의 날수를 더함
+	td2 = td2 + sD;
+
+	// 양력현재일과 음력 1840년까지의 날수의 차이
+	td = td2 - td1 + 1;
+	
+	// 1841년부터 음력날수를 계산
+	for( i = 0 ; i <= sY - 1841 ; i++ )
+	{
+		aDt[i] = 0;
+		for( j = 0 ; j <= 11 ; j++ )
+		{
+			switch( parseInt(aBaseInfo[i*12 + j]) )
+			{
+				case 1 : mm = 29;
+						break;
+				case 2 : mm = 30;
+						break;				
+				case 3 : mm = 58;	// 29 + 29
+						break;				
+				case 4 : mm = 59;	// 29 + 30
+						break;				
+				case 5 : mm = 59;	// 30 + 29
+						break;				
+				case 6 : mm = 60;	// 30 + 30
+						break;				
+			}
+			aDt[i] = aDt[i] + mm;
+		}
+	}
+		
+	// 1840년 이후의 년도를 계산 - 현재까지의 일수에서 위에서 계산된 1841년부터의 매년 음력일수를 빼가면수 년도를 계산
+	nLy = 0;
+	do
+	{
+		td = td - aDt[nLy];
+		nLy = nLy + 1;
+	}
+	while(td > aDt[nLy]);
+	
+	nLm = 0;
+	sLyoon = "0";			// 현재월이 윤달임을 표시할 변수 - 기본값 평달
+	do
+	{
+		if( parseInt(aBaseInfo[nLy*12 + nLm]) <= 2 )
+		{
+			mm = parseInt(aBaseInfo[nLy*12 + nLm]) + 28;
+			if( td > mm )
+			{
+				td = td - mm;
+				nLm = nLm + 1;
+			}
+			else
+				break;
+		}
+		else
+		{
+			switch( parseInt(aBaseInfo[nLy*12 + nLm]) )
+			{
+				case 3 :
+					m1 = 29;
+					m2 = 29;
+					break;
+				case 4 : 
+					m1 = 29;
+					m2 = 30;
+					break;					
+				case 5 : 
+					m1 = 30;
+					m2 = 29;
+					break;					
+				case 6 : 
+					m1 = 30;
+					m2 = 30;
+					break;					
+			}
+
+			if( td > m1 )
+			{
+				td = td - m1;
+				if( td > m2 )
+				{
+					td = td - m2;
+					nLm = nLm + 1;
+				}
+				else
+				{
+					sLyoon = "1";
+				}
+			}
+			else
+			{
+				break;
+			}
+		}
+	}
+	while(1);
+	
+	nLy = nLy + 1841;
+	nLm = nLm + 1;
+	nLd = td;
+
+	return sLyoon+nLy+gfnRight("0" + nLm, 2)+gfnRight("0" + nLd, 2);
+}
+
+/********************************************************************************
+ * Function Name	: gfnLunar2Solar											*
+ * Desc				: 음력을 양력으로 변환하는 함수							*
+ *					  (처리 가능 기간 : 1841 ~ 2043년)						*
+ * Parameter		: sDate (Flag(1 Byte)+yyyyMMdd형태의 음력일자)			*
+ *					  (예 : "020121122") (Flag : 평달 = "0", 윤달 = "1")		*
+ * Return 			: 성공 = yyyyMMdd형태의 양력일자							*
+ *					  실패 = null 												*
+ *  			  		- 1841 ~ 2043 범위 오류의 경우						*
+ *  		  			- sDate가 9자리가 아닐경우							*
+ *  		  			- sDate의 첫자리 Flag가 "0"도 아니고 "1"도 아닌 경우*
+ ********************************************************************************/ 
+function gfnLunar2Solar(sDate)
+{
+	var sMd = "31,0,31,30,31,30,31,31,30,31,30,31";
+	var aMd = new Array();	
+	var aBaseInfo = new Array();	
+	
+	var nLy, nLm, nLd, sLflag;		// 전해온 음력 인자값을 저장할 년, 월, 일, 윤달여부 임시변수
+	var nSy, nSm, nSd;				// 계산된 양력 년, 월, 일을 저장할 변수
+	var y1, m1, i, j, y2, y3;	// 임시변수	
+	var leap;
+
+	if( gfnIsEmpty(sDate) )			return "";
+	if( sDate.length != 9 )		return "";
+	
+	sLflag = sDate.substr(0,1);
+	nLy = parseInt(sDate.substr(1,4), 10);
+	nLm = parseInt(sDate.substr(5,2), 10);
+	nLd = parseInt(sDate.substr(7,2), 10);
+	if( nLy < 1841 || nLy > 2043 )			return "";
+	if( sLflag != "0" && sLflag != "1" )	return "";
+		
+	aBaseInfo = _SolarBase();
+	aMd = sMd.split(",");
+	if( gfnIsLeapYear(sDate.substr(1,8)) == true )					
+		aMd[1] = 29;
+	else
+		aMd[1] = 28;	
+		
+	y1 = nLy - 1841;
+	m1 = nLm - 1;
+	leap = 0;
+	if( parseInt(aBaseInfo[y1*12 + m1]) > 2 )
+		leap = gfnIsLeapYear(nLy+"0101");
+	
+	if( leap == 1 )
+	{
+		switch( parseInt(aBaseInfo[y1*12 + m1]) )
+		{
+			case 3 : mm = 29;
+					break;
+			case 4 : mm = 30;
+					break;			
+			case 5 : mm = 29;
+					break;			
+			case 6 : mm = 30;
+					break;
+		}
+	}
+	else
+	{
+		switch( parseInt(aBaseInfo[y1*12 + m1]) )
+		{
+			case 1 : mm = 29;
+					break;			
+			case 2 : mm = 30;
+					break;			
+			case 3 : mm = 29;
+					break;			
+			case 4 : mm = 29;
+					break;			
+			case 5 : mm = 30;
+					break;			
+			case 6 : mm = 30;
+					break;			
+		}
+	}
+
+	td = 0;
+	for( i = 0 ; i <= y1 - 1 ; i++ )
+	{
+		for( j = 0 ; j <= 11 ; j++ )
+		{
+			switch( parseInt(aBaseInfo[i*12 + j]) )
+			{
+				case 1 : td = td + 29;
+						break;
+				case 2 : td = td + 30;
+						break;				
+				case 3 : td = td + 58;
+						break;				
+				case 4 : td = td + 59;
+						break;				
+				case 5 : td = td + 59;
+						break;				
+				case 6 : td = td + 60;
+						break;				
+			}
+		}
+	}
+
+	for( j = 0 ; j <= m1 - 1 ; j++ )
+	{
+		switch( parseInt(aBaseInfo[y1*12 + j]) )
+		{
+			case 1 : td = td + 29;
+					break;			
+			case 2 : td = td + 30;
+					break;						
+			case 3 : td = td + 58;
+					break;						
+			case 4 : td = td + 59;
+					break;						
+			case 5 : td = td + 59;
+					break;						
+			case 6 : td = td + 60;
+					break;						
+		}
+	}
+
+	if( leap == 1 )
+	{
+		switch( parseInt(aBaseInfo[y1*12 + m1]) )
+		{
+			case 3 : mm = 29;
+					break;						
+			case 4 : mm = 29;
+					break;						
+			case 5 : mm = 30;
+					break;						
+			case 6 : mm = 30;
+					break;						
+		}
+	}
+	
+	td = td + nLd + 22;
+	
+	if( sLflag == "1" )
+	{
+		switch( parseInt(aBaseInfo[y1*12 + m1]) )
+		{
+			case 3 : td = td + 29;
+					break;						
+			case 4 : td = td + 30;
+					break;						
+			case 5 : td = td + 29;
+					break;						
+			case 6 : td = td + 30;
+					break;						
+		}
+	}
+	
+	y1 = 1840;
+	do
+	{
+		y1 = y1 + 1;
+		leap = gfnIsLeapYear(y1+"0101");
+
+		if( leap == 1 )
+			y2 = 366;
+		else
+			y2 = 365;
+
+		if( td <= y2 )
+			break;
+			
+		td = td - y2;
+	}
+	while(1);
+
+	nSy = y1;
+	aMd[1] = y2 - 337;
+	m1 = 0;
+	do
+	{
+		m1 = m1 + 1;
+		if( td <= parseInt(aMd[m1-1]) )
+			break;
+		td = td - parseInt(aMd[m1-1]);
+	}
+	while(1);
+	
+	nSm = m1;
+	nSd = td;
+	y3 = nSy;
+	td = y3 * 365 + parseInt(y3/4) - parseInt(y3/100) + parseInt(y3/400);
+	for( i = 0 ; i <= nSm - 1 ; i++ )
+		td = td + parseInt(aMd[i]);
+
+	td = td + nSd;
+
+	return y3 + gfnRight("0" + nSm, 2)+gfnRight("0" + nSd, 2);
+}
+
+/********************************************************************************
+ * Function Name	: gfnGetHolidays											*
+ * Desc				: 입력한 년도의 모든 한국 법정 공휴일을 List로 반납	*
+ *					  (처리 가능 기간 : 1841 ~ 2043년)						*
+ * Parameter		: nYear (yyyy 형태의 String)								*
+ * Return 			: 성공 = 공휴일 List Array									*
+						Array[i] = "yyyyMMdd공휴일명" 형태로 저장				*
+ *					  실패 = empty Array										*
+ ********************************************************************************/ 
+function gfnGetHolidays(nYear)
+{
+	var nYear;
+	var aHoliday = new Array();
+
+	if( gfnIsEmpty(nYear) )		return aHoliday;
+	
+	/////// 음력 체크
+	// 구정
+	aHoliday[0] = gfnLunar2Solar( "0" + (nYear) + "0101" ) + "설날";
+	aHoliday[1] = gfnAddDate(aHoliday[0], -1) + "설날";
+	aHoliday[2] = gfnAddDate(aHoliday[0], 1) + "설날";
+	// 석가탄신일
+	aHoliday[3] = gfnLunar2Solar( "0" + nYear + "0408" ) + "석가탄신일";
+	// 추석
+	aHoliday[4] = gfnLunar2Solar( "0" + nYear + "0814" ) + "추석";
+	aHoliday[5] = gfnAddDate(aHoliday[4], 1) + "추석";
+	aHoliday[6] = gfnAddDate(aHoliday[5], 1) + "추석";	
+
+	/////// 양력 체크
+	aHoliday[7] = nYear+"0101" + "신정";
+	aHoliday[8] = nYear+"0301" + "삼일절";
+	aHoliday[9] = nYear+"0505" + "어린이날";	
+	aHoliday[10] = nYear+"0606" + "현충일";		
+	aHoliday[11] = nYear+"0815" + "광복절";
+	aHoliday[12] = nYear+"1003" + "개천절";
+	aHoliday[13] = nYear+"1225" + "성탄절";			
+	
+	return aHoliday.sort();
+}
+
+function gfnIsHoliday(sDate)
+{
+	if(!gfnDateCheck(sDate))
+		return "";
+		
+	var sYear = gfnSubStr(sDate, 0, 4);
+	
+	var aHolidays = gfnGetHolidays(sYear);
+	
+	for(var i = 0 ; i < aHolidays.length ; i++){
+		if(sDate == gfnSubStr(aHolidays[i], 0, 8)){
+			return gfnRight(aHolidays[i], aHolidays[i].length - 8);
+		}
+	}
+	
+	return "";
+}
+
+/********************************************************************************
+ * Function Name	: _SolarBase												*
+ * Desc				: 월별 음력 기준 정보 처리 함수(private function)		*
+ *					  (처리 가능 기간 : 1841 ~ 2043년)						*
+ * Parameter		: 															*
+ * Return 			: 성공 = 음력 기준정보									*
+ ********************************************************************************/
+function _SolarBase()
+{
+	var kk;
+	
+	//1841
+	kk = "1,2,4,1,1,2,1,2,1,2,2,1,";
+	kk += "2,2,1,2,1,1,2,1,2,1,2,1,";
+	kk += "2,2,2,1,2,1,4,1,2,1,2,1,";
+	kk += "2,2,1,2,1,2,1,2,1,2,1,2,";
+	kk += "1,2,1,2,2,1,2,1,2,1,2,1,";
+	kk += "2,1,2,1,5,2,1,2,2,1,2,1,";
+	kk += "2,1,1,2,1,2,1,2,2,2,1,2,";
+	kk += "1,2,1,1,2,1,2,1,2,2,2,1,";
+	kk += "2,1,2,3,2,1,2,1,2,1,2,2,";
+	kk += "2,1,2,1,1,2,1,1,2,2,1,2,";
+	//1851
+	kk += "2,2,1,2,1,1,2,1,2,1,5,2,";
+	kk += "2,1,2,2,1,1,2,1,2,1,1,2,";
+	kk += "2,1,2,2,1,2,1,2,1,2,1,2,";
+	kk += "1,2,1,2,1,2,5,2,1,2,1,2,";
+	kk += "1,1,2,1,2,2,1,2,2,1,2,1,";
+	kk += "2,1,1,2,1,2,1,2,2,2,1,2,";
+	kk += "1,2,1,1,5,2,1,2,1,2,2,2,";
+	kk += "1,2,1,1,2,1,1,2,2,1,2,2,";
+	kk += "2,1,2,1,1,2,1,1,2,1,2,2,";
+	kk += "2,1,6,1,1,2,1,1,2,1,2,2,";
+	//1861
+	kk += "1,2,2,1,2,1,2,1,2,1,1,2,";
+	kk += "2,1,2,1,2,2,1,2,2,3,1,2,";
+	kk += "1,2,2,1,2,1,2,2,1,2,1,2,";
+	kk += "1,1,2,1,2,1,2,2,1,2,2,1,";
+	kk += "2,1,1,2,4,1,2,2,1,2,2,1,";
+	kk += "2,1,1,2,1,1,2,2,1,2,2,2,";
+	kk += "1,2,1,1,2,1,1,2,1,2,2,2,";
+	kk += "1,2,2,3,2,1,1,2,1,2,2,1,";
+	kk += "2,2,2,1,1,2,1,1,2,1,2,1,";
+	kk += "2,2,2,1,2,1,2,1,1,5,2,1,";
+	//1871
+	kk += "2,2,1,2,2,1,2,1,2,1,1,2,";
+	kk += "1,2,1,2,2,1,2,1,2,2,1,2,";
+	kk += "1,1,2,1,2,4,2,1,2,2,1,2,";
+	kk += "1,1,2,1,2,1,2,1,2,2,2,1,";
+	kk += "2,1,1,2,1,1,2,1,2,2,2,1,";
+	kk += "2,2,1,1,5,1,2,1,2,2,1,2,";
+	kk += "2,2,1,1,2,1,1,2,1,2,1,2,";
+	kk += "2,2,1,2,1,2,1,1,2,1,2,1,";
+	kk += "2,2,4,2,1,2,1,1,2,1,2,1,";
+	kk += "2,1,2,2,1,2,2,1,2,1,1,2,";
+	//1881
+	kk += "1,2,1,2,1,2,5,2,2,1,2,1,";
+	kk += "1,2,1,2,1,2,1,2,2,1,2,2,";
+	kk += "1,1,2,1,1,2,1,2,2,2,1,2,";
+	kk += "2,1,1,2,3,2,1,2,2,1,2,2,";
+	kk += "2,1,1,2,1,1,2,1,2,1,2,2,";
+	kk += "2,1,2,1,2,1,1,2,1,2,1,2,";
+	kk += "2,2,1,5,2,1,1,2,1,2,1,2,";
+	kk += "2,1,2,2,1,2,1,1,2,1,2,1,";
+	kk += "2,1,2,2,1,2,1,2,1,2,1,2,";
+	kk += "1,5,2,1,2,2,1,2,1,2,1,2,";
+	//1891
+	kk += "1,2,1,2,1,2,1,2,2,1,2,2,";
+	kk += "1,1,2,1,1,5,2,2,1,2,2,2,";
+	kk += "1,1,2,1,1,2,1,2,1,2,2,2,";
+	kk += "1,2,1,2,1,1,2,1,2,1,2,2,";
+	kk += "2,1,2,1,5,1,2,1,2,1,2,1,";
+	kk += "2,2,2,1,2,1,1,2,1,2,1,2,";
+	kk += "1,2,2,1,2,1,2,1,2,1,2,1,";
+	kk += "2,1,5,2,2,1,2,1,2,1,2,1,";
+	kk += "2,1,2,1,2,1,2,2,1,2,1,2,";
+	kk += "1,2,1,1,2,1,2,5,2,2,1,2,";
+	//1901
+	kk += "1,2,1,1,2,1,2,1,2,2,2,1,";
+	kk += "2,1,2,1,1,2,1,2,1,2,2,2,";
+	kk += "1,2,1,2,3,2,1,1,2,2,1,2,";
+	kk += "2,2,1,2,1,1,2,1,1,2,2,1,";
+	kk += "2,2,1,2,2,1,1,2,1,2,1,2,";
+	kk += "1,2,2,4,1,2,1,2,1,2,1,2,";
+	kk += "1,2,1,2,1,2,2,1,2,1,2,1,";
+	kk += "2,1,1,2,2,1,2,1,2,2,1,2,";
+	kk += "1,5,1,2,1,2,1,2,2,2,1,2,";
+	kk += "1,2,1,1,2,1,2,1,2,2,2,1,";
+	//1911
+	kk += "2,1,2,1,1,5,1,2,2,1,2,2,";
+	kk += "2,1,2,1,1,2,1,1,2,2,1,2,";
+	kk += "2,2,1,2,1,1,2,1,1,2,1,2,";
+	kk += "2,2,1,2,5,1,2,1,2,1,1,2,";
+	kk += "2,1,2,2,1,2,1,2,1,2,1,2,";
+	kk += "1,2,1,2,1,2,2,1,2,1,2,1,";
+	kk += "2,3,2,1,2,2,1,2,2,1,2,1,";
+	kk += "2,1,1,2,1,2,1,2,2,2,1,2,";
+	kk += "1,2,1,1,2,1,5,2,2,1,2,2,";
+	kk += "1,2,1,1,2,1,1,2,2,1,2,2,";
+	//1921
+	kk += "2,1,2,1,1,2,1,1,2,1,2,2,";
+	kk += "2,1,2,2,3,2,1,1,2,1,2,2,";
+	kk += "1,2,2,1,2,1,2,1,2,1,1,2,";
+	kk += "2,1,2,1,2,2,1,2,1,2,1,1,";
+	kk += "2,1,2,5,2,1,2,2,1,2,1,2,";
+	kk += "1,1,2,1,2,1,2,2,1,2,2,1,";
+	kk += "2,1,1,2,1,2,1,2,2,1,2,2,";
+	kk += "1,5,1,2,1,1,2,2,1,2,2,2,";
+	kk += "1,2,1,1,2,1,1,2,1,2,2,2,";
+	kk += "1,2,2,1,1,5,1,2,1,2,2,1,";
+	//1931
+	kk += "2,2,2,1,1,2,1,1,2,1,2,1,";
+	kk += "2,2,2,1,2,1,2,1,1,2,1,2,";
+	kk += "1,2,2,1,6,1,2,1,2,1,1,2,";
+	kk += "1,2,1,2,2,1,2,2,1,2,1,2,";
+	kk += "1,1,2,1,2,1,2,2,1,2,2,1,";
+	kk += "2,1,4,1,2,1,2,1,2,2,2,1,";
+	kk += "2,1,1,2,1,1,2,1,2,2,2,1,";
+	kk += "2,2,1,1,2,1,4,1,2,2,1,2,";
+	kk += "2,2,1,1,2,1,1,2,1,2,1,2,";
+	kk += "2,2,1,2,1,2,1,1,2,1,2,1,";
+	//1941
+	kk += "2,2,1,2,2,4,1,1,2,1,2,1,";
+	kk += "2,1,2,2,1,2,2,1,2,1,1,2,";
+	kk += "1,2,1,2,1,2,2,1,2,2,1,2,";
+	kk += "1,1,2,4,1,2,1,2,2,1,2,2,";
+	kk += "1,1,2,1,1,2,1,2,2,2,1,2,";
+	kk += "2,1,1,2,1,1,2,1,2,2,1,2,";
+	kk += "2,5,1,2,1,1,2,1,2,1,2,2,";
+	kk += "2,1,2,1,2,1,1,2,1,2,1,2,";
+	kk += "2,2,1,2,1,2,3,2,1,2,1,2,";
+	kk += "2,1,2,2,1,2,1,1,2,1,2,1,";
+	//1951
+	kk += "2,1,2,2,1,2,1,2,1,2,1,2,";
+	kk += "1,2,1,2,4,2,1,2,1,2,1,2,";
+	kk += "1,2,1,1,2,2,1,2,2,1,2,2,";
+	kk += "1,1,2,1,1,2,1,2,2,1,2,2,";
+	kk += "2,1,4,1,1,2,1,2,1,2,2,2,";
+	kk += "1,2,1,2,1,1,2,1,2,1,2,2,";
+	kk += "2,1,2,1,2,1,1,5,2,1,2,2,";
+	kk += "1,2,2,1,2,1,1,2,1,2,1,2,";
+	kk += "1,2,2,1,2,1,2,1,2,1,2,1,";
+	kk += "2,1,2,1,2,5,2,1,2,1,2,1,";
+	//1961
+	kk += "2,1,2,1,2,1,2,2,1,2,1,2,";
+	kk += "1,2,1,1,2,1,2,2,1,2,2,1,";
+	kk += "2,1,2,3,2,1,2,1,2,2,2,1,";
+	kk += "2,1,2,1,1,2,1,2,1,2,2,2,";
+	kk += "1,2,1,2,1,1,2,1,1,2,2,1,";
+	kk += "2,2,5,2,1,1,2,1,1,2,2,1,";
+	kk += "2,2,1,2,2,1,1,2,1,2,1,2,";
+	kk += "1,2,2,1,2,1,5,2,1,2,1,2,";
+	kk += "1,2,1,2,1,2,2,1,2,1,2,1,";
+	kk += "2,1,1,2,2,1,2,1,2,2,1,2,";
+	//1971
+	kk += "1,2,1,1,5,2,1,2,2,2,1,2,";
+	kk += "1,2,1,1,2,1,2,1,2,2,2,1,";
+	kk += "2,1,2,1,1,2,1,1,2,2,2,1,";
+	kk += "2,2,1,5,1,2,1,1,2,2,1,2,";
+	kk += "2,2,1,2,1,1,2,1,1,2,1,2,";
+	kk += "2,2,1,2,1,2,1,5,2,1,1,2,";
+	kk += "2,1,2,2,1,2,1,2,1,2,1,1,";
+	kk += "2,2,1,2,1,2,2,1,2,1,2,1,";
+	kk += "2,1,1,2,1,6,1,2,2,1,2,1,";
+	kk += "2,1,1,2,1,2,1,2,2,1,2,2,";
+	//1981
+	kk += "1,2,1,1,2,1,1,2,2,1,2,2,";
+	kk += "2,1,2,3,2,1,1,2,2,1,2,2,";
+	kk += "2,1,2,1,1,2,1,1,2,1,2,2,";
+	kk += "2,1,2,2,1,1,2,1,1,5,2,2,";
+	kk += "1,2,2,1,2,1,2,1,1,2,1,2,";
+	kk += "1,2,2,1,2,2,1,2,1,2,1,1,";
+	kk += "2,1,2,2,1,5,2,2,1,2,1,2,";
+	kk += "1,1,2,1,2,1,2,2,1,2,2,1,";
+	kk += "2,1,1,2,1,2,1,2,2,1,2,2,";
+	kk += "1,2,1,1,5,1,2,1,2,2,2,2,";
+	//1991
+	kk += "1,2,1,1,2,1,1,2,1,2,2,2,";
+	kk += "1,2,2,1,1,2,1,1,2,1,2,2,";
+	kk += "1,2,5,2,1,2,1,1,2,1,2,1,";
+	kk += "2,2,2,1,2,1,2,1,1,2,1,2,";
+	kk += "1,2,2,1,2,2,1,5,2,1,1,2,";
+	kk += "1,2,1,2,2,1,2,1,2,2,1,2,";
+	kk += "1,1,2,1,2,1,2,2,1,2,2,1,";
+	kk += "2,1,1,2,3,2,2,1,2,2,2,1,";
+	kk += "2,1,1,2,1,1,2,1,2,2,2,1,";
+	kk += "2,2,1,1,2,1,1,2,1,2,2,1,";
+	//2001
+	kk += "2,2,2,3,2,1,1,2,1,2,1,2,";
+	kk += "2,2,1,2,1,2,1,1,2,1,2,1,";
+	kk += "2,2,1,2,2,1,2,1,1,2,1,2,";
+	kk += "1,5,2,2,1,2,1,2,2,1,1,2,";
+	kk += "1,2,1,2,1,2,2,1,2,2,1,2,";
+	kk += "1,1,2,1,2,1,5,2,2,1,2,2,";
+	kk += "1,1,2,1,1,2,1,2,2,2,1,2,";
+	kk += "2,1,1,2,1,1,2,1,2,2,1,2,";
+	kk += "2,2,1,1,5,1,2,1,2,1,2,2,";
+	kk += "2,1,2,1,2,1,1,2,1,2,1,2,";
+	//2011
+	kk += "2,1,2,2,1,2,1,1,2,1,2,1,";
+	kk += "2,1,6,2,1,2,1,1,2,1,2,1,";
+	kk += "2,1,2,2,1,2,1,2,1,2,1,2,";
+	kk += "1,2,1,2,1,2,1,2,5,2,1,2,";
+	kk += "1,2,1,1,2,1,2,2,2,1,2,2,";
+	kk += "1,1,2,1,1,2,1,2,2,1,2,2,";
+	kk += "2,1,1,2,3,2,1,2,1,2,2,2,";
+	kk += "1,2,1,2,1,1,2,1,2,1,2,2,";
+	kk += "2,1,2,1,2,1,1,2,1,2,1,2,";
+	kk += "2,1,2,5,2,1,1,2,1,2,1,2,";
+	//2021
+	kk += "1,2,2,1,2,1,2,1,2,1,2,1,";
+	kk += "2,1,2,1,2,2,1,2,1,2,1,2,";
+	kk += "1,5,2,1,2,1,2,2,1,2,1,2,";
+	kk += "1,2,1,1,2,1,2,2,1,2,2,1,";
+	kk += "2,1,2,1,1,5,2,1,2,2,2,1,";
+	kk += "2,1,2,1,1,2,1,2,1,2,2,2,";
+	kk += "1,2,1,2,1,1,2,1,1,2,2,2,";
+	kk += "1,2,2,1,5,1,2,1,1,2,2,1,";
+	kk += "2,2,1,2,2,1,1,2,1,1,2,2,";
+	kk += "1,2,1,2,2,1,2,1,2,1,2,1,";
+	//2031
+	kk += "2,1,5,2,1,2,2,1,2,1,2,1,";
+	kk += "2,1,1,2,1,2,2,1,2,2,1,2,";
+	kk += "1,2,1,1,2,1,5,2,2,2,1,2,";
+	kk += "1,2,1,1,2,1,2,1,2,2,2,1,";
+	kk += "2,1,2,1,1,2,1,1,2,2,1,2,";
+	kk += "2,2,1,2,1,4,1,1,2,1,2,2,";
+	kk += "2,2,1,2,1,1,2,1,1,2,1,2,";
+	kk += "2,2,1,2,1,2,1,2,1,1,2,1,";
+	kk += "2,2,1,2,5,2,1,2,1,2,1,1,";
+	kk += "2,1,2,2,1,2,2,1,2,1,2,1,";
+	//2041
+	kk += "2,1,1,2,1,2,2,1,2,2,1,2,";
+	kk += "1,5,1,2,1,2,1,2,2,2,1,2,";
+	kk += "1,2,1,1,2,1,1,2,2,1,2,2";
+	
+	var arr = new Array();
+	arr = kk.split(",");
+	
+	return arr;
+}
+]]></Script>

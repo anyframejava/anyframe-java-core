@@ -1,0 +1,128 @@
+<chapter id="mip_query_mipuisample_architecture">
+	<title>Architecture</title>
+	
+	<para>
+		For your better understanding of this document, the entire software architecture of MiPlatform UI Sample based on Anyframe is explained as follows.
+	</para>
+	
+	
+	<mediaobject>
+		<imageobject>
+			<imagedata align="center" fileref="../image/mip-query/mipuisample/architecture.png" />
+		</imageobject>
+	</mediaobject>
+	<para>
+		The above architecture is optimized by Common Controller and Common Service, 
+		and the general CRUD works are performed through Common Flow using these works. 
+		If complicated business logic is needed rather than a simple CRUD, 
+		a special service other than common service (e.g., Service A, Service B)is implemented, 
+		For Controllers that are outside of the range of Common Controller, 
+		a special Controller (e.g., Controller A) is implemented and executed. 		
+	</para>
+	<para>
+		As you can see on the figure above, 
+		The presentation layer and business layer based on the Model 2 MVC structure use a common class to enhance the development productivity of each layer. 
+		Therefore, development can be carried out in the following three forms.
+	</para>
+	<para>
+		(1) Develop only UI XML + Query XML for simple CRUD of single table.
+	</para>
+	<para>
+		(2) Develop UI XML + Service + Query XML for functions that have complicated logic.
+	</para>
+	<para>
+		(3) Develop separate Controller + UI XML + Service + Query XML instead of Common Controller 
+		in case of developing web controller that does not have standard interface such as file upload and download.
+	</para>
+	<para>
+		This sample uses (1) for view sample and (3) for user login.
+	</para>
+	
+	<section id="mip_query_mipuisample_architecture_presentation">
+		<title>Presentation Layer</title>
+		<para>
+			Web frame work applied to this sample is in charge of the view of MVC model and the Controller area, 
+			and included in presentation layer. 
+			The following is a description of the setup file structure that is basically needed for framework development.
+		</para>
+		<para>
+			The file setting of web.xml and *-servlet.xml are as follows.
+		</para>
+		<itemizedlist>
+			<listitem>
+				<para>
+					web.xml
+				</para>
+				<para>
+					web.xml is a web application Deployment Descriptor. 
+					It is an XML file that defines how the related web application is distributed on the server in JavaEE environment. 
+					The  web.xml development process related to framework based development is specified in the Anyframe manual. 
+					<ulink url="http://en.anyframejava.org">(http://en.anyframejava.org)</ulink>
+				</para>
+			</listitem>
+			
+			<listitem>
+				<para>
+					common-servlet.xml
+				</para>
+				<para>
+					Each view of this sample uses MiPController which is a Common Controller. 
+					Only the login function creates LoginController, so it is defined in common-servlet.xml. 
+					
+					<programlisting language="xml"><![CDATA[<bean name="/mipController.do"
+        class="org.anyframe.mip.query.web.MiPController">
+</bean>
+<bean name="/mipQueryLogin.do" class="org.anyframe.plugin.mip.query.security.web.LoginController" />]]></programlisting>
+					As seen in the above definition of Controller, in case of the simple CRUD function, 
+					a separate Controller does not have to be implemented and MiPController can be used. 
+					However, if a separate interface with UI such as file upload/download is formed 
+					or a function that is not supported by MiPController is added, 
+					a Controller can be newly developed if needed by developer through inheriting AbstractMiPController or
+					AbstractMiPDispatchController. LoginController presented in this sample is an example. 
+				</para>
+			</listitem>
+		</itemizedlist>
+	</section>
+	
+	<section id="mip_query_mipuisample_architecture_business">
+		<title>Business Layer</title>
+		<para>
+			This sample is implemented based on Anyframe Ria MiPlatform which is a common MiPlatform connection model provided by Anyframe, 
+			so only class for login exists in the layer. 
+			Therefore, in this chapter, only the basic structure of file setting needed for using Anyframe Ria MiPlatform will be introduced.
+		</para>
+		<para>
+			The main setup files are the following.
+		</para>
+		<itemizedlist>
+			<listitem>
+				<para>
+					mapping-xxx-xxx.xml
+				</para>
+				<para>
+					File to define query that needs to be executed for using QueryService. 
+					Refer to the Anyframe manual for the development process. 
+					<ulink url="http://en.anyframejava.org">(http://en.anyframejava.org)</ulink>
+				</para>
+			</listitem>
+			<listitem>
+				<para>
+				5 	context-miplatform.xml
+				</para>
+				<para>
+					context-xxx.xml is bean definition file managed by Spring. 
+					context-miplatform.xml defines bean for Common Service and Common Dao of Anyframe Ria MiPlatform.
+					<programlisting language="xml"><![CDATA[<bean name=" mipService"
+        class="org.anyframe.mip.query.service.impl.MiPServiceImpl">
+    <constructor-arg ref="mipDao"/>
+</bean>	
+<bean name="mipDao"
+        class="org.anyframe.mip.query.dao.impl.MiPDaoQuery">
+    <constructor-arg ref="mipQueryService"/>
+</bean>]]></programlisting>
+				</para>
+			</listitem>
+		</itemizedlist>
+		
+	</section>
+</chapter>

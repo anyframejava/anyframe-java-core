@@ -1,0 +1,122 @@
+<chapter id="core_logging_logging">
+	<title>Logging</title>
+    <para>
+    	로그의 내용에 따라 다양한 레벨(DEBUG, INFO, WARN, ERROR, FATAL)로 선택 가능하다. 각각은 메소드
+    	debug(), info(), warn(), error(), fatao()라는 5가지 메소드를 이용해서 로그를 남길 수 있다. 다만
+    	이때 Logger에 지정된 로그 레벨이 있다면, 지정된 로그 레벨 이하의 로깅 이벤트는 무시된다. 따라서 로그도 남지 않는다. 또한,
+    	로그 메시지는 별도 Resource 파일에 정의된 message key를 이용하여 남기면 메시지 변경 및 다국어 지원이 용이하다.
+    	다음에서는 로그 메시지를 남기기 위한 <link linkend="core_logging_logging_basic">기본
+    	방법</link> 과 <link linkend="core_logging_logging_resourcebundle">ResourceBundle</link>을 이용하는
+		방법 에 대해서 알아보고자 한다.
+    </para>
+
+	<section id="core_logging_logging_basic">
+      	<title>기본적인 사용 방법</title>
+
+      	<para>
+      		다음은 기본적인 방법을 사용하여 로그 메시지를 남기는 MovieServiceImpl.java 코드의 일부이다.
+      		<programlisting language="java"><![CDATA[/**
+ * src/main/resources/log4j.xml 파일 설정에 따라 Logger명이
+ * org.anyframe.sample.logging 패키지에 해당하는 Logger를 찾고,
+ * 해당 Logger를 통해 로그 메시지를 남겨보는 테스트
+ */
+@Service("movieService")
+public class MovieServiceImpl implements MovieService {
+
+    public void create(Movie movie) throws Exception {
+        MovieService.LOGGER.debug("DEBUG - call create");
+        MovieService.LOGGER.warn("WARNING - call create");
+        MovieService.LOGGER.error("ERROR - call create");
+        movieDao.create(movie);
+    }
+
+    public Movie get() throws Exception {
+        MovieService.LOGGER.debug("DEBUG - call get");
+        MovieService.LOGGER.warn("WARNING - call get");
+        MovieService.LOGGER.error("ERROR - call get");
+        return movieDao.get();
+    }
+}]]></programlisting>
+      	</para>
+	</section>
+
+	<section id="core_logging_logging_resourcebundle">
+      	<title>ResourceBundle을 이용하는 방법</title>
+
+      	<para>
+      		특정 서비스의 구현 클래스에서 ResourceBundle을 이용하여 로그 메시지를 남기기 위해서는 다음과 같은 절차를
+      		따르도록 한다.
+      	</para>
+
+      	<para>
+      		<emphasis role="bold">1. ResourceBundle을 관리하는 기능을 제공하는 MessageSource 
+      		Bean을 정의한다.</emphasis>
+      	</para>
+
+      	<para>
+      		다음은 MessageSource Bean을 정의하고 있는 context-common.xml 파일의
+      		일부이다.
+      		<programlisting language="xml"><![CDATA[<bean name="messageSource" 
+        class="org.springframework.context.support.ReloadableResourceBundleMessageSource">
+    <property name="basenames">
+        <list>
+            <!-- 중략 -->
+            <value>message/message-sample</value>
+        </list>
+        <!-- 중략 -->
+    </property>
+</bean>]]></programlisting>
+      	</para>
+
+		<para>
+      		<emphasis role="bold">2. 특정 서비스의 구현 클래스는 MessageSource Bean을 인식하기
+     	 	위하여 implements ApplicationContextAware해야 한다.</emphasis>
+      	</para>
+
+      	<para>
+			다음은 MessageSource Bean을 이용하여 로그 메시지를 남기는
+      		MovieServiceImpl.java 의 일부 코드이다. 
+      		<programlisting language="java">public class MovieServiceImpl implements MovieService{
+    @Inject
+    private MessageSource messageSource;
+    // 중략
+}        </programlisting>
+      	</para>
+
+		<para>
+      		<emphasis role="bold">3. Logging Service를 이용하여 로그를 남길 때 MessageSource Bean을 이용한다.</emphasis>
+		</para>
+
+		<para>
+      		다음은 Service 구현 클래스에서 사용할 Logger를 정의한 인터페이스 클래스
+      		MovieService.java 코드이다. 
+      		<programlisting language="java">public interface MovieService {
+    // MovieServiceImpl에서 사용할 Logger 정의
+    <emphasis role="bold">Log LOGGER = LogFactory.getLogger(MovieService.class);</emphasis>
+    String greet();
+}       </programlisting>
+		</para>
+
+		<para>
+			다음은 ResourceBundle을 이용하여 로그 메시지를 남기는 구현 클래스
+      		MovieServiceImpl.java 의 일부 코드이다. 
+      		<programlisting language="java">public void greet() {
+    // ResourceBundle을 이용하여 로그 메시지를 남긴다. (argument가 없는 경우)
+    <emphasis role="bold">MovieService.LOGGER.debug(messageSource.getMessage(</emphasis>
+        <emphasis role="bold">"sample.default.msg", new String[] {}, Locale.getDefault()));</emphasis>
+    // ResourceBundle을 이용하여 로그 메시지를 남긴다. (argument가 1개인 경우)
+    <emphasis role="bold">MovieService.LOGGER.debug(messageSource.getMessage(</emphasis>
+        <emphasis role="bold">"sample.msg", new String[] { "Anyframe" }, Locale.getDefault()));</emphasis>
+}        </programlisting>
+		</para>
+
+		<para>
+			* 위의 코드에서 참조하고 있는 Resource 파일 message-sample.properties 의 내용은 다음과
+      		같이 key=value 형태로 정의한다. 
+      		<programlisting><emphasis role="bold">sample.default.msg=Hello Guest</emphasis>
+<emphasis role="bold">sample.msg=Hello {0}</emphasis></programlisting>
+		</para>
+    </section>
+</chapter>
+
+

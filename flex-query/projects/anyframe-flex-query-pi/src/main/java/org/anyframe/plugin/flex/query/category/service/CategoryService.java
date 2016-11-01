@@ -15,7 +15,6 @@
  */
 package org.anyframe.plugin.flex.query.category.service;
 
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
@@ -35,5 +34,6 @@ public interface CategoryService{
 	
 	int remove(Category category) throws Exception;
 	
-	Map<String, Integer> saveAll(ArrayList<Category> arrayList) throws Exception;
+	Map<String, Integer> saveAll(List<Category> list) throws Exception;
+	
 }

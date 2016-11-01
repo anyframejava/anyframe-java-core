@@ -1,0 +1,67 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<queryservice xmlns="http://www.anyframejava.org/schema/query/mapping" 
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" 
+	xsi:schemaLocation="http://www.anyframejava.org/schema/query/mapping http://www.anyframejava.org/schema/query/mapping/anyframe-query-mapping-1.0.xsd ">
+
+	<queries>
+		<query id="createMovie" isDynamic="true" mappingStyle="upper">
+			<statement>
+				INSERT INTO 
+				MOVIE (MOVIE_ID, TITLE, DIRECTOR, GENRE_ID, ACTORS, RUNTIME, RELEASE_DATE, TICKET_PRICE, NOW_PLAYING, POSTER_FILE)
+				VALUES (:MOVIE_ID, :TITLE, :DIRECTOR, :GENRE_ID, :ACTORS, :RUNTIME, :RELEASE_DATE, :TICKET_PRICE, :NOW_PLAYING, :POSTER_FILE)
+			</statement>
+		</query>
+
+		<query id="updateMovie" isDynamic="true" mappingStyle="upper">
+			<statement>
+				UPDATE MOVIE
+				SET 
+					TITLE = :TITLE, 
+					DIRECTOR = :DIRECTOR,
+					GENRE_ID = :GENRE_ID, 
+					ACTORS = :ACTORS, 
+					RUNTIME = :RUNTIME, 
+					RELEASE_DATE = :RELEASE_DATE,   
+					TICKET_PRICE = :TICKET_PRICE, 
+					NOW_PLAYING = :NOW_PLAYING
+				WHERE
+					MOVIE_ID = :MOVIE_ID
+			</statement>
+		</query>
+
+		<query id="removeMovie" isDynamic="true" mappingStyle="upper">
+			<statement>
+				DELETE FROM MOVIE 
+				WHERE 
+					MOVIE_ID = :MOVIE_ID
+			</statement>
+		</query>
+
+		<query id="findMovieByPk" isDynamic="true" mappingStyle="upper">
+			<statement>
+				SELECT 
+					MOVIE_ID, TITLE, DIRECTOR, GENRE_ID, ACTORS, RUNTIME, RELEASE_DATE, TICKET_PRICE, NOW_PLAYING, POSTER_FILE
+				FROM MOVIE
+				WHERE 
+					MOVIE_ID = :MOVIE_ID
+			</statement>
+		</query>
+
+		<query id="findMovieList" isDynamic="true" mappingStyle="upper">
+			<statement>
+				<!--mip-query-findMovieList-START-->
+				SELECT 
+					MOVIE_ID, TITLE, DIRECTOR, GENRE_ID, ACTORS, RUNTIME, RELEASE_DATE, TICKET_PRICE, NOW_PLAYING, POSTER_FILE
+				FROM MOVIE
+				WHERE 		
+					TITLE like '%' || :SEARCH_TITLE || '%'
+					AND	NOW_PLAYING = :SEARCH_NOW_PLAYING 
+				ORDER BY RELEASE_DATE DESC
+				<!--mip-query-findMovieList-END-->
+			</statement>
+		</query>
+	</queries>
+</queryservice>
+
+
+

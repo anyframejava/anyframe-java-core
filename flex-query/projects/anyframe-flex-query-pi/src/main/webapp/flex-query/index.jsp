@@ -17,7 +17,7 @@ function openFlexWindows(){
 <div class="highlight">
 <h1>Anyframe Flex Query Plugin</h1>
 <p>Anyframe Flex Query Plugin은 Flex UI Sample Application과 Spring BlazeDS Integration의 주요 기능을 테스트 하기위한 Test Drive Application으로 구성되어 있습니다.</br>
-Test Drive는 <a href="http://static.springsource.org/spring-flex/docs/1.5.x/reference/html/ch06.html">Spring BlazeDs Integration Test Drive</a>를 Anyframe의 FlexService, QueryService를 사용해 수정했습니다.</p>
+Test Drive는 <a href="http://static.springsource.org/spring-flex/docs/1.5.x/reference/html/">Spring BlazeDs Integration Test Drive</a>를 Anyframe의 FlexService, QueryService를 사용해 수정했습니다.</p>
 </div>
 </br>
 <div class="highlight">

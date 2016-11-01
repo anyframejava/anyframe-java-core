@@ -15,7 +15,6 @@
  */
 package org.anyframe.plugin.flex.query.dept.service.impl;
 
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
@@ -40,17 +39,15 @@ public class DeptServiceImpl implements DeptService {
 	@Named("deptDao")
 	private DeptDao deptDao;
 
-	@SuppressWarnings("unchecked")
 	public List<Dept> getTree(SearchVO searchVO) throws Exception {
-		
 		searchVO.setSearchCondition("Group");
-		List groupList = deptDao.getTree(searchVO);
+		List<Dept> groupList = deptDao.getTree(searchVO);
 		
 		for ( int i = 0 ; i < groupList.size() ; i ++ ){
 			Dept group = (Dept) groupList.get(i);
 			searchVO.setSearchCondition("Team");
 			searchVO.setSearchKeyword(group.getDeptId());
-			List teamList = deptDao.getTree(searchVO);
+			List<Dept> teamList = deptDao.getTree(searchVO);
 			group.setChildren(teamList);
 		}
 		return groupList;
@@ -72,11 +69,12 @@ public class DeptServiceImpl implements DeptService {
 		return deptDao.remove(dept);
 	}
 
-	public Map<String, Integer> saveAll(ArrayList<Dept> arrayList) throws Exception {
-		return deptDao.saveAll(arrayList);
+	public Map<String, Integer> saveAll(List<Dept> list) throws Exception {
+		return deptDao.saveAll(list);
 	}
 	
 	public List<Dept> getList(SearchVO searchVO) throws Exception{
 		return deptDao.getList(searchVO);
 	}
+	
 }

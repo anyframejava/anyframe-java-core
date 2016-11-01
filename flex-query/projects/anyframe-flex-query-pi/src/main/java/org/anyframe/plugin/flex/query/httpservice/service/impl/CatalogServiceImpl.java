@@ -17,6 +17,7 @@ package org.anyframe.plugin.flex.query.httpservice.service.impl;
 
 import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import javax.inject.Inject;
 import javax.inject.Named;
@@ -26,15 +27,16 @@ import org.anyframe.plugin.flex.query.httpservice.service.CatalogService;
 import org.springframework.stereotype.Service;
 
 @Service("catalogService")
-public class CatalogServiceImpl implements CatalogService{
+public class CatalogServiceImpl implements CatalogService {
 
 	@Inject
 	@Named("flexDao")
 	private FlexDao flexDao;
-	
-	@SuppressWarnings("unchecked")
-	public List getProduct() throws Exception {
-		return (List) flexDao.getList("findFlexQueryProductList", new HashMap());
+
+	public List<Map<String, Object>> getProduct() throws Exception {
+		List<Map<String, Object>> results = flexDao.getList(
+				"findFlexQueryProductList", new HashMap<String, Object>());
+		return results;
 	}
 
 }

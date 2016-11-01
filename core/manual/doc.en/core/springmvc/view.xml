@@ -1,0 +1,407 @@
+<chapter id="core_springmvc_view">
+	<title>View</title>
+	<para>
+		Spring MVC provides Tag Library so that data can be shown more easily in JSP, 
+		and provides ways to integrate with various View technology (Velocity, Freemarker, Tiles, etc.)
+		Here, we will describe how to integrate Spring Form Tag and Tiles.
+	</para>
+	
+	<section id="core_springmvc_view_springformtag">
+		<title>Tag library</title>
+		
+		<para>
+			Spring MVC provides Spring Form Tag to implement input form more easily. 
+			This can access command object and controller reference data in tag. 
+			Using Spring Form Tag is very simple. Let's take a look at the contents of each tag through the example.
+		</para>
+		
+		<section id="core_springmvc_view_springformtag_conf">
+			<title>configuration</title>
+			
+			<para>
+				To use Spring Form Tag spring-form.tld file is needed. This file is included in spring-webmvc-x.x.x.jar file. 
+				To use this form tag, add taglib to JSP page. 
+				<programlisting language="xml">&lt;%@ taglib prefix="form" uri="http://www.springframework.org/tags/form" %&gt;</programlisting>
+			</para>
+		</section>
+		
+		<section id="core_springmvc_view_springformtag_form">
+			<title>form</title>
+			<para>
+				<![CDATA[<form>]]> can define the binding path in tag for data binding. 
+				Path value refers to the bean object of domain model. An example of how to use it is as follows. 
+				<programlisting language="xml"><![CDATA[<form:form commandName="user">
+    userId : <form:input path="userId"/>
+</form:form>]]></programlisting>
+			</para>
+			
+			<para>
+				To use Spring Form tag, transfer object to match with path value should be defined. 
+				It can be defined in <![CDATA[<form>]]> as commandName property. 
+				<programlisting language="xml"><![CDATA[<% request.setAttribute("user", sample.services.UserVO())>]]></programlisting>
+			</para>
+
+      		<para>
+      			This commandName basic value is "command", 
+      			and the transfer object to match with input value should be set as request value. 
+      			This value can be defined in formBackingObject() method when using SimpleFormController. 
+      			<programlisting language="java">protected Object formBackingObject(HttpServletRequest request)
+    throws Exception {
+    <emphasis role="bold">UserVO vo=new UserVO();</emphasis>
+    <emphasis role="bold">request.setAttribute</emphasis>("<emphasis
+            role="bold">user</emphasis>",<emphasis role="bold">vo</emphasis>);
+    return new UserVO();
+}
+</programlisting>
+			</para>
+    	</section>
+
+    	<section id="core_springmvc_view_springformtag_input">
+    		<title>input</title>
+    		<para>
+    		Basic value is HTML <![CDATA[<input>]]> value that is text. 
+    		The example of this tag can be seen from the above <![CDATA[<form>]]> example.
+    		</para> 
+    	</section>
+    	
+    	<section id="core_springmvc_view_springformtag_checkbox">
+    		<title>checkbox</title>
+    		<para>
+    			The following is an example of <![CDATA[<checkbox>]]>. 
+    			If you map bean name of transfer object in path, 
+    			name to be shown in JSP page can be set using label property. 
+    			<programlisting language="xml">&lt;form:checkbox path="hobby" value="listeningMusic" label="listening to music"/&gt;
+&lt;form:checkbox path="hobby" value="study" label="study"/&gt;</programlisting>
+			</para>
+			
+			<para>※ The above code shows the below view.</para>
+			
+			<mediaobject>
+				<imageobject>
+					<imagedata align="center" fileref="../image/core/springmvc/formtag2.jpg" />
+				</imageobject>
+			</mediaobject>
+		</section>
+		
+		<section id="core_springmvc_view_springformtag_checkboxes">
+			<title>checkboxes</title>
+			<para>
+				The above <![CDATA[<checkbox>]]> should be developed for each item, 
+				but can be shown in one line with items property using <![CDATA[<checkboxes>]]>. 
+				Value to be put in items can be passed in Array, List, Map format in formBackingObject() method. 
+				When passed in key of map and value pair, the key becomes the tag value and the value becomes the label name. 
+				(However, when sent as Array or List, label value is the same with value.) 
+				The following is an example.
+				<programlisting language="java">protected Object formBackingObject(HttpServletRequest request) throws Exception {
+    UserVO vo = new UserVO();
+    <emphasis role="bold"><![CDATA[Map<String, String> interest = new HashMap<String, String>()]]>;
+    interest.put("reading", "reading");
+    interest.put("listeningMusic", "listening to music");
+    interest.put("study", "studying");
+    request.setAttribute("interest", interest);
+    request.setAttribute("user", vo);</emphasis>
+    return new UserVO();
+}
+</programlisting>
+			</para>
+			
+			<programlisting language="xml"><![CDATA[<tr>
+    <td>hobby :</td>
+    <td><form:checkboxes path="hobby" items="${interest}" /></td>
+</tr>]]></programlisting>
+
+      		<para>※ The above code shows the below view.</para>
+
+      		<mediaobject>
+        		<imageobject>
+          			<imagedata align="center" fileref="../image/core/springmvc/formtag3.jpg" />
+        		</imageobject>
+      		</mediaobject>
+    	</section>
+
+    	<section id="core_springmvc_view_springformtag_radiobutton">
+    		<title>radiobutton</title>
+    	
+    		<para>
+	      		The following is an example of <![CDATA[<radiobutton>]]>. 
+	      		<![CDATA[<radiobutton>]]> can also set label name using label property.
+	      		<programlisting language="xml"><![CDATA[<tr>
+    <td>Gender:</td>
+    <td>Male: <form:radiobutton path="gender" value="M" label="male"/> <br/>
+        Female: <form:radiobutton path="gender" value="F" label="female"/> </td>
+</tr>]]></programlisting>
+			</para>
+			
+			<mediaobject>
+				<imageobject>
+					<imagedata align="center" fileref="../image/core/springmvc/formtag4.jpg" />
+				</imageobject>
+			</mediaobject>
+		</section>
+
+    	<section id="core_springmvc_view_springformtag_radiobuttons">
+	    	<title>radiobuttons</title>
+	    	
+	    	<para>
+	    		The following is an example of <![CDATA[<radiobuttons>]]>. 
+	    		items property is used in the same way as the <![CDATA[<checkboxes>]]> above. 
+	    		<programlisting language="xml"><![CDATA[<tr>
+    <td>Gender:</td>
+    <td><form:radiobuttons path="gender" items="${genderOptions}"/></td>
+</tr>]]></programlisting>
+			</para>
+    	</section>
+
+    	<section id="core_springmvc_view_springformtag_password">
+	    	<title>password</title>
+	    	<para>
+	    		The following is an example of <![CDATA[<password>]]>.
+	    		<programlisting language="xml"><![CDATA[<tr>
+    <td>password :</td>
+    <td><form:password path="password" /></td>
+</tr>]]></programlisting>
+			</para>
+			
+			<para>※ The above code shows the below view.</para>
+		
+			<mediaobject>
+				<imageobject>
+					<imagedata align="center" fileref="../image/core/springmvc/formtag8.jpg" />
+				</imageobject>
+			</mediaobject>
+		</section>
+	
+	    <section id="core_springmvc_view_springformtag_select">
+	    	<title>select</title>
+			<para>
+				<![CDATA[<select>]]> can also use items property for automatic mapping with the value returned from formBackingObject 
+				like the above <![CDATA[<checkboxes>]]> or <![CDATA[<radiobuttons>]]>.
+				<programlisting language="java">protected Object formBackingObject(HttpServletRequest request)
+                throws Exception {
+    UserVO vo = new UserVO();
+    <emphasis role="bold"><![CDATA[Map<String, String> address = new HashMap<String, String>()]]>;
+    address.put("seoul", "Seoul");
+    address.put("daegu", "Daegu");
+    address.put("busan", "Busan");
+    request.setAttribute("address", address);
+    request.setAttribute("user", vo);</emphasis>
+    
+	return new UserVO();
+}
+</programlisting>
+			</para>
+
+			<programlisting language="xml"><![CDATA[<tr>
+    <td>Address</td>
+    <td><form:select path="address" items="${address}" /></td>
+</tr>]]></programlisting>
+
+			<para>※ The above code shows the below view.</para>
+		
+			<mediaobject>
+				<imageobject>
+					<imagedata align="center" fileref="../image/core/springmvc/formtag6.jpg" />
+				</imageobject>
+			</mediaobject>
+	
+			<para>
+				Can be used as below along with general <![CDATA[<option>]]>.
+			</para>
+		</section>
+	
+	    <section id="core_springmvc_view_springformtag_option">
+	    	<title>option</title>
+			<para>
+				The following is an example on how to use <![CDATA[<option>]]>.
+				<programlisting language="xml"><![CDATA[<tr>
+    <td>Address</td>
+    <td><form:select path="address">
+        <form:option value="seoul" label="Seoul" />
+        <form:option value="daegu" label="Daegu" />
+        <form:option value="busan" label="Busan" />
+    </form:select></td>
+</tr>]]></programlisting>
+			</para>
+	    </section>
+	
+	    <section id="core_springmvc_view_springformtag_options">
+	    	<title>options</title>
+	    	<para>
+	      		The following is an example of <![CDATA[<options>]]>.
+      			<programlisting language="xml"><![CDATA[<tr>
+    <td>Address</td>
+    <td><form:select path="address">
+        <form:options items="${address}" />
+    </form:select></td>
+</tr>]]></programlisting>
+			</para>
+	    </section>
+	
+	    <section id="core_springmvc_view_springformtag_textarea">
+	    	<title>textarea</title>
+	    	<para>
+	    		The following is an example of <![CDATA[<textarea>]]>.
+	    		<programlisting language="xml"><![CDATA[<td>Note :</td>
+<td><form:textarea path="comment" rows="3" cols="20"></form:textarea></td>]]></programlisting>
+			</para>
+			
+			<mediaobject>
+				<imageobject>
+					<imagedata align="center" fileref="../image/core/springmvc/formtag7.jpg" />
+				</imageobject>
+			</mediaobject>
+	    </section>
+	
+	    <section id="core_springmvc_view_springformtag_hidden">
+	    	<title>hidden</title>
+	    	<para>
+	    		The following is an example of <![CDATA[<hidden>]]>.
+	    		<programlisting language="xml"><![CDATA[<form:hidden path="userId" />]]></programlisting>
+	    	</para>
+	    </section>
+
+	    <section id="core_springmvc_view_springformtag_errors">
+	    	<title>errors</title>
+	
+			<para>
+		    Spring MVC provides <![CDATA[<form:errors>]]> of Spring Form tag 
+			so that message got from validator can be easily shown on jsp page. 
+			For more information on showing error message after validation check of input value through created validator, 
+			refer to <link linkend="core_springmvc_validation_validator_taglibrary">Spring MVC >> Validation >> Spring Validator >> Use <![CDATA[<form:errors>]]> tag</link> 
+			in this manual.
+			</para>
+		</section>
+	
+	    <section id="core_springmvc_view_springformtag_sample">
+	    	<title>sample</title>
+	    	
+	    	<section id="core_springmvc_view_springformtag_sample_formview">
+	    		<title>Input view</title>
+	    		
+	    		<para>
+	    			The following is a part of userForm.jsp file, a sample for input view development.
+	    			<programlisting language="xml"><![CDATA[<%@ taglib prefix="form" uri="http://www.springframework.org/tags/form"%>
+<form:form commandName="users" name="form" enctype="multipart/form-data">
+    <table>
+    <tr><td colspan="3"><center><strong>
+        <spring:message code="title.user.form"></spring:message>
+    </strong></center><br/><br/></td></tr>
+        <tr>
+            <td> Name :</td>
+            <td><form:input path="userName" />(required)</td>
+            <td><form:errors path="userName" /></td>
+        </tr>
+        <tr>
+            <td>password :</td>
+            <td><form:password path="password" />(required, enter more than 6 characters.)</td>
+            <td><form:errors path="password" /></td>
+        </tr>
+        <tr>
+            <td>confirm password :</td>
+            <td><form:password path="confirmPassword" />(should be the same as the above password.)</td>
+            <td><form:errors path="confirmPassword" /></td>
+        </tr>
+        <tr>
+            <td>sex :</td>
+            <td><form:radiobutton path="sex" value="M" label="male" /> 
+            <form:radiobutton path="sex" value="F" label="female" /></td>
+        </tr>
+        <tr>
+            <td>address :</td>
+            <!-- Use items property to get the map format object 
+            returned from formbackingObject() of controller, and show. -->
+            <td><form:select path="address" items="${address}"/>
+        </tr>
+        <tr>
+            <td>hobby :</td>
+            <td><form:checkboxes path="hobby" items="${hobby}" /></td>
+        </tr>
+        <tr>
+            <td>Note :</td>
+            <td><form:textarea path="comment" rows="3" cols="20"></form:textarea></td>
+        </tr>
+    </table>
+    <a href="javascript:fncGetUser();">submit</a>
+</form:form>]]></programlisting>
+				</para>
+			</section>
+			
+			<section id="core_springmvc_view_springformtag_sample_controller">
+				<title>Controller class</title>
+				
+				<para>
+					The following is a part of onSubmit() method which sets formBackingObjet() method of UserController.java file that 
+					sets object to be used in Form, and request handling result in model object, and transfers to view. 
+					<programlisting language="java">public class <emphasis role="bold">UserController</emphasis> extends SimpleFormController {
+    ...
+    // setting command class for data binding
+    public UserController() {
+        setCommandClass(UserVO.class);
+        //Becomes commandName to be used in form tag.
+        setCommandName("<emphasis role="bold">users</emphasis>"); 
+        setFormView("/jsp/user/userForm.jsp");
+    }
+
+    // override onSubmit() method.
+    protected ModelAndView onSubmit(Object command) throws Exception {
+        // data binding using command object
+        UserVO userVO = (UserVO) command;
+
+        // call business service
+        userVO = userService.getUser(userVO);
+        // setting view name
+        ModelAndView mav = new ModelAndView("/jsp/user/getUser.jsp");
+        //Transfer model object called "userVO" to view.
+        <emphasis role="bold">mav.addObject</emphasis>(<emphasis role="bold">userVO</emphasis>);
+        // return a ModelAndView object.
+        return mav;
+    }
+
+    protected Object formBackingObject(HttpServletRequest request)
+            throws Exception {
+        <![CDATA[Map<String, String> address = new HashMap<String, String>();]]>
+        address.put("seoul", "Seoul");
+        address.put("daegu", "Daegu");
+        address.put("busan", "Busan");
+
+        <![CDATA[Map<String, String> hobby = new HashMap<String, String>();]]>
+        hobby.put("reading", "reading");
+        hobby.put("listeningMusic", "listening to music");
+        hobby.put("study", "studying");
+        
+        request.setAttribute("address", address);
+        request.setAttribute("hobby", hobby);
+        
+        //Return value is set in "users" which is commandName.
+        return new UserVO();
+    }
+}</programlisting>
+				</para>
+			</section>
+			
+			<section id="core_springmvc_view_springformtag_sample_output">
+				<title>View</title>
+				
+				<para>
+					The following is a part of getUser.jsp file that has developed data view that uses EL statement.
+					<programlisting language="xml"><![CDATA[<tr><td>User Name : </td><td>${userVO.userName}</td></tr>
+<tr><td>User Password : </td><td>${userVO.password}</td></tr>
+<tr><td>User Address : </td><td>${userVO.address}</td></tr>
+<tr><td>User hobby : </td><td>${userVO.hobby}</td></tr>]]></programlisting>
+				</para>
+				
+				<para>
+					Like the above JSP code, you can use Expression Language(supported by JSP 2.0) to show the model object 
+					named "userVO" returned from controller.
+				</para>
+			</section>
+		</section>
+	</section>
+	
+	<section id="core_springmvc_view_tilesintegration">
+    	<title>Tiles Integration</title>
+    	<para>
+    		Refer to <ulink url="http://dev.anyframejava.org/docs.en/anyframe/plugin/optional/tiles/1.0.0/reference/htmlsingle/tiles.html">Tiles Plugin manual</ulink>. 
+    	</para>
+	</section>
+</chapter>

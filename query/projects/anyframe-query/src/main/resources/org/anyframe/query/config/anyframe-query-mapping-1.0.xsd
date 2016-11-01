@@ -1,0 +1,272 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+
+<xsd:schema xmlns="http://www.anyframejava.org/schema/query/mapping"
+		xmlns:xsd="http://www.w3.org/2001/XMLSchema"
+		targetNamespace="http://www.anyframejava.org/schema/query/mapping">
+		
+	<!-- Top-level <queryservice> tag -->
+	<xsd:element name="queryservice">
+		<xsd:complexType>
+			<xsd:sequence>
+				<xsd:element ref="table-mapping" minOccurs="0" maxOccurs="1"/>	
+				<xsd:element ref="queries" minOccurs="0" maxOccurs="1"/>					
+			</xsd:sequence>
+		</xsd:complexType>
+	</xsd:element>
+	
+	<!-- <table-mapping> tag -->
+	<xsd:element name="table-mapping">
+		<xsd:complexType>
+			<xsd:sequence minOccurs="0" maxOccurs="unbounded">
+				<xsd:element ref="table"/>
+			</xsd:sequence>
+		</xsd:complexType>
+	</xsd:element>
+	
+	<!-- <table> tag -->
+	<xsd:element name="table">
+		<xsd:annotation>
+			<xsd:documentation>
+			Define mapping information between table and class
+			</xsd:documentation>
+		</xsd:annotation>
+		<xsd:complexType>
+			<xsd:sequence>
+				<xsd:element ref="field-mapping" minOccurs="1" maxOccurs="unbounded"/>
+				<xsd:element ref="primary-key" minOccurs="1" maxOccurs="1"/>
+			</xsd:sequence>
+			<xsd:attribute name="name" type="xsd:string" use="required"/>
+			<xsd:attribute name="class" type="xsd:string" use="required"/>						
+		</xsd:complexType>
+	</xsd:element>
+	
+	<xsd:element name="field-mapping">
+		<xsd:annotation>
+			<xsd:documentation>
+			Define table column and the attribute of mapping class
+			</xsd:documentation>
+		</xsd:annotation>
+		<xsd:complexType>
+			<xsd:sequence>
+				<xsd:element ref="dbms-column"/>
+				<xsd:element ref="class-attribute"/>
+			</xsd:sequence>
+		</xsd:complexType>
+	</xsd:element>
+	
+	<xsd:element name="dbms-column">	
+		<xsd:complexType mixed="true">
+			<xsd:choice minOccurs="1" maxOccurs="1"/>
+		</xsd:complexType>
+	</xsd:element>	
+		
+	<xsd:element name="class-attribute">	
+		<xsd:complexType mixed="true">
+			<xsd:choice minOccurs="1" maxOccurs="1"/>
+		</xsd:complexType>
+	</xsd:element>	
+	
+	<xsd:element name="primary-key">
+		<xsd:annotation>
+			<xsd:documentation>
+			Define primary key of table
+			</xsd:documentation>
+		</xsd:annotation>
+		<xsd:complexType>
+			<xsd:sequence>
+				<xsd:element ref="dbms-column" minOccurs="1" maxOccurs="unbounded"/>
+			</xsd:sequence>
+		</xsd:complexType>
+	</xsd:element>	
+	
+	<!-- <queries> tag -->
+	<xsd:element name="queries">
+		<xsd:complexType>
+			<xsd:sequence minOccurs="0" maxOccurs="unbounded">
+				<xsd:element ref="query"/>
+			</xsd:sequence>
+		</xsd:complexType>
+	</xsd:element>
+		
+	<!-- <query> tag -->
+	<xsd:element name="query">
+		<xsd:annotation>
+			<xsd:documentation>
+			Define SQL statement to execute and class to save query execution result
+			</xsd:documentation>
+		</xsd:annotation>
+		<xsd:complexType>
+			<xsd:group ref="queryElements"/>
+			<xsd:attributeGroup ref="queryAttributes"/>		
+		</xsd:complexType>
+	</xsd:element>
+	
+	<xsd:attributeGroup name="queryAttributes">
+		<xsd:attribute name="id" type="xsd:ID">
+			<xsd:annotation>
+				<xsd:documentation>
+				Identifier to identify the relevant SQL statement.
+				</xsd:documentation>
+			</xsd:annotation>
+		</xsd:attribute>
+		<xsd:attribute name="isDynamic" type="xsd:boolean" default="true">
+			<xsd:annotation>
+				<xsd:documentation>
+				Identifies whether dynamic query or not.
+				</xsd:documentation>
+			</xsd:annotation>
+		</xsd:attribute>
+		<xsd:attribute name="mappingStyle" default="camel">
+			<xsd:annotation>
+				<xsd:documentation>
+				When mapping search result, 
+				defines to which type the research column name should be modified.
+				
+				There are 4 styles:
+				1. "camel"
+				Change camel cased name to the search column name 
+				2. "lower"
+				Change lower cased name to the search column name 
+				3. "upper"
+				Change upper cased name to the search column name 
+				4. "none"
+				Apply what DBMS returned to the search column name
+				</xsd:documentation>
+			</xsd:annotation>
+			<xsd:simpleType>
+				<xsd:restriction base="xsd:NMTOKEN">
+					<xsd:enumeration value="camel"/>
+					<xsd:enumeration value="lower"/>
+					<xsd:enumeration value="upper"/>
+					<xsd:enumeration value="none"/>
+				</xsd:restriction>
+			</xsd:simpleType>			
+		</xsd:attribute>
+		<xsd:attribute name="maxFetchSize" type="xsd:int" use="optional">
+			<xsd:annotation>
+				<xsd:documentation>
+				Controls maximum fetch-size of search result.
+				Note: If the size of search result is over defined maxFetchSize, Exception occurred. 
+				</xsd:documentation>
+			</xsd:annotation>		
+		</xsd:attribute>			
+	</xsd:attributeGroup>
+	
+	<xsd:group name="queryElements">
+		<xsd:sequence>
+			<xsd:element ref="statement"/>
+			<xsd:element ref="lobStatement" minOccurs="0" maxOccurs="1"/>
+			<xsd:element ref="param" minOccurs="0" maxOccurs="unbounded"/>
+			<xsd:element ref="result" minOccurs="0" maxOccurs="1"/>								
+		</xsd:sequence>
+	</xsd:group>
+	
+	<xsd:element name="statement">
+		<xsd:annotation>
+			<xsd:documentation>
+			Define SQL statement to execute.
+			</xsd:documentation>
+		</xsd:annotation>	
+		<xsd:complexType mixed="true">
+			<xsd:choice minOccurs="1" maxOccurs="1"/>
+		</xsd:complexType>
+	</xsd:element>
+	
+	<xsd:element name="lobStatement">
+		<xsd:annotation>
+			<xsd:documentation>
+			To handle LOB data in Oracle 8i, in case of SQL statement to INSERT new LOB data,
+			lobStatement tag must be additionally defined unlike general SQL statement definition.
+			</xsd:documentation>			
+		</xsd:annotation>
+		<xsd:complexType>
+			<xsd:sequence>
+				<xsd:element ref="statement"/>
+				<xsd:element ref="param" minOccurs="0" maxOccurs="unbounded"/>						
+			</xsd:sequence>			
+		</xsd:complexType>
+	</xsd:element>
+	
+	<xsd:element name="param">
+		<xsd:annotation>
+			<xsd:documentation><![CDATA[
+			Query service compiles the SQL statement and and saves it in PreparedStatement.
+			Therefore, to execute setXXX in PreparedStatement for setting input value,
+			define SQL type of the input parameter as the value of param tag attribute
+			referring to the JDBC types defined in java.sql.Types.
+			param tag is added according to input parameter number and order.
+			To get parameter data, data type must be defined as the following.
+	
+			<Java Type>  				<DBMS Type>
+			String 					:  	CHAR
+			String					: 	VARCHAR
+			String					: 	LONGVARCHAR
+			java.math.BigDecimal	: 	NUMERIC
+			java.math.BigDecimal	: 	DECIMAL
+			boolean					: 	BIT
+			byte					: 	TINYINT
+			short					: 	SMALLINT
+			int						:	INTEGER
+			long					: 	BIGINT
+			float					: 	REAL
+			double					: 	FLOAT
+			double					: 	DOUBLE
+			byte[]					:	BINARY
+			byte[]					:	VARBINARY
+			byte[]					:	LONGVARBINARY
+			java.sql.Date			:	DATE
+			java.sql.Time			:	TIME
+			java.sql.Timestamp		:	TIMESTAMP		
+			]]></xsd:documentation>	
+		</xsd:annotation>	
+		<xsd:complexType>
+			<xsd:attribute name="name" type="xsd:string" use="optional"/>
+			<xsd:attribute name="type" type="xsd:string" use="required"/>
+			<xsd:attribute name="binding" use="optional">
+				<xsd:simpleType>
+					<xsd:restriction base="xsd:NMTOKEN">
+						<xsd:enumeration value="IN"/>
+						<xsd:enumeration value="OUT"/>
+						<xsd:enumeration value="INOUT"/>
+					</xsd:restriction>
+				</xsd:simpleType>
+			</xsd:attribute>
+		</xsd:complexType>
+	</xsd:element>
+	
+	<xsd:element name="result">
+		<xsd:annotation>
+			<xsd:documentation><![CDATA[
+			Can be used when the query is SELECT statement and defines mapping class name for query execution result.
+			If <result> is not defined, column and column value for the execution result of each row is put to Map as key 
+			and value, and maps of each row will be returned as return value contained in list.						
+			Note that key saved in Map is different according to the value of mappingStyle.
+			For example, if value of mappingStyle is 'camel' and search column name is USER_NAME,
+			key of map is userName.					
+			]]></xsd:documentation>	
+		</xsd:annotation>	
+		<xsd:complexType>
+			<xsd:sequence>
+				<xsd:element ref="result-mapping" minOccurs="0" maxOccurs="unbounded"/>
+			</xsd:sequence>			
+			<xsd:attribute name="length" type="xsd:int" use="optional"/>
+			<xsd:attribute name="class" type="xsd:string" use="optional"/>	
+			<xsd:attribute name="mapper" type="xsd:string" use="optional"/>		
+		</xsd:complexType>
+	</xsd:element>
+	
+	<xsd:element name="result-mapping">
+		<xsd:annotation>
+			<xsd:documentation>
+			Can be used when query is SELECT statement.
+			Only when class to save query execution result and mapping table are not defined
+			or when attribute name of class for result and mappingStyle-applied column name are not consistent,
+			attribute name of the class mapping onto the column is defined.			
+			</xsd:documentation>
+		</xsd:annotation>
+		<xsd:complexType>
+			<xsd:attribute name="column" type="xsd:string" use="required" />
+			<xsd:attribute name="attribute" type="xsd:string" use="required" />
+		</xsd:complexType>
+	</xsd:element>
+</xsd:schema>

@@ -1,0 +1,443 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<FDL version="1.4">
+  <TypeDefinition url="..\default_typedef.xml"/>
+  <Form id="frmSAMPLE004" classname="SAMPLE004" inheritanceid="" position="absolute 0 0 765 540" titletext="SAMPLE004" onload="SAMPLE004_onload" onbeforeclose="SAMPLE004_onbeforeclose" style="background:#f2f2efff;">
+    <Layouts>
+      <Layout>
+        <Div id="divSearch" taborder="4" text="search" position="absolute 0 40 765 80" style="background:#fff0f5ff;border:1 solid #906d3bff ;" anchor="left top right">
+          <Layouts>
+            <Layout>
+              <Static id="Static00" text="global.domain.searchcondition" position="absolute 2 5 57 36"/>
+              <Combo id="cmbSearchCondition" taborder="7" innerdataset="@dsCboSearchCd" codecolumn="CODE" datacolumn="DATA" position="absolute 59 9 167 31" index="0" value="0" text="이름"/>
+              <Edit id="edtSearchKeyword" taborder="8" position="absolute 169 9 328 31" onkeydown="divSearch_edtSearchKeyword_onkeydown"/>
+              <Button id="btDoSearch" taborder="9" position="absolute 330 9 351 31" onclick="divSearch_btDoSearch_onclick" style="background:URL('image::btn_TP_SearchDrop_N.png') left middle;cursor:hand;"/>
+            </Layout>
+          </Layouts>
+        </Div>
+        <Div id="divGrd" taborder="5" text="divGrid" position="absolute 0 110 765 272" anchor="left top right">
+          <Layouts>
+            <Layout>
+              <Grid id="grdBoard" taborder="0" binddataset="dsGrdUser" useinputpanel="false" position="absolute 0 0 765 162" formats="&lt;Formats&gt;&#10;  &lt;Format id=&quot;default&quot;&gt;&#10;    &lt;Columns&gt;&#10;      &lt;Col size=&quot;80&quot;/&gt;&#10;      &lt;Col size=&quot;80&quot;/&gt;&#10;    &lt;/Columns&gt;&#10;    &lt;Rows&gt;&#10;      &lt;Row band=&quot;head&quot; size=&quot;24&quot;/&gt;&#10;      &lt;Row band=&quot;body&quot; size=&quot;24&quot;/&gt;&#10;    &lt;/Rows&gt;&#10;    &lt;Band id=&quot;head&quot;&gt;&#10;      &lt;Cell col=&quot;0&quot; disptype=&quot;normal&quot; text=&quot;code&quot;/&gt;&#10;      &lt;Cell col=&quot;1&quot; disptype=&quot;normal&quot; text=&quot;data&quot;/&gt;&#10;    &lt;/Band&gt;&#10;    &lt;Band id=&quot;body&quot;&gt;&#10;      &lt;Cell col=&quot;0&quot; disptype=&quot;normal&quot; text=&quot;bind:code&quot;/&gt;&#10;      &lt;Cell col=&quot;1&quot; disptype=&quot;normal&quot; text=&quot;bind:data&quot;/&gt;&#10;    &lt;/Band&gt;&#10;  &lt;/Format&gt;&#10;&lt;/Formats&gt;&#10;" onheadclick="divGrd_grdBoard_onheadclick" autofittype="col" cellsizingtype="col" onrbuttonup="divGrd_grdBoard_onrbuttonup" anchor="left top right">
+                <Formats>
+                  <Format id="default">
+                    <Columns>
+                      <Column size="36"/>
+                      <Column size="85"/>
+                      <Column size="96"/>
+                      <Column size="128"/>
+                      <Column size="134"/>
+                      <Column size="252"/>
+                    </Columns>
+                    <Rows>
+                      <Row size="24" band="head"/>
+                      <Row size="24"/>
+                    </Rows>
+                    <Band id="head">
+                      <Cell displaytype="checkbox" edittype="checkbox" text="0"/>
+                      <Cell col="1" text="global.domain.userid"/>
+                      <Cell col="2" text="global.domain.username"/>
+                      <Cell col="3" text="global.domain.phone"/>
+                      <Cell col="4" text="global.domain.cellphone"/>
+                      <Cell col="5" text="global.domain.email"/>
+                    </Band>
+                    <Band id="body">
+                      <Cell displaytype="checkbox" edittype="checkbox" text="bind:_chk"/>
+                      <Cell col="1" style="align:left;" text="bind:USER_ID"/>
+                      <Cell col="2" style="align:left;" text="bind:USER_NAME"/>
+                      <Cell col="3" style="align:left;" text="bind:PHONE"/>
+                      <Cell col="4" style="align:left;" text="bind:CELL_PHONE"/>
+                      <Cell col="5" style="align:left;" text="bind:EMAIL"/>
+                    </Band>
+                  </Format>
+                </Formats>
+              </Grid>
+            </Layout>
+          </Layouts>
+        </Div>
+        <Tab id="tbUserDetail" taborder="6" tabindex="0" scrollbars="autoboth" position="absolute 0 312 765 540" anchor="left top right">
+          <Tabpages>
+            <Tabpage id="tbBasicInfo" text="global.domain.basicinfo" scrollbars="none">
+              <Layouts>
+                <Layout>
+                  <GroupBox id="grBxUser" text="global.domain.user" position="absolute 2 2 378 201" style="titlealign:topleft;"/>
+                  <Static id="stUserId" text="global.domain.userid" position="absolute 5 25 113 56"/>
+                  <Edit id="edtUserId" taborder="0" readonly="true" position="absolute 141 28 375 53"/>
+                  <Static id="stUserName" text="global.domain.username" position="absolute 5 73 113 104"/>
+                  <Edit id="edtUserName" taborder="1" position="absolute 141 76 375 101"/>
+                  <Static id="stPassword" text="global.domain.password" position="absolute 5 121 113 152"/>
+                  <Edit id="edtPassword" taborder="2" position="absolute 141 124 375 149" password="true"/>
+                  <Static id="stEnName" text="global.domain.enname" position="absolute 5 169 113 200"/>
+                  <Edit id="edtEnName" taborder="3" position="absolute 141 172 375 197"/>
+                  <GroupBox id="grBxPhone" text="global.domain.phone" position="absolute 408 103 761 200" style="titlealign:topleft;"/>
+                  <Static id="stHomeNumber" text="global.domain.homenumber" position="absolute 412 120 502 151"/>
+                  <Edit id="edtHomeNumber" taborder="6" position="absolute 560 123 757 148"/>
+                  <Static id="stCellPhone" text="global.domain.cellphone" position="absolute 412 163 502 194"/>
+                  <Edit id="edtCellPhone" taborder="7" position="absolute 560 166 757 191"/>
+                  <GroupBox id="grBxAddr" text="global.domain.addr" position="absolute 406 2 761 94" style="titlealign:topleft;"/>
+                  <Edit id="edtDetailAddr" taborder="5" position="absolute 560 61 757 86"/>
+                  <Static id="stDetailAddr" text="global.domain.detailaddr" position="absolute 412 58 502 89"/>
+                  <Static id="stZipCode" text="global.domain.zipcode" position="absolute 412 18 502 49"/>
+                  <MaskEdit id="mskEdtZipCode" taborder="4" position="absolute 560 21 757 46" type="string" mask="###-###" style="align:left middle;"/>
+                </Layout>
+              </Layouts>
+            </Tabpage>
+            <Tabpage id="tbAdditionalInfo" text="global.domain.additionalinfo">
+              <Layouts>
+                <Layout>
+                  <GroupBox id="grBxPlace" text="global.domain.place" position="absolute 2 2 378 201" style="titlealign:topleft;"/>
+                  <Static id="stCompany" text="global.domain.company" position="absolute 5 25 113 56"/>
+                  <Edit id="edtCompany" taborder="0" position="absolute 141 28 375 53" readonly="true"/>
+                  <Static id="stDepartment" text="global.domain.department" position="absolute 5 73 113 104"/>
+                  <Static id="stPosition" text="global.domain.position" position="absolute 5 121 113 152"/>
+                  <Edit id="edtPosition" taborder="2" position="absolute 141 124 375 149"/>
+                  <Edit id="edtAssignment" taborder="3" position="absolute 141 172 375 197"/>
+                  <Static id="stAssignment" text="global.domain.assignment" position="absolute 5 169 113 200"/>
+                  <GroupBox id="grBxContactAddr" text="global.domain.contactaddr" position="absolute 408 103 761 200" style="titlealign:topleft;"/>
+                  <GroupBox id="grBxOfficeAddr" text="global.domain.officeaddr" position="absolute 406 2 761 94" style="titlealign:topleft;"/>
+                  <Static id="stCompZipCode" text="global.domain.compzipcode" position="absolute 412 18 502 49"/>
+                  <MaskEdit id="mskEdtCompZipCode" taborder="4" position="absolute 560 21 757 46" type="string" mask="###-###" style="align:left middle;"/>
+                  <Edit id="edtOfficeDetailAddr" taborder="5" position="absolute 560 61 757 86"/>
+                  <Static id="stOfficeDetailAddr" text="global.domain.officedetailaddr" position="absolute 412 58 502 89"/>
+                  <Static id="stFax" text="global.domain.fax" position="absolute 412 120 502 151"/>
+                  <Edit id="edtFax" taborder="6" position="absolute 560 123 757 148"/>
+                  <Edit id="edtEmail" taborder="7" position="absolute 560 166 757 191"/>
+                  <Static id="stEmail" text="global.domain.email" position="absolute 412 163 502 194"/>
+                  <Combo id="cmbDept" taborder="1" text="Combo00" position="absolute 141 76 375 101" innerdataset="@dsCboDept" codecolumn="DEPT_ID" datacolumn="DEPT_NAME"/>
+                </Layout>
+              </Layouts>
+            </Tabpage>
+          </Tabpages>
+        </Tab>
+        <Div id="divGrdStatus" taborder="7" url="includes::GRDSTATUS.xfdl" text="divPage" position="absolute 0 80 765 110"/>
+        <PopupMenu id="popupMenuGrd" position="absolute 28 184 176 241"/>
+        <Div id="Div00" taborder="8" text="Div00" position="absolute 0 0 765 40">
+          <Layouts>
+            <Layout>
+              <Button id="btSaveAll" taborder="0" text="global.domain.save" onclick="btSaveAll_onclick" position="absolute 692 7 765 32"/>
+              <Button id="btDeleteCategory" taborder="1" text="global.domain.delete" onclick="btDeleteCategory_onclick" position="absolute 617 7 690 32"/>
+              <Button id="btAddCategory" taborder="2" text="global.domain.add" onclick="btAddCategory_onclick" position="absolute 542 7 615 32"/>
+              <Static id="stTitle" text="global.domain.userlist" position="absolute 18 10 219 32"/>
+            </Layout>
+          </Layouts>
+        </Div>
+        <Static id="Static00" position="absolute 2 10 16 32" style="background:URL('image::bullet_WF_Lev1.png') left middle; " text=""/>
+      </Layout>
+    </Layouts>
+    <Objects>
+      <Dataset id="dsService" firefirstcount="0" firenextcount="0" useclientlayout="false" updatecontrol="true" enableevent="true" loadkeymode="keep" loadfiltermode="keep" reversesubsum="false">
+        <ColumnInfo>
+          <Column id="SVC_ID" type="STRING" size="100"/>
+          <Column id="QUERY_LIST" type="STRING" size="256"/>
+          <Column id="SERVICE" type="STRING" size="100"/>
+          <Column id="IN_DATASET_LIST" type="STRING" size="256"/>
+          <Column id="OUT_DATASET_LIST" type="STRING" size="256"/>
+          <Column id="CONTROLLER" type="STRING" size="512"/>
+          <Column id="CALLBACK" type="STRING" size="100"/>
+          <Column id="SYNC_YN" type="STRING" size="1"/>
+        </ColumnInfo>
+        <Rows>
+          <Row>
+            <Col id="SVC_ID">getListUser</Col>
+            <Col id="QUERY_LIST">querySet1=findXPUserList</Col>
+            <Col id="IN_DATASET_LIST">querySet1=dsSearch</Col>
+            <Col id="OUT_DATASET_LIST">dsGrdUser=querySet1</Col>
+          </Row>
+          <Row>
+            <Col id="SVC_ID">saveAllUser</Col>
+            <Col id="QUERY_LIST">querySet1=createXPUser,updateXPUser,removeXPUser</Col>
+            <Col id="IN_DATASET_LIST">querySet1=dsGrdUser:U</Col>
+            <Col id="OUT_DATASET_LIST"/>
+          </Row>
+          <Row>
+            <Col id="SVC_ID">getListDept</Col>
+            <Col id="QUERY_LIST">querySet1=findXPDeptList</Col>
+            <Col id="OUT_DATASET_LIST">dsCboDept=querySet1</Col>
+            <Col id="IN_DATASET_LIST">querySet1=dsSearch</Col>
+          </Row>
+        </Rows>
+      </Dataset>
+      <Dataset id="dsSearch" firefirstcount="0" firenextcount="0" useclientlayout="false" updatecontrol="true" enableevent="true" loadkeymode="keep" loadfiltermode="keep" reversesubsum="false">
+        <ColumnInfo>
+          <Column id="SEARCH_CONDITION" type="STRING" size="256"/>
+          <Column id="SEARCH_KEYWORD" type="STRING" size="256"/>
+        </ColumnInfo>
+        <Rows>
+          <Row>
+            <Col id="SEARCH_CONDITION"/>
+            <Col id="SEARCH_KEYWORD"/>
+          </Row>
+        </Rows>
+      </Dataset>
+      <Dataset id="dsGrdUser" firefirstcount="0" firenextcount="0" useclientlayout="false" updatecontrol="true" enableevent="true" loadkeymode="keep" loadfiltermode="keep" reversesubsum="false">
+        <ColumnInfo>
+          <Column id="_chk" type="STRING" size="1"/>
+          <Column id="USER_ID" type="STRING" size="256"/>
+          <Column id="USER_NAME" type="STRING" size="256"/>
+          <Column id="EN_NAME" type="STRING" size="256"/>
+          <Column id="COMP_PHONE" type="STRING" size="256"/>
+          <Column id="PHONE" type="STRING" size="256"/>
+          <Column id="CELL_PHONE" type="STRING" size="256"/>
+          <Column id="COMPANY" type="STRING" size="256"/>
+          <Column id="DEPT_ID" type="STRING" size="256"/>
+          <Column id="JOB_POSITION" type="STRING" size="256"/>
+          <Column id="ASSIGNMENT" type="STRING" size="256"/>
+          <Column id="OFFICER_YN" type="STRING" size="1"/>
+          <Column id="FAX" type="STRING" size="256"/>
+          <Column id="EMAIL" type="STRING" size="256"/>
+          <Column id="ZIP_CODE" type="STRING" size="256"/>
+          <Column id="ADDRESS" type="STRING" size="256"/>
+          <Column id="COMP_ZIP_CODE" type="STRING" size="256"/>
+          <Column id="COMP_ADDRESS" type="STRING" size="256"/>
+          <Column id="PASSWORD" type="STRING" size="256"/>
+        </ColumnInfo>
+      </Dataset>
+      <Dataset id="dsGrdUserValid" firefirstcount="0" firenextcount="0" useclientlayout="false" updatecontrol="true" enableevent="true" loadkeymode="keep" loadfiltermode="keep" reversesubsum="false">
+        <ColumnInfo>
+          <Column id="_chk" type="STRING" size="256"/>
+          <Column id="USER_ID" type="STRING" size="256"/>
+          <Column id="USER_NAME" type="STRING" size="256"/>
+          <Column id="EN_NAME" type="STRING" size="256"/>
+          <Column id="COMP_PHONE" type="STRING" size="256"/>
+          <Column id="PHONE" type="STRING" size="256"/>
+          <Column id="CELL_PHONE" type="STRING" size="256"/>
+          <Column id="COMPANY" type="STRING" size="256"/>
+          <Column id="DEPT_ID" type="STRING" size="256"/>
+          <Column id="JOB_POSITION" type="STRING" size="256"/>
+          <Column id="ASSIGNMENT" type="STRING" size="256"/>
+          <Column id="OFFICER_YN" type="STRING" size="256"/>
+          <Column id="FAX" type="STRING" size="256"/>
+          <Column id="EMAIL" type="STRING" size="256"/>
+          <Column id="ZIP_CODE" type="STRING" size="256"/>
+          <Column id="ADDRESS" type="STRING" size="256"/>
+          <Column id="COMP_ZIP_CODE" type="STRING" size="256"/>
+          <Column id="COMP_ADDRESS" type="STRING" size="256"/>
+          <Column id="PASSWORD" type="STRING" size="256"/>
+        </ColumnInfo>
+        <Rows>
+          <Row>
+            <Col id="USER_ID"/>
+            <Col id="PASSWORD">title:password,required:true,maxlength:16</Col>
+            <Col id="USER_NAME">title:username,required:true,maxlength:20</Col>
+            <Col id="COMP_PHONE">title:phone,format:phone,maxlength:20</Col>
+            <Col id="PHONE">title:phone,format:phone,maxlength:20</Col>
+            <Col id="CELL_PHONE">title:cellphone,format:phone,maxlength:20</Col>
+            <Col id="COMPANY">title:company,maxlength:60</Col>
+            <Col id="DEPT_ID">[Undefined]</Col>
+            <Col id="JOB_POSITION">title:position,maxlength:60</Col>
+            <Col id="ASSIGNMENT">title:assignment,maxlength:60</Col>
+            <Col id="OFFICER_YN">[Undefined]</Col>
+            <Col id="FAX">title:fax,format:phone,maxlength:20</Col>
+            <Col id="EMAIL">title:email,format:mail,maxlength:30</Col>
+            <Col id="ZIP_CODE">title:zipcode,format:zipcode,maxlength:10</Col>
+            <Col id="ADDRESS">title:detailaddr,maxlength:300</Col>
+            <Col id="COMP_ZIP_CODE">title:compzipcode,format:zipcode,maxlength:10</Col>
+            <Col id="COMP_ADDRESS">title:officedetailaddr,maxlength:300</Col>
+            <Col id="EN_NAME">title:enname,maxlength:20</Col>
+          </Row>
+        </Rows>
+      </Dataset>
+      <Dataset id="dsCboSearchCd" firefirstcount="0" firenextcount="0" useclientlayout="false" updatecontrol="true" enableevent="true" loadkeymode="keep" loadfiltermode="keep" reversesubsum="false">
+        <ColumnInfo>
+          <Column id="CODE" type="STRING" size="256"/>
+          <Column id="DATA" type="STRING" size="256"/>
+        </ColumnInfo>
+        <Rows>
+          <Row>
+            <Col id="CODE">0</Col>
+            <Col id="DATA"/>
+          </Row>
+          <Row>
+            <Col id="CODE">1</Col>
+            <Col id="DATA"/>
+          </Row>
+        </Rows>
+      </Dataset>
+      <Dataset id="dsCboDept" firefirstcount="0" firenextcount="0" useclientlayout="false" updatecontrol="true" enableevent="true" loadkeymode="keep" loadfiltermode="keep" reversesubsum="false">
+        <ColumnInfo>
+          <Column id="DEPT_ID" type="STRING" size="256"/>
+          <Column id="DEPT_NAME" type="STRING" size="256"/>
+          <Column id="DEPT_DESC" type="STRING" size="256"/>
+        </ColumnInfo>
+      </Dataset>
+    </Objects>
+    <Bind>
+      <BindItem id="item5" compid="tbUserDetail.tbBasicInfo.edtUserId" propid="value" datasetid="dsGrdUser" columnid="USER_ID"/>
+      <BindItem id="item0" compid="tbUserDetail.tbBasicInfo.edtUserName" propid="value" datasetid="dsGrdUser" columnid="USER_NAME"/>
+      <BindItem id="item1" compid="tbUserDetail.tbBasicInfo.edtPassword" propid="value" datasetid="dsGrdUser" columnid="PASSWORD"/>
+      <BindItem id="item2" compid="tbUserDetail.tbBasicInfo.edtEnName" propid="value" datasetid="dsGrdUser" columnid="EN_NAME"/>
+      <BindItem id="item3" compid="tbUserDetail.tbBasicInfo.mskEdtZipCode" propid="value" datasetid="dsGrdUser" columnid="ZIP_CODE"/>
+      <BindItem id="item4" compid="tbUserDetail.tbBasicInfo.edtDetailAddr" propid="value" datasetid="dsGrdUser" columnid="ADDRESS"/>
+      <BindItem id="item6" compid="tbUserDetail.tbBasicInfo.edtHomeNumber" propid="value" datasetid="dsGrdUser" columnid="PHONE"/>
+      <BindItem id="item7" compid="tbUserDetail.tbBasicInfo.edtCellPhone" propid="value" datasetid="dsGrdUser" columnid="CELL_PHONE"/>
+      <BindItem id="item16" compid="tbUserDetail.tbAdditionalInfo.edtCompany" propid="value" datasetid="dsGrdUser" columnid="COMPANY"/>
+      <BindItem id="item8" compid="tbUserDetail.tbAdditionalInfo.edtPosition" propid="value" datasetid="dsGrdUser" columnid="JOB_POSITION"/>
+      <BindItem id="item9" compid="tbUserDetail.tbAdditionalInfo.edtAssignment" propid="value" datasetid="dsGrdUser" columnid="ASSIGNMENT"/>
+      <BindItem id="item10" compid="tbUserDetail.tbAdditionalInfo.mskEdtCompZipCode" propid="value" datasetid="dsGrdUser" columnid="COMP_ZIP_CODE"/>
+      <BindItem id="item11" compid="tbUserDetail.tbAdditionalInfo.edtFax" propid="value" datasetid="dsGrdUser" columnid="FAX"/>
+      <BindItem id="item12" compid="tbUserDetail.tbAdditionalInfo.edtEmail" propid="value" datasetid="dsGrdUser" columnid="EMAIL"/>
+      <BindItem id="item13" compid="tbUserDetail.tbAdditionalInfo.edtOfficeDetailAddr" propid="value" datasetid="dsGrdUser" columnid="COMP_ADDRESS"/>
+      <BindItem id="item14" compid="tbUserDetail.tbAdditionalInfo.cmbDept" propid="value" datasetid="dsGrdUser" columnid="DEPT_ID"/>
+      <BindItem id="item15" compid="divSearch.cmbSearchCondition" propid="value" datasetid="dsSearch" columnid="SEARCH_CONDITION"/>
+      <BindItem id="item17" compid="divSearch.edtSearchKeyword" propid="value" datasetid="dsSearch" columnid="SEARCH_KEYWORD"/>
+    </Bind>
+    <Script type="xscript4.0"><![CDATA[include "lib::commonScript.xjs";
+var objFocusedGrd;
+
+// Form onload 이벤트 처리
+function SAMPLE004_onload(obj:Form, e:LoadEventInfo)
+{
+
+	divGrdStatus.fnSetUserData("GRD_STATUS=grdBoard");
+	// Grid 및 ComboBox 데이터 송신
+	gfnService("getListUser");
+	gfnService("getListDept");
+	
+	// 검색 조건 Combo Box 국제화 처리
+	dsCboSearchCd.setColumn(0, "DATA", gfnGetMessage("global.domain.name"));
+	dsCboSearchCd.setColumn(1, "DATA", gfnGetMessage("global.domain.userid"));
+	
+	divSearch.cmbSearchCondition.index = 0;
+	
+	// 각 컴포넌트 title 국제화 처리
+	gfnSetTitle();
+			
+	// 팝업메뉴 생성 및 초기화
+	popupMenuGrd.innerdataset = gdsPopupMenu;
+	popupMenuGrd.captioncolumn = "CAPTION";
+	popupMenuGrd.idcolumn = "ID";
+	popupMenuGrd.levelcolumn = "LEVEL";
+	
+	popupMenuGrd.onmenuclick.addHandler(fnPopupMenu_onmenuclick);
+}
+
+// 팝업 메뉴 클릭 이벤트 처리
+function fnPopupMenu_onmenuclick(obj:PopupMenu, e:MenuClickEventInfo){
+	switch(e.id){
+		case "find":
+			fnFindForm();
+			break;
+		case "excelexport":
+			fnExcelExport();
+			break;
+		default:
+			break;
+	}
+}
+
+// 팝업 메뉴 "검색" 클릭 이벤트 처리
+function fnFindForm(){
+	popupMenuGrd.closePopup();
+	var resultForm = gfnShowModal("includes::GRDFIND.xfdl", {objGrd:objFocusedGrd}, "global.domain.popupmenu.find", 525, 300);
+}
+
+// 팝업 메뉴 "엑셀 다운로드" 클릭 이벤트 처리
+function fnExcelExport(){
+	popupMenuGrd.closePopup();
+	// 엑셀 파일을 다운 받을지 바로 열지 선택 팝업 생성
+	var resultForm = gfnConfirm(gfnGetMessage("global.domain.popup.excelsave"), "OSC");
+	
+	if(resultForm == "S"){
+		// xls 파일로 사용자 선택 위치에 저장
+		gfnExportSaveAsExcel(objFocusedGrd);
+	} else if(resultForm == "Y"){
+		// Excel 프로그램 실행
+		gfnExportExcelEx(objFocusedGrd);
+	}
+}
+
+// 삭제 버튼 클릭 이벤트 처리
+function btDeleteCategory_onclick(obj:Button,  e:ClickEventInfo)
+{
+	gfnCheckedRowDelete(dsGrdUser);	
+}
+
+// 추가 버튼 클릭 이벤트 처리
+function btAddCategory_onclick(obj:Button,  e:ClickEventInfo)
+{
+	var nRow = dsGrdUser.addRow();
+	dsGrdUser.setColumn(nRow, "COMPANY", "삼성SDS");
+	tbUserDetail.tbAdditionalInfo.cmbDept.index = 0;
+}
+
+// 저장 버튼 클릭 이벤트 처리
+function btSaveAll_onclick(obj:Button,  e:ClickEventInfo)
+{
+	// 유효성 검사 후 이상 없는 경우 DataSet의 모든 변경 내용을 저장
+	if(gfnDsCheckValid(dsGrdUser)){
+		gfnService("saveAllUser");
+	}
+}
+
+// Grid Head 클릭 이벤트 처리
+function divGrd_grdBoard_onheadclick(obj:Grid, e:GridClickEventInfo)
+{
+	// Grid 정렬
+	gfnGridSort(obj, e);
+	
+	// Grid Head의 체크박스 클릭시 모든 체크 박스 클릭 처리
+	gfnSetGridCheckAll(obj, e);
+}
+
+// 검색 버튼 클릭 이벤트 처리
+function divSearch_btDoSearch_onclick(obj:Button,  e:ClickEventInfo)
+{
+	if(gfnDsGetUpdate(dsGrdUser)){
+		var resultValue = gfnConfirm("msg.before.search", "YN");
+		
+		if(resultValue == "N") {
+			return;
+		} else if(resultValue == "Y") {
+			gfnService("getListUser");
+		}
+	} else {
+		gfnService("getListUser");
+	}
+}
+
+// 검색어 입력 후 엔터키 입력
+function divSearch_edtSearchKeyword_onkeydown(obj:Edit, e:KeyEventInfo)
+{
+	if(e.keycode == 13){
+		dsSearch.setColumn(0, "SEARCH_KEYWORD", divSearch.edtSearchKeyword.text);
+		divSearch_btDoSearch_onclick();
+	}
+}
+
+// Form을 닫기 전, DataSet에 변경 내역이 있는 경우 저장 여부를 물어보는 팝업 생성
+function SAMPLE004_onbeforeclose(obj:Form, e:CloseEventInfo)
+{
+	if(gfnDsGetUpdate(dsGrdUser)){
+		var resultValue = gfnConfirm("msg.before.movepage", "YN");
+		
+		if(resultValue == "N") {
+			return;
+		} else if(resultValue == "Y") {
+			btSaveAll_onclick();
+		}
+	}
+}
+
+// Grid 우클릭 이벤트 발생 시 현재 마우스 포인트 위치에 Popup Menu 생성
+function divGrd_grdBoard_onrbuttonup(obj:Grid, e:GridMouseEventInfo)
+{
+	nSelectedCol = e.col;
+	nSelectedRow = e.row;
+	objFocusedGrd = obj;
+	var nGridX = system.cursorx;
+	var nGridY = system.cursory;
+	popupMenuGrd.trackPopup(nGridX, nGridY);
+}
+
+// gfnService 처리 후 Callback 처리
+function fnCallback(strServiceId, strErrorCode, strErrorMsg) {
+	if ( strErrorCode == -1 ) {
+		gfnAlertMsg(strErrorMsg, "ERR");
+	} else {
+		if(strServiceId == "saveAllUser") {
+			gfnAlertMsg("msg.save.success");
+			gfnService("getListUser");
+		}
+	}
+}]]></Script>
+  </Form>
+</FDL>

@@ -15,7 +15,6 @@
  */
 package org.anyframe.plugin.flex.query.community.service;
 
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
@@ -24,6 +23,7 @@ import org.anyframe.plugin.flex.query.domain.Community;
 import org.anyframe.plugin.flex.query.domain.SearchVO;
 
 public interface CommunityService {
+	
 	Page getPagingList(SearchVO searchVO) throws Exception;
 	
 	int create(Community community) throws Exception;
@@ -34,5 +34,6 @@ public interface CommunityService {
 	
 	List<Community> getList(SearchVO searchVO) throws Exception;
 	
-	Map<String, Integer> saveAll(ArrayList<Community> arrayList) throws Exception;
+	Map<String, Integer> saveAll(List<Community> list) throws Exception;
+	
 }

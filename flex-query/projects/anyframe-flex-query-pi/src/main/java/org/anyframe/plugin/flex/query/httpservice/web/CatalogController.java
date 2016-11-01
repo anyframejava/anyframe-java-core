@@ -16,6 +16,7 @@
 package org.anyframe.plugin.flex.query.httpservice.web;
 
 import java.util.List;
+import java.util.Map;
 
 import javax.inject.Inject;
 import javax.inject.Named;
@@ -28,16 +29,14 @@ import org.springframework.web.bind.annotation.RequestMapping;
 @Controller("catalogController")
 @RequestMapping("/catalog.do")
 public class CatalogController {
-
 	
 	@Inject
 	@Named("catalogService")
 	private CatalogService catalogService;
 	
-	@SuppressWarnings("unchecked")
 	@RequestMapping(params = "method=getProduct")
 	public String getProduct(Model model)throws Exception{
-		List resultList = catalogService.getProduct();
+		List<Map<String, Object>> resultList = catalogService.getProduct();
 		model.addAttribute("productList", resultList);
 		return "flex-query/httpservice/catalog";
 	}

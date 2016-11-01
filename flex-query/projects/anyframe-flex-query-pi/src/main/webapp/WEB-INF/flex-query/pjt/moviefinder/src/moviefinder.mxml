@@ -37,7 +37,9 @@
 			protected function genreGetListResultHandler(event:ResultEvent):void
 			{
 				genreList = event.result as ArrayCollection;
-				movieFinder.getList(new Movie);
+				var movie:Movie = new Movie();
+				movie.nowPlaying = "Y";
+				movieFinder.getList(movie);
 			}
 			
 			protected function movieGetListResultHandler(event:ResultEvent):void

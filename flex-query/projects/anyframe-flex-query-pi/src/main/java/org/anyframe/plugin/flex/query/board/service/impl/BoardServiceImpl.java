@@ -15,7 +15,6 @@
  */
 package org.anyframe.plugin.flex.query.board.service.impl;
 
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
@@ -56,11 +55,10 @@ public class BoardServiceImpl implements BoardService{
 		return boardDao.remove(board);
 	}
 
-	public Map<String, Integer> saveAll(ArrayList<Board> arrayList) throws Exception {
-		return boardDao.saveAll(arrayList);
+	public Map<String, Integer> saveAll(List<Board> list) throws Exception {
+		return boardDao.saveAll(list);
 	}
 
-	@SuppressWarnings("unchecked")
 	public List<Board> getList(SearchVO searchVO) throws Exception {
 		return boardDao.getList(searchVO);
 	}

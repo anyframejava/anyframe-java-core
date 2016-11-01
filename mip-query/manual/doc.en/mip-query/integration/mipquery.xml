@@ -1,0 +1,246 @@
+<chapter id="mip_query_integration_mipquery">
+	<title>MipQuery</title>
+	<para>
+		<![CDATA[When presentation layer is based on X-Internet's MiPlatform or Gauce, etc., 
+		each product is transferred after storing input data in the specific data format of the product. 
+		Therefore, to process DB data using Query service, "specific data format transfer <-> conversion between Map or VO " needs to be done. 
+		If a massive amount of data is processed in this case, performance can be undermined. 
+		Query service extends basic QueryService and provides optimal implementation for specific X-Internet products to increase the convenience of development and speed of response. 
+		The following is on how to use MiPQueryService optimized for MiPlatform.]]> 
+	</para>
+	
+	<section id="mip_query_integration_mipquery_mipqueryservice">
+		<title>How to use MiPQueryService</title>
+
+		<para>
+			MiPQueryService extracts the user input data from the unique data form transfer of MiPlatform and reflects it in relevant DB. 
+			Therefore, when developing presentation layer based on X-Internet's MiPlatform, 
+			com.tobesoft.platform.data.Dataset and com.tobesoft.platform.data.VariableList, which are specific formats of data transfer of MiPlatform, can be used through MiPQueryService.
+		</para>
+			
+		<important>
+			<title>Notes for Pagination</title>
+			<para>
+				PagingSQLGenerator appropriate for DBMS should be set up for property definition. 
+				When appropriate PagingSQLGenerator does no exist, org.anyframe.query.impl.jdbc.generator.DefaultPagingSQLGenerator provided by Query Service can be used, 
+				but when executing findXXX() method using DefaultPagingSQLGenerator, 
+				data on a specific page can be searched by moving  ResultSet cursor after fetching all data related to conditions within QueryService. 
+				In this case, logic to move ResultSet cursor may take long and seriously impact performance when searching for a large amount of data. 
+				So, using DefaultPagingSQLGenerator is not recommended.
+			</para>
+		</important>			
+
+		<section id="mip_query_integration_mipquery_mipqueryservice_attribute">
+			<title>MiPQueryService configuration file Sample</title>
+
+			<para>
+				The following is a part of context-miplatform-query.xml file defining MiPQueryService. 
+				Because MiPQueryService internally processes data access through RiaQueryService, referenced relationship should be defined for RiaQueryService.
+				<programlisting language="xml"><![CDATA[<bean id="mipQueryService" class="org.anyframe.mip.query.impl.MiPQueryServiceImpl">
+	<property name="namedParamJdbcTemplate" ref="pagingNamedParamJdbcTemplate"/>
+	<property name="lobHandler" ref="lobHandler"/>
+	<property name="sqlRepository" ref="sqlLoader"/>
+	<lookup-method name="getRowCallbackHandler" bean="rowCallbackHandler"/>
+	<lookup-method name="getCallableStatementCallbackHandler" bean="callableStatementCallbackHandler"/>
+	<lookup-method name="getPrintWriterRowCallbackHandler" bean="printWriterRowCallbackHandler"/>
+</bean>	
+
+<bean id="callableStatementCallbackHandler" class="org.anyframe.mip.query.impl.jdbc.mapper.MiPCallableStatementCallbackHandler" scope="prototype"/>
+	
+<bean id="rowCallbackHandler" class="org.anyframe.mip.query.impl.jdbc.mapper.MiPDataSetCallbackHandler" scope="prototype"/>
+	
+<bean id="printWriterRowCallbackHandler" class="org.anyframe.mip.query.impl.jdbc.mapper.MiPPrintWriterCallbackHandler" scope="prototype"/>
+	
+<!-- The original JdbcTemplate definition -->
+<bean id="pagingNamedParamJdbcTemplate" class="org.anyframe.query.impl.jdbc.PagingNamedParamJdbcTemplate">
+  	<constructor-arg index="0" ref="pagingJdbcTemplate"/>
+    <constructor-arg index="1" ref="dataSource"/>
+</bean> 
+    
+<bean id="pagingJdbcTemplate" class="org.anyframe.query.impl.jdbc.PagingJdbcTemplate">
+    <constructor-arg ref="dataSource"/>
+    <property name="exceptionTranslator" ref="exceptionTranslator"/>
+    <property name="paginationSQLGetter" ref="pagingSQLGenerator"/>
+</bean>
+    
+<bean id="pagingSQLGenerator" class="org.anyframe.query.impl.jdbc.generator.OraclePagingSQLGenerator"/>]]></programlisting>
+			</para>
+		</section>
+
+		<section id="mip_query_integration_mipquery_mipqueryservice_xml">
+			<title>Mapping XML file sample</title>
+
+			<para>
+				The following shows part of mapping-query-mip.xml loaded by RiaQueryService bean referenced by MipQueryService. 
+				It includes SQL statements that use 'named parameter'.
+				<programlisting language="xml"><![CDATA[<query id="createMovie" isDynamic="true" mappingStyle="upper">
+	<statement>
+		INSERT INTO 
+		MOVIE (MOVIE_ID, TITLE, DIRECTOR, GENRE_ID, ACTORS, RUNTIME, RELEASE_DATE, TICKET_PRICE, NOW_PLAYING, POSTER_FILE)
+		VALUES (:MOVIE_ID, :TITLE, :DIRECTOR, :GENRE_ID, :ACTORS, :RUNTIME, :RELEASE_DATE, :TICKET_PRICE, :NOW_PLAYING, :POSTER_FILE)
+	</statement>
+</query>
+
+<query id="updateMovie" isDynamic="true" mappingStyle="upper">
+	<statement>
+		UPDATE MOVIE
+		SET 
+			TITLE = :TITLE, 
+			DIRECTOR = :DIRECTOR,
+			GENRE_ID = :GENRE_ID, 
+			ACTORS = :ACTORS, 
+			RUNTIME = :RUNTIME, 
+			RELEASE_DATE = :RELEASE_DATE,   
+			TICKET_PRICE = :TICKET_PRICE, 
+			NOW_PLAYING = :NOW_PLAYING
+		WHERE
+			MOVIE_ID = :MOVIE_ID
+	</statement>
+</query>
+
+<query id="removeMovie" isDynamic="true" mappingStyle="upper">
+	<statement>
+		DELETE FROM MOVIE 
+		WHERE 
+			MOVIE_ID = :MOVIE_ID
+	</statement>
+</query>
+
+<query id="findMovieByPk" isDynamic="true" mappingStyle="upper">
+	<statement>
+		SELECT 
+			MOVIE_ID, TITLE, DIRECTOR, GENRE_ID, ACTORS, RUNTIME, RELEASE_DATE, TICKET_PRICE, NOW_PLAYING, POSTER_FILE
+		FROM MOVIE
+		WHERE 
+			MOVIE_ID = :MOVIE_ID
+	</statement>
+</query>
+
+<query id="findMovieList" isDynamic="true" mappingStyle="upper">
+	<statement>
+		SELECT 
+			MOVIE_ID, TITLE, DIRECTOR, GENRE_ID, ACTORS, RUNTIME, RELEASE_DATE, TICKET_PRICE, NOW_PLAYING, POSTER_FILE
+		FROM MOVIE
+		WHERE 		
+			TITLE like '%' || :SEARCH_TITLE || '%'
+			AND	NOW_PLAYING = :SEARCH_NOW_PLAYING 
+		ORDER BY RELEASE_DATE DESC
+	</statement>
+</query>]]></programlisting>
+			</para>
+		</section>
+
+		<section id="mip_query_integration_mipquery_mipqueryservice_testcode">
+			<title>Test code sample</title>
+
+			<para>
+				The following is a part of the test code that executes INSERT, SELECT, UPDATE, DELETE SQL statements 
+				defined by the previously mentioned mapping XML file using  MiPQueryService.
+				<programlisting language="java">/**
+ * Test code that enters new data in DB through Query service for MiPlatform
+ */    
+public void insertDataSet() {
+    MiPQueryService mipQueryService = (MiPQueryService) context.getBean("mipQueryService");
+    
+    <![CDATA[Map<String, String> queryMap = new HashMap<String, String>();]]>
+    queryMap.put(MiPQueryService.QUERY_INSERT, "createProduct");
+
+    // Transfer Dataset that should be reflected in map and DB which defines query id that will be used by INSERT, UPDATE, DELETE type.
+    // A large amount of data can be saved in Dataset.
+    int resultInsert =
+            <emphasis role="bold">mipQueryService.update(queryMap, makeProduct());</emphasis>
+}
+
+/**
+ * Test code that modifies data in DB through Query service for MiPlatform
+ */   
+public void updateDataSet() {
+    MiPQueryService mipQueryService =
+            (MiPQueryService) context.getBean("mipQueryService");
+
+    <![CDATA[Map<String, String> queryMap = new HashMap<String, String>();]]>
+    queryMap.put(MiPQueryService.QUERY_UPDATE, "updateProduct");
+    
+    // Transfer Dataset that should be reflected in map and DB which defines query id that will be used by INSERT, UPDATE, DELETE type.
+    // A large amount of data can be saved in Dataset.  
+    int resultUpdate =
+            <emphasis role="bold">mipQueryService.update(queryMap, makeProduct());</emphasis>
+}
+
+/**
+ * Test code for INSERT, UPDATE, DELETE of data in DB through query service for MiPlatform
+ */    
+public void processAllDataSet() {
+    MiPQueryService mipQueryService =
+            (MiPQueryService) context.getBean("mipQueryService");
+
+    <![CDATA[Map<String, String> queryMap = new HashMap<String, String>();]]>
+    queryMap.put(MiPQueryService.QUERY_UPDATE, "updateProduct");
+    queryMap.put(MiPQueryService.QUERY_INSERT, "createProduct");
+    queryMap.put(MiPQueryService.QUERY_DELETE, "removeProduct");
+    
+    // Transfer Dataset that should be reflected in map and DB which defines query id that will be used by INSERT, UPDATE, DELETE type.
+    // A large amount of data can be saved in Dataset.            
+    int resultUpdate = <emphasis role="bold">mipQueryService.update(queryMap, makeProducts());</emphasis>
+}
+
+/**
+ * Test code for INSERT, UPDATE, DELETE of data in DB through query service for MiPlatform
+ * In this case, ActionCommand pre-post processing is executed.
+ */    
+public void processAllDataSetWithActionCommand() {
+    MiPQueryService mipQueryService =
+            (MiPQueryService) context.getBean("mipQueryService");
+
+    <![CDATA[Map<String, String> queryMap = new HashMap<String, String>();]]>
+    queryMap.put(MiPQueryService.QUERY_UPDATE, "updateProduct");
+    queryMap.put(MiPQueryService.QUERY_INSERT, "createProduct");
+    queryMap.put(MiPQueryService.QUERY_DELETE, "removeProduct");
+    
+    // Transfer ActionCommand which defines process that should be done before and after accessing Dataset and DB
+    // that should be reflected in Map, DB which defines query id used according to INSERT, UPDATE, DELETE type.
+    // A large amount of data can be saved in Dataset.     
+    int resultUpdate =
+            <emphasis role="bold"> mipQueryService.update(queryMap, makeProducts(),
+            new ProductActionCommand()</emphasis>);
+}
+
+/**
+ * Test code for searching data in DB through query service for MiPlatform
+ * In this case, search conditions are in VariableList form.
+ */     
+public void findDataSetWithVariant() {
+    MiPQueryService mipQueryService =
+            (MiPQueryService) context.getBean("mipQueryService");
+
+    // Transfer query id to be executed, and search conditions in VariableList form
+    Dataset resultDataSet =
+            <emphasis role="bold">mipQueryService.search("findProductByPk", makeVariantList());</emphasis>
+}
+
+/**
+ * Test code to search data in DB through query service for MiPlatform
+ * In this case, search conditions are in Dataset form.
+ */    
+public void findListDataSet(int expected) {
+    MiPQueryService mipQueryService =
+            (MiPQueryService) context.getBean("mipQueryService");
+    
+    // Transfer query id to be executed and search conditions in Dataset form.    
+    Dataset resultDataSet =
+            <emphasis role="bold">mipQueryService.search("findProductList",
+            makeSearchCondition());</emphasis>
+}</programlisting>
+			</para>
+
+			<para>
+				Among the source codes above, testProcessAllDataSetWithActionCommand() method uses  ActionCommand to change a specific column value before data input in DB. 
+				As such, MiPQueryService provides services so that processing before and after entered data is reflected in DB can be handled commonly 
+				when separate ActionCommand implementing org.anyframe.mip.query.MiPActionCommand is transferred as argument. 
+				For example, if new identifier has to be set before entering individual row is newly registered in DB, 
+				extract each row by looping, and simply transfer ActionCommand object that has additions to identifier creation information within preInsert() logic 
+				without separate logic setting identifier.
+			</para>
+		</section>
+	</section>
+</chapter>

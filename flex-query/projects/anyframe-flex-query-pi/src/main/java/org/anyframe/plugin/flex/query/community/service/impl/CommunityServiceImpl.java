@@ -15,7 +15,6 @@
  */
 package org.anyframe.plugin.flex.query.community.service.impl;
 
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
@@ -39,6 +38,7 @@ public class CommunityServiceImpl implements CommunityService{
 	@Inject
 	@Named("communityDao")
 	private CommunityDao  communityDao;
+	
 	public Page getPagingList(SearchVO searchVO) throws Exception {
 		return communityDao.getPagingList(searchVO);
 	}
@@ -55,11 +55,10 @@ public class CommunityServiceImpl implements CommunityService{
 		return communityDao.remove(community);
 	}
 
-	public Map<String, Integer> saveAll(ArrayList<Community> arrayList) throws Exception {
-		return communityDao.saveAll(arrayList);
+	public Map<String, Integer> saveAll(List<Community> list) throws Exception {
+		return communityDao.saveAll(list);
 	}
 
-	@SuppressWarnings("unchecked")
 	public List<Community> getList(SearchVO searchVO) throws Exception {
 		return communityDao.getList(searchVO);
 	}
