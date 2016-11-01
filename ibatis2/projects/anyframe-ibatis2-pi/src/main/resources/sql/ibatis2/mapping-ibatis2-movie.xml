@@ -52,10 +52,10 @@
 		SELECT movie.movie_id, movie.title, movie.director, genre.genre_id, genre.name, 
 		movie.release_date, movie.ticket_price, movie.actors, movie.runtime, movie.now_playing, movie.poster_file 
 		FROM MOVIE movie, GENRE genre
-		WHERE movie.genre_id = genre.genre_id AND
-		<isNotNull property="title">
+		WHERE movie.genre_id = genre.genre_id
+		<isNotNull property="title" prepend="AND">
 			title like #title# 
-	           </isNotNull>
+	    </isNotNull>
 		AND movie.now_playing = #nowPlaying#
 	</select>
 
@@ -64,10 +64,11 @@
 		resultClass="int">
 		SELECT count(*)
 		FROM MOVIE
-		WHERE
-		<isNotNull property="title">
-			title like #title# 
-	           </isNotNull>
+		 <dynamic prepend="WHERE">
+			<isNotNull property="title" prepend="AND">
+				title like #title# 
+		    </isNotNull>
+		</dynamic>
 		AND movie.now_playing = #nowPlaying#
 	</select>
     
