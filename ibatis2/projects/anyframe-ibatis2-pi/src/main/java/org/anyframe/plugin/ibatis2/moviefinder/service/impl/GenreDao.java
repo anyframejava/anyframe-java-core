@@ -40,7 +40,7 @@ public class GenreDao extends SqlMapClientDaoSupport {
 
 	@SuppressWarnings("unchecked")
 	public List<Genre> getList() {
-		return super.getSqlMapClientTemplate().queryForList("getGenreList");
+		return getSqlMapClientTemplate().queryForList("getGenreList");
 	}
 
 }

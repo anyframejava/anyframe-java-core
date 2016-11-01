@@ -24,15 +24,15 @@
 		(movie_id, title, director, genre_id, actors, runtime, release_date,
 		ticket_price, now_playing)
 		VALUES (#movieId#, #title#,
-		#director#, #genre.genreId#, #actors#, #runtime:DECIMAL#, #releaseDate:DATE#,
-		#ticketPrice:DECIMAL#, #nowPlaying#)
+		#director#, #genre.genreId#, #actors#, #runtime#, #releaseDate#,
+		#ticketPrice#, #nowPlaying#)
      </insert>
 	
 	<update id="updateMovie" parameterClass="Movie">
 		UPDATE MOVIE SET
 		title = #title#, director = #director#, genre_id = #genre.genreId#,
-		actors = #actors#, runtime = #runtime:DECIMAL#, release_date = #releaseDate:DATE#,
-		ticket_price = #ticketPrice:DECIMAL#, now_playing = #nowPlaying#
+		actors = #actors#, runtime = #runtime#, release_date = #releaseDate#,
+		ticket_price = #ticketPrice#, now_playing = #nowPlaying#
 		WHERE movie_id
 		= #movieId#
     </update>
