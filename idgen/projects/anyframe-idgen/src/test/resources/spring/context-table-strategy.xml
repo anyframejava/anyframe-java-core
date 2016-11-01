@@ -1,0 +1,212 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:config="http://www.anyframejava.org/schema/service"
+	xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-3.2.xsd
+	http://www.anyframejava.org/schema/service http://www.anyframejava.org/schema/service/anyframe-core-service-2.0.xsd">
+	<bean name="mixStrategyWithNullFix" class="org.anyframe.idgen.impl.strategy.MixStrategy">
+		<property name="maxCiphers" value="5"/>
+		<property name="paddingChar" value="*"/>
+	</bean>
+	
+	<bean name="Ids-TestGenerateTableIdWithNullFix" class="org.anyframe.idgen.impl.TableIdGenServiceImpl" destroy-method="destroy">
+		<property name="dataSource" ref="util_datasource"/>
+		<property name="strategy" ref="mixStrategyWithNullFix"/>
+		<property name="blockSize" value="1"/>
+		<property name="table" value="myIdstest"/>
+		<property name="key" value="test"/>						
+	</bean>
+	
+	<bean name="mixStrategyWithPrefix" class="org.anyframe.idgen.impl.strategy.MixStrategy">
+		<property name="prefix" value="TEST-"/>
+		<property name="maxCiphers" value="5"/>
+		<property name="paddingChar" value="*"/>
+	</bean>
+	
+	<bean name="Ids-TestGenerateTableIdWithPrefix" class="org.anyframe.idgen.impl.TableIdGenServiceImpl" destroy-method="destroy">
+		<property name="dataSource" ref="util_datasource"/>
+		<property name="strategy" ref="mixStrategyWithPrefix"/>
+		<property name="blockSize" value="1"/>
+		<property name="table" value="myIdstest"/>
+		<property name="key" value="test"/>						
+	</bean>
+	
+	<bean name="mixStrategyWithSuffix" class="org.anyframe.idgen.impl.strategy.MixStrategy">
+		<property name="suffix" value="-TEST"/>
+		<property name="maxCiphers" value="5"/>
+		<property name="paddingChar" value="*"/>
+	</bean>
+	
+	<bean name="Ids-TestGenerateTableIdWithSuffix" class="org.anyframe.idgen.impl.TableIdGenServiceImpl" destroy-method="destroy">
+		<property name="dataSource" ref="util_datasource"/>
+		<property name="strategy" ref="mixStrategyWithSuffix"/>
+		<property name="blockSize" value="1"/>
+		<property name="table" value="myIdstest"/>
+		<property name="key" value="test"/>						
+	</bean>
+	
+	<bean name="mixStrategyWithFix" class="org.anyframe.idgen.impl.strategy.MixStrategy">
+		<property name="prefix" value="TE-"/>
+		<property name="suffix" value="-ST"/>
+		<property name="maxCiphers" value="5"/>
+		<property name="paddingChar" value="*"/>
+	</bean>
+	
+	<bean name="Ids-TestGenerateTableIdWithFix" class="org.anyframe.idgen.impl.TableIdGenServiceImpl" destroy-method="destroy">
+		<property name="dataSource" ref="util_datasource"/>
+		<property name="strategy" ref="mixStrategyWithFix"/>
+		<property name="blockSize" value="1"/>
+		<property name="table" value="myIdstest"/>
+		<property name="key" value="test"/>						
+	</bean>
+	
+	<bean name="Ids-TestGenerateClassNameBasedTableIdWithClassName" class="org.anyframe.idgen.impl.TableIdGenServiceImpl" destroy-method="destroy">
+		<property name="dataSource" ref="util_datasource"/>
+		<property name="strategy" ref="classStrategy"/>
+		<property name="blockSize" value="1"/>
+		<property name="table" value="myIdstest"/>
+		<property name="key" value="test"/>						
+	</bean>
+	
+	<bean name="Ids-TestGeneratePackageNameBasedTableIdWithClassName" class="org.anyframe.idgen.impl.TableIdGenServiceImpl" destroy-method="destroy">
+		<property name="dataSource" ref="util_datasource"/>
+		<property name="strategy" ref="packageNameStrategy"/>
+		<property name="blockSize" value="1"/>
+		<property name="table" value="myIdstest"/>
+		<property name="key" value="test"/>						
+	</bean>
+	
+	<bean name="Ids-TestGeneratePackageBasedTableIdWithClassName" class="org.anyframe.idgen.impl.TableIdGenServiceImpl" destroy-method="destroy">
+		<property name="dataSource" ref="util_datasource"/>
+		<property name="strategy" ref="packageStrategy"/>
+		<property name="blockSize" value="1"/>
+		<property name="table" value="myIdstest"/>
+		<property name="key" value="test"/>						
+	</bean>
+	
+	<bean name="Ids-TestGeneratePackageBasedTableIdWithSuffixAndClassName" class="org.anyframe.idgen.impl.TableIdGenServiceImpl" destroy-method="destroy">
+		<property name="dataSource" ref="util_datasource"/>
+		<property name="strategy" ref="packageSuffixStrategy"/>
+		<property name="blockSize" value="1"/>
+		<property name="table" value="myIdstest"/>
+		<property name="key" value="test"/>						
+	</bean>
+	
+	<bean name="Ids-TestWithMixStrategyMaxCiphers" class="org.anyframe.idgen.impl.TableIdGenServiceImpl" destroy-method="destroy">
+		<property name="dataSource" ref="util_datasource"/>
+		<property name="strategy" ref="ignoreMaxCiphersStrategy"/>
+		<property name="blockSize" value="1"/>
+		<property name="table" value="myIdstest"/>	
+	</bean>				
+	
+	<bean name="Ids-TestWithClassNameStrategyMaxCiphers" class="org.anyframe.idgen.impl.TableIdGenServiceImpl" destroy-method="destroy">
+		<property name="dataSource" ref="util_datasource"/>
+		<property name="strategy" ref="ignoreMaxCiphersClassNameStrategy"/>
+		<property name="blockSize" value="1"/>
+		<property name="table" value="myIdstest"/>	
+	</bean>				
+	
+	<bean name="Ids-TestWithPackageNameStrategyMaxCiphers" class="org.anyframe.idgen.impl.TableIdGenServiceImpl" destroy-method="destroy">
+		<property name="dataSource" ref="util_datasource"/>
+		<property name="strategy" ref="ignoreMaxCiphersPackageNameStrategy"/>
+		<property name="blockSize" value="1"/>
+		<property name="table" value="myIdstest"/>	
+	</bean>				
+	
+	<bean name="Ids-TestWithPackageStrategyMaxCiphers" class="org.anyframe.idgen.impl.TableIdGenServiceImpl" destroy-method="destroy">
+		<property name="dataSource" ref="util_datasource"/>
+		<property name="strategy" ref="ignoreMaxCiphersPackageStrategy"/>
+		<property name="blockSize" value="1"/>
+		<property name="table" value="myIdstest"/>
+	</bean>				
+	
+	<bean name="ignoreMaxCiphersPackageStrategy" class="org.anyframe.idgen.impl.strategy.PackageStrategy">
+		<property name="packageIds">
+			<props>
+				<prop key="org.anyframe.idgen">TB</prop>
+			</props>
+		</property>
+		<property name="prefix" value="true"/>
+		<property name="maxCiphers" value="1"/>
+		<property name="ignoreMaxCiphers" value="false"/>
+		<property name="paddingChar" value="*"/>
+		<property name="separator" value="-"/>
+	</bean>
+	
+	<bean name="ignoreMaxCiphersPackageNameStrategy" class="org.anyframe.idgen.impl.strategy.PackageNameStrategy">
+		<property name="prefix" value="true"/>
+		<property name="maxCiphers" value="1"/>
+		<property name="ignoreMaxCiphers" value="false"/>
+		<property name="paddingChar" value="*"/>
+		<property name="separator" value="-"/>
+	</bean>
+	
+	<bean name="ignoreMaxCiphersClassNameStrategy" class="org.anyframe.idgen.impl.strategy.ClassNameStrategy">
+		<property name="prefix" value="true"/>
+		<property name="maxCiphers" value="1"/>
+		<property name="ignoreMaxCiphers" value="false"/>
+		<property name="paddingChar" value="*"/>
+		<property name="separator" value="-"/>
+	</bean>
+	
+	<bean name="ignoreMaxCiphersStrategy" class="org.anyframe.idgen.impl.strategy.MixStrategy">
+		<property name="prefix" value="TEST-"/>
+		<property name="maxCiphers" value="1"/>
+		<property name="ignoreMaxCiphers" value="false"/>
+		<property name="paddingChar" value="*"/>
+	</bean>
+	
+	<bean name="classStrategy" class="org.anyframe.idgen.impl.strategy.ClassNameStrategy">
+		<property name="prefix" value="true"/>
+		<property name="maxCiphers" value="5"/>
+		<property name="paddingChar" value="*"/>
+		<property name="separator" value="-"/>
+	</bean>
+	
+	<bean name="packageNameStrategy" class="org.anyframe.idgen.impl.strategy.PackageNameStrategy">
+		<property name="prefix" value="false"/>
+		<property name="maxCiphers" value="5"/>
+		<property name="paddingChar" value="*"/>
+		<property name="separator" value="-"/>
+	</bean>
+	
+	<bean id="packageStrategy" class="org.anyframe.idgen.impl.strategy.PackageStrategy">
+		<property name="packageIds">
+			<props>
+				<prop key="org.anyframe.idgen.impl">TB</prop>
+				<prop key="org.anyframe.idgen">TBP</prop>
+			</props>
+		</property>
+		<property name="prefix" value="true"/>
+		<property name="maxCiphers" value="5"/>
+		<property name="paddingChar" value="*"/>
+		<property name="separator" value="-"/>
+	</bean>
+	
+	<bean id="packageSuffixStrategy" class="org.anyframe.idgen.impl.strategy.PackageStrategy">
+		<property name="packageIds">
+			<props>
+				<prop key="org.anyframe.idgen">TBP</prop>
+			</props>
+		</property>
+		<property name="suffix" value="true"/>
+		<property name="maxCiphers" value="5"/>
+		<property name="paddingChar" value="*"/>
+		<property name="separator" value="-"/>
+	</bean>
+	
+	<bean name="mixStrategyWithSmallColumnSizeThanNextId" class="org.anyframe.idgen.impl.strategy.MixStrategy">
+		<property name="prefix" value="TEST-"/>
+		<property name="maxCiphers" value="5"/>
+		<property name="paddingChar" value="*"/>
+	</bean>
+	
+	<bean name="Ids-TestGenerateTableIdWithColumnSizeSmallerThanNextId" class="org.anyframe.idgen.impl.TableIdGenServiceImpl" destroy-method="destroy">
+		<property name="dataSource" ref="util_datasource"/>
+		<property name="strategy" ref="mixStrategyWithSmallColumnSizeThanNextId"/>
+		<property name="blockSize" value="1"/>
+		<property name="table" value="ids_maxciphertest"/>
+		<property name="key" value="test"/>						
+	</bean>
+	
+</beans>	

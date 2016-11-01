@@ -14,7 +14,7 @@
 	<property name="subv.password" value="${env.SVN_PASSWORD}" />
 
 	<property name="book.name" value="scheduling" />
-	<property name="version" value="1.5.2" />
+	<property name="version" value="1.6.0" />
 	<property name="service.name" value="anyframe-scheduling" />
 	
 	<!--
@@ -26,7 +26,8 @@
 	<property name="plugin.type" value="optional" />
 	<property name="result.dir" value="E:/Repo/anyframe-opensource/docs/anyframe/plugin/${plugin.type}" />
 	<property name="settings.file" value="E:/workspace/service/maven-settings-public.xml" />
-
+	<property name="localRepo.dir" value="F:/.m2/repository" />
+	
 	<!--
       - Configure basic properties that will be used in the file.
       -->
@@ -272,10 +273,15 @@
 	<target name="javadoc" depends="checkout-service">
 		<echo message="Make Javadoc API" />
 		
-		<artifact:pom file="${service.home}/pom.xml" id="service.pomfile" />
+		<artifact:localRepository id="local.repository" path="${localRepo.dir}"/>
+		
+		<artifact:pom file="${service.home}/pom.xml" id="service.pomfile">
+			<localRepository refid="local.repository"/>
+		</artifact:pom>
 
 		<artifact:dependencies filesetId="service.dependencies" pathId="service.dependencies.path" useScope="compile">
 			<pom refid="service.pomfile" />
+			<localRepository refid="local.repository"/>
 		</artifact:dependencies>
 		
 		<mkdir dir="${service.home}/repo-temp" />
@@ -294,8 +300,8 @@
 			<bottom><![CDATA[<i>Copyright &#169; 2012, www.anyframejava.org, All Rights Reserved.</i>]]></bottom>
 			<tag name="todo" scope="all" description="TODO:" />
 			<group title="Anyframe" packages="org.anyframe.*" />
-			<link href="http://docs.oracle.com/javase/1.5.0/docs/api/" />
-			<link href="http://static.springsource.org/spring/docs/3.1.x/javadoc-api/" />
+			<link href="http://docs.oracle.com/javase/6/docs/api/" />
+			<link href="http://docs.spring.io/spring/docs/4.0.x/javadoc-api/" />
 		</javadoc>
 
 		<delete dir="${service.home}/repo-temp" />

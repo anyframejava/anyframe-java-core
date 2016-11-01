@@ -1,0 +1,150 @@
+<?xml version="1.0" encoding="utf-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-4.0.xsd">
+
+	<bean name="uuidGenService" class="org.anyframe.idgen.impl.UUIdGenServiceImpl">
+		<property name="address" value="00:00:F0:79:19:5B"/>
+	</bean>
+
+	<bean name="tableIdGenSimpleService" class="org.anyframe.idgen.impl.TableIdGenServiceImpl"
+		destroy-method="destroy">
+		<property name="dataSource" ref="dataSource" />
+		<property name="blockSize" value="1"/>
+		<property name="table" value="IDS"/>
+	</bean>
+	
+	<bean name="tableIdGenSimpleServiceWithKey" class="org.anyframe.idgen.impl.TableIdGenServiceImpl"
+		destroy-method="destroy">
+		<property name="dataSource" ref="dataSource" />
+		<property name="blockSize" value="1"/>
+		<property name="table" value="IDS"/>
+		<property name="key" value="IDGEN_MOVIE"/>
+	</bean>
+
+	<bean name="tableIdGenWithPrefix" class="org.anyframe.idgen.impl.TableIdGenServiceImpl"
+		destroy-method="destroy">
+		<property name="dataSource" ref="dataSource" />
+		<property name="strategy" ref="tableIdWithPrefix" />
+		<property name="blockSize" value="1"/>
+		<property name="table" value="IDS"/>
+	</bean>
+
+	<bean name="tableIdGenWithSuffix" class="org.anyframe.idgen.impl.TableIdGenServiceImpl"
+		destroy-method="destroy">
+		<property name="dataSource" ref="dataSource" />
+		<property name="strategy" ref="tableIdWithSuffix" />
+		<property name="blockSize" value="1"/>
+		<property name="table" value="IDS"/>
+	</bean>
+
+	<bean name="tableIdGenWithFix" class="org.anyframe.idgen.impl.TableIdGenServiceImpl"
+		destroy-method="destroy">
+		<property name="dataSource" ref="dataSource" />
+		<property name="strategy" ref="tableIdWithFix" />
+		<property name="blockSize" value="1"/>
+		<property name="table" value="IDS"/>
+	</bean>
+	
+	<bean name="tableIdGenWithClassName" class="org.anyframe.idgen.impl.TableIdGenServiceImpl"
+		destroy-method="destroy">
+		<property name="dataSource" ref="dataSource" />
+		<property name="strategy" ref="tableIdWithClassName" />
+		<property name="blockSize" value="1"/>
+		<property name="table" value="IDS"/>
+	</bean>
+	
+	<bean name="tableIdGenWithPackageName" class="org.anyframe.idgen.impl.TableIdGenServiceImpl"
+		destroy-method="destroy">
+		<property name="dataSource" ref="dataSource" />
+		<property name="strategy" ref="tableIdWithPackageName" />
+		<property name="blockSize" value="1"/>
+		<property name="table" value="IDS"/>
+	</bean>
+	
+	<bean name="tableIdGenWithPackage" class="org.anyframe.idgen.impl.TableIdGenServiceImpl"
+		destroy-method="destroy">
+		<property name="dataSource" ref="dataSource" />
+		<property name="strategy" ref="tableIdWithPackage" />
+		<property name="blockSize" value="1"/>
+		<property name="table" value="IDS"/>
+	</bean>
+	
+	<bean name="tableIdGenWithTimestamp" class="org.anyframe.idgen.impl.TableIdGenServiceImpl"
+		destroy-method="destroy">
+		<property name="dataSource" ref="dataSource" />
+		<property name="blockSize" value="1"/>
+		<property name="table" value="IDS"/>
+		<property name="strategy" ref="timestamp"/>
+	</bean>	
+
+	<bean name="tableIdWithPrefix" class="org.anyframe.idgen.impl.strategy.MixStrategy">
+		<property name="prefix" value="MV-" />
+		<property name="maxCiphers" value="5" />
+		<property name="paddingChar" value="*" />
+	</bean>
+
+	<bean name="tableIdWithSuffix" class="org.anyframe.idgen.impl.strategy.MixStrategy">
+		<property name="suffix" value="-MV" />
+		<property name="maxCiphers" value="5" />
+		<property name="paddingChar" value="*" />
+	</bean>
+
+	<bean name="tableIdWithFix" class="org.anyframe.idgen.impl.strategy.MixStrategy">
+		<property name="prefix" value="MV-" />
+		<property name="suffix" value="-KO" />
+		<property name="maxCiphers" value="5" />
+		<property name="paddingChar" value="*" />
+	</bean>
+	
+	<bean name="tableIdWithClassName" class="org.anyframe.idgen.impl.strategy.ClassNameStrategy">
+		<property name="prefix" value="true" />
+		<property name="maxCiphers" value="5" />
+		<property name="paddingChar" value="*" />
+		<property name="separator" value="-" />
+	</bean>
+
+	<bean name="tableIdWithPackageName" class="org.anyframe.idgen.impl.strategy.PackageNameStrategy">
+		<property name="prefix" value="true" />
+		<property name="maxCiphers" value="5" />
+		<property name="paddingChar" value="*" />
+		<property name="separator" value="-" />
+	</bean>
+
+	<bean id="tableIdWithPackage" class="org.anyframe.idgen.impl.strategy.PackageStrategy">
+		<property name="packageIds">
+			<props>
+				<prop key="org.anyframe.plugin.idgen">TBP</prop>
+			</props>
+		</property>
+		<property name="prefix" value="true"/>
+		<property name="maxCiphers" value="5"/>
+		<property name="paddingChar" value="*"/>
+		<property name="separator" value="-"/>
+	</bean>
+	
+	<bean name="timestamp" class="org.anyframe.idgen.impl.strategy.TimestampStrategy">
+		<property name="prefix" value="true" />
+		<property name="pattern" value="yyyy-MM-dd" />
+		<property name="separator" value="-"/>
+		<property name="maxCiphers" value="5" />
+		<property name="paddingChar" value="0" />
+	</bean>	
+	
+<!--idgen-sequenceIdGenService-START-->
+	<bean name="sequenceIdGenService" class="org.anyframe.idgen.impl.SequenceIdGenServiceImpl"
+		destroy-method="destroy">
+		<property name="dataSource" ref="dataSource" />
+		<property name="query" value="SELECT NEXT VALUE FOR IDGEN_SEQ FROM IDS"/>	
+	</bean>
+<!--idgen-sequenceIdGenService-END-->	
+
+	<bean name="tableIdGenWithCustomColumn" class="org.anyframe.idgen.impl.TableIdGenServiceImpl" destroy-method="destroy">
+		<property name="dataSource" ref="dataSource"/>
+		<property name="blockSize" value="1"/>
+		<property name="table" value="MY_IDS"/>
+		<property name="key" value="test"/>
+		<property name="keyColumn" value="MY_KEY"/>
+		<property name="nextValueColumn" value="MY_ID"/>				
+	</bean>
+</beans>

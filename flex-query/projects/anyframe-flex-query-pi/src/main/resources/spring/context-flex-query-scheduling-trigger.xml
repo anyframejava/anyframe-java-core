@@ -1,0 +1,32 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-4.0.xsd">
+
+	
+	<bean id="stockJob"
+		class="org.springframework.scheduling.quartz.MethodInvokingJobDetailFactoryBean">
+		<property name="targetObject" ref="stockService" />
+		<property name="targetMethod" value="makeRamdomMessage" />
+		<property name="concurrent" value="false" />
+	</bean>
+	
+		<bean id="stockTrigger"
+		class="org.springframework.scheduling.quartz.SimpleTriggerFactoryBean">
+		<property name="jobDetail" ref="stockJob" />
+		<property name="startDelay" value="0" />
+		<property name="repeatInterval" value="1000" />
+	</bean>
+	
+	<!-- JMS Push -->
+	<!-- 
+	<bean id="scheduler"
+		class="org.springframework.scheduling.quartz.SchedulerFactoryBean">
+		<property name="triggers">
+			<list>
+				<ref bean="stockTrigger" /> 
+			</list>
+		</property>
+	</bean>
+	-->
+</beans>

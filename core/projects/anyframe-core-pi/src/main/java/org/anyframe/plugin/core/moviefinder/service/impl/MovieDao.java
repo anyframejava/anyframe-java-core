@@ -27,6 +27,7 @@ import org.anyframe.pagination.Page;
 import org.anyframe.plugin.core.domain.Genre;
 import org.anyframe.plugin.core.domain.Movie;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.core.annotation.Order;
 import org.springframework.dao.DataAccessException;
 import org.springframework.jdbc.core.BeanPropertyRowMapper;
 import org.springframework.jdbc.core.JdbcTemplate;
@@ -38,10 +39,12 @@ import org.springframework.stereotype.Repository;
 /**
  * This MovieDao class is a DAO class to provide movie crud functionality.
  * 
+ * @author Joonbo Jang
  * @author Sooyeon Park
  */
 @Repository("coreMovieDao")
-public class MovieDao extends JdbcDaoSupport {
+@Order(value = 2)
+public class MovieDao extends JdbcDaoSupport implements GenericDao<Movie> {
 
 	//Velocity-Support-contextProperties-START
 	@Value("#{contextProperties['pageSize'] ?: 10}")
@@ -49,6 +52,7 @@ public class MovieDao extends JdbcDaoSupport {
 
 	@Value("#{contextProperties['pageUnit'] ?: 10}")
 	int pageUnit;
+
 	//Velocity-Support-contextProperties-END
 
 	@Inject
@@ -64,11 +68,8 @@ public class MovieDao extends JdbcDaoSupport {
 
 		super.getJdbcTemplate().update(
 				sql,
-				new Object[] { movie.getMovieId(), movie.getTitle(),
-						movie.getDirector(), movie.getGenre().getGenreId(),
-						movie.getActors(), movie.getRuntime(),
-						movie.getReleaseDate(), movie.getTicketPrice(),
-						movie.getNowPlaying() });
+				new Object[] { movie.getMovieId(), movie.getTitle(), movie.getDirector(), movie.getGenre().getGenreId(), movie.getActors(), movie.getRuntime(),
+						movie.getReleaseDate(), movie.getTicketPrice(), movie.getNowPlaying() });
 	}
 
 	public void remove(String movieId) {
@@ -80,27 +81,19 @@ public class MovieDao extends JdbcDaoSupport {
 		String sql = "UPDATE MOVIE SET title = ?, director = ?, genre_id = ?, actors = ?, runtime = ?, release_date = ?, ticket_price = ?, now_playing = ? WHERE movie_id = ?";
 		super.getJdbcTemplate().update(
 				sql,
-				new Object[] { movie.getTitle(), movie.getDirector(),
-						movie.getGenre().getGenreId(), movie.getActors(),
-						movie.getRuntime(), movie.getReleaseDate(),
-						movie.getTicketPrice(), movie.getNowPlaying(),
-						movie.getMovieId() });
+				new Object[] { movie.getTitle(), movie.getDirector(), movie.getGenre().getGenreId(), movie.getActors(), movie.getRuntime(),
+						movie.getReleaseDate(), movie.getTicketPrice(), movie.getNowPlaying(), movie.getMovieId() });
 
 	}
 
 	public Movie get(String movieId) {
 		String sql = "SELECT movie_id, title, director, genre_id, release_date, ticket_price, actors, runtime, now_playing FROM MOVIE WHERE movie_id = ?";
-		return super.getJdbcTemplate().queryForObject(sql,
-				new BeanPropertyRowMapper<Movie>(Movie.class) {
-					public Movie mapRow(ResultSet rs, int i)
-							throws SQLException {
-						return new Movie(rs.getString(1), rs.getString(2), rs
-								.getString(3), new Genre(rs.getString(4), ""),
-								rs.getDate(5), new Float(rs.getFloat(6)), rs
-										.getString(7), new Long(rs.getLong(8)),
-								rs.getString(9));
-					}
-				}, new Object[] { movieId });
+		return super.getJdbcTemplate().queryForObject(sql, new BeanPropertyRowMapper<Movie>(Movie.class) {
+			public Movie mapRow(ResultSet rs, int i) throws SQLException {
+				return new Movie(rs.getString(1), rs.getString(2), rs.getString(3), new Genre(rs.getString(4), ""), rs.getDate(5), new Float(rs.getFloat(6)),
+						rs.getString(7), new Long(rs.getLong(8)), rs.getString(9));
+			}
+		}, new Object[] { movieId });
 	}
 
 	/**
@@ -111,24 +104,15 @@ public class MovieDao extends JdbcDaoSupport {
 	public Page getPagingList(Movie movie, int pageIndex) {
 		String fromSql = " FROM MOVIE movie, GENRE genre";
 		String CONCAT = "'%" + movie.getTitle() + "%'";
-		String whereSql = " WHERE movie.genre_id = genre.genre_id AND title like "
-				+ CONCAT + " AND movie.now_playing = ?";
+		String whereSql = " WHERE movie.genre_id = genre.genre_id AND title like " + CONCAT + " AND movie.now_playing = ?";
 
-		Page result = fetchPage(
-				super.getJdbcTemplate(),
-				"SELECT count(*)" + fromSql + whereSql,
+		Page result = fetchPage(super.getJdbcTemplate(), "SELECT count(*)" + fromSql + whereSql,
 				"SELECT movie.movie_id, movie.title, movie.director, genre.genre_id, genre.name, "
-						+ "movie.release_date, movie.ticket_price, movie.actors, movie.runtime, movie.now_playing "
-						+ fromSql + whereSql, new Object[] { movie
-						.getNowPlaying() }, pageIndex,
-				new ParameterizedRowMapper<Movie>() {
-					public Movie mapRow(ResultSet rs, int i)
-							throws SQLException {
-						return new Movie(rs.getString(1), rs.getString(2), rs
-								.getString(3), new Genre(rs.getString(4), rs
-								.getString(5)), rs.getDate(6), new Float(rs
-								.getFloat(7)), rs.getString(8), new Long(rs
-								.getLong(9)), rs.getString(10));
+						+ "movie.release_date, movie.ticket_price, movie.actors, movie.runtime, movie.now_playing " + fromSql + whereSql,
+				new Object[] { movie.getNowPlaying() }, pageIndex, new ParameterizedRowMapper<Movie>() {
+					public Movie mapRow(ResultSet rs, int i) throws SQLException {
+						return new Movie(rs.getString(1), rs.getString(2), rs.getString(3), new Genre(rs.getString(4), rs.getString(5)), rs.getDate(6),
+								new Float(rs.getFloat(7)), rs.getString(8), new Long(rs.getLong(9)), rs.getString(10));
 					}
 				});
 
@@ -136,22 +120,19 @@ public class MovieDao extends JdbcDaoSupport {
 	}
 
 	@SuppressWarnings("unchecked")
-	private Page fetchPage(final JdbcTemplate jt, final String sqlCountRows,
-			final String sqlFetchRows, final Object args[], final int pageNo,
+	private Page fetchPage(final JdbcTemplate jt, final String sqlCountRows, final String sqlFetchRows, final Object args[], final int pageNo,
 			final ParameterizedRowMapper<Movie> rowMapper) {
 
 		// determine how many rows are available
 		final int rowCount = jt.queryForObject(sqlCountRows, args, Integer.class);
 
 		// create the page object
-		final Page page = new Page(new ArrayList<Movie>(), pageNo, rowCount,
-				pageUnit, pageSize);
+		final Page page = new Page(new ArrayList<Movie>(), pageNo, rowCount, pageUnit, pageSize);
 
 		// fetch a single page of results
 		final int startRow = (pageNo - 1) * pageSize;
 		jt.query(sqlFetchRows, args, new ResultSetExtractor() {
-			public Object extractData(ResultSet rs) throws SQLException,
-					DataAccessException {
+			public Object extractData(ResultSet rs) throws SQLException, DataAccessException {
 				final List<Movie> pageItems = (List<Movie>) page.getList();
 				int currentRow = 0;
 				while (rs.next() && currentRow < startRow + pageSize) {
@@ -165,4 +146,15 @@ public class MovieDao extends JdbcDaoSupport {
 		});
 		return page;
 	}
+
+	@Override
+	public List<Movie> getList() {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	public String getDaoName() {
+		return getClass().getName();
+	}
+
 }

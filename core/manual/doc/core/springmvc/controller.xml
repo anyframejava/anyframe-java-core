@@ -160,6 +160,11 @@ include-filter를 사용했기 때문에 이 WebApplicationContext에는 @Contol
 				<para>@RequestBody/@ResponseBody : 핸들러 메소드가 HTTP Request와 Response의 Body 메세지 전체를 직접 접근할 경우에 사용 가능.
 				(HttpEntity 객체를 이용하여 HTTP Request나 Response의 Body 메세지나 Header 값을 처리할 수도 있다.)</para>
 			</listitem>
+			<listitem>
+				<para>@RestController : @Controller 와 @ResponseBody 를 합친 동작을 하는 Annotation. Stereotype Annotation으로, 
+				componenet scan을 통해 bean으로 등록해서 사용 할 수 있다.
+				</para>
+			</listitem>
 		</itemizedlist>
 
 		<section id="core_springmvc_controller_implementation_controller">
@@ -194,7 +199,7 @@ public class MovieController {
 			<para>
 				또한, Spring 3 부터 REST 스타일의 Web Application 개발을 위해서 URI templates을 지원하기 시작했다. 
 				Spring 3에서 추가된 REST 관련 기능들과 REST Style 웹 어플리케이션 개발에 대한 자세한 내용은
-				본 매뉴얼 <ulink url="http://dev.anyframejava.org/docs/anyframe/plugin/optional/springrest/1.0.5/reference/htmlsingle/springrest.html#springrest_restsupport_part">Spring REST Plugin</ulink>을 
+				본 매뉴얼 <ulink url="http://dev.anyframejava.org/docs/anyframe/plugin/optional/springrest/1.1.0/reference/htmlsingle/springrest.html#springrest_restsupport_part">Spring REST Plugin</ulink>을 
 				참고하기 바란다.
 			</para>
 			<para>다음은 @RequestMapping을 사용하여 처리할 URL을 매핑한 코드예이다.    
@@ -562,7 +567,7 @@ public String addMovie(<emphasis role="bold">OutputStream os</emphasis>, Movie m
 						</para>
 
 						<para>URI template 내의 변수를 핸들러 메소드에서 접근할 경우</para>
-						<para>@PathVariable에 대한 자세한 사용 방법은 본 매뉴얼 >> Spring REST Plugin >> <ulink url="http://dev.anyframejava.org/docs/anyframe/plugin/optional/springrest/1.0.5/reference/htmlsingle/springrest.html#springrest_restsupport_uritemplate">URI Template</ulink> 참고</para>
+						<para>@PathVariable에 대한 자세한 사용 방법은 본 매뉴얼 >> Spring REST Plugin >> <ulink url="http://dev.anyframejava.org/docs/anyframe/plugin/optional/springrest/1.1.0/reference/htmlsingle/springrest.html#springrest_restsupport_uritemplate">URI Template</ulink> 참고</para>
                         <programlisting language="java">@RequestMapping(<emphasis role="bold">value = "/movies/{movieId}/edit"</emphasis>, method = RequestMethod.GET)
 public String get(<emphasis role="bold">@PathVariable String movieId</emphasis>, Model model)
         throws Exception {
@@ -791,7 +796,7 @@ public <emphasis role="bold">Map</emphasis> getMovieList() {
 							여기서 View에 대한 정보를 명시적으로 리턴하지는 않았지만, 내부적으로 View 이름은 
 							RequestToViewNameTranslator에 의해서 입력된 HTTP Request를 이용하여 생성된다. 예를 들어
 							<ulink
-							url="http://static.springsource.org/spring/docs/3.0.x/javadoc-api/org/springframework/web/servlet/view/DefaultRequestToViewNameTranslator.html">DefaultRequestToViewNameTranslator</ulink>
+							url="http://static.springsource.org/spring/docs/4.0.x/javadoc-api/org/springframework/web/servlet/view/DefaultRequestToViewNameTranslator.html">DefaultRequestToViewNameTranslator</ulink>
 							는 입력된 HTTP Request URI를 변환하여 View 이름을 다음과 같이 생성한다.
                             <programlisting language="java">http://localhost:8080/anyframe-sample/display.do
     -> 생성된 View 이름 : 'display'
@@ -818,14 +823,14 @@ http://localhost:8080/anyframe-sample/admin/index.do
 						<para>
 							Web View로 전달할 데이터만 리턴하는 경우
 							<ulink 
-							url="http://static.springsource.org/spring/docs/3.0.x/javadoc-api/org/springframework/ui/Model.html">Model
+							url="http://static.springsource.org/spring/docs/4.0.x/javadoc-api/org/springframework/ui/Model.html">Model
 							</ulink>은 Java-5 이상에서 사용할 수 있는 인터페이스이다. 기본적으로 ModelMap과 같은 기능을 제공한다. Model
 							인터페이스의 구현클래스에는
 							<ulink
-							url="http://static.springsource.org/spring/docs/3.0.x/javadoc-api/org/springframework/validation/support/BindingAwareModelMap.html">BindingAwareModelMap
+							url="http://static.springsource.org/spring/docs/4.0.x/javadoc-api/org/springframework/validation/support/BindingAwareModelMap.html">BindingAwareModelMap
 							</ulink> 와
 							<ulink
-							url="http://static.springsource.org/spring/docs/3.0.x/javadoc-api/org/springframework/ui/ExtendedModelMap.html">ExtendedModelMap
+							url="http://static.springsource.org/spring/docs/4.0.x/javadoc-api/org/springframework/ui/ExtendedModelMap.html">ExtendedModelMap
 							</ulink> 이 있다. View 이름은 위에서 설명한 바와 같이 RequestToViewNameTranslator에 의해 내부적으로
 							생성된다.
                             <programlisting language="java">@RequestMapping("/movieList.do")
@@ -1002,7 +1007,7 @@ public String add(<emphasis role="bold">@RequestBody Movie movie</emphasis>) thr
 				위와 같은 MessageConverter들이 어플리케이션에서 사용되려면 AnnotationMethodHandlerAdapter에 설정되어 있어야한다.
 				AnnotationMethodHandlerAdapter에 <emphasis role="bold">"messageConverters" 속성을 이용</emphasis>하여 설정할 수도 있지만, 
 				앞서 언급했던 <emphasis role="bold"><![CDATA[<mvc:annotation-driven />]]></emphasis>만 정의하면 디폴트로 자동으로 등록해준다.
-				MessageConverter에 대한 더 자세한 내용은 본 매뉴얼 >> Spring REST Plugin >> <ulink url="http://dev.anyframejava.org/docs/anyframe/plugin/optional/springrest/1.0.5/reference/htmlsingle/springrest.html#springrest_restsupport_httpmessageconversion">HTTP Message Conversion</ulink>을 참고하기 바란다.
+				MessageConverter에 대한 더 자세한 내용은 본 매뉴얼 >> Spring REST Plugin >> <ulink url="http://dev.anyframejava.org/docs/anyframe/plugin/optional/springrest/1.1.0/reference/htmlsingle/springrest.html#springrest_restsupport_httpmessageconversion">HTTP Message Conversion</ulink>을 참고하기 바란다.
 			</para>
 		</section>
 		
@@ -1024,6 +1029,52 @@ public String welcome() {
 
 			<para>
 				위에서 설명했던 @RequestBody에서와 같이, 핸들러 메소드의 리턴값은 HttpMessageConverter를 통해 HTTP Response Body로 
+				변환된다.
+			</para>
+		</section>
+
+		<section id="core_springmvc_controller_implementation_restcontroller">
+			<title>@RestController</title>
+
+			<para>
+				@RestController Annotation은 @Controller Annotation과 @ResponseBody Annotation을 합친 동작을 수행한다.
+				@Controller와 마찬가지로 Stereotype annotation으로 component scan 이후 bean으로 등록해서 사용할 수 있다.
+				또한 @RestController로 선언한 메소드의 모든 리턴 값을 HTTP Response를 통해서 바로 전달하게 되며, 따라서
+				ViewResolver를 통해 View를 찾는 등의 과정을 거치지 않게 된다. 
+			</para>
+			<para>  
+				다음은 @RestController의 사용 예이다.
+               <programlisting language="java"><emphasis role="bold">@RestController</emphasis>
+@RequestMapping("/restmovies")
+public class RestMovieController {
+
+	@Inject
+	@Named("springrestMovieService")
+	private MovieService movieService;
+	
+	/**
+	 * Generate response
+	 * 
+	 * @param movieId
+	 * @return return Movie object, Response Status : 200 OK
+	 * @throws Exception
+	 */
+	@RequestMapping(value = "/{movieId}", method = RequestMethod.GET)
+	public Movie get(@PathVariable String movieId) throws Exception {
+		Movie movie = this.movieService.get(movieId);
+		
+		if (movie == null) {
+			throw new NotFoundException("Resource Not Found with movieId "
+					+ movieId);
+		}
+		
+		return movie;
+	}
+</programlisting>
+			</para>
+
+			<para>
+				위에서 설명했던 @ResponseBody에서와 같이, 핸들러 메소드의 리턴값은 HttpMessageConverter를 통해 HTTP Response Body로 
 				변환된다.
 			</para>
 		</section>

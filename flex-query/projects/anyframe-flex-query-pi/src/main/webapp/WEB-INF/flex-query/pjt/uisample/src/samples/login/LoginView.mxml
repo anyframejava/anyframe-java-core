@@ -1,0 +1,79 @@
+<?xml version="1.0" encoding="utf-8"?>
+<mx:Panel xmlns:fx="http://ns.adobe.com/mxml/2009" 
+		  xmlns:s="library://ns.adobe.com/flex/spark" 
+		  xmlns:mx="library://ns.adobe.com/flex/mx" 
+		  scroll="false" 
+		  width="222" height="108" 
+		  styleName="panelLogin" 
+		  y="22" x="12" 
+		  titleStyleName="login" 
+		  layout="absolute">
+
+	<fx:Script>
+		<![CDATA[
+			import mx.rpc.events.ResultEvent;
+			import mx.controls.Alert;
+			
+			private function login():void
+			{
+				if (userId.text == ""){
+					callLater(Alert.show,["아이디를 입력하세요!", ""]);
+					userId.setFocus();
+					return;
+				}
+				if (password.text == ""){
+					callLater(Alert.show,["패스워드를 입력하세요!", ""]);
+					password.setFocus();
+					return;
+				}
+				loginService.send();
+			}
+	
+			private function resultLogIn(event:ResultEvent) : void{
+				var checkLogin:String = loginService.lastResult.result.login_result;
+				if(checkLogin == "success" ){
+					callLater(Alert.show,[userId.text + "님 환영합니다!", ""]);
+					parentDocument.currentState="loginMode";
+					parentDocument.login.userName.text = userId.text;
+					parentDocument.loginUser.userId = userId.text;
+					
+					if (saveId.selected){
+						parentDocument.visitHistory.data.userId = userId.text;
+						parentDocument.visitHistory.data.visitCheck  = 1;
+					}else{
+						parentDocument.visitHistory.data.userId = "";
+						parentDocument.visitHistory.data.visitCheck  = 0;
+					}
+
+				}if(checkLogin == "fault"){
+					callLater(Alert.show,["로그인에 실패 했습니다.", ""]);
+					password.text = "";
+					userId.text = ""
+					userId.setFocus();
+			}
+		}
+		]]>
+	</fx:Script>
+	
+	<fx:Declarations>
+		<!-- Place non-visual elements (e.g., services, value objects) here -->
+		<mx:Validator id="val_id"  source="{userId}"  property="text" requiredFieldError="아이디를 입력하세요!"/>
+		<mx:Validator id="val_pwd" source="{password}" property="text" requiredFieldError="패스워드를 입력하세요!"/>
+		
+		<mx:HTTPService id="loginService" method="post" url="./samples/login/login_result.jsp?result_login=success" result="resultLogIn(event)" useProxy="false">
+			<mx:request>
+				<j_username>{userId.text}</j_username>
+				<j_password>{password.text}</j_password>
+				<dummy>{Math.random()*99999999}</dummy>
+			</mx:request>
+		</mx:HTTPService>
+	</fx:Declarations>
+	
+	<mx:TextInput id="userId" width="103" height="17" x="56" y="42" borderThickness="1" borderStyle="solid" cornerRadius="5" borderColor="#abbdd2" backgroundColor="#ffffff" maxChars="16" enter="password.setFocus()" imeMode="ALPHANUMERIC_HALF"/>
+	<mx:Text x="24" y="42" text="ID" fontWeight="bold" color="#666666" width="32"/>
+	<mx:Text x="24" y="61" text="PW" fontWeight="bold" color="#666666" width="32"/>
+	<mx:TextInput id="password" displayAsPassword="true" maxChars="16" enter="login()" imeMode="ALPHANUMERIC_HALF" x="56" y="61" width="103" height="17" borderColor="#abbdd2" cornerRadius="5" backgroundColor="#ffffff" borderThickness="1" borderStyle="solid"/>
+	<mx:Text x="24" y="14" text="Login" fontWeight="bold" color="#000000" width="50"/>
+	<mx:Button x="167" y="43" styleName="buttonLogin" width="28" height="45" toolTip="Login" click="login()"/>
+	<mx:CheckBox x="56" y="80" label="아이디저장하기" id="saveId"/>	
+</mx:Panel>

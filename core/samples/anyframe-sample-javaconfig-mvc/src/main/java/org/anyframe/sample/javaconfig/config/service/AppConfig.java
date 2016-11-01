@@ -9,6 +9,7 @@ import org.springframework.beans.factory.config.PropertiesFactoryBean;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.ComponentScan;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.context.annotation.Description;
 import org.springframework.context.annotation.EnableAspectJAutoProxy;
 import org.springframework.core.io.ClassPathResource;
 import org.springframework.jdbc.datasource.DataSourceTransactionManager;
@@ -38,6 +39,7 @@ public class AppConfig {
 	private @Value("#{contextProperties['password']}") String password;
 	
 	@Bean
+	@Description("Provides Context Properties bean with context.properties file")
 	public PropertiesFactoryBean contextProperties() {
 		PropertiesFactoryBean contextProperties = new PropertiesFactoryBean();
 		contextProperties.setLocation(new ClassPathResource("context.properties"));
@@ -45,6 +47,7 @@ public class AppConfig {
 	}
 	
 	@Bean
+	@Description("Provides dataSource Bean")
 	public DataSource dataSource() {
 		BasicDataSource dataSource = new BasicDataSource();
 		dataSource.setDriverClassName(driver);
@@ -55,6 +58,7 @@ public class AppConfig {
 	}
 
 	@Bean
+	@Description("PRovides transactionManager bean with dataSource bean")
 	public PlatformTransactionManager transactionManager() {
 		return new DataSourceTransactionManager(dataSource());
 	}

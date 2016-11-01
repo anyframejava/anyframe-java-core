@@ -1,0 +1,235 @@
+<chapter id="flex_query_dataintegraion">
+	<title>Flex의 Data 연동</title>
+	<section id="flex_query_dataintegraion_sec001">
+		<title>Flex 기본 Data 연동</title>
+		<para>
+			Flex Client와 Server측과의 데이터 통신 방신에는 기본적으로 두 가지 방식이 있다. HTTPService와 WebService이다.
+			이 두가지 통신 방식은 LCDS나 BlazeDS없이도 실행 가능하다.
+		</para>
+		<itemizedlist>
+			<listitem>
+				<para><emphasis role="bold">HTTPService</emphasis> : HTTPService 방식은 Flex Client에서 Get, Post방식으로 
+				서버측에 데이터를 전송하고 결과 값을 XML로 받는다. 기존의 Web Application을 수정하여 XML로 데이터를 리턴하기만 하면 
+				Flex UI기반으로 쉽게 개발 할 수 있다. 대신 XML의 경우 데이터량이 증가할 경우 데이터 전송 용량이 커지게 되므로 성능에는 문제가 있다.
+				 </para>
+			</listitem>
+			<listitem>
+				<para><emphasis role="bold">WebService</emphasis> : WebService 방식은 WebService로 노출되어 있는 URL을 호출하고
+				결과값을 SOAP형태로 리턴받는다. HTTPService방식과 마찬가지로 데이터량이 증가할 경우 성능에 문제가 있다.
+				 </para>
+			</listitem>
+  		</itemizedlist>
+  		<section id="flex_query_dataintegraion_sec001_001">
+  		<title>HTTPService</title>
+  		<para>
+  			Flex MXML파일에서 HTTPService를 사용하기 위해서는 <![CDATA[<mx:HTTPService>]]>를 이용하면 된다. 다음은 HTTPService를 이용해 사용자 인증을 하는 샘플 소스이다.
+  		</para>
+  		<programlisting language="xml"><![CDATA[<mx:HTTPService id="categoryService" method="post" 
+    url="../categoryList.do" result="getCtegoryListResult(event)" useProxy="false">
+    <mx:request>
+        <search_condition>{searchCondition.text}</search_condition>
+        <search_keyword>{searchKeyword.text}</search_keyword>
+    </mx:request>
+</mx:HTTPService>
+...중략
+
+private function getCategoryList():void
+{
+    ...중략
+    categoryService.send();
+}]]></programlisting>
+	<para>
+		위의 소스의 경우 getCategoryList메소드가 호출되면 HTTPService에 설정된 url이 호출되고 request태그 안의 값들을 post방식으로 전달한다. 
+		결과 값은 XML형태로 리턴받고 getCategoryListResult메소드에서 처리한다. HTTPService를 BlazeDS없이 사용할 경우에는 useProxy값을 false로 세팅해야 한다.
+	</para>
+  		</section>
+  		<section id="flex_query_dataintegraion_sec001_002">
+  		<title>WebService</title>
+  		<para>
+  		WebService를 호출 하기 위한 예는 다음과 같다.
+  		</para>
+  		<programlisting language="xml"><![CDATA[<mx:WebService id="categoryService" 
+    wsdl="http://localhost:8080/anyframe.samples.ria.flex/getCategoryList.cfc?wsdl" 
+    result="getCategoryListResult(event)" useProxy="false">
+    <mx:operation name="getCategoryList">
+        <mx:request>
+            <search_condition>{searchCondition.text}</search_condition>
+        		<search_keyword>{searchKeyword.text}</search_keyword>
+        </mx:request>
+    </mx:operation>
+</mx:WebService>]]></programlisting>
+	<para>
+	categoryService.getCategoryList.send()를 실행하게 되면 지정된 wsdl 값을 이용하여 WebService를 호출하게 되고 결과는 getCategoryListResult함수에서 처리한다.
+	</para>
+	<programlisting language="xml"><![CDATA[private function getCategoryListResult(event:ResultEvent):void{
+    grdCategory.dataProvider = event.result;
+}
+...중략
+<mx:DataGrid id="grdCategory.dataProvider" fontSize="14" width="800"/>]]></programlisting>
+  		</section>
+	</section>
+		<section id="flex_query_dataintegraion_sec002">
+		<title>BlazeDS를 이용한 Data 연동</title>
+		<para>
+			BlazeDS를 사용할 때에는 HTTPService, WebService 외에 Proxy 방식의 HTTPService, WebService와 RemotingService, MessageService를 사용할 수 있다. 
+		</para>
+		<itemizedlist>
+			<listitem>
+				<para><emphasis role="bold">HTTPProxyService</emphasis> : Flex에서 기본으로 제공하는 HTTPService와 비슷하지만 MXML에 직접 url을 입력하지 않고
+				BlazeDS 설정 파일에 등록된 Destination을 참고로 url을 호출한다. 호출해야 할 url이 변경되어도 MXML파일을 수정하지 않아도 되고 MXML에 url이 노출되지 않으므로
+				보안에도 이점이 있다. 
+				 </para>
+			</listitem>
+			<listitem>
+				<para><emphasis role="bold">WebService(Proxy)</emphasis> : HTTPProxy서비스와 마찬가지로 wsdl의 위치를 BlazeDS 설정 파일에 Destination으로 등록한다.
+				 </para>
+			</listitem>
+			<listitem>
+				<para><emphasis role="bold">RemotingService</emphasis> : RemotingService는 WAS에 등록된 자바 객체의 메소드를 호출하는 방법으로 
+				AMF채널을 이용해 결과값을 직렬화된 객체로 리턴받는 방식이다. SpringBlazeDS Integration을 이용할 경우 Flex Client에서 Spring Bean의 메소드를 호출 할 수 있다.
+				 </para>
+			</listitem>
+			<listitem>
+				<para><emphasis role="bold">MessageService</emphasis> : Producer에서 데이터를 제공하면 BlazeDS Application MessageService 큐에 쌓이게 되고 쌓여진 메세지는
+				Consumer에게 전달된다.
+				 </para>
+			</listitem>
+  		</itemizedlist>
+  		<section id="flex_query_dataintegraion_sec002_001">
+  		<title>HTTPProxyService</title>
+  		<para>
+			Flex에서 기본으로 제공하는 HTTPService와 MXML의 작성방법은 유사하다. 
+			단 useProxy의 속성 값을 true로 해야하고 url대신 destination 속성 값을 정의한다.
+  		</para>
+  		<programlisting language="xml"><![CDATA[<mx:HTTPService id="categoryService" 
+    destination="categoryService" result="getCtegoryListResult(event)" useProxy="true">
+    <mx:request>
+        <search_condition>{searchCondition.text}</search_condition>
+        <search_keyword>{searchKeyword.text}</search_keyword>
+	</mx:request>
+</mx:HTTPService>
+...중략
+
+private function getCategoryList():void
+{
+    ...중략
+    categoryService.send();
+}]]></programlisting>
+<para>
+	위와 같이 MXML을 작성 했다면 BlazeDS 설정 파일 중 HTTPProxyService에 대한 설정 파일인 
+	proxy-config.xml파일에 다음과 같이 categoryService란 이름의 destination을 등록한다.
+</para>
+<programlisting language="xml"><![CDATA[<destinaion id="categoryService">
+    <properties>
+        <url>anyframe.samples.ria.flex/getCategoryList.do</url>
+    </properties>
+</destination>]]></programlisting>
+  		</section>
+  		<section id="flex_query_dataintegraion_sec002_002">
+  		<title>RemotingService</title>
+  		<para>
+			RemotingService를 사용하기 위해서는 BlazeDS 설정 파일(remoting-config.xml)에 아래와 같이 destination을 추가한다.
+  		</para>
+  		<programlisting language="xml"><![CDATA[<service id="remoting-service" 
+    class="flex.messaging.services.RemotingService">
+
+    <adapters>
+        <adapter-definition id="java-object" class="flex.messaging.services.remoting.adapters.JavaAdapter" 
+        	default="true"/>
+    </adapters>
+
+    <default-channels>
+        <channel ref="my-amf"/>
+    </default-channels>
+	
+    <destination id="categoryService">
+        <properties>
+            <source>anyframe.sample.flex.category.CategoryService</source>
+        </properties>
+    </destination>
+	
+</service>]]></programlisting>
+<para>
+	RemotingService에 등록된 destination을 MXML에서는 RemoteObject를 이용해 호출한다.
+</para>
+<programlisting language="xml"><![CDATA[<mx:Script>
+    import mx.rpc.events.ResultEvent;
+		
+    private function getCategoryList():void{
+        var searchVO:FlexSearchVO = new FlexSearchVO();
+        categoryService.getCategoryList(searchVO);
+    }
+    private function getCategoryListResultHandler(event:ResultEvent):void{
+        grdCategory.dataProvider = event.result;	
+    }
+</mx:Script>
+<mx:RemoteObject id="categoryService" destination="categoryService">
+    <mx:method name="getCategoryList" result="getCategoryListResultHandler(event)"/>
+</mx:RemoteObject>
+<mx:DataGrid id="grdCategory"/>
+<mx:Button label="getCategoryList" click="getCategoryList()"/>
+]]></programlisting>
+<para>
+	위의 소스코드는 RemoteObject를 이용해 remoting-config.xml에 등록된 destination의 getCategoryList메소드를 호출하는 예이다.
+</para>
+<para>
+	Spring BlazeDS Integration을 이용하게 될 경우에는 remoting-config.xml파일에 destination을 별도로 등록하지 않고 
+	@RemoteDestination과 같은 annotaion을 사용해 해당 Bean을 직접 destination으로 등록할 수 있다.
+	Spring Bean의 Export방법에 대해서는 <link linkend="flex_query_configuration_sec002">Exporting Spring Beans for Flex Remoting</link>을 참고한다.
+</para>
+  		</section>
+	</section>
+	<section id="flex_query_dataintegraion_sec003">
+	<title>Domain객체와 ASObject의 Mapping</title>
+	<para>ActionScript에서 서버측에서 사용되는 Domain객체를 동일하게 사용할 경우에는 
+	[RemoteClass]메타 데이터를 이용해 서버측 Domain객체와 ASObject간의 매핑정보를 설정해야한다.</para>
+	<programlisting language="java">
+Category.java
+
+package anyframe.samples.flex.domain;
+...중략
+public class Category {
+    private String categoryId;
+    private String categoryName;
+    private String categoryDesc;
+    private String regDate;
+    
+    ..중략    
+    public String getCategoryId() {
+        return categoryId;
+    }
+    public void setCategoryId(String categoryId) {
+        this.categoryId = categoryId;
+    }
+    public String getCategoryName() {
+        return categoryName;
+    }
+    public void setCategoryName(String categoryName) {
+    this.categoryName = categoryName;
+    }
+    public String getCategoryDesc() {
+        return categoryDesc;
+..중략
+</programlisting>
+<programlisting language="java">
+Category.as
+
+package samples.domain
+{
+	[Bindable]
+	[RemoteClass(alias="anyframe.samples.flex.domain.Category")]
+	public class Category
+	{
+		public var categoryId:String;
+	    public var categoryName:String;
+	    public var categoryDesc:String;
+	    public var regDate:String;
+	}
+}</programlisting>
+<para>
+	[RemoteClass]메타 데이터를 이용해 Domain객체와 AS객체를 Mapping했을 경우 
+	Client쪽에서 Category.as를 이용해 전달한 값은 Server측에서 Category.java에 해당하는 객체로 받는다.
+	역으로 Server측에서 Category.java에 해당하는 객체로 값을 리턴할 경우 Client에서는 Category.as에 해당하는 객체로 전달받는다.
+</para>
+</section>
+</chapter>

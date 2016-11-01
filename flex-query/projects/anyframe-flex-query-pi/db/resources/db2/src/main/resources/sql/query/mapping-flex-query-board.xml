@@ -1,0 +1,37 @@
+				<!--flex-query-createBoard-START-->
+				INSERT INTO FLEX_BOARD ( 			
+					POST_ID, 
+					TITLE, 
+					CONTENTS, 
+					REG_ID,
+					REG_DATE,
+					COMMUNITY_ID) 
+				VALUES ('POST-' CONCAT NEXT VALUE FOR FLEX_POST_ID_SEQ, 
+					:vo.title, 
+					:vo.contents, 
+					:vo.regId,
+					:vo.regDate,
+					:vo.communityId)
+				<!--flex-query-createBoard-END-->
+				<!--flex-query-findBoardList-START-->
+				SELECT 
+					board.POST_ID,
+					board.TITLE,
+					board.CONTENTS,
+					board.REG_ID,
+					board.REG_DATE,
+					board.COMMUNITY_ID,
+					community.COMMUNITY_NAME
+				FROM FLEX_BOARD board, FLEX_COMMUNITY community 
+				WHERE board.COMMUNITY_ID = community.COMMUNITY_ID
+				<!--Velocity-Support-dynamicFindBoardList-START-->
+				#if ($vo.searchCondition == "title")
+					AND board.TITLE like '%' CONCAT :vo.searchKeyword CONCAT '%'			
+				#elseif ($vo.searchCondition == "regId")
+					AND board.REG_ID like '%' CONCAT :vo.searchKeyword CONCAT '%'
+				#elseif ($vo.searchCondition == "communityId")
+					AND board.COMMUNITY_ID like '%' CONCAT :vo.searchKeyword CONCAT '%'	
+				#end			
+					order by board.POST_ID DESC
+				<!--Velocity-Support-dynamicFindBoardList-END-->
+				<!--flex-query-findBoardList-END-->

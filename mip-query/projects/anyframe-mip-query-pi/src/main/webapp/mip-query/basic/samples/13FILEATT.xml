@@ -1,0 +1,327 @@
+<?xml version="1.0" encoding="utf-8"?>
+<Window>
+	<Form BKColor="white" DomainID="title.board_detail" Height="640" Id="frm13FILEATT" Left="8" OnLoadCompleted="frm13FILEATT_OnLoadCompleted" PidAttrib="7" Style="stlFrm" Top="8" Ver="1.0" Width="834" WorkArea="true">
+		<Datasets>
+			<Dataset DataSetType="Dataset" Id="dsService">
+				<Contents>
+					<colinfo id="SVC_ID" size="100" summ="default" type="STRING"/>
+					<colinfo id="QUERY_LIST" size="256" summ="default" type="STRING"/>
+					<colinfo id="SERVICE" size="100" summ="default" type="STRING"/>
+					<colinfo id="IN_DATASET_LIST" size="256" summ="default" type="STRING"/>
+					<colinfo id="OUT_DATASET_LIST" size="256" summ="default" type="STRING"/>
+					<colinfo id="CONTROLLER" size="512" summ="default" type="STRING"/>
+					<colinfo id="CALLBACK" size="100" summ="default" type="STRING"/>
+					<colinfo id="SYNC_YN" size="1" summ="default" type="STRING"/>
+					<record>
+						<CALLBACK></CALLBACK>
+						<CONTROLLER></CONTROLLER>
+						<IN_DATASET_LIST>querySet1=dsSearch&#32;querySet2=dsSearch</IN_DATASET_LIST>
+						<OUT_DATASET_LIST>dsBoardFile=querySet1&#32;dsGrdBoard=querySet2</OUT_DATASET_LIST>
+						<QUERY_LIST>querySet1=findBoardFileList&#32;querySet2=findBoardByPk</QUERY_LIST>
+						<SERVICE></SERVICE>
+						<SVC_ID>getListBoardFile</SVC_ID>
+						<SYNC_YN></SYNC_YN>
+					</record>
+					<record>
+						<CALLBACK></CALLBACK>
+						<CONTROLLER></CONTROLLER>
+						<IN_DATASET_LIST>querySet1=dsBoardFile:U</IN_DATASET_LIST>
+						<OUT_DATASET_LIST></OUT_DATASET_LIST>
+						<QUERY_LIST>querySet1=createBoardFile,updateBoardFile,removeBoardFile</QUERY_LIST>
+						<SERVICE></SERVICE>
+						<SVC_ID>saveAllBoardFile</SVC_ID>
+						<SYNC_YN></SYNC_YN>
+					</record>
+					<record>
+						<CALLBACK></CALLBACK>
+						<CONTROLLER></CONTROLLER>
+						<IN_DATASET_LIST></IN_DATASET_LIST>
+						<OUT_DATASET_LIST>dsCboCommunity=querySet1</OUT_DATASET_LIST>
+						<QUERY_LIST>querySet1=findCommunityList</QUERY_LIST>
+						<SERVICE></SERVICE>
+						<SVC_ID>getListCommunity</SVC_ID>
+						<SYNC_YN></SYNC_YN>
+					</record>
+				</Contents>
+			</Dataset>
+			<Dataset DataSetType="Dataset" Id="dsSearch">
+				<Contents>
+					<colinfo id="POST_ID" size="100" summ="default" type="STRING"/>
+					<record>
+						<POST_ID></POST_ID>
+					</record>
+				</Contents>
+			</Dataset>
+			<Dataset DataSetType="Dataset" Id="dsGrdBoard">
+				<Contents>
+					<colinfo id="_chk" size="1" summ="default" type="CHAR"/>
+					<colinfo id="TITLE" size="256" summ="default" type="STRING"/>
+					<colinfo id="CONTENTS" size="256" summ="default" type="STRING"/>
+					<colinfo id="REG_ID" size="256" summ="default" type="STRING"/>
+					<colinfo id="REG_DATE" size="256" summ="default" type="STRING"/>
+					<colinfo id="POST_ID" size="256" summ="default" type="STRING"/>
+					<colinfo id="COMMUNITY_ID" size="256" summ="default" type="STRING"/>
+				</Contents>
+			</Dataset>
+			<Dataset DataSetType="Dataset" Id="dsCboCommunity">
+				<Contents>
+					<colinfo id="COMMUNITY_ID" size="256" type="STRING"/>
+					<colinfo id="COMMUNITY_NAME" size="256" type="STRING"/>
+					<colinfo id="COMMUNITY_DESC" size="256" type="STRING"/>
+					<colinfo id="CATEGORY_ID" size="256" type="STRING"/>
+					<colinfo id="REG_ID" size="256" type="STRING"/>
+					<colinfo id="REG_DATE" size="256" type="STRING"/>
+					<record>
+						<CATEGORY_ID></CATEGORY_ID>
+						<COMMUNITY_DESC></COMMUNITY_DESC>
+						<COMMUNITY_ID></COMMUNITY_ID>
+						<COMMUNITY_NAME></COMMUNITY_NAME>
+						<REG_DATE></REG_DATE>
+						<REG_ID></REG_ID>
+					</record>
+				</Contents>
+			</Dataset>
+			<Dataset DataSetType="Dataset" Id="dsBoardFile" OnColumnChanged="dsBoardFile_OnColumnChanged" OnRowPosChanged="dsBoardFile_OnRowPosChanged">
+				<Contents>
+					<colinfo id="_chk" size="256" summ="default" type="STRING"/>
+					<colinfo id="ID" size="256" summ="default" type="STRING"/>
+					<colinfo id="NAME" size="256" summ="default" type="STRING"/>
+					<colinfo id="REF_ID" size="256" summ="default" type="STRING"/>
+					<colinfo id="FILE_SIZE" size="256" summ="default" type="STRING"/>
+					<colinfo id="FILE_PATH" size="256" summ="default" type="STRING"/>
+					<colinfo id="prog_bar" size="256" summ="default" type="STRING"/>
+				</Contents>
+			</Dataset>
+		</Datasets>
+		<Div BKColor="user26" Border="Flat" Height="571" Id="divManage" Left="14" Style="stlDivManage" TabOrder="2" Text="Div0" Top="53" UserData="RESIZE=TWH" Width="814">
+			<Contents>
+				<Static Border="Flat" DomainID="biz.file_att" Font="돋움,9,Bold" Height="154" Id="lblGrpSearch" Left="18" Style="stlLblGrp" TabOrder="16" Text="첨부파일" Top="191" Type="Groupbox" Width="773"></Static>
+				<Image Align="Left" DomainID="biz.board.id" Font="돋움체,9,Bold" Height="20" Id="imgBoardId" ImageID="blet_01" Left="18" LeftMargin="20" OnClick="Div0_Image0_OnClick" Style="stlImgManage" TabOrder="1" TabStop="FALSE" Text="게시물ID" Top="17" Width="80"></Image>
+				<Image Align="Left" DomainID="biz.board.title" Font="돋움체,9,Bold" Height="20" Id="imgTitle" ImageID="blet_02" Left="18" LeftMargin="20" OnClick="Div0_Image0_OnClick" Style="stlImgManage" TabOrder="2" TabStop="FALSE" Text="제&#32;&#32;목" Top="40" Width="80"></Image>
+				<Edit BindDataset="dsGrdBoard" BKColor="white" Border="Flat" Column="TITLE" Height="20" Id="edtTitle" ImeMode="none" Left="103" LeftMargin="2" Readonly="TRUE" Style="stlEdt" TabOrder="3" Top="40" UserData="titleObj=imgItem3" Width="687"></Edit>
+				<Image Align="Left" DomainID="biz.board.desc" Font="돋움체,9,Bold" Height="20" Id="imgContents" ImageID="blet_01" Left="18" LeftMargin="20" OnClick="Div0_Image0_OnClick" Style="stlImgManage" TabOrder="4" TabStop="FALSE" Text="내&#32;&#32;용" Top="63" Width="80"></Image>
+				<TextArea BindDataset="dsGrdBoard" BKColor="white" Border="Flat" Column="CONTENTS" Height="89" Id="txaItem4" Left="103" Readonly="TRUE" Style="stlTxa" TabOrder="5" Top="63" UserData="titleObj=imgItem4" VScroll="TRUE" Width="687"></TextArea>
+				<Edit BindDataset="dsGrdBoard" Border="Flat" Column="POST_ID" Enable="FALSE" Height="20" Id="edtBoardId" Left="103" LeftMargin="2" Style="stlEdtRead" TabOrder="6" Top="17" Width="190"></Edit>
+				<Image Align="Left" DomainID="biz.board.reg_id" Font="돋움체,9,Bold" Height="20" Id="imgRegId" ImageID="blet_01" Left="322" LeftMargin="20" OnClick="Div0_Image0_OnClick" Style="stlImgManage" TabOrder="7" TabStop="FALSE" Text="등록자" Top="17" Width="100"></Image>
+				<Edit BindDataset="dsGrdBoard" Border="Flat" Column="REG_ID" Enable="FALSE" Height="20" Id="edtRegId" ImeMode="none" Left="415" LeftMargin="2" Style="stlCal" TabOrder="8" Top="17" UserData="titleObj=imgItem3" Width="375"></Edit>
+				<Image Align="Left" DomainID="biz.board.reg_date" Font="돋움체,9,Bold" Height="20" Id="imgRegDate" ImageID="blet_01" Left="18" LeftMargin="20" OnClick="Div0_Image0_OnClick" Style="stlImgManage" TabOrder="9" TabStop="FALSE" Text="등록일" Top="156" Width="80"></Image>
+				<Image Align="Left" DomainID="biz.community" Font="돋움체,9,Bold" Height="20" Id="imgCommunity" ImageID="blet_01" Left="322" LeftMargin="20" OnClick="Div0_Image0_OnClick" Style="stlImgManage" TabOrder="10" TabStop="FALSE" Text="커뮤니티" Top="155" Width="100"></Image>
+				<Combo BindDataset="dsGrdBoard" Border="Flat" CodeColumn="COMMUNITY_ID" Column="COMMUNITY_ID" DataColumn="COMMUNITY_NAME" Enable="FALSE" Height="20" Id="cboCommunity" InnerDataset="dsCboCommunity" Left="416" ResetIndex="FIRST" Style="stlCbo" TabOrder="11" Top="155" Width="375"></Combo>
+				<Grid AutoEnter="TRUE" AutoFit="TRUE" BindDataset="dsBoardFile" BkColor2="user10" BoldHead="true" Border="Flat" Bottom="326" ColSelect="TRUE" ColSizing="TRUE" Editable="TRUE" Enable="true" EndLineColor="default" HeadBorder="Flat" HeadHeight="20" Height="90" Id="grdFile" InputPanel="FALSE" Left="31" LineColor="default" MinWidth="100" MultiSelect="TRUE" OnCellDBLClick="divManage_grdFile_OnCellDblClick" OnHeadClick="divManage_grdFile_OnHeadClick" Right="778" Style="stlGrd" TabOrder="13" TabStop="FALSE" Top="236" UseDBuff="true" UsePopupMenu="true" UserData="ATTACH_MAXROW=5,ATTACH_SIZE=1" UseSelColor="true" Visible="true" VLineColor="default" WheelScrollRow="1" Width="747">
+					<contents>
+						<format id="Default">
+							<columns>
+								<col width="29"/>
+								<col width="40"/>
+								<col width="412"/>
+								<col width="263"/>
+							</columns>
+							<head>
+								<cell col="0" color="user11" display="checkbox" edit="checkbox" text="0"/>
+								<cell col="1" color="user11" display="text" domainid="biz.num"/>
+								<cell col="2" color="user11" display="text" domainid="biz.file_att.name"/>
+								<cell col="3" color="user11" display="text" domainid="biz.file_att.size"/>
+							</head>
+							<body>
+								<cell col="0" colid="_chk" display="checkbox" edit="checkbox"/>
+								<cell align="center" col="1" display="text" expr="currow+1"/>
+								<cell align="left" col="2" colid="NAME" display="text"/>
+								<cell align="right" col="3" colid="FILE_SIZE" display="number"/>
+							</body>
+						</format>
+					</contents>
+				</Grid>
+				<Button ButtonStyle="TRUE" Color="user3" Cursor="HAND" DomainID="button.add" Height="18" Id="btnAdd2" ImageID="btn_adds" Left="31" LeftMargin="12" OnClick="divManage_btnAdd_OnClick" Style="stlBtn2" TabOrder="12" Text="추가" Top="216" UserData="TYPE=I,DIM=TWMV" Width="49"></Button>
+				<Button ButtonStyle="TRUE" Color="user3" Cursor="HAND" DomainID="button.delete" Height="18" Id="btnDelete2" ImageID="btn_deletes" Left="83" LeftMargin="12" OnClick="divManage_btnDelete_OnClick" Style="stlBtn2" TabOrder="13" Text="삭제" Top="216" UserData="TYPE=D,DIM=TWMV" Width="49"></Button>
+				<Button ButtonStyle="TRUE" Color="user3" Cursor="HAND" DomainID="biz.file_att.download" Height="18" Id="btnDown2" ImageID="btn_downs" Left="707" LeftMargin="15" OnClick="divManage_btnDown_OnClick" Style="stlBtn2" TabOrder="13" Text="다운로드" Top="216" UserData="TYPE=S,DIM=TWMV" Width="71"></Button>
+				<HttpFile Height="24" Id="HttpFile" Left="632" Top="345" Width="24"></HttpFile>
+				<FileDialog Bottom="370" Height="24" Id="FileDialog" Left="656" Right="680" TabOrder="17" Top="346" Width="24"></FileDialog>
+				<Static Align="Right" Color="user35" Height="22" Id="stFileSize" Left="601" Style="stlLbl" TabOrder="17" Text="0KB" Top="215" VAlign="Middle" Width="95"></Static>
+				<MaskEdit BindDataset="dsGrdBoard" Border="Flat" Column="REG_DATE" Enable="FALSE" Height="20" Id="mdtRegDate" Left="103" LeftMargin="2" Mask="####-##-##" Style="stlMdt" TabOrder="18" Top="156" Type="STRING" Width="190"></MaskEdit>
+			</Contents>
+		</Div>
+		<Button ButtonStyle="TRUE" Cursor="HAND" DomainID="button.save" Height="19" Id="btnSave" ImageID="btn_save" Left="772" LeftMargin="13" OnClick="btnSave_OnClick" Style="stlBtn" TabOrder="1" Text="저장" Top="30" Width="56"></Button>
+		<Image Align="Left" DomainID="title.board_detail" Height="16" Id="imgTitle" ImageID="b_title_icon1" Left="14" LeftMargin="12" Style="stlTitle" TabOrder="9" Text="제목" Top="24" VAlign="Top" Width="400"></Image>
+	</Form>
+	<Script><![CDATA[#include "javascript::common.js";
+#include "javascript::fileupdown.js"
+
+var strPostId = "";
+var nMaxSize, nMaxRow, nTotalSize;
+
+// 화면 로딩 시에 게시글과 첨부파일목록 출력
+function frm13FILEATT_OnLoadCompleted(obj) {
+	// 테스트용
+	strPostId = "POST-00001";
+	dsSearch.setColumn(0, "POST_ID", strPostId);
+	
+	gfnService("getListCommunity");
+	gfnService("getListBoardFile");
+}
+
+// 첨부파일 더블클릭 시 다운로드 창 오픈
+function divManage_grdFile_OnCellDblClick(obj, nRow, nCell, nX, nY, nPivotIndex) {	
+
+	var	strFileId	= dsBoardFile.getColumn(nRow, "ID");
+	var	strFileName = dsBoardFile.getColumn(nRow, "NAME");	
+	var	strFileSize	= dsBoardFile.getColumn(nRow, "FILE_SIZE");
+	var	strFileExt	= gfnGetFileExt(strFileName);
+		
+	DivManage.FileDialog.filter = "*." + strFileExt + "|*."+strFileExt;
+	DivManage.FileDialog.type = "Save";
+	DivManage.FileDialog.appendExtDefault = true;
+	DivManage.FileDialog.FileName= strFileName;
+	
+	if(DivManage.FileDialog.open()) {
+		var	strFullPath = DivManage.FileDialog.FilePath + "/" + strFileName;
+		
+		var ret = gfn_FileRead(DivManage.HttpFile, strFullPath, strFileId, strFileSize, nRow, "prog_bar", DivManage.grdFile);
+		if ( ret[0] == "FAIL" )
+		{
+			alert(ret[1]);
+		}
+	}
+}
+
+// 첨부 파일 다운로드 버튼 클릭 시
+function divManage_btnDown_OnClick(obj) {
+	var	nCount		= 0;
+	var	strFilePath	= "";
+	
+	for( var i = 0 ; i < dsBoardFile.rowcount ; i ++ ) {
+		if( dsBoardFile.getColumn(i, "_chk") == 1 ) {
+		
+			var	strFileId	= dsBoardFile.getColumn(i, "ID");
+			var	strFileName	= dsBoardFile.getColumn(i, "NAME");
+			var	strFileSize	= dsBoardFile.getColumn(i, "FILE_SIZE");
+			var	strFileExt	= gfnGetFileExt(strFileName);
+			
+			if (nCount == 0) {
+				DivManage.FileDialog.type = "Dir";
+				DivManage.FileDialog.open();
+				strFilePath = DivManage.FileDialog.filePath;
+			}
+			
+			var	strFullPath	= strFilePath + "\\" + strFileName;
+			
+			var ret = gfn_FileRead(DivManage.HttpFile, strFullPath, strFileId, strFileSize, i, "prog_bar", DivManage.grdFile);
+
+			if ( ret[0] == "FAIL" )
+			{
+				alert(ret[1]);
+			}
+			
+			nCount = nCount + 1;
+		}
+	}
+	if(nCount == 0){
+		gfnMsg("MSG_SELECT_FILE");
+	}
+}
+
+// 첨부 파일 추가 버튼 클릭 시
+function divManage_btnAdd_OnClick(obj) {
+	
+	DivManage.FileDialog.type = "Open";	
+	
+	if(DivManage.FileDialog.open()) {
+		
+		var strFilePath	= DivManage.FileDialog.filePath;
+		var strFileName	= DivManage.FileDialog.fileName;
+		var strFileExt	= gfnGetFileExt(DivManage.FileDialog.fileName);
+		var strFullPath = strFilePath + "/" + strFileName;
+		var nFileSize	= DivManage.HttpFile.GetFileSizeLocal(strFullPath);
+		
+				
+		if( IndexOf( strFileName, "(" ) == -1 || IndexOf( strFileName, ")" ) == -1 ) {
+			dsBoardFile.AddColumn("FILE_PATH");
+			dsBoardFile.AddColumn("POST_ID");
+			
+			var nNewRow = dsBoardFile.AppendRow();
+		
+			dsBoardFile.setColumn(nNewRow, "FILE_PATH", strFilePath);
+			dsBoardFile.setColumn(nNewRow, "NAME", strFileName);
+			dsBoardFile.setColumn(nNewRow, "FILE_SIZE", nFileSize);
+			dsBoardFile.setColumn(nNewRow, "POST_ID", strPostId);
+		} else {
+			gfnMsg("MSG_INVALID_FILE_NAME");
+		}
+	}
+}
+
+// 저장 버튼 클릭 시
+function btnSave_OnClick(obj) {
+	var ret;
+	
+	for( var i = 0 ; i < dsBoardFile.rowcount ; i++ )
+	{
+		if ( dsBoardFile.GetRowType(i) == "insert") {
+			var	strFileName	= dsBoardFile.getColumn(i, "NAME");
+			var	strFilePath	= dsBoardFile.getColumn(i, "FILE_PATH");
+			var strFullPath = strFilePath + "/" + strFileName;
+		
+			ret	= gfn_FileWrite(DivManage.HttpFile, strFullPath, strFileName, i, "prog_bar", DivManage.grdFile);
+		
+			if( ret[0] == "FAIL" )
+			{
+				alert( ret[1] );
+				break;
+			}
+			
+			dsBoardFile.SetColumn(i, "REF_ID", strPostId);
+			dsBoardFile.SetColumn(i, "ID", ret[0] );
+		}
+	}
+	
+	gfnService("saveAllBoardFile");
+}
+
+// 첨부 파일 삭제 버튼 클릭 시
+function divManage_btnDelete_OnClick(obj) {
+	gfnRemoveCheckedRows(dsBoardFile,"_chk");
+}
+
+// 첨부 파일 목록 헤더 클릭 시
+function divManage_grdFile_OnHeadClick(obj, nCell, nX, nY, nPivotIndex) {
+	gfnGrid_OnHeadClick(obj, nCell, nX, nY, nPivotIndex);
+}
+
+// 첨부 파일 목록 Dataset의 Column 변경 시
+function dsBoardFile_OnColumnChanged(obj, nRow, strColumnID, varOldValue, varNewValue, nPivotIndex) {	
+	fnCalcTotalFileSize();
+}
+// 첨부 파일 목록 Dataset의 Row 변경 시
+function dsBoardFile_OnRowPosChanged(obj, nOldRow, nRow) {
+	fnCalcTotalFileSize();
+}
+
+// 첨부 파일 전체 용량 계산 및 divManage.stFileSize 값 변경
+function fnCalcTotalFileSize() {	
+	nTotalSize = 0;
+	
+	for(var i = 0 ; i < dsBoardFile.rowcount ; i++) {
+		nTotalSize += parseInt(dsBoardFile.getColumn(i, "FILE_SIZE"));
+	}
+	
+	DivManage.stFileSize.value = ceil(nTotalSize/1024) + "KB";
+}
+
+// callback 메소드 정의
+function fnCallback(strServiceId, strErrorCode, strErrorMsg) {
+	if(strErrorCode == -1) {
+		gfnMsg(strErrorMsg, "ERR");
+		dsBoardFile.reset();
+		
+	} else {
+		//strServiceId 별 callback 처리
+		if(strServiceId == "saveAllBoardFile") {
+			gfnService("getListBoardFile");
+			gfnMsg("MSG_SAVE_SUCCESS");
+		}
+	}
+}
+
+
+
+]]></Script>
+</Window>

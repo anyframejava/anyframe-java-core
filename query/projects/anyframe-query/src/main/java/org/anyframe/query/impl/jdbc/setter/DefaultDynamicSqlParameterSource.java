@@ -31,8 +31,7 @@ import org.springframework.jdbc.core.namedparam.MapSqlParameterSource;
  * @author SoYon Lim
  * @author JongHoon Kim
  */
-public class DefaultDynamicSqlParameterSource extends MapSqlParameterSource
-		implements DynamicSqlParameterSource {
+public class DefaultDynamicSqlParameterSource extends MapSqlParameterSource implements DynamicSqlParameterSource {
 	public DefaultDynamicSqlParameterSource() {
 	}
 
@@ -91,9 +90,7 @@ public class DefaultDynamicSqlParameterSource extends MapSqlParameterSource
 
 //	2009.08.21 : prefix -> get~(), is~()
 	@SuppressWarnings("unchecked")
-	public static Object getProperty(Object obj, String propertyName)
-			throws NoSuchMethodException, IllegalAccessException,
-			InvocationTargetException {
+	public static Object getProperty(Object obj, String propertyName) throws NoSuchMethodException, IllegalAccessException, InvocationTargetException {
 		if (obj instanceof Map) {
 			return ((Map) obj).get(propertyName);
 		}
@@ -117,8 +114,7 @@ public class DefaultDynamicSqlParameterSource extends MapSqlParameterSource
 	}
 
 //	2009.08.21 : prefix -> get~(), is~()
-	protected static String buildPropertyGetterName(String prefix,
-			String propertyName) {
+	protected static String buildPropertyGetterName(String prefix, String propertyName) {
 		if (propertyName.endsWith("()"))
 			return propertyName.substring(0, propertyName.length() - 2);
 		return buildPropertyMethodName(prefix, propertyName);
@@ -128,15 +124,13 @@ public class DefaultDynamicSqlParameterSource extends MapSqlParameterSource
 		return buildPropertyMethodName("set", propertyName);
 	}
 
-	protected static String buildPropertyMethodName(String prefix,
-			String propertyName) {
+	protected static String buildPropertyMethodName(String prefix, String propertyName) {
 		StringBuilder strBuffer = new StringBuilder(prefix);
 		strBuffer.append(NameConverter.capitalise(propertyName));
 		return strBuffer.toString();
 	}
 
-	public static String[] convertDelimitedStringToStringArray(String str,
-			String delimiter) {
+	public static String[] convertDelimitedStringToStringArray(String str, String delimiter) {
 		StringTokenizer strTokenizer = new StringTokenizer(str, delimiter);
 		int length = strTokenizer.countTokens();
 

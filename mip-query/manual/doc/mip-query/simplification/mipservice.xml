@@ -1,0 +1,392 @@
+<chapter id="mip_query_simplification_mipservice">
+	<title>MiPlatform Service</title>	
+    <para>
+    	어플리케이션의 UI를 MiPlatform을 사용해 개발 할 경우, MiPlatform 고유의 데이터 형태를 DB에 반영하기에는 많은 어려움이 있다.
+    </para>
+	
+	<para>
+		예를 들어 Dataset에 10개의 컬럼과 10개의 Insert할 Record가 있을 경우 개발자가 일반적인 JDBC코딩을 하기 위해서는 
+		Dataset의 10개의 컬럼 값을 일일이 꺼내야 하고 10번의 루프를 돌면서 Insert문을 실행하는 로직을 작성해야 한다.
+	</para>
+    <para>
+    	또 DB에서 조회를 하고자 할 경우에는 ResultSet의 메타 정보를 이용해 Dataset의 컬럼을 셋팅하고 루프를 돌면서 
+    	ResultSet의 값들을 Dataset에 추가하는 로직을 작성해야 한다.
+    </para>
+	<para>
+		<emphasis role="bold">Anyframe Ria MiP는 MiPlatform의 고유 데이터 형태를 사용해 DB에 CRUD하기 위한 공통 비즈니스 서비스와 Controller를 제공한다.</emphasis>
+	</para>
+	
+	<para>
+		Anyframe Ria MiPlatform의 장점은 아래와 같다.
+	</para>
+	<itemizedlist>
+    	<listitem>
+      		<para>
+      			Dataset, VariableList와 같은 MiPlatform 고유의 데이터 형태를 변환하지 않고 비즈니스 서비스 개발을 할 수 있다.
+      		</para>
+    	</listitem>
+
+    	<listitem>
+      		<para>
+      			추가적인 비즈니스 로직이 필요 없는 CRUD에 대해서는 비즈니스 서비스 개발 없이 Query Mapping File에 필요한 Query만 작성하면 된다.
+      		</para>
+    	</listitem>
+    
+     	<listitem>
+      		<para>
+      			확장이 필요한 부분만 오버라이드 해서 사용할 수 있기 때문에 비즈니스 서비스 개발이 쉽다.
+      		</para>
+    	</listitem>
+    
+    	<listitem>
+      	<para>
+      		기능이 중복되거나 불필요한 클래스를 생성하지 않기 때문에 전체 클래스 수가 줄어 들고 유지보수 또한 용이하다.
+      	</para>
+    	</listitem>
+  	</itemizedlist>
+  
+	<para>
+		Anyframe Ria MiPlatform은 크게 Controller, Service, Dao로 구성되어 있다.
+	</para>
+	
+	<itemizedlist>
+      	<listitem>
+      		<para>
+      			<emphasis role="bold">Controller</emphasis> – MiPController : AbstractMiPController의 operate()를 확장한 클래스로 사용자 요청에 따라 비즈니스 서비스의 메소드를 호출하고 결과값을 화면으로 전달한다.
+      		</para>
+      	</listitem>
+      	<listitem>
+      		<para>
+      			<emphasis role="bold">Service 인터페이스</emphasis> – MiPService : DatasetList, VariableList를 이용해 DB에서 데이터를 조회, 추가, 삭제, 수정 등을 할 수 있는 API를 제공한다.
+      		</para>
+      	</listitem>
+      	<listitem>
+      		<para>
+      			<emphasis role="bold">Service 구현 클래스</emphasis> – MiPServiceImpl : MiPService의 구현 클래스로 Dataset과 실행 하고자 하는 Query Id를 짝지은 후 MiPDao의 메소드를 호출하고 Query실행 결과를 DatasetList에 추가한다.
+      		</para>
+      	</listitem>
+      	<listitem>
+      		<para>
+      			<emphasis role="bold">Dao 클래스</emphasis> – MiPDao : 파라미터의 형태에 따라 적절한 MiPQueryService의 메소드를 호출해 쿼리를 실행한다.
+      		</para>
+      	</listitem>
+ 	 </itemizedlist>
+
+	<section id="mip_query_simplification_mipservice_controller">
+    	<title>Controller</title>
+    	<para>
+    		Anyframe에서는 MiPlatform 기반의 UI를 통한 사용자 요청을 처리할 수 있도록 Spring
+			MVC의 AbstractController를 구현한 AbstractMiPController, AbstractMiPDispatchController를 제공하고 있다.
+			이 두 클래스를 상속받아 Controller 클래스를 구현하려면 사용자의 요청 별로 Controller 클래스를 구현해야
+			하므로 개발해야 할 Controller 클래스 수가 많아지고 유지보수 또한 어려워지는 단점이 있다.
+			이러한 단점을 보완하기 위해서 Anyframe Ria MiPlatform에서는 MiPController를 제공한다.
+		</para>
+		
+    	<section id="mip_query_simplification_mipservice_controller_mipcontroller">
+			<title>MiPController</title>
+      		<para>
+      			JSP 기반의 UI일 경우, 사용자 요청에 따라 Controller가 호출되고, Controller에서는 비즈니스 서비스 호출 결과
+				값을 결과 페이지에 전달하는 로직이 필요하다. 그러나 MiPlatform 기반의 UI에서는 화면과 서버간의 주고받는 데이터의
+				유형(DatasetList, VariableList)이 동일하고, 요청 화면과 결과 화면이 같으므로 공통화 처리가 가능해진다.
+				따라서, 비즈니스 서비스 호출 외에 별도 로직이 없을 때는 MiPController를 공통 Controller로 사용할 수
+				있다.
+			</para>
+	
+			<para>
+				아래는 MiPController의 operate()의 일부로, 화면에서 전달받은 비즈니스 서비스의 Bean Id 를
+				이용해 WebApplicationContext에서 비즈니스 서비스 객체를 얻어온다. 실행할 비즈니스 서비스의 Bean Id와
+				메소드 이름은 dsService의 SERVICE(예: boardService.getPagingList)의 값에 의해 결정된다.
+			</para>
+			<programlisting language="java"><![CDATA[public class MiPController extends AbstractMiPController {
+	
+    public void operate(PlatformRequest platformRequest, VariableList inVl,
+            DatasetList inDl, VariableList outVl, DatasetList outDl)
+            throws Exception {
+
+        String serviceName = inVl.getValueAsString("service");
+		
+        Object bean = getWebApplicationContext().getBean(serviceName);
+
+        Method method = getMethod(bean,inVl.getValueAsString("method"));
+		
+        try {
+            method.invoke(bean, new Object[] { inVl, inDl, outVl, outDl });
+        } catch (Exception e) {
+            Throwable te = e.getCause();
+            logger.error("Can not invoke a dispatch method name", te);
+            throw new Exception("Fail to process client request.", te);
+        }
+    }
+..중략]]></programlisting>
+			<para>
+				만약 아래 그림의 설정처럼SERVICE의 값이 없을 경우에는 비즈니스 서비스의 Bean Id는 mipService이고
+				메소드 이름은 dsService의 SVC_ID값의 prefix로 결정된다.
+			</para>
+		 	<mediaobject>
+		 		<imageobject>
+          			<imagedata align="center"
+                     	fileref="../image/mip-query/simplification/riamip-exampleofdsservice.bmp" />
+        		</imageobject>
+        		<textobject>
+					<phrase>SERVICE 값이 없는 경우에 대한 처리</phrase>
+				</textobject>
+        	</mediaobject>
+        	<para>
+        		prefix로는 get, getList, getPagingList, create, update, remove, saveAll이 올 수 있다.
+        		prefix가 getList일 경우에는 MiPService의 getList()가 실행된다.
+        	</para>
+      	</section>
+    </section>
+    
+    <section id="mip_query_simplification_mipservice_service">
+    	<title>Service</title>
+    	<para>
+    		Anyframe Ria MiPlatform의 Service는 Interface인 MiPService와 구현 클래스인 MiPServiceImpl로 구성되어 있다.
+    	</para>
+    	
+   		<section id="mip_query_simplification_mipservice_service_mipservice">
+      		<title>MiPService</title>
+      		<para>
+				MiPService는 MiPlatform의 고유 데이터 형태인 VariableList와 Dataset을 이용하여 외부에 제공할
+				수 있는 일반적인 기능을 정의하고 있는 인터페이스 클래스이다. 아래는 MiPService 소스 코드의 일부로
+				모든 메소드의 입력 파라미터는 (VariableList inVl, DatasetList inDl, VariableList outVl,
+				DatasetList outDl)이며, Return Type는 void이다.
+			</para>
+    		<programlisting language="java"><![CDATA[public interface MiPService {
+    ..중략
+    //리스트 조회
+    void getList(VariableList inVl, DatasetList inDl, 
+            VariableList outVl, DatasetList outDl) throws Exception;
+    //리스트 조회(페이징 처리)	
+    void getPagingList(VariableList inVl, DatasetList inDl, 
+            VariableList outVl, DatasetList outDl) throws Exception;
+    //추가
+    void create(VariableList inVl, DatasetList inDl, 
+            VariableList outVl, DatasetList outDl) throws Exception;
+    ..중략
+}]]></programlisting>
+    	</section>
+    	
+    	<section id="mip_query_simplification_mipservice_service_mipserviceimpl">
+      		<title>MiPServiceImpl</title>
+      		<para>
+      			MiPServiceImpl은 MiPService의 구현 클래스로써 dsService에 설정된 정보를 기반으로 MiPDao의 메소드를 호출한다.
+      		</para>
+      		<mediaobject>
+      			<imageobject>
+          			<imagedata align="center"
+                     	fileref="../image/mip-query/simplification/riamip-exampleofdsservice.bmp" />
+        		</imageobject>
+        		<textobject>
+					<phrase>MiPServiceImpl</phrase>
+				</textobject>
+        	</mediaobject>
+        	<para>
+        		위의 2번 Row와 같이 dsService를 설정 했다면 VariableList에 아래 그림처럼 값이 셋팅되어 서버 측에 전달된다.
+        	</para>
+        	<mediaobject>
+        		 <imageobject>
+          			<imagedata align="center"
+                     	fileref="../image/mip-query/simplification/riamip-mipserviceimpl.jpg" />
+        		</imageobject>
+        		<textobject>
+					<phrase>VariableList</phrase>
+				</textobject>
+        	</mediaobject>
+        	<para>
+        		아래는 MiPServiceImpl의 getPagingList()의 일부로써, 특정 페이지에 속한 데이터를 조회하는 기능을 제공한다.
+        	</para>
+			<para>
+				getPagingList() 에서는 위의 그림에서와 같이 입력 파라미터로 전달된 DatasetList에 ID가 “querySet1”인 Dataset이 포함되어 있는 경우,
+				VariableList로부터 “querySet1”이라는 KEY에 해당하는 값을 변수 queryId에 할당한다. 또한 해당 DatasetList로부터 ID가 “querySet1”인
+				Dataset을 추출하여 inDs라는 변수에 할당한다. 그 후 queryId와 inDs를 이용해 MiPDao의 메소드를 호출한다.
+			</para>
+        	<programlisting language="java"><![CDATA[public void getPagingList(VariableList inVl, DatasetList inDl,
+        VariableList outVl, DatasetList outDl) throws QueryException {
+
+    int querySetCount = getQuerySetCount(inVl, outVl);
+    String queryId = null;
+    Dataset inDs = null;
+    Dataset outDs = null;
+    for( int i = 1 ; i <= querySetCount ; i++) {
+        queryId = inVl.getValueAsString("querySet"+i);
+        inDs = inDl.get("querySet"+i);
+        try{
+            if(inDs != null) {
+                outDs = mipDao.getPagingList(queryId, inDs);
+            }
+            outDl.addDataset("querySet"+i, outDs);
+// 중략
+    }
+}]]></programlisting>
+			<para>
+				MiPServiceImpl의 다른 메소드들도 이와 같이 입력 파라미터로부터 추출한 Dataset과 Query ID를 이용하여 사용자의 요청을 처리한다.
+			</para>
+			<para>
+				아래 그림처럼 dsService SVC_ID의 prefix가 get, getList, getPagingList, create, update, remove일 경우에는 querySet에 한 개의
+				Query Id가 셋팅되어야 하고
+			</para>
+			<mediaobject>
+ 				<imageobject>
+        			<imagedata align="center"
+                    	fileref="../image/mip-query/simplification/riamip-exampleofdsservice.bmp" />
+        		</imageobject>
+        		<textobject>
+					<phrase>dsService</phrase>
+				</textobject>
+        	</mediaobject>
+        	<para>
+        		saveAll이면 QUERY_LIST에 “querySet1=createBoard,updateBoard,removeBoard”와 같이 추가, 수정, 삭제를 위한 3개의
+        		Query Id가 셋팅되어 있어야 한다. 조회(get, getList, getPagingList)의 경우에는 결과 Dataset의 Id는 조회 시 검색 조건으로
+        		사용했던 Dataset의 ID(“querySet+번호”)이다.
+        	</para>
+        </section>
+	</section>
+    
+    <section id="mip_query_simplification_mipservice_dao">
+    	<title>MiPDao</title>
+    	
+    		<para>
+    			MiPDao는 MiPQueryService를 이용해 Query를 실행한다.
+    		</para>
+    		<para>
+    			아래는 MiPDao는 Dataset의 Record를 DB Table에 저장(추가, 수정, 삭제)하는 saveAll()이다.
+    		</para>
+    		<programlisting language="java"><![CDATA[public int saveAll(Map queryMap, Dataset inDs,
+    MiPActionCommand actionCommand) throws QueryException {
+	
+    if(actionCommand == null){
+        return miPQueryService.update(queryMap, inDs);
+    }else{
+        return miPQueryService.update(queryMap, inDs, actionCommand);
+    }
+}
+]]></programlisting>
+			<para>
+				insert, update, delete를 위한 Map형태의 Query Id와 Dataset을 이용해 MiPQueryService의 update()를 호출하고 있음을 알 수 있다.
+			</para>
+			<para>
+				MiPDao는 Anyframe Ria MiPlatform에서 제공한 구현체를 사용할 것을 추천하며, 꼭 필요한 경우에 한해 확장해서 사용한다.
+			</para> 
+    </section>
+    
+    <section id="mip_query_simplification_mipservice_extension">
+    	<title>Extension of MiPServiceImpl</title>
+    	<para>
+    		MiPService에서 제공하는 기능 외에 추가적인 기능이 필요할 경우에는 API를 추가로 정의하거나 해당 메소드를 오버라이드 할 수 있다.
+    	</para> 
+
+		<para>
+			아래는 Dataset의 Record를 DB에 Insert하기 전 ‘PROD_NO’ 컬럼에 유일한 아이디를 셋팅하기 위해 saveAll()을 오버라이드 해 기능을 확장한 예이다.
+		</para> 
+		<programlisting language="java"><![CDATA[@Service("mipQueryMovieService")
+@Transactional(rollbackFor = { Exception.class }, propagation = Propagation.REQUIRED)
+public class MovieServiceImpl extends MiPServiceImpl implements MovieService {
+
+    @Inject
+    public MovieServiceImpl(MiPDao mipDao){
+        super.mipDao = mipDao;
+    }
+	
+    ..중략
+    public void saveAll(VariableList inVl, DatasetList inDl,
+            VariableList outVl, DatasetList outDl) throws Exception {
+        
+        Map<String, String> sqlMap = new HashMap<String, String>();
+        sqlMap.put(MiPQueryServiceImpl.QUERY_INSERT, "createMovie");
+        sqlMap.put(MiPQueryServiceImpl.QUERY_UPDATE, "updateMovie");
+        sqlMap.put(MiPQueryServiceImpl.QUERY_DELETE, "removeMovie");
+
+        mipDao.saveAll(sqlMap, inDl.get("dsSave"), new MovieActionCommand());
+    }
+	
+}]]></programlisting>
+    	<para>
+    		MiPDao의 saveAll()의 파라미터에 Anyframe에서 제공하는 MiPActionCommand를 구현한 MovieActionCommand를 전달하고 있다.
+    		MiPActionCommand를 활용하면 특정 쿼리문을 수행하기 전/후에 필요한 비즈니스 로직을 수행 할 수 있다.
+    	</para>
+    	
+    	<section id="mip_query_simplification_mipservice_extension_commend">
+    		<title>[참고] MiPActionCommand</title>
+    		<para>
+    			MiPActionCommand는 MiPQueryService의 save() 가 호출 됐을 때 Insert, Update, Delete Query를 실행 하기 전,
+    			후 필요한 비즈니스 로직을 추가 할 수 있도록 하기 위해 제공되는 인터페이스이다.  MiPActionCommand 인터페이스를
+    			구현한 별도의 클래스를 정의하고 해당 메소드에 비즈니스 로직을 추가하면 된다.
+    		</para>
+    		<para>
+    			아래는 앞서 언급한 MovieActionCommand 클래스의 preInsert()의 일부로써, Dataset을 특정 Table에 Insert하기 전에
+    			Primary Key에 해당하는 PROD_NO 컬럼에 유일한 값을 셋팅하고 있음을 알 수 있다.
+    		</para>
+    		<programlisting language="java"><![CDATA[public class MovieActionCommand implements MiPActionCommand{
+
+    public void preInsert(Dataset ds, int index) {
+        String id = "MV-" + System.currentTimeMillis();
+        Variant variant = new Variant();
+        variant.setObject(id);
+        ds.setColumn(index, "MOVIE_ID", variant);
+    }
+}]]></programlisting>
+		<para>
+			따라서, MiPQueryService의save()에서는 Dataset의 Status가 ‘insert’인 Record를 DB에 Insert하기 전
+			MovieActionCommand의 preInsert()를 호출해 추가 로직을 실행한다.
+		</para> 
+    	</section>
+    </section>
+    
+    <section id="mip_query_simplification_mipservice_testcase">
+    	<title>Testcase</title>
+	    <para>
+			다음은 MiPService의 기능을 테스트 하는 Main.java 중 Dataset을 이용한
+			조회 기능을 테스트
+			하는 코드의 일부이다. querySet1, querySet2라는 Id를 가진 두 개의 Dataset의
+			"SEARCH_CONDITION", "SEARCH_KEYWORD" 컬럼에 검색 조건과 검색 문자를 입력한 후 ,
+			MiPService의 getList()를 호출 해 Query Id가 findBoardList인 query를 실행해 정상적으로
+			동작하는지 확인하는 테스트케이스이다.
+		</para>
+		<programlisting language="java"><![CDATA[/**
+ * Dataset에 검색 조건이 세팅 되어 있을 때 
+ * Dataset을 이용해 목록 조회를 한다. 
+ * 검색조건과 검색키워드를 두 개의 Dataset에 세팅한 후 쿼리 문이 
+ * 정상적으로 동작해 기대했던 값과 조회 결과 값을  비교한다.
+ */
+public void testGetListUsingDataset() throws Exception {
+    DatasetList inDl = new DatasetList();
+    VariableList inVl = new VariableList();
+    DatasetList outDl = new DatasetList();
+    VariableList outVl = new VariableList();
+
+    inVl.add("querySetCount", 2);
+    inVl.add("querySet1", "findBoardList");
+    inVl.add("querySet2", "findBoardList");
+
+    Dataset dsSearch1 = new Dataset("querySet1");
+    dsSearch1.addStringColumn("SEARCH_CONDITION");
+    dsSearch1.addStringColumn("SEARCH_KEYWORD");
+
+    dsSearch1.appendRow();
+    dsSearch1.setColumn(0, "SEARCH_CONDITION", "BOARD_NO");
+    dsSearch1.setColumn(0, "SEARCH_KEYWORD", "BOARD-00002");
+    inDl.addDataset("querySet1", dsSearch1);
+
+    Dataset dsSearch2 = new Dataset("querySet2");
+    dsSearch2.addStringColumn("SEARCH_CONDITION");
+    dsSearch2.addStringColumn("SEARCH_KEYWORD");
+
+    dsSearch2.appendRow();
+    dsSearch2.setColumn(0, "SEARCH_CONDITION", "BOARD_TITLE");
+    dsSearch2.setColumn(0, "SEARCH_KEYWORD", "0001");
+    inDl.addDataset("querySet2", dsSearch2);
+
+    mipService.getList(inVl, inDl, outVl, outDl);
+
+    assertEquals(2, outDl.size());
+
+    Dataset ds1 = outDl.get("querySet1");
+    Dataset ds2 = outDl.get("querySet2");
+
+    assertEquals("BOARD-00002", ds1.getColumnAsString(0, "BOARD_NO"));
+    assertEquals("TITLE-0001", ds2.getColumnAsString(0, "BOARD_TITLE"));
+}]]></programlisting>
+    </section>
+</chapter>	
+

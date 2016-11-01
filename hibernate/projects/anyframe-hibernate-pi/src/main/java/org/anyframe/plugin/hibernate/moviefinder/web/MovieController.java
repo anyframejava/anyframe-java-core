@@ -54,7 +54,7 @@ public class MovieController {
 	private GenreService genreService;
 
 	@ModelAttribute("genreList")
-	public Collection<Genre> populateGenreList() throws Exception {
+	public Collection<Object> populateGenreList() throws Exception {
 		return genreService.getList();
 	}
 

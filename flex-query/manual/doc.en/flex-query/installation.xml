@@ -1,0 +1,451 @@
+<chapter id="flex_query_intallation">
+	<title>Spring BlazeDS Integration Installation</title>
+
+	<para>
+		In this chapter, let's take a look at how to configure Flex
+		development environment without using Flex Plugin.
+		To install Spring
+		BlazeDS Integration, BlazeDS must be installed first.
+		After installing
+		BlazeDS in Web Application project, let's take a look at how to
+		install Spring BlazeDS Integration additionally.	
+	</para>
+
+	<section id="flex_query_intallation_sec001">
+		<title>BlazeDS Installation</title>
+		<para>
+			You can download the latest version of BlazeDS at
+			<ulink url="http://opensource.adobe.com/wiki/display/blazeds/Downloads">Adobe Open Source</ulink>
+			web site.
+			You can download Turnkey version and Binary Distribution.
+			Turnkey version includes Reference document, Sample Application,
+			BlazeDS Console Application, etc. in addition to BlazeDS installation
+			file.
+		</para>
+		<para>
+			Download and extract BlazeDS, then you can see blazeds.war file,
+			which is composed of the following folder.			
+		</para>
+		<mediaobject>
+			<imageobject>
+				<imagedata fileref="../image/flex-query/blazeds_war.jpg" align="center" />
+			</imageobject>
+		</mediaobject>
+		<para>The following is a brief explanation on each folder and file.
+		</para>
+		<itemizedlist>
+			<listitem>
+				<para>
+					<emphasis role="bold">WEB-INF/web.xml</emphasis>
+					: Defined for Servlet and HttpFlexSession session, etc for
+					MessageBrokerServlet
+					as application deployment descriptor. When using SpringBlazeDS
+					Integration, change the Servlet definition so that
+					DispatcherServlet, not MessageBrokerServlet, of SpringMVC can
+					handle client request.
+				</para>
+			</listitem>
+			<listitem>
+				<para>
+					<emphasis role="bold">WEB-INF/flex</emphasis>
+					: Includes configuration files of BlzeDS. Also includes files
+					defined with channel, adaptor,
+					logging, etc. for communication with Server.
+				</para>
+			</listitem>
+			<listitem>
+				<para>
+					<emphasis role="bold">WEB-INF/lib</emphasis>
+					: Server-side libraries of BlazeDS are located.
+				</para>
+			</listitem>
+		</itemizedlist>
+		<section id="flex_query_intallation_sec001_001">
+			<title>BlazeDS configuration file</title>
+			<para>
+				Create "{Web Root folder}/WEB-INF/flex" folder in Web
+				Application Project, then copy four xml files(services-config.xml,
+				remoting-config.xml, proxy-config.xml, messaging-config.xml) in
+				BlazeDS WEB-INF/flex folder as the following figure.				 
+			</para>
+			<mediaobject>
+				<imageobject>
+					<imagedata fileref="../image/flex-query/blazeds_config.jpg"
+						align="center" />
+				</imageobject>
+			</mediaobject>
+			<para>
+				Open service-config.xml file, then delete or comment 'include' part of
+				remoting-config.xml and messaging-config.xml files.
+				The reason why excluding the two files from 'include' is that they can
+				configure Remoting and Messaging communication at
+				Spring BlazeDS Integration configuration file. Define default-channels of
+				Web Application level.
+				The following is a part of service-config.xml file.			
+			</para>
+			<programlisting language="xml"><![CDATA[<services-config>
+    <services>
+        <!-- service-include file-path="remoting-config.xml" / -->
+        <service-include file-path="proxy-config.xml" />
+        <!-- service-include file-path="messaging-config.xml" / -->  
+        <default-channels>
+        	<channel ref="my-amf"/>
+    	</default-channels>      
+    </services>
+
+    <security>
+    <!-- ... -->]]></programlisting>
+		</section>
+		<section id="flex_query_intallation_sec001_002">
+			<title>BlazeDS library</title>
+			<para>
+				Copy BlazeDS Server-side libraries of WEB-INF/lib folder in
+				BlazeDS to {Web Root folder}/WEB-INF/lib folder of Web Application
+				Project.
+				Before copying them, make sure it does not conflict with
+				library in Web Application.			
+			</para>
+		</section>
+	</section>
+	<section id="flex_query_intallation_sec002">
+		<title>Spring BlazeDS Integration installation</title>
+		<para>
+			After finishing BlazeDS installation, install Spring BlazeDS Integration
+			in Web Application.
+		</para>
+		<section id="flex_query_intallation_sec002_001">
+			<title>Spring BlazeDS Integration library</title>
+			<para>
+				Download Spring BlazeDS Integration 1.0.1 from
+				<ulink url="http://www.springsource.org/spring-flex">Spring Source Community</ulink>
+				,
+				then copy org.springframework.flex-1.0.1.RELEASE.jar file to {Web Root
+				folder}/WEB-INF/lib of Web Application Project.
+			</para>
+			<para>
+				Then, download jackson-core-asl-x.x.x.jar which is in dependency
+				relation with Spring BlazeDS Integration
+				from
+				<ulink
+					url="http://repo2.maven.org/maven2/org/codehaus/jackson/jackson-core-asl/0.9.9-6/">Download</ulink>
+				page
+				and copy it to {Web Root folder}/WEB-INF/lib of Web Application
+				Project.
+			</para>
+			<mediaobject>
+				<imageobject>
+					<imagedata fileref="../image/flex-query/flex_lib.jpg" align="center" />
+				</imageobject>
+			</mediaobject>
+		</section>
+		<section id="flex_query_intallation_sec002_002">
+			<title>Servlet Definition</title>
+			<para>
+				If copying Spring BlazeDS Integration library is finished,
+				add Servlet definition to web.xml file so that DispatcherServlet, not
+				MessageBrokerServlet, of Spring MVC can handle request
+				when RPC request came in from Flex UI.
+				In this case, if servlet definition for Spring MVC based presentation
+				is already defined, define new servlet additionally. 		
+		</para>
+			<programlisting language="xml"><![CDATA[<servlet>
+    <servlet-name>action</servlet-name>
+    <servlet-class>
+        org.springframework.web.servlet.DispatcherServlet
+    </servlet-class>
+    <init-param>
+        <param-name>contextConfigLocation</param-name>
+        <param-value>classpath:/springmvc/common-servlet.xml,
+                    classpath:/springmvc/generation-servlet.xml,	
+        </param-value>
+    </init-param>
+    <load-on-startup>1</load-on-startup>
+</servlet>
+	
+<servlet>
+    <servlet-name>SpringBlazeDS</servlet-name>
+    <servlet-class>
+        org.springframework.web.servlet.DispatcherServlet
+    </servlet-class>
+    <init-param>
+        <param-name>contextConfigLocation</param-name>
+        <param-value>classpath:/springmvc/flex-servlet.xml
+        </param-value>
+    </init-param>
+    <load-on-startup>2</load-on-startup>
+</servlet>]]></programlisting>
+			<para>
+				After defining SpringBlazeDS Servlet as above,
+				define servlet-mapping so that SpringBlazeDS Servlet can handle the
+				request of
+				<emphasis role="bold">/messagebroker/*</emphasis>
+				as the following.
+			</para>
+			<programlisting language="xml"><![CDATA[<servlet-mapping>
+    <servlet-name>SpringBlazeDS</servlet-name>
+    <url-pattern>/messagebroker/*</url-pattern>
+</servlet-mapping>]]></programlisting>
+			<para>
+				In Flex Client, Request url pattern of RemotingService,
+				HTTPProxyService and MessageService is /messagebroker/*. 
+	</para>
+		</section>
+		<section id="flex_query_intallation_sec002_003">
+			<title>Spring WebApplicationContext configuration</title>
+			<para>
+				Create Flex-related Spring configuration file(flex.xml) at
+				classpath:/spring of Web Appliaction.   
+	</para>
+			<mediaobject>
+				<imageobject>
+					<imagedata fileref="../image/flex-query/flex_servlet.jpg"
+						align="center" />
+				</imageobject>
+			</mediaobject>
+			<para>
+				Open flex-servlet.xml file, then define xsd to use flex namespace as the
+				following.   	
+	</para>
+			<programlisting language="xml"><![CDATA[<beans xmlns="http://www.springframework.org/schema/beans"
+	xmlns:flex="http://www.springframework.org/schema/flex"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://www.springframework.org/schema/beans 
+	http://www.springframework.org/schema/beans/spring-beans-3.1.xsd
+	http://www.springframework.org/schema/flex 
+	http://www.springframework.org/schema/flex/spring-flex-1.0.xsd">
+	
+</beans>]]></programlisting>
+			<para>
+				To read services-config.xml file, BlazeDS configuration file, to
+				MessageBrokerFactoryBean,
+				define it by using flex namespace.   	
+	</para>
+			<programlisting language="xml"><![CDATA[<flex:message-broker />]]></programlisting>
+			<para>
+				Above is default definition which can be used when
+				services-config.xml exists in root classpath.
+				For additional definition, refer to
+				<link linkend="flex_query_configuration">Spring BlazeDS Integration Configuration</link>
+				.
+			</para>
+		</section>
+	</section>
+	<section id="flex_query_intallation_sec003">
+		<title>Spring Bean Exporting</title>
+		<para>
+			When BlazeDS and Spring BlazeDS Integration installation is done,
+			register Spring Bean to RemotingDestinationExporter to enable
+			Flex RemotingService to access. There are many ways of exporting Spring
+			Bean, among which @RemotingDestination annotation will be
+			used in this manual.
+	</para>
+		<programlisting language="java"><![CDATA[@Service("genreService")
+@RemotingDestination
+public class GenreServiceImpl implements GenreService {
+
+	@Inject
+	@Named("genreDao")
+	private GenreDao genreDao;
+
+	public List<Genre> getList() throws Exception {
+		return genreDao.getList();
+	}
+
+}]]></programlisting>
+		<para>
+			If no property is defined to @RemotingDestination annotation, bean Id
+			is Destination Id.
+			In the source code above, 'genreService' is Destination Id,
+			and in Flex Client, can access
+			using the name of 'genreService'.		
+	</para>
+		<para>
+			To see how to export Spring Bean for the access of RemotingService,
+			refer to
+			<link linkend="flex_query_configuration">Spring Blazeds Integration Configuration</link>
+			.
+		</para>
+	</section>
+	<section id="flex_query_intallation_sec004">
+		<title>Flex Project Creation</title>
+		<para>
+			If Server-side configuration was done for developing Flex Web
+			Application, create Flex project.
+			When developing Flex UI,Editor and Flex Builder are used.
+			Flex Builder is an Eclipse-based commercial S/W for Flex UI development
+			and provides various functions such as
+			WYSIWYG Editor, mxml auto compile, debugging, etc.
+			This manual will cover development by using Flex Builder only. 		
+		</para>
+		<para>
+			You can download trial version from
+			<ulink
+				url="http://www.adobe.com/cfusion/entitlement/index.cfm?e=flex3email">Adobe Flex Builder 3 Download</ulink>
+			and use for 60 days.
+		</para>
+		<para>
+			If you run Flex Builder 3 at first, you can see a page as the
+			following.	
+		</para>
+		<mediaobject>
+			<imageobject>
+				<imagedata fileref="../image/flex-query/flex_builder.jpg" align="center" />
+			</imageobject>
+		</mediaobject>
+		<para>
+			If you select File -> New -> Flex Project at Flex Builder,you
+			can create new Flex Project.		
+		</para>
+		<mediaobject>
+			<imageobject>
+				<imagedata fileref="../image/flex-query/flex_new_project.jpg"
+					align="center" />
+			</imageobject>
+		</mediaobject>
+		<para>
+			Enter Project Name and Flex Project Location,
+			and select
+			<emphasis role="bold">Web application(runs in Flash Player)
+			</emphasis>
+			for Application type
+			select check box of
+			<emphasis role="bold">J2EE</emphasis>
+			,
+			<emphasis role="bold">Use remote object access service</emphasis>
+			for Application server type of Server technology,
+			then click Next
+			after selecting
+			<emphasis role="bold">LiveCycle Data Services</emphasis>
+			.
+		</para>
+		<mediaobject>
+			<imageobject>
+				<imagedata fileref="../image/flex-query/flex_create_project.jpg"
+					align="center" />
+			</imageobject>
+		</mediaobject>
+		<para>
+			At Server location of Congifure J2EE Server window, define the
+			information of BlazeDS-installed Web Application.
+			After entering server information, click Validate Configuration button and
+			check whether BlazeDS was installed in Web Application.		
+		</para>
+		<para>
+			Output folder of Compiled Flex application location enters the
+			path for Flex project to be compiled and located.
+			Generally, defines
+			specific folder under Web Root folder of Web Application Project.
+			Here, {Web Root folder}/flex was defined as output folder. If input
+			was done, click Next button.			
+		</para>
+		<mediaobject>
+			<imageobject>
+				<imagedata fileref="../image/flex-query/flex_server_configuration.jpg"
+					align="center" />
+			</imageobject>
+		</mediaobject>
+		<para>
+			Then, a window that defines build path of Flex Project is
+			opened.
+			Enter a name of Main Application mxml file at Main application
+			file and click Finish.		
+		</para>
+		<mediaobject>
+			<imageobject>
+				<imagedata fileref="../image/flex-query/flex_build_path.jpg"
+					align="center" />
+			</imageobject>
+		</mediaobject>
+		<para>
+			As shown as below, if New Project was created and Main
+			Application mxml file is opened, Flex Project was created
+			successfully.			
+		</para>
+		<mediaobject>
+			<imageobject>
+				<imagedata fileref="../image/flex-query/flex_new_project_complete.jpg"
+					align="center" />
+			</imageobject>
+		</mediaobject>
+		<para>
+			You can see that Flex Project was compiled at Web Application
+			Project {Web Root folder}/flex folder and result files were created
+			as the following.
+			Main Application mxml(main.mxml) file name(main) of
+			Flex Application becomes Flex Application execution html file
+			name(main.html).			
+		</para>
+		<mediaobject>
+			<imageobject>
+				<imagedata fileref="../image/flex-query/flex_compile.jpg" align="center" />
+			</imageobject>
+		</mediaobject>
+		<para>
+			Start WAS and call Flex Application execution html from
+			browser.(http://localhost:8080/myproject/flex/main.html)
+			If page shows
+			as the folllwing, Felx Project was installed successfully.			
+		</para>
+		<mediaobject>
+			<imageobject>
+				<imagedata fileref="../image/flex-query/flex_main_html.jpg"
+					align="center" />
+			</imageobject>
+		</mediaobject>
+	</section>
+	<section id="flex_query_intallation_sec005">
+		<title>Remoting Service Call</title>
+		<para>
+			Call getList method of Spring Bean(genreService) at
+			Flex Applicatin Main mxml.
+			By using RemotingObject tag, define
+			destination(Spring Bean) and method to call as the following.			
+		</para>
+		<programlisting language="xml"><![CDATA[<mx:RemoteObject id="remotingService" destination="genreService">
+    <mx:method name="getList" result="resultHandler(event)"/>
+</mx:RemoteObject>]]></programlisting>
+		<para>
+			Execution result of genreService getList is handled at
+			resultHandler method.
+			The following is an example of binding the
+			result of getList method to DataGrid.			
+		</para>
+		<programlisting language="xml"><![CDATA[<?xml version="1.0" encoding="utf-8"?>
+<mx:Application xmlns:mx="http://www.adobe.com/2006/mxml" layout="vertical" initialize="getList()">
+    <mx:Script>
+            import mx.rpc.events.ResultEvent;
+            import mx.collections.ArrayCollection;
+			
+            [Bindable]
+            private var genreList:ArrayCollection;
+			
+            private function getList():void{
+                remotingService.getList();
+            }
+			
+            private function resultHandler(event:ResultEvent):void{
+                genreList = event.result as ArrayCollection;
+            } 
+    </mx:Script>
+	
+    <mx:RemoteObject id="remotingService" destination="genreService">
+        <mx:method name="getList" result="resultHandler(event)"/>		
+    </mx:RemoteObject>
+   <mx:Array id="columnsInfo">
+		<mx:DataGridColumn dataField="genreId" headerText="GENRE ID" editable="true"/>
+		<mx:DataGridColumn dataField="name" headerText="NAME" editable="true"/>	
+	</mx:Array>
+	
+	<mx:DataGrid id="grdGenre" dataProvider="{genreList}" columns="{columnsInfo}"/>
+</mx:Application>]]></programlisting>
+		<para>
+			If you define as above and then calling main.html, you can see
+			the page as the following.			
+		</para>
+		<mediaobject>
+			<imageobject>
+				<imagedata fileref="../image/flex-query/flex_result.jpg" align="center" />
+			</imageobject>
+		</mediaobject>
+	</section>
+</chapter>

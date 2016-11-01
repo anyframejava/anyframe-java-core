@@ -1,0 +1,391 @@
+<chapter id="flex_query_intallation">
+	<title>Spring BlazeDS Integration 설치</title>
+
+	<para>
+		본 문서에서는 Flex Plugin을 사용하지 않고 별도로 Flex개발 환경을 구성하는 방법에 대해서 다루도록 한다.
+		Spring BlazeDS Integration을 설치 하기 위해서는 BlazeDS가 먼저 설치 되어야 한다. Web Application 프로젝트에 
+		BalzeDS를 설치 한 후, Spring BlazeDS Integration을 추가로 설치 하는 방법에 대해 살펴 보도록한다. 
+	</para>
+	
+	<section id="flex_query_intallation_sec001">
+		<title>BlazeDS의 설치</title>
+		<para>
+			<ulink url="http://opensource.adobe.com/wiki/display/blazeds/Downloads">Adobe Open Source</ulink> Site에서 최신 버전의
+			BlazeDS을 다운 받을 수 있다. Turnkey버전과 Binary Distribution을 다운 받을 수 있다. Turnkey의 경우 BlazeDS설치 파일 이외에
+			Reference 문서, Sample Application, BlazeDS Console Application등이 포함되어 있다.
+		</para>
+		<para>
+			BlazeDS를 다운 받아 압축을 풀면 blazeds.war파일이 포함되어 있다. blazeds.war파일은 아래와 같은 폴더들로 구성된다.
+		</para>
+		<mediaobject>
+			<imageobject>
+				<imagedata fileref="../image/flex-query/blazeds_war.jpg"	align="center" />
+			</imageobject>
+			<textobject>
+				<phrase>blazeds war 파일의 구조를 표현하는 그림이다. WEB-INF 폴더 하위에 web.xml 파일과 BlazeDS 환경 설정 파일들을 포함한 flex 폴더, BlazeDS 서버측 
+				라이브러리들을 포함한 lib 폴더를 포함하고 있음을 알 수 있다.</phrase>
+			</textobject>
+		</mediaobject>
+		<para>다음은 각 폴더와 파일들에 대한 간략한 설명이다.</para>
+		<itemizedlist>
+			<listitem>
+				<para><emphasis role="bold">WEB-INF/web.xml</emphasis> : 어플리케이션의 배포지시자로 
+				MessageBrokerServlet에 대한 Servlet설정과 HttpFlexSession 등에 대해 설정되어 있다. 
+				SpringBlazeDS Integration을 사용햘 경우에는 MessageBrokerServlet이 아닌 SpringMVC의 DispatcherServlet이 
+				Client요청을 처리 할 수 있도록 Servlet설정을 변경해야 한다.</para>
+			</listitem>
+			<listitem>
+			<para><emphasis role="bold">WEB-INF/flex</emphasis> : BlazeDS의 환경 설정 파일들이  있다. 서버측과 통신하기 위한 
+			채널, 아답터, 로깅등의  정보가 세팅되어 있는 파일들이 위치한다.</para>
+			</listitem>
+			<listitem>
+				<para><emphasis role="bold">WEB-INF/lib</emphasis> : BlazeDS 서버 측 라이브러리들이 위치해 있다.</para>
+			</listitem>
+  		</itemizedlist>
+  		<section id="flex_query_intallation_sec001_001">
+	  		<title>BlazeDS 설정 파일</title>
+	  		<para>
+				BlazeDS의 WEB-INF/flex폴더의 4개의 xml파일(services-config.xml, remoting-config.xml, proxy-config.xml, messaging-config.xml)을 
+				Web Application Project의 {Web Root folder}/WEB-INF/flex란 이름의 폴더를 생성한 후 아래 그림과 같이 복사한다. 
+			</para>
+			<mediaobject>
+				<imageobject>
+					<imagedata fileref="../image/flex-query/blazeds_config.jpg"	align="center" />
+				</imageobject>
+				<textobject>
+					<phrase>웹어플리케이션 프로젝의 WebRoot/WEB-INF/flex 폴더 하위에 4개의 xml파일(services-config.xml, remoting-config.xml, proxy-config.xml, 
+					messaging-config.xml)을 위치시켜야 함을 알려주는 그림이다.
+					</phrase>
+				</textobject>
+			</mediaobject>
+			<para>
+			service-config.xml 파일을 열어 remoting-config.xml, messaging-config.xml파일의 include 부분을 삭제 또는 주석처리 한다.
+			두 파일을 include에서 제외하는 이유는 Spring BlazeDS Integration의 설정파일에서 Remoting, Messaging 통신에  대한 환경설정을 할 수 있기 때문이다.
+			그리고 Web Application 레벨의 default-channels을 설정한다. 아래는 수정된 service-config.xml파일의 일부이다.
+			</para>
+			<programlisting language="xml"><![CDATA[<services-config>
+    <services>
+        <!-- service-include file-path="remoting-config.xml" / -->
+        <service-include file-path="proxy-config.xml" />
+        <!-- service-include file-path="messaging-config.xml" / -->  
+        <default-channels>
+        	<channel ref="my-amf"/>
+    	</default-channels>      
+    </services>
+
+    <security>
+    <!-- 중략 -->]]></programlisting>
+		</section>
+		<section id="flex_query_intallation_sec001_002">
+			<title>BlazeDS 라이브러리</title>
+			<para>
+				BlazeDS의 WEB-INF/lib폴더의 BlazeDS 서버 측 라이브러리를 Web Application Project의 {Web Root folder}/WEB-INF/lib폴더에 복사한다.
+				이 때 Web Application에 이미 등록되어 있는 라이브러리와 충돌나지 않도록 확인해서 복사한다.
+			</para>
+		</section>
+	</section>
+	<section id="flex_query_intallation_sec002">
+		<title>Spring BlazeDS Integration 설치</title>
+		<para>
+		BlazeDS설치가 끝났으면 Spring BlazeDS Integration을 Web Application에 설치 하도록 한다.
+		</para>
+		<section id="flex_query_intallation_sec002_001">
+		<title>Spring BlazeDS Integration 라이브러리</title>
+		<para>
+			 <ulink url="http://www.springsource.org/spring-flex">Spring Source Community</ulink>에서
+			Spring BlazeDS Integration 1.5.0을 다운 받아 org.springframework.flex-1.5.0.RELEASE.jar파일을 Web Application Project의 
+			{Web Root folder}/WEB-INF/lib에 복사한다.
+		</para>
+		<mediaobject>
+			<imageobject>
+				<imagedata fileref="../image/flex-query/flex_lib.jpg" align="center" />
+			</imageobject>
+			<textobject>
+				<phrase>웹어플리케이션 프로젝의 WebRoot/WEB-INF/lib 폴더 하위에 spring-flex jar, messaging-core jar 파일을 위치시켜야 함을 알려주는 그림이다.</phrase>
+			</textobject>
+		</mediaobject>
+		</section>
+		<section id="flex_query_intallation_sec002_002">
+		<title>Servlet 설정</title>
+		<para>
+			Spring BlazeDS Integration 라이브러리 복사가 끝났으면, Flex UI에서 RPC요청이 왔을 때 MessageBrokerServlet이 아닌 Spring MVC의 DispatcherServlet이 요청을 처리 할 수 있도록
+			web.xml파일에 Servlet설정을 아래와 같이 추가 한다. 이 때 Spring MVC에 대한 Servlet설정이 이미 정의되어 있으면 새로운 Servlet을 추가 정의한다.
+		</para>
+		<programlisting language="xml"><![CDATA[<servlet>
+    <servlet-name>action</servlet-name>
+    <servlet-class>
+        org.springframework.web.servlet.DispatcherServlet
+    </servlet-class>
+    <init-param>
+        <param-name>contextConfigLocation</param-name>
+        <param-value>classpath:/springmvc/common-servlet.xml,
+                    classpath:/springmvc/generation-servlet.xml,	
+        </param-value>
+    </init-param>
+    <load-on-startup>1</load-on-startup>
+</servlet>
+	
+<servlet>
+    <servlet-name>SpringBlazeDS</servlet-name>
+    <servlet-class>
+        org.springframework.web.servlet.DispatcherServlet
+    </servlet-class>
+    <init-param>
+        <param-name>contextConfigLocation</param-name>
+        <param-value>classpath:/springmvc/flex-servlet.xml
+        </param-value>
+    </init-param>
+    <load-on-startup>2</load-on-startup>
+</servlet>]]></programlisting>
+   	<para>
+   		위와 같이 SpringBlazeDS Servlet설정을 완료 한 후 아래와 같이 <emphasis role="bold">/messagebroker/*</emphasis>에 대한 요청을
+   		 SpringBlazeDS Servlet이 처리 할 수 있도록 servlet-mapping을 정의한다.
+	</para>
+	<programlisting language="xml"><![CDATA[<servlet-mapping>
+    <servlet-name>SpringBlazeDS</servlet-name>
+    <url-pattern>/messagebroker/*</url-pattern>
+</servlet-mapping>]]></programlisting>
+	<para>
+   		Flex Client에서 RemotingService, HTTPProxyService, MessageService의 Request url 패턴은 /messagebroker/*형태이다. 
+	</para>
+	</section>
+	<section id="flex_query_intallation_sec002_003">
+	<title>Spring WebApplicationContext 설정</title>
+	<para>
+   		다음 그림과 같이 Flex관련 Spring 설정 파일(flex.xml)을 생성하고, Web Appliaction의 classpath:/spring 하위에 위치시키도록 한다.
+	</para>
+	<mediaobject>
+		<imageobject>
+			<imagedata fileref="../image/flex-query/flex_servlet.jpg"	align="center" />
+		</imageobject>
+		<textobject>
+			<phrase>웹어플리케이션 프로젝의 src/main/resources/spring 폴더 하위에 Spring 설정 파정 파일을 위치시켜야 함을 알려주는 그림이다.</phrase>
+		</textobject>
+	</mediaobject>
+	<para>
+   		flex-servlet.xml 파일을 열어 flex namespace를 사용하기 위해 다음과 같이 xsd를 정의한다.
+	</para>
+	<programlisting language="xml"><![CDATA[<beans xmlns="http://www.springframework.org/schema/beans"
+	xmlns:flex="http://www.springframework.org/schema/flex"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://www.springframework.org/schema/beans 
+	http://www.springframework.org/schema/beans/spring-beans-3.1.xsd
+	http://www.springframework.org/schema/flex 
+	http://www.springframework.org/schema/flex/spring-flex-1.5.xsd">
+	
+</beans>]]></programlisting>
+	<para>
+   		BlazeDS 설정 파일인 services-config.xml파일을 읽어 MessageBrokerFactoryBean에 등록할 수 있도록 아래와 같이 flex namespace를 사용해
+   		정의한다. 
+	</para>
+	<programlisting language="xml"><![CDATA[<flex:message-broker/>]]></programlisting>
+	<para>
+		위는  Default설정으로 services-config.xml파일이 classpath 상위에 있을 경우에 사용할 수 있다.
+   		추가적인 설정에 대해서는 <link linkend="flex_query_configuration">Spring BlazeDS Integration Configuration</link>을 참고한다.
+	</para>
+	</section>
+	</section>
+	<section id="flex_query_intallation_sec003">
+		<title>Spring Bean Exporting</title>
+	<para>
+		BlazeDS, Spring BlazeDS Integration의 설치가 끝났으면 Spring Bean을 Flex의 RemotingService가 접근 할 수 있도록 
+		RemotingDestinationExporter에 등록한다. Spring Bean을 Exporting하기 위해서는 여러 방법이 있는데 여기에서는
+		@RemotingDestination annotation을 사용하도록 한다.
+	</para>
+	<programlisting language="java"><![CDATA[@Service("genreService")
+@RemotingDestination
+public class GenreServiceImpl implements GenreService {
+
+	@Inject
+	@Named("genreDao")
+	private GenreDao genreDao;
+
+	public List<Genre> getList() throws Exception {
+		return genreDao.getList();
+	}
+
+}]]></programlisting>
+	<para>
+		@RemotingDestination annotation에 아무런 속성을 부여하지 않으면 Bean Id가 Destination Id가 된다.
+		위의 소스코드에서는 'genreService'이 Destination Id가 되고 Flex Client에서는 genreService란 이름으로
+		해당 Service에 접근한다.
+	</para>
+	<para>
+		RemotingService가 접근 할 수 있도록 Spring Bean을 Exporting하는 자세한 방법은 
+		<link linkend="flex_query_configuration">Spring Blazeds Integration Configuration</link>을 참고한다.
+	</para>
+	</section>
+	<section id="flex_query_intallation_sec004">
+		<title>Flex Project 생성</title>
+		<para>
+		Flex Web Application개발을 하기 위한 서버 측 설정이 완료 됐으면 Flex프로젝트를 생성한다. Flex UI를 개발하기 위해서는
+		편집기를 이용한 방법과 Flex Builder를 이용한 방법이 있다. Flex Builder는 Flex UI를 개발하기 위한 이클립스 기반의 상용 S/W
+		로 WYSIWYG Editor, mxml의 자동컴파일, 디버깅등 의 다양한 기능을 제공한다. 본 문서에서는 Flex Builder를 이용해 개발하는 방법에 대해서만 설명한다.  
+		</para>
+		<para>
+		<ulink url="http://www.adobe.com/cfusion/entitlement/index.cfm?e=flex3email">Adobe Flex Builder 3 Download</ulink>에서 60일동안 사용가능한
+		Trial버전을 다운 받을 수 있다.
+		</para>
+		<para>
+		Flex Builder 3를 처음 실행 하게 되면 아래와 같은 화면을 볼 수 있다. 
+		</para>
+		<mediaobject>
+			<imageobject>
+				<imagedata fileref="../image/flex-query/flex_builder.jpg" align="center" />
+			</imageobject>
+			<textobject>
+					<phrase>Flex Builder 3를 처음 실행하게 되면 보여지는 화면</phrase>
+			</textobject>
+		</mediaobject>
+		<para>
+			Flex Builder에서  File -> New -> Flex Project를 선택하면 새로운 Flex Project를 생성할 수 있다.
+		</para>
+		<mediaobject>
+			<imageobject>
+				<imagedata fileref="../image/flex-query/flex_new_project.jpg" align="center" />
+			</imageobject>
+			<textobject>
+				<phrase>신규 Flex 프로젝트를 생성하기 위해 선택히야 하는 메뉴를 보여주는 화면이다. 메인 메뉴중 File을 선택하고 New, Flex Project를 선택해야 
+				함을 표현하고 있다.</phrase>
+			</textobject>
+		</mediaobject>
+		<para>
+			New Flex Project 창이 열리면 Project Name과 Flex Project의 Location등을 입력하고 Application type은
+			<emphasis role="bold">Web application(runs in Flash Player)</emphasis>을 선택,
+			Server technology의 Application server type는 <emphasis role="bold">J2EE</emphasis>, 
+			<emphasis role="bold">Use remote object access service</emphasis>의 체크 박스를 선택, 
+			<emphasis role="bold">LiveCycle Data Services</emphasis>를 선택한 후 Next버튼을 클릭한다.
+		</para>
+		<mediaobject>
+			<imageobject>
+				<imagedata fileref="../image/flex-query/flex_create_project.jpg" align="center" />
+			</imageobject>
+			<textobject>
+				<phrase>신규 Flex 프로젝트를 생성하기 위한 Wizard의 첫번째 내용을 나타내는 그림이다. 프로젝트명, 프로젝트위치, 어플리케이션 타입(웹어플리케이션, 데스크탑어플리케이션),
+				어플리케이션 서버 종류 등을 선택할 수 있도록 하고 있다.</phrase>
+			</textobject>
+		</mediaobject>
+		<para>
+			Configure J2EE Server창 Server location에서는 BlazeDS가 설치된 Web Application의 정보를 세팅한다.
+			서버 정보를 입력 한 후 Validate Configuration 버튼을 클릭해 BlazeDS가 설치 된 Web Application인지 확인한다.
+		</para>
+		<para>
+			Compiled Flex application location의 Output folder는 Flex Project가 컴파일 되서 위치할 경로를 입력한다.
+			일반적으로는 Web Application Project의 Web Root folder 하위의 특정 폴더를 지정한다.
+			여기에서는 {Web Root folder}/flex를 Output folder로 설정했다.
+			입력이 끝났으면 Next버튼을 클릭한다.
+		</para>
+		<mediaobject>
+			<imageobject>
+				<imagedata fileref="../image/flex-query/flex_server_configuration.jpg" align="center" />
+			</imageobject>
+			<textobject>
+				<phrase>신규 Flex 프로젝트를 생성하기 위한 Wizard의 두번째 내용을 나타내는 그림이다. WebRoot, Root URL, 컴파일 옵션, Output 경로를 입력할 수 있도록 하고 있다.</phrase>
+			</textobject>
+		</mediaobject>
+		<para>
+			다음으로는 Flex Project의 build path를 설정하는 창이 열리는데 Main application file에 Main Application mxml파일의 
+			파일 이름을 입력한 후 Finish버튼을 클릭한다.
+		</para>
+		<mediaobject>
+			<imageobject>
+				<imagedata fileref="../image/flex-query/flex_build_path.jpg" align="center" />
+			</imageobject>
+			<textobject>
+				<phrase>신규 Flex 프로젝트를 생성하기 위한 Wizard의 세번째 내용을 나타내는 그림이다.  Main application file에 Main Application mxml파일의 위치를 입력할 수 
+				있도록 하고 있다.</phrase>
+			</textobject>
+		</mediaobject>
+		<para>
+			아래 그림과 같이 신규 프로젝트가 생성되고 Main Application mxml파일이 열리면 성공적으로 Flex Project가 생성된 것이다.
+		</para>
+		<mediaobject>
+			<imageobject>
+				<imagedata fileref="../image/flex-query/flex_new_project_complete.jpg" align="center" />
+			</imageobject>
+			<textobject>
+				<phrase>성공적으로 Flex Project가 생성되어, 신규 프로젝트가 생성되고 Main Application mxml파일이 열려져 있는 것을 보여주고 있다.</phrase>
+			</textobject>
+		</mediaobject>
+		<para>
+			Web Application Project의 {Web Root folder}/flex폴더에 Flex Project가 컴파일 되어 아래와 같은 파일들이 생성된 것을 확인 할 수 있다.
+			Flex Application의 Main Application mxml(main.mxml) 파일명(main)이 Flex Application 실행  html 파일명(main.html)이 된다.  
+		</para>
+		<mediaobject>
+			<imageobject>
+				<imagedata fileref="../image/flex-query/flex_compile.jpg" align="center" />
+			</imageobject>
+			<textobject>
+				<phrase>웹어플리케이션 프로젝트의 WebRoot/flex 폴더 하위에 Flex Project가 컴파일되어 main.swf, playerProductInstall.swf 등과 같은
+				파일이 생성된 것을 보여주고 있다. </phrase>
+			</textobject>
+		</mediaobject>
+		<para>
+			WAS를 시작해 Flex Application실행 html을 브라우저에서 호출한다.(http://localhost:8080/myproject/flex/main.html)
+			아래와 같이 화면이 출력 됐다면 Flex Project가 정상적으로 설치 된 것이다.
+		</para>
+		<mediaobject>
+			<imageobject>
+				<imagedata fileref="../image/flex-query/flex_main_html.jpg" align="center" />
+			</imageobject>
+			<textobject>
+				<phrase>Flex Project가 정상적으로 설치된 후, 브라우저에서 http://localhost:8080/myproject/flex/main.html 과 같이 주소를 입력하였을 경우에 
+				나타나는 화면을 보여주고 있다. 빈 화면이 보여진다.</phrase>
+			</textobject>
+		</mediaobject>
+	</section>
+	<section id="flex_query_intallation_sec005">
+		<title>Remoting Service Call</title>
+		<para>
+			Flex Applicatin Main mxml에서 Spring Bean(genreService)의 getList메소드를 호출한다. 아래와 같이 
+			RemotingObject태그를 사용해  destination(Spring Bean)과 호출할 method를 정의한다.
+		</para>
+		<programlisting language="xml"><![CDATA[<mx:RemoteObject id="remotingService" destination="genreService">
+    <mx:method name="getList" result="resultHandler(event)"/>
+</mx:RemoteObject>]]></programlisting>
+		<para>
+			genreService  getList의 호출 결과는 resultHandler메소드에서 처리한다.
+			아래는 genreService getList메소드를 호출한 결과를 DataGrid에 바인딩하는 예이다.
+		</para>
+		<programlisting language="xml"><![CDATA[<?xml version="1.0" encoding="utf-8"?>
+<mx:Application xmlns:mx="http://www.adobe.com/2006/mxml" layout="vertical" initialize="getList()">
+    <mx:Script>
+            import mx.rpc.events.ResultEvent;
+            import mx.collections.ArrayCollection;
+			
+            [Bindable]
+            private var genreList:ArrayCollection;
+			
+            private function getList():void{
+                remotingService.getList();
+            }
+			
+            private function resultHandler(event:ResultEvent):void{
+                genreList = event.result as ArrayCollection;
+            } 
+    </mx:Script>
+	
+    <mx:RemoteObject id="remotingService" destination="genreService">
+        <mx:method name="getList" result="resultHandler(event)"/>		
+    </mx:RemoteObject>
+   <mx:Array id="columnsInfo">
+		<mx:DataGridColumn dataField="genreId" headerText="GENRE ID" editable="true"/>
+		<mx:DataGridColumn dataField="name" headerText="NAME" editable="true"/>	
+	</mx:Array>
+	
+	<mx:DataGrid id="grdGenre" dataProvider="{genreList}" columns="{columnsInfo}"/>
+</mx:Application>]]></programlisting>
+		<para>
+			위와 같이 작성 한 후 main.html을 호출 하면 다음과 같은 화면을 볼 수 있다.
+		</para>
+		<mediaobject>
+			<imageobject>
+				<imagedata fileref="../image/flex-query/flex_result.jpg" align="center" />
+			</imageobject>
+			<textobject>
+				<phrase>GenreService의 genreList를 호출한 결과를 DataGrid에 바인딩하도록 main.html을 작성하였을 경우 보여지는 화면을 보여주고 있다.
+				영화 장르 목록이 조회되어 있다.</phrase>
+			</textobject>
+		</mediaobject>
+	</section>
+</chapter>

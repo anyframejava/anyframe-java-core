@@ -40,7 +40,6 @@ import org.springframework.util.ObjectUtils;
  * @author Juergen Hoeller
  * @since 15 April 2001
  */
-@SuppressWarnings("unchecked")
 public class TestBean implements BeanNameAware, BeanFactoryAware, ITestBean, IOther, Comparable {
 
 	private String beanName;
@@ -91,8 +90,8 @@ public class TestBean implements BeanNameAware, BeanFactoryAware, ITestBean, IOt
 
 	private Number someNumber;
 
-	@SuppressWarnings("deprecation")
-	private Colour favouriteColour;
+	/*@SuppressWarnings("deprecation")
+	private Colour favouriteColour;*/
 
 	private Boolean someBoolean;
 
@@ -328,7 +327,7 @@ public class TestBean implements BeanNameAware, BeanFactoryAware, ITestBean, IOt
 		this.someNumber = someNumber;
 	}
 
-	@SuppressWarnings("deprecation")
+	/*@SuppressWarnings("deprecation")
 	public Colour getFavouriteColour() {
 		return favouriteColour;
 	}
@@ -336,7 +335,7 @@ public class TestBean implements BeanNameAware, BeanFactoryAware, ITestBean, IOt
 	@SuppressWarnings("deprecation")
 	public void setFavouriteColour(Colour favouriteColour) {
 		this.favouriteColour = favouriteColour;
-	}
+	}*/
 
 	public Boolean getSomeBoolean() {
 		return someBoolean;

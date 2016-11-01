@@ -161,4 +161,48 @@ public class MovieServiceTest {
 		movieService bean을 inject해서 로직을 검증 하는 과정을 확인할 수 있다.
 	</para>
     </section>
+    
+    <section id="core_test_testservice_implement_metaannotation">
+		<title>Test Code 에서의 Meta Annotation 사용</title>
+    	<para>
+    		Spring 4.0 에서 추가된 기능으로, 위 Test Code의 @ContextConfiguration 등과 같이 반복되는 Annotation을 Meta Annotation 으로 등록하여 조금더 간편하게 Test Code에 사용할 수 있다.
+    	</para>
+    	
+    	<programlisting language="java">
+@Target(ElementType.TYPE)
+@Retention(RetentionPolicy.RUNTIME)
+<emphasis role="bold">@ContextConfiguration(locations = { "file:./src/main/resources/spring/context-*.xml" })</emphasis>
+<emphasis role="bold">public @interface AnyframeTest {}</emphasis>
+    	</programlisting>
+    	
+    	<para>
+    		위와 같이 Meta Annotation 을 등록할 수 있으며, 
+    	</para>
+    	
+    	<programlisting language="java">
+@RunWith(SpringJUnit4ClassRunner.class)
+<emphasis role="bold">@AnyframeTest</emphasis>
+public class MovieServiceMetaAnnotationTest {
+	@Inject
+	@Named("movieService")
+	private MovieService movieService;
+
+	@Inject
+	@Named("movieFinder")
+	private MovieFinder movieFinder;
+
+	@Test
+	@Rollback(value = true)
+	public void manageMovie() throws Exception {
+		// 1. create a new movie
+		Movie movie = getMovie();
+		movieService.create(movie);
+//... 중략
+    	</programlisting>
+    	
+    	<para>
+    		위와 같이 Testcode에 직접 사용할 수 있다. 
+    	</para>
+    </section>
+
 </chapter>

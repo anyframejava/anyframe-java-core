@@ -2,7 +2,7 @@
 	pageEncoding="UTF-8" contentType="text/html;charset=utf-8"%>
 <%@ include file="/sample/common/top.jsp"%>
 <div class="location">
-	<a href="<c:url value='/anyframe.jsp'/>">Home</a> &gt; <a href="<c:url value='/scheduling.do?method=list'/>">Scheduling 1.5.2</a>
+	<a href="<c:url value='/anyframe.jsp'/>">Home</a> &gt; <a href="<c:url value='/scheduling.do?method=list'/>">Scheduling 1.6.0</a>
 </div>
 </div>
 <hr />

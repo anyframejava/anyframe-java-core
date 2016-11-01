@@ -1,0 +1,391 @@
+<chapter id="mip_query_simplification_mipservice">
+	<title>Miplatform Service</title>	
+    <para>
+    	 When using MiPlatform for developing application UI, 
+    	 there are many difficulties in reflecting the specific data format of MiPlatform in DB.
+    </para>
+	
+	<para>
+		For instance, if there are 10 columns and 10 records to insert, 
+		to carry out JDBC coding, the developer has to get each value of the 10 columns and loop 10 times to develop the logic to execute insert string. 
+	</para>
+    <para>
+    	Also when searching DB, 
+    	ResultSet meta information has to be used to set Dataset columns and loop 
+    	in order to develop logic that adds ResultSet value to Dataset.
+    </para>
+	<para>
+		<emphasis role="bold">Anyframe Ria MiPlatform uses the special data format for MiPlatform to provide common business service and Controller to CRUDE DB.</emphasis>
+	</para>
+	
+	<para>
+		The advantages of Anyframe Ria MiPlatform are as follows.
+	</para>
+	<itemizedlist>
+    	<listitem>
+      		<para>
+      			Can develop business service without changing the specific data format of MiPlatform such as Dataset and VariableList.
+      		</para>
+    	</listitem>
+
+    	<listitem>
+      		<para>
+      			For CRUD, which does not need additional business logic, query needed for query mapping file can be developed without developing business service.
+      		</para>
+    	</listitem>
+    
+     	<listitem>
+      		<para>
+      			Can easily develop business service, because the part that needs extension can selectively be overridden for use.
+      		</para>
+    	</listitem>
+    
+    	<listitem>
+      	<para>
+      		Functions do not overlap and unnecessary classes are not created, so the number of total classes decreases and maintenance is convenient.
+      	</para>
+    	</listitem>
+  	</itemizedlist>
+  
+	<para>
+		Anyframe Ria MiPlatform is largely classified into Controller, Service, and Dao.
+	</para>
+	
+	<mediaobject>
+        <imageobject>
+          <imagedata align="center"
+                     fileref="../image/mip-query/simplification/riamip-composition.jpg" />
+        </imageobject>
+	</mediaobject>
+      
+	<itemizedlist>
+      	<listitem>
+      		<para>
+      			<emphasis role="bold">Controller</emphasis> – MiPController : Class that is an expansion of operate() of AbstractMiPController. Business service method is called and result value is transferred to screen at the request of user.
+      		</para>
+      	</listitem>
+      	<listitem>
+      		<para>
+      			<emphasis role="bold">Service interface</emphasis> – MiPService : Provides API that can search, add, delete, modify, etc. data in DB using DatasetList and VariableList.
+      		</para>
+      	</listitem>
+      	<listitem>
+      		<para>
+      			<emphasis role="bold">Service implementation class</emphasis> – MiPServiceImpl : 
+      			Implementation class of MiPService. Maps Dataset with query id to be executed, calls MiPDao method, and adds query execution result to DatasetList.
+      		</para>
+      	</listitem>
+      	<listitem>
+      		<para>
+      			<emphasis role="bold">Dao class</emphasis> - MiPDao : Calls MiPQueryService method according to parameter type to execute query.
+      		</para>
+      	</listitem>
+ 	 </itemizedlist>
+
+	<section id="mip_query_simplification_mipservice_controller">
+    	<title>Controller</title>
+    	<para>
+    		Anyframe provides AbstractMiPController and AbstractMiPDispatchController that implements the Controller of Spring MVC 
+    		so that user request can be processed through UI based on MiPlatform. 
+    		In order to inherit these two classes and implement Controller class, 
+    		Controller class should be implemented by each user request. 
+    		In this case, the number of Controller classes to be developed increases, and maintenance becomes difficult. 
+    		To solve this problem, Anyframe Ria MiPlatform provides MiPController.
+		</para>
+		
+    	<section id="mip_query_simplification_mipservice_controller_mipcontroller">
+			<title>MiPController</title>
+      		<para>
+      			In case of UI based on JSP, Controller is called at user request 
+      			and Controller needs a logic to transfer the business service call result value to page. 
+      			However, for UI based on MiPlatform, the data format (DatasetList, VariableList) exchanged between view and server are the same, 
+      			and the request page and result page are the same, which makes common handling possible. 
+      			Therefore, if there are no separate logic other than business service call, MiPController can be used as the common Controller.
+			</para>
+	
+			<para>
+				The following is a part of operate() method for MiPController. 
+				Business service object is obtained from WebApplicationContext using the business service bean id obtained from page. 
+				The method name of bean id and business service to be executed is decided according to the service (i.e., boardService.getPagingList) value of deService.
+			</para>
+			<programlisting language="java"><![CDATA[public class MiPController extends AbstractMiPController {
+	
+    public void operate(PlatformRequest platformRequest, VariableList inVl,
+        DatasetList inDl, VariableList outVl, DatasetList outDl)
+        throws Exception {
+
+        String ServiceName = inVl.getValueAsString("service");
+		
+        Object bean = getWebApplicationContext().getBean(ServiceName);
+
+        Method method = getMethod(bean,inVl.getValueAsString("method"));
+		
+        try {
+            method.invoke(bean, new Object[] { inVl, inDl, outVl, outDl });
+        } catch (Exception e) {
+            Throwable te = e.getCause();
+            logger.error("Can not invoke a dispatch method name", te);
+            throw new Exception("Fail to process client request.", te);
+        }
+    }
+...]]></programlisting>
+			<para>
+				If there is no service value like the figure below, the bean id of business service is mipService 
+				and the method name is the prefix of the dsService SVC_ID value.
+			</para>
+		 	<mediaobject>
+		 		<imageobject>
+          			<imagedata align="center"
+                     	fileref="../image/mip-query/simplification/riamip-exampleofdsservice.bmp" />
+        		</imageobject>
+        	</mediaobject>
+        	<para>
+        		From prefix can come get, getList, getPagingList, create, update, remove, and saveAll. 
+        		If prefix is getList, getList() of MiPService is executed.
+        	</para>
+      	</section>
+    </section>
+    
+    <section id="mip_query_simplification_mipservice_service">
+    	<title>Service</title>
+    	<para>
+    		Service of Anyframe Ria MiPlatform consists of MiPService, which is Interface, and MiPServiceImpl, which is implementation class.
+    	</para>
+    	
+   		<section id="mip_query_simplification_mipservice_service_mipservice">
+      		<title>MiPService</title>
+      		<para>
+				MiPService is an interface class that defines the general functions which can be provided by 
+				using VariableList and Dataset that are special data forms of MiPlatform. 
+				The following is a part of MiPService source code. 
+				Input parameter of all methods are VariableList inVl, DatasetList inDl, VariableList outVl,
+				and DatasetList outDl, and Return Type is void.
+			</para>
+    		<programlisting language="java"><![CDATA[public interface MiPService {
+    ...
+    //list search
+    void getList(VariableList inVl, DatasetList inDl, 
+            VariableList outVl, DatasetList outDl) throws Exception;
+    //list search (pagination)	
+    void getPagingList(VariableList inVl, DatasetList inDl, 
+            VariableList outVl, DatasetList outDl) throws Exception;
+    //create
+    void create(VariableList inVl, DatasetList inDl, 
+            VariableList outVl, DatasetList outDl) throws Exception;
+    ...
+}]]></programlisting>
+    	</section>
+    	
+    	<section id="mip_query_simplification_mipservice_service_mipserviceimpl">
+      		<title>MiPServiceImpl</title>
+      		<para>
+      			MiPServiceImpl is an implementation class of MiPService, and calls MiPDao method based on information defined on dsService.
+      		</para>
+      		<mediaobject>
+      			<imageobject>
+          			<imagedata align="center"
+                     	fileref="../image/mip-query/simplification/riamip-exampleofdsservice.bmp" />
+        		</imageobject>
+        	</mediaobject>
+        	<para>
+        		If dsService is defined as Row 2 above, value is set in VariableList as shown on the figure below, and transferred to server.
+        	</para>
+        	<mediaobject>
+        		 <imageobject>
+          			<imagedata align="center"
+                     	fileref="../image/mip-query/simplification/riamip-mipserviceimpl.jpg" />
+        		</imageobject>
+        	</mediaobject>
+        	<para>
+        		The following is a part of getPagingList() method of MiPServiceImpl. It provides the function to search for data on a specific page.
+        	</para>
+			<para>
+				When a Dataset with "querySet1" id is included in the DatasetList 
+				that is transferred by input parameter as the figure below, 
+				assign "querySet1" KEY value to queryId variable from VariableList. 
+				Also, extract Dataset with "querySet1" id from DatasetList to assign to inDs variable. 
+				Then, call MiPDao method using queryId and inDs.
+			</para>
+        	<programlisting language="java"><![CDATA[public void getPagingList(VariableList inVl, DatasetList inDl,
+        VariableList outVl, DatasetList outDl) throws QueryException {
+
+    int querySetCount = getQuerySetCount(inVl, outVl);
+    String queryId = null;
+    Dataset inDs = null;
+    Dataset outDs = null;
+    for( int i = 1 ; i <= querySetCount ; i++) {
+        queryId = inVl.getValueAsString("querySet"+i);
+        inDs = inDl.get("querySet"+i);
+        try{
+            if(inDs != null) {
+                outDs = mipDao.getPagingList(queryId, inDs);
+            }
+            outDl.addDataset("querySet"+i, outDs);
+// ...
+    }
+}]]></programlisting>
+			<para>
+				Other methods of MiPServiceImpl also process user request using Dataset and query id extracted from input parameter.
+			</para>
+			<para>
+				If prefix of dsService SVC_ID are get, getList, getPagingList, create, update, and remove as the figure below, 
+				one query id should be set for each querySet.
+			</para>
+			<mediaobject>
+ 				<imageobject>
+        			<imagedata align="center"
+                    	fileref="../image/mip-query/simplification/riamip-exampleofdsservice.bmp" />
+        		</imageobject>
+        	</mediaobject>
+        	<para>
+        		In case of saveAll, three query id should be set for addition, modification, and delete such as "querySet1=createBoard,updateBoard,removeBoard" on QUERY_LIST. 
+        		In case of search (get, getList, getPagingList), Dataset ID is the Dataset ID ("querySet+(number)") used as search conditions.  
+        	</para>
+        </section>
+	</section>
+    
+    <section id="mip_query_simplification_mipservice_dao">
+    		<title>MiPDao</title>
+    		<para>
+		    	MiPDao interface uses two data formats (VariableList, Dataset) to provide CRUD function to database. 
+		    	It can be easily used because method is separated by input parameter, 
+		    	and functions of DB work that can be done with Dataset and VariableList include most functions.
+			</para>
+			<programlisting language="java"><![CDATA[public int saveAll(Map queryMap, Dataset inDs,
+    MiPActionCommand actionCommand) throws QueryException {
+	
+    if(actionCommand == null){
+        return miPQueryService.update(queryMap, inDs);
+    }else{
+        return miPQueryService.update(queryMap, inDs, actionCommand);
+    }
+}
+]]></programlisting>
+		<para>
+		You can see that MiPQueryService update() is being called using query id and Dataset in map form for insert, update, and delete. 
+		</para>
+		<para>
+		Using implementation provided by Anyframe Ria MiPlatform is recommended for MiPDaoQuery, and extended only when necessary. 
+		</para>
+   	</section>
+    	
+    <section id="mip_query_simplification_mipservice_extension">
+    	<title>Extension of MiPServiceImpl</title>
+    	<para>
+    		When additional function is needed other than provided by MiPService, 
+    		you can define additional API or override relative method.
+       	</para> 
+
+		<para>
+			The following is an example of expanding saveAll() by overriding to set a single ID in the ‘PROD_NO’ column before inserting Dataset record in DB.
+		</para> 
+		<programlisting language="java"><![CDATA[@Service("mipQueryMovieService")
+@Transactional(rollbackFor = { Exception.class }, propagation = Propagation.REQUIRED)
+public class MovieServiceImpl extends MiPServiceImpl implements MovieService {
+
+  	@Inject
+	public MovieServiceImpl(MiPDao mipDao){
+		super.mipDao = mipDao;
+	}
+	
+    ..중략
+   public void saveAll(VariableList inVl, DatasetList inDl,
+			VariableList outVl, DatasetList outDl) throws Exception {
+
+		Map<String, String> sqlMap = new HashMap<String, String>();
+		
+		sqlMap.put(MiPQueryServiceImpl.QUERY_INSERT, "createMovie");
+		sqlMap.put(MiPQueryServiceImpl.QUERY_UPDATE, "updateMovie");
+		sqlMap.put(MiPQueryServiceImpl.QUERY_DELETE, "removeMovie");
+
+		mipDao.saveAll(sqlMap, inDl.get("dsSave"), new MovieActionCommand());
+	}
+	
+}]]></programlisting>
+    	<para>
+    		ProductActionCommand that is the implementation of MiPActionCommand provided by Anyframe, 
+    		is being transferred to the saveAll() parameter of MiPDao. 
+    		When using MiPActionCommand, Necessary business logic can be executed before and after executing specific string.
+    	</para>
+    	
+    	<section id="mip_query_simplification_mipservice_extension_commend">
+    		<title>[Note] MiPActionCommand</title>
+    		<para>
+    			MiPActionCommand is the interface provided to add necessary business logic 
+    			before and after executing insert, update, and delete query when save() of  MiPQueryService is called. 
+    			Define a separate class that implements MiPActionCommand interface, and add business logic to relevant method.
+    		</para>
+    		<para>
+    			The following is a part of  preInsert() for ProductActionCommand class. 
+    			You can see that the single value for the primary key PROD_NO column before inserting Dataset into a specific table.
+       		</para>
+    		<programlisting language="java"><![CDATA[public class MovieActionCommand implements MiPActionCommand{
+
+   public void preInsert(Dataset ds, int index) {
+			String id = "MV-" + System.currentTimeMillis();
+			Variant variant = new Variant();
+			variant.setObject(id);
+			ds.setColumn(index, "MOVIE_ID", variant);
+	}
+}]]></programlisting>
+		<para>
+			Therefore, preInsert() of MovieActionCommand is called to execute additional logic 
+			before inserting in DB the record which the Dataset status is 'insert' for MiPQueryService save().
+		</para> 
+    	</section>
+    </section>
+    
+    <section id="mip_query_simplification_mipservice_testcase">
+    	<title>Testcase</title>
+	    <para>
+			The following is a part of the code to test the searching function using Dataset among Main.java which test the functions of MiPService. 
+			It is a test case that enters search conditions and letters in "SEARCH_CONDITION", "SEARCH_KEYWORD" column of Dataset that has two IDs which are querySet1 and querySet2, 
+			and then calls getList() of MiPService to execute query that has an ID of findBoardList and check if it runs properly. 
+		</para>
+		<programlisting language="java"><![CDATA[/**
+ * When search conditions are set in Dataset 
+ * list is searched through Dataset. 
+ * After setting search conditions and search keywords on two Datasets, 
+ * compare the expected value when string runs properly with value of search result.
+ */
+public void testGetListUsingDataset() throws Exception {
+	DatasetList inDl = new DatasetList();
+	VariableList inVl = new VariableList();
+	DatasetList outDl = new DatasetList();
+	VariableList outVl = new VariableList();
+
+	inVl.add("querySetCount", 2);
+	inVl.add("querySet1", "findBoardList");
+	inVl.add("querySet2", "findBoardList");
+
+	Dataset dsSearch1 = new Dataset("querySet1");
+	dsSearch1.addStringColumn("SEARCH_CONDITION");
+	dsSearch1.addStringColumn("SEARCH_KEYWORD");
+
+	dsSearch1.appendRow();
+	dsSearch1.setColumn(0, "SEARCH_CONDITION", "BOARD_NO");
+	dsSearch1.setColumn(0, "SEARCH_KEYWORD", "BOARD-00002");
+	inDl.addDataset("querySet1", dsSearch1);
+
+	Dataset dsSearch2 = new Dataset("querySet2");
+	dsSearch2.addStringColumn("SEARCH_CONDITION");
+	dsSearch2.addStringColumn("SEARCH_KEYWORD");
+
+	dsSearch2.appendRow();
+	dsSearch2.setColumn(0, "SEARCH_CONDITION", "BOARD_TITLE");
+	dsSearch2.setColumn(0, "SEARCH_KEYWORD", "0001");
+	inDl.addDataset("querySet2", dsSearch2);
+
+	mipService.getList(inVl, inDl, outVl, outDl);
+
+	assertEquals(2, outDl.size());
+
+	Dataset ds1 = outDl.get("querySet1");
+	Dataset ds2 = outDl.get("querySet2");
+
+	assertEquals("BOARD-00002", ds1.getColumnAsString(0, "BOARD_NO"));
+	assertEquals("TITLE-0001", ds2.getColumnAsString(0, "BOARD_TITLE"));
+}]]></programlisting>
+    </section>
+</chapter>	
+

@@ -17,8 +17,6 @@ package org.anyframe.plugin.hibernate.moviefinder.service;
 
 import java.util.List;
 
-import org.anyframe.plugin.hibernate.domain.Genre;
-
 /**
  * The GenreService class is an Interface class to provide Genre list
  * functionality.
@@ -26,5 +24,5 @@ import org.anyframe.plugin.hibernate.domain.Genre;
  * @author Youngmin Jo
  */
 public interface GenreService {
-	List<Genre> getList() throws Exception;
+	List<Object> getList() throws Exception;
 }

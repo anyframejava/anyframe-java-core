@@ -1,0 +1,65 @@
+<chapter id="mip_query_mipuisample_i18n">
+	<title>Internationalization (i18n)</title>
+	
+	<section id="mip_query_mipuisample_i18n_domain">
+		<title>Domain</title>
+		<para>
+			Domain of MiPlatform defines common guidelines or properties that can be applied to the entire application. 
+			Domain can be edited on the Global tab of MiPlatform PID, and saved in a separate Domain File (/miplatform/domains/domain_XX.xml).
+		</para>
+		<mediaobject>
+          	<imageobject>
+           		<imagedata align="center"
+					fileref="../image/mip-query/mipuisample/editing_domain.png" />
+          	</imageobject>
+        </mediaobject>
+        <para></para>
+        <para>
+        	The Label shown on the view through the Image component in this sample uses Domain to process internationalization.
+        </para>
+        <mediaobject>
+          	<imageobject>
+           		<imagedata align="center"
+					fileref="../image/mip-query/mipuisample/domainid_prop.png" />
+          	</imageobject>
+        </mediaobject>
+        <para></para>
+        <para>
+        	Domain File consists of domain_KO.xml and domain_EN.xml. The structure is as follows.
+        </para>
+        <itemizedlist>
+        	<listitem>
+        		<para>
+					domain_KO.xml
+                    <programlisting language="xml"><![CDATA[<?xml version="1.0" encoding="utf-8"?>
+<domain>
+    <item id="button" text="Button">
+        <item id="search" text="Search"/>
+        <item id="add" text="Add"/>
+        <item id="remove" text="Remove"/>
+        <item id="save" text="Save"/>
+        <item id="new" text="New"/>]]></programlisting>
+				</para>
+        	</listitem>
+        	<listitem>
+        		<para>
+					domain_EN.xml
+                    <programlisting language="xml"><![CDATA[<?xml version="1.0" encoding="utf-8"?>
+<domain>
+    <item id="button" text="Button">
+        <item id="search" text="Search"/>
+        <item id="add" text="Add"/>
+        <item id="remove" text="Remove"/>
+        <item id="save" text="Save"/>
+        <item id="new" text="New"/>]]></programlisting>					
+        		</para>
+        	</listitem>
+        </itemizedlist>
+        <para>
+        	The ‘id’ value above is matched with the contents registered in component DomainID to display the contents defined in ‘text’.
+			<para></para>
+			During login, in the script of layouts/LOGIN.xml, the language value transferred from server can be saved in ‘gvLanguage’ and 
+			loading of domain file that fits the related language can be done.
+		</para>
+	</section>
+</chapter>

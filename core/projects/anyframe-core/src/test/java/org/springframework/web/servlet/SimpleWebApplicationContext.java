@@ -35,7 +35,6 @@ import org.springframework.web.servlet.handler.BeanNameUrlHandlerMapping;
 import org.springframework.web.servlet.i18n.AcceptHeaderLocaleResolver;
 import org.springframework.web.servlet.mvc.Controller;
 import org.springframework.web.servlet.mvc.LastModified;
-import org.springframework.web.servlet.mvc.SimpleFormController;
 import org.springframework.web.servlet.support.RequestContextUtils;
 import org.springframework.web.servlet.theme.AbstractThemeResolver;
 import org.springframework.web.servlet.view.InternalResourceViewResolver;
@@ -52,7 +51,7 @@ public class SimpleWebApplicationContext extends StaticWebApplicationContext {
 		MutablePropertyValues pvs = new MutablePropertyValues();
 		pvs.addPropertyValue("commandClass", "org.springframework.beans.TestBean");
 		pvs.addPropertyValue("formView", "form");
-		registerSingleton("/form.do", SimpleFormController.class, pvs);
+		//registerSingleton("/form.do", SimpleFormController.class, pvs);
 
 		registerSingleton("/locale.do", LocaleChecker.class);
 

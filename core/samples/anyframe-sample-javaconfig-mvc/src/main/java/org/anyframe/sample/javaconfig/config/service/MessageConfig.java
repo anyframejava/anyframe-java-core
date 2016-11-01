@@ -19,6 +19,7 @@ package org.anyframe.sample.javaconfig.config.service;
 import org.springframework.context.MessageSource;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.context.annotation.Description;
 import org.springframework.context.support.ReloadableResourceBundleMessageSource;
 
 /**
@@ -37,6 +38,7 @@ public class MessageConfig {
 	 * @return
 	 */
 	@Bean 
+	@Description("Provides messageSource bean")
 	public MessageSource messageSource(){
 		ReloadableResourceBundleMessageSource messageSource = new ReloadableResourceBundleMessageSource();
 		

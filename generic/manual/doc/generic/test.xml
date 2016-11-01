@@ -1,0 +1,70 @@
+<chapter id="generic_implementation_test">
+		<title>Test Case</title>
+		
+		<para>다음은 Query 서비스를 사용하여 Generic Service를 Test하기 위한 코드이다.</para>
+		
+		<itemizedlist>
+			<listitem>
+				<para>다음은 Generic Plugin 설치로 추가된 Query Service DAO Framework 기반의 generic/moviefinder/service/GenericGenre.java의 일부로써
+		              Generic 서비스를 그대로 활용한 케이스에 대한 Test Code이다.
+					<programlisting language="java"><![CDATA[public class GenreServiceTest {
+
+    @Inject
+    @Named("genericGenreService") 
+    ]]><emphasis role="bold"><![CDATA[private GenericService<GenericGenre, String> genericGenreService;]]></emphasis><![CDATA[
+
+    @Test
+    public void testGenreGetList() throws Exception {
+        SearchVO searchVO = new SearchVO();
+        List list = genericGenreService.getList(searchVO);
+
+        Assert.assertEquals(10, list.size());
+    }
+}]]></programlisting>
+				</para>
+			</listitem>
+			
+			<listitem>
+				<para>다음은 Generic Plugin 설치로 추가된 Query Service DAO Framework 기반의 generic/moviefinder/service/GenericGenre.java의 일부로써
+		              Generic 서비스를 확장한 케이스에 대한 Test Code이다.
+					  <programlisting language="java"><![CDATA[public class MovieServiceTest {
+
+    @Inject
+    @Named("genericMovieService")
+    ]]><emphasis role="bold"><![CDATA[private MovieService movieService;]]></emphasis><![CDATA[
+
+    @Test
+    @Rollback(value = true)
+    public void manageMovie() throws Exception {
+        
+        // 1. create a new movie
+        GenericMovie movie = getMovie();
+        movieService.create(movie);
+
+        // 2. assert - create
+        movie = movieService.get(movie.getMovieId());
+        assertNotNull("fail to fetch a movie", movie);
+        assertEquals("fail to compare a movie title", "Shrek (2001)", movie
+                .getTitle());
+
+        // 3. update a title of movie
+        String title = "Shrek 2 " + System.currentTimeMillis();
+        movie.setTitle(title);
+   
+        // 4. assert - update     
+        movieService.update(movie);
+
+        // 5. remove a movie
+        movie = movieService.get(movie.getMovieId());
+        assertNotNull("fail to fetch a movie", movie);
+        assertEquals("fail to compare a updated title", title, movie.getTitle());
+
+        // 6. assert - remove
+        movieService.remove(movie.getMovieId());
+        중략...
+    }				  
+}]]></programlisting>
+				</para>
+			</listitem>
+		</itemizedlist>
+</chapter>

@@ -1,0 +1,190 @@
+<chapter id="mip_query_integration_mipcontroller">
+	<title>MiPController</title>
+	
+	<para>
+		MiPlatform을 사용하여 개발 시, Client UI Component에서 조회/저장 이벤트가 발생하면 호출하는
+    	Controller 클래스는 Business Service를 실행하여 결과값을 XML로 변환하여 전송한다. Anyframe은 개발자
+    	편의를 위하여 AbstractMipController를 제공하며 개발자는 복잡한 변환로직을 신경쓰지 않고 개발이 가능하다.
+    	<programlisting language="java"><![CDATA[public abstract class AbstractMiPController extends AbstractController  {
+<!-- 중략 -->
+    public ModelAndView handleRequestInternal(HttpServletRequest request,
+            HttpServletResponse response) throws Exception {
+        VariableList inVl = null;
+        DatasetList inDl = null;
+        VariableList outVl = null;
+        DatasetList outDl = null;
+
+        PlatformRequest platformRequest =
+            new PlatformRequest(request, defaultCharset);
+        PlatformResponse platformResponse =
+            new PlatformResponse(response, defaultEncodeMethod, defaultCharset);
+
+        try {
+            platformRequest.receiveData();
+
+            inVl = platformRequest.getVariableList();
+            inDl = platformRequest.getDatasetList();
+            outVl = new VariableList();
+            outDl = new DatasetList();
+            
+            getLogger().debug(this.getClass().getName() + "." + "operate()" + " started");]]>            
+            <emphasis role="bold">operate(request, inVl, inDl, outVl, outDl);</emphasis>            
+            <![CDATA[if(logger.isDebugEnabled()){
+				logger.debug("{}.operate() ended", new Object[] { this.getClass()
+						.getName() });
+				logger.debug("Output VariableList");
+				outVl.printVariables();
+				logger.debug("Output DatasetList");
+				outDl.printDatasets();
+			}
+			
+			setResultMessage(outVl, 0, "Request has been processed successfully");
+
+			String isFirstRow = inVl.getValueAsString("isFR");;
+			
+			// in case of Firstrow
+			if("y".equalsIgnoreCase(isFirstRow)){
+				sendFirstrowData(response, inVl, outVl, outDl);
+			} else {
+				// general PlatformResponse
+				sendPlatformData(response, outVl, outDl);
+			}
+		} catch (Exception e) {
+			String msg = e.getMessage();
+
+			if (msg == null)
+				msg = "Fail to process client request.";
+
+			logger.error(msg);
+			setResultMessage(outVl, -1, msg);
+			
+			sendPlatformData(response, outVl, outDl);
+		} 
+		
+		logger.debug(this.getClass().getName() + " process() end!");
+		return null;
+    }
+    
+    public abstract void operate(HttpServletRequest request, VariableList inVl,
+            DatasetList inDl, VariableList outVl, DatasetList outDl)
+            throws Exception;
+<!-- 중략 --> 
+}]]>
+</programlisting>
+	</para>
+
+    <para>
+    	AbstractMiPController는 AbstractController의 handleRequestInternal 메소드를 구현하고
+    	있고 operate 메소드를 호출한다. 개발자가 AbstractMiPController를 상속하여 User Defined
+    	Controller를 개발할 경우 실제 코딩은 operate 메소드 내부에 구현하면 된다.
+    </para>
+
+    <itemizedlist>
+		<listitem>
+			<para>operate 메소드 내 이용변수 설명</para>
+
+        	<para>
+        		<informaltable>
+        			<caption>operate 메소드 내 이용변수 설명</caption>
+	          		<tgroup cols="3">
+	          			<colspec colnum="1" colname="col1" colwidth="3*"/>
+						<colspec colnum="2" colname="col2" colwidth="2*"/>
+						<colspec colnum="3" colname="col3" colwidth="5*"/>
+						<thead>
+							<row>
+								<entry align="center">변수 타입</entry>
+								<entry align="center">변수명</entry>
+								<entry align="center">설명</entry>
+							</row>
+						</thead>
+	            		<tbody>
+	              			<row>
+	                			<entry>VariableList</entry>
+	
+	                			<entry>inVl</entry>
+	
+	                			<entry>Client에서 GET방식으로 전송한 parameter를 포함</entry>
+	              			</row>
+	
+	              			<row>
+	                			<entry>VariableList</entry>
+	
+	                			<entry>outVl</entry>
+	
+	                			<entry>Client로 전송하는 VariableList</entry>
+	              			</row>
+	
+	              			<row>
+	               		 		<entry>DatasetList</entry>
+	
+	                			<entry>inDl</entry>
+	
+	                			<entry>Client에서 POST방식으로 전송한 Dataset XML를 포함</entry>
+	              			</row>
+	
+	              			<row>
+	                			<entry>DatasetList</entry>
+	
+	                			<entry>outDl</entry>
+	
+	                			<entry>Client로 전송하는 DatasetList</entry>
+	              			</row>
+	            		</tbody>
+	          		</tgroup>
+	        	</informaltable>
+        	</para>
+		</listitem>
+
+		<listitem>
+			<para>Firstrow 방식 응답처리</para>
+			
+			<para>
+				MiPlatform에서는 서버에서 대용량 데이터를 클라이언트로 전송할 때 전체 데이터를 분할해서 전송하는 Firstrow 방식을 제공하고, 그를 위한 PlatformFRResponse 객체를 지원한다.
+				따라서, AbstractMiPController에서는 Dataset에 담긴 대량의 데이터를 사용자가 정의한 값(nextDataSize) 만큼의 Row 개수로 분할하여 
+				응답 처리를 수행하도록 구현하고 있다. (*대용량 데이터가 VariableList의 형태로 저장된 경우에는 Firstrow 방식을 사용할 수 없음을 유의하도록 한다.)
+			</para>
+			
+			<para>
+				아래는 Firstrow 처리를 위해 클라이언트에서 전송해야 하는 파라미터에 대한 설명이다.
+        		<informaltable>
+        			<caption>Firstrow 처리를 위해 클라이언트에서 전송해야 하는 파라미터에 대한 설명</caption>
+	          		<tgroup cols="2">
+	          			<colspec colnum="1" colname="col1" colwidth="3*"/>
+						<colspec colnum="2" colname="col2" colwidth="2*"/>
+						<thead>
+							<row>
+								<entry align="center">변수명</entry>
+								<entry align="center">설명</entry>
+							</row>
+						</thead>
+	            		<tbody>
+	              			<row>
+	                			<entry>isFR</entry>
+	
+	                			<entry>Firstrow 방식으로 전송할지 여부(Default : N)</entry>
+	              			</row>
+	
+	              			<row>
+	                			<entry>nextDataSize</entry>
+	
+	                			<entry>Firstrow 방식으로 전송할 때, DataSet row 분할 기준이 되는 DataSize값(Default : 1000)</entry>
+	              			</row>
+	            		</tbody>
+	          		</tgroup>
+	        	</informaltable>
+			</para>
+		</listitem>
+
+		<listitem>
+			<para>Page navigation</para>
+
+        	<para>
+        		MiPlatform이용 시 화면이동은 발생하지 않으며 조회/저장 이벤트에 해당하는 결과인 Dataset XML만
+        		전송한다. 개발자가 User Defined Controller에서 operate 메소드 구현 시 화면 이동을 위한 View
+        		Name값은 null로 설정한다. 그리고 개발자가 AbstractMiPController를 상속하여 Controller를
+        		개발할 때는 operate 메소드 내부에 Business Service를 실행하여 결과값을 반환하도록 구현한다.
+        	</para>
+		</listitem>
+	</itemizedlist>
+</chapter>
+    

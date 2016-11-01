@@ -1,0 +1,40 @@
+<?xml version="1.0"?>
+<project name="anyframe.samples.ria.flex" default="default" basedir=".">
+    
+	<property file = "./build.properties"/>
+	<property environment="env" />
+  
+	<taskdef resource="flexTasks.tasks" classpath="C:\Program Files (x86)\Adobe\Adobe Flash Builder 4.5\sdks\4.5.1\ant\lib\flexTasks.jar" />
+   	
+   	<target name="init">
+   	   		<delete includeemptydirs="true">
+   				<fileset dir="${deploy}/flex"/>
+   	   		</delete>
+   	</target>
+   	
+   	<target name="mkdir">
+   		<mkdir dir="${deploy}/flex"/>
+   	</target>
+	
+   	<target name="compile-app">
+        
+        <mxmlc file="${app.src}/${app.file}.mxml" 
+            output="${deploy}/${app.file}.swf"
+            actionscript-file-encoding="UTF-8"
+            incremental="false"
+            services="../services-config.xml"
+            context-root="${context.root}"
+        	link-report="${deploy}/flex/report.xml">
+            <load-config filename="${FLEX_HOME}/frameworks/flex-config.xml"/>
+        	<source-path path-element="${FLEX_HOME}/frameworks"/>
+        	<default-size width="1024" height="610" />
+
+            <compiler.library-path dir="${app}" append="true"> 
+			    <include name="libs" />
+            	<include name="src/assets/css" />
+			</compiler.library-path>
+        </mxmlc>
+    </target>
+
+	<target name="default" depends="compile-app"/>	
+</project>

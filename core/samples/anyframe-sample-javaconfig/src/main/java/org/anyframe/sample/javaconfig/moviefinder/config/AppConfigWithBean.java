@@ -22,6 +22,7 @@ import org.anyframe.sample.javaconfig.moviefinder.service.impl.MovieFinderImpl;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.context.annotation.Description;
 import org.springframework.context.annotation.EnableAspectJAutoProxy;
 import org.springframework.context.annotation.Lazy;
 
@@ -39,18 +40,21 @@ public class AppConfigWithBean {
 
 	@Bean
 	@Lazy(value = false)
+	@Description("Provides a MovieFinderDao bean with Lazy")
 	public MovieFinderDao movieFinderDao() {
 		return new MovieFinderDao();
 	}
 
 	@Bean(initMethod = "initialize", destroyMethod = "destroy")
 	@Lazy(value = false)
+	@Description("Provides a MovieFinder bean with Lazy")
 	public MovieFinder movieFinder() {
 		return new MovieFinderImpl(movieFinderDao);
 	}
 
 	@Bean
 	@Lazy(value = true)
+	@Description("Provides a LoggingAspect bean with Lazy")
 	public LoggingAspect loggingAspect() {
 		return new LoggingAspect();
 	}

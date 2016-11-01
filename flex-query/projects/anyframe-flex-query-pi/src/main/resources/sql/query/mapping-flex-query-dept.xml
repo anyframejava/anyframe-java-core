@@ -1,0 +1,42 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<queryservice xmlns="http://www.anyframejava.org/schema/query/mapping" 
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" 
+	xsi:schemaLocation="http://www.anyframejava.org/schema/query/mapping http://www.anyframejava.org/schema/query/mapping/anyframe-query-mapping-1.0.xsd ">
+
+  <queries>
+	<query id="flex.findDeptList" isDynamic="true" mappingStyle="camel">
+			<statement>
+				<!--flex-query-findDeptList-START-->
+				SELECT DEPT_ID, DEPT_NAME, DEPT_DESC 
+				FROM FLEX_DEPT
+								#if ($vo.searchCondition == "deptId")
+					where DEPT_ID like :vo.searchKeyword		
+				#elseif ($vo.searchCondition == "deptName")
+					and DEPT_NAME like :vo.searchKeyword		
+				#end
+
+				<!--flex-query-findDeptList-END-->
+			</statement>
+			<result class="org.anyframe.plugin.flex.query.domain.Dept"/>
+	</query>
+	<query id="flex.findGroupList" isDynamic="true" mappingStyle="camel">
+			<statement>
+				SELECT DEPT_ID, DEPT_NAME, DEPT_DESC 
+				FROM FLEX_DEPT
+				WHERE DEPT_LEVEL = '0'
+			</statement>
+			<result class="org.anyframe.plugin.flex.query.domain.Dept"/>
+	</query>
+	<query id="flex.findTeamList" isDynamic="true" mappingStyle="camel">
+			<statement>
+				SELECT DEPT_ID, DEPT_NAME, DEPT_DESC 
+				FROM FLEX_DEPT
+				WHERE
+					PARENT_DEPT = :vo.searchKeyword
+				AND
+					DEPT_LEVEL = '1'
+			</statement>
+			<result class="org.anyframe.plugin.flex.query.domain.Dept"/>
+	</query>
+  </queries>
+</queryservice>

@@ -6,6 +6,7 @@ import org.anyframe.spring.config.EnableWebMvcAnyframe;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.ComponentScan;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.context.annotation.Description;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.servlet.HandlerExceptionResolver;
 import org.springframework.web.servlet.LocaleResolver;
@@ -26,6 +27,7 @@ public class WebAppConfig {
 	private static final String WARN_LOG_CATEGORY = "controller.logs";
 
 	@Bean
+	@Description("Provides viewResolver bean")
 	public ViewResolver viewResolver() {
 		InternalResourceViewResolver viewResolver = new InternalResourceViewResolver();
 
@@ -37,6 +39,7 @@ public class WebAppConfig {
 	}
 
 	@Bean
+	@Description("Provides exceptionResolver bean")
 	public HandlerExceptionResolver exceptionResolver() {
 		SimpleMappingExceptionResolver exceptionResolver = new SimpleMappingExceptionResolver();
 		exceptionResolver.setDefaultErrorView(DEFAULT_ERROR_VIEW);
@@ -46,6 +49,7 @@ public class WebAppConfig {
 	}
 
 	@Bean
+	@Description("Provides localeResolver bean")
 	public LocaleResolver localeResolver() {
 		SessionLocaleResolver localeResolver = new SessionLocaleResolver();
 		localeResolver.setDefaultLocale(new Locale("en_US"));

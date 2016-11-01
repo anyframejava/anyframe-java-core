@@ -1,0 +1,56 @@
+	
+	<chapter id="generic_implementation_domain">
+				<title>Domain Class Creation</title>
+		<para>
+			Serializable interface implementation is not mandatory when creating Domain class, 
+          	but it is necessary when persistent object is saved in HttpSession in Hibernate or when transferred using RMI.
+		</para>
+		<section id="generic_implementation_domain_query">
+			<title>Using Query Service</title>
+
+			<para>
+				The following is a part of ~generic/domain/GenericMovie.java 
+                based on Query Service DAO Framework added due to Generic Plugin installation. 
+                In this case, you can use CRUD of Generic Service with Query Service 
+                if @Id (@EmbeddedId, in case of composite key) Annotation is set, even without setting Annotations such as @Entity or @Table.
+				
+				<programlisting language="java"><![CDATA[public class GenericMovie implements Serializable {
+    private String movieId;
+    ...]]>
+    <emphasis role="bold">@Id</emphasis>
+    <![CDATA[public String getMovieId() {
+        return movieId;
+    }
+
+    public void setMovieId(String movieId) {
+        this.movieId = movieId;
+    }
+}]]></programlisting>
+			</para>
+		</section>
+		<section id="generic_implementation_domain_hibernate">
+			<title>When using Hibernate/JPA</title>
+
+			<para>
+			    The following is an example of Movie Domain based on Hibernate/JPA DAO Framework. 
+				In this case, if there is Annotation setting such as @Entity, @Table, and @Column, 
+				CRUD functions of Generic Service can be used with Hibernate/JPA.
+				
+				<programlisting language="java"><emphasis role="bold"><![CDATA[@Entity]]></emphasis>
+<emphasis role="bold"><![CDATA[@Table(name = "GENERIC_MOVIE", schema = "PUBLIC")]]></emphasis>
+<![CDATA[public class GenericMovie implements Serializable
+    private String movieId;
+    ...]]>
+    <emphasis role="bold">@Id</emphasis>
+    <emphasis role="bold">@Column(name = "MOVIE_ID", unique = true, nullable = false, length = 12)</emphasis>
+    <![CDATA[public String getMovieId() {
+        return this.movieId;
+    }
+    
+    public void setMovieId(String movieId) {
+        this.movieId = movieId;
+    }
+}]]></programlisting>
+			</para>
+		</section>
+		</chapter>

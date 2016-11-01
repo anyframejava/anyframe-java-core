@@ -1,0 +1,44 @@
+				<!--flex-query-findUserList-START-->
+				SELECT 
+					users.USER_ID, 
+					users.USER_NAME, 
+					users.EN_NAME, 
+					users.COMP_PHONE, 
+					users.PHONE, 
+					users.CELL_PHONE, 
+					users.COMPANY, 
+					users.JOB_POSITION, 
+					users.ASSIGNMENT, 
+					users.OFFICER_YN , 
+					users.FAX, 
+					users.ZIP_CODE, 
+					users.ADDRESS, 
+					users.COMP_ZIP_CODE, 
+					users.COMP_ADDRESS, 
+					users.EMAIL, 
+					users.DEPT_ID, 
+					users.PASSWORD,
+					dept.DEPT_NAME,
+					dept.DEPT_ID
+				FROM FLEX_USER users, FLEX_DEPT dept
+				WHERE dept.DEPT_ID = users.DEPT_ID
+				<!--Velocity-Support-dynamicFindUserList-START-->
+				#if ($vo.searchCondition == "userName")
+					and users.USER_NAME like  '%'+ :vo.searchKeyword +'%'			
+				#elseif ($vo.searchCondition == "userId")
+					and users.USER_ID like  '%'+ :vo.searchKeyword +'%'		
+				#elseif ($vo.searchCondition == "deptId")
+					and users.DEPT_ID like  '%'+ :vo.searchKeyword +'%'		
+				#end			
+					ORDER BY users.USER_NAME
+				<!--Velocity-Support-dynamicFindUserList-END-->
+				<!--flex-query-findUserList-END-->
+				<!--flex-query-createUser-START-->
+				INSERT INTO FLEX_USER
+				(USER_ID, USER_NAME, EN_NAME, COMP_PHONE, PHONE, CELL_PHONE, COMPANY
+				       , JOB_POSITION, ASSIGNMENT, OFFICER_YN , FAX, ZIP_CODE, ADDRESS 
+				       , COMP_ZIP_CODE, COMP_ADDRESS, EMAIL, DEPT_ID, PASSWORD, AUTHORITY)
+				VALUES('USER-'+ CAST(IDENT_CURRENT('FLEX_USER') AS VARCHAR(16)),:vo.userName, :vo.enName, :vo.compPhone, :vo.phone, :vo.cellPhone, :vo.company
+				       , :vo.jobPosition, :vo.assignment, :vo.officerYn, :vo.fax, :vo.zipCode, :vo.address
+				       , :vo.compZipCode, :vo.compAddress, :vo.email, :vo.deptId, :vo.password, 'ROLE_USER')
+				<!--flex-query-createUser-END-->

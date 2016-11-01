@@ -36,7 +36,7 @@ public class GenreServiceImpl implements GenreService {
 	@Named("hibernateGenreDao")
 	private GenreDao genreDao;
 
-	public List<Genre> getList() throws Exception {
+	public List<Object> getList() throws Exception {
 		return genreDao.getList();
 	}
 

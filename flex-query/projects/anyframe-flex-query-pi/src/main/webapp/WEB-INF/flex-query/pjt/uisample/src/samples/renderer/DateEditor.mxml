@@ -1,0 +1,56 @@
+<?xml version="1.0" encoding="utf-8"?>
+<mx:DateField xmlns:fx="http://ns.adobe.com/mxml/2009" 
+			  xmlns:s="library://ns.adobe.com/flex/spark" 
+			  xmlns:mx="library://ns.adobe.com/flex/mx" 
+			  implements="mx.controls.listClasses.IListItemRenderer"
+			  formatString="YYYY/MM/DD"
+			  focusIn="onFocusIn(event)">
+
+	<fx:Script>
+		<![CDATA[
+			import mx.controls.dataGridClasses.DataGridListData;
+			import mx.controls.listClasses.BaseListData;
+			
+			private var rowData:Object;
+			
+			override public function set data(value:Object):void
+			{
+				rowData = value;
+
+				if(listData){
+					var col:DataGridListData = DataGridListData(listData);
+					var ds:String = value[col.dataField];
+					var dt:Date = null;
+					
+					try{
+						dt = stringToDate(ds, "YYYY/MM/DD");
+					}catch(e:Error){
+						
+						return;
+					}
+					this.selectedDate = dt;
+				}
+			}
+			
+			override public function get data():Object
+			{
+				if(listData){
+					var col:DataGridListData = DataGridListData(listData);
+					var ds:String = "";
+	
+					ds = dateToString(this.selectedDate, "YYYY/MM/DD");
+					rowData[col.dataField] = ds;
+				}
+				
+				return rowData;
+			}
+			
+			private function onFocusIn(e:FocusEvent):void
+			{
+				open();
+			}
+			
+		]]>
+	</fx:Script>
+
+</mx:DateField>

@@ -1,0 +1,249 @@
+<chapter id="idgen_idgenstrategy">
+	<title>How to use a Generation Strategy</title>
+
+		<para>
+			TableIdGenService를 사용할 때, 유일한 id 생성 시 generation strategy를 적용할 수 있으며, 이는 DB 기반으로 채번된 ID에 특정한 문자열을 덧붙여주는 역할을 한다.
+			먼저, 사용자가 정의한 문자열인 prefix 또는 suffix를 순번과 조합하는 <link linkend="idgen_idgenstrategy_mix">MixStrategy</link>와 
+			정의된 포맷의 현재 시간과 순번을 조합하는 <link linkend="idgen_idgenstrategy_timestamp">TimestampStrategy</link>를 제공하며, 
+			또한 Id Generation Service를 호출하는 클래스의 이름과 순번을 조합하는 <link linkend="idgen_idgenstrategy_classname">ClassNameStrategy</link>와 패키지명과 순번을 조합하는 
+			<link linkend="idgen_idgenstrategy_packagename">PackageNameStrategy</link>, 패키지에 따라 사용자가 정의한 문자열을 순번과 조합하는 
+			<link linkend="idgen_idgenstrategy_package">PackageStrategy</link>도 제공하고 있다. 
+			위에서 언급한 클래스명, 패키지명, 패키지에 따른 사용자가 정의한 문자열은 모두 prefix 또는 suffix로 사용할 수 있다. 
+    	</para>
+    	<informaltable>
+			<caption>Generation Strategy 목록</caption>
+	      <tgroup cols="5">
+	        <colspec colnum="1" colname="col1" colwidth="3*"/>
+	        <colspec colnum="2" colname="col2" colwidth="4*"/>
+	        <colspec colnum="3" colname="col3" colwidth="1*"/>
+	        <colspec colnum="4" colname="col4" colwidth="1*"/>
+   	        <colspec colnum="5" colname="col5" colwidth="1*"/>
+	        <thead>
+	          <row>
+	            <entry align="center">Strategy Name</entry>
+	            <entry align="center">Description</entry>
+	            <entry align="center">Prefix</entry>
+	            <entry align="center">Suffix</entry>
+	            <entry align="center">Prefix, Suffix 동시적용</entry>
+	          </row>
+	        </thead>
+	        <tbody>
+	          <row>
+	            <entry>MixPrefixStrategy</entry>
+	            <entry>사용자가 정의한 문자열인 prefix를 순번과 조합한다.</entry>
+	            <entry align="center">O</entry>
+	            <entry align="center">X</entry>
+	            <entry align="center">X</entry>
+	          </row>
+	          <row>
+	            <entry>MixStrategy</entry>
+	            <entry>사용자가 정의한 문자열인 prefix 혹은 suffix를 순번과 조합한다</entry>
+	            <entry align="center">O</entry>
+	            <entry align="center">O</entry>
+	            <entry align="center">O</entry>
+	          </row>
+	          <row>
+	            <entry>TimestampStrategy</entry>
+	            <entry>사용자가 정의한 포맷의 현재 시간과 순번을 조합한다.</entry>
+	            <entry align="center">O</entry>
+	            <entry align="center">O</entry>
+	            <entry align="center">X</entry>
+	          </row>
+	          <row>
+	            <entry>ClassNameStrategy</entry>
+	            <entry>Id Generation Service를 호출하는 클래스의 이름과 순번을 조합한다.</entry>
+	            <entry align="center">O</entry>
+	            <entry align="center">O</entry>	          
+	            <entry align="center">X</entry>	          
+	          </row>
+	          <row>
+	            <entry>PackageNameStrategy</entry>
+	            <entry>Id Generation Service를 호출하는 클래스가 속하는 패키지명과 순번을 조합한다.</entry>
+	            <entry align="center">O</entry>
+	            <entry align="center">O</entry>
+	            <entry align="center">X</entry>
+	          </row>
+	          <row>
+	            <entry>PackageStrategy</entry>
+	            <entry>Id Generation Service를 호출하는 클래스 속하는 패키지에 따라 사용자가 정의한 문자열을 순번과 조합한다.</entry>
+	            <entry align="center">O</entry>
+	            <entry align="center">O</entry>	          
+	            <entry align="center">X</entry>	          
+	          </row>
+	        </tbody>
+	      </tgroup>
+	    </informaltable>
+		<para>
+			Generation Strategy는 아래와 같이 TableIdGenService를 통해 참조될 수 있도록 정의해 주어야 한다.
+		</para>
+	    <itemizedlist>
+    		<listitem>
+        		<para>
+        			<emphasis role="bold">dependency injection을 사용한 strategy 참조</emphasis>
+        			<programlisting language="xml"><![CDATA[<bean name="tableIdGenWithFix" class="org.anyframe.idgen.impl.TableIdGenServiceImpl"
+	destroy-method="destroy">
+    <property name="dataSource" ref="dataSource" />
+    <property name="strategy" ref="mixStrategy" />
+    <property name="blockSize" value="1"/>
+    <property name="table" value="IDS"/>
+</bean>
+
+<bean name="mixStrategy" class="org.anyframe.idgen.impl.strategy.MixStrategy">
+	<property name="prefix" value="TEST-" />
+	<property name="maxCiphers" value="5" />
+	<property name="paddingChar" value="*" />
+</bean>]]></programlisting>
+				</para>
+      		</listitem>
+    	</itemizedlist>
+
+		<section id="idgen_idgenstrategy_mixprefix">
+			<title>MixPrefixStrategy</title>
+
+			<para>
+				Anyframe의 TableIdGenService에서는 org.anyframe.idgen.impl.strategy.MixPrefixStrategy라는 generation strategy를 제공한다. 
+				MixPrefixStrategy는 id generation strategy의 한 종류로, id 생성시 TableIdGenService 실행을 통해 추출된 순번과 prefix를 조합한다. 
+				예를 들어 prefix가 'TEST-', TableIdGenService를 통해 전달된 순번이 '12', paddingChar가 '0', maxCiphers가 5일 경우 
+				전달된 id의 값은 prexfix와 순번을 조합하여 'TEST-00012'가 된다. 이 때, 자릿수(maxCiphers)가 5, 순번이 '12'이면 순번은 5자리로 구성하되 빈 부분은 
+				paddingChar로 정의된 문자열로 채우기 때문에 '00012'와 같은 형태가 된다.
+      			<programlisting language="xml"><![CDATA[<bean ]]><emphasis
+      		role="bold">name="mixPrefix" class="org.anyframe.idgen.impl.strategy.MixPrefixStrategy"</emphasis><![CDATA[>
+    <property name="prefix" value="TEST-"/>
+    <property name="maxCiphers" value="5"/>
+    <property name="paddingChar" value="0"/>
+</bean>]]></programlisting>
+			</para>
+			<note>
+			<title>MixPrefixStrategy 기능 더이상 제공하지 않음.</title>
+			<para>
+				MixPrefisStrategy는 suffix의 기능을 제공하지 않고 prefix의 기능만 제공한다. 
+				이에 Id Generation Service 1.5.1버전에서는 MixPrefixStrategy 클래스를 Deprecated 시키고, 
+				MixPrefixStrategy에 suffix 기능을 추가한 MixStrategy를 사용하도록 한다. (MixStrategy의 자세한 설명은 아래의 <link linkend="idgen_idgenstrategy_mix">MixStrategy</link>를 참고한다.)
+			</para>
+			</note>
+    	</section>
+    	
+    	<section id="idgen_idgenstrategy_timestamp">
+    		<title>TimestampStrategy</title>
+    		<para>
+				TimestampStrategy는 id generation strategy의 한 종류로, id 생성시 TableIdGenService 실행을 통해 추출된 순번과 javax.text.SimpleDateFormat pattern으로
+				생성된 현재 시간을 조합한다. separator 속성을 정의하여 현재 시간과 DB기반으로 생성된 Id의 구분자로 이용할 수 있다. 
+				예를 들어 prefix가 'true', pattern이 'yyyy-MM-dd', TableIdGenService를 통해 전달된 순번이 '12', separator가 '-', paddingChar가 '0', maxCiphers가 5일 경우 
+				전달된 id의 값은 현재 시간과 순번을 조합하여 '2011-05-24-00012'와 같은 형태가 된다. 
+				pattern과 separator가 입력되지 않았을 경우 기본적으로 'yyyyMMdd', ''과 같은 값이 적용되어 신규 id가 조합됨을 알아 두도록 한다.
+      			<programlisting language="xml"><![CDATA[<bean ]]><emphasis
+      		role="bold">name="timestamp" class="org.anyframe.idgen.impl.strategy.TimestampStrategy"</emphasis><![CDATA[>
+    <property name="prefix" value="true"/>
+    <property name="pattern" value="yyyy-MM-dd"/>
+    <property name="separator" value="-"/>  		
+    <property name="maxCiphers" value="5"/>
+    <property name="paddingChar" value="0"/>
+</bean>]]></programlisting>				
+    		</para>
+    	</section>
+
+    	<section id="idgen_idgenstrategy_mix">
+    		<title>MixStrategy</title>
+    		<para>
+				MixStrategy는 MixPrefixStrategy의 기능에 suffix 기능을 추가한 클래스로 id 생성시 TableIdGenService 실행을 통해 추출된 순번을 prefix 또는 suffix 또는 prefix+suffix와 조합한다. 
+				예를 들어 prefix가 'TEST-'이고 suffix가 '-PROJECT', TableIdGenService를 통해 전달된 순번이 '12', paddingChar가 '0', maxCiphers가 '5'일 경우 
+				전달된 id의 값은 prefix, suffix와 순번을 조합하여 'TEST-00012-PROJECT' 된다. 또한 prefix와 suffix 중 하나만 사용하는 것도 가능하다.
+      			<programlisting language="xml"><![CDATA[<bean ]]><emphasis
+      		role="bold">name="mixStrategyWithFix" class="org.anyframe.idgen.impl.strategy.MixStrategy"</emphasis><![CDATA[>
+    <property name="prefix" value="TEST-"/>
+    <property name="suffix" value="-PROJECT"/>
+    <property name="maxCiphers" value="5"/>
+    <property name="paddingChar" value="0"/>
+</bean>]]></programlisting>
+				maxCiphers는 기준이 되는 ID의 자릿수를 의미하지만, maxCiphers를 초과하는 ID가 채번되더라도 내부적으로는 이를 허용하고 있다. 예를들어, 
+				maxCiphers가 2이고 현재 '99'번까지 채번된 상태라도 다음 순서인 '100'번에 대해서도 채번할 수 있다. 
+				이를 허용하지 않고 정의한 maxCiphers보다 초과되는 ID가 채번되는 것에 대해 제한하고 싶다면 
+				ignoreMaxCiphers 속성을 false(default=true)로 설정하도록 한다. 
+				<programlisting language="xml"><![CDATA[<bean name="mixStrategyWithFix" class="org.anyframe.idgen.impl.strategy.MixStrategy">
+    <property name="prefix" value="TEST-"/>
+    <property name="suffix" value="-PROJECT"/>
+    <property name="maxCiphers" value="5"/>
+    <property name="paddingChar" value="0"/>
+    ]]><emphasis
+      		role="bold"><![CDATA[<property name="ignoreMaxCiphers" value="false"/>]]></emphasis><![CDATA[
+</bean>]]></programlisting>
+				이렇게 설정하게 되면 
+				채번된 ID의 자릿수가 maxCiphers를 초가하게 되면 '[IDGeneration Service]ID cannot be have length more than maxCiphers.'라는 에러메시지를 출력해준다.
+    		</para>
+    	</section>
+    	
+    	<section id="idgen_idgenstrategy_classname">
+    		<title>ClassNameStrategy</title>
+    		<para>
+				ClassNameStrategy는 id generation strategy의 한 종류로, id 생성시 TableIdGenService 실행을 통해 추출된 순번을 ClassName과 조합한다. 
+				ClassNameStrategy가 갖는 속성은 MixStrategy와 동일하며 이 때, 클래스 이름과 DB기반으로 생성된 ID를 구분해주기 위한 구분자를 'separator'속성을 통해 정의할 수 있다.
+				또한, prefix, suffix 여부를 각각의 속성에 'true' 또는 'false'로 선언할 수 있다. 예를 들어, 클래스 명을 prefix로 조합하고 싶으면 'prefix' 속성을 'true'로 정의하고
+				suffix로 조합하고 싶으면 'suffix' 속성을 'true'로 정의하면 된다. 
+				아래의 코드와 같이 정의된 ClassNameStrategy를 사용하여 ID 생성 기능을 사용하게 되면 ClassName이 TestServiceImpl이고 TableIdGenService를 통해 전달된 순번이 '12',  prefix가 'true', paddingChar가 '0', maxCiphers가 '5', separator가 '-'
+				가 되어 전달된 id의 값은 이를 조합한 'TestServiceImpl-00012'가 된다.
+      			<programlisting language="xml"><![CDATA[<bean ]]><emphasis
+      		role="bold">name="classStrategy" class="org.anyframe.idgen.impl.strategy.ClassNameStrategy"</emphasis><![CDATA[>
+    <property name="prefix" value="true"/>
+    <property name="maxCiphers" value="5"/>
+    <property name="paddingChar" value="0"/>
+    <property name="separator" value="-"/>
+</bean>]]></programlisting>				
+    		</para>
+    	</section>
+    	
+    	<section id="idgen_idgenstrategy_packagename">
+    		<title>PackageNameStrategy</title>
+    		<para>
+				PackageNameStrategy는 id 생성시 TableIdGenService 실행을 통해 추출된 순번을 PackageName과 조합한다. 
+				PackageNameStrategy는 가지는 속성은 ClassNameStrategy와 동일하다. 
+				예를 들어 class가 속하여 있는 PackageName이 com.sds.test.impl이고 TableIdGenService를 통해 전달된 순번이 '12',  prefix가 'true', paddingChar가 '0', maxCiphers가 '5', separator가 '-'일 경우 
+				전달된 id의 값은 ClassName 및 seperator와 순번을 조합하여 'com.sds.test.impl-00012'가 된다. 
+      			<programlisting language="xml"><![CDATA[<bean ]]><emphasis
+      		role="bold">name="packageNameStrategy" class="org.anyframe.idgen.impl.strategy.PackageNameStrategy"</emphasis><![CDATA[>
+    <property name="prefix" value="true"/>
+    <property name="maxCiphers" value="5"/>
+    <property name="paddingChar" value="0"/>
+    <property name="separator" value="-"/>
+</bean>]]></programlisting>				
+    		</para>
+    	</section>
+    	
+    	<section id="idgen_idgenstrategy_package">
+    		<title>PackageStrategy</title>
+    		<para>
+				PackageStrategy는 id generation strategy의 한 종류로, id 생성시 TableIdGenService 실행을 통해 추출된 순번을 패키지별로 사용자가 정의한 문자열과 조합한다. 
+				PacageStrategy의 속성은 ClassNameStrategy와 동일하며 패키지별로 DB기반으로 생성된 문자열과 조합하는 문자열을 지정하기 위해서 'packageIds'라는 속성을 제공하며,
+				아래 코드와 같이 Properties의 형태로 정의한다.  
+				아래와 같이 PackageStratgey를 설정하고 
+				클래스가 com.sds.test.impl에 속해있을 때 이 PackageName에 대하여 prefix를 'TBP'가 되고 TableIdGenService를 통해 전달된 순번이 '12',  
+				prefix가 'true', paddingChar가 '0', maxCiphers가 '5', separator가 '-'일 경우 
+				전달된 id의 값은 이와 조합되어 'TBP-00012'가 된다. 
+      			<programlisting language="xml"><![CDATA[<bean ]]><emphasis
+      		role="bold">name="packageStrategy" class="org.anyframe.idgen.impl.strategy.PackageStrategy"</emphasis><![CDATA[>
+    <property name="packageIds">
+	    <props>		
+		    <prop key="com.sds.test.impl">TBP</prop>
+	    </props>
+    <property name="prefix" value="true"/>
+    <property name="maxCiphers" value="5"/>
+    <property name="paddingChar" value="0"/>
+    <property name="separator" value="-"/>
+</bean>]]></programlisting>				
+    		</para>
+    	</section>
+
+    	<section id="idgen_idgenstrategy_implement">
+			<title>Id Generation Strategy를 implements하는 방법</title>
+			<para> 
+				strategy를 개발하기 위해서는 org.anyframe.idgen.IdGenStrategy를
+				implemensts 해야한다. 또한 makeId(String originalId, <![CDATA[Class<?>]]> clazz) 메소드를 통해 특정 Strategy가 적용된
+      			id를 return하도록 한다. IdGenStrategy를 구현한 클래스의 makeId의 구현 예는 다음과 같다.
+      			<programlisting language="java">public class MyStrategy <emphasis
+        	role="bold">implements IdGenStrategy</emphasis>{
+    <emphasis role="bold">public String makeId(String originalId, <![CDATA[Class<?>]]> clazz) {</emphasis>
+	    return "myPrefix" + orininalId + "mySuffix";
+    }
+}</programlisting>
+			</para>
+    	</section>
+</chapter>

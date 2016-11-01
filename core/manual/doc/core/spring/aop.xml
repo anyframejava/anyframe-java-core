@@ -300,7 +300,7 @@
 			<para>
 				SpringAOP는 Spring Framework의 핵심기능 중의 한가지로 Spring의 Dependency Injection(이후 DI)
 				컨네이너에서 동작하는 엔터프라이즈 서비스에서 주로 사용된다. SpringAOP는 다른 AOP와 달리
-				기존 클래스의 바이트코드를 수정하지 않는다. 대신 JDK의 Dynamic Proxy를 사용해서 Proxy 방식으로 AOP의
+				기존 클래스의 바이트코드를 수정하지 않는다. 대신 JDK의 Dynamic Proxy나 CGLIB을 사용해서 Proxy 방식으로 AOP의
 				기능을 수행한다. 이 때문에 다른 AOP의 기능과 비교해서 매우 제한적인 부분만을 지원한다.
 				하지만 SpringAOP의 구현 목적은 엔터프라이즈 어플리케이션에서 주로 사용되는 핵심적인 기능에 AOP의 장점을
 				살려 이를 Spring 내에서 사용하는 것이기 때문에 다른 AOP와 같은 AOP의 복잡한 전체 기능을 굳이 다 필요로
@@ -316,6 +316,34 @@
 				편인데 이 경우 SpringAOP가 지원하는 AutoProxyingCreatorBean 등을 이용하면 설정 코드를 매우
 				단순하게	작성하는 것이 가능하다.
 			</para>
+			<note>
+				<title>[참고] SpringAOP의 Proxy 기법</title>
+				<para>
+					SpringAOP에서 제공하는 두 가지 Proxy 기법을 사용할 때 아래의 내용을 참고한다.
+					<itemizedlist>
+						<listitem>
+							<para>
+								1. Proxy Target class가 Interface를 구현한 class인 경우 JDK Dynamic Proxy를 이용하여
+								객체를 Proxy 시킨다. Target class의 Interface가 존재하지 않는 경우, CGLIB을 이용하여
+								객체를 Proxy 시킨다.
+							</para>
+						</listitem>
+						<listitem>
+							<para>
+								2. proxyTargetClass 옵션을 true로 하는 경우 CGLIB 기반의 proxy 객체가 생성된다.
+								proxyTargetClass 옵션이 false인 경우(default - false)라도 Target class의 Interface가 존재 하지 않는 경우에는
+								CGLIB 기반의 Proxy 객체가 생성된다.  
+							</para>
+						</listitem>
+						<listitem>
+							<para>
+								3. CGLIB을 이용하여 Proxy 객체를 생성하는 경우 Default Constructor가 필요하다.
+								(Spring 4.0 이상 버전에서는 Default Constructor가 없어도 Proxy 객체를 생성 할 수 있다.)
+							</para>
+						</listitem>
+					</itemizedlist>
+				</para>
+			</note>
 		</listitem>
 	</itemizedlist>
 

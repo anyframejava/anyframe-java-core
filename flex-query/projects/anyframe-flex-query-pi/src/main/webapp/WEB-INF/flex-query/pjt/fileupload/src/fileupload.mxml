@@ -1,0 +1,147 @@
+<?xml version="1.0" encoding="utf-8"?>
+<s:Application xmlns:fx="http://ns.adobe.com/mxml/2009" 
+			   xmlns:s="library://ns.adobe.com/flex/spark" 
+			   xmlns:mx="library://ns.adobe.com/flex/mx"
+			   xmlns:data="org.anyframe.flex.messaging.data.*" 
+			   width="100%" height="100%" 
+			   minWidth="955" minHeight="600"
+			   initialize="init(event)">
+	
+	<fx:Script>
+		<![CDATA[
+			import mx.collections.ArrayCollection;
+			import mx.collections.IList;
+			import mx.controls.Alert;
+			import mx.events.FlexEvent;
+			import mx.rpc.events.FaultEvent;
+			import mx.rpc.events.ResultEvent;
+			import mx.core.IFlexDisplayObject;
+			import mx.managers.PopUpManager; 
+			
+			[Bindable] 
+			private var genreList:ArrayCollection;
+			
+			[Bindable]  
+			private var movieList:ArrayCollection;
+			
+			protected function init(event:FlexEvent):void
+			{
+				genreService.getList();
+			}
+			
+			protected function btnSearchClickHandler(event:MouseEvent=null):void{
+				var movie:Movie = new Movie();
+				movie.title = searchStr.text;
+				movie.nowPlaying = cmbSearch.selectedItem.data;
+				movieFinder.getList(movie);
+			}
+			
+			protected function genreGetListResultHandler(event:ResultEvent):void
+			{
+				genreList = event.result as ArrayCollection;
+				var movie:Movie = new Movie();
+				movie.nowPlaying = "Y";
+				movieFinder.getList(movie);
+			}
+			
+			protected function movieGetListResultHandler(event:ResultEvent):void
+			{
+				movieList = event.result as ArrayCollection;
+			}
+			
+			protected function btnAddClickHandler(event:MouseEvent):void{
+				var addMoviePopup:IFlexDisplayObject = PopUpManager.createPopUp(this as DisplayObject, AddMovie, true);
+				var popUp:AddMovie = addMoviePopup as AddMovie;
+				popUp.addEventListener( MovieEvent.CREATE, createResultHander );
+				popUp.addEventListener( MovieEvent.CANCEL, cancelResultHander );
+				popUp.genreList = genreList;
+				popUp.movie = new Movie;
+				PopUpManager.centerPopUp(popUp);
+			}
+			
+			protected function openUpdateMoviePop(movie:Movie):void{
+				if ( grdMovie.selectedIndex != -1 ){
+					var updateMoviePopup:IFlexDisplayObject = PopUpManager.createPopUp(this as DisplayObject, UpdateMovie, true);
+					var popUp:UpdateMovie = updateMoviePopup as UpdateMovie;
+					popUp.addEventListener( MovieEvent.UPDATE, updateResultHander );
+					popUp.addEventListener( MovieEvent.REMOVE, removeResultHander );
+					popUp.addEventListener( MovieEvent.CANCEL, cancelResultHander );
+					popUp.genreList = genreList;
+					popUp.movie = movie;
+					PopUpManager.centerPopUp(popUp);
+				}
+			}
+			
+			private function updateResultHander(event:MovieEvent):void{
+				btnSearchClickHandler();
+			}
+			
+			private function cancelResultHander(event:MovieEvent):void{
+				btnSearchClickHandler();
+			}
+			
+			private function removeResultHander(event:MovieEvent):void{
+				btnSearchClickHandler();
+			}
+			
+			private function createResultHander(event:MovieEvent):void{
+				btnSearchClickHandler();
+			}
+		]]>
+	</fx:Script>
+	
+	<fx:Declarations>
+		
+		<!-- Place non-visual elements (e.g., services, value objects) here -->
+		<mx:RemoteObject id="genreService" destination="flexQueryGenreService">
+			<mx:method name="getList" result="genreGetListResultHandler(event)"/>
+		</mx:RemoteObject>
+		
+		<mx:RemoteObject id="movieFinder" destination="flexQueryMovieFinder">
+			<mx:method name="getList" result="movieGetListResultHandler(event)"/>
+		</mx:RemoteObject>
+		
+		<mx:ArrayCollection id="nowPlaying">
+			<fx:Object label="Y" data="Y"/>
+			<fx:Object label="N" data="N"/>
+		</mx:ArrayCollection> 
+	</fx:Declarations>
+	
+	<s:layout>
+		<s:VerticalLayout gap="0" horizontalAlign="center"/>
+	</s:layout>
+	
+	<mx:Text>
+		<mx:htmlText>
+			MovieService Basic Sample
+		</mx:htmlText>
+	</mx:Text>
+	
+	<mx:ApplicationControlBar width="100%">
+		<mx:Label text="Title : "/>
+		<mx:TextInput id="searchStr"/>
+		<mx:Button label="SEARCH"  id="btnSearch" click="btnSearchClickHandler(event)"/>
+		<mx:Spacer width="1%" />
+		<mx:Label text="Now Playing : "/>
+		<mx:ComboBox id="cmbSearch" dataProvider="{nowPlaying}" fontWeight="bold"/>
+	</mx:ApplicationControlBar>
+	
+	<mx:Spacer height="2%" />
+	
+	<mx:DataGrid id="grdMovie" width="100%" dataProvider="{movieList}" height="100%" editable="false"
+				 doubleClick="openUpdateMoviePop(grdMovie.selectedItem as Movie)" doubleClickEnabled="true">
+		<mx:columns>
+			<mx:DataGridColumn dataField="movieId" headerText="ID" />
+			<mx:DataGridColumn dataField="genreName" headerText="Genre" />
+			<mx:DataGridColumn dataField="title" headerText="Title" />
+			<mx:DataGridColumn dataField="director" headerText="Director" />
+			<mx:DataGridColumn dataField="actors" headerText="Actors"/>
+			<mx:DataGridColumn dataField="ticketPrice" headerText="Ticket Price" />
+			<mx:DataGridColumn dataField="runtime" headerText="Runtime" />
+		</mx:columns>
+	</mx:DataGrid>
+	
+	<mx:ApplicationControlBar width="100%" horizontalAlign="right">
+		<mx:Button label="ADD"  id="btnAdd" click="btnAddClickHandler(event)"/>
+	</mx:ApplicationControlBar>
+</s:Application>

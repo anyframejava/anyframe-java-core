@@ -20,7 +20,6 @@ import java.util.List;
 import javax.annotation.PostConstruct;
 import javax.inject.Inject;
 
-import org.anyframe.plugin.hibernate.domain.Genre;
 import org.hibernate.SessionFactory;
 import org.springframework.orm.hibernate3.support.HibernateDaoSupport;
 import org.springframework.stereotype.Repository;
@@ -41,7 +40,7 @@ public class GenreDao extends HibernateDaoSupport {
 	}
 
 	@SuppressWarnings("unchecked")
-	public List<Genre> getList() {
+	public List<Object> getList() {
 		return super.getHibernateTemplate().findByNamedQuery("findGenreList");
 	}
 

@@ -1,0 +1,28 @@
+				<!--flex-query-findFlexQueryContactList-START-->
+				SELECT * FROM FLEX_CONTACT 
+				<!--Velocity-Support-dynamicFindFlexQueryContactList-START-->
+				#if($firstName)
+				WHERE
+				first_name like CONCAT('%',:firstName,'%')
+				#end
+				<!--Velocity-Support-dynamicFindFlexQueryContactList-END-->
+				ORDER BY first_name
+				<!--flex-query-findFlexQueryContactList-END-->
+				<!--flex-query-findFlexQueryContractListResultClass-START-->
+				SELECT * FROM FLEX_CONTACT 
+				<!--Velocity-Support-dynamicFindFlexQueryContractListResultClass-START-->
+				#if($first_name)
+				WHERE
+				first_name like CONCAT('%',:firstName,'%')
+				#end
+				<!--Velocity-Support-dynamicFindFlexQueryContractListResultClass-END-->
+				ORDER BY first_name
+				<!--flex-query-findFlexQueryContractListResultClass-END-->
+				<!--flex-query-createFlexQueryContact-START-->
+				INSERT 
+				INTO 
+				FLEX_CONTACT
+				(CONTACT_ID, FIRST_NAME, LAST_NAME, ADDRESS, CITY, STATE, ZIP, PHONE, EMAIL) 
+				VALUES
+				(CONCAT('CONTACT-', FLEX_CONTACT_ID_SEQ_NEXT_VALUE()), :firstName, :lastName, :address, :city, :state, :zip, :phone, :email)
+				<!--flex-query-createFlexQueryContact-END-->

@@ -47,7 +47,7 @@ import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
  * @author SoYon Lim
  */
 @RunWith(SpringJUnit4ClassRunner.class)
-@ContextConfiguration(locations = { "classpath*:/spring/message/context-message.xml" })
+@ContextConfiguration(locations = { "file:./src/test/resources/spring/message/context-message.xml" })
 public class DatabaseMessageSourceTest {
 
 	@Inject
