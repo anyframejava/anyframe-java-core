@@ -1,3 +1,0 @@
-DROP TABLE SCHEDULING_JOB;
-
-commit;

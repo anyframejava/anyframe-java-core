@@ -26,18 +26,14 @@ import java.sql.Types;
  */
 public class MSSQLPagingSQLGenerator extends AbstractPagingSQLGenerator {
 
-	private static final int SEPARATOR_LENGTH = 6; 
-
 	public String getPaginationSQL(String originalSql, Object[] originalArgs,
 			int[] originalArgTypes, int pageIndex, int pageSize) {
 		int topNum = pageIndex * pageSize;
 
 		originalSql = originalSql.trim();
+		originalSql = originalSql.replaceFirst("(?i)SELECT ".toLowerCase(), "SELECT top " + topNum +" ");
 
-		originalSql = "SELECT top " + topNum
-				+ originalSql.substring(SEPARATOR_LENGTH, originalSql.length());
-
-		StringBuffer sql = new StringBuffer(" SELECT * FROM( ");
+		StringBuffer sql = new StringBuffer("SELECT * FROM( ");
 		sql.append("SELECT ORIGIN_SQL.*, ROW_NUMBER() ");
 		sql.append("OVER(ORDER BY (select 0)) AS rownum ");
 		sql.append("FROM (");
@@ -78,12 +74,9 @@ public class MSSQLPagingSQLGenerator extends AbstractPagingSQLGenerator {
 	 * @return generated SQL
 	 */
 	public String getCountSQL(String originalSql) {
-
-		originalSql = originalSql.trim();
-
-		originalSql = "SELECT top 100 percent "
-				+ originalSql.substring(SEPARATOR_LENGTH, originalSql.length());
-		StringBuffer sql = new StringBuffer("SELECT count(*) FROM ( ");
+		
+		originalSql = originalSql.replaceFirst("(?i)SELECT ", "SELECT top 100 percent ");
+		StringBuffer sql = new StringBuffer("SELECT count(*) FROM (");
 		sql.append(originalSql);
 		sql.append(" )INNER_TABLE ");
 		return sql.toString();

@@ -1,1 +1,0 @@
-<%=(String)request.getAttribute("attachedId")%>
