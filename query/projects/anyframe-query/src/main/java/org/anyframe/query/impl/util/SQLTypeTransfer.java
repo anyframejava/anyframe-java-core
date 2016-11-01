@@ -64,7 +64,7 @@ public class SQLTypeTransfer {
 		javatypes.put(Short.class, new Integer(Types.SMALLINT));
 		javatypes.put(Integer.class, new Integer(Types.INTEGER));
 		javatypes.put(Float.class, new Integer(Types.REAL));
-		javatypes.put(java.util.Date.class, new Integer(Types.DATE));
+		javatypes.put(java.util.Date.class, new Integer(Types.TIMESTAMP));
 		javatypes.put(Byte.class, new Integer(Types.TINYINT));
 		javatypes.put(Boolean.class, new Integer(Types.BIT));
 
