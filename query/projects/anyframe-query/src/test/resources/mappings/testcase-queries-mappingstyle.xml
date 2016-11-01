@@ -1,0 +1,44 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<queryservice xmlns="http://www.anyframejava.org/schema/query/mapping" 
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" 
+	xsi:schemaLocation="http://www.anyframejava.org/schema/query/mapping http://www.anyframejava.org/schema/query/mapping/anyframe-query-mapping-1.0.xsd ">
+
+  	<queries>
+  		<query id="findCustomerWithCamelCased" isDynamic="false" mappingStyle="camel">
+  			<statement>
+  				select * from TB_CUSTOMER where SOCIAL_SECURITY_NUMBER like ?
+  			</statement>
+  			<param type="VARCHAR"/>
+  		</query>
+  		<query id="findCustomerWithLowerCased" isDynamic="false" mappingStyle="lower">
+  			<statement>
+  				select * from TB_CUSTOMER where SOCIAL_SECURITY_NUMBER like ?
+  			</statement>
+  			<param type="VARCHAR"/>
+  		</query>
+  		<query id="findCustomerWithUpperCased" isDynamic="false" mappingStyle="upper">
+  			<statement> 
+  				select * from TB_CUSTOMER where SOCIAL_SECURITY_NUMBER like ?
+  			</statement>
+  			<param type="VARCHAR"/>
+  		</query>
+  		<query id="findCustomerWithNone" isDynamic="false" mappingStyle="none">
+  			<statement>
+  				select * from TB_CUSTOMER where SOCIAL_SECURITY_NUMBER like ?
+  			</statement>
+  			<param type="VARCHAR"/>
+  		</query> 
+  		<query id="findCustomerWithIsCamelCaseTrue" isDynamic="false" isCamelCase="true">
+  			<statement>
+  				select * from TB_CUSTOMER where SOCIAL_SECURITY_NUMBER like ?
+  			</statement>
+  			<param type="VARCHAR"/>
+ 		</query>
+  		<query id="findCustomerWithIsCamelCaseFalse" isDynamic="false" isCamelCase="false">
+  			<statement>
+  				select * from TB_CUSTOMER where SOCIAL_SECURITY_NUMBER like ?
+  			</statement>
+  			<param type="VARCHAR"/>
+  		</query>  		 		
+  	</queries>
+</queryservice>  	

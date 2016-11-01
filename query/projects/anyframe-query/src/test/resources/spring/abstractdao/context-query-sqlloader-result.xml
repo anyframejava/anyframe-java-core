@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-2.5.xsd">
+	<bean name="sqlLoader" class="org.anyframe.query.impl.config.loader.SQLLoader">
+		<property name="mappingFiles">
+			<value>
+				<!-- xml files in classpath -->
+				classpath*:/mappings/abstractdao/mapping-usersservice-result.xml
+			</value>
+		</property>
+		<property name="nullchecks">
+			<map>
+				<!-- key: type, value: default-value -->
+				<entry key="VARCHAR" value="" />
+			</map>
+		</property>
+		<property name="dynamicReload" value="5" />
+		<property name="skipError" value="true" />
+	</bean>
+</beans>	

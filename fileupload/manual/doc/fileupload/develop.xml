@@ -1,0 +1,361 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<chapter id="fileupload_develop">
+		  <title>파일 업로드 설정 및 구현</title>
+		  <para>
+		    화면에서 파일업로드 컴포넌트를 생성하기 위해 라이브러리 파일을 incude 하거나 필수적으로 설정해야하는 부분이 있다. 
+		    본 chapter에서는  이와 관련된 설정과 파일업로드의 개별 기능에 대한 상세 구현 내용에 대해 설명하고자 한다.
+		  </para>
+		
+		  <section id="fileupload_setting_url">
+		  		<title>화면개발을 위한 javascript 라이브러리  url 설정</title>
+		  		<para>
+						  fileupload를 사용하기 위해서 jquery, jquery-ui, jquery-form plugin, jquery-fileupload plugin 과 관련  css파일이 필요하다.
+						  따라서 다음과 같이 url을 설정해 주어야 한다.
+						<programlisting language="html"><![CDATA[
+<!-- FileUpload javascript libraries ------------------------------------------------------------>
+<script type="text/javascript" src="<c:url value='/fileupload/jquery/jquery-1.9.0.js'/>"></script>
+<script type="text/javascript" src="<c:url value='/fileupload/jquery/jquery-ui-1.10.0.custom.js'/>"></script>
+<script type="text/javascript" src="<c:url value='/fileupload/jquery/jquery.form.js'/>"></script>
+<script type="text/javascript" src="<c:url value='/fileupload/jquery/jquery.fileupload.js'/>"></script>
+			
+<!--  FileUpload css files ------------------------------------------------------------------------->
+<link rel="stylesheet"  type="text/css" href ="<c:url value='/fileupload/css/jquery_ui_style.css'/>" />
+<link rel="stylesheet"  type="text/css" href ="<c:url value='/fileupload/css/fileuploader_style.css'/>" />]]>
+						</programlisting>
+						<note>
+								<para> * 각 라이브러리간의 dependency가 존재하므로, 라이브러리를 참조하는 순서가 다음과 같이 정의되어야 한다.</para>
+								<para>	: jQuery -> jQuery UI -> form plugin > fileupload plugin  </para>
+						</note>
+				</para>
+		</section>
+		
+		<section id="fileupload_setting_ui">
+				    <title>화면 UI 생성함수 호출 및 설정</title>
+				    <section id="fileupload_setting_readyFunc">
+							<title>함수로드 및 fileupload 생성</title>
+							<para>
+									ready() 함수는 DOM이 완전히 로드된 후에 실행되는 함수로, 위의 모든 라이브러리를 로드한 후 실행되게 된다.
+									파일업로드를 사용하기 위해서 context 와 id 값을 설정한 후, init함수를 호출하여 위의 javscript를 참조, 파일업로드를 기본UI를 만든다.
+									다음과 같이 현재 실행되는 JSP의 context 정보를 FILEUPLOAD.CONTEXT 에 지정, html 태그에서 사용한 id값은 FILEUPLOAD.ID 에 지정해 주어야 한다.		
+									<programlisting language ="html"><![CDATA[
+$(document).ready(function() {
+
+	FILEUPLOAD.CONTEXT = "${ctx}";
+	FILEUPLOAD.ID = "fileuploader";
+	fileupload.init();
+
+});	]]>
+									</programlisting>
+							</para>
+					</section>
+					
+					<section id="fileupload_setting_tag">
+							<title>fileupload 생성할 html 태그 설정</title>
+							<para>
+									  html에서 fileupload를 생성하고자 하는 위치에 사용할 html 태그를 작성하고, id값을 함께 지정해주어야 한다.
+									  이 id 값을 기준으로 파일업로드가 생성될 때 필요한 모든 내부태그와 스타일이 동적으로 작성, 적용되게 된다. 
+									  또한 태그와 같은 경우, 아래와 같이 div를 사용하도록 권장한다. 
+									<programlisting language ="html"><![CDATA[
+<div  id ="fileuploader"></div>]]>
+									</programlisting>
+							</para>
+					</section>
+			</section>
+		    
+		    <section id="fileupload_develop_filesize">
+				    <title>File Size 구현</title>
+					<para>
+							파일업로드를 위해 사용자가 파일을 추가할 때마다 각 파일에 대한 용량 전체크기 정보가 필요하며, 이를 위해 파일 전체크기 정보를 요청하고 응답결과를 얻어오는 과정이 이루어지게 된다.
+							파일 전체크기 정보가 필요한 시점은 파일을 선택하여 놓는 순간이며, 아직 업로드가 되지 않은 상태에서 전체크기에 대한 정보를 사용자에게 알려주기 위한 게시용 정보라고 볼 수 있다.
+							<orderedlist numeration="arabic">
+									<listitem>
+											전체 사이즈 정보 요청하기
+											<para>
+													전체 사이즈 값은 사용자가 파일은 선택하는 즉시  알 수 있도록 하기 위하여 업로드 전, 선택한는 시점에서 요청을 먼저 보내고 정보를 받아오는 형태로 이루어 진다.
+													다음은 Controller에서 method=getmetaFake 일 때  처리하는 부분이다.(JFileUploadController.java)
+													여기서 request객체를 FileUploadAgent의 getMetaFake함수에서 받아 요청을 처리하도록 되어있다. 
+													(getMetaFake 함수는 request 정보 중, contentLength함수로 파일크기 값을 얻고,  이를 FileMeta 정보형태에 맞게 매핑시킨다.)
+											</para>
+											<programlisting language =" java"><![CDATA[
+@RequestMapping(params = "method=getmetaFake", method = RequestMethod.POST)
+	public void getFileMetaFake(HttpServletRequest request, HttpServletResponse response, HttpSession session) throws JSONException, IOException {
+		
+		FileUploadAgent fuAgent = null;
+		
+		if ( (fuAgent = (FileUploadAgent) session.getAttribute(FileUploadAgent.SESSION_OBJECT_NAME)) == null )  {
+			fuAgent = new FileUploadAgent();
+			session.setAttribute(FileUploadAgent.SESSION_OBJECT_NAME, fuAgent);
+		}
+		
+		try {
+			fuAgent.getMetaFake(request);
+			response.setStatus(HttpServletResponse.SC_ACCEPTED);
+		} catch (FileUploadAgentException e) {
+			response.sendError(HttpServletResponse.SC_INTERNAL_SERVER_ERROR, e.getMessage());
+		}
+	}]]>
+											</programlisting>
+											<para>
+													clinet-side에서 ajax 요청을 하는 부분은 다음과 같다.(jquery.fileupload.js)
+											</para>
+											<itemizedlist>
+													<listitem>			
+															<para>
+																	$form.ajaxSubmit(option) : $form은 동적으로 생성한  form 태그와 내부 input태그가 있는 모든 html을 묶어 처리한 선택자이다.  
+																	따라서 options에 설정한 각 async, url, beforeSend, success, error 옵션은 이  form 선택자에 대해 비동기식의  ajax 요청의 parameter로 보내지게 된다.
+																	success 의 경우, 아래의 optionGetSize와 같은 내용을 담은 ajax를 호출하게 된다.
+															</para>
+													</listitem>
+													<listitem>
+															<para>
+																	$.ajax(optionGetSize) : optionGetSize는, sync, url, data, success, error의 옵션내용으로 구성되어 있으며, 
+																	이 옵션의 successs 경우, 사용되는 변수 retJObj는 parameter로 얻어오는 data를 JSON형태로 변환하여 받아오는 값이다.
+																	(data는 byte단위의 filesize와 filename으로 이루어져 있다.)
+																	client-side 에서는 이렇게 retJObj로 받아온 파일사이즈 정보를 실제 화면에서 숫자값으로 나타나게 한다.(updateSize 함수호출 부분)
+															</para>
+													</listitem>
+													<listitem>
+															<para>
+																	getRealSizeNCancelRequest 메소드 : 요청이 처리되지 못할 때, 자동적으로 취소처리를 하는 부분이다. setTimeOut으로 설정한 것에 대해 clear하고, abort시켜서 취소 동작이 이루어지도록 한다.
+															</para>
+													</listitem>
+													<programlisting language =" javascript"><![CDATA[
+// getSizeFake 요청
+var options = {
+	async : true,
+	url : FILEUPLOAD.CONTEXT+"/fileuploadJFileUpload.do?method=getmetaFake",
+	beforeSend : function(jqXHR, settings) {
+		curjqXHR = jqXHR;
+		return true;
+	},
+	success : function(data) {
+		$.ajax(optionGetSize);
+	},
+	error : function(jqXHR, textStatus, errorThrown) {
+		if (errorThrown == "abort")
+			$.ajax(optionGetSize);
+	}
+};
+
+$form.ajaxSubmit(options);
+
+// getSizeReal 요청
+var optionGetSize = {
+			async : true,
+			url : FILEUPLOAD.CONTEXT+"/fileuploadJFileUpload.do?method=getmetaReal",
+			data : {
+				filename : infilename
+			},
+			success : function(data) {
+				var retJObj = $.parseJSON(data);
+				callbackFileuploadObj.updateSize(vfIndex, retJObj.filesize);
+			},
+			error : function(jqXHR, textStatus, errorThrown) {
+			}
+		};
+		
+//요청 취소
+function getRealSizeNCancelRequest() {
+			if (curjqXHR != null) {
+				clearInterval(hAbort);
+				curjqXHR.abort("abort");
+			}
+}
+
+var hAbort = setTimeout(getRealSizeNCancelRequest, FILEUPLOAD.GET_SIZE_INTERVAL); ]]>							
+													</programlisting>
+											</itemizedlist>
+									</listitem>		
+									
+									<listitem>
+										전체 사이즈 정보 구하기
+										<para>
+												위의  client-side에서 ajax로 요청한 결과, 성공하였을 경우, "method=getmetaReal" 인 요청을 하고, 그 응답결과를 넘겨주는 처리를 한다. 
+												또한, JSON 형태로 데이터를 넘겨주기 위해 결과값을 filename,  filesize의 key값에 각 value를 매핑시켜주도록 하고 있다.
+												다음은 Controller에서 그러한 내용을 포함하고 있는 부분이다.(JFileUploadController.java)
+										</para>
+										<programlisting language =" java"><![CDATA[
+@RequestMapping(params = "method=getmetaReal", method = RequestMethod.GET)
+public void getFileMetaReal(HttpServletRequest request, HttpServletResponse response, HttpSession session) throws JSONException, IOException {
+	
+	FileUploadAgent fuAgent = (FileUploadAgent) session.getAttribute(FileUploadAgent.SESSION_OBJECT_NAME);
+	String filename = Normalizer.normalize( request.getParameter(FileUploadAgent.GETMETAREAL_PARAM),  Normalizer.NFC );
+	
+	if (filename == null || filename.length() <= 0) {
+		response.sendError(HttpServletResponse.SC_BAD_REQUEST);
+		return;
+	}
+	
+	try {
+		FileMeta fm = fuAgent.getMeta(filename);
+		
+		JSONObject jsonResult = new JSONObject();
+		jsonResult.put("filename", filename);
+		jsonResult.put("filesize", fm.getSize());	//TODO: check null
+				
+		response.setContentType("text/JSON");			
+		response.setCharacterEncoding("utf-8");
+		response.getWriter().write(jsonResult.toString());	
+	}
+	catch (Exception e) {
+		response.sendError(HttpServletResponse.SC_INTERNAL_SERVER_ERROR, e.getMessage());
+	}
+	
+}]]>
+											</programlisting>
+									</listitem>
+							</orderedlist>
+							
+					</para>	
+		    </section>
+		
+		    <section id="fileupload_develop_filename">
+				    <title>File Name 구현</title>
+				    <para>
+				    		client-side에서 type=file 인 input의 value로 전체 파일 경로 정보를 얻게 된다. 
+				    		이 때, 전체 파일경로 정보로부터 단순 (파일이름.확장자) 와 같은 형식의 값을 얻어내기 위한 처리가 필요하다.
+				    		경로구분자인 " \"로 string을 분리시킨 후, 마지막 배열로 저장되는 값을 사용하게 된다.
+				    		(ex> path = "D:\dev\workspace\anyframe-fileupload-pi.zip" 와 같은 파일경로인 경우, 리턴되는 결과값은 fileName = "anyframe-fileupload-pi.zip" 이다. )
+				    		다음은 파일명을 얻어내기 위한 메소드 _getFileName 이다.	
+				    </para>
+				    <programlisting language =" javascript"><![CDATA[
+_getFileName : function(formId) {
+		
+		var path = $("#"+formId).children("input[type='file']").val();
+		
+		var arryParams = path.split("\\"),
+			  fileName = arryParams[ arryParams.length - 1 ];
+		
+		return fileName;
+},]]>							
+					</programlisting>					
+		    </section>
+		
+		    <section id="fileupload_develop_upload">
+				    <title>File Upload 구현</title>
+				    <para>
+				    		파일업로드에서 여러가지 업로드의 저장방식 중 본 파일업로드 플러그인은 disk 저장방식을 구현하고 있다.
+				    		FileUploadAgent의 upload 함수로 요청을 처리하며, 그 요청결과에 대한 응답을  JSON 타입으로 넘겨주도록 하고 있다. 
+				    		다음은 Controller에서 method=upload 일 때  처리하는 부분이다.(JFileUploadController.java)
+				    </para>
+				   	<programlisting language =" java"><![CDATA[
+@RequestMapping(params = "method=upload", method = RequestMethod.POST)
+	public void upload(HttpServletRequest request, HttpServletResponse response, HttpSession session) throws JSONException, IOException {
+	
+		FileUploadAgent fuAgent = (FileUploadAgent) session.getAttribute(FileUploadAgent.SESSION_OBJECT_NAME);
+				
+		if (fuAgent == null) {
+			response.sendError(HttpServletResponse.SC_BAD_REQUEST);
+			return;
+		}
+
+		JSONObject jsonResult = new JSONObject();
+		response.setContentType("text/JSON");
+		response.setCharacterEncoding("utf-8");
+		
+		try {
+			fuAgent.upload(request);			
+			jsonResult.put("succ", true);
+			response.getWriter().write(jsonResult.toString());
+		} catch (FileUploadAgentException e) {			
+			jsonResult.put("succ", false);
+			jsonResult.put("msg", e.getMessage());
+			response.sendError(HttpServletResponse.SC_INTERNAL_SERVER_ERROR, jsonResult.toString());
+		}
+	}]]>
+					</programlisting>
+					<para>
+							다음은 실제 저장하는 기능 서비스를 구현한 save 메소드이다.(FileUploadLocalDisk.java)
+							Apache Commons의 Streaming API를 사용하여  스트리밍방식으로 저장되는 방식을 택하고 있다.
+					</para>
+					<programlisting language =" java"><![CDATA[
+public boolean save(HttpServletRequest request)  throws FileUploadException, IOException {
+...
+...
+       	FileItemIterator itor;
+        	
+			itor = hUpload.getItemIterator(request);
+			
+			while (itor.hasNext()) {
+        		
+        		FileItemStream fiStrm = itor.next();
+        		
+        		String fname = FileMeta.getFileNameOnly(fiStrm.getName());
+        		
+        		if (!fiStrm.isFormField()) {        			
+        			InputStream inStrm = fiStrm.openStream();
+        			
+        			File file  = new File(targetPath + "/" + fname);
+        			FileOutputStream fo = new FileOutputStream(file);
+        			
+        			Streams.copy(inStrm, fo, true);
+        			inStrm.close();
+        		}
+        	}				
+...
+}]]>
+					</programlisting>
+				    
+				   
+			</section>
+			
+			<section id="fileupload_develop_progress">
+				    <title>File Progress 구현</title>
+				    <para>
+				    		파일을 업로드할 때, progressbar의 상태가 업데이트 되도록 지속적으로 progress 정보를 요청, 응답받아오도록 하고 있다. 
+				    		disk 저장방식으로 서비스를 구현한 FileUploadLoaclDisk 클래스에서  getProgress 메소드는 전체 파일 크기 중 업로드완료되어진 파일의 크기를 백분율로 계산하여 매핑시키고 있다. 
+				    		다음은 FileUploadLoaclDisk에서 getProgress 메소드의 구현부분이다.(FileUploadLoaclDisk.java)
+				    </para>
+				     <programlisting language =" java"><![CDATA[
+public long getProgress(HashMap<String, Long> map) {
+	
+	long nProgress = (content_length <= 0) ? 0 : (int)(((float)readbyte_length / (float)content_length) * 100L);
+	
+	map.put(FileUploadAgent.PROGRESS_PARAM1_PROGRESS, nProgress);
+	map.put(FileUploadAgent.PROGRESS_PARAM2_CONTENTBYTE, content_length);
+	map.put(FileUploadAgent.PROGRESS_PARAM3_READBYTE, readbyte_length);
+
+	return nProgress;
+}]]>
+					</programlisting>
+				    <para>
+				    		clinet-side에서는 요청이 성공하였을 경우, 응답받은 progress값으로 실제 화면에서 size값과 progressbar의 value 값이 바뀌게 되면서 상태가 업데이트되도록 한다. 
+				    		또한, 진행이 모두 완료되었을 경우와 아닌 경우를 나누어 더이상 요청이 이루어지지 않고, 완료되었을 때 필요한 다른 액션이 일어나게 된다.
+				    		다음은 이러한 과정에 대한 구현내용이다.(jquery.fileupload.js)
+				    </para>
+				    <programlisting language =" javascript"><![CDATA[
+var options2 = {
+		async : true,
+		url : FILEUPLOAD.CONTEXT+"/fileuploadJFileUpload.do?method=progressReal",
+		success : function(data) {
+			var retJObj = $.parseJSON(data);
+			fileupload.updateCurrentSize(vfIndex, retJObj.readbyte, retJObj.progress);
+			progressResult = retJObj;
+		},
+		error : function(data) {
+			clearInterval(hAbort);
+			curjqXHR.abort();
+		}
+	};
+
+function checkProgress() {
+		if (progressResult != undefined && progressResult.progress == 100) {
+			clearInterval(hAbort);
+	
+			fileupload.completeUnitList(vfIndex);
+	
+			if (vfIndex == (vf.length - 2)) {
+				fileupload.completeAll(true);
+			}
+	
+			if ((vfIndex + 1) < (vf.length - 1)) {
+				setTimeout(VFUpload, 0);
+			}
+		} else {
+			$.ajax(options2);
+		}
+}]]>
+					</programlisting>
+			</section>
+			
+</chapter>
