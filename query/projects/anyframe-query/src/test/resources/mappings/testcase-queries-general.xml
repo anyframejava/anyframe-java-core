@@ -57,11 +57,33 @@
 				insert into TB_BATCH_TEST(col1, col2, col3) 
 				values (:col1,:col2,:col3)
 			</statement>
+		</query>
+		
+		<query id="batchInsertWithObject" isDynamic="true">
+			<statement>
+				insert into TB_BATCH_TEST(col1, col2, col3) 
+				values (:vo.col1,:vo.col2,:vo.col3)
+			</statement>
+		</query>
+		
+		<query id="batchUpdateWithObject" isDynamic="true">
+			<statement>
+				update TB_BATCH_TEST
+				set col1 = :vo.col1 ,
+				    col2 = :vo.col2
+				where col3 = :vo.col3
+			</statement>
 		</query>		
+				
 		<query id="batchDelete" isDynamic="false">
 			<statement>delete TB_BATCH_TEST where col1 = ?</statement>
 			<param type="VARCHAR" />
 		</query>
+		
+		<query id="batchDeleteWithObject" isDynamic="true">
+			<statement>delete TB_BATCH_TEST where col1 = :vo.col1</statement>
+		</query>
+		\
 		<query id="findBatchTest" isDynamic="false">
 			<statement>
 				select col1,col2,col3 from TB_BATCH_TEST

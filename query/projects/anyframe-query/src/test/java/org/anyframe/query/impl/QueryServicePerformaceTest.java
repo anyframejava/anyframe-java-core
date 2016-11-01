@@ -1,27 +1,43 @@
+/*
+ * Copyright 2002-2012 the original author or authors.
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *      http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
 package org.anyframe.query.impl;
 
 import java.util.ArrayList;
 import java.util.Date;
 
+import javax.inject.Inject;
+
 import org.anyframe.query.QueryService;
-import org.springframework.test.AbstractDependencyInjectionSpringContextTests;
+import org.junit.Before;
+import org.junit.Test;
+import org.junit.runner.RunWith;
+import org.springframework.test.context.ContextConfiguration;
+import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 
-
-public class QueryServicePerformaceTest extends
-        AbstractDependencyInjectionSpringContextTests {
-    private QueryService queryService;
-
-    public void setQueryService(QueryService queryService) {
-        this.queryService = queryService;
-    }
-
-    protected String[] getConfigLocations() {
-        return new String[] {"classpath:/spring/context-*.xml" };
-    }
+@RunWith(SpringJUnit4ClassRunner.class)
+@ContextConfiguration(locations = { "classpath:/spring/context-*.xml" })
+public class QueryServicePerformaceTest {
+	
+	@Inject
+	QueryService queryService;
 
     /**
      * Table TB_EXT_CATEGORY is created for test and initial data is entered. 
      */
+	@Before
     public void onSetUp() throws Exception {
         try {
             queryService.updateBySQL("DROP TABLE TB_CATEGORY", new String[] {},
@@ -46,17 +62,19 @@ public class QueryServicePerformaceTest extends
                 new String[] {}, new Object[] {});
         }
     }
-
+	
+	@Test
     public void testResultSetMapperPerformance() throws Exception {
 //        findCategoryList();
 //        findCategoryListUsingResultMapper();
 //        findCategoryListUsingHashMap();
     }
-
+	
+	@Test
     public void findCategoryList() throws Exception {
         long beforetime = new Date().getTime();
 
-        ArrayList threadList = new ArrayList();
+        ArrayList<QueryThread> threadList = new ArrayList<QueryThread>();
         for (int i = 0; i < 100; i++) {
             QueryThread thread =
                 new QueryThread("Thread " + i, queryService,
@@ -74,10 +92,11 @@ public class QueryServicePerformaceTest extends
             + (nexttime - beforetime));
     }
 
-    public void findCategoryListUsingResultMapper() throws Exception {
+    @Test
+	public void findCategoryListUsingResultMapper() throws Exception {
         long beforetime = new Date().getTime();
 
-        ArrayList threadList = new ArrayList();
+        ArrayList<QueryThread> threadList = new ArrayList<QueryThread>();
         for (int i = 0; i < 100; i++) {
             QueryThread thread =
                 new QueryThread("Thread " + i, queryService,
@@ -95,10 +114,11 @@ public class QueryServicePerformaceTest extends
             + (nexttime - beforetime));
     }
 
+    @Test
     public void findCategoryListUsingHashMap() throws Exception {
         long beforetime = new Date().getTime();
 
-        ArrayList threadList = new ArrayList();
+        ArrayList<QueryThread> threadList = new ArrayList<QueryThread>();
         for (int i = 0; i < 100; i++) {
             QueryThread thread =
                 new QueryThread("Thread " + i, queryService,
@@ -118,6 +138,7 @@ public class QueryServicePerformaceTest extends
     public class QueryThread extends Thread {
         private QueryService queryService;
         private String queryId;
+        @SuppressWarnings("unused")
         private String threadId;
 
         public QueryThread(String threadId, QueryService queryService,

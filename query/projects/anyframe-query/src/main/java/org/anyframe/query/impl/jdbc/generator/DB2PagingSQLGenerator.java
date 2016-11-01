@@ -1,5 +1,5 @@
 /*
- * Copyright 2002-2008 the original author or authors.
+ * Copyright 2002-2012 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -40,10 +40,9 @@ public class DB2PagingSQLGenerator extends AbstractPagingSQLGenerator {
         originalSql = originalSql.trim();
 
         StringBuilder sql = new StringBuilder("SELECT * FROM ( ");
-        sql.append("SELECT rownumber() over() as ROW_SEQ, ");
 
         if (isDistinct(originalSql)) {
-            sql.append("row_.* FROM (");
+            sql.append("SELECT row_.*, rownumber() over() as ROW_SEQ FROM (");
             sql.append(originalSql.substring(0));
             sql.append(") AS row_ ");
             sql.append(") AS INNER_TABLE WHERE ROW_SEQ BETWEEN ? AND ?");
@@ -51,15 +50,16 @@ public class DB2PagingSQLGenerator extends AbstractPagingSQLGenerator {
             return sql.toString();
         }
         if (isOrderBy(originalSql) || isAll(originalSql)) {
-            sql.append("INNER_TABLE.* FROM (");
+            sql.append("SELECT INNER_TABLE.*, rownumber() over() as ROW_SEQ FROM (");
             sql.append(originalSql.substring(0));
             sql.append(") AS INNER_TABLE ) WHERE ROW_SEQ BETWEEN ? AND ?");
 
             return sql.toString();
         }
 
-        sql.append(originalSql.substring(6));
-        sql.append(") AS INNER_TABLE WHERE ROW_SEQ BETWEEN ? AND ?");
+        sql.append("SELECT INNER_TABLE.*, rownumber() over() as ROW_SEQ FROM (");
+        sql.append(originalSql.substring(0));
+        sql.append(") AS INNER_TABLE ) WHERE ROW_SEQ BETWEEN ? AND ?");
 
         return sql.toString();
     }

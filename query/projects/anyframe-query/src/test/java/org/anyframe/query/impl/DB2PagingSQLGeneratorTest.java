@@ -1,5 +1,5 @@
 /*
- * Copyright 2002-2008 the original author or authors.
+ * Copyright 2002-2012 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -51,7 +51,7 @@ public class DB2PagingSQLGeneratorTest extends TestCase {
             generator.getPaginationSQL(sql1, new Object[0], new int[0], 0, 10);
         assertEquals(
             "fail to generate SQL using DB2PagingSQLGenerator.",
-            "SELECT * FROM ( SELECT rownumber() over() as ROW_SEQ,  USER_NAME from USERS) AS INNER_TABLE WHERE ROW_SEQ BETWEEN ? AND ?",
+            "SELECT * FROM ( SELECT INNER_TABLE.*, rownumber() over() as ROW_SEQ FROM (select USER_NAME from USERS) AS INNER_TABLE ) WHERE ROW_SEQ BETWEEN ? AND ?",
             generatedSql);
 
         String sql2 = "select DISTINCT USER_ID from USERS";
@@ -59,7 +59,7 @@ public class DB2PagingSQLGeneratorTest extends TestCase {
             generator.getPaginationSQL(sql2, new Object[0], new int[0], 0, 10);
         assertEquals(
             "fail to generate SQL using DB2PagingSQLGenerator.",
-            "SELECT * FROM ( SELECT rownumber() over() as ROW_SEQ, row_.* FROM (select DISTINCT USER_ID from USERS) AS row_ ) AS INNER_TABLE WHERE ROW_SEQ BETWEEN ? AND ?",
+            "SELECT * FROM ( SELECT row_.*, rownumber() over() as ROW_SEQ FROM (select DISTINCT USER_ID from USERS) AS row_ ) AS INNER_TABLE WHERE ROW_SEQ BETWEEN ? AND ?",
             generatedSql);
 
         String sql3 = "select USER_NAME from USERS ORDER BY USER_NAME";
@@ -67,7 +67,7 @@ public class DB2PagingSQLGeneratorTest extends TestCase {
             generator.getPaginationSQL(sql3, new Object[0], new int[0], 0, 10);
         assertEquals(
             "fail to generate SQL using DB2PagingSQLGenerator.",
-            "SELECT * FROM ( SELECT rownumber() over() as ROW_SEQ, INNER_TABLE.* FROM (select USER_NAME from USERS ORDER BY USER_NAME) AS INNER_TABLE ) WHERE ROW_SEQ BETWEEN ? AND ?",
+            "SELECT * FROM ( SELECT INNER_TABLE.*, rownumber() over() as ROW_SEQ FROM (select USER_NAME from USERS ORDER BY USER_NAME) AS INNER_TABLE ) WHERE ROW_SEQ BETWEEN ? AND ?",
             generatedSql);
 
         String sql4 = "select * from USERS ORDER BY USER_NAME";
@@ -75,7 +75,7 @@ public class DB2PagingSQLGeneratorTest extends TestCase {
             generator.getPaginationSQL(sql4, new Object[0], new int[0], 0, 10);
         assertEquals(
             "fail to generate SQL using DB2PagingSQLGenerator.",
-            "SELECT * FROM ( SELECT rownumber() over() as ROW_SEQ, INNER_TABLE.* FROM (select * from USERS ORDER BY USER_NAME) AS INNER_TABLE ) WHERE ROW_SEQ BETWEEN ? AND ?",
+            "SELECT * FROM ( SELECT INNER_TABLE.*, rownumber() over() as ROW_SEQ FROM (select * from USERS ORDER BY USER_NAME) AS INNER_TABLE ) WHERE ROW_SEQ BETWEEN ? AND ?",
             generatedSql);
 
         String sql5 = "select DISTINCT * from USERS";
@@ -83,7 +83,7 @@ public class DB2PagingSQLGeneratorTest extends TestCase {
             generator.getPaginationSQL(sql5, new Object[0], new int[0], 0, 10);
         assertEquals(
             "fail to generate SQL using DB2PagingSQLGenerator.",
-            "SELECT * FROM ( SELECT rownumber() over() as ROW_SEQ, row_.* FROM (select DISTINCT * from USERS) AS row_ ) AS INNER_TABLE WHERE ROW_SEQ BETWEEN ? AND ?",
+            "SELECT * FROM ( SELECT row_.*, rownumber() over() as ROW_SEQ FROM (select DISTINCT * from USERS) AS row_ ) AS INNER_TABLE WHERE ROW_SEQ BETWEEN ? AND ?",
             generatedSql);
 
         String sql6 = "select DISTINCT * from USERS ORDER BY USER_NAME";
@@ -91,7 +91,7 @@ public class DB2PagingSQLGeneratorTest extends TestCase {
             generator.getPaginationSQL(sql6, new Object[0], new int[0], 0, 10);
         assertEquals(
             "fail to generate SQL using DB2PagingSQLGenerator.",
-            "SELECT * FROM ( SELECT rownumber() over() as ROW_SEQ, row_.* FROM (select DISTINCT * from USERS ORDER BY USER_NAME) AS row_ ) AS INNER_TABLE WHERE ROW_SEQ BETWEEN ? AND ?",
+            "SELECT * FROM ( SELECT row_.*, rownumber() over() as ROW_SEQ FROM (select DISTINCT * from USERS ORDER BY USER_NAME) AS row_ ) AS INNER_TABLE WHERE ROW_SEQ BETWEEN ? AND ?",
             generatedSql);
 
         String sql7 = "   select DISTINCT * from USERS ORDER BY USER_NAME   ";
@@ -99,7 +99,7 @@ public class DB2PagingSQLGeneratorTest extends TestCase {
             generator.getPaginationSQL(sql7, new Object[0], new int[0], 0, 10);
         assertEquals(
             "fail to generate SQL using DB2PagingSQLGenerator.",
-            "SELECT * FROM ( SELECT rownumber() over() as ROW_SEQ, row_.* FROM (select DISTINCT * from USERS ORDER BY USER_NAME) AS row_ ) AS INNER_TABLE WHERE ROW_SEQ BETWEEN ? AND ?",
+            "SELECT * FROM ( SELECT row_.*, rownumber() over() as ROW_SEQ FROM (select DISTINCT * from USERS ORDER BY USER_NAME) AS row_ ) AS INNER_TABLE WHERE ROW_SEQ BETWEEN ? AND ?",
             generatedSql);
 
         String sql8 =
@@ -108,7 +108,7 @@ public class DB2PagingSQLGeneratorTest extends TestCase {
             generator.getPaginationSQL(sql8, new Object[0], new int[0], 0, 10);
         assertEquals(
             "fail to generate SQL using DB2PagingSQLGenerator.",
-            "SELECT * FROM ( SELECT rownumber() over() as ROW_SEQ, row_.* FROM (select      DISTINCT * from USERS ORDER BY USER_NAME) AS row_ ) AS INNER_TABLE WHERE ROW_SEQ BETWEEN ? AND ?",
+            "SELECT * FROM ( SELECT row_.*, rownumber() over() as ROW_SEQ FROM (select      DISTINCT * from USERS ORDER BY USER_NAME) AS row_ ) AS INNER_TABLE WHERE ROW_SEQ BETWEEN ? AND ?",
             generatedSql);
     }
 }

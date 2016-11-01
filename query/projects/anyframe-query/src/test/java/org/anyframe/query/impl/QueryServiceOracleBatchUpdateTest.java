@@ -1,5 +1,5 @@
 /*
- * Copyright 2002-2008 the original author or authors.
+ * Copyright 2002-2012 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -21,11 +21,18 @@ import java.sql.Statement;
 import java.util.ArrayList;
 import java.util.Date;
 
+import javax.inject.Inject;
 import javax.sql.DataSource;
+
+import junit.framework.Assert;
 
 import org.anyframe.query.QueryService;
 import org.anyframe.query.vo.BatchTestVO;
-import org.springframework.test.AbstractDependencyInjectionSpringContextTests;
+import org.junit.Before;
+import org.junit.Test;
+import org.junit.runner.RunWith;
+import org.springframework.test.context.ContextConfiguration;
+import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 
 /**
  * TestCase Name : QueryServiceOracleBatchUpdateTest <br>
@@ -49,27 +56,21 @@ import org.springframework.test.AbstractDependencyInjectionSpringContextTests;
  * 
  * @author SoYon Lim
  */
-public class QueryServiceOracleBatchUpdateTest extends
-		AbstractDependencyInjectionSpringContextTests {
+@RunWith(SpringJUnit4ClassRunner.class)
+@ContextConfiguration(locations = { "classpath*:/spring/oraclebatch/context-*.xml" })
+public class QueryServiceOracleBatchUpdateTest {
 
-	private QueryService queryService = null;
-
-	public void setQueryService(QueryService queryService) {
-		this.queryService = queryService;
-	}
-
-	protected String[] getConfigLocations() {
-		setAutowireMode(AbstractDependencyInjectionSpringContextTests.AUTOWIRE_BY_NAME);
-		return new String[] { "classpath*:/spring/oraclebatch/context-*.xml" };
-	}
-
+	@Inject
+	QueryService queryService;
+	
+	@Inject
+	DataSource dataSource;
+	
 	/**
 	 * Table TB_BATCH_TEST is created for test.
 	 */
+	@Before
 	public void onSetUp() throws Exception {
-		super.onSetUp();
-		DataSource dataSource = (DataSource) applicationContext
-				.getBean("dataSource");
 		try {
 			Connection conn = dataSource.getConnection();
 			try {
@@ -89,21 +90,18 @@ public class QueryServiceOracleBatchUpdateTest extends
 				conn.close();
 			}
 		} catch (SQLException e) {
-			fail("Unable to initialize database for test. " + e);
+			Assert.fail("Unable to initialize database for test. " + e);
 		}
 
 		batchInsertByObject();
 	}
 
-	public void onTearDown() {
-		setDirty();
-	}
-
+	@Test
 	public void testOraclePagingJdbcTemplateBatchUpdatePerformance()
 			throws Exception {
 		long beforetime = new Date().getTime();
 
-		ArrayList threadList = new ArrayList();
+		ArrayList<QueryThread> threadList = new ArrayList<QueryThread>();
 		for (int i = 0; i < 1; i++) {
 			QueryThread thread = new QueryThread(queryService);
 			threadList.add(thread);
@@ -130,7 +128,7 @@ public class QueryServiceOracleBatchUpdateTest extends
 	 */
 	private void batchInsertByObject() throws Exception {
 		// 1. set data for insert
-		ArrayList args = new ArrayList();
+		ArrayList<BatchTestVO> args = new ArrayList<BatchTestVO>();
 		BatchTestVO batchTestVO = new BatchTestVO();
 		batchTestVO.setCol1("I1BatchCreateByObject");
 		batchTestVO.setCol2("I1BatchCreateByObject");
@@ -154,7 +152,7 @@ public class QueryServiceOracleBatchUpdateTest extends
 
 		// 2. execute query
 		int[] rtVal = queryService.batchCreate(args);
-		assertTrue("Fail to batch insert by Object.", rtVal.length == 4);
+		Assert.assertTrue("Fail to batch insert by Object.", rtVal.length == 4);
 	}
 
 	public class QueryThread extends Thread {
@@ -184,7 +182,7 @@ public class QueryServiceOracleBatchUpdateTest extends
 		 */
 		public void testBatchUpdateByObject() throws Exception {
 			// 2. set data for update
-			ArrayList args = new ArrayList();
+			ArrayList<BatchTestVO> args = new ArrayList<BatchTestVO>();
 			BatchTestVO batchTestVO = new BatchTestVO();
 			batchTestVO.setCol1("I1BatchCreateByObject");
 			batchTestVO.setCol2("Modified");
@@ -203,13 +201,13 @@ public class QueryServiceOracleBatchUpdateTest extends
 
 			// 3. execute query
 			int[] rtVal = queryService.batchUpdate(args);
-			assertTrue("Fail to batch update by object.", rtVal.length == 3);
+			Assert.assertTrue("Fail to batch update by object.", rtVal.length == 3);
 
-			assertEquals("Fail to batch update by object - result value.", 0,
+			Assert.assertEquals("Fail to batch update by object - result value.", 0,
 					rtVal[0]);
-			assertEquals("Fail to batch update by object - result value.", 0,
+			Assert.assertEquals("Fail to batch update by object - result value.", 0,
 					rtVal[1]);
-			assertEquals("Fail to batch update by object - result value.", 3,
+			Assert.assertEquals("Fail to batch update by object - result value.", 3,
 					rtVal[2]);
 		}
 	}
@@ -223,8 +221,9 @@ public class QueryServiceOracleBatchUpdateTest extends
 	 * @throws Exception
 	 *             throws exception which is from QueryService
 	 */
+	@Test
 	public void testBatchInsertWithProcedure() throws Exception {
-		ArrayList args = new ArrayList();
+		ArrayList<Object[]> args = new ArrayList<Object[]>();
 		Object[] arg = new Object[3];
 
 		arg[0] = "test1";
@@ -248,7 +247,7 @@ public class QueryServiceOracleBatchUpdateTest extends
 
 		ArrayList rtList = (ArrayList) queryService.find("findBatchTest",
 				new Object[] {});
-		assertTrue("Fail to batch insert.", rtList.size() == 7);
+		Assert.assertTrue("Fail to batch insert.", rtList.size() == 7);
 	}
 
 	/**
@@ -259,6 +258,7 @@ public class QueryServiceOracleBatchUpdateTest extends
 	 * @throws Exception
 	 *             throws exception which is from QueryService
 	 */
+	@Test
 	public void testBatchInsertWithProcedureBySQL() throws Exception {
 		String sql = "DECLARE  " + "col1      VARCHAR2(50):= ?;  "
 				+ "col2      VARCHAR2(50):= ?;  " + "col3      NUMBER:= ?; "
@@ -269,7 +269,7 @@ public class QueryServiceOracleBatchUpdateTest extends
 		types[1] = "VARCHAR";
 		types[2] = "NUMERIC";
 
-		ArrayList args = new ArrayList();
+		ArrayList<Object[]> args = new ArrayList<Object[]>();
 		Object[] arg = new Object[3];
 
 		arg[0] = "test1";
@@ -293,6 +293,6 @@ public class QueryServiceOracleBatchUpdateTest extends
 
 		ArrayList rtList = (ArrayList) queryService.find("findBatchTest",
 				new Object[] {});
-		assertTrue("Fail to batch insert.", rtList.size() == 7);
+		Assert.assertTrue("Fail to batch insert.", rtList.size() == 7);
 	}
 }

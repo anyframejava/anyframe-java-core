@@ -1,5 +1,5 @@
 /*
- * Copyright 2002-2008 the original author or authors.
+ * Copyright 2002-2012 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -17,16 +17,12 @@ package org.anyframe.query.impl.jdbc.mapper;
 
 import java.lang.reflect.Field;
 import java.sql.ResultSet;
-import java.sql.ResultSetMetaData;
 import java.sql.SQLException;
-import java.sql.Types;
-import java.util.HashMap;
 import java.util.Map;
 
 import org.anyframe.query.MappingInfo;
-import org.anyframe.query.QueryService;
-import org.anyframe.query.impl.util.ColumnUtil;
 import org.anyframe.query.impl.util.AbstractNameMatcher;
+import org.anyframe.query.impl.util.ColumnUtil;
 import org.anyframe.query.impl.util.SQLTypeTransfer;
 import org.anyframe.util.StringUtil;
 import org.apache.commons.collections.map.ListOrderedMap;

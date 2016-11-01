@@ -1,5 +1,5 @@
 /*
- * Copyright 2002-2008 the original author or authors.
+ * Copyright 2002-2012 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -19,9 +19,17 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Map;
 
+import javax.inject.Inject;
+
+import junit.framework.Assert;
+
 import org.anyframe.query.QueryService;
 import org.anyframe.query.vo.Customer;
-import org.springframework.test.AbstractDependencyInjectionSpringContextTests;
+import org.junit.Before;
+import org.junit.Test;
+import org.junit.runner.RunWith;
+import org.springframework.test.context.ContextConfiguration;
+import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 
 
 /**
@@ -73,22 +81,17 @@ import org.springframework.test.AbstractDependencyInjectionSpringContextTests;
  * 
  * @author SoYon Lim
  */
-public class QueryServiceWithRowCountTest extends
-		AbstractDependencyInjectionSpringContextTests {
+@RunWith(SpringJUnit4ClassRunner.class)
+@ContextConfiguration(locations = { "classpath*:/spring/context-*.xml" })
+public class QueryServiceWithRowCountTest {
 
-	private QueryService queryService = null;
-
-	public void setQueryService(QueryService queryService) {
-		this.queryService = queryService;
-	}
-
-	protected String[] getConfigLocations() {
-		return new String[] { "classpath*:/spring/context-*.xml" };
-	}
+	@Inject
+	QueryService queryService;
 
 	/**
 	 * Table TB_CUSTOMER is created for test.  
 	 */
+	@Before
 	public void onSetUp() throws Exception {
 		try {
 			queryService.updateBySQL("DROP TABLE TB_CUSTOMER", new String[] {},
@@ -113,6 +116,7 @@ public class QueryServiceWithRowCountTest extends
 	 * @throws Exception
 	 *             throws exception which is from QueryService
 	 */
+	@Test
 	public void testFindBySQLWithPageInfo() throws Exception {
 		// 1. execute query
 		Map rtMap = queryService.findBySQLWithRowCount(
@@ -124,9 +128,9 @@ public class QueryServiceWithRowCountTest extends
 		ArrayList rtList = (ArrayList) rtMap.get(QueryService.LIST);
 
 		// 3. assert
-		assertEquals("Fail to get total count of results.", 1, totalCount
+		Assert.assertEquals("Fail to get total count of results.", 1, totalCount
 				.intValue());
-		assertEquals("Fail to get results.", 0, rtList.size());
+		Assert.assertEquals("Fail to get results.", 0, rtList.size());
 
 		// 4. execute query
 		rtMap = queryService.findBySQLWithRowCount(
@@ -138,9 +142,9 @@ public class QueryServiceWithRowCountTest extends
 		rtList = (ArrayList) rtMap.get(QueryService.LIST);
 
 		// 6. assert
-		assertEquals("Fail to get total count of results.", 1, totalCount
+		Assert.assertEquals("Fail to get total count of results.", 1, totalCount
 				.intValue());
-		assertEquals("Fail to get results.", 1, rtList.size());
+		Assert.assertEquals("Fail to get results.", 1, rtList.size());
 	}
 
 	/**
@@ -153,6 +157,7 @@ public class QueryServiceWithRowCountTest extends
 	 * @throws Exception
 	 *             throws exception which is from QueryService
 	 */
+	@Test
 	public void testFindBySQLNoResultSetWithPageInfo() throws Exception {
 		// 1. execute query
 		Map fstRtMap = queryService
@@ -172,16 +177,16 @@ public class QueryServiceWithRowCountTest extends
 		// 3. assert first result
 		ArrayList fstRtList = (ArrayList) fstRtMap.get(QueryService.LIST);
 		Long fstTotalCount = (Long) fstRtMap.get(QueryService.COUNT);
-		assertEquals("Fail to get total count of results.", 0, fstTotalCount
+		Assert.assertEquals("Fail to get total count of results.", 0, fstTotalCount
 				.intValue());
-		assertEquals("Fail to get results.", 0, fstRtList.size());
+		Assert.assertEquals("Fail to get results.", 0, fstRtList.size());
 
 		// 4. assert second result
 		ArrayList scdRtList = (ArrayList) scdRtMap.get(QueryService.LIST);
 		Long scdTotalCount = (Long) scdRtMap.get(QueryService.COUNT);
-		assertEquals("Fail to get total count of results.", 0, scdTotalCount
+		Assert.assertEquals("Fail to get total count of results.", 0, scdTotalCount
 				.intValue());
-		assertEquals("Fail to get results.", 0, scdRtList.size());
+		Assert.assertEquals("Fail to get results.", 0, scdRtList.size());
 	}
 
 	/**
@@ -195,6 +200,7 @@ public class QueryServiceWithRowCountTest extends
 	 * @throws Exception
 	 *             throws exception which is from QueryService
 	 */
+	@Test
 	public void testFindCustomerWithRowCountPageIndexPageSize()
 			throws Exception {
 		// 1. insert test data
@@ -211,12 +217,12 @@ public class QueryServiceWithRowCountTest extends
 
 		// 3. assert total size of result
 		Long totalCount = (Long) rtMap.get(QueryService.COUNT);
-		assertEquals("Fail to get total count of results.", 6, totalCount
+		Assert.assertEquals("Fail to get total count of results.", 6, totalCount
 				.intValue());
 
 		// 4. assert result size
 		ArrayList rtList = (ArrayList) rtMap.get(QueryService.LIST);
-		assertEquals("Fail to get results.", 0, rtList.size());
+		Assert.assertEquals("Fail to get results.", 0, rtList.size());
 
 		// 5. execute query
 		rtMap = queryService.findWithRowCount("findCustomerWithResultMapping",
@@ -224,17 +230,17 @@ public class QueryServiceWithRowCountTest extends
 
 		// 6. assert total size of result
 		totalCount = (Long) rtMap.get(QueryService.COUNT);
-		assertEquals("Fail to get total count of results.", 6, totalCount
+		Assert.assertEquals("Fail to get total count of results.", 6, totalCount
 				.intValue());
 
 		// 7. assert result size
 		rtList = (ArrayList) rtMap.get(QueryService.LIST);
-		assertEquals("Fail to get results.", 3, rtList.size());
+		Assert.assertEquals("Fail to get results.", 3, rtList.size());
 
 		// 8. assert in detail
 		for (int i = 0; i < rtList.size(); i++) {
 			Customer customer = (Customer) rtList.get(i);
-			assertTrue("Fail to compare result.", customer.getNm().startsWith(
+			Assert.assertTrue("Fail to compare result.", customer.getNm().startsWith(
 					"Anyframe"));
 		}
 	}
@@ -250,6 +256,7 @@ public class QueryServiceWithRowCountTest extends
 	 * @throws Exception
 	 *             throws exception which is from QueryService
 	 */
+	@Test
 	public void testFindWithRowCountNoPageInfo() throws Exception {
 		// 1. insert test data
 		insertCustomerBySQL("1234567890111", "Anyframe2", "Seoul");
@@ -264,17 +271,17 @@ public class QueryServiceWithRowCountTest extends
 
 		// 3. assert total size of result
 		Long totalCount = (Long) rtMap.get(QueryService.COUNT);
-		assertEquals("Fail to get total count of results.", 6, totalCount
+		Assert.assertEquals("Fail to get total count of results.", 6, totalCount
 				.intValue());
 
 		// 4. assert result size
 		ArrayList rtList = (ArrayList) rtMap.get(QueryService.LIST);
-		assertEquals("Fail to get results.", 6, rtList.size());
+		Assert.assertEquals("Fail to get results.", 6, rtList.size());
 
 		// 5. assert in detail
 		for (int i = 0; i < rtList.size(); i++) {
 			Customer customer = (Customer) rtList.get(i);
-			assertTrue("Fail to compare result.", customer.getNm().startsWith(
+			Assert.assertTrue("Fail to compare result.", customer.getNm().startsWith(
 					"Anyframe"));
 		}
 	}
@@ -290,6 +297,7 @@ public class QueryServiceWithRowCountTest extends
 	 * @throws Exception
 	 *             throws exception which is from QueryService
 	 */
+	@Test
 	public void testFindWithPageInfo() throws Exception {
 		// 1. insert test data
 		insertCustomerBySQL("1234567890111", "Anyframe2", "Seoul");
@@ -304,17 +312,17 @@ public class QueryServiceWithRowCountTest extends
 
 		// 3. assert total size of result
 		Long totalCount = (Long) rtMap.get(QueryService.COUNT);
-		assertEquals("Fail to get total count of results.", 6, totalCount
+		Assert.assertEquals("Fail to get total count of results.", 6, totalCount
 				.intValue());
 
 		// 4. assert result size
 		ArrayList rtList = (ArrayList) rtMap.get(QueryService.LIST);
-		assertEquals("Fail to get results.", 2, rtList.size());
+		Assert.assertEquals("Fail to get results.", 2, rtList.size());
 
 		// 5. assert in detail
 		for (int i = 0; i < rtList.size(); i++) {
 			Customer customer = (Customer) rtList.get(i);
-			assertTrue("Fail to compare result.", customer.getNm().startsWith(
+			Assert.assertTrue("Fail to compare result.", customer.getNm().startsWith(
 					"Anyframe"));
 		}
 	}
@@ -332,6 +340,7 @@ public class QueryServiceWithRowCountTest extends
 	 * @throws Exception
 	 *             throws exception which is from QueryService
 	 */
+	@Test
 	public void testFindWithZeroPage() throws Exception {
 		// 1. insert test data
 		insertCustomerBySQL("1234567890111", "Anyframe2", "Seoul");
@@ -346,14 +355,15 @@ public class QueryServiceWithRowCountTest extends
 
 		// 3. assert total size of result
 		Long totalCount = (Long) rtMap.get(QueryService.COUNT);
-		assertEquals("Fail to get total count of results.", 6, totalCount
+		Assert.assertEquals("Fail to get total count of results.", 6, totalCount
 				.intValue());
 
 		// 4. assert result size
 		ArrayList rtList = (ArrayList) rtMap.get(QueryService.LIST);
-		assertEquals("Fail to get results.", 0, rtList.size());
+		Assert.assertEquals("Fail to get results.", 0, rtList.size());
 	}
-
+	
+	@Test
 	public void testFind() throws Exception {
 		for (int i = 0; i < 23; i++) {
 			insertCustomerBySQL(new Integer(i).toString(), "Anyframe2", "Seoul");
@@ -363,7 +373,7 @@ public class QueryServiceWithRowCountTest extends
 				new Object[] { "%%" }, 2, 10);
 		
 		ArrayList rtList = (ArrayList)rtMap.get(QueryService.LIST);
-		assertEquals("Fail to get results.", 10, rtList.size());
+		Assert.assertEquals("Fail to get results.", 10, rtList.size());
 		
 	}
 
@@ -384,13 +394,13 @@ public class QueryServiceWithRowCountTest extends
 				new String[] { "VARCHAR" }, new Object[] { ssno });
 
 		// 2. assert
-		assertEquals("Fail to find customer by SQL.", 1, rtCollection.size());
+		Assert.assertEquals("Fail to find customer by SQL.", 1, rtCollection.size());
 
 		// 3. assert in detail
 		Map rtMap = (Map) rtCollection.iterator().next();
-		assertEquals("Fail to compare result.", address, (String) rtMap
+		Assert.assertEquals("Fail to compare result.", address, (String) rtMap
 				.get("address"));
-		assertEquals("Fail to compare result.", name, (String) rtMap
+		Assert.assertEquals("Fail to compare result.", name, (String) rtMap
 				.get("name"));
 	}
 
@@ -412,7 +422,7 @@ public class QueryServiceWithRowCountTest extends
 						name, address });
 
 		// 2. assert
-		assertEquals("Fail to insert customer.", 1, result);
+		Assert.assertEquals("Fail to insert customer.", 1, result);
 		findCustomerBySQL(ssno, name, address);
 	}
 }

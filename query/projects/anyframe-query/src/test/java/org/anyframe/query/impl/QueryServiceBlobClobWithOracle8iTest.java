@@ -1,5 +1,5 @@
 /*
- * Copyright 2002-2008 the original author or authors.
+ * Copyright 2002-2012 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -18,9 +18,17 @@ package org.anyframe.query.impl;
 import java.util.Collection;
 import java.util.Iterator;
 
+import javax.inject.Inject;
+
+import junit.framework.Assert;
+
 import org.anyframe.query.QueryService;
 import org.apache.commons.collections.map.ListOrderedMap;
-import org.springframework.test.AbstractDependencyInjectionSpringContextTests;
+import org.junit.Before;
+import org.junit.Test;
+import org.junit.runner.RunWith;
+import org.springframework.test.context.ContextConfiguration;
+import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 
 /**
  * TestCase Name : QueryServiceBlobClobWithOracle8iTest <br>
@@ -38,28 +46,17 @@ import org.springframework.test.AbstractDependencyInjectionSpringContextTests;
  * 
  * @author SoYon Lim
  */
-public class QueryServiceBlobClobWithOracle8iTest extends
-		AbstractDependencyInjectionSpringContextTests {
-	private QueryService queryService = null;
-
-	public void setQueryService(QueryService queryService) {
-		this.queryService = queryService;
-	}
-
-	/**
-	 * Annotation of return statement for test is undone.
-	 */
-	protected String[] getConfigLocations() {
-		setAutowireMode(AbstractDependencyInjectionSpringContextTests.AUTOWIRE_BY_NAME);
-		// return new String[]
-		// {"classpath*:/spring/ora8ilob/context-*.xml"
-		// };
-		return new String[] {};
-	}
+@RunWith(SpringJUnit4ClassRunner.class)
+@ContextConfiguration(locations = { "classpath*:/spring/context-*.xml" })
+public class QueryServiceBlobClobWithOracle8iTest {
+	
+	@Inject
+	QueryService queryService;
 
 	/**
 	 * Table TB_BINARY is created for test.
 	 */
+	@Before
 	public void init() throws Exception {
 		System.out.println("Attempting to drop old table");
 		try {
@@ -82,6 +79,7 @@ public class QueryServiceBlobClobWithOracle8iTest extends
 	 * @throws Exception
 	 *             throws exception which is from QueryService
 	 */
+	@Test
 	public void testOracle8iBlobClob() throws Exception {
 		// oracle8iBlobClob();
 	}
@@ -99,13 +97,13 @@ public class QueryServiceBlobClobWithOracle8iTest extends
 				new Object[] { new Object[] { new Integer(7) },
 						new Object[] { new Integer(7) },
 						new Object[] { tempString, tempString.getBytes() } });
-		assertEquals("Fail to insert ClobBlob.", 1, result);
+		Assert.assertEquals("Fail to insert ClobBlob.", 1, result);
 
 		// 2. assert
 		Collection rtCollection = queryService.find("findBlobClobWithOra8i",
 				new Object[] { new Integer(7) });
 
-		assertEquals("Fail to find ClobBlob.", 1, rtCollection.size());
+		Assert.assertEquals("Fail to find ClobBlob.", 1, rtCollection.size());
 
 		Iterator rtIterator = rtCollection.iterator();
 
@@ -113,11 +111,11 @@ public class QueryServiceBlobClobWithOracle8iTest extends
 		while (rtIterator.hasNext()) {
 			ListOrderedMap map = (ListOrderedMap) rtIterator.next();
 
-			assertEquals("Fail to compare result.", tempString, map
+			Assert.assertEquals("Fail to compare result.", tempString, map
 					.get("myclob"));
-			assertEquals("Fail to compare result.", 201, ((byte[]) map
+			Assert.assertEquals("Fail to compare result.", 201, ((byte[]) map
 					.get("myblob")).length);
-			assertEquals("Fail to compare result.", tempString, new String(
+			Assert.assertEquals("Fail to compare result.", tempString, new String(
 					(byte[]) map.get("myblob")));
 		}
 	}

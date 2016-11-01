@@ -1,5 +1,5 @@
 /*
- * Copyright 2002-2008 the original author or authors.
+ * Copyright 2002-2012 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -19,11 +19,19 @@ import java.util.Collection;
 import java.util.Iterator;
 import java.util.Map;
 
+import javax.inject.Inject;
+
+import junit.framework.Assert;
+
 import org.anyframe.query.QueryService;
 import org.anyframe.query.vo.CodeVO;
 import org.anyframe.query.vo.GroupCodeVO;
 import org.anyframe.query.vo.LocalResultMappingVO;
-import org.springframework.test.AbstractDependencyInjectionSpringContextTests;
+import org.junit.Before;
+import org.junit.Test;
+import org.junit.runner.RunWith;
+import org.springframework.test.context.ContextConfiguration;
+import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 
 /**
  * TestCase Name : QueryServiceResultMappingTest <br>
@@ -33,46 +41,45 @@ import org.springframework.test.AbstractDependencyInjectionSpringContextTests;
  * [Main Flow]
  * <ul>
  * <li>#-1 Positive Case : In the case table mapping information is defined by
- * using <table> within mapping XML file, search return value of class mapped at relevant
- * table are captured and transferred.</li>
+ * using
+ * <table>
+ * within mapping XML file, search return value of class mapped at relevant
+ * table are captured and transferred.
+ * </li>
  * <li>#-2 Positive Case : In the case search return value regarding defined
  * specific query statement is mapped by using <result-mapping> within mapping
  * XML file, search return value at <result> is captured in class defined in
  * <result> and transferred.</li>
- * <li>#-3 Positive Case : In the case <result class=""> only is defined regarding 
- * specific query statement without definition of table mapping information, 
- * search return value is captured in class defined in <result> and transferred. </li>
- * <li>#-4 Positive Case : In the case there is no mapping information on 
- * separately defined specific query statement, search return value is captured 
- * in HashMap and transferred. However, in the case isCamelCased is true when 
- * to define key value put in HashMap based on isCamelCase property of 
- * relevant query statement, spring applying CamelCase in search column name 
- * is set as HashMap key value. </li>
- * <li>#-5 Positive Case : In the case there is no mapping information on 
- * separately defined specific query statement, search return value is captured 
- * in HashMap and transferred. However, in the case isCamelCased is false 
- * when to define key value put in HashMap based on isCamelCase property 
- * of relevant query statement, search column name is set as HashMap key value. </li>
+ * <li>#-3 Positive Case : In the case <result class=""> only is defined
+ * regarding specific query statement without definition of table mapping
+ * information, search return value is captured in class defined in <result> and
+ * transferred.</li>
+ * <li>#-4 Positive Case : In the case there is no mapping information on
+ * separately defined specific query statement, search return value is captured
+ * in HashMap and transferred. However, in the case isCamelCased is true when to
+ * define key value put in HashMap based on isCamelCase property of relevant
+ * query statement, spring applying CamelCase in search column name is set as
+ * HashMap key value.</li>
+ * <li>#-5 Positive Case : In the case there is no mapping information on
+ * separately defined specific query statement, search return value is captured
+ * in HashMap and transferred. However, in the case isCamelCased is false when
+ * to define key value put in HashMap based on isCamelCase property of relevant
+ * query statement, search column name is set as HashMap key value.</li>
  * </ul>
  * 
  * @author SoYon Lim
  */
-public class QueryServiceResultMappingTest extends
-		AbstractDependencyInjectionSpringContextTests {
-	private QueryService queryService = null;
+@RunWith(SpringJUnit4ClassRunner.class)
+@ContextConfiguration(locations = { "classpath*:/spring/context-*.xml" })
+public class QueryServiceResultMappingTest {
 
-	public void setQueryService(QueryService queryService) {
-		this.queryService = queryService;
-	}
-
-	protected String[] getConfigLocations() {
-		setAutowireMode(AbstractDependencyInjectionSpringContextTests.AUTOWIRE_BY_NAME);
-		return new String[] { "classpath*:/spring/context-*.xml" };
-	}
+	@Inject
+	QueryService queryService;
 
 	/**
 	 * Table TB_RESERVATION is created for test.
 	 */
+	@Before
 	public void onSetUp() throws Exception {
 		System.out.println("Attempting to drop old table");
 		try {
@@ -123,167 +130,180 @@ public class QueryServiceResultMappingTest extends
 	}
 
 	/**
-	 * [Flow #-1] Positive Case : In the case table mapping information is defined 
-	 * by using <table> within mapping XML file, search return value is captured 
-	 * in class mapped in relevant table and transferred. 
+	 * [Flow #-1] Positive Case : In the case table mapping information is
+	 * defined by using
+	 * <table>
+	 * within mapping XML file, search return value is captured in class mapped
+	 * in relevant table and transferred.
 	 * 
 	 * @throws Exception
 	 *             throws exception which is from QueryService
 	 */
+	@Test
 	public void testResultMappingWithTableMapping() throws Exception {
 		Collection rtList = queryService.find("findWithTableMapping",
 				new Object[] {});
 
-		assertEquals("Fail to find code list using table mapping definition.",
-				2, rtList.size());
+		Assert.assertEquals(
+				"Fail to find code list using table mapping definition.", 2,
+				rtList.size());
 
 		Iterator rtItr = rtList.iterator();
 		while (rtItr.hasNext()) {
 			CodeVO codeVO = (CodeVO) rtItr.next();
-			assertTrue("Fail to assert in detail.",
-					(codeVO.getCodeId().equals("0000") || codeVO.getCodeId()
-							.equals("0001")));
+			Assert.assertTrue("Fail to assert in detail.", (codeVO.getCodeId()
+					.equals("0000") || codeVO.getCodeId().equals("0001")));
 		}
 	}
 
 	/**
-	 * [Flow #-2] Positive Case : In the case search return value regarding 
-	 * defined specific query statement  is mapped by using <result-mapping> 
-	 * within mapping XML file, search return value is captured in class 
-	 * defined in <result> and transferred. 
+	 * [Flow #-2] Positive Case : In the case search return value regarding
+	 * defined specific query statement is mapped by using <result-mapping>
+	 * within mapping XML file, search return value is captured in class defined
+	 * in <result> and transferred.
 	 * 
 	 * @throws Exception
 	 *             throws exception which is from QueryService
 	 */
+	@Test
 	public void testResultMappingWithLocalResultMapping() throws Exception {
 		Collection rtList = queryService.find("findWithLocalResultMapping",
 				new Object[] { "CTGR" });
 
-		assertEquals(
-				"Fail to find code list using local result mapping definition.",
-				1, rtList.size());
+		Assert
+				.assertEquals(
+						"Fail to find code list using local result mapping definition.",
+						1, rtList.size());
 
 		Iterator rtItr = rtList.iterator();
 		while (rtItr.hasNext()) {
 			LocalResultMappingVO codeVO = (LocalResultMappingVO) rtItr.next();
-			assertTrue("Fail to assert in detail.",
-					codeVO.getCodeID().equals("0000"));
-			assertTrue("Fail to assert in detail.", codeVO.getGroupName()
-					.equals("Category"));
-			assertTrue("Fail to assert in detail.", codeVO.getCodeDescription()
-					.equals("Electronics"));
+			Assert.assertTrue("Fail to assert in detail.", codeVO.getCodeID()
+					.equals("0000"));
+			Assert.assertTrue("Fail to assert in detail.", codeVO
+					.getGroupName().equals("Category"));
+			Assert.assertTrue("Fail to assert in detail.", codeVO
+					.getCodeDescription().equals("Electronics"));
 		}
 	}
 
 	/**
-	 * [Flow #-3] Positive Case : In the case <result class=""> only is defined 
-	 * regarding specific query statement without definition of 
-	 * table mapping information, search return value is captured 
-	 * in class defined in <result> and transferred. However, 
-	 * when search result is mapped on specific class, camelCase is applied 
-	 * in search column name and then property name defined in relevant string is found.  
+	 * [Flow #-3] Positive Case : In the case <result class=""> only is defined
+	 * regarding specific query statement without definition of table mapping
+	 * information, search return value is captured in class defined in <result>
+	 * and transferred. However, when search result is mapped on specific class,
+	 * camelCase is applied in search column name and then property name defined
+	 * in relevant string is found.
 	 * 
 	 * @throws Exception
 	 *             throws exception which is from QueryService
 	 */
+	@Test
 	public void testResultMappingWithOnlyResultClass() throws Exception {
 		Collection rtList = queryService.find("findWithOnlyResultClass",
 				new Object[] {});
 
-		assertEquals(
+		Assert.assertEquals(
 				"Fail to find code list using only result class definition.",
 				2, rtList.size());
 
 		Iterator rtItr = rtList.iterator();
 		while (rtItr.hasNext()) {
 			GroupCodeVO codeVO = (GroupCodeVO) rtItr.next();
-			assertTrue("Fail to assert in detail.", (codeVO.getGroupId()
+			Assert.assertTrue("Fail to assert in detail.", (codeVO.getGroupId()
 					.equals("CTGR") || codeVO.getGroupId().equals("CMMN")));
 		}
 	}
 
 	/**
-	 * [Flow #-4] Positive Case : In the case there is no mapping information 
-	 * on separately defined specific query statement, search return value is captured 
-	 * in HashMap and transferred. However, in the case isCamelCased is true 
-	 * when to define key value put in HashMap based on isCamelCase property 
-	 * of relevant query statement, spring applying CamelCase 
-	 * in search column name is set as HashMap key value. 
-
+	 * [Flow #-4] Positive Case : In the case there is no mapping information on
+	 * separately defined specific query statement, search return value is
+	 * captured in HashMap and transferred. However, in the case isCamelCased is
+	 * true when to define key value put in HashMap based on isCamelCase
+	 * property of relevant query statement, spring applying CamelCase in search
+	 * column name is set as HashMap key value.
+	 * 
 	 * 
 	 * @throws Exception
 	 *             throws exception which is from QueryService
 	 */
+	@Test
 	public void testResultMappingWithHashMapCamelCased() throws Exception {
 		Collection rtList = queryService.find("findWithHashMapAndCamelCased",
 				new Object[] {});
 
-		assertEquals(
+		Assert.assertEquals(
 				"Fail to find code list without no result mapping definition.",
 				2, rtList.size());
 
 		Iterator rtItr = rtList.iterator();
 		while (rtItr.hasNext()) {
 			Map result = (Map) rtItr.next();
-			assertTrue("Fail to assert in detail.", (result.get("codeId")
-					.equals("0000") || result.get("codeId").equals("0001")));
+			Assert.assertTrue("Fail to assert in detail.", (result
+					.get("codeId").equals("0000") || result.get("codeId")
+					.equals("0001")));
 		}
 	}
 
 	/**
-	 * [Flow #-5] Positive Case : In the case there is no mapping information 
-	 * on separately defined specific query statement, search return value is captured 
-	 * in HashMap and transferred. However, in the case isCamelCased is false 
-	 * when to define key value put in HashMap based on isCamelCase property 
-	 * of relevant query statement, search column name is set as HashMap key value. 
+	 * [Flow #-5] Positive Case : In the case there is no mapping information on
+	 * separately defined specific query statement, search return value is
+	 * captured in HashMap and transferred. However, in the case isCamelCased is
+	 * false when to define key value put in HashMap based on isCamelCase
+	 * property of relevant query statement, search column name is set as
+	 * HashMap key value.
 	 * 
 	 * @throws Exception
 	 *             throws exception which is from QueryService
 	 */
+	@Test
 	public void testResultMappingWithHashMap() throws Exception {
 		Collection rtList = queryService.find(
 				"findWithHashMapAndNonCamelCased", new Object[] {});
 
-		assertEquals(
+		Assert.assertEquals(
 				"Fail to find code list without no result mapping definition.",
 				2, rtList.size());
 
 		Iterator rtItr = rtList.iterator();
 		while (rtItr.hasNext()) {
 			Map result = (Map) rtItr.next();
-			assertTrue("Fail to assert in detail.", (result.get("code_id")
-					.equals("0000") || result.get("code_id").equals("0001")));
+			Assert.assertTrue("Fail to assert in detail.", (result.get(
+					"code_id").equals("0000") || result.get("code_id").equals(
+					"0001")));
 		}
 	}
 
 	/**
-	 * [Flow #-6] Positive Case : In the case search return value regarding 
-	 * defined specific query statement  is mapped by using <result-mapping> 
-	 * within mapping XML file, search return value is captured in class 
-	 * defined in <result> and transferred. 
+	 * [Flow #-6] Positive Case : In the case search return value regarding
+	 * defined specific query statement is mapped by using <result-mapping>
+	 * within mapping XML file, search return value is captured in class defined
+	 * in <result> and transferred.
 	 * 
 	 * @throws Exception
 	 *             throws exception which is from QueryService
 	 */
+	@Test
 	public void testResultMappingWithCompositeResultMapping() throws Exception {
 		Collection rtList = queryService.find("findWithCompositeResultMapping",
 				new Object[] { "CTGR" });
 
-		assertEquals(
-				"Fail to find code list using local result mapping definition.",
-				1, rtList.size());
+		Assert
+				.assertEquals(
+						"Fail to find code list using local result mapping definition.",
+						1, rtList.size());
 
 		Iterator rtItr = rtList.iterator();
 		while (rtItr.hasNext()) {
 			LocalResultMappingVO codeVO = (LocalResultMappingVO) rtItr.next();
 
-			assertTrue("Fail to assert in detail.", codeVO.getCodeDescription()
-					.equals("Electronics"));
+			Assert.assertTrue("Fail to assert in detail.", codeVO
+					.getCodeDescription().equals("Electronics"));
 			System.out.println(codeVO.getGroup().getGroupId());
 			System.out.println(codeVO.getGroup().getCodeNm());
-			assertTrue("Fail to assert in detail.", codeVO.getGroup()
+			Assert.assertTrue("Fail to assert in detail.", codeVO.getGroup()
 					.getGroupId().equals("CTGR"));
-			assertTrue("Fail to assert in detail.", codeVO.getGroup()
+			Assert.assertTrue("Fail to assert in detail.", codeVO.getGroup()
 					.getCodeNm().equals("Category"));
 		}
 	}

@@ -1,5 +1,5 @@
 /*
- * Copyright 2002-2008 the original author or authors.
+ * Copyright 2002-2012 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -19,11 +19,18 @@ import java.sql.Types;
 import java.util.Collection;
 import java.util.Iterator;
 
+import javax.inject.Inject;
+
+import junit.framework.Assert;
+
 import org.anyframe.query.QueryService;
-import org.anyframe.query.impl.Pagination;
 import org.anyframe.query.impl.jdbc.PagingJdbcTemplate;
 import org.anyframe.query.impl.jdbc.generator.OraclePagingSQLGenerator;
-import org.springframework.test.AbstractDependencyInjectionSpringContextTests;
+import org.junit.Before;
+import org.junit.Test;
+import org.junit.runner.RunWith;
+import org.springframework.test.context.ContextConfiguration;
+import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 import org.springframework.util.LinkedCaseInsensitiveMap;
 
 /**
@@ -64,29 +71,21 @@ import org.springframework.util.LinkedCaseInsensitiveMap;
  * 
  * @author SoYon Lim
  */
-public class PagingJdbcTemplateTest extends
-		AbstractDependencyInjectionSpringContextTests {
+@RunWith(SpringJUnit4ClassRunner.class)
+@ContextConfiguration(locations = { "classpath*:/spring/context-*.xml" })
+public class PagingJdbcTemplateTest {
 
-	private PagingJdbcTemplate jdbcTemplate = null;
+	@Inject
+	PagingJdbcTemplate jdbcTemplate;
 
-	private QueryService queryService = null;
-
-	protected String[] getConfigLocations() {
-		return new String[] { "classpath*:/spring/context-*.xml" };
-	}
-
-	public void setQueryService(QueryService queryService) {
-		this.queryService = queryService;
-	}
-
-	public void setJdbcTemplate(PagingJdbcTemplate jdbcTemplate) {
-		this.jdbcTemplate = jdbcTemplate;
-	}
+	@Inject
+	QueryService queryService;
 
 	/**
 	 * Initial data is entered and table TB_CUSTOMER is created for test.
 	 */
-	public void onSetUp() throws Exception {
+	@Before
+	public void initialize() throws Exception {
 		try {
 			queryService.updateBySQL("DROP TABLE TB_CUSTOMER", new String[] {},
 					new Object[] {});
@@ -119,6 +118,7 @@ public class PagingJdbcTemplateTest extends
 	 * @throws Exception
 	 *             throws exception which is from PagingJdbcTemplate
 	 */
+	@Test
 	public void testQueryForListWithPagination() throws Exception {
 		// 1. set page information
 		Pagination context = new Pagination();
@@ -132,19 +132,19 @@ public class PagingJdbcTemplateTest extends
 				new Object[] { "%12345%" }, new int[] { 12 }, -1, context);
 
 		// 3. assert size of result
-		assertEquals("Fail to find using PagingJdbcTemplate.", 2, rtCollection
-				.size());
+		Assert.assertEquals("Fail to find using PagingJdbcTemplate.", 2,
+				rtCollection.size());
 		// 4. assert total size of result
-		assertEquals("Fail to compare total count of results.", 6, context
-				.getRecordCount());
+		Assert.assertEquals("Fail to compare total count of results.", 6,
+				context.getRecordCount());
 
 		// 5. compare result in detail
 		Iterator rtIterator = rtCollection.iterator();
 		while (rtIterator.hasNext()) {
 			LinkedCaseInsensitiveMap map = (LinkedCaseInsensitiveMap) rtIterator
 					.next();
-			assertTrue("Fail to compare result.", ((String) map.get("name"))
-					.startsWith("Anyframe"));
+			Assert.assertTrue("Fail to compare result.", ((String) map
+					.get("name")).startsWith("Anyframe"));
 		}
 	}
 
@@ -161,6 +161,7 @@ public class PagingJdbcTemplateTest extends
 	 * @throws Exception
 	 *             throws exception which is from PagingJdbcTemplate
 	 */
+	@Test
 	public void testQueryForListWithPaginationGenerator() throws Exception {
 		// 1. set OraclePagingSQLGenerator
 		jdbcTemplate.setPaginationSQLGetter(new OraclePagingSQLGenerator());
@@ -176,19 +177,19 @@ public class PagingJdbcTemplateTest extends
 				"select NAME, ADDRESS from TB_CUSTOMER where SSNO like ?",
 				new Object[] { "%12345%" }, new int[] { 12 }, -1, context);
 		// 4. assert size of result
-		assertEquals("Fail to find using PagingJdbcTemplate.", 2, rtCollection
-				.size());
+		Assert.assertEquals("Fail to find using PagingJdbcTemplate.", 2,
+				rtCollection.size());
 		// 5. assert total size of result
-		assertEquals("Fail to compare total count of results.", 6, context
-				.getRecordCount());
+		Assert.assertEquals("Fail to compare total count of results.", 6,
+				context.getRecordCount());
 
 		// 6. compare result in detail
 		Iterator rtIterator = rtCollection.iterator();
 		while (rtIterator.hasNext()) {
 			LinkedCaseInsensitiveMap map = (LinkedCaseInsensitiveMap) rtIterator
 					.next();
-			assertTrue("Fail to compare result.", ((String) map.get("name"))
-					.startsWith("Anyframe"));
+			Assert.assertTrue("Fail to compare result.", ((String) map
+					.get("name")).startsWith("Anyframe"));
 		}
 	}
 
@@ -204,6 +205,7 @@ public class PagingJdbcTemplateTest extends
 	 * @throws Exception
 	 *             throws exception which is from PagingJdbcTemplate
 	 */
+	@Test
 	public void testQueryForListWithPaginationWithNoArgs() throws Exception {
 		// 1. set page information
 		Pagination context = new Pagination();
@@ -218,19 +220,19 @@ public class PagingJdbcTemplateTest extends
 						new Object[] {}, new int[] {}, -1, context);
 
 		// 3. assert size of result
-		assertEquals("Fail to find using PagingJdbcTemplate.", 2, rtCollection
-				.size());
+		Assert.assertEquals("Fail to find using PagingJdbcTemplate.", 2,
+				rtCollection.size());
 		// 4. assert total size of result
-		assertEquals("Fail to compare total count of results.", 6, context
-				.getRecordCount());
+		Assert.assertEquals("Fail to compare total count of results.", 6,
+				context.getRecordCount());
 
 		// 5. compare result in detail
 		Iterator rtIterator = rtCollection.iterator();
 		while (rtIterator.hasNext()) {
 			LinkedCaseInsensitiveMap map = (LinkedCaseInsensitiveMap) rtIterator
 					.next();
-			assertTrue("Fail to compare result.", ((String) map.get("name"))
-					.startsWith("Anyframe"));
+			Assert.assertTrue("Fail to compare result.", ((String) map
+					.get("name")).startsWith("Anyframe"));
 		}
 	}
 
@@ -244,6 +246,7 @@ public class PagingJdbcTemplateTest extends
 	 * @throws Exception
 	 *             throws exception which is from PagingJdbcTemplate
 	 */
+	@Test
 	public void testQueryForListWithPaginationWithNoArgsError()
 			throws Exception {
 		// 1. set page information
@@ -259,10 +262,10 @@ public class PagingJdbcTemplateTest extends
 							"select NAME, ADDRESS from TB_CUSTOMER where SSNO like '%12345%'",
 							(Object[]) null, new int[] { Types.VARCHAR }, -1,
 							context);
-			fail("Fail to throw exception.");
+			Assert.fail("Fail to throw exception.");
 		} catch (Exception e) {
 			e.printStackTrace();
-			assertTrue("Fail to compare exception type.",
+			Assert.assertTrue("Fail to compare exception type.",
 					e instanceof NullPointerException);
 		}
 	}
@@ -272,7 +275,7 @@ public class PagingJdbcTemplateTest extends
 	 * createBySQL().
 	 * 
 	 * @param ssno
-	 *            resident registration number 
+	 *            resident registration number
 	 * @param name
 	 *            name
 	 * @param address
@@ -286,6 +289,6 @@ public class PagingJdbcTemplateTest extends
 				"insert into TB_CUSTOMER values (?, ?, ?)", new String[] {
 						"VARCHAR", "VARCHAR", "VARCHAR" }, new Object[] { ssno,
 						name, address });
-		assertEquals("Fail to insert customer.", 1, result);
+		Assert.assertEquals("Fail to insert customer.", 1, result);
 	}
 }

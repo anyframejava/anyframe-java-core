@@ -1,5 +1,5 @@
 /*
- * Copyright 2002-2008 the original author or authors.
+ * Copyright 2002-2012 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -19,8 +19,16 @@ import java.util.Collection;
 import java.util.Iterator;
 import java.util.Map;
 
+import javax.inject.Inject;
+
+import junit.framework.Assert;
+
 import org.anyframe.query.QueryService;
-import org.springframework.test.AbstractDependencyInjectionSpringContextTests;
+import org.junit.Before;
+import org.junit.Test;
+import org.junit.runner.RunWith;
+import org.springframework.test.context.ContextConfiguration;
+import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 
 /**
  * TestCase Name : QueryServiceMappingStyleTest <br>
@@ -55,22 +63,17 @@ import org.springframework.test.AbstractDependencyInjectionSpringContextTests;
  * 
  * @author SoYon Lim
  */
-public class QueryServiceMappingStyleTest extends
-		AbstractDependencyInjectionSpringContextTests {
-	private QueryService queryService = null;
+@RunWith(SpringJUnit4ClassRunner.class)
+@ContextConfiguration(locations = { "classpath*:/spring/context-*.xml" })
+public class QueryServiceMappingStyleTest {
 
-	public void setQueryService(QueryService queryService) {
-		this.queryService = queryService;
-	}
-
-	protected String[] getConfigLocations() {
-		setAutowireMode(AbstractDependencyInjectionSpringContextTests.AUTOWIRE_BY_NAME);
-		return new String[] { "classpath*:/spring/context-*.xml" };
-	}
+	@Inject
+	QueryService queryService;
 
 	/**
 	 * Table TB_CUSTOMER is created for test.
 	 */
+	@Before
 	public void onSetUp() throws Exception {
 		try {
 			queryService.updateBySQL("DROP TABLE TB_CUSTOMER", new String[] {},
@@ -119,6 +122,7 @@ public class QueryServiceMappingStyleTest extends
 	 * @throws Exception
 	 *             throws exception which is from QueryService
 	 */
+	@Test
 	public void testFindCustomerWithCamelCased() throws Exception {
 		Collection rtCollection = queryService.find(
 				"findCustomerWithCamelCased", new Object[] { "%%" });
@@ -135,6 +139,7 @@ public class QueryServiceMappingStyleTest extends
 	 * @throws Exception
 	 *             throws exception which is from QueryService
 	 */
+	@Test
 	public void testFindCustomerWithUpperCased() throws Exception {
 		Collection rtCollection = queryService.find(
 				"findCustomerWithUpperCased", new Object[] { "%%" });
@@ -151,6 +156,7 @@ public class QueryServiceMappingStyleTest extends
 	 * @throws Exception
 	 *             throws exception which is from QueryService
 	 */
+	@Test
 	public void testFindCustomerWithLowerCased() throws Exception {
 		Collection rtCollection = queryService.find(
 				"findCustomerWithLowerCased", new Object[] { "%%" });
@@ -167,6 +173,7 @@ public class QueryServiceMappingStyleTest extends
 	 * @throws Exception
 	 *             throws exception which is from QueryService
 	 */
+	@Test
 	public void testFindCustomerWithNone() throws Exception {
 		Collection rtCollection = queryService.find("findCustomerWithNone",
 				new Object[] { "%%" });
@@ -183,6 +190,7 @@ public class QueryServiceMappingStyleTest extends
 	 * @throws Exception
 	 *             throws exception which is from QueryService
 	 */
+	@Test
 	public void testFindCustomerWithIsCamelCaseTrue() throws Exception {
 		Collection rtCollection = queryService.find(
 				"findCustomerWithIsCamelCaseTrue", new Object[] { "%%" });
@@ -199,6 +207,7 @@ public class QueryServiceMappingStyleTest extends
 	 * @throws Exception
 	 *             throws exception which is from QueryService
 	 */
+	@Test
 	public void testFindCustomerWithIsCamelCaseFalse() throws Exception {
 		Collection rtCollection = queryService.find(
 				"findCustomerWithIsCamelCaseFalse", new Object[] { "%%" });
@@ -207,7 +216,7 @@ public class QueryServiceMappingStyleTest extends
 	}
 
 	/**
-	 * Checked is searched result value. 
+	 * Checked is searched result value.
 	 */
 	private void assertFindCustomer(Collection rtCollection, String ssnoKey,
 			String nameKey, String addressKey) throws Exception {
@@ -215,12 +224,12 @@ public class QueryServiceMappingStyleTest extends
 		int i = 0;
 		while (rtItr.hasNext()) {
 			Map result = (Map) rtItr.next();
-			assertEquals("Fail to assert - social security number.",
+			Assert.assertEquals("Fail to assert - social security number.",
 					"123456789010" + i, result.get(ssnoKey));
-			assertEquals("Fail to assert - social security number.",
+			Assert.assertEquals("Fail to assert - social security number.",
 					"test" + i, result.get(nameKey));
-			assertEquals("Fail to assert - social security number.", "seoul",
-					result.get(addressKey));
+			Assert.assertEquals("Fail to assert - social security number.",
+					"seoul", result.get(addressKey));
 			i++;
 		}
 	}

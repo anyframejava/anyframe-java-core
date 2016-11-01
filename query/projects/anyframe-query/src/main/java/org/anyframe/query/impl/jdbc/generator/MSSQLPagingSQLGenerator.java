@@ -22,6 +22,7 @@ import java.sql.Types;
  * 
  * @author SoYon Lim
  * @author JongHoon Kim
+ * @since 1.1.3
  */
 public class MSSQLPagingSQLGenerator extends AbstractPagingSQLGenerator {
 
@@ -56,7 +57,7 @@ public class MSSQLPagingSQLGenerator extends AbstractPagingSQLGenerator {
 		}
 
 		args[originalArgs.length + 0] = new Long((pageIndex - 1)
-				* (pageSize + 1));
+				* pageSize + 1);
 		args[originalArgs.length + 1] = new Long(pageIndex * pageSize);
 
 		return args;

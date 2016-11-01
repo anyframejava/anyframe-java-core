@@ -1,5 +1,5 @@
 /*
- * Copyright 2002-2008 the original author or authors.
+ * Copyright 2002-2012 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -15,10 +15,18 @@
  */
 package org.anyframe.query.impl;
 
+import javax.inject.Inject;
+
+import junit.framework.Assert;
+
 import org.anyframe.query.QueryService;
 import org.anyframe.query.QueryServiceException;
 import org.anyframe.query.impl.util.InternalDataAccessException;
-import org.springframework.test.AbstractDependencyInjectionSpringContextTests;
+import org.junit.Before;
+import org.junit.Test;
+import org.junit.runner.RunWith;
+import org.springframework.test.context.ContextConfiguration;
+import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 
 /**
  * TestCase Name : QueryServiceDDLTest <br>
@@ -42,22 +50,17 @@ import org.springframework.test.AbstractDependencyInjectionSpringContextTests;
  * 
  * @author SoYon Lim
  */
-public class QueryServiceDDLTest extends
-        AbstractDependencyInjectionSpringContextTests {
-    private QueryService queryService = null;
-
-    public void setQueryService(QueryService queryService) {
-        this.queryService = queryService;
-    }
-
-    protected String[] getConfigLocations() {
-        setAutowireMode(AbstractDependencyInjectionSpringContextTests.AUTOWIRE_BY_NAME);
-        return new String[] {"classpath*:/spring/context-*.xml" };
-    }
-
+@RunWith(SpringJUnit4ClassRunner.class)
+@ContextConfiguration(locations = { "classpath*:/spring/context-*.xml" })
+public class QueryServiceDDLTest {
+	
+	@Inject
+	QueryService queryService;
+	
 	/**
 	 * Index IDX_CUSTOMER is created for test.
 	 */
+	@Before
     public void onSetUp() throws Exception {
         try {
             queryService.remove("dropTable", new Object[] {});
@@ -83,6 +86,7 @@ public class QueryServiceDDLTest extends
      *         throws exception which is from
      *         QueryService
      */
+	@Test
     public void testCreateTable() throws Exception {
         // 1. execute query
         queryService.create("createTable", new Object[] {});
@@ -90,14 +94,14 @@ public class QueryServiceDDLTest extends
         // 2. execute same query
         try {
             queryService.create("createTable", new Object[] {});
-            fail("Fail to create table.");
+            Assert.fail("Fail to create table.");
         } catch (QueryServiceException e) {
             // 3. assert
-            assertTrue("Fail to find cause.",
+        	Assert.assertTrue("Fail to find cause.",
                 e.getCause() instanceof InternalDataAccessException);
             String errorCode =
                 ((InternalDataAccessException) e.getCause()).getSqlErrorCode();
-            assertEquals("Fail to find sql error code.", "955", errorCode);
+            Assert.assertEquals("Fail to find sql error code.", "955", errorCode);
         }
     }
 
@@ -112,6 +116,7 @@ public class QueryServiceDDLTest extends
      *         throws exception which is from
      *         QueryService
      */
+	@Test
     public void testDropTable() throws Exception {
         // 1. create table
         testCreateTable();
@@ -124,11 +129,11 @@ public class QueryServiceDDLTest extends
             queryService.remove("dropTable", new Object[] {});
         } catch (QueryServiceException e) {
             // 4. assert
-            assertTrue("Fail to find cause.",
+        	Assert.assertTrue("Fail to find cause.",
                 e.getCause() instanceof InternalDataAccessException);
             String errorCode =
                 ((InternalDataAccessException) e.getCause()).getSqlErrorCode();
-            assertEquals("Fail to find sql error code.", "942", errorCode);
+            Assert.assertEquals("Fail to find sql error code.", "942", errorCode);
         }
     }
 
@@ -140,15 +145,16 @@ public class QueryServiceDDLTest extends
      *         throws exception which is from
      *         QueryService
      */
+	@Test
     public void testCreateIndex() throws Exception {
         // 1. execute query
         int result = queryService.create("createIndex", new Object[] {});
         // 정상적으로 실행된 경우 0을 리턴함.
-        assertEquals("Fail to create index.", 0, result);
+        Assert.assertEquals("Fail to create index.", 0, result);
 
         // 2. execute query
         queryService.remove("dropIndex", new Object[] {});
         // 정상적으로 실행된 경우 0을 리턴함.
-        assertEquals("Fail to drop index.", 0, result);
+        Assert.assertEquals("Fail to drop index.", 0, result);
     }
 }

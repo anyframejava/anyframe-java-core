@@ -1,5 +1,5 @@
 /*
- * Copyright 2002-2008 the original author or authors.
+ * Copyright 2002-2012 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -18,8 +18,16 @@ package org.anyframe.query.impl;
 import java.util.Collection;
 import java.util.Map;
 
+import javax.inject.Inject;
+
+import junit.framework.Assert;
+
 import org.anyframe.query.QueryService;
-import org.springframework.test.AbstractDependencyInjectionSpringContextTests;
+import org.junit.Before;
+import org.junit.Test;
+import org.junit.runner.RunWith;
+import org.springframework.test.context.ContextConfiguration;
+import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 
 /**
  * TestCase Name : QueryServiceForSpecialCharTest <br>
@@ -34,23 +42,28 @@ import org.springframework.test.AbstractDependencyInjectionSpringContextTests;
  * 
  * @author SoYon Lim
  */
-public class QueryServiceForSpecialCharTest extends
-        AbstractDependencyInjectionSpringContextTests {
+@RunWith(SpringJUnit4ClassRunner.class)
+@ContextConfiguration(locations = { "classpath*:/spring/context-*.xml" })
+public class QueryServiceForSpecialCharTest {
 
-    private QueryService queryService = null;
+    @Inject
+    QueryService queryService;
+    
+//	private QueryService queryService = null;
 
-    public void setQueryService(QueryService queryService) {
-        this.queryService = queryService;
-    }
-
-    protected String[] getConfigLocations() {
-        setAutowireMode(AbstractDependencyInjectionSpringContextTests.AUTOWIRE_BY_NAME);
-        return new String[] {"classpath*:/spring/context-*.xml" };
-    }
+//    public void setQueryService(QueryService queryService) {
+//        this.queryService = queryService;
+//    }
+//
+//    protected String[] getConfigLocations() {
+//        setAutowireMode(AbstractDependencyInjectionSpringContextTests.AUTOWIRE_BY_NAME);
+//        return new String[] {"classpath*:/spring/context-*.xml" };
+//    }
 
 	/**
 	 * Table TB_USER is created for test and initial data is entered.
 	 */
+    @Before
     public void onSetUp() throws Exception {
         try {
             queryService.updateBySQL("DROP TABLE TB_USER", new String[] {},
@@ -80,6 +93,7 @@ public class QueryServiceForSpecialCharTest extends
      *         throws exception which is from
      *         QueryService
      */
+    @Test
     public void testUserUsingConditionWithSpecialChar() throws Exception {
         // 1. set query statement
         String sql =
@@ -91,7 +105,7 @@ public class QueryServiceForSpecialCharTest extends
             queryService.findBySQL(sql, new String[] {}, new Object[] {});
 
         // 3. assert
-        assertTrue("Fail to execute query with special character.",
+        Assert.assertTrue("Fail to execute query with special character.",
             rtCollection.size() == 0);
 
         // 4. set another query statement
@@ -102,9 +116,9 @@ public class QueryServiceForSpecialCharTest extends
             queryService.findBySQL(sql, new String[] {}, new Object[] {});
 
         // 6. assert
-        assertTrue("Fail to execute query with special character.",
+        Assert.assertTrue("Fail to execute query with special character.",
             rtCollection.size() == 1);
         Map result = (Map) rtCollection.iterator().next();
-        assertEquals("Fail to compare result.", "test", result.get("LOGON_ID"));
+        Assert.assertEquals("Fail to compare result.", "test", result.get("LOGON_ID"));
     }
 }

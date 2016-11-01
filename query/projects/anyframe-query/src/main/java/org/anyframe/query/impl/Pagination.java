@@ -1,5 +1,5 @@
 /*
- * Copyright 2002-2008 the original author or authors.
+ * Copyright 2002-2012 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -18,8 +18,9 @@ package org.anyframe.query.impl;
 import org.anyframe.query.QueryService;
 
 /**
- * This class is to save Pagination information necessary for paging handling on entered
- * query statement.
+ * This class is to save Pagination information necessary for paging handling on
+ * entered query statement.
+ * 
  * @author SoYon Lim
  * @author JongHoon Kim
  */
@@ -30,7 +31,7 @@ public class Pagination {
 	private int pageSize = 20;
 
 	private int pageIndex = 1;
-	
+
 	private boolean isPaging = true;
 
 	public boolean isPaging() {
@@ -96,20 +97,20 @@ public class Pagination {
 	// 2009.05.12
 	public void setPageIndex(int pageIndex) {
 		if (isPaging && pageIndex < 1)
-			QueryService.LOGGER
-					.debug("Page number must have over 1. (current page number = "
-							+ pageIndex + ")");
+			QueryService.LOGGER.debug(
+					"Page number must have over 1. (current page number = {})",
+					pageIndex);
 		this.pageIndex = pageIndex;
 	}
 
 	// 2009.05.12
 	public void setPageIndexToLast() {
-		if (isPaging && this.pageIndex > getPageCount())
+		if (isPaging && this.pageIndex > getPageCount()) {
 			QueryService.LOGGER
-					.warn("Current page number is bigger than last page number of result. (current page number = "
-							+ pageIndex
-							+ ", last page number = "
-							+ getPageCount());
+					.warn(
+							"Current page number is bigger than last page number of result. (current page number = {}, last page number = {}",
+							new Object[] { pageIndex, getPageCount() });
+		}
 	}
 
 	/**

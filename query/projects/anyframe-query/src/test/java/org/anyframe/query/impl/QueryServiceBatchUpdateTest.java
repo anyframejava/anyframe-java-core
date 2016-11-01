@@ -1,5 +1,5 @@
 /*
- * Copyright 2002-2008 the original author or authors.
+ * Copyright 2002-2012 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -23,11 +23,18 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
 
+import javax.inject.Inject;
 import javax.sql.DataSource;
+
+import junit.framework.Assert;
 
 import org.anyframe.query.QueryService;
 import org.anyframe.query.vo.BatchTestVO;
-import org.springframework.test.AbstractDependencyInjectionSpringContextTests;
+import org.junit.Before;
+import org.junit.Test;
+import org.junit.runner.RunWith;
+import org.springframework.test.context.ContextConfiguration;
+import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 
 /**
  * TestCase Name : QueryServiceBatchUpdateTest <br>
@@ -42,17 +49,20 @@ import org.springframework.test.AbstractDependencyInjectionSpringContextTests;
  * <li>#-2 Positive Case : By calling for batchMove() method of QueryService,
  * data for deletion is put into BatchTestVO and removed as Batch. Then,
  * verified is whether deletion is successful.</li>
- * <li>#-3 Positive Case : By calling for batchUpdate() method of QueryService,
- * data for modification is put into BatchTestVO and modified as Batch. Then,
- * verified is whether modification is successful.</li>
- * <li>#-4 Positive Case : By calling for batchUpdate() method of QueryService,
+ * <li>#-3 Positive Case : By calling for batchUpdate(queryId,targets) method of
+ * QueryService, data for modification is put into BatchTestVO and modified as
+ * Batch. Then, verified is whether modification is successful.</li>
+ * <li>#-4 Positive Case : By calling for batchUpdate(targets) method of
+ * QueryService, data for modification is put into BatchTestVO and modified as
+ * Batch. Then, verified is whether modification is successful.</li>
+ * <li>#-5 Positive Case : By calling for batchUpdate() method of QueryService,
  * data for modification is put into HashMap and modified as Batch. Then,
  * verified is whether modification is successful.</li>
- * <li>#-5 Positive Case : By calling for batchExecute () method of
+ * <li>#-6 Positive Case : By calling for batchExecute () method of
  * QueryService, data for modification is put into HashMap and modified as
  * Batch. Then, verified is whether modification is successful. Query calls for
  * procedure implemented via batchExecute()method.</li>
- * <li>#-6 Positive Case : By calling for ()batchExecuteBySQL method of
+ * <li>#-7 Positive Case : By calling for ()batchExecuteBySQL method of
  * QueryService, data for modification is put into Object[] and modified as
  * Batch. Then, verified is whether modification is successful. Query calls for
  * procedure implemented via batchExecuteBySQL()method.</li>
@@ -60,29 +70,23 @@ import org.springframework.test.AbstractDependencyInjectionSpringContextTests;
  * 
  * @author SoYon Lim
  */
-public class QueryServiceBatchUpdateTest extends
-		AbstractDependencyInjectionSpringContextTests {
+@RunWith(SpringJUnit4ClassRunner.class)
+@ContextConfiguration(locations = { "classpath*:/spring/context-*.xml" })
+public class QueryServiceBatchUpdateTest {
 
-	private QueryService queryService = null;
+	@Inject
+	QueryService queryService;
+
+	@Inject
+	DataSource dataSource;
 
 	private int initCount = 0;
-
-	public void setQueryService(QueryService queryService) {
-		this.queryService = queryService;
-	}
-
-	protected String[] getConfigLocations() {
-		setAutowireMode(AbstractDependencyInjectionSpringContextTests.AUTOWIRE_BY_NAME);
-		return new String[] { "classpath*:/spring/context-*.xml" };
-	}
 
 	/**
 	 * Table TB_BATCH_TEST is created for test.
 	 */
+	@Before
 	public void onSetUp() throws Exception {
-		super.onSetUp();
-		DataSource dataSource = (DataSource) applicationContext
-				.getBean("dataSource");
 		try {
 			Connection conn = dataSource.getConnection();
 			try {
@@ -119,12 +123,8 @@ public class QueryServiceBatchUpdateTest extends
 				conn.close();
 			}
 		} catch (SQLException e) {
-			fail("Unable to initialize database for test. " + e);
+			Assert.fail("Unable to initialize database for test. " + e);
 		}
-	}
-
-	public void onTearDown() {
-		setDirty();
 	}
 
 	/**
@@ -135,12 +135,13 @@ public class QueryServiceBatchUpdateTest extends
 	 * @throws Exception
 	 *             throws exception which is from QueryService
 	 */
+	@Test
 	public void testBatchRemove() throws Exception {
 		// 1. insert data
 		batchInsert();
 
 		// 2. set data for delete
-		ArrayList args = new ArrayList();
+		ArrayList<Object[]> args = new ArrayList<Object[]>();
 		Object[] arg = new Object[1];
 		arg[0] = "I1";
 
@@ -160,7 +161,8 @@ public class QueryServiceBatchUpdateTest extends
 		// 4. assert
 		ArrayList rtList = (ArrayList) queryService.find("findBatchTest",
 				new Object[] {});
-		assertTrue("Fail to batch remove.", rtList.size() == 0 + initCount);
+		Assert.assertTrue("Fail to batch remove.",
+				rtList.size() == 0 + initCount);
 	}
 
 	/**
@@ -171,12 +173,13 @@ public class QueryServiceBatchUpdateTest extends
 	 * @throws Exception
 	 *             throws exception which is from QueryService
 	 */
+	@Test
 	public void testBatchRemoveByObject() throws Exception {
 		// 1. insert data by SQL
 		batchInsertBySQL();
 
 		// 2. set data for delete
-		ArrayList args = new ArrayList();
+		ArrayList<BatchTestVO> args = new ArrayList<BatchTestVO>();
 		BatchTestVO batchTestVO = new BatchTestVO();
 		batchTestVO.setCol1("I1InsertBySQL");
 		args.add(batchTestVO);
@@ -189,28 +192,76 @@ public class QueryServiceBatchUpdateTest extends
 
 		// 3. execute query
 		int[] rtVal = queryService.batchRemove(args);
-		assertTrue("Fail to batch remove by object.", rtVal.length == 3);
+		Assert.assertTrue("Fail to batch remove by object.", rtVal.length == 3);
 
 		// 4. assert
 		ArrayList rtList = (ArrayList) queryService.find("findBatchTest",
 				new Object[] {});
-		assertTrue("Fail to find.", rtList.size() == initCount);
+		Assert.assertTrue("Fail to find.", rtList.size() == initCount);
 	}
 
 	/**
-	 * [Flow #-3] Positive Case : By calling for batchUpdate()method of
+	 * [Flow #-3] Positive Case : By calling for batchUpdate(queryId,targets)
+	 * method of QueryService, various sets of data is put into BatchTestVO and
+	 * deleted as Batch. Then checked is whether deletion is successful.
+	 * 
+	 * @throws Exception
+	 *             throws exception which is from QueryService
+	 */
+	@Test
+	public void testBatchUpdateUsingQueryIdByObject() throws Exception {
+		// 1. insert data by object
+		batchInsertByObject();
+
+		// 2. set data for update
+		ArrayList<BatchTestVO> args = new ArrayList<BatchTestVO>();
+		BatchTestVO batchTestVO = new BatchTestVO();
+		batchTestVO.setCol1("I1BatchCreateByObject");
+		batchTestVO.setCol2("Modified");
+		batchTestVO.setCol3(101);
+		args.add(batchTestVO);
+		batchTestVO = new BatchTestVO();
+		batchTestVO.setCol1("I2BatchCreateByObject");
+		batchTestVO.setCol2("Modified");
+		batchTestVO.setCol3(102);
+		args.add(batchTestVO);
+		batchTestVO = new BatchTestVO();
+		batchTestVO.setCol1("I3BatchCreateByObject");
+		batchTestVO.setCol2("Modified");
+		batchTestVO.setCol3(103);
+		args.add(batchTestVO);
+
+		// 3. execute query
+		int[] rtVal = queryService.batchUpdate("batchUpdateWithObject" , args);
+		Assert.assertTrue("Fail to batch update by object.", rtVal.length == 3);
+
+		// 4. assert
+		ArrayList rtList = (ArrayList) queryService.find("findBatchTest",
+				new Object[] {});
+
+		Assert.assertTrue("Fail to find.", rtList.size() == initCount + 3);
+		for (int i = 0; i < rtList.size(); i++) {
+			Map result = (Map) rtList.get(i);
+			Assert.assertEquals("Fail to batch update a specified column.",
+					"Modified", result.get("col2"));
+		}
+	}
+	
+	/**
+	 * [Flow #-4] Positive Case : By calling for batchUpdate(targets)method of
 	 * QueryService, various sets of data is put into BatchTestVO and deleted as
 	 * Batch. Then checked is whether deletion is successful.
 	 * 
 	 * @throws Exception
 	 *             throws exception which is from QueryService
 	 */
+	@Test
 	public void testBatchUpdateByObject() throws Exception {
 		// 1. insert data by object
 		batchInsertByObject();
 
 		// 2. set data for update
-		ArrayList args = new ArrayList();
+		ArrayList<BatchTestVO> args = new ArrayList<BatchTestVO>();
 		BatchTestVO batchTestVO = new BatchTestVO();
 		batchTestVO.setCol1("I1BatchCreateByObject");
 		batchTestVO.setCol2("Modified");
@@ -229,45 +280,47 @@ public class QueryServiceBatchUpdateTest extends
 
 		// 3. execute query
 		int[] rtVal = queryService.batchUpdate(args);
-		assertTrue("Fail to batch update by object.", rtVal.length == 3);
+		Assert.assertTrue("Fail to batch update by object.", rtVal.length == 3);
 
 		// 4. assert
 		ArrayList rtList = (ArrayList) queryService.find("findBatchTest",
 				new Object[] {});
 
-		assertTrue("Fail to find.", rtList.size() == initCount + 3);
+		Assert.assertTrue("Fail to find.", rtList.size() == initCount + 3);
 		for (int i = 0; i < rtList.size(); i++) {
 			Map result = (Map) rtList.get(i);
-			assertEquals("Fail to batch update a specified column.",
+			Assert.assertEquals("Fail to batch update a specified column.",
 					"Modified", result.get("col2"));
 		}
 	}
 
+	
 	/**
-	 * [Flow #-4] Positive Case : By calling for batchUPdate()method of
+	 * [Flow #-5] Positive Case : By calling for batchUPdate()method of
 	 * QueryService, various sets of data is put into HashMap and modified as
 	 * Batch. Then checked is whether modification is successful.
 	 * 
 	 * @throws Exception
 	 *             throws exception which is from QueryService
 	 */
+	@Test
 	public void testBatchUpdateByMap() throws Exception {
 		// 1. set data for insert
-		ArrayList args = new ArrayList();
+		ArrayList<Map<String, Object>> args = new ArrayList<Map<String, Object>>();
 
-		Map batchTestMap = new HashMap();
+		Map<String, Object> batchTestMap = new HashMap<String, Object>();
 		batchTestMap.put("col1", "I1BatchCreateByMap");
 		batchTestMap.put("col2", "Modified");
 		batchTestMap.put("col3", new Integer(101));
 		args.add(batchTestMap);
 
-		batchTestMap = new HashMap();
+		batchTestMap = new HashMap<String, Object>();
 		batchTestMap.put("col1", "I2BatchCreateByMap");
 		batchTestMap.put("col2", "Modified");
 		batchTestMap.put("col3", new Integer(102));
 		args.add(batchTestMap);
 
-		batchTestMap = new HashMap();
+		batchTestMap = new HashMap<String, Object>();
 		batchTestMap.put("col1", "I3BatchCreateByMap");
 		batchTestMap.put("col2", "Modified");
 		batchTestMap.put("col3", new Integer(103));
@@ -275,22 +328,22 @@ public class QueryServiceBatchUpdateTest extends
 
 		// 2. execute query
 		int[] rtVal = queryService.batchUpdate("batchInsertWithMap", args);
-		assertTrue("Fail to batch update by object.", rtVal.length == 3);
+		Assert.assertTrue("Fail to batch update by object.", rtVal.length == 3);
 
 		// 3. assert
 		ArrayList rtList = (ArrayList) queryService.find("findBatchTest",
 				new Object[] {});
 
-		assertTrue("Fail to find.", rtList.size() == initCount + 3);
+		Assert.assertTrue("Fail to find.", rtList.size() == initCount + 3);
 		for (int i = 0; i < rtList.size(); i++) {
 			Map result = (Map) rtList.get(i);
-			assertEquals("Fail to batch update a specified column.",
+			Assert.assertEquals("Fail to batch update a specified column.",
 					"Modified", result.get("col2"));
 		}
 	}
 
 	/**
-	 * [Flow #-5] Positive Case : By calling for batchExecute()method of
+	 * [Flow #-6] Positive Case : By calling for batchExecute()method of
 	 * QueryService, various sets of data is put into Object[] and modified as
 	 * Batch. Then checked is whether modification is successful. Query
 	 * implemented calls for procedures via batchExecute().
@@ -298,8 +351,9 @@ public class QueryServiceBatchUpdateTest extends
 	 * @throws Exception
 	 *             throws exception which is from QueryService
 	 */
+	@Test
 	public void testBatchInsertWithProcedure() throws Exception {
-		ArrayList args = new ArrayList();
+		ArrayList<Object[]> args = new ArrayList<Object[]>();
 		Object[] arg = new Object[3];
 
 		arg[0] = "test1";
@@ -323,11 +377,11 @@ public class QueryServiceBatchUpdateTest extends
 
 		ArrayList rtList = (ArrayList) queryService.find("findBatchTest",
 				new Object[] {});
-		assertTrue("Fail to batch insert.", rtList.size() == 3);
+		Assert.assertTrue("Fail to batch insert.", rtList.size() == 3);
 	}
 
 	/**
-	 * [Flow #-6] Positive Case : By calling for batchExecuteBySQL() method of
+	 * [Flow #-7] Positive Case : By calling for batchExecuteBySQL() method of
 	 * QueryService, data for modification is put into Object[] and modified for
 	 * Batch. Then checked is whether modification is successful. Query
 	 * implemented calls for procedures via batchExecuteBySQL().
@@ -335,6 +389,7 @@ public class QueryServiceBatchUpdateTest extends
 	 * @throws Exception
 	 *             throws exception which is from QueryService
 	 */
+	@Test
 	public void testBatchInsertWithProcedureBySQL() throws Exception {
 		String sql = "DECLARE  " + "col1      VARCHAR2(50):= ?;  "
 				+ "col2      VARCHAR2(50):= ?;  " + "col3      NUMBER:= ?; "
@@ -345,7 +400,7 @@ public class QueryServiceBatchUpdateTest extends
 		types[1] = "VARCHAR";
 		types[2] = "NUMERIC";
 
-		ArrayList args = new ArrayList();
+		ArrayList<Object[]> args = new ArrayList<Object[]>();
 		Object[] arg = new Object[3];
 
 		arg[0] = "test1";
@@ -369,7 +424,7 @@ public class QueryServiceBatchUpdateTest extends
 
 		ArrayList rtList = (ArrayList) queryService.find("findBatchTest",
 				new Object[] {});
-		assertTrue("Fail to batch insert.", rtList.size() == 3);
+		Assert.assertTrue("Fail to batch insert.", rtList.size() == 3);
 	}
 
 	/**
@@ -383,7 +438,7 @@ public class QueryServiceBatchUpdateTest extends
 	 */
 	private void batchInsert() throws Exception {
 		// 1. set data for insert
-		ArrayList args = new ArrayList();
+		ArrayList<Object[]> args = new ArrayList<Object[]>();
 		Object[] arg = new Object[3];
 		arg[0] = "I1";
 		arg[1] = "I1";
@@ -406,7 +461,8 @@ public class QueryServiceBatchUpdateTest extends
 		// 3. assert
 		ArrayList rtList = (ArrayList) queryService.find("findBatchTest",
 				new Object[] {});
-		assertTrue("Fail to batch insert.", rtList.size() == 3 + initCount);
+		Assert.assertTrue("Fail to batch insert.",
+				rtList.size() == 3 + initCount);
 	}
 
 	/**
@@ -427,7 +483,7 @@ public class QueryServiceBatchUpdateTest extends
 		types[0] = "VARCHAR";
 		types[1] = "VARCHAR";
 		types[2] = "NUMERIC";
-		ArrayList args = new ArrayList();
+		ArrayList<Object[]> args = new ArrayList<Object[]>();
 		Object[] arg = new Object[3];
 		arg[0] = "I1InsertBySQL";
 		arg[1] = "I1";
@@ -450,7 +506,7 @@ public class QueryServiceBatchUpdateTest extends
 		// 4. assert
 		ArrayList rtList = (ArrayList) queryService.find("findBatchTest",
 				new Object[] {});
-		assertTrue("Fail to batch insert by SQL.",
+		Assert.assertTrue("Fail to batch insert by SQL.",
 				rtList.size() == 3 + initCount);
 	}
 
@@ -465,7 +521,7 @@ public class QueryServiceBatchUpdateTest extends
 	 */
 	private void batchInsertByObject() throws Exception {
 		// 1. set data for insert
-		ArrayList args = new ArrayList();
+		ArrayList<BatchTestVO> args = new ArrayList<BatchTestVO>();
 		BatchTestVO batchTestVO = new BatchTestVO();
 		batchTestVO.setCol1("I1BatchCreateByObject");
 		batchTestVO.setCol2("I1BatchCreateByObject");
@@ -484,11 +540,11 @@ public class QueryServiceBatchUpdateTest extends
 
 		// 2. execute query
 		int[] rtVal = queryService.batchCreate(args);
-		assertTrue("Fail to batch insert by Object.", rtVal.length == 3);
+		Assert.assertTrue("Fail to batch insert by Object.", rtVal.length == 3);
 
 		// 3. assert
 		ArrayList rtList = (ArrayList) queryService.find("findBatchTest",
 				new Object[] {});
-		assertTrue("Fail to find.", rtList.size() == initCount + 3);
+		Assert.assertTrue("Fail to find.", rtList.size() == initCount + 3);
 	}
 }

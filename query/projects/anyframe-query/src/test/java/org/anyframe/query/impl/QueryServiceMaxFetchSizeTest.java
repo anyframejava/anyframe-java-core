@@ -1,5 +1,5 @@
 /*
- * Copyright 2002-2008 the original author or authors.
+ * Copyright 2002-2012 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -19,10 +19,18 @@ import java.util.Collection;
 import java.util.Iterator;
 import java.util.Map;
 
+import javax.inject.Inject;
+
+import junit.framework.Assert;
+
 import org.anyframe.query.QueryService;
 import org.anyframe.query.QueryServiceException;
+import org.junit.Before;
+import org.junit.Test;
+import org.junit.runner.RunWith;
 import org.springframework.dao.DataRetrievalFailureException;
-import org.springframework.test.AbstractDependencyInjectionSpringContextTests;
+import org.springframework.test.context.ContextConfiguration;
+import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 
 /**
  * TestCase Name : QueryServiceMaxFetchSizeTest <br>
@@ -49,22 +57,17 @@ import org.springframework.test.AbstractDependencyInjectionSpringContextTests;
  * DataRetrievalFailureException takes place.</li>
  * </ul>
  */
-public class QueryServiceMaxFetchSizeTest extends
-		AbstractDependencyInjectionSpringContextTests {
+@RunWith(SpringJUnit4ClassRunner.class)
+@ContextConfiguration(locations = { "classpath*:/spring/maxfetchsize/context-*.xml" })
+public class QueryServiceMaxFetchSizeTest {
 
-	private QueryService queryService = null;
-
-	public void setQueryService(QueryService queryService) {
-		this.queryService = queryService;
-	}
-
-	protected String[] getConfigLocations() {
-		return new String[] { "classpath*:/spring/maxfetchsize/context-*.xml" };
-	}
-
+	@Inject
+	QueryService queryService;
+	
 	/**
 	 * Table TB_CUSTOMER is created for test.
 	 */
+	@Before
 	public void onSetUp() throws Exception {
 		System.out.println("Attempting to drop old table");
 		try {
@@ -88,6 +91,7 @@ public class QueryServiceMaxFetchSizeTest extends
 	 * @throws Exception
 	 *             throws exception which is from QueryService
 	 */
+	@Test
 	public void testFindBySQL() throws Exception {
 		// 1. insert test data
 		insertCustomerBySQL("1234567890123", "Anyframe1", "Seoul");
@@ -100,13 +104,13 @@ public class QueryServiceMaxFetchSizeTest extends
 				new String[] { "VARCHAR" }, new Object[] { "%12345678%" });
 
 		// 3. assert
-		assertEquals("Fail to find Customer.", 3, rtCollection.size());
+		Assert.assertEquals("Fail to find Customer.", 3, rtCollection.size());
 
 		// 4. assert in detail
 		Iterator rtIterator = rtCollection.iterator();
 		while (rtIterator.hasNext()) {
 			Map map = (Map) rtIterator.next();
-			assertTrue("Fail to compare result.", ((String) map.get("name"))
+			Assert.assertTrue("Fail to compare result.", ((String) map.get("name"))
 					.startsWith("Anyframe"));
 		}
 
@@ -118,10 +122,10 @@ public class QueryServiceMaxFetchSizeTest extends
 			rtCollection = queryService.findBySQL(
 					"select NAME, ADDRESS from TB_CUSTOMER where SSNO like ?",
 					new String[] { "VARCHAR" }, new Object[] { "%12345678%" });
-			fail("fail to check maxFetchSize");
+			Assert.fail("fail to check maxFetchSize");
 		} catch (QueryServiceException e) {
 			// 7. assert
-			assertTrue("fail to compare exception",
+			Assert.assertTrue("fail to compare exception",
 					e.getCause() instanceof DataRetrievalFailureException);
 		}
 
@@ -131,10 +135,10 @@ public class QueryServiceMaxFetchSizeTest extends
 					"select NAME, ADDRESS from TB_CUSTOMER where SSNO like ?",
 					new String[] { "VARCHAR" }, new Object[] { "%12345678%" },
 					1, 4);
-			fail("fail to check maxFetchSize in case of pagination");
+			Assert.fail("fail to check maxFetchSize in case of pagination");
 		} catch (QueryServiceException e) {
 			// 9. assert
-			assertTrue("fail to compare exception",
+			Assert.assertTrue("fail to compare exception",
 					e.getCause() instanceof DataRetrievalFailureException);
 		}
 	}
@@ -148,6 +152,7 @@ public class QueryServiceMaxFetchSizeTest extends
 	 * @throws Exception
 	 *             throws exception which is from QueryService
 	 */
+	@Test
 	public void testFind() throws Exception {
 		// 1. insert test data over maxFetchSize
 		insertCustomerBySQL("1234567890123", "Anyframe1", "Seoul");
@@ -159,10 +164,10 @@ public class QueryServiceMaxFetchSizeTest extends
 		try {
 			queryService.find("findCustomerWithResult",
 					new Object[] { "%12345678%" });
-			fail("fail to check maxFetchSize");
+			Assert.fail("fail to check maxFetchSize");
 		} catch (QueryServiceException e) {
 			// 3. assert
-			assertTrue("fail to compare exception",
+			Assert.assertTrue("fail to compare exception",
 					e.getCause() instanceof DataRetrievalFailureException);
 		}
 
@@ -170,10 +175,10 @@ public class QueryServiceMaxFetchSizeTest extends
 		try {
 			queryService.find("findCustomerWithResult",
 					new Object[] { "%12345678%" }, 1, 4);
-			fail("fail to check maxFetchSize in case of pagination");
+			Assert.fail("fail to check maxFetchSize in case of pagination");
 		} catch (QueryServiceException e) {
 			// 5. assert
-			assertTrue("fail to compare exception",
+			Assert.assertTrue("fail to compare exception",
 					e.getCause() instanceof DataRetrievalFailureException);
 		}
 	}
@@ -187,6 +192,7 @@ public class QueryServiceMaxFetchSizeTest extends
 	 * @throws Exception
 	 *             throws exception which is from QueryService
 	 */
+	@Test
 	public void testFindWithRowCount() throws Exception {
 		// 1. insert test data over maxFetchSize
 		insertCustomerBySQL("1234567890123", "Anyframe1", "Seoul");
@@ -198,10 +204,10 @@ public class QueryServiceMaxFetchSizeTest extends
 		try {
 			queryService.findWithRowCount("findCustomerWithResult",
 					new Object[] { "%12345678%" });
-			fail("fail to check maxFetchSize");
+			Assert.fail("fail to check maxFetchSize");
 		} catch (QueryServiceException e) {
 			// 3. assert
-			assertTrue("fail to compare exception",
+			Assert.assertTrue("fail to compare exception",
 					e.getCause() instanceof DataRetrievalFailureException);
 		}
 
@@ -209,10 +215,10 @@ public class QueryServiceMaxFetchSizeTest extends
 		try {
 			queryService.findWithRowCount("findCustomerWithResult",
 					new Object[] { "%12345678%" }, 1, 4);
-			fail("fail to check maxFetchSize in case of pagination");
+			Assert.fail("fail to check maxFetchSize in case of pagination");
 		} catch (QueryServiceException e) {
 			// 5. assert
-			assertTrue("fail to compare exception",
+			Assert.assertTrue("fail to compare exception",
 					e.getCause() instanceof DataRetrievalFailureException);
 		}
 	}
@@ -226,6 +232,7 @@ public class QueryServiceMaxFetchSizeTest extends
 	 * @throws Exception
 	 *             throws exception which is from QueryService
 	 */
+	@Test
 	public void testFindBySQLWithRowCount() throws Exception {
 		// 1. insert test data over maxFetchSize
 		insertCustomerBySQL("1234567890123", "Anyframe1", "Seoul");
@@ -238,10 +245,10 @@ public class QueryServiceMaxFetchSizeTest extends
 			queryService.findBySQLWithRowCount(
 					"select NAME, ADDRESS from TB_CUSTOMER where SSNO like ?",
 					new String[] { "VARCHAR" }, new Object[] { "%12345678%" });
-			fail("fail to check maxFetchSize");
+			Assert.fail("fail to check maxFetchSize");
 		} catch (QueryServiceException e) {
 			// 3. assert
-			assertTrue("fail to compare exception",
+			Assert.assertTrue("fail to compare exception",
 					e.getCause() instanceof DataRetrievalFailureException);
 		}
 
@@ -251,10 +258,10 @@ public class QueryServiceMaxFetchSizeTest extends
 					"select NAME, ADDRESS from TB_CUSTOMER where SSNO like ?",
 					new String[] { "VARCHAR" }, new Object[] { "%12345678%" },
 					1, 4);
-			fail("fail to check maxFetchSize in case of pagination");
+			Assert.fail("fail to check maxFetchSize in case of pagination");
 		} catch (QueryServiceException e) {
 			// 5. assert
-			assertTrue("fail to compare exception",
+			Assert.assertTrue("fail to compare exception",
 					e.getCause() instanceof DataRetrievalFailureException);
 		}
 	}
@@ -268,6 +275,7 @@ public class QueryServiceMaxFetchSizeTest extends
 	 * @throws Exception
 	 *             throws exception which is from QueryService
 	 */
+	@Test
 	public void testFindWithColInfo() throws Exception {
 		// 1. insert test data over maxFetchSize
 		insertCustomerBySQL("1234567890123", "Anyframe1", "Seoul");
@@ -279,10 +287,10 @@ public class QueryServiceMaxFetchSizeTest extends
 		try {
 			queryService.findWithColInfo("findCustomerWithResult",
 					new Object[] { "%12345678%" });
-			fail("fail to check maxFetchSize");
+			Assert.fail("fail to check maxFetchSize");
 		} catch (QueryServiceException e) {
 			// 3. assert
-			assertTrue("fail to compare exception",
+			Assert.assertTrue("fail to compare exception",
 					e.getCause() instanceof DataRetrievalFailureException);
 		}
 
@@ -290,10 +298,10 @@ public class QueryServiceMaxFetchSizeTest extends
 		try {
 			queryService.findWithColInfo("findCustomerWithResult",
 					new Object[] { "%12345678%" }, 1, 4);
-			fail("fail to check maxFetchSize in case of pagination");
+			Assert.fail("fail to check maxFetchSize in case of pagination");
 		} catch (QueryServiceException e) {
 			// 5. assert
-			assertTrue("fail to compare exception",
+			Assert.assertTrue("fail to compare exception",
 					e.getCause() instanceof DataRetrievalFailureException);
 		}
 	}
@@ -316,13 +324,13 @@ public class QueryServiceMaxFetchSizeTest extends
 				new String[] { "VARCHAR" }, new Object[] { ssno });
 
 		// 2. assert
-		assertEquals("Fail to find customer by SQL.", 1, rtCollection.size());
+		Assert.assertEquals("Fail to find customer by SQL.", 1, rtCollection.size());
 
 		// 3. assert in detail
 		Map rtMap = (Map) rtCollection.iterator().next();
-		assertEquals("Fail to compare result.", address, (String) rtMap
+		Assert.assertEquals("Fail to compare result.", address, (String) rtMap
 				.get("address"));
-		assertEquals("Fail to compare result.", name, (String) rtMap
+		Assert.assertEquals("Fail to compare result.", name, (String) rtMap
 				.get("name"));
 	}
 
@@ -345,7 +353,7 @@ public class QueryServiceMaxFetchSizeTest extends
 						name, address });
 
 		// 2. assert
-		assertEquals("Fail to insert customer.", 1, result);
+		Assert.assertEquals("Fail to insert customer.", 1, result);
 		findCustomerBySQL(ssno, name, address);
 	}
 

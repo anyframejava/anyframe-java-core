@@ -1,5 +1,5 @@
 /*
- * Copyright 2002-2008 the original author or authors.
+ * Copyright 2002-2012 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -19,9 +19,17 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Map;
 
+import javax.inject.Inject;
+
+import junit.framework.Assert;
+
 import org.anyframe.query.QueryService;
 import org.anyframe.query.QueryServiceException;
-import org.springframework.test.AbstractDependencyInjectionSpringContextTests;
+import org.junit.Before;
+import org.junit.Test;
+import org.junit.runner.RunWith;
+import org.springframework.test.context.ContextConfiguration;
+import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 
 
 /**
@@ -52,22 +60,17 @@ import org.springframework.test.AbstractDependencyInjectionSpringContextTests;
  * 
  * @author SoYon Lim
  */
-public class QueryServiceTest extends
-		AbstractDependencyInjectionSpringContextTests {
-
-	private QueryService queryService = null;
-
-	public void setQueryService(QueryService queryService) {
-		this.queryService = queryService;
-	}
-
-	protected String[] getConfigLocations() {
-		return new String[] { "classpath*:/spring/context-*.xml" };
-	}
+@RunWith(SpringJUnit4ClassRunner.class)
+@ContextConfiguration(locations = { "classpath*:/spring/context-*.xml" })
+public class QueryServiceTest {
+	
+	@Inject
+	QueryService queryService;
 
 	/**
 	 * Table TB_CUSTOMER, TB_USER is created for test. 
 	 */
+	@Before
 	public void onSetUp() throws Exception {
 		System.out.println("Attempting to drop old table");
 		try {
@@ -102,6 +105,7 @@ public class QueryServiceTest extends
 	 * @throws Exception
 	 *             throws exception which is from QueryService
 	 */
+	@Test
 	public void testUpdateUsingQueryId() throws Exception {
 		// 1. set data for test
 		String ssno = "1234567890123";
@@ -116,7 +120,7 @@ public class QueryServiceTest extends
 				"AnyframeUPD", "1234567890123" });
 
 		// 4. assert
-		assertEquals("Fail to update Customer.", 1, result);
+		Assert.assertEquals("Fail to update Customer.", 1, result);
 
 		// 5. assert in detail
 		findCustomerUsingQueryId(ssno, "AnyframeUPD", address);
@@ -129,6 +133,7 @@ public class QueryServiceTest extends
 	 * @throws Exception
 	 *             throws exception which is from QueryService
 	 */
+	@Test
 	public void testRemoveUsingQueryId() throws Exception {
 		// 1. set data for test
 		String ssno = "1234567890123";
@@ -143,10 +148,10 @@ public class QueryServiceTest extends
 				new Object[] { ssno });
 
 		// 4. assert
-		assertEquals("Fail to remove Customer.", 1, result);
+		Assert.assertEquals("Fail to remove Customer.", 1, result);
 		Collection rtCollection = queryService.find("findCustomer",
 				new Object[] { ssno });
-		assertEquals("Fail to find customer by SQL.", 0, rtCollection.size());
+		Assert.assertEquals("Fail to find customer by SQL.", 0, rtCollection.size());
 	}
 
 	/**
@@ -157,6 +162,7 @@ public class QueryServiceTest extends
 	 * @throws Exception
 	 *             throws exception which is from QueryService
 	 */
+	@Test
 	public void testFindWithKoreanLanguage() throws Exception {
 		// 1. set data for insert
 		String ssno = "1234567890123";
@@ -171,29 +177,29 @@ public class QueryServiceTest extends
 				"dynamicWithKoreanLanguage", new String[] { "key=true" });
 
 		// 4. assert
-		assertEquals("Fail to find customer by SQL.", 1, rtCollection.size());
+		Assert.assertEquals("Fail to find customer by SQL.", 1, rtCollection.size());
 
 		// 5. assert in detail
 		Map map = (Map) rtCollection.iterator().next();
-		assertEquals("Fail to compare result.", name, (String) map.get("name"));
+		Assert.assertEquals("Fail to compare result.", name, (String) map.get("name"));
 
 		// 6. execute another query
 		rtCollection = queryService.find("queryWithKoreanLanguage",
 				new Object[] {});
 
 		// 7. assert
-		assertEquals("Fail to find customer by SQL.", 1, rtCollection.size());
+		Assert.assertEquals("Fail to find customer by SQL.", 1, rtCollection.size());
 
 		// 8. assert in detail
 		map = (Map) rtCollection.iterator().next();
-		assertEquals("Fail to compare result.", name, (String) map.get("name"));
+		Assert.assertEquals("Fail to compare result.", name, (String) map.get("name"));
 
 		// 9. execute query
 		rtCollection = queryService.find("findCustomerWithKorean",
 				new Object[] { new Object[] { "ssno", "1234567890123" } });
 		
 		// 10. assert
-		assertEquals("Fail to find customer by SQL.", 1, rtCollection.size());
+		Assert.assertEquals("Fail to find customer by SQL.", 1, rtCollection.size());
 	}
 
 	/**
@@ -203,14 +209,15 @@ public class QueryServiceTest extends
 	 * @throws Exception
 	 *             throws exception which is from QueryService
 	 */
+	@Test
 	public void testUndefinedQueryId() throws Exception {
 		try {
 			// 1. execute query
 			queryService.find("undefinedQueryId", new Object[] {});
-			fail("Fail to recognize undefined query id.");
+			Assert.fail("Fail to recognize undefined query id.");
 		} catch (QueryServiceException e) {
 			// 2. assert
-			assertTrue("Fail to catch QueryServiceException.", e.getMessage()
+			Assert.assertTrue("Fail to catch QueryServiceException.", e.getMessage()
 					.startsWith("Query Service : Fail to find queryId"));
 		}
 	}
@@ -222,13 +229,14 @@ public class QueryServiceTest extends
 	 * @throws Exception
 	 *             throws exception which is from QueryService
 	 */
+	@Test
 	public void testGetQueryMap() throws Exception {
 		// 1. get all queries in all mapping xml files
 		Map queryMap = queryService.getQueryMap();
 
 		// 2. assert
-		assertEquals("Fail to get the size of query map.", 60, queryMap.size());
-		assertEquals("Fail to get query map.", (String) queryMap
+		Assert.assertEquals("Fail to get the size of query map.", 63, queryMap.size());
+		Assert.assertEquals("Fail to get query map.", (String) queryMap
 				.get("callFunction"), "{? = call FUNC_RETURN_NUM(?)}");
 	}
 
@@ -239,11 +247,12 @@ public class QueryServiceTest extends
 	 * @throws Exception
 	 *             throws exception which is from QueryService
 	 */
+	@Test
 	public void testGetStatement() throws Exception {
 		// 1. get query statement using query id
 		String statement = queryService.getStatement("callFunction");
 		// 2. assert
-		assertEquals("Fail to get query statement.", statement,
+		Assert.assertEquals("Fail to get query statement.", statement,
 				"{? = call FUNC_RETURN_NUM(?)}");
 	}
 
@@ -255,9 +264,10 @@ public class QueryServiceTest extends
 	 * @throws Exception
 	 *             throws exception which is from QueryService
 	 */
+	@Test
 	public void testCountQuery() throws Exception {
 		// 1. get total count of queries and assert
-		assertEquals("Fail to count total queries.", 60, queryService
+		Assert.assertEquals("Fail to count total queries.", 63, queryService
 				.countQuery());
 	}
 
@@ -269,17 +279,18 @@ public class QueryServiceTest extends
 	 * @throws Exception
 	 *             throws exception which is from QueryService
 	 */
+	@Test
 	public void testGetQueryParams() throws Exception {
 		// 1. get query parameters
 		ArrayList params = queryService.getQueryParams("callFunction");
 
 		// 2. assert
-		assertEquals("Fail to get query parameters.", 2, params.size());
+		Assert.assertEquals("Fail to get query parameters.", 2, params.size());
 
 		// 3. assert in detail
 		String[] firstParam = (String[]) params.get(0);
-		assertEquals("Fail to find query param name.", firstParam[0], "outVal");
-		assertEquals("Fail to find query param type.", firstParam[1], "NUMERIC");
+		Assert.assertEquals("Fail to find query param name.", firstParam[0], "outVal");
+		Assert.assertEquals("Fail to find query param type.", firstParam[1], "NUMERIC");
 	}
 
 	/**
@@ -299,7 +310,7 @@ public class QueryServiceTest extends
 				name, address });
 
 		// 2. assert
-		assertEquals("Fail to insert Customer.", 1, result);
+		Assert.assertEquals("Fail to insert Customer.", 1, result);
 
 		// 3. assert in detail
 		findCustomerUsingQueryId(ssno, name, address);
@@ -322,13 +333,13 @@ public class QueryServiceTest extends
 				new Object[] { ssno });
 
 		// 2. assert
-		assertEquals("Fail to find customer by SQL.", 1, rtCollection.size());
+		Assert.assertEquals("Fail to find customer by SQL.", 1, rtCollection.size());
 
 		// 3. assert in detail
 		Map rtMap = (Map) rtCollection.iterator().next();
-		assertEquals("Fail to compare result.", address, (String) rtMap
+		Assert.assertEquals("Fail to compare result.", address, (String) rtMap
 				.get("address"));
-		assertEquals("Fail to compare result.", name, (String) rtMap
+		Assert.assertEquals("Fail to compare result.", name, (String) rtMap
 				.get("name"));
 	}
 }

@@ -1,5 +1,5 @@
 /*
- * Copyright 2002-2008 the original author or authors.
+ * Copyright 2002-2012 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -17,11 +17,19 @@ package org.anyframe.query.impl;
 
 import java.util.Collection;
 
+import javax.inject.Inject;
+
+import junit.framework.Assert;
+
 import org.anyframe.pagination.Page;
 import org.anyframe.query.QueryService;
 import org.anyframe.query.dao.UserDaoWithResultClass;
 import org.anyframe.query.vo.UsersVO;
-import org.springframework.test.AbstractDependencyInjectionSpringContextTests;
+import org.junit.Before;
+import org.junit.Test;
+import org.junit.runner.RunWith;
+import org.springframework.test.context.ContextConfiguration;
+import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 
 /**
  * TestCase Name : DaoWithResultTest <br>
@@ -45,49 +53,41 @@ import org.springframework.test.AbstractDependencyInjectionSpringContextTests;
  * 
  * @author SoYon Lim
  */
-public class DaoWithTableResultTest extends
-        AbstractDependencyInjectionSpringContextTests {
+@RunWith(SpringJUnit4ClassRunner.class)
+@ContextConfiguration(locations = {
+		"classpath:spring/abstractdao/context-common.xml",
+		"classpath:spring/abstractdao/context-userdao.xml",
+		"classpath:spring/abstractdao/context-query.xml",
+		"classpath:spring/abstractdao/context-query-sqlloader-tableresult.xml" })
+@Deprecated
+public class DaoWithTableResultTest {
+	
+	@Inject
+	UserDaoWithResultClass userDaoWithResultClass;
 
-    private UserDaoWithResultClass userDaoWithResultClass;
-
-    private QueryService queryService;
-
-    public void setUserDaoWithResultClass(
-            UserDaoWithResultClass userDaoWithResultClass) {
-        this.userDaoWithResultClass = userDaoWithResultClass;
-    }
-
-    public void setQueryService(QueryService queryService) {
-        this.queryService = queryService;
-    }
-
-    protected String[] getConfigLocations() {
-        return new String[] {
-            "classpath:spring/abstractdao/context-common.xml",
-            "classpath:spring/abstractdao/context-userdao.xml",
-            "classpath:spring/abstractdao/context-query.xml",
-            "classpath:spring/abstractdao/context-query-sqlloader-tableresult.xml" };
-    }
+	@Inject
+	QueryService queryService;
 
 	/**
 	 * Table USERS are created for test.
 	 */
-    public void onSetUp() throws Exception {
-        // Try to drop the table. It may not
-        // exist and throw an exception.
-        System.out.println("Attempting to drop old table");
-        try {
-            queryService.updateBySQL("DROP TABLE USERS", new String[] {},
-                new Object[] {});
-        } catch (Exception e) {
-            // ignore
-        }
+	@Before
+	public void onSetUp() throws Exception {
+		// Try to drop the table. It may not
+		// exist and throw an exception.
+		System.out.println("Attempting to drop old table");
+		try {
+			queryService.updateBySQL("DROP TABLE USERS", new String[] {},
+					new Object[] {});
+		} catch (Exception e) {
+			// ignore
+		}
 
-        queryService
-            .updateBySQL(
-                "CREATE TABLE USERS (USER_ID VARCHAR(20) NOT NULL,USER_NAME VARCHAR(50) NOT NULL,PASSWORD VARCHAR(10) NOT NULL,SSN VARCHAR(13),SL_YN CHAR(1),BIRTH_DAY VARCHAR(8),AGE NUMERIC(3),CELL_PHONE VARCHAR(14),ADDR VARCHAR(100),EMAIL VARCHAR(50),EMAIL_YN CHAR(1),IMAGE_FILE VARCHAR(100),REG_DATE DATE,CONSTRAINT PK_USERS PRIMARY KEY(USER_ID))",
-                new String[] {}, new Object[] {});
-    }
+		queryService
+				.updateBySQL(
+						"CREATE TABLE USERS (USER_ID VARCHAR(20) NOT NULL,USER_NAME VARCHAR(50) NOT NULL,PASSWORD VARCHAR(10) NOT NULL,SSN VARCHAR(13),SL_YN CHAR(1),BIRTH_DAY VARCHAR(8),AGE NUMERIC(3),CELL_PHONE VARCHAR(14),ADDR VARCHAR(100),EMAIL VARCHAR(50),EMAIL_YN CHAR(1),IMAGE_FILE VARCHAR(100),REG_DATE DATE,CONSTRAINT PK_USERS PRIMARY KEY(USER_ID))",
+						new String[] {}, new Object[] {});
+	}
 
 	/**
 	 * [Flow #-1] Positive Case : Called for is method provided into implemented
@@ -102,47 +102,48 @@ public class DaoWithTableResultTest extends
 	 * @throws Exception
 	 *             throws exception which is from QueryService
 	 */
-    public void testUserDaoWithTableResult() throws Exception {
-        // 1. insert a new user
-        UsersVO usersVO1 = new UsersVO();
-        usersVO1.setUserId("admin");
-        usersVO1.setUserName("ADMIN");
-        usersVO1.setPassword("admin123");
-        userDaoWithResultClass.createUsers(usersVO1);
+	@Test
+	public void testUserDaoWithTableResult() throws Exception {
+		// 1. insert a new user
+		UsersVO usersVO1 = new UsersVO();
+		usersVO1.setUserId("admin");
+		usersVO1.setUserName("ADMIN");
+		usersVO1.setPassword("admin123");
+		userDaoWithResultClass.createUsers(usersVO1);
 
-        // 2. insert another new user
-        UsersVO usersVO2 = new UsersVO();
-        usersVO2.setUserId("test");
-        usersVO2.setUserName("TEST");
-        usersVO2.setPassword("test123");
-        userDaoWithResultClass.createUsers(usersVO2);
+		// 2. insert another new user
+		UsersVO usersVO2 = new UsersVO();
+		usersVO2.setUserId("test");
+		usersVO2.setUserName("TEST");
+		usersVO2.setPassword("test123");
+		userDaoWithResultClass.createUsers(usersVO2);
 
-        // 3. check for inserting
-        UsersVO result = userDaoWithResultClass.findUsers(usersVO1);
-        assertEquals(usersVO1.getUserName(), result.getUserName());
+		// 3. check for inserting
+		UsersVO result = userDaoWithResultClass.findUsers(usersVO1);
+		Assert.assertEquals(usersVO1.getUserName(), result.getUserName());
 
-        // 4. check for inserting
-        result = userDaoWithResultClass.findUsers(usersVO2);
-        assertEquals(usersVO2.getUserName(), result.getUserName());
+		// 4. check for inserting
+		result = userDaoWithResultClass.findUsers(usersVO2);
+		Assert.assertEquals(usersVO2.getUserName(), result.getUserName());
 
-        // 5. update a user information
-        usersVO2.setUserName("TESTUPD");
-        userDaoWithResultClass.updateUsers(usersVO2);
+		// 5. update a user information
+		usersVO2.setUserName("TESTUPD");
+		userDaoWithResultClass.updateUsers(usersVO2);
 
-        // 6. check for updating
-        result = userDaoWithResultClass.findUsers(usersVO2);
-        assertEquals(usersVO2.getUserName(), result.getUserName());
+		// 6. check for updating
+		result = userDaoWithResultClass.findUsers(usersVO2);
+		Assert.assertEquals(usersVO2.getUserName(), result.getUserName());
 
-        // 7. select user list
-        UsersVO searchVO = new UsersVO();
-        Page page = userDaoWithResultClass.findUsersList(searchVO, 1, 1, 10);
-        assertEquals(2, page.getTotalCount());
+		// 7. select user list
+		UsersVO searchVO = new UsersVO();
+		Page page = userDaoWithResultClass.findUsersList(searchVO, 1, 1, 10);
+		Assert.assertEquals(2, page.getTotalCount());
 
-        // 8. assert in detail
-        Collection list = page.getList();
-        assertEquals(1, list.size());
-        result = (UsersVO) list.iterator().next();
-        assertEquals(usersVO1.getUserName(), result.getUserName());
-    }
+		// 8. assert in detail
+		Collection list = page.getList();
+		Assert.assertEquals(1, list.size());
+		result = (UsersVO) list.iterator().next();
+		Assert.assertEquals(usersVO1.getUserName(), result.getUserName());
+	}
 
 }

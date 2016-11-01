@@ -1,5 +1,5 @@
 /*
- * Copyright 2002-2008 the original author or authors.
+ * Copyright 2002-2012 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -217,20 +217,22 @@ public class ReflectionResultSetMapper extends AbstractResultSetMapperSupport
 				// up lower property value
 
 				// Instance of Custom Class Type
-				Object compositeObj = createObject(resultSet,
-						subconfiguration.getResultClass(), subconfiguration);
+				Object compositeObj = createObject(resultSet, subconfiguration
+						.getResultClass(), subconfiguration);
 
 				try {
 					// Setting the custom object to result class.
 					subconfiguration.getCompositeClassSetter().invoke(object,
 							new Object[] { compositeObj });
 				} catch (Exception e) {
-					QueryService.LOGGER.warn(
-							"Query Service : Fail to invoke setter['"
-									+ subconfiguration
-											.getCompositeClassSetter()
-											.getName() + "'] of target class['"
-									+ targetClass.getName() + "'].", e);
+					QueryService.LOGGER
+							.warn(
+									"Query Service : Fail to invoke setter['{}'] of target class['{}'].",
+									new Object[] {
+											subconfiguration
+													.getCompositeClassSetter()
+													.getName(),
+											targetClass.getName() }, e);
 				}
 			}
 		}
@@ -326,9 +328,9 @@ public class ReflectionResultSetMapper extends AbstractResultSetMapperSupport
 			descriptors = info.getPropertyDescriptors();
 		} catch (IntrospectionException e) {
 			QueryService.LOGGER
-					.warn("Query Service : Fail to find a property descriptor of target class['"
-							+ targetClass.getName()
-							+ "']. So, set a PropertyDescriptor array with size 0.");
+					.warn(
+							"Query Service : Fail to find a property descriptor of target class['{}']. So, set a PropertyDescriptor array with size 0.",
+							targetClass.getName());
 			// TODO Auto-generated catch block
 			descriptors = new PropertyDescriptor[0];
 		}
@@ -384,8 +386,8 @@ public class ReflectionResultSetMapper extends AbstractResultSetMapperSupport
 				Method compositeClassSetter = null;
 				// Check whether Setter on relevant property exists. if it
 				// doesn’t, don’t process it.
-				compositeClassSetter = findSetter(descriptors,
-						targetClass.getName(), key);
+				compositeClassSetter = findSetter(descriptors, targetClass
+						.getName(), key);
 
 				if (compositeClassSetter == null)
 					continue;
@@ -436,12 +438,12 @@ public class ReflectionResultSetMapper extends AbstractResultSetMapperSupport
 			}
 		}
 
-		if (setter == null)
+		if (setter == null) {
 			QueryService.LOGGER
-					.warn("Query Service : Fail to find a setter method of attribute ['"
-							+ attributeName
-							+ "'] from target class['"
-							+ className + "'].");
+					.warn(
+							"Query Service : Fail to find a setter method of attribute ['{}'] from target class['{}'].",
+							new Object[] { attributeName, className });
+		}
 		return setter;
 	}
 

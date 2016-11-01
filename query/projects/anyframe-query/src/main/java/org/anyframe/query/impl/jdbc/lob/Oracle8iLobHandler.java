@@ -1,5 +1,5 @@
 /*
- * Copyright 2002-2008 the original author or authors.
+ * Copyright 2002-2012 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -37,8 +37,8 @@ import java.util.Map;
 
 import oracle.sql.CLOB;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.jdbc.support.lob.LobCreator;
 import org.springframework.jdbc.support.lob.OracleLobHandler;
 import org.springframework.jdbc.support.nativejdbc.NativeJdbcExtractor;
@@ -69,7 +69,8 @@ import org.springframework.util.FileCopyUtils;
  * singleton if you do not want to depend on the Oracle JAR being in the class
  * path: use "lazy-init=true" to avoid this issue. We changed
  * org.springframework.jdbc.support.lob.OracleLobHandler Class into
- * org.anyframe.query.impl.jdbc.lob.Oracle8iLobHandler Class in Anyframe.
+ * org.anyframe.query.impl.jdbc.lob.Oracle8iLobHandler Class in Anyframe
+ * and jcl to slf4j.
  * <ul>
  * <li>Add some operations for supporting Oracle 8i.</li>
  * </ul>
@@ -79,7 +80,7 @@ import org.springframework.util.FileCopyUtils;
  */
 public class Oracle8iLobHandler extends OracleLobHandler {
 	
-	private static Log log = LogFactory.getLog(Oracle8iLobHandler.class);
+	private static Logger log = LoggerFactory.getLogger(Oracle8iLobHandler.class);
 	
 	private static final String CONNECTION_CLASS_NAME = "oracle.jdbc.OracleConnection";
 
@@ -189,13 +190,13 @@ public class Oracle8iLobHandler extends OracleLobHandler {
 
 			pos = clob.length() + 1;
 
-			clob.putString(pos, clobValue);
+			clob.setString(pos, clobValue);
 		} catch (IllegalArgumentException e) {
-			log.error("Cannot invoke method " + getCLOBMethod.getName() + " because of illegal argument. Error : " + e.getMessage());
+			log.error("Cannot invoke method {} because of illegal argument. Error : {}", new Object[]{ getCLOBMethod.getName(), e.getMessage()});
 		} catch (IllegalAccessException e) {
-			log.error("Cannot invoke method " + getCLOBMethod.getName() + " because this method is inaccessible. Error : " + e.getMessage());
+			log.error("Cannot invoke method {} because this method is inaccessible. Error : {}", new Object[]{getCLOBMethod.getName(), e.getMessage()});
 		} catch (InvocationTargetException e) {
-			log.error(getCLOBMethod.getName() + " method throws an exception. Error : " + e.getMessage());
+			log.error("{} method throws an exception. Error : {}", new Object[]{getCLOBMethod.getName(), e.getMessage()});
 		}
 	}
 
@@ -507,7 +508,7 @@ public class Oracle8iLobHandler extends OracleLobHandler {
 					it.remove();
 				}
 			} catch (InvocationTargetException ex) {
-				log.error("Cannot invoke method. Error : " + ex.getMessage());
+				log.error("Cannot invoke method. Error : {}", ex.getMessage());
 
 			} catch (Exception ex) {
 				throw new RuntimeException(

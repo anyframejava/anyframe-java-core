@@ -1,5 +1,5 @@
 /*
- * Copyright 2002-2008 the original author or authors.
+ * Copyright 2002-2012 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -19,8 +19,16 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Map;
 
+import javax.inject.Inject;
+
+import junit.framework.Assert;
+
 import org.anyframe.query.QueryService;
-import org.springframework.test.AbstractDependencyInjectionSpringContextTests;
+import org.junit.Before;
+import org.junit.Test;
+import org.junit.runner.RunWith;
+import org.springframework.test.context.ContextConfiguration;
+import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 
 
 /**
@@ -53,22 +61,17 @@ import org.springframework.test.AbstractDependencyInjectionSpringContextTests;
  * 
  * @author SoYon Lim
  */
-public class QueryServiceWithoutPageGenerator extends
-		AbstractDependencyInjectionSpringContextTests {
+@RunWith(SpringJUnit4ClassRunner.class)
+@ContextConfiguration(locations = { "classpath*:/spring/withoutgenerator/context-*.xml" })
+public class QueryServiceWithoutPageGenerator {
 
-	private QueryService queryService = null;
-
-	public void setQueryService(QueryService queryService) {
-		this.queryService = queryService;
-	}
-
-	protected String[] getConfigLocations() {
-		return new String[] { "classpath*:/spring/withoutgenerator/context-*.xml" };
-	}
-
+	@Inject
+	QueryService queryService;
+	
 	/**
 	 * Table TB_CUSTOMER is created for test. 
 	 */
+	@Before
 	public void onSetUp() throws Exception {
 		try {
 			queryService.updateBySQL("DROP TABLE TB_CUSTOMER", new String[] {},
@@ -97,6 +100,7 @@ public class QueryServiceWithoutPageGenerator extends
 	 * @throws Exception
 	 *             throws exception which is from QueryService
 	 */
+	@Test
 	public void testFindCustomerBySQLWithRowCount() throws Exception {
 		// 1. execute query (page number = 4, page size = 2)
 		Map rtMap = queryService.findBySQLWithRowCount(
@@ -109,9 +113,9 @@ public class QueryServiceWithoutPageGenerator extends
 
 		// 3. assert (current page number is bigger than last page number of
 		// result)
-		assertEquals("Fail to get total count of results.", 5, totalCount
+		Assert.assertEquals("Fail to get total count of results.", 5, totalCount
 				.intValue());
-		assertEquals("Fail to get results.", 0, rtList.size());
+		Assert.assertEquals("Fail to get results.", 0, rtList.size());
 
 		// 4. execute query (page number = 0, page size = 2)
 		rtMap = queryService.findBySQLWithRowCount(
@@ -123,9 +127,9 @@ public class QueryServiceWithoutPageGenerator extends
 		rtList = (ArrayList) rtMap.get(QueryService.LIST);
 
 		// 6. assert (current page number must have over 1)
-		assertEquals("Fail to get total count of results.", 5, totalCount
+		Assert.assertEquals("Fail to get total count of results.", 5, totalCount
 				.intValue());
-		assertEquals("Fail to get results.", 0, rtList.size());
+		Assert.assertEquals("Fail to get results.", 0, rtList.size());
 
 		// 7. execute query (page number = 3, page size = 2)
 		rtMap = queryService.findBySQLWithRowCount(
@@ -137,9 +141,9 @@ public class QueryServiceWithoutPageGenerator extends
 		rtList = (ArrayList) rtMap.get(QueryService.LIST);
 
 		// 9. assert (last page number is 3 and total length of result is 5)
-		assertEquals("Fail to get total count of results.", 5, totalCount
+		Assert.assertEquals("Fail to get total count of results.", 5, totalCount
 				.intValue());
-		assertEquals("Fail to get results.", 1, rtList.size());
+		Assert.assertEquals("Fail to get results.", 1, rtList.size());
 	}
 
 	/**
@@ -151,6 +155,7 @@ public class QueryServiceWithoutPageGenerator extends
 	 * @throws Exception
 	 *             throws exception which is from QueryService
 	 */
+	@Test
 	public void testFindCustomerBySQL() throws Exception {
 		// 1. execute query (page number = 4, page size = 2)
 		Collection rtCollection = queryService.findBySQL(
@@ -159,7 +164,7 @@ public class QueryServiceWithoutPageGenerator extends
 
 		// 2. assert (current page number is bigger than last page number of
 		// result)
-		assertEquals("Fail to get results.", 0, rtCollection.size());
+		Assert.assertEquals("Fail to get results.", 0, rtCollection.size());
 
 		// 3. execute query (page number = 0, page size = 2)
 		rtCollection = queryService.findBySQL(
@@ -167,7 +172,7 @@ public class QueryServiceWithoutPageGenerator extends
 				new String[] { "VARCHAR" }, new Object[] { "%123%" }, 0, 2);
 
 		// 4. assert (current page number must have over 1)
-		assertEquals("Fail to get results.", 0, rtCollection.size());
+		Assert.assertEquals("Fail to get results.", 0, rtCollection.size());
 
 		// 5. execute query (page number = 3, page size = 2)
 		rtCollection = queryService.findBySQL(
@@ -175,7 +180,7 @@ public class QueryServiceWithoutPageGenerator extends
 				new String[] { "VARCHAR" }, new Object[] { "%123%" }, 3, 2);
 
 		// 6. assert (last page number is 3 and total length of result is 5)
-		assertEquals("Fail to get results.", 1, rtCollection.size());
+		Assert.assertEquals("Fail to get results.", 1, rtCollection.size());
 	}
 
 	/**
@@ -188,6 +193,7 @@ public class QueryServiceWithoutPageGenerator extends
 	 * @throws Exception
 	 *             throws exception which is from QueryService
 	 */
+	@Test
 	public void testFindCustomerWithRowCount() throws Exception {
 		// 1. execute query (page number = 4, page size = 2)
 		Map rtMap = queryService.findWithRowCount(
@@ -196,13 +202,13 @@ public class QueryServiceWithoutPageGenerator extends
 
 		// 2. assert total size of result
 		Long totalCount = (Long) rtMap.get(QueryService.COUNT);
-		assertEquals("Fail to get total count of results.", 5, totalCount
+		Assert.assertEquals("Fail to get total count of results.", 5, totalCount
 				.intValue());
 
 		// 3. assert result size (current page number is bigger than last page
 		// number of result)
 		ArrayList rtList = (ArrayList) rtMap.get(QueryService.LIST);
-		assertEquals("Fail to get results.", 0, rtList.size());
+		Assert.assertEquals("Fail to get results.", 0, rtList.size());
 
 		// 4. execute query (page number = 0, page size = 2)
 		rtMap = queryService.findWithRowCount("findCustomerWithResultMapping",
@@ -210,12 +216,12 @@ public class QueryServiceWithoutPageGenerator extends
 
 		// 5. assert total size of result
 		totalCount = (Long) rtMap.get(QueryService.COUNT);
-		assertEquals("Fail to get total count of results.", 5, totalCount
+		Assert.assertEquals("Fail to get total count of results.", 5, totalCount
 				.intValue());
 
 		// 6. assert result size (current page number must have over 1)
 		rtList = (ArrayList) rtMap.get(QueryService.LIST);
-		assertEquals("Fail to get results.", 0, rtList.size());
+		Assert.assertEquals("Fail to get results.", 0, rtList.size());
 
 		// 7. execute query (page number = 3, page size = 2)
 		rtMap = queryService.findWithRowCount("findCustomerWithResultMapping",
@@ -223,13 +229,13 @@ public class QueryServiceWithoutPageGenerator extends
 
 		// 8. assert total size of result
 		totalCount = (Long) rtMap.get(QueryService.COUNT);
-		assertEquals("Fail to get total count of results.", 5, totalCount
+		Assert.assertEquals("Fail to get total count of results.", 5, totalCount
 				.intValue());
 
 		// 9. assert result size (last page number is 3 and total length of
 		// result is 5)
 		rtList = (ArrayList) rtMap.get(QueryService.LIST);
-		assertEquals("Fail to get results.", 1, rtList.size());
+		Assert.assertEquals("Fail to get results.", 1, rtList.size());
 	}
 
 	/**
@@ -242,13 +248,14 @@ public class QueryServiceWithoutPageGenerator extends
 	 * @throws Exception
 	 *             throws exception which is from QueryService
 	 */
+	@Test
 	public void testFindCustomer() throws Exception {
 		// 1. execute query (page number = 0, page size = 2)
 		Collection rtCollection = queryService.find("findCustomerWithResult",
 				new Object[] { "%123%" }, 0);
 
 		// 2. assert result size (current page number must have over 1)
-		assertEquals("Fail to get results.", 0, rtCollection.size());
+		Assert.assertEquals("Fail to get results.", 0, rtCollection.size());
 
 		// 3. execute query (page number = 4, page size = 2)
 		rtCollection = queryService.find("findCustomerWithResult",
@@ -256,7 +263,7 @@ public class QueryServiceWithoutPageGenerator extends
 
 		// 4. assert result size (current page number is bigger than last page
 		// number of result)
-		assertEquals("Fail to get results.", 0, rtCollection.size());
+		Assert.assertEquals("Fail to get results.", 0, rtCollection.size());
 
 		// 5. execute query (page number = 3, page size = 2)
 		rtCollection = queryService.find("findCustomerWithResult",
@@ -264,7 +271,7 @@ public class QueryServiceWithoutPageGenerator extends
 
 		// 6. assert result size (last page number is 3 and total length of
 		// result is 5)
-		assertEquals("Fail to get results.", 1, rtCollection.size());
+		Assert.assertEquals("Fail to get results.", 1, rtCollection.size());
 	}
 
 	/**
@@ -285,13 +292,13 @@ public class QueryServiceWithoutPageGenerator extends
 				new String[] { "VARCHAR" }, new Object[] { ssno });
 
 		// 2. assert
-		assertEquals("Fail to find customer by SQL.", 1, rtCollection.size());
+		Assert.assertEquals("Fail to find customer by SQL.", 1, rtCollection.size());
 
 		// 3. assert in detail
 		Map rtMap = (Map) rtCollection.iterator().next();
-		assertEquals("Fail to compare result.", address, (String) rtMap
+		Assert.assertEquals("Fail to compare result.", address, (String) rtMap
 				.get("address"));
-		assertEquals("Fail to compare result.", name, (String) rtMap
+		Assert.assertEquals("Fail to compare result.", name, (String) rtMap
 				.get("name"));
 	}
 
@@ -314,7 +321,7 @@ public class QueryServiceWithoutPageGenerator extends
 						name, address });
 
 		// 2. assert
-		assertEquals("Fail to insert customer.", 1, result);
+		Assert.assertEquals("Fail to insert customer.", 1, result);
 		findCustomerBySQL(ssno, name, address);
 	}
 }

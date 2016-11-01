@@ -1,5 +1,5 @@
 /*
- * Copyright 2002-2008 the original author or authors.
+ * Copyright 2002-2012 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -18,10 +18,18 @@ package org.anyframe.query.impl;
 import java.sql.Date;
 import java.util.Collection;
 
+import javax.inject.Inject;
+
+import junit.framework.Assert;
+
 import org.anyframe.query.QueryService;
 import org.anyframe.query.vo.Reservation;
 import org.anyframe.util.DateUtil;
-import org.springframework.test.AbstractDependencyInjectionSpringContextTests;
+import org.junit.Before;
+import org.junit.Test;
+import org.junit.runner.RunWith;
+import org.springframework.test.context.ContextConfiguration;
+import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 
 /**
  * TestCase Name : QueryServiceReservationTest <br>
@@ -42,22 +50,17 @@ import org.springframework.test.AbstractDependencyInjectionSpringContextTests;
  * </ul>
  * @author SoYon Lim
  */
-public class QueryServiceReservationTest extends
-        AbstractDependencyInjectionSpringContextTests {
-    private QueryService queryService = null;
-
-    public void setQueryService(QueryService queryService) {
-        this.queryService = queryService;
-    }
-
-    protected String[] getConfigLocations() {
-        setAutowireMode(AbstractDependencyInjectionSpringContextTests.AUTOWIRE_BY_NAME);
-        return new String[] {"classpath*:/spring/context-*.xml" };
-    }
+@RunWith(SpringJUnit4ClassRunner.class)
+@ContextConfiguration(locations = { "classpath*:/spring/context-*.xml" })
+public class QueryServiceReservationTest {
+	
+	@Inject
+	QueryService queryService;
 
     /**
      * Table TB_RESERVATION is created for test.
      */
+	@Before
     public void onSetUp() throws Exception {
         System.out.println("Attempting to drop old table");
         try {
@@ -83,6 +86,7 @@ public class QueryServiceReservationTest extends
      *         throws exception which is from
      *         QueryService
      */
+	@Test
     public void testInsertReservationByObject() throws Exception {
         // 1. set object value for test
         String reserveId = "0001";
@@ -98,7 +102,7 @@ public class QueryServiceReservationTest extends
         int results = queryService.create(reservation);
 
         // 3. assert
-        assertEquals("Fail to insert object.", results, 1);
+        Assert.assertEquals("Fail to insert object.", results, 1);
         findReservation(reserveId, reserveSsno);
     }
 
@@ -110,6 +114,7 @@ public class QueryServiceReservationTest extends
      *         throws exception which is from
      *         QueryService
      */
+	@Test
     public void testUpdateReservationByObject() throws Exception {
         // 1. set object value for test
         Reservation reservation =
@@ -119,7 +124,7 @@ public class QueryServiceReservationTest extends
         int results = queryService.update(reservation);
 
         // 3. assert
-        assertEquals("Fail to update object.", results, 1);
+        Assert.assertEquals("Fail to update object.", results, 1);
         findReservation(reservation.getReserveId(), reservation
             .getReserveSsno());
     }
@@ -132,6 +137,7 @@ public class QueryServiceReservationTest extends
      *         throws exception which is from
      *         QueryService
      */
+	@Test
     public void testRemoveReservationByObject() throws Exception {
         // 1. set object value for test
         Reservation reservation =
@@ -141,9 +147,9 @@ public class QueryServiceReservationTest extends
         int results = queryService.remove(reservation);
 
         // 3. assert
-        assertEquals("Fail to update object.", results, 1);
+        Assert.assertEquals("Fail to update object.", results, 1);
         Collection rtCollection = (Collection) queryService.find(reservation);
-        assertEquals("Fail to remove reservation.", 0, rtCollection.size());
+        Assert.assertEquals("Fail to remove reservation.", 0, rtCollection.size());
     }
 
     /**
@@ -165,12 +171,12 @@ public class QueryServiceReservationTest extends
         Collection rtCollection = (Collection) queryService.find(reservation);
 
         // 3. assert
-        assertNotNull("Fail to find object.", rtCollection);
-        assertTrue("Fail to find object.", rtCollection.size() == 1);
+        Assert.assertNotNull("Fail to find object.", rtCollection);
+        Assert.assertTrue("Fail to find object.", rtCollection.size() == 1);
 
         // 4. assert in detail
         Reservation result = ((Reservation) rtCollection.iterator().next());
-        assertEquals("Fail to compare reserveSsno.", reserveSsno, result
+        Assert.assertEquals("Fail to compare reserveSsno.", reserveSsno, result
             .getReserveSsno());
 
         // 5. return for another test
@@ -196,7 +202,7 @@ public class QueryServiceReservationTest extends
 
         // 2. execute query
         int results = queryService.create(reservation);
-        assertEquals("Fail to insert object.", results, 1);
+        Assert.assertEquals("Fail to insert object.", results, 1);
 
         // 3. return for another test
         return reservation;

@@ -1,0 +1,914 @@
+<chapter id="query_configuration">
+	<title>Configuration</title>
+	<para>
+		To use Query service, properties as the following must be defined.
+		Let's take a look at the meaning of each property.
+	</para>
+    <informaltable>
+		<tgroup cols="4">
+		<colspec colname="col1" colnum="1" colwidth="2.5*" />
+		<colspec colname="col2" colnum="2" colwidth="6*" />
+		<colspec colname="col3" colnum="3" colwidth="1*" />
+		<colspec colname="col4" colnum="4" colwidth="1*" />
+	
+		<thead>
+			<row>
+				<entry align="center">Property</entry>
+				<entry align="center">Description</entry>
+				<entry align="center">Required</entry>
+				<entry align="center">Default Value</entry>
+			</row>
+		</thead>
+	
+		<tbody>
+			<row>
+				<entry>
+					<link linkend="query_configuration_jdbctemplate">
+						<emphasis role="bold">jdbcTemplate</emphasis>
+					</link>
+				</entry>
+				<entry>
+				    Use DataSource service to get java.sql.Connection from DB, and execute the defined SQL statement.
+					Executes the defined SQL statement by using DataSource service to get java.sql.Connection from DB.
+					Defines bean id of PagingJdbcTemplate.
+				</entry>
+				<entry align="center">Y</entry>
+				<entry align="center">N/A</entry>
+			</row>
+	
+			<row>
+				<entry>
+					<link linkend="query_configuration_sqlrepository"><emphasis role="bold">sqlRepository</emphasis>
+					</link>
+				</entry>
+				<entry>
+					Defines bean id of SQLLoader which handles mapping XML files
+					that define table mapping information and SQL statements.
+				</entry>
+				<entry align="center">Y</entry>
+				<entry align="center">N/A</entry>
+			</row>
+	
+			<row>
+				<entry>
+					<link linkend="query_configuration_generator"><emphasis role="bold">pagingSQLGenerator</emphasis>
+					</link>
+				</entry>
+				<entry>
+					Defines bean id of PagingSQLGenerator which helps create SQL
+				    appropriate for the DB pagination, even when SQL is not defined for pagination in DB-specific format.
+				</entry>
+				<entry align="center">Y</entry>
+				<entry align="center">N/A</entry>
+			</row>
+	
+			<row>
+				<entry>
+					<link linkend="query_configuration_lobhandler"><emphasis role="bold">lobHandler</emphasis>
+					</link>
+				</entry>
+				<entry>In case of handling LOB data,
+					   defines bean id of LobHandler appropriate for the relevant DB.</entry>
+				<entry align="center">N</entry>
+				<entry align="center">N/A</entry>
+			</row>
+	
+			<row>
+				<entry>velocityPropsFilename</entry>
+				<entry>
+						In case of handling dynamic SQL statements, defines when trying to
+						change the path of the log file managed by Velocity.
+						Log file path can be defined by using absolute/relative path (file:...) or classpath (classpath:...) as the following.
+					<itemizedlist>
+						<listitem>
+							<para>
+								file:./query/log/velocity.log
+							</para>
+						</listitem>
+						<listitem>
+							<para>
+								classpath:/anyframe/core/query/log/velocity.log
+							</para>
+						</listitem>
+					</itemizedlist> 
+					<para>
+						If value is not defined, Velocity log is not recorded.
+						If you want to log, note that the log file must be created in the defined path.
+					</para>
+				</entry>
+				<entry align="center">N</entry>
+				<entry>Log not recorded.</entry>
+			</row>
+		</tbody>
+		</tgroup>
+    </informaltable>
+
+	<para>
+		Among the setting information that Query service needs as mentioned above,
+		let's take a close look at jdbcTemplate, sqlRepository, pagingSQLGenerator and lobHandler.
+	</para>
+
+    <section id="query_configuration_jdbctemplate">
+    	<title>jdbcTemplate</title>
+	    <para>
+	      	To execute the defined SQL statement by accessing DB and getting java.sql.Connection object
+			using DataSource service, Query service provides PagingJdbcTemplate, PagingNamedParamJdbcTemplate
+			and OraclePagingJdbcTemplate which has extended JdbcTemplate in Spring under org.anyframe.query.impl.jdbc package.
+	    </para>
+
+      	<itemizedlist>
+	        <listitem>
+	          	<para>
+	        	  	PagingJdbcTemplate : Using ResultSetExtractor, executes mapping and pagination for search results.
+	          	</para>
+	        </listitem>
+        	<listitem>
+	          	<para>
+	          		OraclePagingJdbcTemplate : If DBMS is Oracle, it can be used when checking the total number of modified data by batching.
+					There are two ways of batching for Insert, Update, and Delete in Oracle.
+					The first is <emphasis role="bold">following JDBC 2.0 Spec.</emphasis>
+					and the other is <emphasis role="bold">Oracle-specified batching.</emphasis>																
+					Query service performs batching with the first method.
+					When performed successfully, '-2' will be set in the int array as execution result.
+					According to JDBC 2.0 Spec., '-2' means "processed successfully, but the number of modified data is unknown."
+					Therefore, after batching, to know the total number of modified data,
+					the second batching method must be performed, 
+					and the implementation provided for this is OraclePagingJdbcTemplate.
+				</para>
+        	</listitem>
+
+		    <listitem>
+		        <para>
+		        	PagingNamedParamJdbcTemplate : As a class internally used in QueryServiceImpl without 
+					any special confiuration, it executes dynamic SQL statement with named parameter.
+		        </para>
+		    </listitem>
+      	</itemizedlist>
+
+      	<para>
+      		The following is main properties for PagingJdbcTemplate.
+		    (For other properties, refer to the properties in org.springframework.jdbc.core.JdbcTemplate.)
+      	</para>
+
+		<informaltable>
+        	<tgroup cols="4">
+				<colspec colname="col1" colnum="1" colwidth="2.5*" />
+				<colspec colname="col2" colnum="2" colwidth="6*" />
+				<colspec colname="col3" colnum="3" colwidth="1*" />
+				<colspec colname="col4" colnum="4" colwidth="1*" />
+
+				<thead>
+					<row>
+						   <entry align="center">Property</entry>
+						   <entry align="center">Description</entry>
+						   <entry align="center">Required</entry>					
+						   <entry align="center">Default Value</entry>
+					</row>
+				</thead>
+
+         		<tbody>
+            		<row>
+						<entry>dataSource</entry>
+						<entry>Define bean id of dataSource to refer to.</entry>
+						<entry align="center">Y</entry>
+						<entry align="center">N/A</entry>
+            		</row>
+
+            		<row>
+              			<entry>exceptionTranslator</entry>
+						<entry>
+							Define bean id of ExceptionTranslator.
+							When SQLException occurs during handling DB data, 
+							ExceptionTranslator sets DBMS specific SQL error code and error message to separate Exception object, 
+							and then throws.	
+							Query service provides org.anyframe.query.impl.util.RawSQLExceptionTranslator.
+							Therefore, if ExceptionTranslator is set, 
+							SQL error code and error message can be extracted from QueryServiceException, 
+							which was thrown through Query service, when SQLException occurs.
+						</entry>
+              			<entry align="center">N</entry>
+              			<entry align="center">N/A</entry>
+            		</row>
+
+            		<row>
+              			<entry>maxFetchSize</entry>
+						<entry>
+							To prevent performance decline that can occur when searching for heavyweight data, maxFetchSize can be used.
+						    If the number of result data is bigger than the defined maxFetchSize, it is handled as exception.
+						   This property is applied to all query statements searched through Query Service, 
+						   and to limit the number of result data only for specific query statements, 
+							the number of maximum searches allowed can be limited by defining maxFetchSize for each query statement 
+							when query statements are defined in the Mapping XML file. 
+							The priority of maxFetchSize follows the order of maxFetchSize given to a specific query statement &gt; maxFetchSize of jdbcTemplate, 
+							and when maxFetchSize is not defined, the number of the searched data is not limited. 
+						</entry>
+              			<entry align="center">N</entry>
+              			<entry align="center">N/A</entry>
+            		</row>
+
+            		<row>
+              			<entry>nativeJdbcExtractor</entry>
+						<entry>
+							This can be defined only when using OraclePagingJdbcTemplate.
+						    It defines bean id of NativeJdbcExtractor which extracts of 
+						    original JDBC Connection object from connection object wrapped for connection pool in use.
+						</entry>
+              			<entry align="center">N</entry>
+              			<entry align="center">N/A</entry>
+            		</row>
+         		</tbody>
+        	</tgroup>
+      	</informaltable>
+	</section>
+     
+	<section id="query_configuration_sqlrepository">
+      	<title>sqlRepository</title>
+		<para>
+			Query service provides org.anyframe.query.impl.config.loader.SQLLoader
+			to handle mapping XML files which define table mapping information and SQL statements.
+			The following is main properties necessary for SQLLoader.
+		</para>
+
+		<informaltable>
+			<tgroup cols="4">
+				<colspec colname="col1" colnum="1" colwidth="2.5*" />
+				<colspec colname="col2" colnum="2" colwidth="6*" />
+				<colspec colname="col3" colnum="3" colwidth="1*" />
+				<colspec colname="col4" colnum="4" colwidth="1*" />
+
+          		<thead>
+					<row>
+						<entry align="center">Property</entry>
+			            <entry align="center">Description</entry>
+			            <entry align="center">Required</entry>
+			            <entry align="center">Default Value</entry>
+					</row>
+				</thead>
+
+          		<tbody>
+            		<row>
+              			<entry>mappingFiles</entry>
+ 						<entry>
+							Element that assigns the mapping XML file name that defines the table mapping information and the query statements to be used. 
+							Can be defined in multiple with ',' as the delimiter. 
+							Designation of filename elements are the same as the designation of the Spring Configuration file path. 
+							Thus, it is possible to designate the absolute/relative file path (file:...) and designate the classpath (classpath:...). 
+							Pattern using * can also be applied.
+						</entry>
+              			<entry align="center">Y</entry>
+              			<entry align="center">N/A</entry>
+            		</row>
+
+					<row>
+						<entry>nullchecks</entry>
+						<entry>
+							Converts to the defined value when null value is returned because there is no DB column value.
+							Currently, CHAR, VARCHAR, LONGVARCHAR type are supported.
+							Define using <![CDATA[<map>]]> among the Collection types.
+						</entry>					
+						<entry align="center">N</entry>
+						<entry align="center">N/A</entry>
+					</row>
+
+					<row>
+						<entry>dynamicReload</entry>
+						<entry>Sets the dynamic Reload cycle for the mapping XML file.(in milliseconds) 
+						When the value under 10 is entered, it is recognized as 10, and when the value is 10 or above, 
+						it is recognized as the entered value. 
+						When it is not entered, the dynamic Reload is not executed.</entry>
+						<entry align="center">N</entry>
+						<entry align="center"/>
+					</row>
+
+					<row>
+						<entry>skipError</entry>
+						<entry>
+							Defines reload frequency. (in milliseconds)
+							Recognizes as 10 if defined under 10,
+							and as input value if defined 10 or above.
+						</entry>
+						<entry align="center">N</entry>
+						<entry />
+					</row>
+
+					<row>
+						<entry>skiperror</entry>
+						<entry />
+						<entry>
+						    During reading reading mapping XML file, when error occurs, sets whether or not to skip error.
+						</entry>
+						<entry align="center">N</entry>
+						<entry />
+						<entry />
+					</row>
+          		</tbody>
+        	</tgroup>
+      	</informaltable>
+	</section>
+      	    	
+	<section id="query_configuration_generator">
+      	<title>pagingSQLGenerator</title>
+      	<para>
+      		Even if not defined of DB-specified SQL statement for pagination, Query service provides
+			PagingSQLGenerator which makes pagination SQL statement for each DB.
+      	</para>
+
+      	<informaltable>
+        	<tgroup cols="2">
+          		<colspec colname="col1" colnum="1" colwidth="2*" />
+          		<colspec colname="col2" colnum="2" colwidth="8*" />
+
+				<thead>
+            		<row>
+              			<entry align="center">DB type</entry>
+              			<entry align="center">PagingSQLGenerator Class</entry>
+            		</row>
+            	</thead>
+
+          		<tbody>
+            		<row>
+              			<entry>Altibase</entry>
+              			<entry>org.anyframe.query.impl.jdbc.generator.AltibasePagingSQLGenerator</entry>
+            		</row>
+            		<row>
+              			<entry>DB2</entry>
+              			<entry>org.anyframe.query.impl.jdbc.generator.DB2PagingSQLGenerator</entry>
+            		</row>  
+            		<row>
+              			<entry>HSQLDB</entry>
+              			<entry>org.anyframe.query.impl.jdbc.generator.HSQLPagingSQLGenerator</entry>
+            		</row>
+            		<row>
+              			<entry>MSSQL</entry>
+              			<entry>org.anyframe.query.impl.jdbc.generator.MSSQLPagingSQLGenerator</entry>
+            		</row>  
+            		<row>
+              			<entry>MySQL</entry>
+              			<entry>org.anyframe.query.impl.jdbc.generator.MySQLPagingSQLGenerator</entry>
+            		</row>            		          		          		
+            		<row>
+              			<entry>Oracle</entry>
+              			<entry>org.anyframe.query.impl.jdbc.generator.OraclePagingSQLGenerator</entry>
+            		</row>
+          		</tbody>
+        	</tgroup>
+      	</informaltable>
+
+		<para>
+			On top of this, when PagingSQLGenerator is needed,
+			by extending org.anyframe.query.impl.jdbc.generator.AbstractPagingSQLGenerator, create
+			new PagingSQLGenerator and implement getPaginationSQL() method.	
+			In getPaginationSQL() method, logic that returns SQL paginated based on SQL can be defined.		
+			The following is a part of OraclePagingSQLGenerator class.
+		</para>
+
+      	<programlisting language="java"><![CDATA[public class OraclePagingSQLGenerator ]]><emphasis
+        role="bold">extends AbstractPagingSQLGenerator</emphasis><![CDATA[ {
+public String getPaginationSQL(String originalSql, Object[] originalArgs,
+    int[] originalArgTypes, int pageIndex, int pageSize) {
+    ]]><emphasis role="bold">// To modify the defined SQL statement to ROWNUM-based format by adding string on the front and back</emphasis><![CDATA[  
+    StringBuilder sql = new StringBuilder(
+        " SELECT * FROM ( SELECT   INNER_TABLE.* , ROWNUM AS ROW_SEQ FROM ( \n");
+        sql.append(originalSql);
+        sql.append(" ) INNER_TABLE WHERE ROWNUM <= ? ) "   
+        + " WHERE ROW_SEQ BETWEEN ? AND ?");
+
+    ]]><emphasis role="bold">// Return modified SQL statement</emphasis><![CDATA[
+    return sql.toString();
+}
+
+]]><emphasis role="bold">// Other than the basic input parameter for the SQL statement</emphasis><![CDATA[ 
+]]><emphasis role="bold">// Setting pageIndex, pageSize value for pagination.</emphasis><![CDATA[
+public Object[] setQueryArgs(Object[] originalArgs, int pageIndex,
+        int pageSize) {
+    Object[] args = new Object[originalArgs.length + 3];
+
+    for (int i = 0; i < originalArgs.length; i++) {
+        args[i] = originalArgs[i];
+    }
+
+    args[originalArgs.length] = String.valueOf(new Long(pageIndex
+            * pageSize));
+    args[originalArgs.length + 1] = String.valueOf(new Long((pageIndex - 1)
+            * pageSize + 1));
+    args[originalArgs.length + 2] = String.valueOf(new Long(pageIndex
+            * pageSize));
+
+    return args;
+}
+
+]]><emphasis role="bold">// Other than the basic input parameter for the SQL statement</emphasis><![CDATA[ 
+]]><emphasis role="bold">// Setting pageIndex, pageSize column type for pagination.</emphasis><![CDATA[
+public int[] setQueryArgTypes(int[] originalArgTypes) {
+    int[] argTypes = new int[originalArgTypes.length + 3];
+
+    for (int i = 0; i < originalArgTypes.length; i++) {
+        argTypes[i] = originalArgTypes[i];
+    }
+
+    argTypes[originalArgTypes.length] = Types.VARCHAR;
+    argTypes[originalArgTypes.length + 1] = Types.VARCHAR;
+    argTypes[originalArgTypes.length + 2] = Types.VARCHAR;
+
+    return argTypes;
+}
+}]]></programlisting>
+
+		<para>
+			In addition, the SQL statement for searching the total number of data relevant to the search condition
+			is defined in AbstractPagingSQLGenerator, a parent class.
+			When DBMS does not support count(*), override in the relevant PagingSQLGenerator.
+		</para>
+		<para>
+		When DefaultPagingSQLGenerator is used because there is no pagingSQLGenerator that fits the DBMS in use, 
+		Query service searches all lists when searching for a list that is included in a specific page. 
+		Then, ScrollableResultSet cursor is used to extract data included in the page.
+		Therefore, compared to the PagingSQLGenerator which searches for data only in the relevant page,
+		the performance of this service declines.
+		</para>
+	</section>      
+				
+	<section id="query_configuration_lobhandler">
+		<title>lobHandler</title>
+
+		<para>
+			Query service recommends to handle LOB data using LobHandler provided in Spring.
+			The following is the LobHandler list provided in Spring. 
+		</para>
+
+		<itemizedlist>
+			<listitem>
+				<para>
+					Oracle(9i or over) : org.springframework.jdbc.support.lob.OracleLobHandler
+				</para>
+			</listitem>
+				
+			<listitem>
+				<para>
+					Others : org.springframework.jdbc.support.lob.DefaultLobHandler
+				</para>
+			</listitem>
+		</itemizedlist>
+
+		<para>
+			However, OracleLobHandler provided by Spring can only be used in Oracle 9i onwards, 
+			so org.anyframe.query.impl.jdbc.lob.Oracle8iLobHandler is additionally provided for Oracle 8i users. 
+			OracleLobHandler or Oracle8iLobHandler need the following properties.
+		</para>
+
+      	<informaltable>
+        	<tgroup cols="4">
+          		<colspec colname="col1" colnum="1" colwidth="2*" />
+          		<colspec colname="col2" colnum="2" colwidth="6*" />
+          		<colspec colname="col3" colnum="3" colwidth="1*" />
+          		<colspec colname="col4" colnum="4" colwidth="1*" />
+
+          		<thead>
+            		<row>
+              			<entry align="center">Property</entry>
+              			<entry align="center">Description</entry>
+              			<entry align="center">Required</entry>
+              			<entry align="center">Default Value</entry>
+            		</row>
+          		</thead>
+
+          		<tbody>
+            		<row>
+              			<entry>nativeJdbcExtractor</entry>
+						<entry>
+							This defines bean id of NativeJdbcExtractor
+							which extracts the original JDBC connection object from JDBC connection object wrapped to fit the connection pool in use.
+						   (Define only when nativeJdbcExtractor is needed from the lobHandler)
+							<para>
+								The following are main JdbcExtractor classes provided in Spring.
+							</para>
+							<itemizedlist>
+								<listitem>
+									<para>
+										Common DBCP                                   
+										: org.springframework.jdbc.support.nativejdbc.
+										CommonsDbcpNativeJdbcExtractor
+									</para>
+								</listitem>
+									
+								<listitem>
+									<para>
+									  	C3P0 
+									  	: org.springframework.jdbc.support.nativejdbc.
+									  	C3P0NativeJdbcExtractor
+									</para>
+								</listitem>
+									
+								<listitem>
+									<para>
+										WebLogic
+									  	: org.springframework.jdbc.support.nativejdbc.
+									  	WebLogicNativeJdbcExtractor
+									</para>
+								</listitem>
+									
+								<listitem>
+									<para>
+										WebSphere
+										: org.springframework.jdbc.support.nativejdbc.
+										WebSphereNativeJdbcExtractor
+									</para>
+								</listitem>
+							</itemizedlist> 
+                			<para>
+                				In other words, if Commons DBCP, an open source project, is in use,
+								CommonsDbcpNativeJdbcExtractor can be used.
+              				</para>
+              			</entry>
+              			<entry align="center">N</entry>
+              			<entry align="center">N/A</entry>
+            		</row>
+          		</tbody>
+        	</tgroup>
+      	</informaltable>
+	</section>
+
+	<section id="query_configuration_samples">
+    	<title>Samples</title>
+      		
+		<para>
+			The following is a part of context-query.xml containing
+			the above-mentioned Query service properties.
+		</para>
+      		
+		<programlisting language="xml"><![CDATA[<bean id="queryService" class="org.anyframe.query.impl.QueryServiceImpl">
+    <property name="jdbcTemplate" ref="jdbcTemplate"/>
+    <property name="sqlRepository" ref="sqlLoader"/>
+    <property name="pagingSQLGenerator" ref="pagingSQLGenerator"/>
+    <property name="lobHandler" ref="lobHandler"/>
+    <!-- if you don't define velocityPropsFilename, 
+        queryservice doesn't make a velocity log file. -->
+    <property name="velocityPropsFilename" value="file:./testvelocity/velocity.log"/>
+</bean>
+
+<bean id="jdbcTemplate" class="org.anyframe.query.impl.jdbc.PagingJdbcTemplate">
+    <property name="dataSource" ref="dataSource" />
+</bean>
+
+<bean id="pagingSQLGenerator" 
+    class="org.anyframe.query.impl.jdbc.generator.OraclePagingSQLGenerator"/>
+
+<bean id="nativeJdbcExtractor" 
+    class="org.springframework.jdbc.support.nativejdbc.CommonsDbcpNativeJdbcExtractor" 
+    lazy-init="true"/>
+
+<bean id="lobHandler" class="org.springframework.jdbc.support.lob.OracleLobHandler"
+    lazy-init="true">
+    <property name="nativeJdbcExtractor" ref="nativeJdbcExtractor"/>
+</bean>]]></programlisting>
+
+		<para>
+			In addition, sqlLoader can be defined like in the following context-query-sqlloader.xml file.
+		</para>
+			
+		<programlisting language="xml"><![CDATA[<bean id="sqlLoader" class="org.anyframe.query.impl.config.loader.SQLLoader">
+    <property name="mappingFiles">
+			<value>
+			    <!-- xml files in folder -->
+			    file:./src/test/resources/foldermappings/**/testcase-*.xml,
+				file:./src/test/resources/dynamicreload/testcase-queries-dynamicreload.xml,
+				<!-- xml files in classpath -->
+  		    	classpath*:/mappings/testcase-queries-dynamic.xml,
+  		    	classpath*:/mappings/testcase-queries-general.xml,
+  		   		classpath*:/mappings/testcase-queries-resultmapping.xml,
+  		    	classpath*:/mappings/testcase-queries-resultsetmapper.xml,
+  		    	classpath*:/mappings/testcase-table-mappings.xml,
+  		    	classpath*:/mappings/testcase-queries-extended.xml,
+  		    	classpath*:/mappings/testcase-queries-mappingstyle.xml,
+  		   		<!-- xml files in jar  --> 
+  		    	classpath*:/jarmappings/testcase-queries-lob.xml
+			</value>
+		</property>	
+		<property name="nullchecks">
+			<map>
+			    <!-- key: type, value: default-value -->
+		    	<entry key="VARCHAR" value=""/>
+		    </map>
+		</property>
+ 		<property name="dynamicReload" value="5" />	    
+		<property name="skipError" value="true" />
+	</bean>]]></programlisting>      		
+	</section>
+
+	<section id="query_configuration_testcase">
+    	<title>TestCase</title>
+
+		<para>
+		    The following is a part of that performs INSERT, SELECT, UPDATE, DELETE on sample data 
+			in the relevant DB using Query service.
+		</para>
+            
+		<section id="query_configuration_testcase_insert">
+            <title>INSERT</title>
+            <para>
+				The following is an example of INSERT.
+			</para>
+            	
+            <programlisting language="java"><![CDATA[public void insertQuery() throws Exception{
+    IQueryService queryService = (IQueryService) context.getBean("queryService");
+    //create() : By using SQL statement defined in XML mapping file, execute INSERT. 
+    int rs = queryService.create
+            ("create", new Object[] { "1234567890123", "AAAAA" , "seoul"});
+    if ( rs == -1 ){
+        throw new Exception("Insert query failed");
+    }
+}]]></programlisting>            	
+		</section>
+
+		<section id="query_configuration_testcase_select">
+            <title>SELECT</title>
+            <para>
+				The following is an example of SELECT.
+			</para>
+
+            <programlisting language="java"><![CDATA[public void selectQuery() throws Exception{
+    IQueryService queryService = (IQueryService) context.getBean("queryService");
+    ]]><emphasis role="bold">//find() : By using SQL statement defined in XML mapping, execute SELECT.</emphasis><![CDATA[
+
+    //In general cases (when not mapping table and class)
+    ArrayList rsquery  = (ArrayList) queryService
+            .find("selectGeneral", new Object[] { "%12345%" });
+    Map hsRsquery = new HashMap();
+    for( int i = 0 ; i < rsquery.size() ; i ++ ){
+        hsRsquery = (Map) rsquery.get(i);
+        String name = (String) hsRsquery.get("name");
+    }
+    
+    ]]><emphasis role="bold">/*When not mapping table onto the class in Mapping XML, </emphasis><![CDATA[
+    ]]><emphasis role="bold">* For the query execution result, put column name and relevant value in each row </emphasis><![CDATA[
+    ]]><emphasis role="bold">* of org.apache.commons.collections.map.ListOrderedMap in pairs. </emphasis><![CDATA[ 
+    ]]><emphasis role="bold">* return the value with ListOrderedMap contained in ArrayList. </emphasis><![CDATA[
+    ]]><emphasis role="bold">*/</emphasis><![CDATA[
+
+    //Table - When using class mapping
+    Collection rsqueryNotUsingResultMapping = queryService
+            .find("selectNotUsingResultMapping", new Object[] { "%12345%" });
+    Iterator rsqueryItr = rsqueryNotUsingResultMapping.iterator();
+    while (rsqueryItr.hasNext()) {
+        Customer customer = (Customer) rsqueryItr.next();
+        String name =  customer.getNm();
+    }
+
+    //When using result-mapping   
+    Collection rsqueryUsingResultMapping = queryService
+            .find("selectUsingResultMapping", new Object[] { "%12345%" });
+    Iterator rsqueryItr_01 = rsqueryUsingResultMapping.iterator();
+    while (rsqueryItr_01.hasNext()) {
+        CompositionCustomer compositionCustomer 
+                = (CompositionCustomer) rsqueryItr_01.next();
+        String name =  compositionCustomer.getCompositionName();
+    }
+
+    System.out.println("rsquery.size() : " 
+            + rsquery.size());
+    System.out.println("rsqueryNotUsingResultMapping.size() : " 
+            + rsqueryNotUsingResultMapping.size());
+    System.out.println("rsqueryUsingResultMapping.size( : " 
+            + rsqueryUsingResultMapping.size();
+}]]></programlisting>
+		</section>
+
+		<section id="query_configuration_testcase_update">
+            <title>UPDATE</title>
+            <para>
+            	The following is an example of UPDATE.
+            </para>			
+
+            <programlisting language="java"><![CDATA[public void updateQuery() throws Exception {
+    IQueryService queryService = (IQueryService) context
+            .getBean("queryService");
+    //update() : By using SQL statement defined in XML mapping, execute UPDATE.
+    int rs = queryService.update("update"
+            , new Object[] { "9999999999999", "AAAAA" , "busan" , "1234567890123"});
+    if ( rs == -1 ){
+        throw new Exception("Update query failed");
+    }
+}]]></programlisting>
+		</section>
+
+		<section id="query_configuration_testcase_delete">
+			<title>DELETE</title>
+			<para>
+				The following is an example of DELETE.
+			</para>	
+
+			<programlisting language="java"><![CDATA[public void deleteQuery() throws Exception {
+    IQueryService queryService = (IQueryService) context
+            .getBean("queryService");
+    //remove() : By using SQL statement defined in XML mapping file, execute DELETE.
+    int rs = queryService.remove("delete", new Object[] { "9999999999999" });
+    if ( rs == -1 ){
+        throw new Exception("Delete query failed");
+    }
+}]]></programlisting>
+		</section>
+    </section>
+    <section id="query_configuration_simplification">
+    	<title>Configuration Simplification</title>
+    	<para>
+    		Defining the property of QueryService should be accompanied by defining the properties of various beans such as jdbcTemplate, pagingSQLGenerator and sqlRepository as can be seen above. 
+    		Thus, it can seem a littl complicated to define the property of QueryService. 
+    		Also, since QueryService runs based on a specific DB, 
+    		defining properties can be more complex with not only defining the property of DB but also the property of QueryService mapped with this added 
+    		when an application is established that uses several DBS. 
+    		To reduce the complexity of property definition and to enable defining the property of QueryService easily, 
+    		QueryService provides query namespace. (from version 1.1.0)
+    	</para>
+    	<para>
+    		Let us look at how to use query namespace step by step in the following paragrpahs.
+    	</para>  
+      	<para>
+      		Query namespace provides the auto-config tag, and auto-config has the following property.
+      	</para>  	
+	    <informaltable>
+			<tgroup cols="4">
+				<colspec colname="col1" colnum="1" colwidth="2.5*" />
+				<colspec colname="col2" colnum="2" colwidth="6*" />
+				<colspec colname="col3" colnum="3" colwidth="1*" />
+				<colspec colname="col4" colnum="4" colwidth="1*" />
+			
+				<thead>
+					<row>
+						<entry align="center">Property</entry>
+						<entry align="center">Description</entry>
+						<entry align="center">Required</entry>
+						<entry align="center">Default Value</entry>
+					</row>
+				</thead>
+				<tbody>
+					<row>
+						<entry>dbType</entry>
+						<entry>
+							DMBS type is defined via QueryService.
+							Users can choose one type among apeltibase,db2, hsqldb, mysql, and oracle. 
+							And defined dbType determines implementation of pagingSQLGenerator and lobHandler Bean. 
+							In the case PagingSQLGenerator implementation is not provided at Anyframe, implementation class name should be 
+							defined in the same format as xxxxPagingSQLGenerator’s. In the case of implementation class with dbType value, 
+							other springs except PagingSQLGenerator are defined with the separation between Capital letter and small letter.  
+							<para>
+								The following is the implementation of the pagingSQLGenerator bean set for each dbType.
+								(The implementations presented below all come under the org.anyframe.query.impl.jdbc.generator package.)
+							</para>
+							<itemizedlist>
+								<listitem>
+									<para>altibase : AltibasePagingSQLGenerator</para>
+								</listitem>
+								<listitem>
+									<para>db2 : DB2PagingSQLGenerator</para>
+								</listitem>	
+								<listitem>
+									<para>hsqldb : HSQLPagingSQLGenerator</para>
+								</listitem>
+								<listitem>
+									<para>mssql : MSSQLPagingSQLGenerator</para>
+								</listitem>		
+								<listitem>
+									<para>mysql : MySQLPagingSQLGenerator</para>
+								</listitem>	
+								<listitem>
+									<para>oracle : OraclePagingSQLGenerator</para>
+								</listitem>
+								<listitem>
+									<para>default : DefaultPagingSQLGenerator</para>
+								</listitem>																																				
+							</itemizedlist>
+							<para>
+								In the case proper PagingSQLGenerator is not found, it is set as DefaultPagingSQLGenerator. 
+							</para>
+							<para>
+								The following is the implementation of lobHandler Bean set for each dbType.
+								(The implementations presented below all come under the org.springframework.jdbc.support.lob package.)
+							</para>							
+							<itemizedlist>
+								<listitem>
+									<para>oracle: OracleLobHandler</para>
+								</listitem>
+								<listitem>
+									<para>others: DefaultLobHandler</para>
+								</listitem>	
+							</itemizedlist>
+						</entry>
+						<entry align="center">Y</entry>
+						<entry align="center">N/A</entry>
+					</row> 
+					<row>
+						<entry>id</entry>
+						<entry>
+							Used to give a separate identifier to QueryService Bean that defined property using <![CDATA[<query:auto-config>]]>.
+							
+						</entry>
+						<entry align="center">N</entry>
+						<entry align="center">queryService</entry>
+					</row>
+					<row>
+						<entry>dataSource-ref</entry>
+						<entry>
+							QueryService Bean that defined its property using <![CDATA[<query:auto-config>]]> is basically executed by referencing the bean named 'dataSource'.     
+							Used to execute QueryService referencing other DataSource Beans.
+						</entry>
+						<entry align="center">N</entry>
+						<entry align="center">dataSource</entry>
+					</row>	
+					<row>
+						<entry>jdbcTemplate-ref</entry>
+						<entry>
+							QueryService Bean that defined its property using <![CDATA[<query:auto-config>]]> is basically executed by referencing 
+							the bean named 'jdbcTemplate'. 
+							The implementation of the 'jdbcTemplate' Bean applied as the default is org.anyframe.query.impl.jdbc.PagingJdbcTemplate.
+							It is used to use other JdbcTemplate implementations such as org.anyframe.query.impl.jdbc.OraclePagingJdbcTemplate provided by QueryService 
+							
+						</entry>
+						<entry align="center">N</entry>
+						<entry align="center">jdbcTemplate</entry>
+					</row>		
+					<row>
+						<entry>sqlLoader-ref</entry>
+						<entry>
+							QueryService Bean that defined its property using <![CDATA[<query:auto-config>]]> is basically executed by referencing 
+							the bean named 'sqlLoader'. 
+							The 'sqlLoader' Bean applied as the default basically loads sql/query/*.xml file on the classpath 
+							and does not apply the Dynamic Reload property to the mapping XML file. 
+							(skipError=true and nullchecks={VARCHAR,""} properties applied.)
+							Therefore, it is used to apply the location and other properties of the mapping XML file differently. 							
+						</entry>
+						<entry align="center">N</entry>
+						<entry align="center">sqlLoader</entry>
+					</row>																		
+				</tbody>
+			</tgroup>
+		</informaltable>  
+    	<para>
+    		It should be noted that to use query namespace, the following definition of namespace should precede. 
+    	</para>
+      	<programlisting language="java"><![CDATA[<beans xmlns="http://www.springframework.org/schema/beans" 
+    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+    ]]><emphasis role="bold">xmlns:query="http://www.anyframejava.org/schema/query"</emphasis><![CDATA[
+    xsi:schemaLocation="http://www.springframework.org/schema/beans 
+    http://www.springframework.org/schema/beans/spring-beans-3.0.xsd
+    ]]><emphasis role="bold">http://www.anyframejava.org/schema/query 
+    http://www.anyframejava.org/schema/query/anyframe-query-1.1.xsd</emphasis><![CDATA[">
+    <]]><emphasis role="bold">query</emphasis><![CDATA[:auto-config dbType="oracle"/>
+</beans>]]></programlisting>		
+		<para>
+			The property definition that uses query namespace shown above has the same meaning as the property definition shown next.  
+		</para> 
+      	<programlisting language="java"><![CDATA[<beans xmlns="http://www.springframework.org/schema/beans" 
+    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+    xsi:schemaLocation="http://www.springframework.org/schema/beans 
+    http://www.springframework.org/schema/beans/spring-beans-3.0.xsd">
+	
+    <bean name="]]><emphasis role="bold">queryService</emphasis><![CDATA[" class="org.anyframe.query.impl.QueryServiceImpl">
+        <property name="jdbcTemplate" ref="jdbcTemplate"/>
+        <property name="pagingSQLGenerator" ref="pagingSQLGenerator"/>
+        <property name="sqlRepository" ref="sqlLoader"/>
+        <property name="lobHandler" ref="lobHandler"/>
+    </bean>
+	
+    <bean name="]]><emphasis role="bold">sqlLoader</emphasis><![CDATA[" 
+        class="org.anyframe.query.impl.config.loader.SQLLoader">
+        <property name="mappingFiles">
+            <value>classpath:sql/query/*.xml</value>
+        </property>	
+        <property name="nullchecks">
+            <map>
+                <entry key="VARCHAR" value=""/>
+            </map>
+        </property>
+        <property name="skipError" value="true" />	
+    </bean>
+	
+    <bean id="]]><emphasis role="bold">jdbcTemplate</emphasis><![CDATA[" 
+        class="org.anyframe.query.impl.jdbc.PagingJdbcTemplate">
+        <property name="dataSource" ref="dataSource" />
+        <property name="exceptionTranslator" ref="exceptionTranslator" />
+    </bean>
+    
+    <bean id="]]><emphasis role="bold">exceptionTranslator</emphasis><![CDATA[" 
+        class="org.anyframe.query.impl.util.RawSQLExceptionTranslator"/>
+    
+    <bean id="]]><emphasis role="bold">pagingSQLGenerator</emphasis><![CDATA[" 
+        class="org.anyframe.query.impl.jdbc.generator.OraclePagingSQLGenerator"/>
+	
+    <bean id="]]><emphasis role="bold">lobHandler</emphasis><![CDATA[" 
+        class="org.springframework.jdbc.support.lob.OracleLobHandler" lazy-init="true">
+        <property name="nativeJdbcExtractor" ref="nativeJdbcExtractor"/>
+    </bean>
+
+    <bean id="]]><emphasis role="bold">nativeJdbcExtractor</emphasis><![CDATA[" 
+        class="org.springframework.jdbc.support.nativejdbc.CommonsDbcpNativeJdbcExtractor" lazy-init="true"/>
+</beans>]]></programlisting>
+		<para>
+			However, beware that identifiers of jdbcTemplate, pagingSQLGenerator, lobHandler, sqlLoader Bean defined by auto-configuration
+			are created in random spring.
+			The reason would be that in the case of executing DB access logic by using a variety of DB, various QueryServices are defined and 
+			jdbcTemplate, pagingSQLGenerator, lobHandler, sqlLoader Beans referred to by QueryService should have their own unique identifier. 
+		</para>	 	
+    </section>
+</chapter>
+
+ 

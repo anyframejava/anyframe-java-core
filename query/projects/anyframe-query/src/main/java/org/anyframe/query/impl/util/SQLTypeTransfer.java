@@ -1,5 +1,5 @@
 /*
- * Copyright 2002-2008 the original author or authors.
+ * Copyright 2002-2012 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -24,7 +24,6 @@ import org.anyframe.query.QueryService;
 import org.springframework.jdbc.core.ColumnMapRowMapper;
 import org.springframework.jdbc.core.SqlOutParameter;
 import org.springframework.jdbc.core.SqlParameter;
-
 
 /**
  * @author SoYon Lim
@@ -157,8 +156,10 @@ public class SQLTypeTransfer {
 				retValue = ((Integer) (sqltypes.get(typeName))).intValue();
 			} catch (Exception e) {
 				QueryService.LOGGER
-						.error("Query Service : Not supported sql type. ["
-								+ typeName + "]" + e.getStackTrace().toString());
+						.error(
+								"Query Service : Not supported sql type. [{}] {}",
+								new Object[] { typeName,
+										e.getStackTrace().toString() });
 			}
 		}
 		return retValue;
@@ -172,10 +173,10 @@ public class SQLTypeTransfer {
 			try {
 				retValue = ((Integer) (javatypes.get(clazz))).intValue();
 			} catch (Exception e) {
-				QueryService.LOGGER
-						.error("Query Service : Not supported java type. ["
-								+ clazz.getName() + "]"
-								+ e.getStackTrace().toString());
+				QueryService.LOGGER.error(
+						"Query Service : Not supported java type. [{}] {}",
+						new Object[] { clazz.getName(),
+								e.getStackTrace().toString() });
 			}
 		}
 		return retValue;
@@ -237,9 +238,9 @@ public class SQLTypeTransfer {
 			try {
 				retValue = (String) sqltypenames.get(new Integer(type));
 			} catch (Exception e) {
-				QueryService.LOGGER
-						.error("Query Service : Not supported sql type. ["
-								+ type + "]" + e.getStackTrace().toString());
+				QueryService.LOGGER.error(
+						"Query Service : Not supported sql type. [{}] {}",
+						new Object[] { type, e.getStackTrace().toString() });
 			}
 		}
 		return retValue;

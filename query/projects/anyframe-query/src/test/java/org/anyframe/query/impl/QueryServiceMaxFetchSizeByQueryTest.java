@@ -1,5 +1,5 @@
 /*
- * Copyright 2002-2008 the original author or authors.
+ * Copyright 2002-2012 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,13 +16,20 @@
 package org.anyframe.query.impl;
 
 import java.util.Collection;
-import java.util.Iterator;
 import java.util.Map;
+
+import javax.inject.Inject;
+
+import junit.framework.Assert;
 
 import org.anyframe.query.QueryService;
 import org.anyframe.query.QueryServiceException;
+import org.junit.Before;
+import org.junit.Test;
+import org.junit.runner.RunWith;
 import org.springframework.dao.DataRetrievalFailureException;
-import org.springframework.test.AbstractDependencyInjectionSpringContextTests;
+import org.springframework.test.context.ContextConfiguration;
+import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 
 /**
  * TestCase Name : QueryServiceMaxFetchSizeByQueryTest <br>
@@ -42,22 +49,17 @@ import org.springframework.test.AbstractDependencyInjectionSpringContextTests;
  * DataRetrievalFailureException takes place.</li>
  * </ul>
  */
-public class QueryServiceMaxFetchSizeByQueryTest extends
-		AbstractDependencyInjectionSpringContextTests {
+@RunWith(SpringJUnit4ClassRunner.class)
+@ContextConfiguration(locations = { "classpath*:/spring/maxfetchsize/context-*.xml" })
+public class QueryServiceMaxFetchSizeByQueryTest {
 
-	private QueryService queryService = null;
-
-	public void setQueryService(QueryService queryService) {
-		this.queryService = queryService;
-	}
-
-	protected String[] getConfigLocations() {
-		return new String[] { "classpath*:/spring/maxfetchsize/context-*.xml" };
-	}
+	@Inject
+	QueryService queryService;
 
 	/**
 	 * Table TB_CUSTMER is created for test.
 	 */
+	@Before
 	public void onSetUp() throws Exception {
 		System.out.println("Attempting to drop old table");
 		try {
@@ -81,6 +83,7 @@ public class QueryServiceMaxFetchSizeByQueryTest extends
 	 * @throws Exception
 	 *             throws exception which is from QueryService
 	 */
+	@Test
 	public void testFind() throws Exception {
 		// 1. insert test data over maxFetchSize
 		insertCustomerBySQL("1234567890123", "Anyframe1", "Seoul");
@@ -90,16 +93,16 @@ public class QueryServiceMaxFetchSizeByQueryTest extends
 		Collection results = queryService.find("findCustomerWithResultLength",
 				new Object[] { "%12345678%" });
 		// 2. assert
-		assertTrue("fail to apply maxFetchSize", results.size() == 2);
+		Assert.assertTrue("fail to apply maxFetchSize", results.size() == 2);
 
 		try {
 			// 3. execute select query with maxFetchSize
 			queryService.find("findCustomerWithResultLengthMaxFetchSize",
 					new Object[] { "%12345678%" });
-			fail("fail to check maxFetchSize");
+			Assert.fail("fail to check maxFetchSize");
 		} catch (QueryServiceException e) {
 			// 4. assert
-			assertTrue("fail to compare exception",
+			Assert.assertTrue("fail to compare exception",
 					e.getCause() instanceof DataRetrievalFailureException);
 		}
 
@@ -107,10 +110,10 @@ public class QueryServiceMaxFetchSizeByQueryTest extends
 			// 5. execute select query with maxFetchSize, length
 			queryService.find("findCustomerWithResultLengthMaxFetchSize",
 					new Object[] { "%12345678%" }, 1);
-			fail("fail to check maxFetchSize");
+			Assert.fail("fail to check maxFetchSize");
 		} catch (QueryServiceException e) {
 			// 6. assert
-			assertTrue("fail to compare exception",
+			Assert.assertTrue("fail to compare exception",
 					e.getCause() instanceof DataRetrievalFailureException);
 		}
 
@@ -118,10 +121,10 @@ public class QueryServiceMaxFetchSizeByQueryTest extends
 			// 7. execute select query with maxFetchSize
 			queryService.find("findCustomerWithMaxFetchSize",
 					new Object[] { "%12345678%" }, 1, 4);
-			fail("fail to check maxFetchSize");
+			Assert.fail("fail to check maxFetchSize");
 		} catch (QueryServiceException e) {
 			// 8. assert
-			assertTrue("fail to compare exception",
+			Assert.assertTrue("fail to compare exception",
 					e.getCause() instanceof DataRetrievalFailureException);
 		}
 
@@ -130,10 +133,10 @@ public class QueryServiceMaxFetchSizeByQueryTest extends
 			queryService.findWithRowCount(
 					"findCustomerWithResultLengthMaxFetchSize",
 					new Object[] { "%12345678%" });
-			fail("fail to check maxFetchSize");
+			Assert.fail("fail to check maxFetchSize");
 		} catch (QueryServiceException e) {
 			// 10. assert
-			assertTrue("fail to compare exception",
+			Assert.assertTrue("fail to compare exception",
 					e.getCause() instanceof DataRetrievalFailureException);
 		}
 
@@ -142,10 +145,10 @@ public class QueryServiceMaxFetchSizeByQueryTest extends
 			queryService.findWithRowCount(
 					"findCustomerWithResultLengthMaxFetchSize",
 					new Object[] { "%12345678%" }, 1);
-			fail("fail to check maxFetchSize");
+			Assert.fail("fail to check maxFetchSize");
 		} catch (QueryServiceException e) {
 			// 12. assert
-			assertTrue("fail to compare exception",
+			Assert.assertTrue("fail to compare exception",
 					e.getCause() instanceof DataRetrievalFailureException);
 		}
 
@@ -153,10 +156,10 @@ public class QueryServiceMaxFetchSizeByQueryTest extends
 			// 13. execute select query with maxFetchSize
 			queryService.findWithRowCount("findCustomerWithMaxFetchSize",
 					new Object[] { "%12345678%" }, 1, 4);
-			fail("fail to check maxFetchSize");
+			Assert.fail("fail to check maxFetchSize");
 		} catch (QueryServiceException e) {
 			// 14. assert
-			assertTrue("fail to compare exception",
+			Assert.assertTrue("fail to compare exception",
 					e.getCause() instanceof DataRetrievalFailureException);
 		}
 	}
@@ -170,6 +173,7 @@ public class QueryServiceMaxFetchSizeByQueryTest extends
 	 * @throws Exception
 	 *             throws exception which is from QueryService
 	 */
+	@Test
 	public void testFindWithDynamicQuery() throws Exception {
 		// 1. insert test data over maxFetchSize
 		insertCustomerBySQL("1234567890123", "Anyframe1", "Seoul");
@@ -180,10 +184,10 @@ public class QueryServiceMaxFetchSizeByQueryTest extends
 			queryService.find(
 					"findCustomerWithDynamicResultLengthMaxFetchSize",
 					new Object[] { new Object[] { "ssno", "%12345678%" } });
-			fail("fail to check maxFetchSize");
+			Assert.fail("fail to check maxFetchSize");
 		} catch (QueryServiceException e) {
 			// 2. assert
-			assertTrue("fail to compare exception",
+			Assert.assertTrue("fail to compare exception",
 					e.getCause() instanceof DataRetrievalFailureException);
 		}
 
@@ -192,10 +196,10 @@ public class QueryServiceMaxFetchSizeByQueryTest extends
 			queryService.find(
 					"findCustomerWithDynamicResultLengthMaxFetchSize",
 					new Object[] { new Object[] { "ssno", "%12345678%" } }, 1);
-			fail("fail to check maxFetchSize");
+			Assert.fail("fail to check maxFetchSize");
 		} catch (QueryServiceException e) {
 			// 4. assert
-			assertTrue("fail to compare exception",
+			Assert.assertTrue("fail to compare exception",
 					e.getCause() instanceof DataRetrievalFailureException);
 		}
 
@@ -204,10 +208,10 @@ public class QueryServiceMaxFetchSizeByQueryTest extends
 			queryService.find("findCustomerWithDynamicMaxFetchSize",
 					new Object[] { new Object[] { "ssno", "%12345678%" } }, 1,
 					4);
-			fail("fail to check maxFetchSize");
+			Assert.fail("fail to check maxFetchSize");
 		} catch (QueryServiceException e) {
 			// 6. assert
-			assertTrue("fail to compare exception",
+			Assert.assertTrue("fail to compare exception",
 					e.getCause() instanceof DataRetrievalFailureException);
 		}
 
@@ -216,10 +220,10 @@ public class QueryServiceMaxFetchSizeByQueryTest extends
 			queryService.findWithRowCount(
 					"findCustomerWithDynamicResultLengthMaxFetchSize",
 					new Object[] { new Object[] { "ssno", "%12345678%" } });
-			fail("fail to check maxFetchSize");
+			Assert.fail("fail to check maxFetchSize");
 		} catch (QueryServiceException e) {
 			// 8. assert
-			assertTrue("fail to compare exception",
+			Assert.assertTrue("fail to compare exception",
 					e.getCause() instanceof DataRetrievalFailureException);
 		}
 
@@ -228,10 +232,10 @@ public class QueryServiceMaxFetchSizeByQueryTest extends
 			queryService.findWithRowCount(
 					"findCustomerWithDynamicResultLengthMaxFetchSize",
 					new Object[] { new Object[] { "ssno", "%12345678%" } }, 1);
-			fail("fail to check maxFetchSize");
+			Assert.fail("fail to check maxFetchSize");
 		} catch (QueryServiceException e) {
 			// 10. assert
-			assertTrue("fail to compare exception",
+			Assert.assertTrue("fail to compare exception",
 					e.getCause() instanceof DataRetrievalFailureException);
 		}
 
@@ -241,10 +245,10 @@ public class QueryServiceMaxFetchSizeByQueryTest extends
 					"findCustomerWithDynamicMaxFetchSize",
 					new Object[] { new Object[] { "ssno", "%12345678%" } }, 1,
 					4);
-			fail("fail to check maxFetchSize");
+			Assert.fail("fail to check maxFetchSize");
 		} catch (QueryServiceException e) {
 			// 12. assert
-			assertTrue("fail to compare exception",
+			Assert.assertTrue("fail to compare exception",
 					e.getCause() instanceof DataRetrievalFailureException);
 		}
 	}
@@ -267,13 +271,13 @@ public class QueryServiceMaxFetchSizeByQueryTest extends
 				new String[] { "VARCHAR" }, new Object[] { ssno });
 
 		// 2. assert
-		assertEquals("Fail to find customer by SQL.", 1, rtCollection.size());
+		Assert.assertEquals("Fail to find customer by SQL.", 1, rtCollection.size());
 
 		// 3. assert in detail
 		Map rtMap = (Map) rtCollection.iterator().next();
-		assertEquals("Fail to compare result.", address, (String) rtMap
+		Assert.assertEquals("Fail to compare result.", address, (String) rtMap
 				.get("address"));
-		assertEquals("Fail to compare result.", name, (String) rtMap
+		Assert.assertEquals("Fail to compare result.", name, (String) rtMap
 				.get("name"));
 	}
 
@@ -296,7 +300,7 @@ public class QueryServiceMaxFetchSizeByQueryTest extends
 						name, address });
 
 		// 2. assert
-		assertEquals("Fail to insert customer.", 1, result);
+		Assert.assertEquals("Fail to insert customer.", 1, result);
 		findCustomerBySQL(ssno, name, address);
 	}
 

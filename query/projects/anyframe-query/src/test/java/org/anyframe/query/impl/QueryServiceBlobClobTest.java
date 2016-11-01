@@ -1,5 +1,5 @@
 /*
- * Copyright 2002-2008 the original author or authors.
+ * Copyright 2002-2012 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -19,9 +19,17 @@ import java.util.Collection;
 import java.util.Iterator;
 import java.util.Map;
 
+import javax.inject.Inject;
+
+import junit.framework.Assert;
+
 import org.anyframe.query.QueryService;
 import org.anyframe.query.vo.LobVO;
-import org.springframework.test.AbstractDependencyInjectionSpringContextTests;
+import org.junit.Before;
+import org.junit.Test;
+import org.junit.runner.RunWith;
+import org.springframework.test.context.ContextConfiguration;
+import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 
 /**
  * TestCase Name : QueryServiceBlobClobTest <br>
@@ -40,24 +48,18 @@ import org.springframework.test.AbstractDependencyInjectionSpringContextTests;
  * 
  * @author SoYon Lim
  */
-public class QueryServiceBlobClobTest extends
-		AbstractDependencyInjectionSpringContextTests {
-	private QueryService queryService = null;
-
-	public void setQueryService(QueryService queryService) {
-		this.queryService = queryService;
-	}
-
-	protected String[] getConfigLocations() {
-		setAutowireMode(AbstractDependencyInjectionSpringContextTests.AUTOWIRE_BY_NAME);
-		return new String[] { "classpath*:/spring/context-*.xml" };
-	}
-
+@RunWith(SpringJUnit4ClassRunner.class)
+@ContextConfiguration(locations = { "classpath*:/spring/context-*.xml" })
+public class QueryServiceBlobClobTest {
+	
+	@Inject
+	QueryService queryService;
+	
 	/**
 	 * Table TB_BINARY_TEST is created for test.
 	 */
+	@Before
 	public void onSetUp() throws Exception {
-		super.onSetUp();
 		System.out.println("Attempting to drop old table");
 		try {
 			queryService.updateBySQL("DROP TABLE TB_BINARY_TEST",
@@ -77,6 +79,7 @@ public class QueryServiceBlobClobTest extends
 	 * @throws Exception
 	 *             throws exception which is from QueryService
 	 */
+	@Test
 	public void testFindClobBlob() throws Exception {
 		// 1. set data for insert
 		insertClobBlob();
@@ -84,14 +87,14 @@ public class QueryServiceBlobClobTest extends
 		// 2. execute query
 		Collection results = queryService.find("findBlobClob",
 				new Object[] { new Integer(5) });
-		assertEquals(1, results.size());
+		Assert.assertEquals(1, results.size());
 
 		// 3. assert
 		Iterator resultItr = results.iterator();
 		while (resultItr.hasNext()) {
 			Map binary = (Map) resultItr.next();
-			assertEquals("Fail to find clob.", val, binary.get("myclob"));
-			assertEquals("Fail to find blob.", "12345", new String(
+			Assert.assertEquals("Fail to find clob.", val, binary.get("myclob"));
+			Assert.assertEquals("Fail to find blob.", "12345", new String(
 					(byte[]) binary.get("myblob")));
 		}
 	}
@@ -104,6 +107,7 @@ public class QueryServiceBlobClobTest extends
 	 * @throws Exception
 	 *             throws exception which is from QueryService
 	 */
+	@Test
 	public void testDeleteClobBlob() throws Exception {
 		// 1. set data for insert
 		insertClobBlob();
@@ -116,7 +120,7 @@ public class QueryServiceBlobClobTest extends
 		Collection results = queryService.find("findBlobClob",
 				new Object[] { new Integer(5) });
 
-		assertEquals("Fail to delete clob/blob.", 0, results.size());
+		Assert.assertEquals("Fail to delete clob/blob.", 0, results.size());
 	}
 
 	/**
@@ -126,6 +130,7 @@ public class QueryServiceBlobClobTest extends
 	 * @throws Exception
 	 *             throws exception which is from QueryService
 	 */
+	@Test
 	public void testFindClobBlobWithResultClass() throws Exception {
 		// 1. set data for insert
 		insertClobBlob();
@@ -133,14 +138,14 @@ public class QueryServiceBlobClobTest extends
 		// 2. execute query
 		Collection results = queryService.find("findBlobClobWithResultClass",
 				new Object[] { new Integer(5) });
-		assertEquals(1, results.size());
+		Assert.assertEquals(1, results.size());
 
 		// 3. assert
 		Iterator resultItr = results.iterator();
 		while (resultItr.hasNext()) {
 			LobVO binary = (LobVO) resultItr.next();
-			assertEquals("Fail to find clob.", val, binary.getMyclob());
-			assertEquals("Fail to find blob.", "12345", new String(binary
+			Assert.assertEquals("Fail to find clob.", val, binary.getMyclob());
+			Assert.assertEquals("Fail to find blob.", "12345", new String(binary
 					.getMyblob()));
 		}
 	}

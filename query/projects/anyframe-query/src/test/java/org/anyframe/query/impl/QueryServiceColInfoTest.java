@@ -1,5 +1,5 @@
 /*
- * Copyright 2002-2008 the original author or authors.
+ * Copyright 2002-2012 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,13 +16,18 @@
 package org.anyframe.query.impl;
 
 import java.util.Collection;
-import java.util.Iterator;
 import java.util.Map;
 
+import javax.inject.Inject;
+
+import junit.framework.Assert;
+
 import org.anyframe.query.QueryService;
-import org.anyframe.query.QueryServiceException;
-import org.springframework.dao.DataRetrievalFailureException;
-import org.springframework.test.AbstractDependencyInjectionSpringContextTests;
+import org.junit.Before;
+import org.junit.Test;
+import org.junit.runner.RunWith;
+import org.springframework.test.context.ContextConfiguration;
+import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 
 /**
  * TestCase Name : QueryServiceColInfoTest <br>
@@ -37,22 +42,27 @@ import org.springframework.test.AbstractDependencyInjectionSpringContextTests;
  * tough search result value is 0.</li>
  * </ul>
  */
-public class QueryServiceColInfoTest extends
-		AbstractDependencyInjectionSpringContextTests {
-
-	private QueryService queryService = null;
-
-	public void setQueryService(QueryService queryService) {
-		this.queryService = queryService;
-	}
-
-	protected String[] getConfigLocations() {
-		return new String[] { "classpath*:/spring/maxfetchsize/context-*.xml" };
-	}
+@RunWith(SpringJUnit4ClassRunner.class)
+@ContextConfiguration(locations = { "classpath*:/spring/maxfetchsize/context-*.xml" })
+public class QueryServiceColInfoTest {
+	
+	@Inject
+	QueryService queryService;
+	
+//	private QueryService queryService = null;
+//
+//	public void setQueryService(QueryService queryService) {
+//		this.queryService = queryService;
+//	}
+//
+//	protected String[] getConfigLocations() {
+//		return new String[] { "classpath*:/spring/maxfetchsize/context-*.xml" };
+//	}
 
 	/**
 	 * Table TB_CUSTOMER is created for test.
 	 */
+	@Before
 	public void onSetUp() throws Exception {
 		System.out.println("Attempting to drop old table");
 		try {
@@ -75,6 +85,7 @@ public class QueryServiceColInfoTest extends
 	 * @throws Exception
 	 *             throws exception which is from QueryService
 	 */
+	@Test
 	public void testFindWithColInfo() throws Exception {
 		// 1. insert test data over maxFetchSize
 		insertCustomerBySQL("1234567890123", "Anyframe1", "Seoul");
@@ -88,11 +99,11 @@ public class QueryServiceColInfoTest extends
 
 		Map columnInfos = (Map) results.get(QueryService.COL_INFO);
 
-		assertEquals("fail to find column information about ssno",
+		Assert.assertEquals("fail to find column information about ssno",
 				"VARCHAR:13:0", columnInfos.get("ssno"));
-		assertEquals("fail to find column information about ssno",
+		Assert.assertEquals("fail to find column information about ssno",
 				"VARCHAR:20:0", columnInfos.get("name"));
-		assertEquals("fail to find column information about ssno",
+		Assert.assertEquals("fail to find column information about ssno",
 				"VARCHAR:20:0", columnInfos.get("address"));
 
 		results = queryService.findWithColInfo("findCustomerWithResult",
@@ -100,11 +111,11 @@ public class QueryServiceColInfoTest extends
 
 		columnInfos = (Map) results.get(QueryService.COL_INFO);
 
-		assertEquals("fail to find column information about ssno",
+		Assert.assertEquals("fail to find column information about ssno",
 				"VARCHAR:13:0", columnInfos.get("ssno"));
-		assertEquals("fail to find column information about ssno",
+		Assert.assertEquals("fail to find column information about ssno",
 				"VARCHAR:20:0", columnInfos.get("name"));
-		assertEquals("fail to find column information about ssno",
+		Assert.assertEquals("fail to find column information about ssno",
 				"VARCHAR:20:0", columnInfos.get("address"));
 
 		results = queryService.findWithColInfo("findCustomerWithResultMapping",
@@ -112,9 +123,9 @@ public class QueryServiceColInfoTest extends
 
 		columnInfos = (Map) results.get(QueryService.COL_INFO);
 
-		assertEquals("fail to find column information about ssno",
+		Assert.assertEquals("fail to find column information about ssno",
 				"VARCHAR:20:0", columnInfos.get("name"));
-		assertEquals("fail to find column information about ssno",
+		Assert.assertEquals("fail to find column information about ssno",
 				"VARCHAR:20:0", columnInfos.get("address"));
 	}
 
@@ -136,13 +147,13 @@ public class QueryServiceColInfoTest extends
 				new String[] { "VARCHAR" }, new Object[] { ssno });
 
 		// 2. assert
-		assertEquals("Fail to find customer by SQL.", 1, rtCollection.size());
+		Assert.assertEquals("Fail to find customer by SQL.", 1, rtCollection.size());
 
 		// 3. assert in detail
 		Map rtMap = (Map) rtCollection.iterator().next();
-		assertEquals("Fail to compare result.", address, (String) rtMap
+		Assert.assertEquals("Fail to compare result.", address, (String) rtMap
 				.get("address"));
-		assertEquals("Fail to compare result.", name, (String) rtMap
+		Assert.assertEquals("Fail to compare result.", name, (String) rtMap
 				.get("name"));
 	}
 
@@ -165,7 +176,7 @@ public class QueryServiceColInfoTest extends
 						name, address });
 
 		// 2. assert
-		assertEquals("Fail to insert customer.", 1, result);
+		Assert.assertEquals("Fail to insert customer.", 1, result);
 		findCustomerBySQL(ssno, name, address);
 	}
 

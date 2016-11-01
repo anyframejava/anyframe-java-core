@@ -1,5 +1,5 @@
 /*
- * Copyright 2002-2008 the original author or authors.
+ * Copyright 2002-2012 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -230,9 +230,10 @@ public abstract class AbstractResultSetMapperSupport implements ResultSetMapper 
 				return resultSet.getString(columnIndex);
 			} // swich
 		} catch (Exception e) {
-			QueryService.LOGGER.error(
-					"Query Service : Not supported SQL type. Column Name - "
-							+ columnName + ".", e);
+			QueryService.LOGGER
+					.error(
+							"Query Service : Not supported SQL type. Column Name - {}.",
+							columnName, e);
 		}
 		return null;
 	}

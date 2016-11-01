@@ -1,5 +1,5 @@
 /*
- * Copyright 2002-2010 the original author or authors.
+ * Copyright 2002-2012 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -20,8 +20,16 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
+import javax.inject.Inject;
+
+import junit.framework.Assert;
+
 import org.anyframe.query.QueryService;
-import org.springframework.test.AbstractDependencyInjectionSpringContextTests;
+import org.junit.Before;
+import org.junit.Test;
+import org.junit.runner.RunWith;
+import org.springframework.test.context.ContextConfiguration;
+import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 
 /**
  * TestCase Name : QueryServiceConcurrentTest <br>
@@ -33,22 +41,17 @@ import org.springframework.test.AbstractDependencyInjectionSpringContextTests;
  * <li>#-1 Positive Case : Query statement is executed through
  * findWithRowCount() of QueryService and its result value is verified.</li>
  */
-public class QueryServiceConcurrentTest extends
-		AbstractDependencyInjectionSpringContextTests {
-	private QueryService queryService = null;
-
-	public void setQueryService(QueryService queryService) {
-		this.queryService = queryService;
-	}
-
-	protected String[] getConfigLocations() {
-		setAutowireMode(AbstractDependencyInjectionSpringContextTests.AUTOWIRE_BY_NAME);
-		return new String[] { "classpath*:/spring/context-*.xml" };
-	}
+@RunWith(SpringJUnit4ClassRunner.class)
+@ContextConfiguration(locations = { "classpath*:/spring/context-*.xml" })
+public class QueryServiceConcurrentTest {
+	
+	@Inject
+	QueryService queryService;
 
 	/**
 	 * Table TB_RESERVATION is created for test.
 	 */
+	@Before
 	public void onSetUp() throws Exception {
 		System.out.println("Attempting to drop old table");
 		try {
@@ -80,6 +83,7 @@ public class QueryServiceConcurrentTest extends
 	 * @throws Exception
 	 *             throws exception which is from QueryService
 	 */
+	@Test
 	public void testConcurrentExecution() throws Exception {
 		// make race condition situation
 		// THREAD #1
@@ -126,9 +130,11 @@ public class QueryServiceConcurrentTest extends
 			TestThread currentThread = (TestThread) Thread.currentThread();
 			if (currentThread.getThreadNum() == 1
 					|| currentThread.getThreadNum() == 3) {
-				assertEquals("Fail to compare condition.", "A", condition);
+				Assert.assertEquals("Fail to compare condition.", "A",
+						condition);
 			} else {
-				assertEquals("Fail to compare condition.", "B", condition);
+				Assert.assertEquals("Fail to compare condition.", "B",
+						condition);
 			}
 
 			Map result = queryService.findWithRowCount("findWithConcurrent",
@@ -145,20 +151,20 @@ public class QueryServiceConcurrentTest extends
 						+ result.get(key) + "]");
 
 				if (currentThread.getThreadNum() == 1 && key.equals("LIST")) {
-					assertEquals("Fail to compare condition.", "A",
+					Assert.assertEquals("Fail to compare condition.", "A",
 							((Map) ((List) result.get("LIST")).get(0))
 									.get("condition"));
 				}
 
 				if (currentThread.getThreadNum() == 2 && key.equals("LIST")) {
-					assertEquals("Fail to compare condition.", "B",
+					Assert.assertEquals("Fail to compare condition.", "B",
 							((Map) ((List) result.get("LIST")).get(0))
 									.get("condition"));
 				}
 			}
 
 		} catch (Exception e) {
-			fail("throw exception : " + e.getMessage());
+			Assert.fail("throw exception : " + e.getMessage());
 		}
 	}
 }

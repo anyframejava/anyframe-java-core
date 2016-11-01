@@ -1,5 +1,5 @@
 /*
- * Copyright 2002-2010 the original author or authors.
+ * Copyright 2002-2012 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -15,18 +15,10 @@
  */
 package org.anyframe.query.impl;
 
-import static org.junit.Assert.assertEquals;
-
-import java.util.Collection;
-import java.util.Iterator;
-import java.util.Map;
-
 import javax.inject.Inject;
 import javax.inject.Named;
-import javax.sql.DataSource;
 
 import org.anyframe.query.QueryService;
-import org.anyframe.query.vo.LobVO;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -52,9 +44,10 @@ public class QueryServiceSybaseBlobClobTest {
 	@Inject
 	@Named("queryService")
 	private QueryService queryService = null;
-	@Inject
-	@Named("dataSource")
-	private DataSource dataSource = null;
+	
+//	@Inject
+//	@Named("dataSource")
+//	private DataSource dataSource = null;
 
 	/**
 	 * Table TB_BINARY_TEST is created for test. 

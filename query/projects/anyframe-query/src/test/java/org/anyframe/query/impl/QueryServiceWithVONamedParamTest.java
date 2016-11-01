@@ -1,5 +1,5 @@
 /*
- * Copyright 2002-2008 the original author or authors.
+ * Copyright 2002-2012 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -17,9 +17,17 @@ package org.anyframe.query.impl;
 
 import java.util.Collection;
 
+import javax.inject.Inject;
+
+import junit.framework.Assert;
+
 import org.anyframe.query.QueryService;
 import org.anyframe.query.vo.CategoryVO;
-import org.springframework.test.AbstractDependencyInjectionSpringContextTests;
+import org.junit.Before;
+import org.junit.Test;
+import org.junit.runner.RunWith;
+import org.springframework.test.context.ContextConfiguration;
+import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 
 
 /**
@@ -46,21 +54,25 @@ import org.springframework.test.AbstractDependencyInjectionSpringContextTests;
  * </ul>
  * @author SoYon Lim
  */
-public class QueryServiceWithVONamedParamTest extends
-        AbstractDependencyInjectionSpringContextTests {
-    private QueryService queryService;
+@RunWith(SpringJUnit4ClassRunner.class)
+@ContextConfiguration(locations = { "classpath:/spring/context-*.xml" })
+public class QueryServiceWithVONamedParamTest {
+    
+	@Inject
+	QueryService queryService;
 
-    public void setQueryService(QueryService queryService) {
-        this.queryService = queryService;
-    }
-
-    protected String[] getConfigLocations() {
-        return new String[] {"classpath:/spring/context-*.xml" };
-    }
+//    public void setQueryService(QueryService queryService) {
+//        this.queryService = queryService;
+//    }
+//
+//    protected String[] getConfigLocations() {
+//        return new String[] {"classpath:/spring/context-*.xml" };
+//    }
 
     /**
      * Table TB_EXT_CATEGORY is created for test and initial data is entered. 
      */
+	@Before
     public void onSetUp() throws Exception {
         try {
             queryService.updateBySQL("DROP TABLE TB_EXT_CATEGORY",
@@ -95,6 +107,7 @@ public class QueryServiceWithVONamedParamTest extends
      *         throws exception which is from
      *         QueryService
      */
+	@Test
     public void testUpdateCategory() throws Exception {
         // 1. insert test data
         CategoryVO categoryVO = insertCategory();
@@ -108,7 +121,7 @@ public class QueryServiceWithVONamedParamTest extends
                 "vo", categoryVO } });
 
         // 4. assert
-        assertEquals("Fail to update category.", 1, result);
+        Assert.assertEquals("Fail to update category.", 1, result);
         // 5. assert in detail
         findCategory(categoryVO.getCategoryNo(), categoryVO.getCategoryName());
     }
@@ -123,6 +136,7 @@ public class QueryServiceWithVONamedParamTest extends
      *         throws exception which is from
      *         QueryService
      */
+	@Test
     public void testDeleteCategory() throws Exception {
         // 1. insert test data
         CategoryVO categoryVO = insertCategory();
@@ -133,7 +147,7 @@ public class QueryServiceWithVONamedParamTest extends
                 "vo", categoryVO } });
 
         // 3. assert
-        assertEquals("Fail to delete category.", 1, result);
+        Assert.assertEquals("Fail to delete category.", 1, result);
 
         // 4. execute query for assert
         Collection rtCollection =
@@ -141,7 +155,7 @@ public class QueryServiceWithVONamedParamTest extends
                 categoryVO } });
 
         // 5. assert
-        assertEquals("Fail to find category list.", 0, rtCollection.size());
+        Assert.assertEquals("Fail to find category list.", 0, rtCollection.size());
     }
 
     /**
@@ -161,7 +175,7 @@ public class QueryServiceWithVONamedParamTest extends
                 "vo", categoryVO } });
 
         // 3. assert
-        assertEquals("Fail to insert category.", 1, result);
+        Assert.assertEquals("Fail to insert category.", 1, result);
 
         // 4. assert in detail
         findCategory(categoryVO.getCategoryNo(), categoryVO.getCategoryName());
@@ -191,13 +205,13 @@ public class QueryServiceWithVONamedParamTest extends
                 searchVO } });
 
         // 3. assert
-        assertEquals("Fail to find category list.", 1, rtCollection.size());
+        Assert.assertEquals("Fail to find category list.", 1, rtCollection.size());
 
         // 4. assert in detail
         CategoryVO categoryVO = (CategoryVO) rtCollection.iterator().next();
-        assertEquals("Fail to compare result.", categoryNo, categoryVO
+        Assert.assertEquals("Fail to compare result.", categoryNo, categoryVO
             .getCategoryNo());
-        assertEquals("Fail to compare result.", categoryName, categoryVO
+        Assert.assertEquals("Fail to compare result.", categoryName, categoryVO
             .getCategoryName());
     }
 

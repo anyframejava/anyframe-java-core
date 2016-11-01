@@ -1,5 +1,5 @@
 /*
- * Copyright 2002-2008 the original author or authors.
+ * Copyright 2002-2012 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -27,6 +27,7 @@ import org.anyframe.query.impl.jdbc.generator.AltibasePagingSQLGenerator;
 import org.anyframe.query.impl.jdbc.generator.DB2PagingSQLGenerator;
 import org.anyframe.query.impl.jdbc.generator.DefaultPagingSQLGenerator;
 import org.anyframe.query.impl.jdbc.generator.HSQLPagingSQLGenerator;
+import org.anyframe.query.impl.jdbc.generator.MSSQLPagingSQLGenerator;
 import org.anyframe.query.impl.jdbc.generator.MySQLPagingSQLGenerator;
 import org.anyframe.query.impl.jdbc.generator.OraclePagingSQLGenerator;
 import org.anyframe.query.impl.util.RawSQLExceptionTranslator;
@@ -91,11 +92,12 @@ import org.w3c.dom.Element;
 public class AutoConfigBeanDefinitionParser implements BeanDefinitionParser {
 
 	private String[] dbTypes = new String[] { "altibase", "db2", "hsqldb",
-			"mysql", "oracle", "default" };
+			"mssql", "mysql", "oracle", "default" };
 	private Class[] pagingSQLGenerators = new Class[] {
 			AltibasePagingSQLGenerator.class, DB2PagingSQLGenerator.class,
-			HSQLPagingSQLGenerator.class, MySQLPagingSQLGenerator.class,
-			OraclePagingSQLGenerator.class, DefaultPagingSQLGenerator.class };
+			HSQLPagingSQLGenerator.class, MSSQLPagingSQLGenerator.class,
+			MySQLPagingSQLGenerator.class, OraclePagingSQLGenerator.class,
+			DefaultPagingSQLGenerator.class };
 
 	private static String QUERY_BEAN_NAME = "queryService";
 

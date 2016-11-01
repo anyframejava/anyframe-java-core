@@ -1,5 +1,5 @@
 /*
- * Copyright 2002-2008 the original author or authors.
+ * Copyright 2002-2012 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -17,7 +17,6 @@ package org.anyframe.query.impl;
 
 import java.io.File;
 import java.util.Iterator;
-import java.util.Locale;
 import java.util.Map;
 import java.util.SortedMap;
 import java.util.TreeMap;
@@ -77,9 +76,9 @@ public abstract class AbstractQueryService implements ApplicationContextAware,
 
 	public void afterPropertiesSet() throws Exception {
 		try {
-			//In the case where velocityPropsFilename property is not defined,
-			//Velocity Log file is not created.
-			
+			// In the case where velocityPropsFilename property is not defined,
+			// Velocity Log file is not created.
+
 			if (StringUtil.isEmpty(propsFilename)) {
 				Velocity.addProperty("runtime.log.logsystem.class",
 						"org.apache.velocity.runtime.log.NullLogSystem");
@@ -90,16 +89,18 @@ public abstract class AbstractQueryService implements ApplicationContextAware,
 
 				File velocityLogFile = resources[0].getFile();
 				if (velocityLogFile.exists()) {
-					Velocity.addProperty("runtime.log",
-							velocityLogFile.getAbsolutePath());
+					Velocity.addProperty("runtime.log", velocityLogFile
+							.getAbsolutePath());
 					Velocity.init();
 				} else
 					throw new Exception("Velocity log file doesn't exists.");
 			}
 		} catch (Exception e) {
-			QueryService.LOGGER.error(
-					"Query Service : Fail to initialize Velocity.\n Reason = ["
-							+ e.getMessage() + "]", e);
+			QueryService.LOGGER
+					.error(
+							"Query Service : Fail to initialize Velocity.\n Reason = [{}]",
+							e.getMessage(), e);
+
 			throw new Exception("Query Service : Fail to initialize Velocity.",
 					e);
 		}

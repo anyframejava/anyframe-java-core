@@ -1,5 +1,5 @@
 /*
- * Copyright 2002-2008 the original author or authors.
+ * Copyright 2002-2012 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -15,7 +15,6 @@
  */
 package org.anyframe.query.impl;
 
-import java.lang.reflect.Method;
 import java.sql.CallableStatement;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
@@ -64,7 +63,7 @@ public class JdbcBatchUpdateProcedureTest {
 	@Inject
 	NativeJdbcExtractor nativeJdbcExtractor;
 
-	ArrayList args = new ArrayList();
+	ArrayList<Object[]> args = new ArrayList<Object[]>();
 
 	String sql = null;
 
@@ -218,9 +217,9 @@ public class JdbcBatchUpdateProcedureTest {
 			cs = nativeJdbcExtractor.getNativeCallableStatement(cs);
 		}
 
-		Method setExecuteBatchMethod = cs.getClass().getMethod(
-				"setExecuteBatch", new Class[] { int.class });
-		setExecuteBatchMethod.invoke(cs, new Object[] { new Integer(4) });
+//		Method setExecuteBatchMethod = cs.getClass().getMethod(
+//				"setExecuteBatch", new Class[] { int.class });
+//		setExecuteBatchMethod.invoke(cs, new Object[] { new Integer(4) });
 
 		for (int i = 0; i < args.size(); i++) {
 			Object[] psArg = (Object[]) args.get(i);

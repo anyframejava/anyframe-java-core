@@ -1,5 +1,5 @@
 /*
- * Copyright 2002-2008 the original author or authors.
+ * Copyright 2002-2012 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -36,6 +36,7 @@ import org.anyframe.query.QueryService;
 import org.anyframe.query.QueryServiceException;
 import org.anyframe.query.impl.config.QuerySchemaResolver;
 import org.anyframe.query.impl.jdbc.mapper.ResultSetMappingConfiguration;
+import org.anyframe.query.impl.util.SimpleSaxErrorHandler;
 import org.anyframe.util.StringUtil;
 import org.springframework.beans.factory.DisposableBean;
 import org.springframework.beans.factory.InitializingBean;
@@ -44,7 +45,6 @@ import org.springframework.core.io.Resource;
 import org.springframework.core.io.ResourceLoader;
 import org.springframework.core.io.support.ResourcePatternResolver;
 import org.springframework.util.ResourceUtils;
-import org.springframework.util.xml.SimpleSaxErrorHandler;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 import org.w3c.dom.NodeList;
@@ -120,16 +120,19 @@ public class SQLLoader implements ResourceLoaderAware, InitializingBean,
 			DocumentBuilder builder = getBuilder();
 			loadSQLDefinitions(builder, isDynamic);
 		} catch (Exception e) {
-			QueryService.LOGGER.error(
-					"Query Service : Fail to initialize query service.\n Reason = ["
-							+ e.getMessage() + "]", e);
+			QueryService.LOGGER
+					.error(
+							"Query Service : Fail to initialize query service.\n Reason = [{}]",
+							e.getMessage(), e);
+
 			throw new ConfigurationException(
 					"Query Service : Fail to configure mapping xml files.", e);
 		}
 
-		QueryService.LOGGER.info("Query Service : There are "
-				+ registeredQueryCount
-				+ " defined queries in all configuration files.");
+		QueryService.LOGGER
+				.info(
+						"Query Service : There are {} defined queries in all configuration files.",
+						registeredQueryCount);
 	}
 
 	public Map<String, QueryInfo> getQueryInfos() {
@@ -166,8 +169,8 @@ public class SQLLoader implements ResourceLoaderAware, InitializingBean,
 				}
 
 				// 2009.03.17 - start
-				//Operation added to IMappingInfo is implemented. 
-				
+				// Operation added to IMappingInfo is implemented.
+
 				public Map<String, String[]> getCompositeColumnNames() {
 					return null;
 				}
@@ -310,7 +313,7 @@ public class SQLLoader implements ResourceLoaderAware, InitializingBean,
 
 		DocumentBuilderFactory factory = DocumentBuilderFactory.newInstance();
 		factory.setNamespaceAware(true);
-//		factory.setValidating(true);
+		// factory.setValidating(true);
 
 		try {
 			factory
@@ -327,9 +330,12 @@ public class SQLLoader implements ResourceLoaderAware, InitializingBean,
 		}
 
 		DocumentBuilder builder = factory.newDocumentBuilder();
+		// 2012.03.12
+		// org.springframework.util.xml.SimpleSaxErrorHandler -> org.anyframe.query.impl.util.SimpleSaxErrorHandler
+		// jcl -> slf4j
 		builder.setErrorHandler(new SimpleSaxErrorHandler(QueryService.LOGGER));
-		builder.setEntityResolver(new QuerySchemaResolver()); 
-		
+		builder.setEntityResolver(new QuerySchemaResolver());
+
 		return builder;
 	}
 
@@ -347,11 +353,11 @@ public class SQLLoader implements ResourceLoaderAware, InitializingBean,
 							.getResources(location);
 					int loadCount = loadSQLDefinitions(builder, isDynamic,
 							resources);
-					if (QueryService.LOGGER.isDebugEnabled()) {
-						QueryService.LOGGER.debug("Loaded " + loadCount
-								+ " sql definitions from location pattern ["
-								+ location + "]");
-					}
+					
+					QueryService.LOGGER
+							.debug(
+									"Loaded {} sql definitions from location pattern [{}]",
+									new Object[]{loadCount, location});
 				} catch (IOException ex) {
 					throw new ConfigurationException(
 							"Query Service : Could not resolve sql definition resource pattern ["
@@ -363,20 +369,16 @@ public class SQLLoader implements ResourceLoaderAware, InitializingBean,
 				Resource resource = resourceLoader.getResource(location);
 				int loadCount = loadSQLDefinitions(builder, isDynamic,
 						new Resource[] { resource });
-				if (QueryService.LOGGER.isDebugEnabled()) {
-					QueryService.LOGGER.debug("Loaded " + loadCount
-							+ " sql definitions from location [" + location
-							+ "]");
-				}
+				
+				QueryService.LOGGER.debug(
+						"Loaded {} sql definitions from location [{}]", new Object[]{loadCount, location});
 			}
 		}
 
 		if (isDynamic) {
 			watcher.start();
-			if (QueryService.LOGGER.isDebugEnabled()) {
-				QueryService.LOGGER
-						.debug("Query Service : Watcher is started...");
-			}
+			
+			QueryService.LOGGER.debug("Query Service : Watcher is started...");
 		}
 	}
 
@@ -431,13 +433,49 @@ public class SQLLoader implements ResourceLoaderAware, InitializingBean,
 				}
 			}
 		} catch (SAXParseException se) {
+			Object[] args = { resource.getFilename(), se.getSystemId(),
+					se.getMessage(), se.getLineNumber(), se.getSystemId() };
 			QueryService.LOGGER.error(
-					"Query Service : Fail to configure mapping xml file ["
-							+ resource.getFilename() + "]. " + se.getSystemId()
-							+ " is invalid.\n" + "Cause - [" + se.getMessage()
-							+ "]\n" + "Please confirm the "
-							+ se.getLineNumber() + " line in "
-							+ se.getSystemId() + ".", se);
+					"Query Service : Fail to configure mapping xml file [{}]. {} is invalid.\n"
+							+ "Cause - [{}]\n"
+							+ "Please confirm the {} line in {}.", args, se);
+
+			if (!skipError)
+				throw se;
+		}
+
+		return successCount;
+	}
+
+	private int clearResultMap(DocumentBuilder builder, Resource resource)
+			throws ConfigurationException, SAXException, IOException {
+		int successCount = 0;
+		try {
+			Document rootConfig = builder.parse(resource.getInputStream());
+
+			NodeList queriesConfig = rootConfig.getElementsByTagName("queries");
+
+			if (queriesConfig.getLength() > 0) {
+				NodeList queries = ((Element) queriesConfig.item(0))
+						.getElementsByTagName("query");
+
+				for (int i = 0; i < queries.getLength(); i++) {
+					DefaultQueryInfo queryInfo = new DefaultQueryInfo();
+					queryInfo.configure((Element) queries.item(i));
+					if (queryResultMappings.containsKey(queryInfo.getQueryId())) {
+						queryResultMappings.remove(queryInfo.getQueryId());
+						++successCount;
+					}
+				}
+			}
+		} catch (SAXParseException se) {
+			Object[] args = { resource.getFilename(), se.getSystemId(),
+					se.getMessage(), se.getLineNumber(), se.getSystemId() };
+			QueryService.LOGGER.error(
+					"Query Service : Fail to clear queryResultMapping [{}]. {} is invalid.\n"
+							+ "Cause - [{}]\n"
+							+ "Please confirm the {} line in {}.", args, se);
+
 			if (!skipError)
 				throw se;
 		}
@@ -477,8 +515,9 @@ public class SQLLoader implements ResourceLoaderAware, InitializingBean,
 		public void addResource(Resource resource) throws Exception {
 			resources
 					.put(resource, new Long(resource.getFile().lastModified()));
-			QueryService.LOGGER.info("appended " + resource.getFilename()
-					+ " file for monitoring");
+			
+			QueryService.LOGGER.info("appended {} file for monitoring",
+					resource.getFilename());
 		}
 
 		/**
@@ -551,14 +590,19 @@ public class SQLLoader implements ResourceLoaderAware, InitializingBean,
 				Resource resource = (Resource) en.nextElement();
 				try {
 					buildSQLMap(builder, resource);
+					// clear queryResultMappings contain query Id 2012.02.15 by
+					// junghwan.hong
+					clearResultMap(builder, resource);
+
 				} catch (Exception e) {
 					QueryService.LOGGER.error(
-							"Query Service : Error Query Mapping file : "
-									+ resource.getFilename(), e);
+							"Query Service : Error Query Mapping file : {}",
+							resource.getFilename(), e);
 				}
-				QueryService.LOGGER
-						.info("Query Service : Rebuild Query Mapping file : "
-								+ resource.getFilename());
+				
+				QueryService.LOGGER.info(
+						"Query Service : Rebuild Query Mapping file : {}",
+						resource.getFilename());
 			}
 
 		}

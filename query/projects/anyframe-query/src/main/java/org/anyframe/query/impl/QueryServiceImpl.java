@@ -1,5 +1,5 @@
 /*
- * Copyright 2002-2008 the original author or authors.
+ * Copyright 2002-2012 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -132,10 +132,7 @@ public class QueryServiceImpl extends AbstractQueryService implements
 
 		if (jdbcTemplate.getPaginationSQLGetter() == null) {
 			QueryService.LOGGER
-					.error("pagingSQLGenerator needs to be defined for executing query. "
-							+ "So, you must specify a proper pagingSQLGenerator in QueryService configuration. "
-							+ "If you can't find a proper pagingSQLGenerator, you can define a DefaultPagingSQLGenerator as pagingSQLGenerator."
-							+ "But you must read notice of that class before using a DefaultPagingSQLGenerator.");
+					.error("pagingSQLGenerator needs to be defined for executing query. So, you must specify a proper pagingSQLGenerator in QueryService configuration. If you can't find a proper pagingSQLGenerator, you can define a DefaultPagingSQLGenerator as pagingSQLGenerator. But you must read notice of that class before using a DefaultPagingSQLGenerator.");
 			throw new QueryServiceException(
 					"[Query Service] pagingSQLGenerator needs to be defined for QueryService. \n So, you must specify a proper pagingSQLGenerator in QueryService configuration. \n If you can't find a proper pagingSQLGenerator, you can define a DefaultPagingSQLGenerator as pagingSQLGenerator. \n But you must read notice of that class before using a DefaultPagingSQLGenerator.");
 		}
@@ -1327,6 +1324,13 @@ public class QueryServiceImpl extends AbstractQueryService implements
 					public void setValues(PreparedStatement ps, int index)
 							throws SQLException {
 						Map properties = new HashMap();
+						String[] parameterName = parsedSql.getParameterNames();
+						String name = "";
+						for(String names:parameterName) {
+							name = names;
+							break;
+						}
+							
 						if (targets.get(index) instanceof Map)
 							properties = (Map) targets.get(index);
 
@@ -1339,8 +1343,15 @@ public class QueryServiceImpl extends AbstractQueryService implements
 									properties.put(param[0], param[1]);
 								}
 							}
-						} else
-							properties.put("anyframe", targets.get(index));
+						} else {
+							//by junghwan.hong 12.04.03 add to ':vo" type
+							if(name.startsWith("anyframe"))
+								properties.put("anyframe", targets.get(index));
+							else
+								properties.put("vo", targets.get(index));
+							
+						}
+							
 						// Find all Bind Variables to set at relevant dynamic
 						// SQL at inputMap via NamedParameterUtils and transfer
 						// them in the format of sequence.
@@ -1448,8 +1459,8 @@ public class QueryServiceImpl extends AbstractQueryService implements
 		}
 
 		return sqlCUDExecutor(queryInfo.getQueryString(), values, types,
-				queryInfo.isDynamic(), queryInfo.getLobStatement(),
-				queryInfo.getLobParamTypes(), queryInfo.getQueryId());
+				queryInfo.isDynamic(), queryInfo.getLobStatement(), queryInfo
+						.getLobParamTypes(), queryInfo.getQueryId());
 	}
 
 	/**
@@ -1644,8 +1655,8 @@ public class QueryServiceImpl extends AbstractQueryService implements
 				count = resultList.size();
 			else
 				count = paginationVO.getRecordCount();
-			return makeResultMap(resultList, count,
-					rowCallbackHandler.getColumnInfo());
+			return makeResultMap(resultList, count, rowCallbackHandler
+					.getColumnInfo());
 		} catch (Exception e) {
 			throw processException("select with column info [query id = '"
 					+ queryId + "']", getQueryString(queryInfo), e);
@@ -1707,8 +1718,8 @@ public class QueryServiceImpl extends AbstractQueryService implements
 				return resultSetMapper.getObjects();
 			} else {
 				if (!paging)
-					return jdbcTemplate.query(sql, values,
-							queryInfo.getSqlTypes(), queryMaxFetchSize,
+					return jdbcTemplate.query(sql, values, queryInfo
+							.getSqlTypes(), queryMaxFetchSize,
 							(RowMapper) resultSetMapper);
 				else
 					return jdbcTemplate.queryWithPagination(sql, values,
@@ -1758,8 +1769,8 @@ public class QueryServiceImpl extends AbstractQueryService implements
 		if (mapperClazz != null
 				&& CallbackResultSetMapper.class.isAssignableFrom(mapperClazz)) {
 			callbackResultSetMapper = new CallbackResultSetMapper(targetClazz,
-					mappingInfo, lobHandler, nullchecks,
-					queryInfo.getMappingStyle());
+					mappingInfo, lobHandler, nullchecks, queryInfo
+							.getMappingStyle());
 			customResultSetMapper = callbackResultSetMapper;
 		} else if (mapperClazz != null
 				&& ReflectionResultSetMapper.class
@@ -1769,8 +1780,8 @@ public class QueryServiceImpl extends AbstractQueryService implements
 			customResultSetMapper = callbackResultSetMapper;
 		} else {
 			callbackResultSetMapper = new DefaultCallbackResultSetMapper(
-					targetClazz, mappingInfo, lobHandler, nullchecks,
-					queryInfo.getMappingStyle());
+					targetClazz, mappingInfo, lobHandler, nullchecks, queryInfo
+							.getMappingStyle());
 		}
 		// 2009.10.28
 		callbackResultSetMapper.setSqlLoader(this.getSqlRepository());
@@ -1835,8 +1846,8 @@ public class QueryServiceImpl extends AbstractQueryService implements
 					throw new QueryServiceException(
 							"Query Service : Invalid Argument - Argument String must include a delimiter '='.");
 				}
-				properties.put(tempStr.substring(0, pos),
-						tempStr.substring(pos + 1));
+				properties.put(tempStr.substring(0, pos), tempStr
+						.substring(pos + 1));
 				if (mapSqlParameterSource != null)
 					mapSqlParameterSource.addValue(tempStr.substring(0, pos),
 							tempStr.substring(pos + 1), types[i]);
@@ -1871,10 +1882,11 @@ public class QueryServiceImpl extends AbstractQueryService implements
 
 	public QueryServiceException processException(String actionName,
 			String sql, Exception exception) {
+		Object[] args = { actionName, sql, exception.getMessage() };
 		QueryService.LOGGER.error(
-				"Query Service : Fail to {" + actionName + "}.\n Query = ["
-						+ sql + "] \n Reason = [" + exception.getMessage()
-						+ "].", exception);
+				"Query Service : Fail to {}.\n Query = [{}] \n Reason = [{}].",
+				args, exception);
+
 		// In the case Exception serving as root cause has the same type as
 		// InternalDataAccessException, ErrorCode occurring in query execution
 		// is set.

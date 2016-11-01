@@ -1,5 +1,5 @@
 /*
- * Copyright 2002-2008 the original author or authors.
+ * Copyright 2002-2012 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -20,8 +20,8 @@ import java.util.Collection;
 import java.util.List;
 import java.util.Map;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.jdbc.core.JdbcTemplate;
 
 /**
@@ -88,7 +88,7 @@ import org.springframework.jdbc.core.JdbcTemplate;
  * xsi:schemaLocation="http://www.springframework.org/schema/beans 
  *  http://www.springframework.org/schema/beans/spring-beans-2.5.xsd
  * http://www.anyframejava.org/schema/query 
- *  http://www.anyframejava.org/schema/query/anyframe-query-1.0.xsd"&gt;
+ *  http://www.anyframejava.org/schema/query/anyframe-query-1.1.xsd"&gt;
  * 
  * &lt;query:auto-config dbType="oracle"/&gt;
  * 
@@ -255,7 +255,7 @@ import org.springframework.jdbc.core.JdbcTemplate;
  * @author SoYon Lim
  */
 public interface QueryService {
-	Log LOGGER = LogFactory.getLog(QueryService.class);
+	Logger LOGGER = LoggerFactory.getLogger(QueryService.class);
 
 	String COL_INFO = "COLUMN_INFO";
 

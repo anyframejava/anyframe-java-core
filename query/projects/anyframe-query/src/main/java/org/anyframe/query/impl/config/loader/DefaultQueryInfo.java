@@ -1,5 +1,5 @@
 /*
- * Copyright 2002-2008 the original author or authors.
+ * Copyright 2002-2012 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -64,19 +64,19 @@ public class DefaultQueryInfo implements QueryInfo {
 		checkRequiredAttribute("query", "id", queryId);
 
 		NodeList statements = query.getElementsByTagName("statement");
-		
+
 		Element statementElement = null;
 		int statementLength = 0;
-		for(int i=0; i<statements.getLength(); i++){
-			Element temporaryElement = (Element)statements.item(i);
-			
+		for (int i = 0; i < statements.getLength(); i++) {
+			Element temporaryElement = (Element) statements.item(i);
+
 			String parentNode = temporaryElement.getParentNode().getNodeName();
-			if(parentNode.equals("query")){
+			if (parentNode.equals("query")) {
 				statementElement = temporaryElement;
 				statementLength++;
 			}
 		}
-		
+
 		hasOnlyOneElements("query", "statement", statementLength);
 		statement = statementElement.getTextContent();
 
@@ -84,7 +84,8 @@ public class DefaultQueryInfo implements QueryInfo {
 		isDynamic = isDynamicValue.equals("") ? true : new Boolean(
 				isDynamicValue).booleanValue();
 		String mappingStyleValue = query.getAttribute("mappingStyle");
-		mappingStyle = mappingStyleValue.equals("") ? "camel" : mappingStyleValue;		
+		mappingStyle = mappingStyleValue.equals("") ? "camel"
+				: mappingStyleValue;
 
 		String maxFetchSizeValue = query.getAttribute("maxFetchSize");
 		maxFetchSize = maxFetchSizeValue.equals("") ? -1 : new Integer(
@@ -97,13 +98,13 @@ public class DefaultQueryInfo implements QueryInfo {
 			Element result = (Element) results.item(0);
 
 			resultClass = result.getAttribute("class");
-			if(resultClass.equals("")) {
+			if (resultClass.equals("")) {
 				resultClass = null;
 			}
 			resultMapper = result.getAttribute("mapper");
-			if(resultMapper.equals("")) {
+			if (resultMapper.equals("")) {
 				resultMapper = null;
-			}		
+			}
 
 			String lengthValue = result.getAttribute("length");
 			length = lengthValue.equals("") ? 0 : new Integer(lengthValue)
@@ -145,8 +146,9 @@ public class DefaultQueryInfo implements QueryInfo {
 												.indexOf("."));
 								if (i != 0 && !tempField.equals(compositeField))
 									QueryService.LOGGER
-											.warn("Query Service : This mapping information is ignored. Property name is different. If you want to handle properties of user defined type, attribute should start with same property name. Please check result mapping (queryId ='"
-													+ queryId + "')");
+											.warn(
+													"Query Service : This mapping information is ignored. Property name is different. If you want to handle properties of user defined type, attribute should start with same property name. Please check result mapping (queryId ='{}')",
+													queryId);
 								compositeField = tempField;
 								compositeFieldes[j] = compositeFieldName
 										.substring(compositeFieldName
@@ -159,8 +161,9 @@ public class DefaultQueryInfo implements QueryInfo {
 									compositeColumns);
 						} else {
 							QueryService.LOGGER
-									.warn("Query Service : This mapping information is ignored. If you want to handle properties of user defined type, the number of column should be same as that of attribute. Please check result mapping (queryId ='"
-											+ queryId + "')");
+									.warn(
+											"Query Service : This mapping information is ignored. If you want to handle properties of user defined type, the number of column should be same as that of attribute. Please check result mapping (queryId ='{}')",
+											queryId);
 						}
 					} else {
 						columns.add(column);
@@ -206,7 +209,7 @@ public class DefaultQueryInfo implements QueryInfo {
 			hasOnlyOneElements("lobStatement", "statement", lobStatements
 					.getLength());
 			lobStatement = lobStatements.item(0).getTextContent();
-			if(lobStatement.equals("")){
+			if (lobStatement.equals("")) {
 				lobStatement = null;
 			}
 
@@ -309,7 +312,7 @@ public class DefaultQueryInfo implements QueryInfo {
 	public int getMaxFetchSize() {
 		return maxFetchSize;
 	}
-	
+
 	private boolean isComposite(String str) {
 		if (str.startsWith("{") && str.endsWith("}"))
 			return true;
@@ -330,5 +333,5 @@ public class DefaultQueryInfo implements QueryInfo {
 			throw new ConfigurationException("Query Service : must have one <"
 					+ childElement + "> in a <" + parentElement + ">.");
 		}
-	}	
+	}
 }

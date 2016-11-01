@@ -1,5 +1,5 @@
 /*
- * Copyright 2002-2008 the original author or authors.
+ * Copyright 2002-2012 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -19,10 +19,18 @@ import java.util.Collection;
 import java.util.HashMap;
 import java.util.Map;
 
+import javax.inject.Inject;
+
+import junit.framework.Assert;
+
 import org.anyframe.pagination.Page;
 import org.anyframe.query.QueryService;
 import org.anyframe.query.dao.UserDaoWithMap;
-import org.springframework.test.AbstractDependencyInjectionSpringContextTests;
+import org.junit.Before;
+import org.junit.Test;
+import org.junit.runner.RunWith;
+import org.springframework.test.context.ContextConfiguration;
+import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 
 /**
  * TestCase Name : DaoWithMapTest <br>
@@ -42,32 +50,25 @@ import org.springframework.test.AbstractDependencyInjectionSpringContextTests;
  * 
  * @author SoYon Lim
  */
-public class DaoWithMapTest extends
-        AbstractDependencyInjectionSpringContextTests {
-
-    private UserDaoWithMap userDaoWithMap;
-
-    private QueryService queryService = null;
-
-    public void setUserDaoWithMap(UserDaoWithMap userDaoWithMap) {
-        this.userDaoWithMap = userDaoWithMap;
-    }
-
-    public void setQueryService(QueryService queryService) {
-        this.queryService = queryService;
-    }
-
-    protected String[] getConfigLocations() {
-        return new String[] {
-            "classpath:spring/abstractdao/context-common.xml",
-            "classpath:spring/abstractdao/context-userdao.xml",
-            "classpath:spring/abstractdao/context-query.xml",
-            "classpath:spring/abstractdao/context-query-sqlloader.xml" };
-    }
-
+@RunWith(SpringJUnit4ClassRunner.class)
+@ContextConfiguration(locations = {
+		"classpath:spring/abstractdao/context-common.xml",
+		"classpath:spring/abstractdao/context-userdao.xml",
+		"classpath:spring/abstractdao/context-query.xml",
+		"classpath:spring/abstractdao/context-query-sqlloader.xml" })
+@Deprecated
+public class DaoWithMapTest {
+	
+	@Inject
+	UserDaoWithMap userDaoWithMap;
+	
+	@Inject
+	QueryService queryService;
+	
 	/**
 	 * Table USERS are created for test.
 	 */
+    @Before
     public void onSetUp() throws Exception {
         // Try to drop the table. It may not
         // exist and throw an exception.
@@ -96,16 +97,18 @@ public class DaoWithMapTest extends
 	 * @throws Exception
 	 *             throws exception which is from QueryService
 	 */
+    @SuppressWarnings("unchecked")
+	@Test
     public void testUserDaoWithMap() throws Exception {
         // 1. insert a new user
-        Map usersMap1 = new HashMap();
+        Map<String,String> usersMap1 = new HashMap<String, String>();
         usersMap1.put("userId", "admin");
         usersMap1.put("userName", "ADMIN");
         usersMap1.put("password", "admin123");
         userDaoWithMap.createUsers(usersMap1);
 
         // 2. insert another new user
-        Map usersMap2 = new HashMap();
+        Map<String, String> usersMap2 = new HashMap<String, String>();
         usersMap2.put("userId", "test");
         usersMap2.put("userName", "TEST");
         usersMap2.put("password", "test123");
@@ -113,11 +116,11 @@ public class DaoWithMapTest extends
 
         // 3. check for inserting
         Map result = userDaoWithMap.findUsers(usersMap1);
-        assertEquals(usersMap1.get("userName"), result.get("userName"));
+        Assert.assertEquals(usersMap1.get("userName"), result.get("userName"));
 
         // 4. check for inserting
         result = userDaoWithMap.findUsers(usersMap2);
-        assertEquals(usersMap2.get("userName"), result.get("userName"));
+        Assert.assertEquals(usersMap2.get("userName"), result.get("userName"));
 
         // 5. update a user information
         usersMap2.put("userName", "TESTUPD");
@@ -125,18 +128,18 @@ public class DaoWithMapTest extends
 
         // 6. check for updating
         result = userDaoWithMap.findUsers(usersMap2);
-        assertEquals(usersMap2.get("userName"), result.get("userName"));
+        Assert.assertEquals(usersMap2.get("userName"), result.get("userName"));
 
         // 7. select user list
         Map searchMap = new HashMap();
         Page page = userDaoWithMap.findUsersList(searchMap, 1, 1, 10);
-        assertEquals(2, page.getTotalCount());
+        Assert.assertEquals(2, page.getTotalCount());
 
         // 8. assert in detail
         Collection list = page.getList();
-        assertEquals(1, list.size());
+        Assert.assertEquals(1, list.size());
         result = (Map) list.iterator().next();
-        assertEquals(usersMap1.get("userName"), result.get("userName"));
+        Assert.assertEquals(usersMap1.get("userName"), result.get("userName"));
     }
 
 }
