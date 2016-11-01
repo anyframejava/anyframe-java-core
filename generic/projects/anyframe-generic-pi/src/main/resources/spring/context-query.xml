@@ -1,0 +1,44 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-3.0.xsd">
+						
+	<bean name="queryService" class="org.anyframe.query.impl.QueryServiceImpl">
+		<property name="jdbcTemplate" ref="jdbcTemplate"/>
+		<property name="pagingSQLGenerator" ref="pagingSQLGenerator"/>
+		<property name="sqlRepository" ref="sqlLoader"/>
+		<!--query-propertyLobHandler-START-->
+		<property name="lobHandler" ref="lobHandler"/>
+		<!--query-propertyLobHandler-END-->				
+	</bean>
+	
+	<bean name="sqlLoader" class="org.anyframe.query.impl.config.loader.SQLLoader">
+		<property name="mappingFiles">
+			<value>classpath:sql/query/mapping-*.xml</value>
+		</property>	
+		<property name="nullchecks">
+			<map>
+		    	<entry key="VARCHAR" value=""/>
+		    </map>
+		</property>
+ 		<property name="dynamicReload" value="5000" />	    
+		<property name="skipError" value="true" />	
+	</bean>
+	
+    <bean id="jdbcTemplate" class="org.anyframe.query.impl.jdbc.PagingJdbcTemplate">
+      <property name="dataSource" ref="dataSource" />
+      <property name="exceptionTranslator" ref="exceptionTranslator" />
+    </bean>
+    
+    <bean id="exceptionTranslator" class="org.anyframe.query.impl.util.RawSQLExceptionTranslator"/>
+    
+   	<!--query-generator-START-->
+	<bean id="pagingSQLGenerator" class="org.anyframe.query.impl.jdbc.generator.HSQLPagingSQLGenerator"/>
+	<!--query-generator-END-->
+	
+	<!--query-lobHandler-START-->
+	<bean id="lobHandler" class="org.springframework.jdbc.support.lob.DefaultLobHandler" lazy-init="true">
+		<property name="wrapAsLob" value="true"/>
+	</bean>		
+	<!--query-lobHandler-END-->
+
+</beans>	

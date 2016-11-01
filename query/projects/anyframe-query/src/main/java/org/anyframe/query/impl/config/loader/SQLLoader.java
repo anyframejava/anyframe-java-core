@@ -41,6 +41,8 @@ import org.apache.avalon.framework.configuration.ConfigurationException;
 import org.apache.avalon.framework.configuration.DefaultConfigurationBuilder;
 import org.springframework.beans.factory.DisposableBean;
 import org.springframework.beans.factory.InitializingBean;
+import org.springframework.context.MessageSource;
+import org.springframework.context.MessageSourceAware;
 import org.springframework.context.ResourceLoaderAware;
 import org.springframework.core.io.Resource;
 import org.springframework.core.io.ResourceLoader;
@@ -53,14 +55,16 @@ import org.xml.sax.XMLReader;
 /**
  * @author Soyon Lim
  */
-public class SQLLoader implements ResourceLoaderAware, InitializingBean,
-		DisposableBean {
+public class SQLLoader implements MessageSourceAware, ResourceLoaderAware,
+		InitializingBean, DisposableBean {
 
 	private boolean skipError = false;
 
 	private int dynamicReload = 0;
 
 	private Watcher watcher;
+
+	private MessageSource messageSource;
 
 	private ResourceLoader resourceLoader = null;
 
@@ -75,6 +79,14 @@ public class SQLLoader implements ResourceLoaderAware, InitializingBean,
 	private String mappingFiles = "";
 
 	private int registeredQueryCount = 0;
+
+	/**
+	 * @param messageSource
+	 *            the messageSource to set
+	 */
+	public void setMessageSource(MessageSource messageSource) {
+		this.messageSource = messageSource;
+	}
 
 	public Map getQueryResultMappings() {
 		return queryResultMappings;
@@ -115,9 +127,9 @@ public class SQLLoader implements ResourceLoaderAware, InitializingBean,
 			DefaultConfigurationBuilder builder = getBuilder();
 			loadSQLDefinitions(builder, isDynamic);
 		} catch (Exception e) {
-			QueryService.LOGGER.error(
-					"Query Service : Fail to initialize query service.\n Reason = ["
-							+ e.getMessage() + "]", e);
+			QueryService.LOGGER.error(messageSource.getMessage(
+					"error.query.initialize.configure", new String[] {},
+					Locale.getDefault()), e);
 			throw new ConfigurationException(
 					"Query Service : Fail to configure mapping xml files.", e);
 		}

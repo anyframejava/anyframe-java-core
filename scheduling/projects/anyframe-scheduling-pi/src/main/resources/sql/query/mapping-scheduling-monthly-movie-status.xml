@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!DOCTYPE queryservice PUBLIC "-//ANYFRAME//DTD QUERYSERVICE//EN"
+"http://www.anyframejava.org/dtd/anyframe-core-query-mapping-3.2.dtd">
+<queryservice>
+    <queries>
+<!--  Query : 월별 상품 현황 등록 -->
+        <query id="createMonthlyMovieStatus">
+            <statement>INSERT INTO MONTHLY_MOVIE_STATUS ( GENRE_ID, JAN_COUNT, FEB_COUNT, MAR_COUNT, APR_COUNT, MAY_COUNT, JUN_COUNT, JUL_COUNT, AUG_COUNT, SEP_COUNT, OCT_COUNT,
+            NOV_COUNT, DEC_COUNT ) VALUES (:genreId, :janCount, :febCount, :marCount, :aprCount, :mayCount, :junCount, :julCount, :augCount, :sepCount, :octCount, :novCount,
+            :decCount)</statement>
+        </query>
+<!--  Query : 월별 상품 현황 삭제 -->
+        <query id="removeMonthlyMovieStatus">
+            <statement>DELETE FROM MONTHLY_MOVIE_STATUS</statement>
+        </query>
+<!--  Query : 전체 상품 현황 조회 -->
+        <query id="findMonthlyMovieStatusList">
+            <statement>SELECT * FROM MONTHLY_MOVIE_STATUS</statement>
+        </query>
+<!--  Query : 월별 상품 현황 조회 -->
+        <query id="countMovieListByMonth">
+            <statement>
+<!--scheduling countMovieListByMonth-START-->
+            SELECT count(*) totalCount FROM MOVIE WHERE GENRE_ID = :genreId AND RELEASE_DATE BETWEEN :startDay AND :endDay 
+<!--scheduling countMovieListByMonth-END-->
+            </statement>
+        </query>
+    </queries>
+</queryservice>

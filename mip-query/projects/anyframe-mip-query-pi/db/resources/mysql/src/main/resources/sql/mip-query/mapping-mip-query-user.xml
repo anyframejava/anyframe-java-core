@@ -1,0 +1,52 @@
+		<!--mip-query-queryUser-START-->
+		<query id="findUserList" isDynamic="true" mappingStyle="upper">
+			<statement><![CDATA[
+				SELECT USER_ID, USER_NAME, EN_NAME, COMP_PHONE, PHONE, CELL_PHONE, COMPANY
+				       , JOB_POSITION, ASSIGNMENT, OFFICER_YN , FAX, ZIP_CODE, ADDRESS
+				       , COMP_ZIP_CODE, COMP_ADDRESS, EMAIL, DEPT_ID, PASSWORD
+				FROM MIP_USER
+				#if ($SEARCH_CONDITION.length()>0 && "0" == $SEARCH_CONDITION)
+					WHERE USER_NAME like CONCAT('%' , :SEARCH_KEYWORD , '%')
+				#elseif ($SEARCH_CONDITION.length()>0 && "1" == $SEARCH_CONDITION)
+				    WHERE USER_ID like CONCAT('%' , :SEARCH_KEYWORD , '%')
+				#end
+				ORDER BY USER_ID
+			]]></statement>
+		</query>
+		<query id="createUser" isDynamic="true" mappingStyle="upper">
+			<statement><![CDATA[
+				INSERT INTO MIP_USER
+				(USER_ID, USER_NAME, EN_NAME, COMP_PHONE, PHONE, CELL_PHONE, COMPANY
+				       , JOB_POSITION, ASSIGNMENT, OFFICER_YN , FAX, ZIP_CODE, ADDRESS
+				       , COMP_ZIP_CODE, COMP_ADDRESS, EMAIL, DEPT_ID, PASSWORD)
+				VALUES(CONCAT('USER-' , USER_ID_SEQ_NEXT_VALUE()) ,:USER_NAME, :EN_NAME, :COMP_PHONE, :PHONE, :CELL_PHONE, :COMPANY
+				       , :JOB_POSITION, :ASSIGNMENT, :OFFICER_YN, :FAX, :ZIP_CODE, :ADDRESS
+				       , :COMP_ZIP_CODE, :COMP_ADDRESS, :EMAIL, :DEPT_ID, :PASSWORD)
+			]]></statement>
+		</query>
+		<query id="updateUser" isDynamic="true" mappingStyle="upper">
+			<statement><![CDATA[
+				UPDATE MIP_USER
+				SET
+				USER_NAME =:USER_NAME, EN_NAME =:EN_NAME, COMP_PHONE =:COMP_PHONE, PHONE =:PHONE, CELL_PHONE =:CELL_PHONE, COMPANY =:COMPANY
+				       , JOB_POSITION =:JOB_POSITION, ASSIGNMENT =:ASSIGNMENT, OFFICER_YN =:OFFICER_YN, FAX =:FAX, ZIP_CODE =:ZIP_CODE, ADDRESS =:ADDRESS
+				       , COMP_ZIP_CODE =:COMP_ZIP_CODE, COMP_ADDRESS =:COMP_ADDRESS, EMAIL =:EMAIL, DEPT_ID =:DEPT_ID, PASSWORD = :PASSWORD
+				WHERE USER_ID=:USER_ID
+			]]></statement>
+		</query>
+		<query id="removeUser" isDynamic="true" mappingStyle="upper">
+			<statement><![CDATA[
+				DELETE FROM MIP_USER
+				WHERE USER_ID=:USER_ID
+			]]></statement>
+		</query>
+		<query id="findUserListByDept" isDynamic="true" mappingStyle="upper">
+			<statement><![CDATA[
+				SELECT USER_ID, USER_NAME, EN_NAME, COMP_PHONE, PHONE, CELL_PHONE, COMPANY
+				       , JOB_POSITION, ASSIGNMENT, OFFICER_YN , FAX, ZIP_CODE, ADDRESS
+				       , COMP_ZIP_CODE, COMP_ADDRESS, EMAIL, DEPT_ID, PASSWORD
+				FROM MIP_USER
+				WHERE DEPT_ID = :DEPT_ID
+			]]></statement>
+		</query>
+		<!--mip-query-queryUser-END-->

@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="ISO-8859-1" ?>
+<!DOCTYPE struts-config PUBLIC
+          "-//Apache Software Foundation//DTD Struts Configuration 1.3//EN"
+          "http://struts.apache.org/dtds/struts-config_1_3.dtd">
+
+<struts-config>
+	<!-- Global Exception Definitions -->
+	<global-exceptions>
+		<exception key="common.msg.error" path="/WEB-INF/jsp/struts/common/error.jsp" type="java.lang.Exception"
+			handler="org.anyframe.struts.action.DefaultExceptionHandler" />
+	</global-exceptions>
+
+	<!-- Controller Configuration -->
+	<controller contentType="text/html;charset=utf-8" locale="true"
+		processorClass="org.anyframe.struts.tiles.DefaultRequestProcessor" />
+
+	<!-- Message Resources Definitions	-->
+	<message-resources factory="org.anyframe.struts.util.DefaultPropertyMessageResourcesFactory"
+		parameter="message.message-moviefinder" />
+	
+	 
+	<plug-in className="org.apache.struts.tiles.TilesPlugin">
+		<set-property property="definitions-config" value="/WEB-INF/struts-tiles-defs.xml" />
+		<set-property property="moduleAware" value="true" />
+	</plug-in>
+	
+</struts-config>

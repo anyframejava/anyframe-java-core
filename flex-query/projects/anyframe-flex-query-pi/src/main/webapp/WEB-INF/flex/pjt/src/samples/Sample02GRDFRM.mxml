@@ -1,0 +1,258 @@
+<?xml version="1.0" encoding="utf-8"?>
+<mx:Module xmlns:mx="http://www.adobe.com/2006/mxml" 
+	xmlns:local="anyframe.common.*"
+	width="686" height="381" x="245" y="22" layout="absolute" 
+	xmlns:detail="samples.board.*" xmlns:zet="http://www.openzet.org/2009/mxml" 
+	xmlns:domain="samples.domain.*" initialize="init()"
+	verticalScrollPolicy="off" horizontalScrollPolicy="off">
+	
+	<mx:Script>
+		<![CDATA[
+			import samples.renderer.ResultHandler;
+			import mx.rpc.events.FaultEvent;
+			import mx.collections.ItemResponder;
+			import samples.domain.Board;
+			import mx.events.ListEvent;
+			import mx.events.DataGridEvent; 
+			import mx.controls.AdvancedDataGridBaseEx;
+			import mx.controls.Alert;
+			import mx.collections.ArrayCollection;
+			import org.anyframe.pagination.Page;
+			import mx.rpc.events.ResultEvent;
+			import org.openzet.controls.PagingLinkBar; 
+			import org.openzet.events.PagingEvent;
+			import org.anyframe.flex.query.service.FlexSearchVO; 
+			import samples.domain.Community;
+			import org.anyframe.flex.query.Util;
+			import mx.events.DataGridEventReason;
+			import mx.rpc.AsyncToken;
+			
+			private var keyword:String = "";
+			private var condition:String = "";
+			
+			[Bindable] 
+			private var boardList:ArrayCollection;
+			
+			private var totalCount:int;
+			private var pagingLinkBar:PagingLinkBar;
+			
+			[Bindable]
+			private var page:Page;		
+				
+            [Bindable]
+            private var communityList:ArrayCollection;
+            
+			private var deleteBoardList:ArrayCollection = new ArrayCollection();
+			
+			private function init():void{
+				if ( communityList == null ){
+					getCommunityList();
+				}
+				getBoardList(1);
+			}
+			
+			private function getBoardListResultHandler(event:ResultEvent):void {
+				
+				page = event.result as Page;
+				plb.totalCount = page.totalCount;
+				plb.fetchSize = page.pagesize;
+				plb.numPages = page.pageunit;
+				plb.currentPage = page.currentPage;
+				
+				boardList = page.objects as ArrayCollection;
+				
+				setPageStatus(page);
+			}
+			private function setPageStatus(page:Page):void{
+				pageStatus.text = "Page : " + page.currentPage +"/" + page.maxPage;
+			} 
+			private function getBoardList(currentPage:int, pageClick:Boolean = false):void {
+				
+				var searchVO:FlexSearchVO = new FlexSearchVO("Board");
+				if ( pageClick ){
+					searchVO.searchCondition = condition;
+					searchVO.searchKeyword = keyword;
+				}else{
+					keyword = searchKeyword.text;
+					condition = searchCondition.selectedItem.data;
+					searchVO.searchKeyword = keyword;
+					searchVO.searchCondition = condition;
+				}
+				searchVO.pageIndex = currentPage;
+				boardService.getPagingList(searchVO);
+			}
+			
+			 private function pageClickHandler(event:PagingEvent) : void
+            {
+                getBoardList(event.newPage, true);
+            }
+            
+            private function getCommunityList():void{
+            	var responder : ItemResponder = new ItemResponder(getCommunityResultHandler, getCommunityFaultHandler); 
+            	var token : AsyncToken = communityService.getList(new FlexSearchVO("Community"));
+            	token.addResponder(responder);
+            }
+            
+            private function getCommunityResultHandler(event:ResultEvent, token:AsyncToken):void{
+            	communityList = event.result as ArrayCollection;
+            	var community:Community = communityList as Community;
+            }
+            
+            private function getCommunityFaultHandler(event:FaultEvent):void{
+            	mx.controls.Alert.show(event.fault.message);
+            }
+            
+            private function grdClick(event:ListEvent):void{
+            	board = grdBoard.selectedItem as Board;
+            }
+            
+            private function comboChange(event:ListEvent):void{
+            	if( grdBoard.selectedIndex != -1 ){
+            		grdBoard.selectedItem.communityName = comboCommumity.selectedItem.communityName;
+            		board.communityId = comboCommumity.selectedItem.communityId;
+            	}
+            }
+            
+            private function addBoard():void{
+            	var addBoard:Board = new Board();
+				addBoard.status = 1;
+				addBoard.regDate = Util.getToday();
+				addBoard.regId = parentDocument.loginUser.userId;
+				grdBoard.dataProvider.addItem(addBoard);
+            }
+            
+            private function updateBoard(event:DataGridEvent):void{
+				
+				if (event.reason == DataGridEventReason.CANCELLED){
+					return;
+                }
+                
+				var updateBoard:Board = grdBoard.itemEditorInstance.data as Board;
+				
+				var rowStatus:Number = updateBoard.status;
+				
+				if( rowStatus == 0 ){
+					updateBoard.status = 2;
+				}
+			}
+			
+			private function deleteBoard():void{
+				if(grdBoard.selectedIndex != -1){
+					var deleteBoard:Board = grdBoard.selectedItem as Board;
+					var rowStatus:int = deleteBoard.status;
+					
+					if (rowStatus != 1){
+						deleteBoard.status = 3;
+						deleteBoardList.addItem(deleteBoard)
+					}
+					grdBoard.dataProvider.removeItemAt(grdBoard.selectedIndex);
+				}
+		    }
+		    
+		    private function saveBoard():void{
+		    	var saveBoardList:ArrayCollection = new ArrayCollection();
+		    	for ( var j:int = 0 ; j < deleteBoardList.length ; j ++ ){
+		    		saveBoardList.addItem(deleteBoardList.getItemAt(j));
+		    	}
+		    	for ( var i:int = 0 ; i < boardList.length ; i ++ ){
+		    		var board:Board = boardList.getItemAt(i) as Board;
+		    		if(board.status != 0){
+		    			if(board.communityId == null){
+							Alert.show( "글 " + board.title + "의 커뮤니티를 선택 하지 않았습니다.");
+							return;
+		    			}else if(board.title == null) {
+		    				Alert.show( "Title을 입력하지 않은 글이 있습니다.");
+		    			}else{
+		    				saveBoardList.addItem(board);
+		    			}
+		    		}
+		    	}
+		    	if ( saveBoardList.length == 0 ){
+		    		Alert.show( "변경된 데이터가 없습니다." );
+		    	}else{
+		    		boardService.saveAll(saveBoardList);
+		    	}
+		    }
+		    
+		     private function saveAllResultHandler(event:ResultEvent):void{
+		    	mx.controls.Alert.show(ResultHandler.saveAllResultMessage(event));
+		    	deleteBoardList.removeAll();
+		    	getBoardList(1);
+		    	board = new Board();
+		    }
+		]]>
+	</mx:Script>
+	
+	<domain:Board id="board" 
+		postId="{postId.text}"
+		title="{boardTitle.text}"
+		contents="{contents.text}"
+		regId="{regId.text}"
+	/>
+	
+	<mx:ArrayCollection id="searchConditionValue">
+		<mx:Object label="제목" data="title"/>
+		<mx:Object label="등록자" data="regId"/>
+	</mx:ArrayCollection> 
+	
+	<mx:Array id="columnsInfo">
+		<mx:DataGridColumn dataField="title" headerStyleName="dataGridHeaderAlign" headerText="제목" width="720"/>
+		<mx:DataGridColumn dataField="regId" headerStyleName="dataGridHeaderAlign" headerText="등록자" editable="false"/>
+		<mx:DataGridColumn dataField="regDate" headerStyleName="dataGridHeaderAlign" headerText="등록일" itemEditor="samples.renderer.DateEditor"/>
+	</mx:Array>
+	
+	<mx:RemoteObject id="boardService" destination="flexService" showBusyCursor="true">
+		<mx:method name="getPagingList" result="getBoardListResultHandler(event)" fault="ResultHandler.faultMessage(event)"/>
+		<mx:method name="saveAll" result="saveAllResultHandler(event)" fault="ResultHandler.faultMessage(event)"/>
+	</mx:RemoteObject>
+	
+	<mx:RemoteObject id="communityService" destination="flexService" >
+		<mx:method name="getList" fault="ResultHandler.faultMessage(event)"/>
+	</mx:RemoteObject>
+	<mx:Panel title="     게시글 목록" width="686" height="383" x="0" y="0" layout="absolute" styleName="panelContents" horizontalScrollPolicy="off" verticalScrollPolicy="off">
+	
+		<mx:ComboBox id="searchCondition" dataProvider="{searchConditionValue}" x="1" y="34" width="119" color="#FFFFFf" dropdownBorderColor="#3e577c" fontWeight="bold"/>
+		<mx:TextInput id="searchKeyword" x="124" y="35" width="179" height="19" enter="getBoardList(1)"/>
+		<mx:Button x="305" y="30" styleName="buttonSearch" id="searchButton" click="getBoardList(1)"/>
+		<mx:Button label="추가" x="502" y="32" icon="@Embed(source='../assets/images/icon_plus.png')" textAlign="left" click="addBoard()"/>
+		<mx:Button label="삭제"  x="562" y="32" icon="@Embed(source='../assets/images/icon_delete.png')" textAlign="left" click="deleteBoard()"/>
+		<mx:Button label="저장" x="621" y="32" styleName="button01" icon="@Embed(source='../assets/images/icon_save.png')" textAlign="left" click="saveBoard()"/>
+		<mx:Label id="pageStatus" x="609" y="60" width="69"/>
+		<mx:DataGrid rowCount="6" id="grdBoard" dataProvider="{boardList}" columns="{columnsInfo}"
+						verticalScrollPolicy="off" horizontalScrollPolicy="off" 
+						editable="true" x="1" y="81" width="683" borderColor="#a7a8ab" 
+						borderThickness="1" borderStyle="solid" headerStyleName="mydataGrid"
+						rollOverColor="#4b5564" useRollOver="true" verticalGridLineColor="#585b63" verticalGridLines="true" 
+						backgroundColor="#ececec"  height="137"
+						itemClick="grdClick(event)" itemEditEnd="updateBoard(event)">
+				<mx:headerBackgroundSkin>@Embed(source='../assets/images/bg_gridHeader.png')</mx:headerBackgroundSkin>
+		</mx:DataGrid>	
+		
+		<zet:PagingLinkBar
+            id="plb"
+            width="100%"
+            horizontalAlign="center"
+            styleName="PagingLinkBar"
+            pageClick="pageClickHandler(event)" y="226"/>
+			
+		<mx:Canvas width="686" x="0" y="248" height="133" horizontalScrollPolicy="off" verticalScrollPolicy="off">
+		
+			<mx:Text x="0" y="2" text="게시글 ID" width="79" textAlign="right"/>
+			<mx:TextInput x="87" y="1" id="postId" text="{board.postId}" height="19" width="179" editable="false" cornerRadius="5"/>
+			
+			<mx:Text x="12" y="27" text="제목" textAlign="right" width="67"/>
+			<mx:TextInput x="87" y="24" width="289" height="19" id="boardTitle" text="{board.title}" cornerRadius="5" />
+			
+			<mx:Text x="12" y="48" text="내용" width="67" textAlign="right"/>
+			<mx:TextArea id="contents" text="{board.contents}" width="597" height="27"  x="87" y="48" cornerRadius="5"/>
+			
+			<mx:Text x="12" y="79" text="등록자" width="67" textAlign="right"/>
+			<mx:TextArea id="regId" text="{board.regId}" width="181" height="19" cornerRadius="5" x="87" y="77" editable="false"/>   
+				    
+			<mx:Text x="12" y="104" text="커뮤니티" width="67" textAlign="right"/>				
+			<mx:ComboBox x="87" y="100" id="comboCommumity" text="{board.communityName}" width="219" editable="false" dataProvider="{communityList}" labelField="communityName" change="comboChange(event)" styleName="comboboxWhite"/>
+		
+		</mx:Canvas>
+		
+	</mx:Panel>
+</mx:Module>

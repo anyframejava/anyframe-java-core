@@ -1,0 +1,36 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<plugin name="util-demo">
+  <groupId>org.anyframe.plugin</groupId>
+  <artifactId>anyframe-util-demo-pi</artifactId>
+  <version>1.0.0.RC1</version>
+  <dependent-plugins>
+    <dependent-plugin name="dashboard" version="2.0.0&gt;*"/>
+  </dependent-plugins>
+  <resources>
+    <resource dir="src/main/java" filtered="true" packaged="true">
+      <include name="**/*.java"/>
+    </resource>
+    <resource dir="src/main/webapp" filtered="false" packaged="false">
+      <include name="**/util/demo/**/*.*"/>
+    </resource>
+    <resource dir="src/main/webapp/WEB-INF/jsp" filtered="false" packaged="false">
+      <include name="**/*.jsp"/>
+    </resource>
+  </resources>
+  <build>
+    <filesets>
+      <fileset dir="src/main/java" filtered="true" packaged="true">
+        <include name="**/org/anyframe/plugin/util/demo/**/*.java"/>
+      </fileset>
+      <fileset dir="src/main/webapp" filtered="false" packaged="false">
+        <include name="**/util/demo/**/*.*"/>
+        <include name="**/anyframe.jsp"/>
+      </fileset>
+    </filesets>
+  </build>
+  <samples>true</samples>
+  <interceptor>
+    <class></class>
+  </interceptor>
+  <essential>false</essential>
+</plugin>

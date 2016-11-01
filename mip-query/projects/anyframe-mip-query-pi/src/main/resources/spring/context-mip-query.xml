@@ -1,0 +1,52 @@
+<?xml version="1.0" encoding="utf-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" 
+	xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-3.0.xsd">
+							
+	<bean name="mipService" class="org.anyframe.mip.query.service.impl.MiPServiceImpl">
+		<constructor-arg index="0" ref="mipDao" />
+	</bean>
+
+	<bean name="mipDao" class="org.anyframe.mip.query.dao.impl.MiPDaoQuery">
+		<constructor-arg index="0" ref="mipQueryService" />
+	</bean>						
+
+	<bean id="mipQueryService" class="org.anyframe.mip.query.impl.MiPQueryServiceImpl">
+		<property name="namedParamJdbcTemplate" ref="pagingNamedParamJdbcTemplate"/>
+		<property name="lobHandler" ref="lobHandler"/>
+		<property name="sqlRepository" ref="mipSqlLoader"/>
+		<lookup-method name="getRowCallbackHandler" bean="rowCallbackHandler"/>
+		<lookup-method name="getCallableStatementCallbackHandler" bean="callableStatementCallbackHandler"/>
+		<lookup-method name="getPrintWriterRowCallbackHandler" bean="printWriterRowCallbackHandler"/>
+	</bean>	
+	
+	<bean id="callableStatementCallbackHandler" class="org.anyframe.mip.query.impl.jdbc.mapper.MiPCallableStatementCallbackHandler" scope="prototype"/>
+	
+	<bean id="rowCallbackHandler" class="org.anyframe.mip.query.impl.jdbc.mapper.MiPDataSetCallbackHandler" scope="prototype"/>
+	
+	<bean id="printWriterRowCallbackHandler" class="org.anyframe.mip.query.impl.jdbc.mapper.MiPPrintWriterCallbackHandler" scope="prototype"/>
+	
+	 <bean id="mipjdbcTemplate" class="org.anyframe.query.impl.jdbc.PagingJdbcTemplate">
+      <property name="dataSource" ref="dataSource" />
+      <property name="exceptionTranslator" ref="exceptionTranslator" />
+      <property name="paginationSQLGetter" ref="pagingSQLGenerator"/>
+    </bean>
+    
+    <bean id="pagingNamedParamJdbcTemplate" class="org.anyframe.query.impl.jdbc.PagingNamedParamJdbcTemplate">
+    	<constructor-arg index="0" ref="mipjdbcTemplate"/>
+	    <constructor-arg index="1" ref="dataSource"/>
+    </bean> 
+    
+	<bean name="mipSqlLoader" class="org.anyframe.query.impl.config.loader.SQLLoader">
+		<property name="mappingFiles">
+			<value>classpath:sql/mip-query/mapping-*.xml</value>
+		</property>	
+		<property name="nullchecks">
+			<map>
+		    	<entry key="VARCHAR" value=""/>
+		    </map>
+		</property>    
+		<property name="skipError" value="true" />		
+	</bean>	
+		
+</beans>

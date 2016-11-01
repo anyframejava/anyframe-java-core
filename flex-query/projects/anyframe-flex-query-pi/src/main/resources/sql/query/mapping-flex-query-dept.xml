@@ -1,0 +1,39 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE queryservice PUBLIC "-//ANYFRAME//DTD QUERYSERVICE//EN" "http://www.anyframejava.org/dtd/anyframe-core-query-mapping-3.2.dtd">
+<queryservice>
+  <queries>
+	<query id="flex.findDeptList" isDynamic="true" mappingStyle="camel">
+			<statement>
+				SELECT DEPT_ID, DEPT_NAME, DEPT_DESC 
+				FROM FLEX_DEPT
+				<!--Velocity-Support-dynamicFindDeptList-START-->
+				#if ($vo.searchCondition == "deptId")
+					where DEPT_ID like :vo.searchKeyword		
+				#elseif ($vo.searchCondition == "deptName")
+					and DEPT_NAME like :vo.searchKeyword		
+				#end
+				<!--Velocity-Support-dynamicFindDeptList-END-->
+			</statement>
+			<result class="org.anyframe.plugin.flex.query.domain.Dept"/>
+	</query>
+	<query id="flex.findGroupList" isDynamic="true" mappingStyle="camel">
+			<statement>
+				SELECT DEPT_ID, DEPT_NAME, DEPT_DESC 
+				FROM FLEX_DEPT
+				WHERE DEPT_LEVEL = '0'
+			</statement>
+			<result class="org.anyframe.plugin.flex.query.domain.Dept"/>
+	</query>
+	<query id="flex.findTeamList" isDynamic="true" mappingStyle="camel">
+			<statement>
+				SELECT DEPT_ID, DEPT_NAME, DEPT_DESC 
+				FROM FLEX_DEPT
+				WHERE
+					PARENT_DEPT = :vo.searchKeyword
+				AND
+					DEPT_LEVEL = '1'
+			</statement>
+			<result class="org.anyframe.plugin.flex.query.domain.Dept"/>
+	</query>
+  </queries>
+</queryservice>

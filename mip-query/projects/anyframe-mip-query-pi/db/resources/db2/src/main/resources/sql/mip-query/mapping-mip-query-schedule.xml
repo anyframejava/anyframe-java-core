@@ -1,0 +1,33 @@
+		<!--mip-query-querySchedule-START-->
+		<query id="findScheduleList" isDynamic="true" mappingStyle="upper">
+			<statement><![CDATA[
+				SELECT SCHD_ID, USER_ID, SCHD_TITLE, SCHD_CONTENTS, SCHD_STARTDATE, SCHD_ENDDATE, SCHD_PLACE
+				FROM MIP_SCHD
+				#if ($SEARCH_CONDITION.length()>0 && "0" == $SEARCH_CONDITION)
+					WHERE SCHD_TITLE like '%' CONCAT :SEARCH_KEYWORD CONCAT '%'
+				#end
+			]]></statement>
+		</query>
+		<query id="createSchedule" isDynamic="true" mappingStyle="upper">
+			<statement><![CDATA[
+				INSERT INTO MIP_SCHD
+				(SCHD_ID, USER_ID, SCHD_TITLE, SCHD_CONTENTS, SCHD_STARTDATE, SCHD_ENDDATE, SCHD_PLACE)
+				VALUES('SCHD-' CONCAT NEXT VALUE FOR SCHD_ID_SEQ, :USER_ID, :SCHD_TITLE, :SCHD_CONTENTS, :SCHD_STARTDATE, :SCHD_ENDDATE, :SCHD_PLACE)
+			]]></statement>
+		</query>
+		<query id="updateSchedule" isDynamic="true" mappingStyle="upper">
+			<statement><![CDATA[
+				UPDATE MIP_SCHD
+				SET
+				SCHD_TITLE =:SCHD_TITLE, SCHD_CONTENTS =:SCHD_CONTENTS
+				       , SCHD_STARTDATE =:SCHD_STARTDATE, SCHD_ENDDATE =:SCHD_ENDDATE, SCHD_PLACE =:SCHD_PLACE
+				WHERE SCHD_ID=:SCHD_ID
+			]]></statement>
+		</query>
+		<query id="removeSchedule" isDynamic="true" mappingStyle="upper">
+			<statement><![CDATA[
+				DELETE FROM MIP_SCHD
+				WHERE SCHD_ID=:SCHD_ID
+			]]></statement>
+		</query>
+		<!--mip-query-querySchedule-END-->

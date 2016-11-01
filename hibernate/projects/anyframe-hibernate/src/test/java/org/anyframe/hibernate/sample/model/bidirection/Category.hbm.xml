@@ -1,0 +1,45 @@
+<?xml version="1.0"?>
+<!DOCTYPE hibernate-mapping PUBLIC "-//Hibernate/Hibernate Mapping DTD 3.0//EN"
+"http://hibernate.sourceforge.net/hibernate-mapping-3.0.dtd">
+<!-- Generated 2008. 9. 1 ???? 1:00:43 by Hibernate Tools 3.2.1.GA -->
+<hibernate-mapping>
+    <class name="org.anyframe.hibernate.sample.model.bidirection.Category" table="CATEGORY" lazy="true" schema="PUBLIC">
+        <id name="categoryId" type="string">
+            <column name="CATEGORY_ID" length="9" />
+            <generator class="assigned" />
+        </id>
+        <property name="categoryName" type="string">
+            <column name="CATEGORY_NAME" length="50" not-null="true" />
+        </property>
+        <property name="categoryDesc" type="string">
+            <column name="CATEGORY_DESC" length="100" />
+        </property>
+        <set name="movies" inverse="true" table="MOVIE_CATEGORY" cascade="save-update">
+            <key>
+                <column name="CATEGORY_ID" length="9" not-null="true" />
+            </key>
+            <many-to-many entity-name="org.anyframe.hibernate.sample.model.bidirection.Movie">
+                <column name="MOVIE_ID" length="8" not-null="true" />
+            </many-to-many>
+        </set>
+    </class>
+    
+    <query name="findCategoryList">
+    	<![CDATA[	
+		SELECT distinct category 
+		FROM Movie movie right join movie.categories category 
+		ORDER BY category.categoryName ASC 
+    	]]>
+    </query>     
+    
+    <sql-query name="nativeFindCategoryList">
+    	<return alias="category" class="org.anyframe.hibernate.sample.model.bidirection.Category"/>
+    	<![CDATA[	
+    	SELECT distinct category.* 
+    	FROM MOVIE movie 
+    		right join MOVIE_CATEGORY moviecategory on movie.MOVIE_ID=moviecategory.MOVIE_ID
+    		right join CATEGORY category on moviecategory.CATEGORY_ID=category.CATEGORY_ID 
+    	ORDER BY category.CATEGORY_NAME ASC 
+    	]]>
+    </sql-query>       
+</hibernate-mapping>

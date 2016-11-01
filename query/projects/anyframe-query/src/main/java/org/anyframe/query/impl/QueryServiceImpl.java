@@ -23,6 +23,7 @@ import java.util.Collection;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
+import java.util.Locale;
 import java.util.Map;
 import java.util.Properties;
 import java.util.Set;
@@ -46,9 +47,7 @@ import org.anyframe.query.impl.util.NamedParameterUtil;
 import org.anyframe.query.impl.util.ParsedSql;
 import org.anyframe.query.impl.util.SQLTypeTransfer;
 import org.apache.velocity.app.Velocity;
-import org.springframework.beans.BeansException;
 import org.springframework.beans.factory.InitializingBean;
-import org.springframework.context.ApplicationContext;
 import org.springframework.jdbc.core.BatchPreparedStatementSetter;
 import org.springframework.jdbc.core.CallableStatementCreator;
 import org.springframework.jdbc.core.CallableStatementCreatorFactory;
@@ -62,6 +61,7 @@ import org.springframework.jdbc.core.namedparam.MapSqlParameterSource;
 import org.springframework.jdbc.core.namedparam.SqlParameterSource;
 import org.springframework.jdbc.object.BatchSqlUpdate;
 import org.springframework.jdbc.support.lob.LobHandler;
+
 
 /**
  * @author Soyon Lim
@@ -84,7 +84,7 @@ public class QueryServiceImpl extends AbstractQueryService implements
 	}
 
 	protected LobHandler lobHandler;
-
+	
 	PagingSQLGenerator pagingSQLGenerator;
 
 	/** ************* SETTER METHODS ************** */
@@ -95,8 +95,8 @@ public class QueryServiceImpl extends AbstractQueryService implements
 	 */
 	public void setJdbcTemplate(PagingJdbcTemplate jdbcTemplate) {
 		this.jdbcTemplate = jdbcTemplate;
-		this.namedParamJdbcTemplate = new PagingNamedParamJdbcTemplate(
-				jdbcTemplate, jdbcTemplate.getDataSource());
+		this.namedParamJdbcTemplate = new PagingNamedParamJdbcTemplate(jdbcTemplate,
+				jdbcTemplate.getDataSource());
 		this.namedParamJdbcTemplate.setExceptionTranslator(jdbcTemplate
 				.getExceptionTranslator());
 	}
@@ -120,15 +120,15 @@ public class QueryServiceImpl extends AbstractQueryService implements
 	public void afterPropertiesSet() throws Exception {
 		super.afterPropertiesSet();
 		jdbcTemplate.setPaginationSQLGetter(this.pagingSQLGenerator);
-
+		
 		if (jdbcTemplate.getPaginationSQLGetter() == null) {
 			QueryService.LOGGER
 					.error("pagingSQLGenerator needs to be defined for executing query. "
 							+ "So, you must specify a proper pagingSQLGenerator in QueryService configuration. "
 							+ "If you can't find a proper pagingSQLGenerator, you can define a DefaultPagingSQLGenerator as pagingSQLGenerator."
 							+ "But you must read notice of that class before using a DefaultPagingSQLGenerator.");
-			throw new QueryServiceException(
-					"[Query Service] pagingSQLGenerator needs to be defined for QueryService. \n So, you must specify a proper pagingSQLGenerator in QueryService configuration. \n If you can't find a proper pagingSQLGenerator, you can define a DefaultPagingSQLGenerator as pagingSQLGenerator. \n But you must read notice of that class before using a DefaultPagingSQLGenerator.");
+			throw new QueryServiceException(getMessageSource(),
+					"error.query.common.checksqlgenerator", new Object[] {});
 		}
 	}
 
@@ -610,9 +610,8 @@ public class QueryServiceImpl extends AbstractQueryService implements
 
 			return queryMap;
 		} catch (Exception e) {
-			throw new QueryServiceException(
-					"Query Service : Fail to make querymap consist of queryId and statement.\n Reason = ["
-							+ e.getMessage() + "]", e);
+			throw new QueryServiceException(getMessageSource(),
+					"error.query.get.querymap", new Object[] {}, e);
 		}
 	}
 
@@ -646,12 +645,9 @@ public class QueryServiceImpl extends AbstractQueryService implements
 
 			return results;
 		} catch (Exception e) {
-			throw new QueryServiceException(
-					"Query Service : Fail to find query's parameters for specified query with queryId ["
-							+ queryId
-							+ "].\n Reason = ["
-							+ e.getMessage()
-							+ "]", e);
+			throw new QueryServiceException(getMessageSource(),
+					"error.query.common.checkparams", new Object[] { queryId },
+					e);
 		}
 	}
 
@@ -688,8 +684,8 @@ public class QueryServiceImpl extends AbstractQueryService implements
 	protected int[] batchExecutor(final String sql, int[] types,
 			final List targets) throws QueryServiceException {
 		if (targets.size() <= 0)
-			throw new QueryServiceException(
-					"Query Service : batchCreate needs at least 1 variables.");
+			throw new QueryServiceException(getMessageSource(),
+					"error.query.runtime.batch");
 
 		BatchSqlUpdate sqlBatch = new BatchSqlUpdate();
 		sqlBatch.setJdbcTemplate(jdbcTemplate);
@@ -756,10 +752,9 @@ public class QueryServiceImpl extends AbstractQueryService implements
 						// inputMap에서 해당 dynamic SQL에
 						// 셋팅해야 할 모든 Bind Variables의 값을 찾아
 						// 배열 형태로 전달받는다.
-						Object[] args = NamedParameterUtil
-								.buildValueArray(parsedSql,
-										new DefaultDynamicSqlParameterSource(
-												properties));
+						Object[] args = NamedParameterUtil.buildValueArray(
+								parsedSql, new DefaultDynamicSqlParameterSource(
+										properties));
 						// Set the value for the parameter
 						for (int i = 0; i < args.length; i++) {
 							StatementCreatorUtils.setParameterValue(ps, i + 1,
@@ -830,8 +825,8 @@ public class QueryServiceImpl extends AbstractQueryService implements
 	protected int objectCUDExecutor(Object obj, String sql) {
 		Map properties = new HashMap();
 		properties.put("anyframe", obj);
-		return namedParamJdbcTemplate.update(sql,
-				new DefaultDynamicSqlParameterSource(properties));
+		return namedParamJdbcTemplate.update(sql, new DefaultDynamicSqlParameterSource(
+				properties));
 	}
 
 	/**
@@ -857,8 +852,8 @@ public class QueryServiceImpl extends AbstractQueryService implements
 		}
 
 		return sqlCUDExecutor(queryInfo.getQueryString(), values, types,
-				queryInfo.isDynamic(), queryInfo.getLobStatement(),
-				queryInfo.getLobParamTypes(), queryInfo.getQueryId());
+				queryInfo.isDynamic(), queryInfo.getLobStatement(), queryInfo
+						.getLobParamTypes(), queryInfo.getQueryId());
 	}
 
 	/**
@@ -891,8 +886,8 @@ public class QueryServiceImpl extends AbstractQueryService implements
 			if (values.length != 3 || !(values[0] instanceof Object[])
 					|| !(values[1] instanceof Object[])
 					|| !(values[2] instanceof Object[])) {
-				throw new QueryServiceException(
-						"Query Service : Lob CUD Type Value must be like this : Object[]{Object[] for main statement, Object[] for lob statement, Object[] for lob value}}");
+				throw new QueryServiceException(getMessageSource(),
+						"error.query.get.lobvalues");
 			}
 			inputValues = (Object[]) values[0];
 		}
@@ -1022,8 +1017,8 @@ public class QueryServiceImpl extends AbstractQueryService implements
 				count = resultList.size();
 			else
 				count = paginationVO.getRecordCount();
-			return makeResultMap(resultList, count,
-					rowCallbackHandler.getColumnInfo());
+			return makeResultMap(resultList, count, rowCallbackHandler
+					.getColumnInfo());
 		} catch (Exception e) {
 			throw processException("select with column info [query id = '"
 					+ queryId + "']", getQueryString(queryInfo), e);
@@ -1067,10 +1062,8 @@ public class QueryServiceImpl extends AbstractQueryService implements
 
 				if (isVelocity(sql)) {
 					StringWriter writer = new StringWriter();
-					Velocity.evaluate(
-							new DefaultDynamicSqlParameterSourceContext(
-									sqlParameterSource), writer,
-							"QueryService", sql);
+					Velocity.evaluate(new DefaultDynamicSqlParameterSourceContext(
+							sqlParameterSource), writer, "QueryService", sql);
 					sql = writer.toString();
 				}
 
@@ -1080,9 +1073,8 @@ public class QueryServiceImpl extends AbstractQueryService implements
 				return resultSetMapper.getObjects();
 			} else {
 				if (!paging)
-					return jdbcTemplate.query(sql, values,
-							queryInfo.getSqlTypes(),
-							(RowMapper) resultSetMapper);
+					return jdbcTemplate.query(sql, values, queryInfo
+							.getSqlTypes(), (RowMapper) resultSetMapper);
 				else
 					return jdbcTemplate.queryWithPagination(sql, values,
 							queryInfo.getSqlTypes(),
@@ -1131,8 +1123,8 @@ public class QueryServiceImpl extends AbstractQueryService implements
 		if (mapperClazz != null
 				&& CallbackResultSetMapper.class.isAssignableFrom(mapperClazz)) {
 			callbackResultSetMapper = new CallbackResultSetMapper(targetClazz,
-					mappingInfo, lobHandler, nullchecks,
-					queryInfo.getMappingStyle());
+					mappingInfo, lobHandler, nullchecks, queryInfo
+							.getMappingStyle());
 			customResultSetMapper = callbackResultSetMapper;
 		} else if (mapperClazz != null
 				&& ReflectionResultSetMapper.class
@@ -1142,8 +1134,8 @@ public class QueryServiceImpl extends AbstractQueryService implements
 			customResultSetMapper = callbackResultSetMapper;
 		} else {
 			callbackResultSetMapper = new DefaultCallbackResultSetMapper(
-					targetClazz, mappingInfo, lobHandler, nullchecks,
-					queryInfo.getMappingStyle());
+					targetClazz, mappingInfo, lobHandler, nullchecks, queryInfo
+							.getMappingStyle());
 		}
 		// 2009.10.28
 		callbackResultSetMapper.setSqlLoader(this.getSqlRepository());
@@ -1171,15 +1163,15 @@ public class QueryServiceImpl extends AbstractQueryService implements
 					// types[i] =
 					// SqlTypeValue.TYPE_UNKNOWN;
 					// continue;
-					throw new QueryServiceException(
-							"Query Service : Invalid Argument - Argument String must include a delimiter '='.");
+					throw new QueryServiceException(getMessageSource(),
+							"error.query.generate.valuemap.string");
 				}
 				types[i] = queryInfo.getSqlType(tempStr.substring(0, pos));
 			} else if (values[i] instanceof Object[]) {
 				tempArray = (Object[]) values[i];
 				if (tempArray.length != 2) {
-					throw new QueryServiceException(
-							"Query Service : Invalid Argument - Argument Object Array size must be 2.");
+					throw new QueryServiceException(getMessageSource(),
+							"error.query.generate.valuemap.array");
 				}
 				types[i] = queryInfo.getSqlType((String) tempArray[0]);
 			} else if (values[i] == null) {
@@ -1205,19 +1197,19 @@ public class QueryServiceImpl extends AbstractQueryService implements
 				tempStr = (String) values[i];
 				int pos = tempStr.indexOf(DELIMETER);
 				if (pos < 0) {
-					throw new QueryServiceException(
-							"Query Service : Invalid Argument - Argument String must include a delimiter '='.");
+					throw new QueryServiceException(getMessageSource(),
+							"error.query.generate.valuemap.string");
 				}
-				properties.put(tempStr.substring(0, pos),
-						tempStr.substring(pos + 1));
+				properties.put(tempStr.substring(0, pos), tempStr
+						.substring(pos + 1));
 				if (mapSqlParameterSource != null)
 					mapSqlParameterSource.addValue(tempStr.substring(0, pos),
 							tempStr.substring(pos + 1), types[i]);
 			} else if (values[i] instanceof Object[]) {
 				tempArray = (Object[]) values[i];
 				if (tempArray.length != 2) {
-					throw new QueryServiceException(
-							"Query Service : Invalid Argument - Argument Object Array size must be 2.");
+					throw new QueryServiceException(getMessageSource(),
+							"error.query.generate.valuemap.array");
 				}
 				properties.put(tempArray[0], tempArray[1]);
 				if (mapSqlParameterSource != null)
@@ -1244,19 +1236,19 @@ public class QueryServiceImpl extends AbstractQueryService implements
 
 	public QueryServiceException processException(String actionName,
 			String sql, Exception exception) {
-		QueryService.LOGGER.error(
-				"Query Service : Fail to {" + actionName + "}.\n Query = ["
-						+ sql + "] \n Reason = [" + exception.getMessage()
-						+ "].", exception);
+		QueryService.LOGGER.error(getMessageSource().getMessage(
+				"error.query.runtime.error",
+				new Object[] { actionName, sql, exception.getMessage() },
+				Locale.getDefault()), exception);
 		// 원인이 되는 Exception이
 		// InternalDataAccessException와 같은 유형일 경우 쿼리
 		// 수행시 발생한 ErrorCode가 셋팅된다.
 		if (exception instanceof InternalDataAccessException) {
 			InternalDataAccessException idaException = (InternalDataAccessException) exception;
 			QueryServiceException queryServiceException = new QueryServiceException(
-					"Query Service : Fail to " + actionName + ".\n Query = ["
-							+ sql + "] \n Reason = [" + exception.getMessage()
-							+ "].", idaException);
+					getMessageSource(), "error.query.runtime.error",
+					new Object[] { actionName, sql, exception.getMessage() },
+					idaException);
 			queryServiceException.setSqlErrorCode(idaException
 					.getSqlErrorCode());
 			queryServiceException.setSqlErrorMessage(idaException
@@ -1266,9 +1258,8 @@ public class QueryServiceImpl extends AbstractQueryService implements
 		if (exception instanceof QueryServiceException)
 			return (QueryServiceException) exception;
 		else
-			return new QueryServiceException("Query Service : Fail to "
-					+ actionName + ".\n Query = [" + sql + "] \n Reason = ["
-					+ exception.getMessage() + "].", exception);
+			return new QueryServiceException(getMessageSource(),
+					"error.query.runtime.error", new Object[] { actionName,
+							sql, exception.getMessage() }, exception);
 	}
-
 }

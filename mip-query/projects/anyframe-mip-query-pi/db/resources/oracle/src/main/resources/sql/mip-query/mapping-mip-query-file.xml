@@ -1,0 +1,33 @@
+		<!--mip-query-queryBoardFile-START-->
+		<query id="findBoardFileList" isDynamic="true" mappingStyle="upper">
+			<statement><![CDATA[
+				SELECT 
+				FILE_ID, FILE_PATH, FILE_NAME, FILE_EXT, FILE_SIZE,
+				CONTENTS, POST_ID
+				FROM MIP_ATTACH
+				WHERE POST_ID = :POST_ID
+				ORDER BY FILE_ID DESC
+			]]></statement>
+		</query>
+		<query id="createBoardFile" isDynamic="true" mappingStyle="upper">
+			<statement><![CDATA[
+				INSERT INTO MIP_ATTACH
+				(FILE_ID, FILE_PATH, FILE_NAME, FILE_EXT, FILE_SIZE,CONTENTS, POST_ID) 
+				VALUES ('FILE-' || FILE_ID_SEQ.NEXTVAL , :FILE_PATH, :FILE_NAME, :FILE_EXT, :FILE_SIZE, :CONTENTS, :POST_ID) 
+			]]></statement>
+		</query>
+		<query id="updateBoardFile" isDynamic="true" mappingStyle="upper">
+			<statement><![CDATA[
+				UPDATE MIP_ATTACH
+				SET
+				TITLE = :FILE_ID, :FILE_PATH, :FILE_NAME, :FILE_EXT, :FILE_SIZE,CONTENTS, :POST_ID
+				WHERE FILE_ID = :FILE_ID
+			]]></statement>
+		</query>
+		<query id="removeBoardFile" isDynamic="true" mappingStyle="upper">
+			<statement><![CDATA[
+				DELETE FROM MIP_ATTACH 
+				WHERE FILE_ID = :FILE_ID
+			]]></statement>
+		</query>
+		<!--mip-query-queryBoardFile-END-->

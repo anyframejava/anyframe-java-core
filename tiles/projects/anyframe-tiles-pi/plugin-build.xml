@@ -1,0 +1,62 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<plugin name="tiles">
+  <groupId>org.anyframe.plugin</groupId>
+  <artifactId>anyframe-tiles-pi</artifactId>
+  <version>1.0.0.RC1</version>
+  <dependent-plugins>
+    <dependent-plugin name="core" version="2.0.0&gt;*"/>
+  </dependent-plugins>
+  <resources>
+    <resource dir="src/main/java" filtered="true" packaged="true">
+      <include name="**/*.java"/>
+    </resource>
+    <resource dir="src/main/resources" filtered="true" packaged="false">
+      <include name="**/*.xml"/>
+    </resource>
+    <resource dir="src/test/java" filtered="true" packaged="true">
+      <include name="**/*.java"/>
+    </resource>
+    <resource dir="src/test/resources" filtered="true" packaged="false">
+      <include name="**/*.xml"/>
+    </resource>
+    <resource dir="src/main/webapp" filtered="false" packaged="false">
+      <include name="**/sample/tiles/**/*.*"/>
+    </resource>    
+    <resource dir="src/main/webapp/WEB-INF/jsp" filtered="false" packaged="false">
+      <include name="**/*.jsp"/>
+    </resource>
+    <resource dir="src/main/webapp/WEB-INF" filtered="false" packaged="false">
+      <include name="**/tiles-views.xml"/>
+    </resource>    
+  </resources>
+  <build>
+    <filesets>
+      <fileset dir="src/main/java" filtered="true" packaged="true">
+        <include name="**/org/anyframe/plugin/tiles/**/*.java"/>
+      </fileset>
+      <fileset dir="src/main/resources" filtered="true" packaged="false">
+        <include name="**/*tiles*.xml"/>
+      </fileset>
+      <fileset dir="src/test/java" filtered="true" packaged="true">
+        <include name="**/org/anyframe/plugin/tiles/**/*.java"/>
+      </fileset>
+      <fileset dir="src/test/resources" filtered="true" packaged="false">
+        <include name="**/*tiles*.xml"/>
+      </fileset>
+      <fileset dir="src/main/webapp" filtered="false" packaged="false">
+        <include name="**/tiles/**/*.*"/>
+        <include name="**/anyframe.jsp"/>
+      </fileset>
+      <fileset dir="src/main/webapp/WEB-INF" filtered="false" packaged="false">
+        <include name="**/tiles-views.xml"/>
+        <include name="**/test.xml"/>
+      </fileset>      
+    </filesets>
+  </build>
+  <samples>true</samples>
+  <interceptor>
+    <class></class>
+  </interceptor>
+  <essential>false</essential>
+  <checked>false</checked>
+</plugin>

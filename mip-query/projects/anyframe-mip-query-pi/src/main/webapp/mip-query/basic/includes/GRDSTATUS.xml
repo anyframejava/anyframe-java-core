@@ -1,0 +1,64 @@
+<?xml version="1.0" encoding="utf-8"?>
+<Window>
+	<Form Height="24" Id="frmGRDSTATUS" Left="8" OnLoadCompleted="frmGRDSTATUS_OnLoadCompleted" OnTimer="frmGRDSTATUS_OnTimer" PidAttrib="7" Top="8" Ver="1.0" Width="520" WorkArea="true">
+		<Image Align="Right" DomainID="biz.grid_total" Font="돋움,8,Bold" Height="13" Id="stGridStatus" LeftMargin="15" TabOrder="1" Text="Total&#32;Count&#32;:&#32;" Width="202"></Image>
+	</Form>
+	<Script><![CDATA[var TIMER_ID = 100;
+var TIMER_ELAPSE = 400;
+
+var bActive = false;
+var objGrid = null;
+var objGridDataset = null;
+
+// form OnLoadCompleted event
+function frmGRDSTATUS_OnLoadCompleted(obj) {
+	var arrUserData = split(UserData, ",");
+	
+	for(var i = 0 ; i < arrUserData.length ; i++) {
+		var arrUserDataDtl = split(arrUserData[i], "=");
+		
+		if(arrUserDataDtl[0] == "GRD_STATUS") {
+			fnSetActive(false);
+			fnSetGrid(arrUserDataDtl[1]);
+			fnSetActive(true);
+			break;
+		}
+	}
+}
+
+function fnSetActive(bValue){
+	if(bActive == bValue) 
+		return;
+	bActive = bValue;
+	
+	if(bActive){
+		setTimer(TIMER_ID, TIMER_ELAPSE);
+	} else {
+		killTimer(TIMER_ID);
+	}
+}
+
+function fnSetGrid(sGridID) {
+	fnSetActive(false);
+	objGrid = parent.object(sGridID);
+	objGridDataset = parent.object(objGrid.BindDataset);
+	fnSetActive(true);
+}
+
+function frmGRDSTATUS_OnTimer(obj, nEventID) {
+	var nRowCount = objGridDataset.rowcount;
+	var nRowPos = 1 + objGridDataset.row;	
+	var strTotalCount = objGridDataset.getConstColumn("totalCount");
+	
+	if(!gfnIsNull(strTotalCount) && parseInt(strTotalCount) != 0) {
+		nRowCount = strTotalCount;
+		nRowPos = 1 + objGridDataset.row + ((objGridDataset.getConstColumn("pageIndex")-1) * objGridDataset.getConstColumn("pageSize"));
+	}
+	
+	if(bActive) {
+		stGridStatus.text = 'Total Count : ' + nRowPos + '/' + nRowCount + " ";
+	} else {
+		stGridStatus.text = 'Total Count : ';
+	}
+}]]></Script>
+</Window>

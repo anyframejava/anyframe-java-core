@@ -1,0 +1,50 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<plugin name="monitoring">
+  <groupId>org.anyframe.plugin</groupId>
+  <artifactId>anyframe-monitoring-pi</artifactId>
+  <version>1.0.0.RC1</version>
+  <dependent-plugins>
+    <dependent-plugin name="core" version="2.0.0&gt;*"/>
+  </dependent-plugins>
+  <resources>
+    <resource dir="src/main/java" filtered="true" packaged="true">
+      <include name="**/*.java"/>
+    </resource>
+    <resource dir="src/main/resources" filtered="true" packaged="false">
+      <include name="**/*.xml"/>
+      <include name="**/*infrared*.properties"/>
+    </resource>
+    <resource dir="src/test/java" filtered="true" packaged="true">
+      <include name="**/*.java"/>
+    </resource>
+    <resource dir="src/test/resources" filtered="true" packaged="false">
+      <include name="**/*.xml"/>
+    </resource>
+    <resource dir="src/main/webapp/WEB-INF/jsp" filtered="false" packaged="false">
+      <include name="**/*.jsp"/>
+    </resource>
+  </resources>
+  <build>
+    <filesets>
+      <fileset dir="src/main/java" filtered="true" packaged="true">
+        <include name="**/org/anyframe/plugin/monitoring/**/*.java"/>
+      </fileset>
+      <fileset dir="src/main/resources" filtered="true" packaged="false">
+        <include name="**/*monitoring*.xml"/>
+        <include name="**/*infrared*.properties"/>
+      </fileset>
+      <fileset dir="src/test/java" filtered="true" packaged="true">
+        <include name="**/org/anyframe/plugin/monitoring/**/*.java"/>
+      </fileset>
+      <fileset dir="src/test/resources" filtered="true" packaged="false">
+        <include name="**/*monitoring*.xml"/>
+      </fileset>
+      <fileset dir="src/main/webapp" filtered="false" packaged="false">
+        <include name="**/monitoring/**/*.*"/>
+        <include name="**/web.xml"/>
+      </fileset>
+    </filesets>
+  </build>
+  <essential>false</essential>
+  <samples>false</samples>
+</plugin>

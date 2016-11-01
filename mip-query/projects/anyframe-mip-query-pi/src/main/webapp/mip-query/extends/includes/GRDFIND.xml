@@ -1,0 +1,52 @@
+<?xml version="1.0" encoding="utf-8"?>
+<Window>
+	<Form BKColor="user20" Height="128" Id="frmGRDFIND" Left="8" OnKeyDown="frmGRDFIND_OnKeyDown" OnLoadCompleted="frmGRDFIND_OnLoadCompleted" PidAttrib="7" Style="stlFrm" Title="Find" Top="8" Ver="1.0" Width="230" WorkArea="true">
+		<Edit AutoSelect="TRUE" Border="Flat" Height="20" Id="edtSearchKw" Left="11" LeftMargin="2" RightMargin="2" Style="stlEdt" TabOrder="1" Top="8" Width="134"></Edit>
+		<Static Color="blue" DomainID="biz.search_direction" Height="49" Id="stDirection" Left="11" Style="stlLblGrp" TabOrder="2" Text="Direction" Top="34" Type="Groupbox" Width="196"></Static>
+		<Radio Border="Flat" Height="21" Id="rdoDirection" INDEX="-1" Left="22" LeftMargin="5" RightMargin="5" Style="stlRdo" TabOrder="3" Top="51" Value="D" Width="112">
+			<Contents>
+				<Layout code="U" height="20" left="5" text="Up" top="0" width="50"/>
+				<Layout code="D" height="20" left="55" text="Down" top="0" width="50"/>
+			</Contents>
+		</Radio>
+		<Button ButtonStyle="TRUE" Cursor="HAND" DomainID="button.search" Height="19" Id="btnSearch" ImageID="btn_search" Left="149" OnClick="btnSearch_OnClick" Style="stlBtn" TabOrder="4" Text="&#32;검색" Top="8" UserData="TYPE=S" Width="56"></Button>
+		<Button ButtonStyle="TRUE" Cursor="HAND" DomainID="button.close" Height="19" Id="btnClose" ImageID="btn_close" Left="88" OnClick="btnClose_OnClick" Style="stlBtn" TabOrder="5" Text="&#32;닫기" Top="95" UserData="TYPE=S" Width="56"></Button>
+	</Form>
+	<Script><![CDATA[var objGrid;
+var objGridDataset;
+
+// form OnLoadCompleted event
+// 화면 로딩 시 검색어 입력상태
+function frmGRDFIND_OnLoadCompleted(obj) {
+	objGrid = eval(L_ARG_STR_GRID); // L_ARG_STR_GRID는 mipsupport::lib_Form.js에 존재
+	objGridDataset = eval(objGrid.BindDataset);
+	edtSearchKw.text = L_ARG_STR_VALUE;
+	edtSearchKw.setFocus();
+}
+
+// 엔터키 입력 및 ESC키 입력
+function frmGRDFIND_OnKeyDown(obj, objSenderObj, nChar, bShift, bControl, bAlt, nLLParam, nHLParam) {
+	// Enter
+	if(bShift == 0 && bAlt == 0 && nChar == 13) {
+		btnSearch_OnClick(obj);
+
+	// ESC
+	} else if(bShift == 0 && bAlt == 0 && nChar == 27) {
+		btnClose_OnClick(obj);
+	}
+}
+
+// 검색 버튼 클릭 
+function btnSearch_OnClick(obj) {
+	var nRow = objGridDataset.row;
+	var nCol = objGrid.getCellPos();
+
+	grd_fn_Find(objGrid, edtSearchKw.text, nRow, nCol, rdoDirection.value); // grd_fn_Find은 mipsupport::lib_Grid.js에 존재
+}
+
+// 닫기 버튼 클릭
+function btnClose_OnClick(obj) {
+	GRD_STR_FIND_DIRECTION = "";	// GRD_STR_FIND_DIRECTION은 mipsupport::lib_Form.js에 존재
+	close();
+}]]></Script>
+</Window>

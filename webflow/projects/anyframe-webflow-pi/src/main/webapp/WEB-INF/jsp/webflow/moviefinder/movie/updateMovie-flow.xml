@@ -1,0 +1,38 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<flow xmlns="http://www.springframework.org/schema/webflow"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://www.springframework.org/schema/webflow
+        http://www.springframework.org/schema/webflow/spring-webflow-2.0.xsd">
+        
+	<var name="movie" class="org.anyframe.plugin.webflow.domain.Movie" />
+	
+	<input name="movieId" type="java.lang.String" />
+	
+	<on-start>
+		<evaluate expression="webflowMovieService.get(movieId)" result="movie"/>
+	</on-start>
+	
+	<view-state id="get" model="movie" view="webflow/moviefinder/movie/form">
+		<on-render>
+			<evaluate expression="webflowGenreService.getList()"
+				result="flowScope.genreList" />
+		</on-render>
+		<transition on="update" to="update">
+			<set name="movie.nowPlaying" value="requestParameters._nowPlaying"/>
+		</transition>
+		<transition on="remove" to="backtolist">
+			<set name="flowScope.movieId" value="requestParameters.movieId" />
+			<evaluate expression="webflowMovieService.remove(movieId)" />
+		</transition>
+	</view-state>
+
+	<view-state id="update" model="movie" view="webflow/moviefinder/movie/review">
+		<transition on="revise" to="get" />
+		<transition on="confirm" to="backtolist">
+			<evaluate expression="webflowMovieService.update(movie)" />
+		</transition>
+	</view-state>
+	
+	<end-state id="backtolist"
+		view="externalRedirect:contextRelative:webflowMovieFinder.do?method=list" />
+</flow>
