@@ -28,7 +28,6 @@ import org.anyframe.query.impl.jdbc.generator.HSQLPagingSQLGenerator;
 import org.anyframe.query.impl.jdbc.generator.MSSQLPagingSQLGenerator;
 import org.anyframe.query.impl.jdbc.generator.MySQLPagingSQLGenerator;
 import org.anyframe.query.impl.jdbc.generator.OraclePagingSQLGenerator;
-import org.anyframe.query.impl.jdbc.generator.PostgreSQLPagingSQLGenerator;
 import org.anyframe.query.impl.util.RawSQLExceptionTranslator;
 import org.springframework.beans.factory.config.BeanDefinition;
 import org.springframework.beans.factory.config.RuntimeBeanReference;
@@ -150,10 +149,6 @@ public class QueryServiceBeanDefinitionRegistry implements
 				pageSqlGeneratorDef = new RootBeanDefinition(
 						MSSQLPagingSQLGenerator.class);
 
-			} else if ("postgresql".equals(dbType)) {
-				// page sql generator bean definition for hsqldb
-				pageSqlGeneratorDef = new RootBeanDefinition(
-						PostgreSQLPagingSQLGenerator.class);
 			} else { // defalut
 				// page sql generator bean definition for hsqldb
 				pageSqlGeneratorDef = new RootBeanDefinition(

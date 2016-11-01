@@ -1,0 +1,390 @@
+<chapter id="query_mapping">
+	<title>Mapping XML Files</title>
+		<para>
+		When QueryService is initialized, QueryService loads the defined mapping information using SqlLoader.
+		And upon requests of the user, it finds and executes the query statement using query id based on the mapping information. 
+		</para>
+		<para>	
+			Let's take a look how to define mapping XML file loaded by org.anyframe.query.impl.config.loader.MappingXMLLoader.		
+			The mapping XML file is composed of <![CDATA[<table-mapping>]]> and <![CDATA[<queries>]]> between 
+			<![CDATA[<queryservice>]]> and <![CDATA[</queryservice>]]>. 
+			Since <![CDATA[<queries>]]> is an essential element, it should not be omitted. 
+		</para>
+	
+	<section id="query_mapping_schema">
+		<title>Mapping XML Schema</title>
+		<para>
+			The schema of the mapping XML file loaded by QueryService should be defined based on XSD (from version 1.1.0). 
+			(based on DTD before 1.0.0)
+			To define the mapping XML file, definition of the following Namespace should precede.
+		</para>
+		<programlisting language="xml"><![CDATA[
+<queryservice ]]><emphasis role="bold">xmlns="http://www.anyframejava.org/schema/query/mapping"</emphasis><![CDATA[ 
+    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" 
+    ]]><emphasis role="bold">xsi:schemaLocation="http://www.anyframejava.org/schema/query/mapping 
+    http://www.anyframejava.org/schema/query/mapping/anyframe-query-mapping-1.0.xsd</emphasis><![CDATA[">
+    ...
+</queryservice>]]></programlisting>
+	</section>
+
+	<section id="query_mapping_table">
+		<title>table-mapping definition method</title>
+
+		<para>
+		    By using <![CDATA[<table>]]> in <![CDATA[<table-mapping>]]>,
+			mapping information between table and a specific class can be defined.
+			In <![CDATA[<table-mapping>]]>, several <![CDATA[<table>]]> can be defined.
+		</para>
+
+		<informaltable>
+			<tgroup cols="3">
+				<colspec colname="col1" colnum="1" colwidth="2*" />
+				<colspec colname="col2" colnum="2" colwidth="4*" />
+				<colspec colname="col3" colnum="3" colwidth="4*" />				
+
+				<thead>
+					<row>
+						<entry align="center">Tag Name</entry>
+						<entry align="center">Description</entry>
+						<entry align="center">Child Tag</entry>
+					</row>
+				</thead>
+
+				<tbody>
+					<row>
+						<entry>table</entry>
+						<entry>
+							Define mapping information between table and class.
+							<para>* attribute explanation</para>
+							<para>name: table name </para>
+							<para>class : class name</para>
+						</entry>
+						<entry>field-mapping(required), primary-key(required)</entry>
+					</row>
+
+					<row>
+						<entry>field-mapping</entry>
+						<entry>Define table column and the attribute of mapping class.</entry>
+						<entry>dbms-column(required), class-attribute(required)</entry>
+					</row>
+
+					<row>
+						<entry>primary-key</entry>
+						<entry>Define primary key of table.</entry>
+						<entry>dbms-column(required)</entry>
+					</row>
+
+					<row>
+						<entry>dbms-column</entry>
+						<entry>Define column name of table.</entry>
+						<entry/>
+					</row>
+
+					<row>
+						<entry>class-attribute</entry>
+						<entry>Maps each attribute name of the class onto the column.
+						
+						</entry>
+						<entry/>
+					</row>
+				</tbody>
+			</tgroup>
+		</informaltable>
+
+		<para>
+			The following is an example of <![CDATA[<table-mapping>]]> using the above-listed setting information
+			and contains mapping information between TBL_CUSTOMER table and Customer class.
+			<programlisting language="xml"><![CDATA[<queryservice>
+    <table-mapping>
+        <table name="TBL_CUSTOMER"
+            class="org.anyframe.sample.domain.Customer">
+            <field-mapping>
+                <dbms-column>ssno</dbms-column>
+                <class-attribute>ssno</class-attribute>
+            </field-mapping>
+            <field-mapping>
+                <dbms-column>name</dbms-column>
+                <class-attribute>nm</class-attribute>
+            </field-mapping>
+            <field-mapping>
+                <dbms-column>address</dbms-column>
+                <class-attribute>addr</class-attribute>
+            </field-mapping>
+            <primary-key>
+                <dbms-column>ssno</dbms-column>
+            </primary-key>
+        </table>
+    </table-mapping>
+</queryservice>]]></programlisting>
+		</para>
+	</section>
+
+	<section id="query_mapping_queries">
+		<title>queries definition method</title>
+
+		<para>
+			By using <![CDATA[<query>]]> in <![CDATA[<queries>]]>,
+			it can define sql statements to execute through Query services.
+						In <![CDATA[<queries>]]>, several <![CDATA[<query>]]> can be defined.
+		</para>
+
+		<informaltable>
+			<tgroup cols="3">
+				<colspec colname="col1" colnum="1" colwidth="1*" />
+				<colspec colname="col2" colnum="2" colwidth="7*" />
+				<colspec colname="col3" colnum="3" colwidth="2*" />				
+
+				<thead>
+					<row>
+						<entry align="center">Tag Name</entry>
+						<entry align="center">Description</entry>
+						<entry align="center">Child Tag</entry>
+					</row>
+				</thead>
+
+				<tbody>
+					<row>
+						<entry>query</entry>
+						<entry>
+							Top-level element to define SQL statement.
+							<para>
+								* attribute explanation
+							</para>
+							<para>
+								id: Identifier to identify the relevant SQL statement
+							</para>
+							<para>
+								isDynamic: Identifies whether dynamic query or not (Default=true)
+							</para>
+							<para>
+								isCamelCase: When mapping search result, 
+								defines whether to apply camelCase to the search column name (Default=true)
+							</para>
+							<para>
+								maxFetchSize: To prevent degradation that can occur when a large amount of data is searched as a whole, 
+								the number of maximum searches allowed can be limited by defining maxFetchSize for each query statement. 
+								When the number of the data as the result of the search is larger than the defined maxFetchSize, 
+								it is handled as Exception.
+								When maxFetchSize has not been defined for a specific query statement, 
+								maxFetchSize of jdbcTemplate is applied.  
+								If maxFetchSize has not been defined for jdbcTemplate, 
+								the number of data searched is not limited.
+							</para>
+							<para> 
+								mappingStyle: When mapping search result, 
+								defines to which type the research column name should be modified
+							   (select among camel,lower, upper, none, Default=camel)
+							</para>
+							<para> 
+								 camel - Apply CamelCase to the search column name 
+							</para>
+							<para>
+								 lower - Apply LowerCase to the search column name
+							</para>
+							<para>
+								 upper - Apply UpperCase to the search column name
+							</para>
+							<para>
+								 none - Apply what DBMS returned to the search column name 
+							</para>
+							<para>
+								*As there is limit to the various style column mapping in isCamelCase, new attribute is added.
+								Therefore, isCamelCase is to be deprecated (from Anyframe 3.2.1 onwards).
+								When mappingStyle is applied, isCamelCase is ignored, 
+								and For compatibility with the previous version, 
+								if isCamelCase is true, mappingStyle is 'camel'
+								and if false, handled as 'lower'.
+							</para>
+						</entry>
+						<entry>statement(required), lobStatement(optional), param(optional), result(optional)</entry>
+					</row>
+
+					<row>
+						<entry>statement</entry>
+						<entry>
+							Define SQL statement to execute.
+							Conflict occurs when the same column name exists. Use column alias.
+						</entry>
+						<entry/>
+					</row>
+
+					<row>
+						<entry>param</entry>
+						<entry>
+							Query service compiles the SQL statement and and saves it in PreparedStatement.
+							Therefore, to execute setXXX in PreparedStatement for setting input value,
+							define SQL type of the input parameter as the value of param tag attribute
+							referring to the JDBC types defined in java.sql.Types.
+							param tag is added according to input parameter number and order.
+							To get parameter data, data type must be defined as the following.
+							<informaltable>
+								<tgroup cols="2">
+									<thead>
+										<row>
+											<entry align="center">Java Type</entry>
+											<entry align="center">DBMS Type</entry>
+										</row>
+									</thead>
+
+									<tbody>
+										<row>
+											<entry>String</entry>
+											<entry>CHAR</entry>
+										</row>
+
+										<row>
+											<entry>String</entry>
+											<entry>VARCHAR</entry>
+										</row>
+
+										<row>
+											<entry>String</entry>
+											<entry>LONGVARCHAR</entry>
+										</row>
+
+										<row>
+											<entry>java.math.BigDecimal</entry>
+											<entry>NUMERIC </entry>
+										</row>
+
+										<row>
+											<entry>java.math.BigDecimal</entry>
+											<entry>DECIMAL</entry>
+										</row>
+
+										<row>
+											<entry>boolean</entry>
+											<entry>BIT</entry>
+										</row>
+
+										<row>
+											<entry>byte</entry>
+											<entry>TINYINT</entry>
+										</row>
+
+										<row>
+											<entry>short</entry>
+											<entry>SMALLINT</entry>
+										</row>
+
+										<row>
+											<entry>int</entry>
+											<entry>INTEGER</entry>
+										</row>
+
+										<row>
+											<entry>long</entry>
+											<entry>BIGINT</entry>
+										</row>
+
+										<row>
+											<entry>float</entry>
+											<entry>REAL</entry>
+										</row>
+
+										<row>
+											<entry>double</entry>
+											<entry>FLOAT</entry>
+										</row>
+
+										<row>
+											<entry>double</entry>
+											<entry>DOUBLE</entry>
+										</row>
+
+										<row>
+											<entry>byte[]</entry>
+											<entry>BINARY</entry>
+										</row>
+
+										<row>
+											<entry>byte[]</entry>
+											<entry>VARBINARY</entry>
+										</row>
+
+										<row>
+											<entry>byte[]</entry>
+											<entry>LONGVARBINARY</entry>
+										</row>
+
+										<row>
+											<entry>java.sql.Date</entry>
+											<entry>DATE</entry>
+										</row>
+
+										<row>
+											<entry>java.sql.Time</entry>
+											<entry>TIME</entry>
+										</row>
+
+										<row>
+											<entry>java.sql.Timestamp</entry>
+											<entry>TIMESTAMP</entry>
+										</row>
+									</tbody>
+								</tgroup>
+							</informaltable>
+							<para>
+								* attribute setting
+							</para>
+							<para>
+								type : Parameter DBMS data type
+							</para>
+							<para>
+								binding : In the case of CallableStatement, select among 'IN', 'OUT', and 'INOUT'
+							 </para>
+							<para>
+								name : In case of CallableStatement, set the name of variable defined in Stored Procedure
+							</para>
+						</entry>
+						<entry>If omitted, type is VARCHAR</entry>
+					</row>
+
+					<row>
+						<entry>result</entry>
+
+						<entry>
+							Can be used when the query is SELECT statement and defines mapping class name for query execution result.
+							If <![CDATA[<result>]]> is not defined, 
+							column and column value for the execution result of each row is put to Map as key and value,
+							and maps of each row will be returned as return value contained in ArrayList.						
+							Note that key value saved in Map is different according to the property value of isCamelCase or mappingStyle.
+							(For example, if property value of mappingStyle is 'camel' and search column name is USER_NAME,
+							key value of map is userName.)
+							<para> 
+							* attribute explanation
+							</para>
+							<para>
+								length : Number of row to be shown in one page
+							</para>
+							<para>
+								class : Name of class to save query execution result
+							</para>
+						</entry>
+						<entry>result-mapping(optional)</entry>
+					</row>
+
+					<row>
+						<entry>result-mapping</entry>
+						<entry>
+							Can be used when query is SELECT statement.
+							Only when class to save query execution result and mapping table are not defined
+							or when attribute name of class for result and mappingStyle-applied column name are not consistent,
+							attribute name of the class mapping onto the column is defined.
+							<para> 
+								* attribute explanation
+							</para>
+							<para>
+								column : Column name of the result
+							</para>
+							<para>
+								attribute : Attribute name of the class mapping onto the defined column
+							</para>
+						</entry>
+					</row>
+				</tbody>
+			</tgroup>
+		</informaltable>
+	</section>
+</chapter>
+

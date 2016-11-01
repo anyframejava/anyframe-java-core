@@ -144,8 +144,10 @@ public class DefaultQueryInfo implements QueryInfo {
 							String compositeField = "";
 							Map<String, List<String>> tmpColumnMap = new HashMap<String, List<String>>();
 							for (int j = 0; j < compositeFieldes.length; j++) {
+								boolean hasSubtree = false; // composite 필드가 존재하는 최하위 노드
+								
 								String compositeFieldName = compositeFieldes[j];
-								String key = compositeFieldName.substring(0,
+								String key = compositeFieldName.substring(0 ,
 										compositeFieldName.indexOf("."));
 								Tree<String> child;
 								
@@ -162,18 +164,33 @@ public class DefaultQueryInfo implements QueryInfo {
 								String[] fieldNames = compositeFieldName
 										.substring(compositeFieldName
 												.indexOf(".") + 1).split("\\.");
-								Tree<String> lvnChild;
+								Tree<String> lvnChild = null;
 								compositeField = key;
-//								if(child.getTree(fieldNames[0])!=null){
+								
+								for(int idx=0;idx<fieldNames.length;idx++){
+									if(child.getTree(fieldNames[idx]) != null){
+										hasSubtree = true;
+										lvnChild = child.getTree(fieldNames[idx]);
+									}
+								}
+								
+								if(!hasSubtree){
+									lvnChild = child.addLeaf(fieldNames[0]);
+								}
+								
+//								if(child.getTree(fieldNames[0]) != null){
 //									lvnChild = child.getTree(fieldNames[0]);
 //								}else{
 //									lvnChild = child.addLeaf(fieldNames[0]);
 //								}
-								lvnChild = child.addLeaf(fieldNames[0]);
+								//lvnChild = child.addLeaf(fieldNames[0]);
 								
+								// 2이상 = depth가 3이상
 								if (fieldNames.length > 1) {
 									for (int k=1; k < fieldNames.length; k++) {
-										lvnChild = lvnChild.addLeaf(fieldNames[k]);
+										if(child.getTree(fieldNames[k]) == null){
+											lvnChild = lvnChild.addLeaf(fieldNames[k]);
+										}
 										compositeField = fieldNames[k-1];
 									}
 								}

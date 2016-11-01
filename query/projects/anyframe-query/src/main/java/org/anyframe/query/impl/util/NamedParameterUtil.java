@@ -116,16 +116,6 @@ public abstract class NamedParameterUtil {
 				} else {
 					if (c == ':' || c == '&') {
 						int j = i + 1;
-						if (j < statement.length && statement[j] == ':' && c == ':') { 
-							// Postgres-style "::" casting operator - to be skipped. 
-							i = i + 2; 
-							continue; 
-						}
-						if (j < statement.length && statement[j] == '&' && c == '&') { 
-							// Postgres-style "&&" casting operator - to be skipped. 
-							i = i + 2; 
-							continue; 
-						}
 						while (j < statement.length
 								&& !isParameterSeparator(statement[j])) {
 							j++;
@@ -269,16 +259,6 @@ public abstract class NamedParameterUtil {
 				} else {
 					if (c == ':' || c == '&') {
 						int j = i + 1;
-						if (j < statement.length && statement[j] == ':' && c == ':') { 
-							// Postgres-style "::" casting operator - to be skipped. 
-							i = i + 2; 
-							continue; 
-						}
-						if (j < statement.length && statement[j] == '&' && c == '&') { 
-							// Postgres-style "&&" casting operator - to be skipped. 
-							i = i + 2; 
-							continue; 
-						}
 						while (j < statement.length
 								&& !isParameterSeparator(statement[j])) {
 							j++;

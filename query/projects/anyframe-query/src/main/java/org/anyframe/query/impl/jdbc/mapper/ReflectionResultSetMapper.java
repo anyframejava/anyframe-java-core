@@ -388,13 +388,19 @@ public class ReflectionResultSetMapper<T> extends AbstractResultSetMapperSupport
 //					continue;
 //				}
 //			} else {
-				if (isComposite && compositeColumns != null && ArrayUtils.indexOf(compositeColumns, columnName) < 0) {
-					String lowerColumnName = new String(columnName);
-					lowerColumnName= lowerColumnName.toLowerCase();
-					if (isComposite && compositeColumns != null && ArrayUtils.indexOf(compositeColumns, lowerColumnName) < 0) {
-						continue;
-					}
+			
+			// 하위 어트리뷰트없고, 컴포짓클래스인 경우에는 continue 한다.
+			if(isComposite && compositeColumns == null){
+				continue;								
+			}			
+			
+			if (isComposite && compositeColumns != null && ArrayUtils.indexOf(compositeColumns, columnName) < 0) {
+				String lowerColumnName = new String(columnName);
+				lowerColumnName= lowerColumnName.toLowerCase();
+				if (isComposite && compositeColumns != null && ArrayUtils.indexOf(compositeColumns, lowerColumnName) < 0) {
+					continue;
 				}
+			}
 //			}
 			// --------------------------------------------------------------------------------------------
 

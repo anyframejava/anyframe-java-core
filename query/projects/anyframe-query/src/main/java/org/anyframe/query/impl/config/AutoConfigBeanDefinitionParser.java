@@ -30,7 +30,6 @@ import org.anyframe.query.impl.jdbc.generator.HSQLPagingSQLGenerator;
 import org.anyframe.query.impl.jdbc.generator.MSSQLPagingSQLGenerator;
 import org.anyframe.query.impl.jdbc.generator.MySQLPagingSQLGenerator;
 import org.anyframe.query.impl.jdbc.generator.OraclePagingSQLGenerator;
-import org.anyframe.query.impl.jdbc.generator.PostgreSQLPagingSQLGenerator;
 import org.anyframe.query.impl.util.RawSQLExceptionTranslator;
 import org.anyframe.util.StringUtil;
 import org.springframework.beans.factory.config.BeanDefinition;
@@ -94,12 +93,12 @@ import org.w3c.dom.Element;
 public class AutoConfigBeanDefinitionParser implements BeanDefinitionParser {
 
 	private final String[] dbTypes = new String[] { "altibase", "db2", "hsqldb",
-			"mssql", "mysql", "oracle", "default" , "postgresql"};
+			"mssql", "mysql", "oracle", "default" };
 	private final Class<?>[] pagingSQLGenerators = new Class[] {
 			AltibasePagingSQLGenerator.class, DB2PagingSQLGenerator.class,
 			HSQLPagingSQLGenerator.class, MSSQLPagingSQLGenerator.class,
 			MySQLPagingSQLGenerator.class, OraclePagingSQLGenerator.class,
-			DefaultPagingSQLGenerator.class, PostgreSQLPagingSQLGenerator.class  };
+			DefaultPagingSQLGenerator.class };
 
 	private final static String QUERY_BEAN_NAME = "queryService";
 
