@@ -1,0 +1,205 @@
+<chapter id="core_servlet3_security">
+	<title>Security Enhancement</title>
+	<para>
+		서블릿 3.0에 추가된 어노테이션을 사용하여 보안과 관련된 설정을 할 수 있다.
+	</para>
+	
+	<itemizedlist>
+		<listitem>
+			<para>
+				<emphasis role="bold">@ServletSecurity</emphasis>
+			</para>
+			<para>
+				서블릿 클래스에서 사용되며 서블릿 컨테이너에서 HTTP 프로토콜을 통해 주고 받는 메세지에 적용 되는 보안 제약 사항을 정의 할 수 있다.
+				서블릿 클래스에 정의 할 수 있으며 메소드 레벨에는 정의 할 수 없다.
+			</para>
+				
+			<informaltable>
+				<caption>@ServletSecurity 속성</caption>
+				<tgroup cols="1">
+					<thead>
+						<row>
+							<entry align="center">Element</entry>
+							<entry align="center">Description</entry>
+							<entry align="center">Default</entry>
+						</row>
+					</thead>
+
+					<tbody>
+						<row>
+							<entry>value</entry>
+							<entry>httpMethodConstraints에 표현되지 않은 모든 HTTP 메소드에 대한 보안 제약 사항</entry>
+							<entry>@HttpConstraint</entry>
+						</row>
+						<row>
+							<entry>httpMethodConstraints</entry>
+							<entry>특정 HTTP 메소드에 대한 보안 제약 사항</entry>
+							<entry>{}</entry>
+						</row>
+					</tbody>
+				</tgroup>
+			</informaltable>
+		</listitem>
+		<listitem>			
+			<para>
+				<emphasis role="bold">@HttpConstraint</emphasis>
+			</para>
+			<para>
+				모든 HTTP 메소드에 적용 되는 보안 제약 사항을 정의 할 수 있으며 @ServletSecurity 하위 요소로 사용되며 HttpMethodConstraint 요소 내에 정의 되지 않는다.
+			</para>
+			
+			<informaltable>
+				<caption>@HttpConstraint 속성</caption>
+				<tgroup cols="1">
+					<thead>
+						<row>
+							<entry align="center">Element</entry>
+							<entry align="center">Description</entry>
+							<entry align="center">Default</entry>
+						</row>
+					</thead>
+
+					<tbody>
+						<row>
+							<entry>value</entry>
+							<entry>rolesAllowed 항목이 빈 값인 경우 적용 되는 기본 보안 제약 사항</entry>
+							<entry>PERMIT</entry>
+						</row>
+						<row>
+							<entry>rolesAllowed</entry>
+							<entry>접근 권한을 가지는 role name</entry>
+							<entry>{}</entry>
+						</row>
+						<row>
+							<entry>transportGuarantee</entry>
+							<entry>전송되는 데이터에 대한 보안 제약 사항</entry>
+							<entry>NONE</entry>
+						</row>
+					</tbody>
+				</tgroup>
+			</informaltable>
+		</listitem>			
+		<listitem>
+			<para>
+				<emphasis role="bold">@HttpMethodConstraint</emphasis>
+			</para>
+			<para>
+				특정 HTTP 메소드에 적용 되는 보안 제약 사항을 정의 할 수 있으며 @ServletSecurity 하위 요소로 사용된다.
+			</para>
+			
+			<informaltable>
+				<caption>@HttpMethodConstraint 속성</caption>
+				<tgroup cols="1">
+					<thead>
+						<row>
+							<entry align="center">Element</entry>
+							<entry align="center">Description</entry>
+							<entry align="center">Default</entry>
+						</row>
+					</thead>
+
+					<tbody>
+						<row>
+							<entry>emptyRoleSemantic</entry>
+							<entry>rolesAllowed 항목이 빈 값인 경우 적용 되는 기본 보안 제약 사항</entry>
+							<entry>PERMIT</entry>
+						</row>
+						<row>
+							<entry>rolesAllowed</entry>
+							<entry>접근 권한을 가지는 role name</entry>
+							<entry>{}</entry>
+						</row>
+						<row>
+							<entry>transportGuarantee</entry>
+							<entry>전송되는 데이터에 대한 보안 제약 사항</entry>
+							<entry>NONE</entry>
+						</row>
+					</tbody>
+				</tgroup>
+			</informaltable>
+		</listitem>
+	</itemizedlist>
+	
+	<para>
+		접근제어 어노테이션을 사용한 예제는 다음과 같다.
+	</para>	
+	<itemizedlist>
+		<listitem>
+			<para>
+				<emphasis role="bold">Code Example 1. 보안 제약 사항 없음</emphasis>
+			</para>		
+			<para>
+				<programlisting language="java">public class Example1 extends HttpServlet {
+}</programlisting>
+			</para>
+		</listitem>
+		<listitem>
+			<para>
+				<emphasis role="bold">Code Example 2. 모든 요청에 대해 보안 제약 사항 없음. 데이터 전송에 대한 보안 필요</emphasis>
+			</para>		
+			<para>
+				<programlisting language="java">@ServletSecurity(@HttpConstraint(transportGuarantee = TransportGuarantee.CONFIDENTIAL))
+public class Example2 extends HttpServlet {
+}</programlisting>
+			</para>
+		</listitem>
+		<listitem>
+			<para>
+				<emphasis role="bold">Code Example 3. 모든 요청을 거부</emphasis>
+			</para>
+			<para>
+				<programlisting language="java">@ServletSecurity(@HttpConstraint(EmptyRoleSemantic.DENY))
+public class Example3 extends HttpServlet {
+}</programlisting>
+			</para>
+		</listitem>
+		<listitem>
+			<para>
+				<emphasis role="bold">Code Example 4. 모든 요청에 대해 R1 role을 가진 사용자만 접근 허용</emphasis>
+			</para>
+			<para>
+				<programlisting language="java">@ServletSecurity(@HttpConstraint(rolesAllowed = "R1"))
+public class Example4 extends HttpServlet {
+}</programlisting>
+			</para>
+		</listitem>
+		<listitem>
+			<para>
+				<emphasis role="bold">Code Example 5. GET, POST를 제외한 요청에 대한 보안 제약 없음. GET, POST 요청은 R1 role을 가진 사용자만 접근 허용. POST 요청은 데이터 전송에 대한 보안 필요</emphasis>
+			</para>
+			<para>
+				<programlisting language="java">@ServletSecurity((httpMethodConstraints = {
+	@HttpMethodConstraint(value = "GET", rolesAllowed = "R1"),
+	@HttpMethodConstraint(value = "POST", rolesAllowed = "R1",
+	transportGuarantee = TransportGuarantee.CONFIDENTIAL)
+})
+public class Example5 extends HttpServlet {
+}</programlisting>
+			</para>
+		</listitem>
+		<listitem>
+			<para>
+				<emphasis role="bold">Code Example 6. GET 요청에 대한 보안 제약 사항 없음. GET을 제외한 요청에 대해서는 R1 role을 가진 사용자만 접근 허용</emphasis>
+			</para>
+			<para>
+				<programlisting language="java">@ServletSecurity(value = @HttpConstraint(rolesAllowed = "R1"),
+	httpMethodConstraints = @HttpMethodConstraint("GET"))
+public class Example6 extends HttpServlet {
+}</programlisting>
+			</para>
+		</listitem>
+		<listitem>
+			<para>
+				<emphasis role="bold">Code Example 7. TRACE 요청은 모두 거부. TRACE를 제외한 요청은 R1 role을 가진 사용자만 접근 허용</emphasis>
+			</para>
+			<para>
+				<programlisting language="java">@ServletSecurity(value = @HttpConstraint(rolesAllowed = "R1"),
+	httpMethodConstraints = @HttpMethodConstraint(value="TRACE",
+	emptyRoleSemantic = EmptyRoleSemantic.DENY))
+public class Example7 extends HttpServlet {
+}</programlisting>
+			</para>
+		</listitem>
+	</itemizedlist>
+	
+</chapter>

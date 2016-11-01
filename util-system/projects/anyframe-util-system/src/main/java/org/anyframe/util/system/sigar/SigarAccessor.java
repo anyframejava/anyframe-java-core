@@ -67,6 +67,8 @@ import org.hyperic.sigar.shell.ShellCommandUsageException;
 import org.joda.time.DateTime;
 import org.joda.time.format.DateTimeFormat;
 import org.joda.time.format.DateTimeFormatter;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.util.ReflectionUtils;
 
 /**
@@ -79,7 +81,7 @@ import org.springframework.util.ReflectionUtils;
  *
  */
 public class SigarAccessor extends org.hyperic.sigar.cmd.SysInfo {
-
+	
 	public static final String DEFAULT_SIGAR_LIB_PATH = "sigar-bin/lib";
 
 	private static SysInfo sysInfo;
@@ -90,8 +92,9 @@ public class SigarAccessor extends org.hyperic.sigar.cmd.SysInfo {
 
 	private static Field output = ReflectionUtils.findField(SigarCommandBase.class, "output");
 
+	private static final Logger LOGGER = LoggerFactory.getLogger(SigarAccessor.class);
+	
 	static {
-
 		ScriptPropertiesLoader loader = new ScriptPropertiesLoader();
 		loader.load();
 
@@ -121,7 +124,7 @@ public class SigarAccessor extends org.hyperic.sigar.cmd.SysInfo {
 			ReflectionUtils.makeAccessible(output);
 		}
 		catch (ShellCommandInitException e) {
-			e.printStackTrace();
+			LOGGER.error("SigarAccessor ShellCommandInitException occurred", e);
 		}
 	}
 
@@ -326,7 +329,7 @@ public class SigarAccessor extends org.hyperic.sigar.cmd.SysInfo {
 			sysInfo.setFileSystemUsageInfo(fileSystemUsage);
 		}
 		catch (SigarPermissionDeniedException spe) {
-			System.err.println("SigarPermissionDeniedException occurred [" + name + "] " + spe.getMessage());
+			LOGGER.error("SigarPermissionDeniedException occurred [" + name + "] " + spe.getMessage());
 		}
 	}
 
@@ -457,7 +460,7 @@ public class SigarAccessor extends org.hyperic.sigar.cmd.SysInfo {
 			processCpuInfo.setTotal(Ps.getCpuTime(procCpu.getTotal()));
 		}
 		catch (Exception e) {
-			System.err.println("ProcessCpuInfo pid=" + pid + ", " + e.getMessage());
+			LOGGER.error("ProcessCpuInfo pid=" + pid + ", " + e.getMessage());
 			processCpuInfo.setPercent(unknown);
 			processCpuInfo.setLastTime(unknown);
 			processCpuInfo.setStartTime(unknown);
@@ -484,7 +487,7 @@ public class SigarAccessor extends org.hyperic.sigar.cmd.SysInfo {
 			processExeInfo.setName(procExe.getName());
 		}
 		catch (Exception e) {
-			System.err.println("ProcessExeInfo pid=" + pid + ", " + e.getMessage());
+			LOGGER.error("ProcessExeInfo pid=" + pid + ", " + e.getMessage());
 			processExeInfo.setCwd(unknown);
 			processExeInfo.setName(unknown);
 		}
@@ -514,7 +517,7 @@ public class SigarAccessor extends org.hyperic.sigar.cmd.SysInfo {
 			processStateInfo.setTty(String.valueOf(procState.getTty()));
 		}
 		catch (Exception e) {
-			System.err.println("ProcessStateInfo pid=" + pid + ", " + e.getMessage());
+			LOGGER.error("ProcessStateInfo pid=" + pid + ", " + e.getMessage());
 			processStateInfo.setName(unknown);
 			processStateInfo.setNice(unknown);
 			processStateInfo.setPpid(unknown);
@@ -561,7 +564,7 @@ public class SigarAccessor extends org.hyperic.sigar.cmd.SysInfo {
 			processMemoryInfo.setPageFaults(String.valueOf(pm.getPageFaults()));
 		}
 		catch (Exception e) {
-			System.err.println("ProcessMemoryInfo pid=" + pid + ", " + e.getMessage());
+			LOGGER.error("ProcessMemoryInfo pid=" + pid + ", " + e.getMessage());
 			processMemoryInfo.setSize(unknown);
 			processMemoryInfo.setResident(unknown);
 			processMemoryInfo.setShare(unknown);

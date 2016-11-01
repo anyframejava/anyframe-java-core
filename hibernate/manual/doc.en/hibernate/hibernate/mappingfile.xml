@@ -1021,7 +1021,7 @@
             			to get identifier from  NEXT_VALUE of ID_MANAGEMENT and provide unique id.
             			max_lo is the number of new identifiers newly created at hilo generator execution.
             			The following is a log on query which creates identifier when executing test case with the mapping file above.            			
-                        <programlisting language="xml"><![CDATA[select NEXT_VALUE from ID_MANAGEMENT 
+                        <programlisting language="java"><![CDATA[select NEXT_VALUE from ID_MANAGEMENT 
 update ID_MANAGEMENT set NEXT_VALUE = 1 where NEXT_VALUE = 0]]></programlisting>
 					</para>
 
@@ -1088,7 +1088,7 @@ update ID_MANAGEMENT set NEXT_VALUE = 1 where NEXT_VALUE = 0]]></programlisting>
             		<para>
             			To create identifier of COUNTRY_CODE, primary key, the mapping file above creates identifier by using sequence named "COUNTRY_ID_SEQ"
             			 at DBMS. The following is a query log which is executed to get value from DBMS when creating identifier by using seqhilo generator.
-                        <programlisting language="xml"><![CDATA[call next value for COUNTRY_ID_SEQ]]></programlisting>
+                        <programlisting language="java"><![CDATA[call next value for COUNTRY_ID_SEQ]]></programlisting>
                     </para>
 
             		<para>
@@ -1141,7 +1141,7 @@ update ID_MANAGEMENT set NEXT_VALUE = 1 where NEXT_VALUE = 0]]></programlisting>
 
             		<para>
             			When key creation is needed by using increment generator, query is executed as the following.            	
-                        <programlisting language="xml"><![CDATA[select max(COUNTRY_CODE) from COUNTRY_INCREMENT]]></programlisting>
+                        <programlisting language="java"><![CDATA[select max(COUNTRY_CODE) from COUNTRY_INCREMENT]]></programlisting>
                     </para>
 
             		<para>
@@ -1208,7 +1208,7 @@ update ID_MANAGEMENT set NEXT_VALUE = 1 where NEXT_VALUE = 0]]></programlisting>
             					
 
             		<para>
-            			<programlisting language="xml"><![CDATA[insert into PUBLIC.COUNTRY_UUID 
+            			<programlisting language="java"><![CDATA[insert into PUBLIC.COUNTRY_UUID 
     (COUNTRY_ID, COUNTRY_NAME, COUNTRY_CODE) 
         values ('KR', 'Republic of Korea', 'c687b6dc#1c894fc4#011c#894fc5ef#0001')]]></programlisting>
                 			As the value of separator was set "#" in Mapping file, "#" was used as the delimiter of identifier.                		

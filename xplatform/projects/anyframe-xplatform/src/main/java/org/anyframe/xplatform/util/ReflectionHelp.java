@@ -24,8 +24,10 @@ import java.util.List;
 /**
  * ReflectionHelp class provides functions about reflection api.
  * 
- * @author SoYon Lim
- * @author JongHoon Kim
+ * @author Warren Mayocchi
+ * 
+ * @author modified by SoYon Lim
+ * @author modified by JongHoon Kim
  * @author modified by Jongpil Park
  */
 public class ReflectionHelp {
@@ -35,7 +37,7 @@ public class ReflectionHelp {
 	 * object, including those inherited from parent classes.
 	 * 
 	 * @param target
-	 *            The class to examine.
+	 *            The class to examine. 
 	 * @return Array of fields.
 	 */
 	public static Field[] getAllDeclaredFields(Class<? extends Object> target) {
@@ -63,8 +65,7 @@ public class ReflectionHelp {
 	public static List<Field> getFields(Object bean) {
 		Field[] fields = getAllDeclaredFields(bean.getClass());
 		AccessibleObject.setAccessible(fields, true);
-		List<Field> fieldList = Arrays.asList(fields);
-		return fieldList;
+		return Arrays.asList(fields);
 	}
 
 	/**

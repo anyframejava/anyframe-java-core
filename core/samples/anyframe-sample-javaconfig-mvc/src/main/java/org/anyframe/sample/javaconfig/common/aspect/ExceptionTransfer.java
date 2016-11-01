@@ -19,6 +19,7 @@ import java.util.Locale;
 
 import javax.inject.Inject;
 
+import org.anyframe.sample.javaconfig.common.MovieFinderException;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.aspectj.lang.JoinPoint;
@@ -28,10 +29,6 @@ import org.aspectj.lang.annotation.Pointcut;
 import org.springframework.aop.framework.Advised;
 import org.springframework.context.MessageSource;
 import org.springframework.stereotype.Service;
-
-import org.anyframe.exception.BaseException;
-
-import org.anyframe.sample.javaconfig.common.MovieFinderException;
 
 /**
  * This ExceptionTransfer class is an Aspect class to provide exception handling
@@ -74,19 +71,15 @@ public class ExceptionTransfer {
 			throw movieFinderEx;
 		}
 
-		if (exception instanceof BaseException) {
-			BaseException baseEx = (BaseException) exception;
-			logger.error(baseEx.getMessage(), baseEx);
-		}
-
-		try{
-			logger.error(messageSource.getMessage("error." + className	+ "." + opName, new String[] {}, Locale.getDefault()),
-					exception);
-		} catch(Exception e){
-			logger.error(messageSource.getMessage("error.common", new String[] {}, Locale.getDefault()),
-					exception);
+		try {
+			logger.error(messageSource.getMessage("error." + className + "."
+					+ opName, new String[] {}, Locale.getDefault()), exception);
+		} catch (Exception e) {
+			logger.error(messageSource.getMessage("error.common",
+					new String[] {}, Locale.getDefault()), exception);
 			throw new MovieFinderException("error.common");
 		}
-		throw new MovieFinderException("error." + className	+ "." + opName);
+		throw new MovieFinderException(messageSource, "error." + className
+				+ "." + opName);
 	}
 }

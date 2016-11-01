@@ -44,7 +44,7 @@ public class FlexDao {
 		this.queryService = queryService;
 	}
 
-	private String variableName = "vo";
+	private final String variableName = "vo"; 
 
 	/**
 	 * This is the method for selecting using DataRow.
@@ -56,7 +56,7 @@ public class FlexDao {
 	 * @throws QueryException
 	 *             if there is any problem executing the query
 	 */
-	public <E> List<E> getList(String queryId, Map<String, Object> searchMap)
+	public <T> List<T> getList(String queryId, Map<String, Object> searchMap)
 			throws QueryException {
 		Object[] param = convertParams(searchMap);
 		return queryService.find(queryId, param);
@@ -74,7 +74,7 @@ public class FlexDao {
 	 * @throws QueryException
 	 *             if there is any problem executing the query
 	 */
-	public <E> List<E> getList(String queryId, Map<String, Object> searchMap, Map<String, Object> paramMap)
+	public <T> List<T> getList(String queryId, Map<String, Object> searchMap, Map<String, Object> paramMap)
 			throws QueryException {
 		Object[] param = convertParams(searchMap);
 		return queryService.find(queryId, param);
@@ -313,13 +313,13 @@ public class FlexDao {
 
 		for (int i = 0; i < dsSize; i++) {
 			DataRow dr = (DataRow) dataSet.get(i);
-			if (dr.ROWTYPE.equals("D")) {
+			if ("D".equals(dr.rowType)) {
 				Object[] deleteRow = convertParams(dr, param);
 				deleteList.add(deleteRow);
-			} else if (dr.ROWTYPE.equals("I")) {
+			} else if ("I".equals(dr.rowType)) {
 				Object[] insertRow = convertParams(dr, param);
 				insertList.add(insertRow);
-			} else if (dr.ROWTYPE.equals("U")) {
+			} else if ("U".equals(dr.rowType)) {
 				Object[] updateRow = convertParams(dr, param);
 				updateList.add(updateRow);
 			}

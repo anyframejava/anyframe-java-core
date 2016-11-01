@@ -44,15 +44,15 @@ import org.springframework.web.util.WebUtils;
  */
 public class SimpleMediaTypeViewResolver extends WebApplicationObjectSupport implements ViewResolver, Ordered {
 
-	private static final Logger logger = LoggerFactory.getLogger(SimpleMediaTypeViewResolver.class);
+	private static final Logger LOGGER = LoggerFactory.getLogger(SimpleMediaTypeViewResolver.class);
 
-	private static final UrlPathHelper urlPathHelper = new UrlPathHelper();	
+	private static final UrlPathHelper URL_PATH_HELPER = new UrlPathHelper();	
 	
 	private int order = Ordered.HIGHEST_PRECEDENCE;
 
-	private ConcurrentMap<String, ViewResolver> viewResolverMapping = new ConcurrentHashMap<String, ViewResolver>();
+	private final ConcurrentMap<String, ViewResolver> viewResolverMapping = new ConcurrentHashMap<String, ViewResolver>();
 	
-	private ConcurrentMap<String, View> viewMapping = new ConcurrentHashMap<String, View>();
+	private final ConcurrentMap<String, View> viewMapping = new ConcurrentHashMap<String, View>();
 	
 	private ViewResolver defaultViewResolver = null;
 	
@@ -97,12 +97,12 @@ public class SimpleMediaTypeViewResolver extends WebApplicationObjectSupport imp
 	public void setMediaTypeMappings(Map<String, Object> mediaTypeMappings) {
 		for(Map.Entry<String, Object> entry : mediaTypeMappings.entrySet()) {
 			String extention = entry.getKey().toLowerCase();
-			logger.debug("setMediaTypeMappings(): extention - {}", extention);
+			LOGGER.debug("setMediaTypeMappings(): extention - {}", extention);
 			if(entry.getValue() instanceof ViewResolver) {
-				logger.debug("setMediaTypeMappings(): found view resolver - {}", entry.getValue().getClass().getName());
+				LOGGER.debug("setMediaTypeMappings(): found view resolver - {}", entry.getValue().getClass().getName());
 				viewResolverMapping.put(extention, (ViewResolver)entry.getValue());
 			}else if(entry.getValue() instanceof View){
-				logger.debug("setMediaTypeMappings(): found view - {}", entry.getValue().getClass().getName());
+				LOGGER.debug("setMediaTypeMappings(): found view - {}", entry.getValue().getClass().getName());
 				viewMapping.put(extention, (View)entry.getValue());
 			}
 		}
@@ -115,32 +115,32 @@ public class SimpleMediaTypeViewResolver extends WebApplicationObjectSupport imp
 	 */
 	public View resolveViewName(String viewName, Locale locale) throws Exception {
 		
-		logger.debug("MediaTypeViewResolver...");
+		LOGGER.debug("MediaTypeViewResolver...");
 		
 		RequestAttributes attrs = RequestContextHolder.getRequestAttributes();
 
 		String requestedMediaType = null;
 		HttpServletRequest request = ((ServletRequestAttributes) attrs).getRequest();
 		requestedMediaType = getMediaType(request);
-		logger.debug("Requested media type is {}", requestedMediaType);
+		LOGGER.debug("Requested media type is {}", requestedMediaType);
 		if (requestedMediaType != null) {
 			ViewResolver viewResolver = viewResolverMapping.get(requestedMediaType);
 			if(viewResolver != null){
-				logger.debug("Found acceptable view resolver {}", viewResolver.getClass().getName());
+				LOGGER.debug("Found acceptable view resolver {}", viewResolver.getClass().getName());
 				return viewResolver.resolveViewName(viewName, locale);
 			}else{
 				View view = viewMapping.get(requestedMediaType); 
 				if(view != null) {
-					logger.debug("Found acceptable view {}", view.getClass().getName());
+					LOGGER.debug("Found acceptable view {}", view.getClass().getName());
 					return view;
 				}else{
-					logger.debug("No acceptable view found for requested media type {}; ", requestedMediaType);
+					LOGGER.debug("No acceptable view found for requested media type {}; ", requestedMediaType);
 					return getDefaultView(viewName, locale);	
 				}
 			}
 			
 		}else{
-			logger.debug("No media type found this request {};", request.getRequestURI());
+			LOGGER.debug("No media type found this request {};", request.getRequestURI());
 			return getDefaultView(viewName, locale);
 		}
 	}
@@ -153,13 +153,13 @@ public class SimpleMediaTypeViewResolver extends WebApplicationObjectSupport imp
 	 */
 	private View getDefaultView(String viewName, Locale locale) throws Exception {
 		if(this.defaultViewResolver != null) {
-			logger.debug("returning default view {}", this.defaultViewResolver.getClass().getName());
+			LOGGER.debug("returning default view {}", this.defaultViewResolver.getClass().getName());
 			return this.defaultViewResolver.resolveViewName(viewName, locale);
 		}else if(this.defaultView != null) {
-			logger.debug("returning default view {}", this.defaultView.getClass().getName());
+			LOGGER.debug("returning default view {}", this.defaultView.getClass().getName());
 			return this.defaultView;
 		}else{
-			logger.debug("returning null.");
+			LOGGER.debug("returning null.");
 			return null;
 		}
 	}
@@ -173,7 +173,7 @@ public class SimpleMediaTypeViewResolver extends WebApplicationObjectSupport imp
 		String mediaType = null;
 
 		if(this.checkExtension) {
-			String requestUri = urlPathHelper.getLookupPathForRequest(request);
+			String requestUri = URL_PATH_HELPER.getLookupPathForRequest(request);
 			String filename = WebUtils.extractFullFilenameFromUrlPath(requestUri);
 			String extension = StringUtils.getFilenameExtension(filename);
 			if (!StringUtils.hasText(extension)) {

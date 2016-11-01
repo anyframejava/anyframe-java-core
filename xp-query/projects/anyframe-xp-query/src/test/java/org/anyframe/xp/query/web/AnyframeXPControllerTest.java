@@ -65,6 +65,7 @@ import com.tobesoft.xplatform.tx.HttpPlatformRequest;
  * 
  * @author Jonghoon Kim
  */
+@SuppressWarnings("deprecation")
 public class AnyframeXPControllerTest extends TestCase {
 
 	/**

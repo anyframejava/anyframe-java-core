@@ -252,7 +252,9 @@ public class UtilSystemController {
 		pie2d.setDecimalPrecision(2);
 		pie2d.setShowPercentageValues(1);
 		pie2d.setShowNames(1);
+		//Velocity-Support-numberSuffix-START
 		pie2d.setNumberSuffix("&#37;");
+		//Velocity-Support-numberSuffix-END
 		pie2d.setShowValues(1);
 		pie2d.setShowPercentageInLabel(0);
 		pie2d.setPieYScale(45);

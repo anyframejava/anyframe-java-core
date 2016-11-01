@@ -35,7 +35,7 @@ import org.springframework.jdbc.support.lob.LobHandler;
  * org.anyframe.query.impl.jdbc.setter.PreparedStatementArgTypeSetter in
  * Anyframe.
  * <ul>
- * <li>We changed some logic for processing LOB data.</li>
+ * <li>We changed some logic for processing LOB data.</li> 
  * </ul>
  * 
  * @author Juergen Hoeller
@@ -49,7 +49,7 @@ public class PreparedStatementArgTypeSetter implements PreparedStatementSetter,
 
 	private final int[] argTypes;
 
-	private LobHandler lobHandler;
+	private final LobHandler lobHandler;
 
 	/**
 	 * Create a new ArgTypePreparedStatementSetter for the given arguments.

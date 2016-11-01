@@ -17,6 +17,7 @@ package org.anyframe.util.system;
 
 import java.io.IOException;
 
+import org.anyframe.exception.BaseRuntimeException;
 import org.hyperic.sigar.SigarException;
 
 /**
@@ -30,7 +31,7 @@ import org.hyperic.sigar.SigarException;
 public class SystemUtilBase {
 
 	/**
-	 * Separate parameter returned as String Array with space (" ") to make form
+	 * Separate parameter returned as String Array with space (" ") to make form 
 	 * it into one String, and return.
 	 *
 	 * @param arr array of string
@@ -56,13 +57,13 @@ public class SystemUtilBase {
 			return action.doInProcessIO();
 		}
 		catch (IOException e) {
-			throw new RuntimeException("processIO IOException occured : " + e.getMessage(), e);
+			throw new BaseRuntimeException("processIO IOException occured : " + e.getMessage(), e);
 		}
 		catch (SigarException se) {
-			throw new RuntimeException("SigarException occured : " + se.getMessage(), se);
+			throw new BaseRuntimeException("SigarException occured : " + se.getMessage(), se);
 		}
 		catch (Exception e) {
-			throw new RuntimeException("processIO Exception occured : " + e.getMessage(), e);
+			throw new BaseRuntimeException("processIO Exception occured : " + e.getMessage(), e);
 		}
 	}
 

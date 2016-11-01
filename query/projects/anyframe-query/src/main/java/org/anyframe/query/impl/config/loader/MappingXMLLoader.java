@@ -51,7 +51,7 @@ public class MappingXMLLoader extends AbstractSqlLoader implements
 
 	private static final String XSD_SCHEMA_LANGUAGE = "http://www.w3.org/2001/XMLSchema";
 
-	private Watcher watcher;
+	private Watcher watcher; 
 
 	private ResourceLoader resourceLoader = null;
 
@@ -286,7 +286,7 @@ public class MappingXMLLoader extends AbstractSqlLoader implements
 
 		private final int scanRate = 10;
 
-		private Hashtable<Resource, Long> resources = new Hashtable<Resource, Long>();
+		private final Hashtable<Resource, Long> resources = new Hashtable<Resource, Long>();
 
 		private boolean done = false;
 

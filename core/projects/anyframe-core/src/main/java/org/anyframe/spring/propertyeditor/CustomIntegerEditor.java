@@ -32,7 +32,7 @@ public class CustomIntegerEditor extends PropertyEditorSupport {
 	}
 
 	public void setAsText(String str) {
-		if (str == "" || str == null)
+		if (str==null || "".equals(str))
 			setValue(0);
 		else
 			setValue(Integer.parseInt(str));

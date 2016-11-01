@@ -35,11 +35,13 @@ import org.springframework.stereotype.Repository;
  */
 @Repository("hibernateMovieDao")
 public class MovieDao extends HibernateDaoSupport {
+	//Velocity-Support-contextProperties-START
 	@Value("#{contextProperties['pageSize'] ?: 10}")
 	int pageSize;
 
 	@Value("#{contextProperties['pageUnit'] ?: 10}")
 	int pageUnit;
+	//Velocity-Support-contextProperties-END
 
 	@Inject
 	DynamicHibernateService dynamicHibernateService;
@@ -52,12 +54,11 @@ public class MovieDao extends HibernateDaoSupport {
 	public void create(Movie movie) {
 		// set movie id
 		movie.setMovieId("MV-" + System.currentTimeMillis());
-
 		super.getHibernateTemplate().save(movie);
 	}
 
 	public void remove(String movieId) {
-		super.getHibernateTemplate().delete(this.get(movieId));
+		super.getHibernateTemplate().delete(get(movieId));
 	}
 
 	public void update(Movie movie) {
@@ -68,7 +69,6 @@ public class MovieDao extends HibernateDaoSupport {
 		return super.getHibernateTemplate().get(Movie.class, movieId);
 	}
 
-	@SuppressWarnings("unchecked")
 	public Page getPagingList(Movie movie, int pageIndex) {
 		Object[] args = null;
 
@@ -81,10 +81,9 @@ public class MovieDao extends HibernateDaoSupport {
 			args[0] = new Object[] { "nowPlaying", movie.getNowPlaying() };
 		}
 
-		List resultList = dynamicHibernateService.findList("findMovieList",
-				args, pageIndex, pageSize);
-		Long totalSize = (Long) dynamicHibernateService.find("countMovieList",
-				args);
+		List<Movie> resultList = dynamicHibernateService.findList(
+				"findMovieList", args, pageIndex, pageSize);
+		Long totalSize = dynamicHibernateService.find("countMovieList", args);
 
 		// When domain object is exposed through web service,
 		// LazyInitialisationException occurs.

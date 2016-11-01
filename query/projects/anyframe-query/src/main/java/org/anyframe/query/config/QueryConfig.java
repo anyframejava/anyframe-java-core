@@ -42,7 +42,7 @@ import org.springframework.jdbc.support.lob.LobHandler;
  * @since 1.1.3
  */
 @Configuration
-public class QueryConfig {
+public class QueryConfig { 
 
 	@Autowired
 	DataSource dataSource;
@@ -78,8 +78,7 @@ public class QueryConfig {
 	@Bean
 	@Lazy(value = true)
 	public LobHandler lobHandler() {
-		DefaultLobHandler logHandler = new DefaultLobHandler();
-		return logHandler;
+		return new DefaultLobHandler();
 	}
 
 	@Bean

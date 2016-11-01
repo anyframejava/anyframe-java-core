@@ -42,8 +42,7 @@ public class GenreDao extends HibernateDaoSupport {
 
 	@SuppressWarnings("unchecked")
 	public List<Genre> getList() {
-		return (List) this.getHibernateTemplate().findByNamedQuery(
-				"findGenreList");
+		return super.getHibernateTemplate().findByNamedQuery("findGenreList");
 	}
 
 }

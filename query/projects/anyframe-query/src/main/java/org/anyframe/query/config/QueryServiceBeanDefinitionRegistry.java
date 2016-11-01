@@ -36,7 +36,6 @@ import org.springframework.beans.factory.support.RootBeanDefinition;
 import org.springframework.context.annotation.ImportBeanDefinitionRegistrar;
 import org.springframework.core.type.AnnotationMetadata;
 import org.springframework.jdbc.support.lob.DefaultLobHandler;
-import org.springframework.jdbc.support.lob.OracleLobHandler;
 import org.springframework.jdbc.support.nativejdbc.CommonsDbcpNativeJdbcExtractor;
 
 /**
@@ -110,10 +109,8 @@ public class QueryServiceBeanDefinitionRegistry implements
 			nativeJdbcExtractorDef.setLazyInit(true);
 
 			// lob handler bean definition for oracle
-			lobHandlerDef = new RootBeanDefinition(OracleLobHandler.class);
+			lobHandlerDef = new RootBeanDefinition(DefaultLobHandler.class);
 			lobHandlerDef.setLazyInit(true);
-			lobHandlerDef.getPropertyValues().add("nativeJdbcExtractor",
-					nativeJdbcExtractorDef);
 
 			// page sql generator bean definition for oracle
 			pageSqlGeneratorDef = new RootBeanDefinition(

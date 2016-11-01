@@ -34,34 +34,35 @@ import org.springframework.stereotype.Repository;
 @Repository("userDao")
 public class UserDao extends QueryServiceDaoSupport {
 
+	//Velocity-Support-contextProperties-START
 	@Value("#{contextProperties['pageSize'] ?: 10}")
 	int pageSize;
 
 	@Value("#{contextProperties['pageUnit'] ?: 10}")
 	int pageUnit;
-	
+	//Velocity-Support-contextProperties-END
+
 	@Inject
 	public void setQueryService(QueryService queryService) {
 		super.setQueryService(queryService);
 	}
 
 	public int create(User user) {
-		return create("flex.createUser", user);
+		return super.create("flex.createUser", user);
 	}
 
 	public List<User> getList(SearchVO searchVO) {
-		List<User> results = this.findList("flex.findUserList", searchVO);
-		return results;
+		return super.findList("flex.findUserList", searchVO);
 	}
 
 	public Page getPagingList(SearchVO searchVO) {
 		int pageIndex = searchVO.getPageIndex();
-		return this.findListWithPaging("flex.findUserList", searchVO,
-				pageIndex, pageSize, pageUnit);
+		return super.findListWithPaging("flex.findUserList", searchVO, pageIndex,
+				pageSize, pageUnit);
 	}
 
 	public int remove(User user) {
-		return remove("flex.removeUser", user);
+		return super.remove("flex.removeUser", user);
 	}
 
 	public Map<String, Integer> saveAll(List<User> list) {
@@ -90,17 +91,17 @@ public class UserDao extends QueryServiceDaoSupport {
 		resultCount.put("INSERT", createRowCount);
 		resultCount.put("UPDATE", updateRowCount);
 		resultCount.put("DELETE", removeRowCount);
+
 		return resultCount;
 	}
 
 	public int update(User user) {
-		return update("flex.updateUser", user);
+		return super.update("flex.updateUser", user);
 	}
 
 	public List<User> getTree(SearchVO searchVO) {
 		String queryId = StringUtil.nullToString(searchVO.getSearchCondition());
-		List<User> results = this.findList("find" + queryId + "List", searchVO);
-		return results;
+		return super.findList("find" + queryId + "List", searchVO);
 	}
 
 }

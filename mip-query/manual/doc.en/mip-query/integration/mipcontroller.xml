@@ -5,10 +5,10 @@
 		When search or save event occurs in Client UI Component while developing using MiPlatform, 
 		the called Controller class executes business service and converts the results into XML. 
 		Anyframe provides AbstractMiPController for the convenience of developers so that they do not have to be concerned about the complicated conversion logic. 
-    	<programlisting language="xml"><![CDATA[public abstract class AbstractMiPController extends AbstractController {
+    	<programlisting language="java"><![CDATA[public abstract class AbstractMiPController extends AbstractController {
   // ...
-  public ModelAndView handleRequestInternal(HttpServletRequest request,
-			HttpServletResponse response) throws Exception {
+    public ModelAndView handleRequestInternal(HttpServletRequest request,
+            HttpServletResponse response) throws Exception {
         VariableList inVl = null;
         DatasetList inDl = null;
         VariableList outVl = null;
@@ -20,7 +20,6 @@
             new PlatformResponse(response, defaultEncodeMethod, defaultCharset);
 
         try {
-
             platformRequest.receiveData();
 
             inVl = platformRequest.getVariableList();

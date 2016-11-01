@@ -13,6 +13,7 @@
     	</para>
 
 		<informaltable>
+			<caption>TableIdGenService 속성 목록</caption>
 	      <tgroup cols="4">
 	        <colspec colnum="1" colname="col1" colwidth="2*"/>
 	        <colspec colnum="2" colname="col2" colwidth="6*"/>
@@ -36,8 +37,8 @@
 	          </row>
 	          <row>
 	            <entry>strategy</entry>
-	            <entry>Id Generation Strategy를 지정한다. 기본적으로 prefix, 신규 Id,
-	            fillChar를 조합한 Id를 전달하는 MixPrefix를 사용한다.</entry>
+	            <entry>Id Generation Strategy를 지정한다. 기본적으로 prefix 및 suffix, 신규 Id,
+	            paddingChar를 조합한 Id를 전달하는 MixStrategy를 사용한다.</entry>
 	            <entry align="center">N</entry>
 	            <entry align="center">N/A</entry>
 	          </row>
@@ -102,7 +103,7 @@
 
 				<para>
 					다음은 TableIdGenService의 속성을 정의한 context-idgen.xml의 일부이다.
-          			TableIdGenService는 기본적으로 mixPrefix Strategy를 적용하고 있으며,
+          			TableIdGenService는 기본적으로 mix Strategy를 적용하고 있으며,
           			Genre 테이블에 유일한 id를 제공하기 위해 IDS라는 ID 관리 테이블을 사용할 것이다.
           			다음 속성 기반의 TableIdGenService 실행을 위해서는 IDS라는 테이블에 
           			[TABLE_NAME:<emphasis role="bold">IDGEN_MOVIE</emphasis>, NEXT_ID:초기값]와 같은 정보가 추가되어 있다라고 전제해 보자.
@@ -123,7 +124,7 @@
           			유일한 id를 추출하는 IdgenServiceTest.java 코드의 일부이다.
          			<programlisting language="java">
 @Test
-public void testSimpleTableId() throws Exception {
+public void testSimpleTableId() {
     // 1. get id twice to compare with each other
     String id1 = tableidSimple.getNextStringId(<emphasis role="bold">"IDGEN_MOVIE</emphasis>);
     String id2 = tableidSimple.getNextStringId(<emphasis role="bold">"IDGEN_MOVIE</emphasis>);
@@ -167,7 +168,7 @@ public void testSimpleTableId() throws Exception {
 	          			유일한 id를 추출하는 IdgenServiceTest.java 코드의 일부이다.
          			<programlisting language="java">
 @Test
-public void testWithCumstomColumn() throws Exception{
+public void testWithCumstomColumn() {
     // 1. get id twice to compare with each other
     String id1 = tableidCustomColumn.getNextStringId();
     String id2 = tableidCustomColumn.getNextStringId();

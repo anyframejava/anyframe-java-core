@@ -21,7 +21,6 @@ import java.util.List;
 import org.anyframe.datatype.SearchVO;
 import org.anyframe.pagination.Page;
 
-
 /**
  * Generic DAO (Data Access Object) with common methods to CRUD POJOs.
  * <p>
@@ -45,18 +44,18 @@ public interface GenericDao<T, PK extends Serializable> {
 	 *            the class type you'd like to persist
 	 */
 	public void setPersistentClass(final Class<T> persistentClass);
-	
+
 	/**
 	 * Generic method to get an object based on class and identifier. An
-	 * anyframe.common.exception.BaseException is thrown if nothing is
-	 * found.
+	 * anyframe.common.exception.BaseException is thrown if nothing is found.
 	 * 
 	 * @param id
 	 *            the identifier (primary key) of the object to get
 	 * @return a populated object
-	 * @see anyframe.common.exception.BaseException
+	 * @throws Exception
+	 *             if there is any problem getting an object
 	 */
-	T get(PK id);
+	T get(PK id) throws Exception;
 
 	/**
 	 * Checks for existence of an object of type T using the id argument.
@@ -64,32 +63,40 @@ public interface GenericDao<T, PK extends Serializable> {
 	 * @param id
 	 *            the id of the entity
 	 * @return - true if it exists, false if it doesn't
+	 * @throws Exception
+	 *             if there is any problem checking for existence of an object
 	 */
-	boolean exists(PK id);
+	boolean exists(PK id) throws Exception;
 
 	/**
 	 * Generic method to create an object - handles insert
 	 * 
 	 * @param object
 	 *            the object to create
+	 * @throws Exception
+	 *             if there is any problem creating an object
 	 */
-	void create(T object);
+	void create(T object) throws Exception;
 
 	/**
 	 * Generic method to update an object - handles update
 	 * 
 	 * @param object
 	 *            the object to save
+	 * @throws Exception
+	 *             if there is any problem updating an object
 	 */
-	void update(T object); 
+	void update(T object) throws Exception;
 
 	/**
 	 * Generic method to delete an object based on class and id
 	 * 
 	 * @param id
 	 *            the identifier (primary key) of the object to remove
+	 * @throws Exception
+	 *             if there is any problem removing an object
 	 */
-	void remove(PK id);
+	void remove(PK id) throws Exception;
 
 	/**
 	 * Generic method to get object list based on search condition and search
@@ -98,17 +105,23 @@ public interface GenericDao<T, PK extends Serializable> {
 	 * @param searchVO
 	 *            search condition and search keyword
 	 * @return result page object with total count
+	 * @throws Exception
+	 *             if there is any problem getting object list
 	 */
-	public Page getPagingList(SearchVO searchVO);
+	Page getPagingList(SearchVO searchVO) throws Exception;
 
 	/**
 	 * Generic method to get object list based on dmain object.
 	 * 
-	 * @param Object
+	 * @param object
 	 *            domain object
+	 * @param pageIndex
+	 *            page number which expected to be displayed (pageIndex > 0)
 	 * @return Page
+	 * @throws Exception
+	 *             if there is any problem getting object list
 	 */
-	public Page getPagingList(T object, int pageIndex);
+	Page getPagingList(T object, int pageIndex) throws Exception;
 
 	/**
 	 * Generic method to get object list based on arguments
@@ -116,15 +129,19 @@ public interface GenericDao<T, PK extends Serializable> {
 	 * @param searchVO
 	 *            search condition and search keyword
 	 * @return List
+	 * @throws Exception
+	 *             if there is any problem getting object list
 	 */
-	public List<T> getList(SearchVO searchVO);
+	List<T> getList(SearchVO searchVO) throws Exception;
 
 	/**
 	 * Generic method to get object list based on arguments
 	 * 
-	 * @param Object
+	 * @param object
 	 *            domain object
 	 * @return List
+	 * @throws Exception
+	 *             if there is any problem getting object list
 	 */
-	public List<T> getList(T object);
+	List<T> getList(T object) throws Exception;
 }

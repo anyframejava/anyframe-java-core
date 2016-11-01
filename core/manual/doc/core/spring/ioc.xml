@@ -54,6 +54,11 @@
 				<imageobject>
 					<imagedata align="center" fileref="../image/core/spring/ioc.jpg" />
 				</imageobject>
+				<textobject>
+					<phrase>IoC가 아닌 경우와 IoC인 경우를 비교하는 그림으로써 IoC가 아닌 경우 특정 작업을 수행하기 위해 필요한 다른 컴포넌트들을 직접 생성하고 있고,
+					IoC인 경우 컨테이너에 의해 필요한 컴포넌트들을 공급받음을 나타내고 있다.
+					</phrase>
+				</textobject>
 			</mediaobject>		
 			
 			<para>이러한 IoC는 다음과 같은 장점을 가지고 있다.</para>
@@ -94,6 +99,10 @@
 					<imagedata align="center"
 						fileref="../image/core/spring/ioc-dependencyinjection.jpg" />
 				</imageobject>
+				<textobject>
+					<phrase>Inversion of Control을 Dependency Lookup과 Dependency Injection으로 구분할 수 있으며 Dependency Injection은
+					Setter Injection과 Constructor Injection으로 구분됨을 나타내는 그림이다.</phrase>
+				</textobject>
 			</mediaobject>
 			<para></para>
 			<itemizedlist>
@@ -254,6 +263,10 @@
 						<imageobject>
 							<imagedata align="center" fileref="../image/core/spring/ioc-basic.jpg" />
 						</imageobject>
+						<textobject>
+							<phrase>Bean Wiring을 나타내는 그림으로써 Bean들과 각각에 대한 Dependency 관계는 Spring IoC
+							Container에 의해 사용되는 설정 메타데이터에 의해 정의된다.</phrase>
+						</textobject>
 					</mediaobject>
 				</listitem>
 			</itemizedlist>
@@ -273,6 +286,7 @@
 					</para>
 
 					<informaltable>
+					    <caption>BeanFactory 역할</caption>
 						<tgroup cols="1">
 							<thead>
 								<row>
@@ -311,6 +325,7 @@
 					</para>
 
 					<informaltable>
+					    <caption>ApplicationContext 역할</caption>
 						<tgroup cols="1">
 							<thead>
 								<row>
@@ -385,6 +400,7 @@
 				</para>
 
 				<informaltable>
+					<caption>Resource 구현체 목록</caption>
 					<tgroup cols="2">
 						<thead>
 							<row>
@@ -470,6 +486,10 @@
             		<imagedata align="center"
                        fileref="../image/core/spring/ioc-basic-applicationcontext.jpg" />
 			      </imageobject>
+			       <textobject>
+			      	<phrase>org.springframework.context.ApplicationContext 인터페이스의 대략적인 구조를 나타내는 그림으로써 ApplicationContext는
+			      	ApplicationEventPublisher, ResourceLoader, MessageSource, ListableBeanFactory 인터페이스를 구현하고 있음을 표현하고 있다.</phrase>
+			      </textobject>
 			    </mediaobject>
 			
 			    <para>
@@ -595,6 +615,7 @@ BeanFactory factory = (BeanFactory) context;</programlisting>
         			</para>
 
 					<informaltable>
+						<caption>주요 메타데이터 속성 목록</caption>
 						<tgroup cols="2">
 							<colspec colnum="1" colname="col1" colwidth="3*" />
 							<colspec colnum="2" colname="col2" colwidth="7*" />
@@ -1038,6 +1059,7 @@ MovieService movieService = (MovieServiceImpl)<emphasis role="bold">ctx.getBean<
         		<title>Setter Injection vs. Constructor Injection</title>
 
         		<informaltable>
+        			<caption>Setter Injection과 Constructor Injection 비교</caption>
 					<tgroup cols="2">
 						<thead>
 							<row>
@@ -1438,6 +1460,10 @@ MovieService movieService = (MovieServiceImpl)<emphasis role="bold">ctx.getBean<
            				<imagedata align="center"
                        		fileref="../image/core/spring/ioc-property.jpg" />
           			</imageobject>
+          			<textobject>
+          				<phrase>Fred라는 객체가 Bob이라는 객체를 포함하고 있고, Bob이라는 객체가 Sammy라는 객체를 포함하고 있는 경우 
+          				Fred가 Null이거나 Bob이 Null일 때 NullPointerException이 발생함을 표현하는 그림이다.</phrase>
+          			</textobject>
         		</mediaobject>
 
         		<para>
@@ -1524,6 +1550,7 @@ MovieService movieService = (MovieServiceImpl)<emphasis role="bold">ctx.getBean<
 		    </para>
 
 			<informaltable>
+				<caption>autowire 속성값 목록</caption>
         		<tgroup cols="2">
                		<colspec colnum="1" colname="col1" colwidth="2*"/>
 					<colspec colnum="2" colname="col2" colwidth="8*"/>
@@ -1649,6 +1676,7 @@ MovieService movieService = (MovieServiceImpl)<emphasis role="bold">ctx.getBean<
 					</para>
 	
 					<informaltable>
+						<caption>dependency-check 속성값 목록</caption>
 						<tgroup cols="2">
 							<colspec colnum="1" colname="col1" colwidth="2*" />
 							<colspec colnum="2" colname="col2" colwidth="8*" />
@@ -1862,6 +1890,7 @@ public class SayHelloMethodReplacer <emphasis role="bold">implements MethodRepla
 					</para>
 
 					<informaltable>
+						<caption>scope 속성값 목록</caption>
 						<tgroup cols="2">
 							<colspec colnum="1" colname="col1" colwidth="2*" />
 							<colspec colnum="2" colname="col2" colwidth="8*" />
@@ -1940,6 +1969,9 @@ public class SayHelloMethodReplacer <emphasis role="bold">implements MethodRepla
 					<imageobject>
 						<imagedata align="center" fileref="../image/core/spring/ioc-singleton.jpg" />
 					</imageobject>
+					<textobject>
+						<phrase>Singleton Scope을 나타내는 그림으로써, Singleton Scope은 여러 개의 요청에 대해 동일한 Bean 인스턴스가 Injection되어 사용됨을 표현하고 있다.</phrase>
+					</textobject>
 				</mediaobject>
 
 				<para>
@@ -1970,6 +2002,9 @@ public class SayHelloMethodReplacer <emphasis role="bold">implements MethodRepla
 					<imageobject>
 						<imagedata align="center" fileref="../image/core/spring/ioc-prototype.jpg" />
 					</imageobject>
+					<textobject>
+						<phrase>>Prototype Scope을 나타내는 그림으로써, Prototype Scope은 매번 요청시마다 새로운 인스턴스가 생성되어 Injection됨을 표현하고 있다.</phrase>
+					</textobject>
 				</mediaobject>
 
 				<para>
@@ -2117,6 +2152,9 @@ org.springframework.beans.factory.config.Scope 인터페이스를 implement한�
           			<imagedata align="center"
                      	fileref="../image/core/spring/ioc-lifecycle.jpg" />
         		</imageobject>
+        		<textobject>
+        			<phrase>Spring Bean의 LifeCycle은 Initializaion ->Activation -> Destruction으로 구성되어 있음을 나타내는 그림</phrase>
+        		</textobject>
       		</mediaobject>
 
 			<section id="core_spring_ioc_extensions_lifecycle_initial">
@@ -2132,6 +2170,11 @@ org.springframework.beans.factory.config.Scope 인터페이스를 implement한�
             			<imagedata align="center"
                        		fileref="../image/core/spring/ioc-initialization.jpg" />
           			</imageobject>
+          			<textobject>
+          				<phrase>Spring Container가 구동되는 여러 과정을 표현하고 있는 그림이다. BeanFactory를 통해 Bean 설정 파일을 찾고, 해당 Bean을 생성한 이후에 
+          				Bean들의 참조 관계를 처리한다. 그리고 BeanNameAware, BeanFactoryAware, InitializaingBean 등과 같은 인터페이스를 구현한 Bean의 경우 인터페이스
+          				구현 메소드를 실행시켜주는 순서로 동작하게 됨을 표현하고 있다.</phrase>
+          			</textobject>
         		</mediaobject>
 
         		<para>
@@ -2187,6 +2230,10 @@ org.springframework.beans.factory.config.Scope 인터페이스를 implement한�
 						<imagedata align="center"
 							fileref="../image/core/spring/ioc-destruction.jpg" />
 						</imageobject>
+						<textobject>
+							<phrase>Spring Container 종료 시점에 수행되는 절차를 표현한 그림으로써 대상 Bean이 DisposableBean 인터페이스를 구현하고 있는 경우
+							destroy 메소드를 실행하고, 대상 Bean의 속성 정의시 destroy-method 속성값을 정의하였다면 해당 메소드를 실행해주는 형태로 동작함을 표현하고 있다.</phrase>
+						</textobject>
 				</mediaobject>
 
         		<para>
@@ -2440,6 +2487,7 @@ org.springframework.beans.factory.config.Scope 인터페이스를 implement한�
 	            <para><emphasis role="bold">Built-in Events</emphasis></para>
 	
 	            <informaltable>
+	            	<caption>Built-in Event 목록</caption>
 	              <tgroup cols="2">
 	              	<colspec colnum="1" colname="col1" colwidth="3*"/>
 					<colspec colnum="2" colname="col2" colwidth="7*"/>
@@ -2545,6 +2593,7 @@ org.springframework.beans.factory.config.Scope 인터페이스를 implement한�
 		<title>BeanFactory와 ApplicationContext 특징 비교</title>
 
 		<informaltable>
+			<caption>BeanFactory와 ApplicationContext 특징 비교</caption>
 			<tgroup cols="3">
 				<colspec colnum="1" colname="col1" colwidth="5*"/>
 					<colspec colnum="2" colname="col2" colwidth="2*"/>

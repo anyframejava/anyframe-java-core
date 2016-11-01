@@ -140,11 +140,11 @@
 				<programlisting language="java">/**
  * Test code that enters new data in DB through Query service for MiPlatform
  */    
-public void insertDataSet() throws Exception {
-    IMiPQueryService mipQueryService = (IMiPQueryService) context.getBean("mipQueryService");
+public void insertDataSet() {
+    MiPQueryService mipQueryService = (MiPQueryService) context.getBean("mipQueryService");
 
-    Map queryMap = new HashMap();
-    queryMap.put(IMiPQueryService.QUERY_INSERT, "createProduct");
+    <![CDATA[Map<String, String> queryMap = new HashMap<String, String>();]]>
+    queryMap.put(MiPQueryService.QUERY_INSERT, "createProduct");
 
     // Transfer Dataset that should be reflected in map and DB which defines query id that will be used by INSERT, UPDATE, DELETE type.
     // A large amount of data can be saved in Dataset.
@@ -155,12 +155,12 @@ public void insertDataSet() throws Exception {
 /**
  * Test code that modifies data in DB through Query service for MiPlatform
  */   
-public void updateDataSet() throws Exception {
-    IMiPQueryService mipQueryService =
-            (IMiPQueryService) context.getBean("mipQueryService");
+public void updateDataSet() {
+    MiPQueryService mipQueryService =
+            (MiPQueryService) context.getBean("mipQueryService");
 
-    Map queryMap = new HashMap();
-    queryMap.put(IMiPQueryService.QUERY_UPDATE, "updateProduct");
+    <![CDATA[Map<String, String> queryMap = new HashMap<String, String>();]]>
+    queryMap.put(MiPQueryService.QUERY_UPDATE, "updateProduct");
     
     // Transfer Dataset that should be reflected in map and DB which defines query id that will be used by INSERT, UPDATE, DELETE type.
     // A large amount of data can be saved in Dataset.  
@@ -171,14 +171,14 @@ public void updateDataSet() throws Exception {
 /**
  * Test code for INSERT, UPDATE, DELETE of data in DB through query service for MiPlatform
  */    
-public void processAllDataSet() throws Exception {
-    IMiPQueryService mipQueryService =
-            (IMiPQueryService) context.getBean("mipQueryService");
+public void processAllDataSet() {
+    MiPQueryService mipQueryService =
+            (MiPQueryService) context.getBean("mipQueryService");
 
-    Map queryMap = new HashMap();
-    queryMap.put(IMiPQueryService.QUERY_UPDATE, "updateProduct");
-    queryMap.put(IMiPQueryService.QUERY_INSERT, "createProduct");
-    queryMap.put(IMiPQueryService.QUERY_DELETE, "removeProduct");
+    <![CDATA[Map<String, String> queryMap = new HashMap<String, String>();]]>
+    queryMap.put(MiPQueryService.QUERY_UPDATE, "updateProduct");
+    queryMap.put(MiPQueryService.QUERY_INSERT, "createProduct");
+    queryMap.put(MiPQueryService.QUERY_DELETE, "removeProduct");
     
     // Transfer Dataset that should be reflected in map and DB which defines query id that will be used by INSERT, UPDATE, DELETE type.
     // A large amount of data can be saved in Dataset.            
@@ -189,14 +189,14 @@ public void processAllDataSet() throws Exception {
  * Test code for INSERT, UPDATE, DELETE of data in DB through query service for MiPlatform
  * In this case, ActionCommand pre-post processing is executed.
  */    
-public void processAllDataSetWithActionCommand() throws Exception {
-    IMiPQueryService mipQueryService =
-            (IMiPQueryService) context.getBean("mipQueryService");
+public void processAllDataSetWithActionCommand() {
+    MiPQueryService mipQueryService =
+            (MiPQueryService) context.getBean("mipQueryService");
 
-    Map queryMap = new HashMap();
-    queryMap.put(IMiPQueryService.QUERY_UPDATE, "updateProduct");
-    queryMap.put(IMiPQueryService.QUERY_INSERT, "createProduct");
-    queryMap.put(IMiPQueryService.QUERY_DELETE, "removeProduct");
+    <![CDATA[Map<String, String> queryMap = new HashMap<String, String>();]]>
+    queryMap.put(MiPQueryService.QUERY_UPDATE, "updateProduct");
+    queryMap.put(MiPQueryService.QUERY_INSERT, "createProduct");
+    queryMap.put(MiPQueryService.QUERY_DELETE, "removeProduct");
     
     // Transfer ActionCommand which defines process that should be done before and after accessing Dataset and DB
     // that should be reflected in Map, DB which defines query id used according to INSERT, UPDATE, DELETE type.
@@ -210,9 +210,9 @@ public void processAllDataSetWithActionCommand() throws Exception {
  * Test code for searching data in DB through query service for MiPlatform
  * In this case, search conditions are in VariableList form.
  */     
-public void findDataSetWithVariant() throws Exception {
-    IMiPQueryService mipQueryService =
-            (IMiPQueryService) context.getBean("mipQueryService");
+public void findDataSetWithVariant() {
+    MiPQueryService mipQueryService =
+            (MiPQueryService) context.getBean("mipQueryService");
 
     // Transfer query id to be executed, and search conditions in VariableList form
     Dataset resultDataSet =
@@ -223,9 +223,9 @@ public void findDataSetWithVariant() throws Exception {
  * Test code to search data in DB through query service for MiPlatform
  * In this case, search conditions are in Dataset form.
  */    
-public void findListDataSet(int expected) throws Exception {
-    IMiPQueryService mipQueryService =
-            (IMiPQueryService) context.getBean("mipQueryService");
+public void findListDataSet(int expected) {
+    MiPQueryService mipQueryService =
+            (MiPQueryService) context.getBean("mipQueryService");
     
     // Transfer query id to be executed and search conditions in Dataset form.    
     Dataset resultDataSet =
@@ -237,7 +237,7 @@ public void findListDataSet(int expected) throws Exception {
 			<para>
 				위 소스 코드 중 testProcessAllDataSetWithActionCommand() 메소드에서는 ActionCommand를 이용하여 
 				DB에 데이터를 입력하기 전에 특정 칼럼의 값을 변경하고 있다. 이와 같이 MiPQueryService는 
-				anyframe.core.query.ria.mip.IMiPActionCommand를 구현한 별도 ActionCommand를 인자로 함께 전달하는 경우 
+				org.anyframe.mip.query.MiPActionCommand를 구현한 별도 ActionCommand를 인자로 함께 전달하는 경우 
 				입력 데이터를 DB에 반영하기 전/후에 대한 공통 처리를 수행할 수 있도록 지원한다. 예를 들어 입력받은 개별 Row를 DB에 
 				신규 등록하기 전에 신규 식별자 값이 셋팅되어야 한다면, Loop을 돌면서 각 Row를 추출한 뒤 식별자를 셋팅하는 별도 로직없이 
 				preInsert() 로직 내에 식별자 생성 구문이 추가된 ActionCommand 객체만 전달하면 되는 것이다.

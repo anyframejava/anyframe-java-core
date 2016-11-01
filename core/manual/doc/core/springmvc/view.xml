@@ -44,7 +44,7 @@
       		<para>
       			이러한 commandName의 기본값은 "command"이며 input값들과 매칭될 트랜스퍼 오브젝트를 request값으로 셋팅해줘야한다. 
       			이 값은 SimpleFormController를 사용할 경우 formBackingObject()메소드에서 지정해 줄 수도있다. 
-      			<programlisting language="xml">protected Object formBackingObject(HttpServletRequest request)
+      			<programlisting language="java">protected Object formBackingObject(HttpServletRequest request)
     throws Exception {
     <emphasis role="bold">UserVO vo=new UserVO();</emphasis>
     <emphasis role="bold">request.setAttribute</emphasis>("<emphasis
@@ -75,6 +75,9 @@
 				<imageobject>
 					<imagedata align="center" fileref="../image/core/springmvc/formtag2.jpg" />
 				</imageobject>
+				<textobject>
+					<phrase>음악감상과 공부라는 항목 앞에 체크박스가 표현된 그림</phrase>
+				</textobject>
 			</mediaobject>
 		</section>
 		
@@ -87,13 +90,13 @@
 				value쌍으로 넘겨줄 경우 key는 태그의 value값이 되고 value는 label명이 된다. (단, Array나 List로
 				넘길 경우 label은 value와 같은 값을 가지게 된다.) 다음은 그 예이다. 
 				<programlisting language="java">protected Object formBackingObject(HttpServletRequest request) throws Exception {
-    UserVO vo=new UserVO();
-    <emphasis role="bold">Map interest = new HashMap();
+    UserVO vo = new UserVO();
+    <emphasis role="bold"><![CDATA[Map<String, String> interest = new HashMap<String, String>()]]>;
     interest.put("reading", "독서");
     interest.put("listeningMusic", "음악감상");
     interest.put("study", "공부");
     request.setAttribute("interest", interest);
-    request.setAttribute("user",vo);</emphasis>
+    request.setAttribute("user", vo);</emphasis>
     return new UserVO();
 }
 </programlisting>
@@ -110,6 +113,11 @@
         		<imageobject>
           			<imagedata align="center" fileref="../image/core/springmvc/formtag3.jpg" />
         		</imageobject>
+        		<textobject>
+        			<phrase>
+        				공부, 독성, 음악감상 항목 앞에 체크박스가 표현된 화면
+        			</phrase>
+        		</textobject>
       		</mediaobject>
     	</section>
 
@@ -129,6 +137,9 @@
 				<imageobject>
 					<imagedata align="center" fileref="../image/core/springmvc/formtag4.jpg" />
 				</imageobject>
+				<textobject>
+					<phrase>남자, 여자라는 항목 앞에 라디오버튼이 표현된 화면</phrase>
+				</textobject>
 			</mediaobject>
 		</section>
 
@@ -160,6 +171,9 @@
 				<imageobject>
 					<imagedata align="center" fileref="../image/core/springmvc/formtag8.jpg" />
 				</imageobject>
+				<textobject>
+					<phrase>패스워드를 입력하기 위한 입력 상자에 입력된 패스워드가 직접적으로 보여지지 않음을 나타낸 그림</phrase>
+				</textobject>
 			</mediaobject>
 		</section>
 	
@@ -170,13 +184,13 @@
 				넘겨주는 값으로 자동 매핑 시켜줄 수 있다.
 				<programlisting language="java">protected Object formBackingObject(HttpServletRequest request)
                 throws Exception {
-    UserVO vo=new UserVO();
-    <emphasis role="bold">Map address = new HashMap();
+    UserVO vo = new UserVO();
+    <emphasis role="bold"><![CDATA[Map<String, String> address = new HashMap<String, String>();]]>
     address.put("seoul","서울");
     address.put("daegu","대구");
     address.put("busan","부산");
     request.setAttribute("address", address);
-    request.setAttribute("user",vo);</emphasis>
+    request.setAttribute("user", vo);</emphasis>
     
 	return new UserVO();
 }
@@ -194,6 +208,9 @@
 				<imageobject>
 					<imagedata align="center" fileref="../image/core/springmvc/formtag6.jpg" />
 				</imageobject>
+				<textobject>
+					<phrase>주소를 표현하기 위해 도시 목록을 보여주는 Select Box를 나타낸 그림으로써 목록에 서울,대구,부산이 보여지고 있다.</phrase>
+				</textobject>
 			</mediaobject>
 	
 			<para>
@@ -241,6 +258,9 @@
 				<imageobject>
 					<imagedata align="center" fileref="../image/core/springmvc/formtag7.jpg" />
 				</imageobject>
+				<textobject>
+					<phrase>비고를 입력하기 위한 입력창을 표현한 그림</phrase>
+				</textobject>
 			</mediaobject>
 	    </section>
 	
@@ -394,7 +414,7 @@ public class <emphasis role="bold">MovieController</emphasis> {
 	<section id="core_springmvc_view_tilesintegration">
     	<title>Tiles Integration</title>
     	<para>
-    		<ulink url="http://dev.anyframejava.org/docs/anyframe/plugin/optional/tiles/1.0.3.RC1/reference/htmlsingle/tiles.html">Tiles Plugin 매뉴얼</ulink>을 참조한다. 
+    		<ulink url="http://dev.anyframejava.org/docs/anyframe/plugin/optional/tiles/1.0.4/reference/htmlsingle/tiles.html">Tiles Plugin 매뉴얼</ulink>을 참조한다. 
     	</para>
 	</section>
 </chapter>

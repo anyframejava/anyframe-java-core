@@ -27,7 +27,7 @@ import java.sql.Statement;
 import javax.inject.Inject;
 import javax.sql.DataSource;
 
-import org.anyframe.exception.JdbcConnectionException;
+import org.anyframe.exception.IdCreationException;
 import org.anyframe.idgen.IdGenService;
 import org.junit.After;
 import org.junit.Before;
@@ -137,7 +137,7 @@ public class SequenceIdGenServiceJdbcTest {
 			idGenerator.getNextIntegerId();
 			fail("Should not have gotten an id");
 		} catch (Exception e) {
-			assertTrue(e instanceof JdbcConnectionException);
+			assertTrue(e instanceof IdCreationException);
 		}
 	}
 

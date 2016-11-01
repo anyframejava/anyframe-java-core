@@ -5,7 +5,7 @@
   	<div id="container">
     	<div class="main_greeting">
         	<dl>
-                <dt>Welcome to Anyframe 5.5.0.RC1</dt>
+                <dt>Welcome to Anyframe 5.5.1</dt>
                 <dd>Congratulations! Anyframe application has been successfully installed. Anyframe is an open source project and application framework that provides basic architecture, common technical services, templates to help you develop web applications on the Java platform quickly and efficiently.</dd>
             </dl>
         </div>
@@ -24,7 +24,7 @@
                     	<ul>
                         <!--Add new configuration here-->
                     		<!--query-ria-configuration-START-->
-							<li>Query-RIA 1.5.0.RC1</li>
+							<li>Query-RIA 1.5.1</li>
 							<!--query-ria-configuration-END-->
                         </ul>
                     </td>

@@ -31,57 +31,57 @@ public class MovieServiceImpl implements MovieService {
 	}
 
 	public void createMovie(Movie movie) {
-		this.movieDao.createMovie(movie);
+		movieDao.createMovie(movie);
 	}
 
 	public void createMovieList(List<Movie> movieList) {
-		this.movieDao.createMovieList(movieList);
+		movieDao.createMovieList(movieList);
 	}
 
 	public Movie findMovie(String movieId) {
-		return this.movieDao.findMovie(movieId);
+		return movieDao.findMovie(movieId);
 	}
 
 	public List<Movie> findMovieList(int conditionType, String condition) {
-		return this.movieDao.findMovieList(conditionType, condition);
+		return movieDao.findMovieList(conditionType, condition);
 	}
 
 	public List<Movie> findMovieListWithSQL(int conditionType, String condition) {
-		return this.movieDao.findMovieListWithSQL(conditionType, condition);
+		return movieDao.findMovieListWithSQL(conditionType, condition);
 	}
 
 	public List<Object[]> findMovieListWithoutReturn(int conditionType,
 			String condition) {
-		return this.movieDao.findMovieListWithoutReturn(conditionType,
+		return movieDao.findMovieListWithoutReturn(conditionType,
 				condition);
 	}
 
 	public List<Object[]> findMovieListWithScalar(int conditionType,
 			String condition) {
-		return this.movieDao.findMovieListWithScalar(conditionType, condition);
+		return movieDao.findMovieListWithScalar(conditionType, condition);
 	}
 
 	public List<Object[]> findMovieListByCountry(String countryCode) {
-		return this.movieDao.findMovieListByCountry(countryCode);
+		return movieDao.findMovieListByCountry(countryCode);
 	}
 
 	public List<Movie> findMovieListAll() {
-		return this.findMovieListAll();
+		return findMovieListAll();
 	}
 
 	public void removeMovie(Movie movie) {
-		this.movieDao.removeMovie(movie);
+		movieDao.removeMovie(movie);
 	}
 
 	public void updateMovie(Movie movie) {
-		this.movieDao.updateMovie(movie);
+		movieDao.updateMovie(movie);
 	}
 
 	public void createCategory(Category category) {
-		this.movieDao.createCategory(category);
+		movieDao.createCategory(category);
 	}
 
 	public void createCountry(Country country) {
-		this.movieDao.createCountry(country);
+		movieDao.createCountry(country);
 	}
 }

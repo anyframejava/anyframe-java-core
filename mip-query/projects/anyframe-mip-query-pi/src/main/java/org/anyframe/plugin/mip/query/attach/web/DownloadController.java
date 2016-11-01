@@ -36,8 +36,10 @@ import org.springframework.web.servlet.mvc.AbstractController;
  */
 public class DownloadController extends AbstractController {
 	
+	//Velocity-Support-contextProperties-START
 	@Value("#{contextProperties['repository.path']}")
 	private	String repositoryPath;
+	//Velocity-Support-contextProperties-END
 
 	@Override
 	protected ModelAndView handleRequestInternal(HttpServletRequest request,

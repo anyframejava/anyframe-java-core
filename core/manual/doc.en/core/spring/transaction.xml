@@ -348,7 +348,7 @@
 		        	Note that, however, in the case that multiple number of Transaction Managers are defined and you'd like to manage transaction based on Annotation,
 		        	you cannot define and use Transaction Manager for specific class.(up to Spring 2.5)
 		        	
-		        	<programlisting language="xml"><![CDATA[@Service("annotationMovieService")
+		        	<programlisting language="java"><![CDATA[@Service("annotationMovieService")
 ]]><emphasis role="bold">@Transactional</emphasis><![CDATA[
 public class MovieServiceImplWithAnnotation implements MovieService {
 
@@ -356,7 +356,7 @@ public class MovieServiceImplWithAnnotation implements MovieService {
     
     @Transactional(noRollbackFor = { MovieException.class }, propagation = Propagation.REQUIRED)
     public void updateMovieList(Movie newMovie, Movie updateMovie)
-            throws Exception {
+            throws MovieException {
         String movieName = "";
         try {
             movieName = newMovie.getTitle();
@@ -365,7 +365,7 @@ public class MovieServiceImplWithAnnotation implements MovieService {
             movieName = updateMovie.getTitle();
             int result = update(updateMovie);
             if (result <= 0) {
-                throw new Exception("fail to update with wrong movieid.");
+                throw new MovieException("fail to update with wrong movieid.");
             }
 
         } catch (Exception e) {
@@ -810,7 +810,7 @@ public class MovieServiceImplWithAnnotation implements MovieService {
       		as the movie with the relevant ID does not exist, modification will fail.
       		Newly added movie information must be committed without rollback by transaction property defined in updateMovieList method of MovieService.
       		
-      		 <programlisting language="xml">public void testUpdateMovieWithNotExistMovie() throws Exception {
+      		 <programlisting language="java">public void testUpdateMovieWithNotExistMovie() throws Exception {
     Movie newMovie = getMovie();
     String newMovieID = newMovie.getMovieId();
     Movie updateMovie = movieService.get("MV-00003");
@@ -890,7 +890,7 @@ public class MovieServiceImplWithAnnotation implements MovieService {
         		<para>
         			In case of Programmatic Transaction Management by using TransactionTemplate,
         			define callback method to be called by Transaction Context and implement business logic in this method.
-        			<programlisting language="xml"><emphasis
+        			<programlisting language="java"><emphasis
         			role="bold">this.transactionTemplate.execute(new TransactionCallbackWithoutResult()</emphasis> {                
   <emphasis role="bold">public void doInTransactionWithoutResult(TransactionStatus status)</emphasis> {                    
   //... biz. logic ...       
@@ -998,7 +998,7 @@ public class MovieServiceImplWithAnnotation implements MovieService {
 		        	In this case, use TransactionDefinition and
 	        		TransactionStatus properly.
 		        	
-					<programlisting language="xml">...
+					<programlisting language="java">...
 DefaultTransactionDefinition def = new DefaultTransactionDefinition();
 def.setPropagationBehavior(TransactionDefinition.PROPAGATION_REQUIRED);
 TransactionStatus status = transactionService.getTransaction(def);
@@ -1025,7 +1025,7 @@ TransactionStatus status = transactionService.getTransaction(def);
         		is rolled back.
         		The following is testAddUserUsingTransactionManager method logic of test class UserServiceWithProgrammaticTest.
         		
-		       	<programlisting language="xml">public void testAddMovieUsingTransactionManager() throws Exception {
+		       	<programlisting language="java">public void testAddMovieUsingTransactionManager() throws Exception {
     DefaultTransactionDefinition txDefinition = new DefaultTransactionDefinition();
     // Defining Propagation Behavior, Isolation Level, etc. for the relevant transaction 
     txDefinition

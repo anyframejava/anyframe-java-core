@@ -43,17 +43,13 @@ public class JMSBroadcastingListener extends
 		com.opensymphony.oscache.plugins.clustersupport.JMSBroadcastingListener {
 
 	Logger logger = LoggerFactory.getLogger(JMSBroadcastingListener.class);
-	private static final int REMOVE_KEY = 10;
-
-	@SuppressWarnings("unused")
-	private Config config = null;
+	private static final int REMOVE_KEY = 10; 
 
 	/**
 	 * use config to access JMS Server using JDNI properties.
 	 */
 	public void initialize(Cache cache, Config config)
 			throws InitializationException {
-		this.config = config;
 		super.initialize(cache, config);
 	}
 
@@ -96,7 +92,7 @@ public class JMSBroadcastingListener extends
 			cache.flushGroup((String) message.getData(), CLUSTER_ORIGIN);
 			break;
 		case ClusterNotification.FLUSH_PATTERN:
-			cache.flushPattern((String) message.getData(), CLUSTER_ORIGIN);
+			cache.flushGroup((String) message.getData(), CLUSTER_ORIGIN);
 			break;
 		case ClusterNotification.FLUSH_CACHE:
 			cache.flushAll((Date) message.getData(), CLUSTER_ORIGIN);

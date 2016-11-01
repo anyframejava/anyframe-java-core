@@ -72,7 +72,7 @@ public class QueryServiceImpl extends AbstractQueryService implements
 		QueryService, InitializingBean {
 	private static final String DELIMETER = "=";
 
-	private PagingJdbcTemplate jdbcTemplate;
+	private PagingJdbcTemplate jdbcTemplate; 
 
 	protected PagingNamedParamJdbcTemplate namedParamJdbcTemplate = null;
 
@@ -628,7 +628,7 @@ public class QueryServiceImpl extends AbstractQueryService implements
 	 * @throws QueryException
 	 *             if there is any problem executing the query
 	 */
-	public <E> List<E> find(String queryId, Object[] values)
+	public <T> List<T> find(String queryId, Object[] values)
 			throws QueryException {
 		return find(queryId, values, -1, -1, false);
 	}
@@ -648,7 +648,7 @@ public class QueryServiceImpl extends AbstractQueryService implements
 	 * @throws QueryException
 	 *             if there is any problem executing the query
 	 */
-	public <E> List<E> find(String queryId, Object[] values, int pageIndex)
+	public <T> List<T> find(String queryId, Object[] values, int pageIndex)
 			throws QueryException {
 		return find(queryId, values, pageIndex, -1, true);
 	}
@@ -665,7 +665,7 @@ public class QueryServiceImpl extends AbstractQueryService implements
 	 *             if there is any problem executing the query
 	 */
 	@SuppressWarnings("unchecked")
-	public <E> List<E> find(Object obj) throws QueryException {
+	public <T> List<T> find(Object obj) throws QueryException {
 		String sql = "";
 		String className = "";
 		try {
@@ -714,7 +714,7 @@ public class QueryServiceImpl extends AbstractQueryService implements
 	 * @throws QueryException
 	 *             if there is any problem executing the query
 	 */
-	public <E> List<E> find(String queryId, Object[] values, int pageIndex,
+	public <T> List<T> find(String queryId, Object[] values, int pageIndex,
 			int pageSize) throws QueryException {
 		return find(queryId, values, pageIndex, pageSize, true);
 	}
@@ -737,7 +737,7 @@ public class QueryServiceImpl extends AbstractQueryService implements
 	 *             if there is any problem executing the query
 	 */
 	@SuppressWarnings("unchecked")
-	public <E> List<E> findBySQL(String sql, String[] types, Object[] values)
+	public <T> List<T> findBySQL(String sql, String[] types, Object[] values)
 			throws QueryException {
 		try {
 			return jdbcTemplate.query(sql, values, convertTypes(types),
@@ -769,7 +769,7 @@ public class QueryServiceImpl extends AbstractQueryService implements
 	 *             if there is any problem executing the query
 	 */
 	@SuppressWarnings("unchecked")
-	public <E> List<E> findBySQL(String sql, String[] types, Object[] values,
+	public <T> List<T> findBySQL(String sql, String[] types, Object[] values,
 			int pageIndex, int pageSize) throws QueryException {
 		try {
 			Pagination paginationVO = new Pagination(pageSize);
@@ -1238,8 +1238,7 @@ public class QueryServiceImpl extends AbstractQueryService implements
 	 */
 	public String getStatement(String queryId) {
 		QueryInfo queryInfo = getSqlRepository().getQueryInfos().get(queryId);
-		String sql = queryInfo.getQueryString();
-		return sql;
+		return queryInfo.getQueryString();
 	}
 
 	/**
@@ -1286,9 +1285,7 @@ public class QueryServiceImpl extends AbstractQueryService implements
 		sqlBatch.compile();
 
 		for (int i = 0; i < targets.size(); i++) {
-			Object obj = targets.get(i);
-			if (obj instanceof Object[])
-				sqlBatch.update((Object[]) obj);
+			sqlBatch.update(targets.get(i));
 		}
 		return sqlBatch.flush();
 	}
@@ -1389,11 +1386,18 @@ public class QueryServiceImpl extends AbstractQueryService implements
 					// callback method called for by Spring JdbcTemplate
 					public void setValues(PreparedStatement ps, int index)
 							throws SQLException {
-						Object[] args = (Object[]) targets.get(index);
-						// Set the value for the parameter
-						for (int i = 0; i < args.length; i++) {
-							StatementCreatorUtils.setParameterValue(ps, i + 1,
-									SqlTypeValue.TYPE_UNKNOWN, null, args[i]);
+						Object args = targets.get(index);
+						
+						if(args instanceof Object[]) {
+							Object[] argArray = (Object[]) args;
+							// Set the value for the parameter
+							for (int i = 0; i < argArray.length; i++) {
+								StatementCreatorUtils.setParameterValue(ps, i + 1,
+										SqlTypeValue.TYPE_UNKNOWN, null, argArray[i]);
+							}							
+						} else {
+							StatementCreatorUtils.setParameterValue(ps, 1,
+									SqlTypeValue.TYPE_UNKNOWN, null, args);
 						}
 					}
 				});
@@ -1542,7 +1546,7 @@ public class QueryServiceImpl extends AbstractQueryService implements
 	 * ************* PRIVATE Internal METHODS **************
 	 */
 
-	private <E> List<E> find(String queryId, Object[] values, int pageIndex,
+	private <T> List<T> find(String queryId, Object[] values, int pageIndex,
 			int pageSize, boolean paging) throws QueryException {
 		QueryInfo queryInfo = null;
 		try {
@@ -1675,7 +1679,7 @@ public class QueryServiceImpl extends AbstractQueryService implements
 	}
 
 	@SuppressWarnings("unchecked")
-	private <E> List<E> findInternal(QueryInfo queryInfo, String queryId,
+	private <T> List<T> findInternal(QueryInfo queryInfo, String queryId,
 			Object[] values, Pagination paginationVO, boolean paging,
 			ReflectionResultSetMapper resultSetMapper) throws QueryException {
 		String sql = "";

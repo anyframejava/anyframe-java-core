@@ -24,8 +24,8 @@ import org.apache.velocity.context.Context;
  * @author SoYon Lim
  * @author JongHoon Kim
  */
-public class DefaultDynamicSqlParameterSourceContext implements Context {
-	private DefaultDynamicSqlParameterSource parameterSource = null;
+public class DefaultDynamicSqlParameterSourceContext implements Context { 
+	private final DefaultDynamicSqlParameterSource parameterSource;
 
 	public DefaultDynamicSqlParameterSourceContext(
 			DefaultDynamicSqlParameterSource parameterSource) {

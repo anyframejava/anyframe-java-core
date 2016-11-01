@@ -24,6 +24,7 @@ import org.anyframe.exception.MissingRequiredPropertyException;
 import org.anyframe.query.QueryInfo;
 import org.anyframe.query.QueryService;
 import org.anyframe.query.impl.util.SQLTypeTransfer;
+import org.anyframe.util.StringUtil;
 import org.springframework.jdbc.core.SqlParameter;
 import org.springframework.jdbc.core.SqlTypeValue;
 import org.springframework.util.StringUtils;
@@ -44,7 +45,7 @@ public class DefaultQueryInfo implements QueryInfo {
 	// 2009.01.15 - custom resultset mapper
 	private String resultMapper = null;
 	private DefaultMappingInfo localMappingInfo = null;
-	private boolean isDynamic = true;
+	private boolean dynamic = true;
 	private String lobStatement = null;
 	private String[] lobParamTypes = null;
 	private int length = 0;
@@ -57,7 +58,7 @@ public class DefaultQueryInfo implements QueryInfo {
 	private String[] paramBindingTypes = null;
 	private String[] paramBindingNames = null;
 	private List<SqlParameter> sqlParameterList = null;
-	private Map<String, Integer> paramMap = new HashMap<String, Integer>();
+	private final Map<String, Integer> paramMap = new HashMap<String, Integer>();
 
 	public void configure(Element query) {
 		queryId = query.getAttribute("id");
@@ -71,7 +72,7 @@ public class DefaultQueryInfo implements QueryInfo {
 			Element temporaryElement = (Element) statements.item(i);
 
 			String parentNode = temporaryElement.getParentNode().getNodeName();
-			if (parentNode.equals("query")) {
+			if ("query".equals(parentNode)) {
 				statementElement = temporaryElement;
 				statementLength++;
 			}
@@ -81,14 +82,14 @@ public class DefaultQueryInfo implements QueryInfo {
 		statement = statementElement.getTextContent();
 
 		String isDynamicValue = query.getAttribute("isDynamic");
-		isDynamic = isDynamicValue.equals("") ? true : new Boolean(
+		dynamic = "".equals(isDynamicValue) ? true : new Boolean(
 				isDynamicValue).booleanValue();
 		String mappingStyleValue = query.getAttribute("mappingStyle");
-		mappingStyle = mappingStyleValue.equals("") ? "camel"
+		mappingStyle = "".equals(mappingStyleValue) ? "camel"
 				: mappingStyleValue;
 
 		String maxFetchSizeValue = query.getAttribute("maxFetchSize");
-		maxFetchSize = maxFetchSizeValue.equals("") ? -1 : new Integer(
+		maxFetchSize = "".equals(maxFetchSizeValue) ? -1 : new Integer(
 				maxFetchSizeValue).intValue();
 
 		NodeList results = query.getElementsByTagName("result");
@@ -98,16 +99,16 @@ public class DefaultQueryInfo implements QueryInfo {
 			Element result = (Element) results.item(0);
 
 			resultClass = result.getAttribute("class");
-			if (resultClass.equals("")) {
+			if ("".equals(resultClass)) {
 				resultClass = null;
 			}
 			resultMapper = result.getAttribute("mapper");
-			if (resultMapper.equals("")) {
+			if ("".equals(resultMapper)) {
 				resultMapper = null;
 			}
 
 			String lengthValue = result.getAttribute("length");
-			length = lengthValue.equals("") ? 0 : new Integer(lengthValue)
+			length = "".equals(lengthValue) ? 0 : new Integer(lengthValue)
 					.intValue();
 
 			NodeList resultMappings = result
@@ -209,7 +210,7 @@ public class DefaultQueryInfo implements QueryInfo {
 			hasOnlyOneElements("lobStatement", "statement", lobStatements
 					.getLength());
 			lobStatement = lobStatements.item(0).getTextContent();
-			if (lobStatement.equals("")) {
+			if ("".equals(lobStatement)) {
 				lobStatement = null;
 			}
 
@@ -272,7 +273,7 @@ public class DefaultQueryInfo implements QueryInfo {
 	}
 
 	public boolean isDynamic() {
-		return isDynamic;
+		return dynamic;
 	}
 
 	public int getFetchCountPerQuery() {
@@ -321,7 +322,7 @@ public class DefaultQueryInfo implements QueryInfo {
 
 	private void checkRequiredAttribute(String element, String name,
 			String value) {
-		if (value.equals("")) {
+		if (StringUtil.isEmpty(value)) {
 			throw new MissingRequiredPropertyException("Query Service : "
 					+ name + " is essential attribute in a <" + element + ">.");
 		}

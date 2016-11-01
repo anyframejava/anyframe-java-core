@@ -26,14 +26,11 @@ import javax.servlet.http.HttpSession;
 import org.anyframe.scheduling.JobInfo;
 import org.anyframe.scheduling.SchedulingService;
 import org.anyframe.util.DateUtil;
-import org.apache.taglibs.standard.tag.el.sql.DateParamTag;
 import org.quartz.JobKey;
 import org.springframework.beans.propertyeditors.CustomDateEditor;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
-import org.springframework.validation.Errors;
-import org.springframework.validation.Validator;
 import org.springframework.web.bind.WebDataBinder;
 import org.springframework.web.bind.annotation.InitBinder;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -72,6 +69,8 @@ public class SchedulingServiceDemoController {
 		if(result.hasErrors()){
 			return "scheduling/job/form";
 		}
+		
+		jobInfo.setStartDate(new Date());
 		schedulingService.create(jobInfo);
 		status.setComplete();
 

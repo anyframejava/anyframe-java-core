@@ -37,7 +37,7 @@ public interface XPService {
 	 * @param outDl
 	 *            Output DataSetList including return values.
 	 * @throws Exception
-	 *             if there is any problem executing the query
+	 *             if there is any problem getting the DataSet
 	 */
 	void get(VariableList inVl, DataSetList inDl, VariableList outVl,
 			DataSetList outDl) throws Exception;
@@ -54,7 +54,7 @@ public interface XPService {
 	 * @param outDl
 	 *            Output DataSetList including return values.
 	 * @throws Exception
-	 *             if there is any problem executing the query
+	 *             if there is any problem getting the DataSet list
 	 */
 	void getList(VariableList inVl, DataSetList inDl, VariableList outVl,
 			DataSetList outDl) throws Exception;
@@ -71,7 +71,7 @@ public interface XPService {
 	 * @param outDl
 	 *            Output DataSetList including return values.
 	 * @throws Exception
-	 *             if there is any problem executing the query
+	 *             if there is any problem getting the DataSet list
 	 */
 	void getPagingList(VariableList inVl, DataSetList inDl, VariableList outVl,
 			DataSetList outDl) throws Exception;
@@ -88,7 +88,7 @@ public interface XPService {
 	 * @param outDl
 	 *            Output DataSetList including return values.
 	 * @throws Exception
-	 *             if there is any problem executing the query
+	 *             if there is any problem inserting the data using DataSet
 	 */
 	void create(VariableList inVl, DataSetList inDl, VariableList outVl,
 			DataSetList outDl) throws Exception;
@@ -105,7 +105,7 @@ public interface XPService {
 	 * @param outDl
 	 *            Output DataSetList including return values.
 	 * @throws Exception
-	 *             if there is any problem executing the query
+	 *             if there is any problem updating the data using DataSet
 	 */
 	void update(VariableList inVl, DataSetList inDl, VariableList outVl,
 			DataSetList outDl) throws Exception;
@@ -122,7 +122,7 @@ public interface XPService {
 	 * @param outDl
 	 *            Output DataSetList including return values.
 	 * @throws Exception
-	 *             if there is any problem executing the query
+	 *             if there is any problem deleting the data using DataSet
 	 */
 	void remove(VariableList inVl, DataSetList inDl, VariableList outVl,
 			DataSetList outDl) throws Exception;
@@ -140,7 +140,8 @@ public interface XPService {
 	 * @param outDl
 	 *            Output DataSetList including return values.
 	 * @throws Exception
-	 *             if there is any problem executing the query
+	 *             if there is any problem inserting, updating and deleting the
+	 *             data using DataSet
 	 */
 	void saveAll(VariableList inVl, DataSetList inDl, VariableList outVl,
 			DataSetList outDl) throws Exception;
@@ -158,7 +159,8 @@ public interface XPService {
 	 * @param outDl
 	 *            Output DataSetList including return values.
 	 * @throws Exception
-	 *             if there is any problem executing the query
+	 *             if there is any problem inserting, updating and deleting the
+	 *             data using DataSet
 	 */
 	void batchSaveAll(VariableList inVl, DataSetList inDl, VariableList outVl,
 			DataSetList outDl) throws Exception;
@@ -176,7 +178,7 @@ public interface XPService {
 	 * @param outDl
 	 *            Output DataSetList including return values.
 	 * @throws Exception
-	 *             if there is any problem executing the query
+	 *             if there is any problem executing the procedure
 	 */
 	void execute(VariableList inVl, DataSetList inDl, VariableList outVl,
 			DataSetList outDl) throws Exception;

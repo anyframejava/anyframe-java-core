@@ -27,7 +27,7 @@ import org.anyframe.query.exception.PagingSQLCreationException;
 public class AltibasePagingSQLGenerator extends AbstractPagingSQLGenerator {
 
 	/**
-	 * Generate sql for paging
+	 * Generate sql for paging 
 	 * 
 	 * @param originalSql
 	 *            original SQL
@@ -55,10 +55,8 @@ public class AltibasePagingSQLGenerator extends AbstractPagingSQLGenerator {
 	public Object[] setQueryArgs(Object[] originalArgs, int pageIndex,
 			int pageSize) {
 		Object[] args = new Object[originalArgs.length + 2];
-
-		for (int i = 0; i < originalArgs.length; i++) {
-			args[i] = originalArgs[i];
-		}
+		
+		System.arraycopy(originalArgs, 0, args, 0, originalArgs.length);
 
 		args[originalArgs.length] = new Long(((pageIndex - 1) * pageSize) + 1);
 		args[originalArgs.length + 1] = new Long(pageSize);
@@ -69,10 +67,7 @@ public class AltibasePagingSQLGenerator extends AbstractPagingSQLGenerator {
 	public int[] setQueryArgTypes(int[] originalArgTypes) {
 		int[] argTypes = new int[originalArgTypes.length + 2];
 
-		for (int i = 0; i < originalArgTypes.length; i++) {
-			argTypes[i] = originalArgTypes[i];
-		}
-
+		System.arraycopy(originalArgTypes, 0, argTypes, 0, originalArgTypes.length);
 		argTypes[originalArgTypes.length] = Types.BIGINT;
 		argTypes[originalArgTypes.length + 1] = Types.BIGINT;
 

@@ -20,8 +20,8 @@ import java.lang.reflect.Method;
 import java.util.Map;
 
 public class ResultSetMappingConfiguration {
-	private String[] columnNames;
-	private int[] columnTypes;
+	private final String[] columnNames;
+	private final int[] columnTypes;
 	private Field[] attributes;
 	private Method[] setters;
 	// 2009.03.17 - start
@@ -31,7 +31,7 @@ public class ResultSetMappingConfiguration {
 	private int columnCount = 0;
 	private String[] columnKeys = null;
 	// add for Gauce (2008-04-15)
-	private int[] columnPrecisions = null;
+	private int[] columnPrecisions = null; 
 	private int[] columnScales = null;
 
 	public ResultSetMappingConfiguration(String[] columnNames,

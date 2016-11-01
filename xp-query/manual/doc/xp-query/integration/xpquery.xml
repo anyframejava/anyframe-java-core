@@ -119,25 +119,26 @@
 			<para>
 				다음에서는 XPQueryService를 이용하여 앞서 언급한 매핑 XML 파일에 정의된 INSERT, SELECT, UPDATE, DELETE 쿼리문을 
 				실행하는 테스트 코드의 일부이다.
-				<programlisting language="java">/**
+				<programlisting language="java"><![CDATA[/**
  * [Flow #-1] Positive Case : 미리 세팅되어 있는 Database의 값을 XPQueryService의 update
  * method를 호출해 값을 수정하는 TestCase다. 수정될 값이 세팅되어 있는 DataSet를 XPQueryService
  * update()의 argument로 직접 사용해 Database의 값이 제대로 수정 됐는지 검증한다.
  * 
  * @throws Exception
  */
-public void testUpdateDataSet() throws Exception {
+@Test
+public void testUpdateDataSet() {
 	insertDataSet();
 
-	Map queryMap = new HashMap();
+	Map<String, String> queryMap = new HashMap<String, String>();
 	queryMap.put(XPQueryService.QUERY_UPDATE, "updateXPQueryService");
 	int resultUpdate = xpQueryService.update(queryMap, makeUpdateDataSet());
-	assertEquals(1, resultUpdate);
+	Assert.assertEquals(1, resultUpdate);
 
 	DataSet resultDataSet = findDataSet("bbnydory00");
 
-	assertDataSet(resultDataSet, "bbnydory00", "2012-12-01", 12345678, 1234.5678,
-			"Anyframe XPQueryService Test. - UPDATE");
+	assertDataSet(resultDataSet, "bbnydory00", "2012-12-01", 12345678,
+			1234.5678, "Anyframe XPQueryService Test. - UPDATE");
 }
 
 ...중략...
@@ -149,40 +150,45 @@ public void testUpdateDataSet() throws Exception {
  * 
  * @throws Exception
  */
-public void testProcessAllDataSetWithActionCommand() throws Exception {
+@Test
+public void testProcessAllDataSetWithActionCommand() {
 	insertDataSet();
 
-	Map queryMap = new HashMap();
+	Map<String, String> queryMap = new HashMap<String, String>();
 	queryMap.put(XPQueryService.QUERY_INSERT, "createXPQueryService");
 	queryMap.put(XPQueryService.QUERY_UPDATE, "updateXPQueryService");
 	queryMap.put(XPQueryService.QUERY_DELETE, "deleteXPQueryService");
-	int resultUpdate = xpQueryService.update(queryMap, makeAllDataSet(), new XPActionCommand() {
+	int resultUpdate = xpQueryService.update(queryMap, makeAllDataSet(),
+			new XPActionCommand() {
 
-		public void postDelete(DataSet record, int currentRow) {
-		}
+				public void postDelete(DataSet record, int currentRow) {
+				}
 
-		public void postInsert(DataSet record, int currentRow) {
-		}
+				public void postInsert(DataSet record, int currentRow) {
+				}
 
-		public void postUpdate(DataSet record, int currentRow) {
-		}
+				public void postUpdate(DataSet record, int currentRow) {
+				}
 
-		public void preDelete(DataSet record, int currentRow) {
-		}
+				public void preDelete(DataSet record, int currentRow) {
+				}
 
-		public void preInsert(DataSet record, int currentRow) {
-			record.set(currentRow, "TEST_VARCHAR2", "Anyframe preUpdate");
-		}
+				public void preInsert(DataSet record, int currentRow) {
+					record.set(currentRow, "TEST_VARCHAR2",
+							"Anyframe preUpdate");
+				}
 
-		public void preUpdate(DataSet record, int currentRow) {
-		}
-	});
-	assertEquals("Fail to process all with ActionCommand.", 3, resultUpdate);
+				public void preUpdate(DataSet record, int currentRow) {
+				}
+			});
+	Assert.assertEquals("Fail to process all with ActionCommand.", 3,
+			resultUpdate);
 
 	DataSet resultDataSet = findDataSet("bbnydory88");
 
-	assertDataSet(resultDataSet, "bbnydory88", "2012-12-01", 12345678, 1234.5678, "Anyframe preUpdate");
-}</programlisting>
+	assertDataSet(resultDataSet, "bbnydory88", "2012-12-01", 12345678,
+			1234.5678, "Anyframe preUpdate");
+}]]></programlisting>
 			</para>
 
 			<para>

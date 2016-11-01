@@ -24,5 +24,5 @@ import org.anyframe.sample.di.qualifier.moviefinder.domain.Movie;
  * @author Sooyeon Park
  */
 public interface MovieDao {
-	Movie get(String movieId) throws Exception;
+	Movie get(String movieId);
 }

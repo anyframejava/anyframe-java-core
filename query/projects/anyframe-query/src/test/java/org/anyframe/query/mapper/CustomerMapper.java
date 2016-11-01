@@ -24,7 +24,7 @@ import org.anyframe.query.vo.Customer;
 
 public class CustomerMapper implements ResultSetMapper {
 
-    public Object mapRow(ResultSet resultSet) throws SQLException {
+    public Customer mapRow(ResultSet resultSet) throws SQLException {
         Customer customer = new Customer();
         customer.setNm(resultSet.getString("name"));
         customer.setAddr(resultSet.getString("address"));

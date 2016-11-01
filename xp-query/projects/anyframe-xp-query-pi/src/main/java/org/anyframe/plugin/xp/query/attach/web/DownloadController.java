@@ -25,19 +25,24 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.stereotype.Controller;
+import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.servlet.ModelAndView;
-import org.springframework.web.servlet.mvc.AbstractController;
 
 /**
  * Download Controller class for file download function
  * 
  * @author Youngmin Jo
  */
-public class DownloadController extends AbstractController{
+@Controller
+public class DownloadController{
 
+	//Velocity-Support-contextProperties-START
 	@Value("#{contextProperties['repository.path']}")
 	private	String repositoryPath;
+	//Velocity-Support-contextProperties-END
 	
+	@RequestMapping("/xpQueryDownload.do")
 	protected ModelAndView handleRequestInternal(HttpServletRequest request, HttpServletResponse response) throws Exception{
 		
 	    String fileId = request.getParameter("fileId");

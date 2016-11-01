@@ -9,7 +9,7 @@
 	<section id="core_springmvc_configuration_webxml">
 		<title>web.xml 작성</title>
 		<para>
-			J2EE 웹 어플리케이션은 반드시 WEB-INF 디렉토리 하위에, 배포 기술서인 web.xml 파일이 존재해야 한다. 
+			JavaEE 웹 어플리케이션은 반드시 WEB-INF 디렉토리 하위에, 배포 기술서인 web.xml 파일이 존재해야 한다. 
 			Spring MVC를 이용한 웹 어플리케이션을 개발하기 위해서는 이 web.xml 파일에 DispatcherServlet을 등록하고,
 			Spring MVC 기반의 웹 어플리케이션 구성요소들이 정의되어 있는 XML 설정 파일의 위치를 지정해주어야 한다. 작성 방법은 아래와 같다.
     	</para>
@@ -61,6 +61,11 @@
 	      <imageobject>
 	        <imagedata align="center" fileref="../image/core/springmvc/mvc-context.jpg" />
 	      </imageobject>
+	      <textobject>
+	      	<phrase>Spring MVC 프레임워크에서 각각의 DispatcherServlet은 고유의 WebApplicationContext를 가지고 있고, 각각의 WebApplicationContext는 상위의 
+	      	WebApplicationContext에 정의된 모든 Bean 정보를 상속받아 사용할 수 있음을 표현한 그림이다.
+	      	</phrase>
+	      </textobject>
 	    </mediaobject>
 	    <para>
 	    	WebApplicationContext는 웹 어플리케이션에 필요한 몇몇 기능들을 추가하여 ApplicationContext를 확장한 것으로 Spring의 IoC 컨테이너의 한 종류이다. 
@@ -70,6 +75,7 @@
 	    	이러한 Bean 들을 일반 Bean 처럼 WebApplicationContext에 설정할 수 있다.
 	    </para>
 	    <informaltable>
+	    	<caption>웹 어플리케이션을 구성하고 있는 여러가지 Bean 목록</caption>
 	      <tgroup cols="2">
 	        <thead>
 	          <row>
@@ -138,6 +144,7 @@
    					</para>
    					<para>
    						<informaltable>
+   							<caption>RequestMappingHandlerMapping 속성 목록</caption>
    							<tgroup cols="2">
    								<thead>
    									<row>
@@ -287,6 +294,7 @@
           	</para>
           	<para>
           		<informaltable>
+          			<caption>Spring MVC에서 제공하는 View Resolver 목록</caption>
           			<tgroup cols="2">
           				<thead>
           					<row>
@@ -322,7 +330,7 @@
 			                <row>
 			                	<entry>ContentNegotiatingViewResolver</entry>
 			                	<entry>요청 URL의 파일명이나 HTTP Request의 Accepter 헤더값을 기반으로 View를 판단.자세한 사용법은 본 매뉴얼의 
-			                	<ulink url="http://dev.anyframejava.org/docs/anyframe/plugin/optional/springrest/1.0.3.RC1/reference/htmlsingle/springrest.html#springrest_restsupport_contentnegotiation">SpringREST Plugin >> Content Negotiation</ulink>을 참조</entry>
+			                	<ulink url="http://dev.anyframejava.org/docs/anyframe/plugin/optional/springrest/1.0.4/reference/htmlsingle/springrest.html#springrest_restsupport_contentnegotiation">SpringREST Plugin >> Content Negotiation</ulink>을 참조</entry>
 			                </row>
 						</tbody>
 					</tgroup>
@@ -472,11 +480,19 @@
 					            		<imageobject>
 					            			<imagedata align="center" fileref="../image/core/springmvc/oldmvcinfrastructure.png"/>
 					            		</imageobject>
+					            		<textobject>
+					            			<phrase>3.0 클래스의 흐름을 표현한 그림으로써, DispatcherServlet은 실제 수행 될 Controller의 Method를 찾아서 실행 시키기 위해 
+					            			2번의 select, 1번의 invoke 동작을 내부적으로 수행함을 표현하고 있다.</phrase>
+					            		</textobject>
 					            	</mediaobject>
 					            	<mediaobject>
 					            		<imageobject>
 					            			<imagedata align="center" fileref="../image/core/springmvc/newmvcinfrastructure.png"/>
 					            		</imageobject>
+					            		<textobject>
+					            			<phrase>3.1 클래스의 흐름을 표현한 그림으로써, RequestMappingHandlerMapping class가 Controller의 Method를 select하고,
+											RequestMappingHandlerAdapter가 선택 된 Method를 invoke하도록 구조가 변경되었음을 나타내고 있다.</phrase>
+					            		</textobject>
 					            	</mediaobject>
 								</para>
 								<para>

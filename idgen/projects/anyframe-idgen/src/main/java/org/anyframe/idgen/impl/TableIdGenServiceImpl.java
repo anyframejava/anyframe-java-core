@@ -22,7 +22,6 @@ import java.sql.SQLException;
 import java.sql.Statement;
 
 import org.anyframe.exception.IdCreationException;
-import org.anyframe.exception.JdbcConnectionException;
 import org.springframework.jdbc.datasource.DataSourceUtils;
 import org.springframework.jdbc.support.JdbcUtils;
 
@@ -41,7 +40,7 @@ import org.springframework.jdbc.support.JdbcUtils;
  *  &lt;property name=&quot;strategy&quot; ref=&quot;mixPrefix&quot;/&gt;
  *  &lt;property name=&quot;key&quot; value=&quot;MOVIE_ID&quot;/&gt;
  *  &lt;property name=&quot;keyColumn&quot; value=&quot;TABLE_NAME&quot;/&gt;
- *  &lt;property name=&quot;nextValueColumn&quot; value=&quot;NEXT_ID&quot;/&gt;
+ *  &lt;property name=&quot;nextValueColumn&quot; value=&quot;NEXT_ID&quot;/&gt; 
  * </pre>
  * 
  * Property 'key', value of the keyColumn in id management table can be
@@ -140,12 +139,11 @@ public class TableIdGenServiceImpl extends AbstractDataSourceBlockIdGenService {
 	 * @return either a Long or a BigDecimal depending on the value of
 	 *         useBigDecimals
 	 * @throws IdCreationException
-	 * @throws JdbcConnectionException
 	 */
 	private Object allocateIdBlock(String tableName, int blockSize,
 			boolean useBigDecimals) {
 
-		tableName = ((tableName.equals("")) ? mTableName : tableName);
+		tableName = (("".equals(tableName)) ? mTableName : tableName);
 
 		getLogger()
 				.debug(
@@ -278,10 +276,12 @@ public class TableIdGenServiceImpl extends AbstractDataSourceBlockIdGenService {
 							// Just show the exception
 							// message to keep the
 							// output small.
+							
 							getLogger()
-									.warn(
-											"[IDGeneration Service] Encountered an exception attempting to update the '{}'.  May be a transaction conflict. Try again. ",
-											mTable, e);
+							.warn(
+									"[IDGeneration Service] Encountered an exception attempting to update the '{}'.  May be a transaction conflict. Try again. ",
+									mTable, e);
+							
 						}
 
 						// If we got here, then we
@@ -314,13 +314,11 @@ public class TableIdGenServiceImpl extends AbstractDataSourceBlockIdGenService {
 			}
 			// 2009.10.08 - without handling connection directly
 		} catch (Exception e) {
-			if (e instanceof IdCreationException)
-				throw (IdCreationException) e;
 			getLogger()
 					.error(
 							"[IDGeneration Service] Although too many retries, unable to allocate a block of Ids.",
 							e);
-			throw new JdbcConnectionException(
+			throw new IdCreationException(
 					"[IDGeneration Service] Although too many retries, unable to allocate a block of Ids.",
 					e);
 		}

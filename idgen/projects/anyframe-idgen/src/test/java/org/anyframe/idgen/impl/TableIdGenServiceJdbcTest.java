@@ -29,7 +29,6 @@ import javax.inject.Inject;
 import javax.sql.DataSource;
 
 import org.anyframe.exception.IdCreationException;
-import org.anyframe.exception.JdbcConnectionException;
 import org.anyframe.idgen.IdGenService;
 import org.anyframe.util.DateUtil;
 import org.junit.After;
@@ -677,7 +676,7 @@ public class TableIdGenServiceJdbcTest {
 			idGenService.getNextIntegerId();
 			fail("Should not have gotten an id");
 		}catch(Exception e){
-			assertTrue(e instanceof JdbcConnectionException);	
+			assertTrue(e instanceof IdCreationException);	
 		}	
 	}
 
@@ -686,7 +685,7 @@ public class TableIdGenServiceJdbcTest {
 	 *-------------------------------------------------------------*/
 	/**
 	 * Tests to see whether or not the current DataSource supports BigDecimal
-	 * 
+	 * ≈∂
 	 * @return boolean check bigcimal implemented
 	 */
 	private boolean isBigDecimalImplemented() {

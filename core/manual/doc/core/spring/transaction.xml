@@ -85,7 +85,7 @@
 			        	다음은 HibernateTransactionManager의 속성 정의 파일인 context-transaction-hibernate.xml 의 일부이다.
 			        	 여기에서 sessionFactory property를 정의해 주는데, sessionFactory 설정은 sessionFactory
           				Bean을 참조하고 있음을 알 수 있다. Hibernate의 sessionFactory Bean 설정 방법은 <ulink
-          				url="http://dev.anyframejava.org/docs/anyframe/plugin/optional/hibernate/1.5.0.RC1/reference/htmlsingle/hibernate.html#hibernate_hibernate_springintegration_property">Hibernate</ulink> 서비스 매뉴얼 내용을
+          				url="http://dev.anyframejava.org/docs/anyframe/plugin/optional/hibernate/1.5.1/reference/htmlsingle/hibernate.html#hibernate_hibernate_springintegration_property">Hibernate</ulink> 서비스 매뉴얼 내용을
           				참고한다.
           				<programlisting language="xml"><![CDATA[<bean id="transactionManagerHibernate"
     class=]]><emphasis role="bold">"org.springframework.orm.hibernate3.HibernateTransactionManager"</emphasis><![CDATA[>
@@ -324,7 +324,7 @@ public class MovieServiceImplWithAnnotation implements MovieService {
     
     ]]><emphasis role="bold">@Transactional(noRollbackFor = { MovieException.class }, propagation = Propagation.REQUIRED)</emphasis><![CDATA[
     public void updateMovieList(Movie newMovie, Movie updateMovie)
-            throws Exception {
+            throws MovieException {
         String movieName = "";
         try {
             movieName = newMovie.getTitle();
@@ -333,7 +333,7 @@ public class MovieServiceImplWithAnnotation implements MovieService {
             movieName = updateMovie.getTitle();
             int result = update(updateMovie);
             if (result <= 0) {
-                throw new Exception("fail to update with wrong movieid.");
+                throw new MovieException("fail to update with wrong movieid.");
             }
 
         } catch (Exception e) {
@@ -350,6 +350,7 @@ public class MovieServiceImplWithAnnotation implements MovieService {
 		        </para>
 		
 		        <informaltable>
+		        	<caption>@Transactional 속성 목록</caption>
 		        	<tgroup cols="2">
 		                <colspec colnum="1" colname="col1" colwidth="3*"/>
 		                <colspec colnum="2" colname="col2" colwidth="7*"/>
@@ -502,6 +503,7 @@ public class MovieServiceImplWithAnnotation implements MovieService {
 	       			<![CDATA[위 샘플 XML에서와 같이 Transaction 관리를 위해 <tx:advice> 하위 태그인
 			        <tx:method>에는 다음과 같은 상세 속성 정보를 부여할 수 있다. ]]>
 			        <informaltable>
+			        	<caption><![CDATA[<tx:method>]]> 속성 목록</caption>
 			            <tgroup cols="2">
 			                <colspec colnum="1" colname="col1" colwidth="3*"/>
 			                <colspec colnum="2" colname="col2" colwidth="7*"/>
@@ -602,6 +604,7 @@ public class MovieServiceImplWithAnnotation implements MovieService {
         		<para>
         			Propagation Behavior(전달 행위)는 Transaction 전파 규칙을 정의하기 위해 사용된다.</para>
 		        <informaltable>
+		        	<caption>Propagation Behavior 목록</caption>
 		          <tgroup cols="2">
 		                <colspec colnum="1" colname="col1" colwidth="4*" />
 		                <colspec colnum="2" colname="col2" colwidth="6*" />
@@ -678,6 +681,7 @@ public class MovieServiceImplWithAnnotation implements MovieService {
         			사용자들에게 제공하게 된다. 또한, 많은 사용자들의 수정 작업으로 인하여 통계 자료를 작성할 수 없는 사용자를
         			위하여 읽기 작업을 수행할 수 있도록 Isolation Level을 변경할 수 있다.
         			<informaltable>
+        				<caption>Isolation Level 목록</caption>
 						<tgroup cols="2">
 			            	<colspec colnum="1" colname="col1" colwidth="4*" />
 			                <colspec colnum="2" colname="col2" colwidth="6*" />
@@ -918,7 +922,7 @@ public class MovieServiceImplWithAnnotation implements MovieService {
 		        	Transaction 서비스를 직접 얻어온 후에 다음과 같이 try~catch 구문 내에서 Transaction
 	        		서비스를 이용하여, 적절히 begin, commit, rollback을 수행한다. 이 때, TransactionDefinition와
 	        		TransactionStatus 객체를 적절히 이용하면 된다.
-					<programlisting language="xml">...
+					<programlisting language="java">...
 DefaultTransactionDefinition def = new DefaultTransactionDefinition();
 def.setPropagationBehavior(TransactionDefinition.PROPAGATION_REQUIRED);
 TransactionStatus status = transactionService.getTransaction(def);
@@ -943,7 +947,7 @@ TransactionStatus status = transactionService.getTransaction(def);
 		        MovieException이 발생하게 된다. 따라서 catch 블럭의 TransactionStatus를 이용하여 현재
 		        Transaction에서 발생한 변경 사항이 rollback 처리 된다. 다음은 테스트 클래스
 		        ProgrammaticTransactionManagementTest의 testAddMovieUsingTransactionManager 메소드의 로직이다. 
-		       	<programlisting language="xml">public void testAddMovieUsingTransactionManager() throws Exception {
+		       	<programlisting language="java">public void testAddMovieUsingTransactionManager() throws Exception {
     DefaultTransactionDefinition txDefinition = new DefaultTransactionDefinition();
     // 해당 Transaction을 위한 Propagation Behavior, Isolation Level 등 정의
     txDefinition
@@ -1011,8 +1015,8 @@ TransactionStatus status = transactionService.getTransaction(def);
 							</listitem>									
 						</itemizedlist>
 					</para>
-					<table>
-						<title>Download List</title>
+					<informaltable>
+						<caption>Download List</caption>
 							<tgroup cols="2">
 								<colspec colnum="1" colname="col1" colwidth="4*"/>
 								<colspec colnum="2" colname="col2" colwidth="6*"/>
@@ -1025,15 +1029,15 @@ TransactionStatus status = transactionService.getTransaction(def);
 								<tbody>
 									<row>
 										<entry align="center">hsqldb.zip</entry>
-										<entry align="center"><ulink url="http://dev.anyframejava.org/docs/anyframe/plugin/essential/core/1.5.0.RC1/reference/sample/hsqldb.zip">Download</ulink></entry>
+										<entry align="center"><ulink url="http://dev.anyframejava.org/docs/anyframe/plugin/essential/core/1.5.1/reference/sample/hsqldb.zip">Download</ulink></entry>
 									</row>										
 									<row>
 										<entry align="center">anyframe-sample-transaction.zip</entry>
-										<entry align="center"><ulink url="http://dev.anyframejava.org/docs/anyframe/plugin/essential/core/1.5.0.RC1/reference/sample/anyframe-sample-transaction.zip">Download</ulink></entry>
+										<entry align="center"><ulink url="http://dev.anyframejava.org/docs/anyframe/plugin/essential/core/1.5.1/reference/sample/anyframe-sample-transaction.zip">Download</ulink></entry>
 									</row>
 								</tbody>
 							</tgroup>
-						</table> 
+						</informaltable> 
 				</listitem>
 				<listitem>
 					<para>참고자료</para>

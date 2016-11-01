@@ -31,7 +31,7 @@ public class MovieFinderDao {
 		System.out.println("Calling constructor of MovieDao");
 	}
 	
-	public List<Movie> getPagingList(Movie movie, int pageIndex) throws Exception {
+	public List<Movie> getPagingList(Movie movie, int pageIndex) {
 		Movie result = new Movie();
 		
 		result.setMovieId("MV-99999");

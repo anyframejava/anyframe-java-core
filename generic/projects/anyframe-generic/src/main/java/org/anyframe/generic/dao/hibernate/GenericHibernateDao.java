@@ -140,7 +140,7 @@ public class GenericHibernateDao<T, PK extends Serializable> implements
 	/**
 	 * {@inheritDoc}
 	 */
-	public T get(PK id) {
+	public T get(PK id) throws Exception {
 		T entity = (T) hibernateTemplate.get(this.persistentClass, id);
 
 		if (entity == null)
@@ -153,7 +153,7 @@ public class GenericHibernateDao<T, PK extends Serializable> implements
 	/**
 	 * {@inheritDoc}
 	 */
-	public boolean exists(PK id) {
+	public boolean exists(PK id) throws Exception {
 		T entity = (T) hibernateTemplate.get(this.persistentClass, id);
 		return entity != null;
 	}
@@ -161,21 +161,21 @@ public class GenericHibernateDao<T, PK extends Serializable> implements
 	/**
 	 * {@inheritDoc}
 	 */
-	public void create(T object) {
+	public void create(T object) throws Exception {
 		hibernateTemplate.save(object);
 	}
 
 	/**
 	 * {@inheritDoc}
 	 */
-	public void update(T object) {
+	public void update(T object) throws Exception {
 		hibernateTemplate.update(object);
 	}
 
 	/**
 	 * {@inheritDoc}
 	 */
-	public void remove(PK id) {
+	public void remove(PK id) throws Exception {
 		hibernateTemplate.delete(this.get(id));
 	}
 
@@ -244,7 +244,7 @@ public class GenericHibernateDao<T, PK extends Serializable> implements
 	 * </pre>
 	 * 
 	 */
-	public Page getPagingList(SearchVO searchVO) {
+	public Page getPagingList(SearchVO searchVO) throws Exception {
 		int pageIndex = searchVO.getPageIndex();
 
 		String searchCondition = StringUtil.nullToString(searchVO
@@ -275,14 +275,14 @@ public class GenericHibernateDao<T, PK extends Serializable> implements
 	/**
 	 * {@inheritDoc}
 	 */
-	public Page getPagingList(T object, int pageIndex) {
+	public Page getPagingList(T object, int pageIndex) throws Exception {
 		throw new UnsupportedOperationException("Method is not supported.");
 	}
 
 	/**
 	 * {@inheritDoc}
 	 */
-	public List<T> getList(SearchVO searchVO) {
+	public List<T> getList(SearchVO searchVO) throws Exception {
 
 		String searchCondition = StringUtil.nullToString(searchVO
 				.getSearchCondition());
@@ -305,7 +305,7 @@ public class GenericHibernateDao<T, PK extends Serializable> implements
 	/**
 	 * {@inheritDoc}
 	 */
-	public List<T> getList(T object) {
+	public List<T> getList(T object) throws Exception {
 		throw new UnsupportedOperationException("Method is not supported.");
 	}
 }

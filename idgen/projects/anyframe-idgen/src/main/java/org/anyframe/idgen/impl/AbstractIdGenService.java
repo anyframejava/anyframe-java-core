@@ -21,8 +21,6 @@ import org.anyframe.exception.IdCreationException;
 import org.anyframe.idgen.IdGenService;
 import org.anyframe.idgen.IdGenStrategy;
 import org.slf4j.Logger;
-import org.springframework.beans.factory.BeanFactory;
-import org.springframework.beans.factory.BeanFactoryAware;
 
 /**
  * Abstract class for IdGenService This service is developed to work on Spring
@@ -37,12 +35,9 @@ import org.springframework.beans.factory.BeanFactoryAware;
  * 
  * @author <a href="mailto:dev@avalon.apache.org">Avalon Development Team</a>
  * @author modified by SoYon Lim
- * @author modified by JongHoon Kim
+ * @author modified by JongHoon Kim 
  */
-public abstract class AbstractIdGenService implements IdGenService,
-		BeanFactoryAware {
-	@SuppressWarnings("unused")
-	private BeanFactory beanFactory;
+public abstract class AbstractIdGenService implements IdGenService {
 
 	private static final BigDecimal BIG_DECIMAL_MAX_LONG = new BigDecimal(
 			new Long(Long.MAX_VALUE).doubleValue());
@@ -50,10 +45,10 @@ public abstract class AbstractIdGenService implements IdGenService,
 	/**
 	 * Used to manage internal synchronization.
 	 */
-	private Object mSemaphore = new Object();
+	private final Object mSemaphore = new Object();
 
 	private IdGenStrategy strategy = new IdGenStrategy() {
-		public String makeId(String originalId) {
+		public String makeId(String originalId, Class<?> clazz) {
 			return originalId;
 		}
 	};
@@ -267,7 +262,7 @@ public abstract class AbstractIdGenService implements IdGenService,
 	 * @return the next Id
 	 */
 	public final String getNextStringId() {
-		return strategy.makeId(getNextBigDecimalId().toString());
+		return getNextStringId("", null);
 	}
 
 	/**
@@ -279,7 +274,33 @@ public abstract class AbstractIdGenService implements IdGenService,
 	 * @return the next Id
 	 */
 	public String getNextStringId(String tableName) {
-		return strategy.makeId(getNextBigDecimalId(tableName).toString());
+		return getNextStringId(tableName, null);
+	}
+
+	/**
+	 * Get the next Id from the pool and apply a specific generation strategy to
+	 * that id.
+	 * @param clazz
+	 *  		  class information that call ID generation service.
+	 * @return the next Id
+	 */
+	public String getNextStringId(Class<?> clazz) {
+		return getNextStringId("", clazz);
+	}
+	
+	
+	/**
+	 * Get the next Id from the pool and apply a specific generation strategy to
+	 * that id.
+	 * 
+	 * @param tableName
+	 *            key of id management table
+	 * @param clazz
+	 *  		  class information that call ID generation service.
+	 * @return the next Id
+	 */
+	public String getNextStringId(String tableName, Class<?> clazz) {
+		return strategy.makeId(getNextBigDecimalId(tableName).toString(), clazz);
 	}
 
 	/**
@@ -299,15 +320,5 @@ public abstract class AbstractIdGenService implements IdGenService,
 	 */
 	public void setStrategy(IdGenStrategy strategy) {
 		this.strategy = strategy;
-	}
-
-	/**
-	 * set BeanFactory
-	 * 
-	 * @param beanFactory
-	 *            to be set by Spring Framework
-	 */
-	public void setBeanFactory(BeanFactory beanFactory) {
-		this.beanFactory = beanFactory;
 	}
 }

@@ -53,6 +53,11 @@
 			<imagedata align="center"
 				fileref="../image/core/spring/cross_concerns.jpg" />
 		</imageobject>
+		<textobject>
+			<phrase>AOP의 주요 개념인 Core Concerns와 Crosscutting Concerns를 이해하기 쉽게 나타낸 그림이다.
+			Core Concerns는 계좌이체, 입출금, 이자계산 등과 같이 어플리케이션을 통해 제공되어야 하는 핵심 요구사항을 의미하며,
+			Crosscutting Concerns는 로깅, 인증, 권한체크, DB 연동 등과 같이 핵심 모듈의 모든 클래스와 메소드 속에 연동되어져 실행되어야 하는 기능을 의미한다.</phrase>
+		</textobject>
 	</mediaobject>
 
 	<para>
@@ -122,6 +127,7 @@
 	</para>
 
 	<informaltable>
+	    <caption>대표적인 AOP 툴 비교</caption>
 		<tgroup cols="5">
 			<thead>
 				<row>
@@ -719,6 +725,7 @@
       		</para>
 
       	<informaltable>
+      	<caption>Advice 종류</caption>
         <tgroup cols="2">
         <colspec colnum="1" colname="col1" colwidth="2*" />
 			<colspec colnum="2" colname="col2" colwidth="8*" />
@@ -789,6 +796,11 @@
         	<imageobject>
          		<imagedata align="center" fileref="../image/core/spring/weaving.jpg" />
         	</imageobject>
+        	<textobject>
+ 				<phrase>AOP의 Weaving을 표현한 그림으로써 AOP에서는 Weaving 작업을 통해 Core
+      			Concerns 모듈의 사이 사이에 필요한 Crosscutting Concerns 코드가 동작하도록 엮어지게 만들어 줌을 설명한다.
+      			즉, Weaving을 통해 계좌이체 기능과 보안, 로깅 기능을 잘 엮어서 핵심 기능이 정상적으로 동작하도록 지원해 줌을 나타내고 있다.</phrase>
+ 			</textobject>
       	</mediaobject>
 
       	<para>
@@ -800,6 +812,7 @@
       	<para>Weaving을 처리하는 방법은 다음과 같이 3가지가 존재한다.</para>
 
       	<informaltable>
+      	<caption>Weaving 방식</caption>
 		<tgroup cols="2">
 		<colspec colnum="1" colname="col1" colwidth="3*" />
 		<colspec colnum="2" colname="col2" colwidth="7*" />
@@ -1054,23 +1067,21 @@ public void transfer(JoinPoint thisJoinPoint, Exception exception) throws MovieF
     Log logger = LogFactory.getLogger(target.getClass());
 
     if (exception instanceof MovieFinderException) {
-        SalesException empEx = (SalesException) exception;
+        MovieFinderException empEx = (MovieFinderException) exception;
         logger.error(empEx.getMessage(), empEx);
         throw empEx;
     }
-	
-    if (exception instanceof BaseException) {
-        BaseException baseEx = (BaseException) exception;
-        logger.error(baseEx.getMessage(), baseEx);
-        throw new SalesException(messageSource, "error." + className + "." + opName,
-                        new String[] {}, exception);
-    }		
-	
-    logger.error(messageSource.getMessage("error." + className + "."
-                                        + opName, new String[] {},
-                                        Locale.getDefault()), exception);
-    throw new MovieFinderException(messageSource, "error." + className + "." + opName,
-                     new String[] {}, exception);
+    
+    try {
+        logger.error(messageSource.getMessage("error." + className + "."
+                + opName, new String[] {}, Locale.getDefault()), exception);
+    } catch (Exception e) {
+        logger.error(messageSource.getMessage("error.common",
+                new String[] {}, Locale.getDefault()), exception);
+        throw new MovieFinderException(messageSource, "error.common");
+    }
+    throw new MovieFinderException(messageSource, "error." + className
+                + "." + opName);
 }</programlisting>
        		</para>
 
@@ -1408,7 +1419,7 @@ title=Shrek (2001), genreId=GR-03]
         this.messageSource = messageSource;
     }	
 
-    public void transfer(JoinPoint thisJoinPoint, Exception exception) throws SalesException {
+    public void transfer(JoinPoint thisJoinPoint, Exception exception) throws MovieFinderException {
         Object target = thisJoinPoint.getTarget();
         while (target instanceof Advised) {
             try {
@@ -1424,25 +1435,22 @@ title=Shrek (2001), genreId=GR-03]
         String opName = (thisJoinPoint.getSignature().getName()).toLowerCase();
         Log logger = LogFactory.getLogger(target.getClass());
 
-        if (exception instanceof SalesException) {
-            SalesException empEx = (SalesException) exception;
+        if (exception instanceof MovieFinderException) {
+            MovieFinderException empEx = (MovieFinderException) exception;
             logger.error(empEx.getMessage(), empEx);
             throw empEx;
         }
-		
-        if (exception instanceof BaseException) {
-            BaseException baseEx = (BaseException) exception;
-            logger.error(baseEx.getMessage(), baseEx);
-            throw new SalesException(messageSource, "error." + className + "."
-                    + opName, new String[] {}, exception);
-        }		
-
-        logger.error(messageSource.getMessage("error." + className + "."
-                                            + opName, new String[] {},
-                                            Locale.getDefault()), exception);
-
-        throw new SalesException(messageSource, "error." + className + "."
-                + opName, new String[] {}, exception);
+                
+        try {
+            logger.error(messageSource.getMessage("error." + className + "."
+                    + opName, new String[] {}, Locale.getDefault()), exception);
+        } catch (Exception e) {
+            logger.error(messageSource.getMessage("error.common",
+                    new String[] {}, Locale.getDefault()), exception);
+            throw new MovieFinderException(messageSource, "error.common");
+        }
+        throw new MovieFinderException(messageSource, "error." + className
+                    + "." + opName);
     }
 }</programlisting>
 				</para>
@@ -1598,6 +1606,11 @@ title=Shrek (2001), genreId=GR-03]
             			<imageobject>
             	  			<imagedata align="center" fileref="../image/core/spring/convert_aop_project.JPG" />
             			</imageobject>
+            			<textobject>
+            				<phrase>Eclipse Context 메뉴를 표현해주는 그림으로써 Context 메뉴를 보여주고 있다.
+            				Context 메뉴에서 AspectJ Tools를 선택하면 하위에 Convert to AspectJ Project라는 메뉴가 나타남을 보여주고 있다.
+            				</phrase>
+            			</textobject>
           			</mediaobject>
         		</listitem>
       		</orderedlist>
@@ -1813,12 +1826,6 @@ title=Shrek (2001), genreId=GR-03]
     <appender-ref ref="console"/>
 </logger>]]></programlisting>
         		</para>
-        		
-        		
-        			<logger name="org.anyframe.plugin" additivity="false">	
-        <level value="INFO"/>
-        <appender-ref ref="console"/>
-    </logger>
       		</section>
       		
       		<section id="core_spring_aop_examples_logging_aspect">
@@ -1967,7 +1974,7 @@ before executing remove(String arg1) method
     }	
 
     public void transfer(JoinPoint thisJoinPoint, Exception exception)
-            throws SalesException {
+            throws MovieFinderException {
         Object target = thisJoinPoint.getTarget();
         while (target instanceof Advised) {
             try {
@@ -1983,30 +1990,28 @@ before executing remove(String arg1) method
         String opName = (thisJoinPoint.getSignature().getName()).toLowerCase();
         Log logger = LogFactory.getLogger(target.getClass());
 
-        if (exception instanceof SalesException) {
-            SalesException empEx = (SalesException) exception;
+        if (exception instanceof MovieFinderException) {
+            MovieFinderException empEx = (MovieFinderException) exception;
             logger.error(empEx.getMessage(), empEx);
             throw empEx;
         }
-		
-        if (exception instanceof BaseException) {
-            BaseException baseEx = (BaseException) exception;
-            logger.error(baseEx.getMessage(), baseEx);
-            throw new SalesException(messageSource, "error." + className + "." + opName
-                                ,new String[] {}, exception);
-        }		
-
-        logger.error(messageSource.getMessage("error." + className + "."
-                + opName, new String[] {}, Locale.getDefault()), exception);
-
-        throw new SalesException(messageSource, "error." + className + "."
-                + opName, new String[] {}, exception);
+                               
+        try {
+            logger.error(messageSource.getMessage("error." + className + "."
+                    + opName, new String[] {}, Locale.getDefault()), exception);
+        } catch (Exception e) {
+            logger.error(messageSource.getMessage("error.common",
+                    new String[] {}, Locale.getDefault()), exception);
+            throw new MovieFinderException(messageSource, "error.common");
+        }
+        throw new MovieFinderException(messageSource, "error." + className
+                    + "." + opName);
     }
 }</programlisting></para>
 
         		<para>
-        			transfer() 메소드에서는 발생한 Exception 객체의 유형을 MovieFinderException, BaseException, 기타로 구분하고
-        			Exception이 발생한 Target 클래스와 메소드명을 조합한	message key를 이용하여 해당하는 메시지를 얻어낸다.
+        			transfer() 메소드에서는 발생한 Exception 객체의 유형을 MovieFinderException, 기타로 구분하고
+        			Exception이 발생한 Target 클래스와 메소드명을 조합한 message key를 이용하여 해당하는 메시지를 얻어낸다.
         			그런 후에 이 메시지를 이용하여 ERROR 레벨의 로그를 남긴 후에 MovieFinderException으로 전환하여 throw한다.
         		</para>
       		</section>
@@ -2106,6 +2111,10 @@ static final String varialableName = "msg...";
 		      <imageobject>
 		        <imagedata align="center" fileref="../image/core/spring/sw_architecture.jpg" />
 		      </imageobject>
+		      <textobject>
+			  	<phrase>Anyframe 기반 어플리케이션 개발시 가장 흔하게 볼 수 있는 일부 소프트웨어 아키텍처 그림으로써 JSP, Action, Interface, Implementation, DAO 순서로 
+			  	흐름 관계를 표현하고 있다.</phrase>
+			  </textobject>	
 		    </mediaobject>
 
       		<para>
@@ -2298,6 +2307,11 @@ public void <emphasis role="bold">daoName()</emphasis> {}
 			              <imageobject>
 			                <imagedata align="center" fileref="../image/core/spring/problem_list.jpg" />
 			              </imageobject>
+			              <textobject>
+			              	<phrase>Problems View를 캡춰한 그림으로써, 정의된 Design Rule을 위반한 항목의 목록을 표현하고 있다.
+			              	예를 들어, "DAO 인스턴스를 직접 생성하실 수 없습니다. 객체간 참조 관계는 서비스 속성 정의  틔 에 정의하여 사용하세요."라는 오류 메시지가
+			              	Problems View에 보여지고 있다.</phrase>
+			              </textobject>
 			            </mediaobject>
 	          		</listitem>
 
@@ -2309,6 +2323,10 @@ public void <emphasis role="bold">daoName()</emphasis> {}
 			                <imagedata align="center"
 			                           fileref="../image/core/spring/call_to_dao_constructor.jpg" />
 			              </imageobject>
+			               <textobject>
+			              	<phrase>Problems View에서 특정 오류 항목에 대해 더블 클릭하였을 때 관련된 코드로 이동됨을 나타내고 있는 그림이다. 그림에서는 UserDAO의 인스턴스를 직접
+			              	생성하고 있는 라인으로 이동하였음을 보여주고 있다.</phrase>
+			              </textobject>
 			            </mediaobject>
 	          		</listitem>
 	

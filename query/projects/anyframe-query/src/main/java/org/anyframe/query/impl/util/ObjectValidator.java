@@ -23,8 +23,11 @@ package org.anyframe.query.impl.util;
  * an implementation of this interface will determine which of the result
  * objects will be included in the return result.
  * 
- * @author SoYon Lim
- * @author JongHoon Kim
+ * 
+ * @author Warren Mayocchi
+ * 
+ * @author modified by SoYon Lim
+ * @author modified by JongHoon Kim
  */
 public interface ObjectValidator {
 

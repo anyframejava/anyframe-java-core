@@ -20,13 +20,15 @@ package org.anyframe.idgen;
  * 
  * @author SoYon Lim
  */
-public interface IdGenStrategy {
+public interface IdGenStrategy{
 	/**
 	 * convert original id to a new id which apply a specific assembling rule
 	 * 
 	 * @param originalId
 	 *            original id to be converted
+	 * @param clazz
+	 *  		  class information that call ID generation service.
 	 * @return assembled id
 	 */
-	String makeId(String originalId);
+	String makeId(String originalId, Class<?> clazz);
 }

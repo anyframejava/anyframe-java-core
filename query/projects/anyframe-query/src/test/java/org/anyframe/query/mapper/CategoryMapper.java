@@ -24,7 +24,7 @@ import org.anyframe.query.vo.CategoryVO;
 
 public class CategoryMapper implements ResultSetMapper {
 
-    public Object mapRow(ResultSet resultSet) throws SQLException {
+    public CategoryVO mapRow(ResultSet resultSet) throws SQLException {
         CategoryVO categoryVO = new CategoryVO();
         
         categoryVO.setCategoryNo(resultSet.getString("category_no"));

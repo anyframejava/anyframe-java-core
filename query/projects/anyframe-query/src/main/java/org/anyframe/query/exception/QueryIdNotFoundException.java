@@ -20,7 +20,7 @@ package org.anyframe.query.exception;
  * 
  * @author Jongpil Park
  * 
- * @since 1.1.4
+ * @since 1.5.0
  */
 public class QueryIdNotFoundException extends QueryException {
 	private static final long serialVersionUID = 1L;

@@ -18,10 +18,10 @@
 			따라서 매핑 XML 파일을 정의하기 위해서는 먼저 다음과 같은 Namespace 정의가 선행되어야 한다.
 		</para>
 		<programlisting language="xml"><![CDATA[
-<queryservice ]]><emphasis role="bold">xmlns="http://www.anyframejava.org/schema/query/mapping"</emphasis><![CDATA[ 
-    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" 
-    ]]><emphasis role="bold">xsi:schemaLocation="http://www.anyframejava.org/schema/query/mapping 
-    http://www.anyframejava.org/schema/query/mapping/anyframe-query-mapping-1.0.xsd</emphasis><![CDATA[">
+<queryservice ]]><emphasis role="bold">xmlns="http://www.anyframejava.org/schema/query/mapping"</emphasis><![CDATA[
+        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+        ]]><emphasis role="bold">xsi:schemaLocation="http://www.anyframejava.org/schema/query/mapping
+        http://www.anyframejava.org/schema/query/mapping/anyframe-query-mapping-1.0.xsd</emphasis><![CDATA[">
     ...
 </queryservice>]]></programlisting>
 	</section>
@@ -34,6 +34,7 @@
 		</para>
 
 		<informaltable>
+			<caption>table-mapping 정의 방법</caption>
 			<tgroup cols="3">
 				<colspec colname="col1" colnum="1" colwidth="2*" />
 				<colspec colname="col2" colnum="2" colwidth="4*" />
@@ -93,24 +94,24 @@
 			TBL_CUSTOMER와 클래스 Customer간의 매핑 정보를 담고 있다.
 			<programlisting language="xml"><![CDATA[<queryservice>
     <table-mapping>
-       <table name="TBL_CUSTOMER"
-              class="org.anyframe.sample.domain.Customer">
-          <field-mapping>
-             <dbms-column>ssno</dbms-column>
-             <class-attribute>ssno</class-attribute>
-          </field-mapping>
-          <field-mapping>
-             <dbms-column>name</dbms-column>
-             <class-attribute>nm</class-attribute>
-          </field-mapping>
-          <field-mapping>
-             <dbms-column>address</dbms-column>
-             <class-attribute>addr</class-attribute>
-          </field-mapping>
-          <primary-key>
-             <dbms-column>ssno</dbms-column>
-          </primary-key>
-       </table>
+        <table name="TBL_CUSTOMER"
+            class="org.anyframe.sample.domain.Customer">
+            <field-mapping>
+                <dbms-column>ssno</dbms-column>
+                <class-attribute>ssno</class-attribute>
+            </field-mapping>
+            <field-mapping>
+                <dbms-column>name</dbms-column>
+                <class-attribute>nm</class-attribute>
+            </field-mapping>
+            <field-mapping>
+                <dbms-column>address</dbms-column>
+                <class-attribute>addr</class-attribute>
+            </field-mapping>
+            <primary-key>
+                <dbms-column>ssno</dbms-column>
+            </primary-key>
+        </table>
     </table-mapping>
 </queryservice>]]></programlisting>
 		</para>
@@ -125,6 +126,7 @@
 		</para>
 
 		<informaltable>
+			<caption>queries 정의 방법</caption>
 			<tgroup cols="3">
 				<colspec colname="col1" colnum="1" colwidth="1*" />
 				<colspec colname="col2" colnum="2" colwidth="7*" />
@@ -207,6 +209,7 @@
 							추가한다. 입력 Parameter의 데이터를 가져오기 위해서는 다음과 같은 기준에 따라 데이터 타입을 정의해야만
 							한다
 							<informaltable>
+								<caption>parameter type 매핑 정보</caption>
 								<tgroup cols="2">
 									<thead>
 										<row>

@@ -38,9 +38,9 @@ import org.springframework.http.converter.StringHttpMessageConverter;
 import org.springframework.http.converter.feed.AtomFeedHttpMessageConverter;
 import org.springframework.http.converter.feed.RssChannelHttpMessageConverter;
 import org.springframework.http.converter.json.MappingJacksonHttpMessageConverter;
+import org.springframework.http.converter.support.AllEncompassingFormHttpMessageConverter;
 import org.springframework.http.converter.xml.Jaxb2RootElementHttpMessageConverter;
 import org.springframework.http.converter.xml.SourceHttpMessageConverter;
-import org.springframework.http.converter.xml.XmlAwareFormHttpMessageConverter;
 import org.springframework.scheduling.config.AnnotationDrivenBeanDefinitionParser;
 import org.springframework.util.ClassUtils;
 import org.springframework.util.xml.DomUtils;
@@ -126,160 +126,118 @@ import org.w3c.dom.Element;
  * @author modified by Jaehyoung Eum
  * @since 1.0.0
  */
-class AttributeAnnotationDrivenBeanDefinitionParser implements
-		BeanDefinitionParser {
+class AttributeAnnotationDrivenBeanDefinitionParser implements BeanDefinitionParser {
 
-	private static final boolean JSR330_PRESENT = ClassUtils.isPresent(
-			"javax.validation.Validator",
+	private static final boolean JSR330_PRESENT = ClassUtils.isPresent("javax.validation.Validator",
 			AnnotationDrivenBeanDefinitionParser.class.getClassLoader());
 
-	private static final boolean JAXB2_PRESENT = ClassUtils.isPresent(
-			"javax.xml.bind.Binder", AnnotationDrivenBeanDefinitionParser.class
-					.getClassLoader());
+	private static final boolean JAXB2_PRESENT = ClassUtils.isPresent("javax.xml.bind.Binder",
+			AnnotationDrivenBeanDefinitionParser.class.getClassLoader());
 
-	private static final boolean JACKSON_PRESENT = ClassUtils.isPresent(
-			"org.codehaus.jackson.map.ObjectMapper",
+	private static final boolean JACKSON_PRESENT = ClassUtils.isPresent("org.codehaus.jackson.map.ObjectMapper",
 			AnnotationDrivenBeanDefinitionParser.class.getClassLoader())
-			&& ClassUtils
-					.isPresent("org.codehaus.jackson.JsonGenerator",
-							AnnotationDrivenBeanDefinitionParser.class
-									.getClassLoader());
+			&& ClassUtils.isPresent("org.codehaus.jackson.JsonGenerator",
+					AnnotationDrivenBeanDefinitionParser.class.getClassLoader());
 
-	private static boolean romePresent = ClassUtils.isPresent(
-			"com.sun.syndication.feed.WireFeed",
+	private static boolean romePresent = ClassUtils.isPresent("com.sun.syndication.feed.WireFeed",
 			AnnotationDrivenBeanDefinitionParser.class.getClassLoader());
 
 	public BeanDefinition parse(Element element, ParserContext parserContext) {
 		Object source = parserContext.extractSource(element);
 
-		CompositeComponentDefinition compDefinition = new CompositeComponentDefinition(
-				element.getTagName(), source);
+		CompositeComponentDefinition compDefinition = new CompositeComponentDefinition(element.getTagName(), source);
 		parserContext.pushContainingComponent(compDefinition);
 
-		RootBeanDefinition methodMappingDef = new RootBeanDefinition(
-				RequestMappingHandlerMapping.class);
+		RootBeanDefinition methodMappingDef = new RootBeanDefinition(RequestMappingHandlerMapping.class);
 		methodMappingDef.setSource(source);
 		methodMappingDef.setRole(BeanDefinition.ROLE_INFRASTRUCTURE);
 		methodMappingDef.getPropertyValues().add("order", 0);
-		String methodMappingName = parserContext.getReaderContext()
-				.registerWithGeneratedName(methodMappingDef);
+		String methodMappingName = parserContext.getReaderContext().registerWithGeneratedName(methodMappingDef);
 
-		RuntimeBeanReference conversionService = getConversionService(element,
-				source, parserContext);
-		RuntimeBeanReference validator = getValidator(element, source,
-				parserContext);
-		RuntimeBeanReference messageCodesResolver = getMessageCodesResolver(
-				element, source, parserContext);
+		RuntimeBeanReference conversionService = getConversionService(element, source, parserContext);
+		RuntimeBeanReference validator = getValidator(element, source, parserContext);
+		RuntimeBeanReference messageCodesResolver = getMessageCodesResolver(element, source, parserContext);
 
-		RootBeanDefinition bindingDef = new RootBeanDefinition(
-				ConfigurableWebBindingInitializer.class);
+		RootBeanDefinition bindingDef = new RootBeanDefinition(ConfigurableWebBindingInitializer.class);
 		bindingDef.setSource(source);
 		bindingDef.setRole(BeanDefinition.ROLE_INFRASTRUCTURE);
-		bindingDef.getPropertyValues().add("conversionService",
-				conversionService);
+		bindingDef.getPropertyValues().add("conversionService", conversionService);
 		bindingDef.getPropertyValues().add("validator", validator);
-		bindingDef.getPropertyValues().add("messageCodesResolver",
-				messageCodesResolver);
+		bindingDef.getPropertyValues().add("messageCodesResolver", messageCodesResolver);
 
-		ManagedList<?> messageConverters = getMessageConverters(element,
-				source, parserContext);
-		ManagedList<?> argumentResolvers = getArgumentResolvers(element,
-				source, parserContext);
-		ManagedList<?> returnValueHandlers = getReturnValueHandlers(element,
-				source, parserContext);
+		ManagedList<?> messageConverters = getMessageConverters(element, source, parserContext);
+		ManagedList<?> argumentResolvers = getArgumentResolvers(element, source, parserContext);
+		ManagedList<?> returnValueHandlers = getReturnValueHandlers(element, source, parserContext);
 
-		RootBeanDefinition methodAdapterDef = new RootBeanDefinition(
-				RequestMappingHandlerAdapter.class);
+		RootBeanDefinition methodAdapterDef = new RootBeanDefinition(RequestMappingHandlerAdapter.class);
 		methodAdapterDef.setSource(source);
 		methodAdapterDef.setRole(BeanDefinition.ROLE_INFRASTRUCTURE);
-		methodAdapterDef.getPropertyValues().add("webBindingInitializer",
-				bindingDef);
-		methodAdapterDef.getPropertyValues().add("messageConverters",
-				messageConverters);
+		methodAdapterDef.getPropertyValues().add("webBindingInitializer", bindingDef);
+		methodAdapterDef.getPropertyValues().add("messageConverters", messageConverters);
 		if (element.hasAttribute("ignoreDefaultModelOnRedirect")) {
-			Boolean ignoreDefaultModel = Boolean.valueOf(element
-					.getAttribute("ignoreDefaultModelOnRedirect"));
-			methodAdapterDef.getPropertyValues().add(
-					"ignoreDefaultModelOnRedirect", ignoreDefaultModel);
+			Boolean ignoreDefaultModel = Boolean.valueOf(element.getAttribute("ignoreDefaultModelOnRedirect"));
+			methodAdapterDef.getPropertyValues().add("ignoreDefaultModelOnRedirect", ignoreDefaultModel);
 		}
 		if (argumentResolvers != null) {
-			methodAdapterDef.getPropertyValues().add("customArgumentResolvers",
-					argumentResolvers);
+			methodAdapterDef.getPropertyValues().add("customArgumentResolvers", argumentResolvers);
 		}
 		if (returnValueHandlers != null) {
-			methodAdapterDef.getPropertyValues().add(
-					"customReturnValueHandlers", returnValueHandlers);
+			methodAdapterDef.getPropertyValues().add("customReturnValueHandlers", returnValueHandlers);
 		}
 		// anyframe:annotation-driven supply
 		if (element.hasAttribute("synchronizeOnSession")) {
 			methodAdapterDef.getPropertyValues().add("synchronizeOnSession",
 					element.getAttribute("synchronizeOnSession"));
 		}
-		String methodAdapterName = parserContext.getReaderContext()
-				.registerWithGeneratedName(methodAdapterDef);
+		String methodAdapterName = parserContext.getReaderContext().registerWithGeneratedName(methodAdapterDef);
 
-		RootBeanDefinition csInterceptorDef = new RootBeanDefinition(
-				ConversionServiceExposingInterceptor.class);
+		RootBeanDefinition csInterceptorDef = new RootBeanDefinition(ConversionServiceExposingInterceptor.class);
 		csInterceptorDef.setSource(source);
-		csInterceptorDef.getConstructorArgumentValues()
-				.addIndexedArgumentValue(0, conversionService);
-		RootBeanDefinition mappedCsInterceptorDef = new RootBeanDefinition(
-				MappedInterceptor.class);
+		csInterceptorDef.getConstructorArgumentValues().addIndexedArgumentValue(0, conversionService);
+		RootBeanDefinition mappedCsInterceptorDef = new RootBeanDefinition(MappedInterceptor.class);
 		mappedCsInterceptorDef.setSource(source);
 		mappedCsInterceptorDef.setRole(BeanDefinition.ROLE_INFRASTRUCTURE);
-		mappedCsInterceptorDef.getConstructorArgumentValues()
-				.addIndexedArgumentValue(0, (Object) null);
-		mappedCsInterceptorDef.getConstructorArgumentValues()
-				.addIndexedArgumentValue(1, csInterceptorDef);
-		String mappedInterceptorName = parserContext.getReaderContext()
-				.registerWithGeneratedName(mappedCsInterceptorDef);
+		mappedCsInterceptorDef.getConstructorArgumentValues().addIndexedArgumentValue(0, (Object) null);
+		mappedCsInterceptorDef.getConstructorArgumentValues().addIndexedArgumentValue(1, csInterceptorDef);
+		String mappedInterceptorName = parserContext.getReaderContext().registerWithGeneratedName(
+				mappedCsInterceptorDef);
 
-		RootBeanDefinition methodExceptionResolver = new RootBeanDefinition(
-				ExceptionHandlerExceptionResolver.class);
+		RootBeanDefinition methodExceptionResolver = new RootBeanDefinition(ExceptionHandlerExceptionResolver.class);
 		methodExceptionResolver.setSource(source);
 		methodExceptionResolver.setRole(BeanDefinition.ROLE_INFRASTRUCTURE);
-		methodExceptionResolver.getPropertyValues().add("messageConverters",
-				messageConverters);
+		methodExceptionResolver.getPropertyValues().add("messageConverters", messageConverters);
 		methodExceptionResolver.getPropertyValues().add("order", 0);
-		String methodExceptionResolverName = parserContext.getReaderContext()
-				.registerWithGeneratedName(methodExceptionResolver);
+		String methodExceptionResolverName = parserContext.getReaderContext().registerWithGeneratedName(
+				methodExceptionResolver);
 
 		RootBeanDefinition responseStatusExceptionResolver = new RootBeanDefinition(
 				ResponseStatusExceptionResolver.class);
 		responseStatusExceptionResolver.setSource(source);
-		responseStatusExceptionResolver
-				.setRole(BeanDefinition.ROLE_INFRASTRUCTURE);
+		responseStatusExceptionResolver.setRole(BeanDefinition.ROLE_INFRASTRUCTURE);
 		responseStatusExceptionResolver.getPropertyValues().add("order", 1);
-		String responseStatusExceptionResolverName = parserContext
-				.getReaderContext().registerWithGeneratedName(
-						responseStatusExceptionResolver);
+		String responseStatusExceptionResolverName = parserContext.getReaderContext().registerWithGeneratedName(
+				responseStatusExceptionResolver);
 
-		RootBeanDefinition defaultExceptionResolver = new RootBeanDefinition(
-				DefaultHandlerExceptionResolver.class);
+		RootBeanDefinition defaultExceptionResolver = new RootBeanDefinition(DefaultHandlerExceptionResolver.class);
 		defaultExceptionResolver.setSource(source);
 		defaultExceptionResolver.setRole(BeanDefinition.ROLE_INFRASTRUCTURE);
 		defaultExceptionResolver.getPropertyValues().add("order", 2);
-		String defaultExceptionResolverName = parserContext.getReaderContext()
-				.registerWithGeneratedName(defaultExceptionResolver);
+		String defaultExceptionResolverName = parserContext.getReaderContext().registerWithGeneratedName(
+				defaultExceptionResolver);
 
-		parserContext.registerComponent(new BeanComponentDefinition(
-				methodMappingDef, methodMappingName));
-		parserContext.registerComponent(new BeanComponentDefinition(
-				methodAdapterDef, methodAdapterName));
-		parserContext.registerComponent(new BeanComponentDefinition(
-				methodExceptionResolver, methodExceptionResolverName));
-		parserContext.registerComponent(new BeanComponentDefinition(
-				responseStatusExceptionResolver,
+		parserContext.registerComponent(new BeanComponentDefinition(methodMappingDef, methodMappingName));
+		parserContext.registerComponent(new BeanComponentDefinition(methodAdapterDef, methodAdapterName));
+		parserContext.registerComponent(new BeanComponentDefinition(methodExceptionResolver,
+				methodExceptionResolverName));
+		parserContext.registerComponent(new BeanComponentDefinition(responseStatusExceptionResolver,
 				responseStatusExceptionResolverName));
-		parserContext.registerComponent(new BeanComponentDefinition(
-				defaultExceptionResolver, defaultExceptionResolverName));
-		parserContext.registerComponent(new BeanComponentDefinition(
-				mappedCsInterceptorDef, mappedInterceptorName));
+		parserContext.registerComponent(new BeanComponentDefinition(defaultExceptionResolver,
+				defaultExceptionResolverName));
+		parserContext.registerComponent(new BeanComponentDefinition(mappedCsInterceptorDef, mappedInterceptorName));
 
 		// Ensure BeanNameUrlHandlerMapping (SPR-8289) and default
 		// HandlerAdapters are not "turned off"
-		AnnotationMvcNamespaceUtils.registerDefaultComponents(parserContext,
-				source);
+		AnnotationMvcNamespaceUtils.registerDefaultComponents(parserContext, source);
 
 		parserContext.popAndRegisterContainingComponent();
 
@@ -287,15 +245,12 @@ class AttributeAnnotationDrivenBeanDefinitionParser implements
 	}
 
 	@SuppressWarnings("unchecked")
-	private RuntimeBeanReference getConversionService(Element element,
-			Object source, ParserContext parserContext) {
+	private RuntimeBeanReference getConversionService(Element element, Object source, ParserContext parserContext) {
 		RuntimeBeanReference conversionServiceRef;
 		if (element.hasAttribute("conversion-service")) {
-			conversionServiceRef = new RuntimeBeanReference(element
-					.getAttribute("conversion-service"));
+			conversionServiceRef = new RuntimeBeanReference(element.getAttribute("conversion-service"));
 		} else {
-			RootBeanDefinition conversionDef = new RootBeanDefinition(
-					FormattingConversionServiceFactoryBean.class);
+			RootBeanDefinition conversionDef = new RootBeanDefinition(FormattingConversionServiceFactoryBean.class);
 			conversionDef.setSource(source);
 			conversionDef.setRole(BeanDefinition.ROLE_INFRASTRUCTURE);
 
@@ -304,163 +259,136 @@ class AttributeAnnotationDrivenBeanDefinitionParser implements
 			converters.add(new StringToNumberConverterFactory());
 			conversionDef.getPropertyValues().add("converters", converters);
 
-			String conversionName = parserContext.getReaderContext()
-					.registerWithGeneratedName(conversionDef);
-			parserContext.registerComponent(new BeanComponentDefinition(
-					conversionDef, conversionName));
+			String conversionName = parserContext.getReaderContext().registerWithGeneratedName(conversionDef);
+			parserContext.registerComponent(new BeanComponentDefinition(conversionDef, conversionName));
 			conversionServiceRef = new RuntimeBeanReference(conversionName);
 		}
 		return conversionServiceRef;
 	}
 
-	private RuntimeBeanReference getValidator(Element element, Object source,
-			ParserContext parserContext) {
+	private RuntimeBeanReference getValidator(Element element, Object source, ParserContext parserContext) {
 		if (element.hasAttribute("validator")) {
 			return new RuntimeBeanReference(element.getAttribute("validator"));
 		} else if (JSR330_PRESENT) {
-			RootBeanDefinition validatorDef = new RootBeanDefinition(
-					LocalValidatorFactoryBean.class);
+			RootBeanDefinition validatorDef = new RootBeanDefinition(LocalValidatorFactoryBean.class);
 			validatorDef.setSource(source);
 			validatorDef.setRole(BeanDefinition.ROLE_INFRASTRUCTURE);
-			String validatorName = parserContext.getReaderContext()
-					.registerWithGeneratedName(validatorDef);
-			parserContext.registerComponent(new BeanComponentDefinition(
-					validatorDef, validatorName));
+			String validatorName = parserContext.getReaderContext().registerWithGeneratedName(validatorDef);
+			parserContext.registerComponent(new BeanComponentDefinition(validatorDef, validatorName));
 			return new RuntimeBeanReference(validatorName);
 		} else {
 			return null;
 		}
 	}
 
-	private RuntimeBeanReference getMessageCodesResolver(Element element,
-			Object source, ParserContext parserContext) {
+	private RuntimeBeanReference getMessageCodesResolver(Element element, Object source, ParserContext parserContext) {
 		if (element.hasAttribute("message-codes-resolver")) {
-			return new RuntimeBeanReference(element
-					.getAttribute("message-codes-resolver"));
+			return new RuntimeBeanReference(element.getAttribute("message-codes-resolver"));
 		} else {
 			return null;
 		}
 	}
 
-	private ManagedList<?> getArgumentResolvers(Element element, Object source,
-			ParserContext parserContext) {
-		Element resolversElement = DomUtils.getChildElementByTagName(element,
-				"argument-resolvers");
+	private ManagedList<?> getArgumentResolvers(Element element, Object source, ParserContext parserContext) {
+		Element resolversElement = DomUtils.getChildElementByTagName(element, "argument-resolvers");
 		if (resolversElement != null) {
-			ManagedList<BeanDefinitionHolder> argumentResolvers = extractBeanSubElements(
-					resolversElement, parserContext);
+			ManagedList<BeanDefinitionHolder> argumentResolvers = extractBeanSubElements(resolversElement,
+					parserContext);
 			return wrapWebArgumentResolverBeanDefs(argumentResolvers);
 		}
 		return null;
 	}
 
-	private ManagedList<?> getReturnValueHandlers(Element element,
-			Object source, ParserContext parserContext) {
-		Element handlersElement = DomUtils.getChildElementByTagName(element,
-				"return-value-handlers");
+	private ManagedList<?> getReturnValueHandlers(Element element, Object source, ParserContext parserContext) {
+		Element handlersElement = DomUtils.getChildElementByTagName(element, "return-value-handlers");
 		if (handlersElement != null) {
 			return extractBeanSubElements(handlersElement, parserContext);
 		}
 		return null;
 	}
 
-	private ManagedList<?> getMessageConverters(Element element, Object source,
-			ParserContext parserContext) {
-		Element convertersElement = DomUtils.getChildElementByTagName(element,
-				"message-converters");
+	private ManagedList<?> getMessageConverters(Element element, Object source, ParserContext parserContext) {
+		Element convertersElement = DomUtils.getChildElementByTagName(element, "message-converters");
 		ManagedList<? super Object> messageConverters = new ManagedList<Object>();
 		if (convertersElement != null) {
 			messageConverters.setSource(source);
-			for (Element converter : DomUtils.getChildElementsByTagName(
-					convertersElement, "bean")) {
-				BeanDefinitionHolder beanDef = parserContext.getDelegate()
-						.parseBeanDefinitionElement(converter);
-				beanDef = parserContext.getDelegate()
-						.decorateBeanDefinitionIfRequired(converter, beanDef);
+			for (Element converter : DomUtils.getChildElementsByTagName(convertersElement, "bean")) {
+				BeanDefinitionHolder beanDef = parserContext.getDelegate().parseBeanDefinitionElement(converter);
+				beanDef = parserContext.getDelegate().decorateBeanDefinitionIfRequired(converter, beanDef);
 				messageConverters.add(beanDef);
+			}
+			
+			for (Element property : DomUtils.getChildElementsByTagName(convertersElement, "property")) {
+				String value = property.getAttribute("name");
+				if("anyframeMessageConverters".equals(value)){
+					Element list = DomUtils.getChildElementByTagName(property, "list");
+					List<Element> httpMessageConverterRefIds = DomUtils.getChildElementsByTagName(list, "ref");
+					for(Element httpMessageConvertRefId : httpMessageConverterRefIds){
+						messageConverters.add(new RuntimeBeanReference(httpMessageConvertRefId.getAttribute("bean")));
+					}
+				}
 			}
 		}
 
-		if (convertersElement == null
-				|| Boolean.valueOf(convertersElement
-						.getAttribute("register-defaults"))) {
+		if (convertersElement == null || Boolean.valueOf(convertersElement.getAttribute("register-defaults"))) {
 			messageConverters.setSource(source);
-			messageConverters.add(createConverterBeanDefinition(
-					ByteArrayHttpMessageConverter.class, source));
+			messageConverters.add(createConverterBeanDefinition(ByteArrayHttpMessageConverter.class, source));
 
-			RootBeanDefinition stringConverterDef = createConverterBeanDefinition(
-					StringHttpMessageConverter.class, source);
-			stringConverterDef.getPropertyValues().add("writeAcceptCharset",
-					false);
+			RootBeanDefinition stringConverterDef = createConverterBeanDefinition(StringHttpMessageConverter.class,
+					source);
+			stringConverterDef.getPropertyValues().add("writeAcceptCharset", false);
 			messageConverters.add(stringConverterDef);
 
-			messageConverters.add(createConverterBeanDefinition(
-					ResourceHttpMessageConverter.class, source));
-			messageConverters.add(createConverterBeanDefinition(
-					SourceHttpMessageConverter.class, source));
-			messageConverters.add(createConverterBeanDefinition(
-					XmlAwareFormHttpMessageConverter.class, source));
+			messageConverters.add(createConverterBeanDefinition(ResourceHttpMessageConverter.class, source));
+			messageConverters.add(createConverterBeanDefinition(SourceHttpMessageConverter.class, source));
+			messageConverters.add(createConverterBeanDefinition(AllEncompassingFormHttpMessageConverter.class, source));
 			if (JAXB2_PRESENT) {
-				messageConverters.add(createConverterBeanDefinition(
-						Jaxb2RootElementHttpMessageConverter.class, source));
+				messageConverters
+						.add(createConverterBeanDefinition(Jaxb2RootElementHttpMessageConverter.class, source));
 			}
 			if (JACKSON_PRESENT) {
-				messageConverters.add(createConverterBeanDefinition(
-						MappingJacksonHttpMessageConverter.class, source));
+				messageConverters.add(createConverterBeanDefinition(MappingJacksonHttpMessageConverter.class, source));
 			}
 			if (romePresent) {
-				messageConverters.add(createConverterBeanDefinition(
-						AtomFeedHttpMessageConverter.class, source));
-				messageConverters.add(createConverterBeanDefinition(
-						RssChannelHttpMessageConverter.class, source));
+				messageConverters.add(createConverterBeanDefinition(AtomFeedHttpMessageConverter.class, source));
+				messageConverters.add(createConverterBeanDefinition(RssChannelHttpMessageConverter.class, source));
 			}
 		}
 		return messageConverters;
 	}
 
 	@SuppressWarnings("unchecked")
-	private RootBeanDefinition createConverterBeanDefinition(
-			Class<? extends HttpMessageConverter> converterClass, Object source) {
-		RootBeanDefinition beanDefinition = new RootBeanDefinition(
-				converterClass);
+	private RootBeanDefinition createConverterBeanDefinition(Class<? extends HttpMessageConverter> converterClass,
+			Object source) {
+		RootBeanDefinition beanDefinition = new RootBeanDefinition(converterClass);
 		beanDefinition.setSource(source);
 		beanDefinition.setRole(BeanDefinition.ROLE_INFRASTRUCTURE);
 
 		return beanDefinition;
 	}
 
-	private ManagedList<BeanDefinitionHolder> extractBeanSubElements(
-			Element parentElement, ParserContext parserContext) {
+	private ManagedList<BeanDefinitionHolder> extractBeanSubElements(Element parentElement, ParserContext parserContext) {
 		ManagedList<BeanDefinitionHolder> list = new ManagedList<BeanDefinitionHolder>();
 		list.setSource(parserContext.extractSource(parentElement));
-		for (Element beanElement : DomUtils.getChildElementsByTagName(
-				parentElement, "bean")) {
-			BeanDefinitionHolder beanDef = parserContext.getDelegate()
-					.parseBeanDefinitionElement(beanElement);
-			beanDef = parserContext.getDelegate()
-					.decorateBeanDefinitionIfRequired(beanElement, beanDef);
+		for (Element beanElement : DomUtils.getChildElementsByTagName(parentElement, "bean")) {
+			BeanDefinitionHolder beanDef = parserContext.getDelegate().parseBeanDefinitionElement(beanElement);
+			beanDef = parserContext.getDelegate().decorateBeanDefinitionIfRequired(beanElement, beanDef);
 			list.add(beanDef);
 		}
 		return list;
 	}
 
-	private ManagedList<BeanDefinitionHolder> wrapWebArgumentResolverBeanDefs(
-			List<BeanDefinitionHolder> beanDefs) {
+	private ManagedList<BeanDefinitionHolder> wrapWebArgumentResolverBeanDefs(List<BeanDefinitionHolder> beanDefs) {
 		ManagedList<BeanDefinitionHolder> result = new ManagedList<BeanDefinitionHolder>();
 
 		for (BeanDefinitionHolder beanDef : beanDefs) {
 			String className = beanDef.getBeanDefinition().getBeanClassName();
-			Class<?> clazz = ClassUtils.resolveClassName(className, ClassUtils
-					.getDefaultClassLoader());
+			Class<?> clazz = ClassUtils.resolveClassName(className, ClassUtils.getDefaultClassLoader());
 
 			if (WebArgumentResolver.class.isAssignableFrom(clazz)) {
-				RootBeanDefinition adapter = new RootBeanDefinition(
-						ServletWebArgumentResolverAdapter.class);
-				adapter.getConstructorArgumentValues().addIndexedArgumentValue(
-						0, beanDef);
-				result.add(new BeanDefinitionHolder(adapter, beanDef
-						.getBeanName()
-						+ "Adapter"));
+				RootBeanDefinition adapter = new RootBeanDefinition(ServletWebArgumentResolverAdapter.class);
+				adapter.getConstructorArgumentValues().addIndexedArgumentValue(0, beanDef);
+				result.add(new BeanDefinitionHolder(adapter, beanDef.getBeanName() + "Adapter"));
 			} else {
 				result.add(beanDef);
 			}

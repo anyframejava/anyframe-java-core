@@ -111,7 +111,7 @@ public class GenericQueryDao<T, PK extends Serializable> extends
 	 * {@inheritDoc}
 	 */
 	@SuppressWarnings("unchecked")
-	public T get(PK id) {
+	public T get(PK id) throws Exception {
 		T object;
 		try {
 			object = (T) findByPk("find"
@@ -132,7 +132,7 @@ public class GenericQueryDao<T, PK extends Serializable> extends
 	 * {@inheritDoc}
 	 */
 	@SuppressWarnings("unchecked")
-	public boolean exists(PK id) {
+	public boolean exists(PK id) throws Exception {
 		T object;
 		try {
 			object = (T) findByPk("find"
@@ -148,7 +148,7 @@ public class GenericQueryDao<T, PK extends Serializable> extends
 	/**
 	 * {@inheritDoc}
 	 */
-	public void create(T object) {
+	public void create(T object) throws Exception {
 		String className = ClassUtils.getShortName(object.getClass());
 		create("create" + className, object);
 	}
@@ -156,7 +156,7 @@ public class GenericQueryDao<T, PK extends Serializable> extends
 	/**
 	 * {@inheritDoc}
 	 */
-	public void update(T object) {
+	public void update(T object) throws Exception {
 		String className = ClassUtils.getShortName(object.getClass());
 		update("update" + className, object);
 	}
@@ -164,7 +164,7 @@ public class GenericQueryDao<T, PK extends Serializable> extends
 	/**
 	 * {@inheritDoc}
 	 */
-	public void remove(PK id) {
+	public void remove(PK id) throws Exception {
 		try {
 			remove("remove" + ClassUtils.getShortName(this.persistentClass),
 					getObject(id));
@@ -229,7 +229,7 @@ public class GenericQueryDao<T, PK extends Serializable> extends
 	 * </pre>
 	 * 
 	 */
-	public Page getPagingList(SearchVO searchVO) {
+	public Page getPagingList(SearchVO searchVO) throws Exception {
 		int pageIndex = searchVO.getPageIndex();
 
 		String searchCondition = StringUtil.nullToString(searchVO
@@ -253,7 +253,7 @@ public class GenericQueryDao<T, PK extends Serializable> extends
 	/**
 	 * {@inheritDoc}
 	 */
-	public Page getPagingList(T object, int pageIndex) {
+	public Page getPagingList(T object, int pageIndex) throws Exception {
 		return this.findListWithPaging("find"
 				+ ClassUtils.getShortName(getPersistentClass()) + "List",
 				object, pageIndex, pageSize);
@@ -262,7 +262,7 @@ public class GenericQueryDao<T, PK extends Serializable> extends
 	/**
 	 * {@inheritDoc}
 	 */
-	public List<T> getList(SearchVO searchVO) {
+	public List<T> getList(SearchVO searchVO) throws Exception {
 		String searchCondition = StringUtil.nullToString(searchVO
 				.getSearchCondition());
 		String searchKeyword = StringUtil.nullToString(searchVO
@@ -283,7 +283,7 @@ public class GenericQueryDao<T, PK extends Serializable> extends
 	/**
 	 * {@inheritDoc}
 	 */
-	public List<T> getList(T object) {
+	public List<T> getList(T object) throws Exception {
 		return this.findList("find"
 				+ ClassUtils.getShortName(this.persistentClass) + "List",
 				object);

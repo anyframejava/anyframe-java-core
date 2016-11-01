@@ -28,6 +28,7 @@ import org.springframework.jdbc.core.SqlParameter;
 import org.springframework.jdbc.support.lob.LobHandler;
 
 import com.tobesoft.xplatform.data.DataSet;
+import com.tobesoft.xplatform.data.DataSetList;
 import com.tobesoft.xplatform.data.DataTypes;
 
 /**
@@ -46,7 +47,7 @@ public class XPCallableStatementCallbackHandler extends XPCallbackSupport
 
 	@SuppressWarnings("unused")
 	private LobHandler lobHandler;
-
+	
 	public void setSQLParams(List<SqlParameter> sqlParams) {
 		this.sqlParams = sqlParams;
 	}
@@ -54,34 +55,37 @@ public class XPCallableStatementCallbackHandler extends XPCallbackSupport
 	public void setLobHandler(LobHandler lobHandler) {
 		this.lobHandler = lobHandler;
 	}
-
+	
 	public Object doInCallableStatement(CallableStatement cs)
 			throws SQLException {
 
 		ResultSet rs = null;
 		cs.execute();
-		DataSet dataset = null;
+		DataSetList dataSetList = new DataSetList();
 
-		for (int i = 0; i < sqlParams.size(); i++) {
-			if (sqlParams.get(i) instanceof SqlOutParameter) {
+		for(int i = 0 ; i < sqlParams.size() ; i++){
+			if(sqlParams.get(i) instanceof SqlOutParameter) {
 				SqlOutParameter outParams = (SqlOutParameter) sqlParams.get(i);
 				int sqlType = outParams.getSqlType();
 				String paramName = outParams.getName();
-
-				if (sqlType == XPCallableStatementCallbackHandler.CUSOR) {
+				
+				if(sqlType == XPCallableStatementCallbackHandler.CUSOR) {
 					rs = (ResultSet) cs.getObject(i + 1);
-					dataset = setResultDataSet(paramName, rs);
+					dataSetList.add(setResultDataSet(paramName, rs));
 				} else {
 					Object obj = cs.getObject(i + 1);
-					dataset = new DataSet(paramName);
-					dataset.addColumn(paramName, getDsType(sqlType), 1);
-					dataset.newRow();
-
-					dataset.set(0, paramName, obj);
+					DataSet outDs = new DataSet(paramName);
+					outDs.addColumn(paramName, getDsType(sqlType), 1);
+					
+					outDs.newRow();
+					outDs.set(0, paramName, obj);
+					
+					dataSetList.add(outDs);
 				}
 			}
 		}
-		return dataset;
+	
+		return dataSetList;
 	}
 
 	public DataSet setResultDataSet(String datasetId, ResultSet rs) {

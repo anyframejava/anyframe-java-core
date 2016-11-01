@@ -36,7 +36,7 @@ import org.springframework.beans.factory.InitializingBean;
  * QueryService uses accumulated table-mappings and query-mappings to execute
  * specified query statement.
  * 
- * @author Soyon Lim
+ * @author Soyon Lim 
  * 
  */
 public abstract class AbstractSqlLoader implements SqlLoader, InitializingBean,
@@ -46,13 +46,13 @@ public abstract class AbstractSqlLoader implements SqlLoader, InitializingBean,
 
 	private int dynamicReload = 0;
 
-	private Map<String, String> nullchecks = new HashMap<String, String>();
+	private final Map<String, String> nullchecks = new HashMap<String, String>();
 
-	private Map<String, QueryInfo> queryInfos = new HashMap<String, QueryInfo>();
+	private final Map<String, QueryInfo> queryInfos = new HashMap<String, QueryInfo>();
 
-	private Map<String, MappingInfo> tableMappings = new HashMap<String, MappingInfo>();
+	private final Map<String, MappingInfo> tableMappings = new HashMap<String, MappingInfo>();
 
-	private Map<String, ResultSetMappingConfiguration> queryResultMappings = new HashMap<String, ResultSetMappingConfiguration>();
+	private final Map<String, ResultSetMappingConfiguration> queryResultMappings = new HashMap<String, ResultSetMappingConfiguration>();
 
 	private int registeredQueryCount = 0;
 

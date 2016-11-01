@@ -43,7 +43,7 @@ public class PagingNamedParamJdbcTemplate extends NamedParameterJdbcTemplate {
 
 	protected int maxFetchSize = -1;
 
-	private PagingJdbcTemplate pagingJdbcTemplate = null;
+	private final PagingJdbcTemplate pagingJdbcTemplate;
 
 	public PagingJdbcTemplate getPagingJdbcTemplate() {
 		return pagingJdbcTemplate;
@@ -165,9 +165,9 @@ public class PagingNamedParamJdbcTemplate extends NamedParameterJdbcTemplate {
 
 	private class SqlParameterSetter {
 
-		private Object[] args;
-		private int[] argTypes;
-		private String substitutedSql;
+		private final Object[] args;
+		private final int[] argTypes;
+		private final String substitutedSql;
 
 		public SqlParameterSetter(String substitutedSql, Object[] args,
 				int[] argTypes) {

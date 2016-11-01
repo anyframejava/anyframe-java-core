@@ -310,6 +310,12 @@ java.naming.provider.url=tcp://localhost:61616]]></programlisting>
 								<imagedata align="center"
 									fileref="../image/hibernate/clusteredcache1.jpg" />
 		                	</imageobject>
+		                	<textobject>
+		                		<phrase>
+		                			INFO 레벨의 로그 메시지를 보여주고 있는 그림으로, 어플리케이션 A에서 특정 데이터 수정 후, 이벤트가 전송되고 어플케이션 B에서 해당 이벤트를 
+		                			받았는지 확인할 수 있다. 
+		                		</phrase>
+		                	</textobject>
 		              	</mediaobject>
 		
 						<para>
@@ -324,6 +330,11 @@ java.naming.provider.url=tcp://localhost:61616]]></programlisting>
 	                  			<imagedata align="center"
 									fileref="../image/hibernate/clusteredcache2.jpg" />
 	                		</imageobject>
+	                		<textobject>
+	                			<phrase>Hibernate를 통해 실행되는 쿼리문을 보여주고 있는 그림으로, 어플리케이션 B에서 어플리케이션 A를 통해 수정한 데이터를 조회할 때
+	                			해당 객체는 Cache Event Listener에 의해 Cache로부터 지워졌으므로, 기존에 Caching된 객체를 그대로 읽지 않고, DB에 다시 접근하여 변경된 
+	                			데이터를 다시 읽어오고 있음을 알 수 있다.</phrase>
+	                		</textobject>
 	              		</mediaobject>
 	            	</listitem>
 				</itemizedlist>

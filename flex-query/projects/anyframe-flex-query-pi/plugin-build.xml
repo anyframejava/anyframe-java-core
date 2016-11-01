@@ -3,7 +3,7 @@
 	description="Flex-Query Plugin consists of BlazeDS installation for communicating Flex Client and Server, and libraries and configuration file for integrating Spring to BlazeDS.">
 	<groupId>org.anyframe.plugin</groupId>
 	<artifactId>anyframe-flex-query-pi</artifactId>
-	<version>1.5.0.RC1</version>
+	<version>1.5.1</version>
 	<dependent-plugins>
 		<dependent-plugin name="query" version="2.0.0&gt;*&gt;1.4.0" />
 	</dependent-plugins>
@@ -24,20 +24,13 @@
 		</resource>
 
 		<resource dir="src/main/webapp" filtered="false" packaged="false">
+			<include name="**/flex-query/**/*.*" />
+			<exclude name="**/flex-query/pjt/**/*.mxml" />
+			<exclude name="**/flex-query/pjt/**/*.as" />
 			<exclude name="**/anyframe.jsp" merged="true" />
 			<exclude name="**/web.xml" merged="true" />
 		</resource>
 		
-		<resource dir="src/main/webapp/flex-query" filtered="false" packaged="false">
-			<include name="**/*.*" />
-		</resource>
-
-		<resource dir="src/main/webapp/WEB-INF/" filtered="false" packaged="false">
-			<include name="**/flex-query/**/*.*" />
-			<exclude name="**/flex-query/pjt/**/*.mxml" />
-			<exclude name="**/flex-query/pjt/**/*.as" />
-		</resource>
-
 		<resource dir="src/main/webapp/WEB-INF/flex-query/pjt"
 			filtered="true" packaged="false">
 			<include name="**/src/**/*.mxml" />

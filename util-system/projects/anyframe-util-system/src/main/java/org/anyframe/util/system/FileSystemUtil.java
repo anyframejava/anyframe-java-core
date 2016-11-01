@@ -125,7 +125,7 @@ public class FileSystemUtil extends SystemUtilBase {
 	 */
 	public static void copyDirectory(final String srcDir, final String destDir, final boolean preserveFileDate) {
 		processIO(new IOCallback<Object>() {
-			public Object doInProcessIO() throws IOException, NullPointerException {
+			public Object doInProcessIO() throws IOException {
 				FileUtils.copyDirectory(new File(srcDir), new File(destDir), preserveFileDate);
 				return null;
 			}
@@ -139,12 +139,12 @@ public class FileSystemUtil extends SystemUtilBase {
 	 *
 	 * @param srcDir source directory
 	 * @param destDir destination directory
-	 * @param isDir whether the copy destination is directory or not. if
+	 * @param filedir whether the copy destination is directory or not. if
 	 * <code>true</code>, copy directory only
 	 */
 	public static void copyDirectory(final String srcDir, final String destDir, final FileDir filedir) {
 		processIO(new IOCallback<Object>() {
-			public Object doInProcessIO() throws IOException, NullPointerException {
+			public Object doInProcessIO() throws IOException {
 				copyDirectory(srcDir, destDir, filedir, true);
 				return null;
 			}
@@ -161,7 +161,7 @@ public class FileSystemUtil extends SystemUtilBase {
 	 *
 	 * @param srcDir source directory
 	 * @param destDir destination directory
-	 * @param isDir whether the copy destination is directory or not. if
+	 * @param filedir whether the copy destination is directory or not. if
 	 * <code>true</code>, copy directory only
 	 * @param preserveFileDate whether the date of source directory is preserved
 	 * @see FileUtils#copyDirectory(File, File, FileFilter, boolean)
@@ -171,7 +171,7 @@ public class FileSystemUtil extends SystemUtilBase {
 	public static void copyDirectory(final String srcDir, final String destDir, final FileDir filedir,
 			final boolean preserveFileDate) {
 		processIO(new IOCallback<Object>() {
-			public Object doInProcessIO() throws IOException, NullPointerException {
+			public Object doInProcessIO() throws IOException {
 				switch (filedir) {
 				case isFile:
 					FileUtils.copyDirectory(new File(srcDir), new File(destDir), FileFileFilter.FILE, preserveFileDate);
@@ -199,7 +199,7 @@ public class FileSystemUtil extends SystemUtilBase {
 	 */
 	public static void copyDirectory(final String srcDir, final String destDir, final String extension) {
 		processIO(new IOCallback<Object>() {
-			public Object doInProcessIO() throws IOException, NullPointerException {
+			public Object doInProcessIO() throws IOException {
 				copyDirectory(srcDir, destDir, extension, true);
 				return null;
 			}
@@ -224,7 +224,7 @@ public class FileSystemUtil extends SystemUtilBase {
 	public static void copyDirectory(final String srcDir, final String destDir, final String extension,
 			final boolean preserveFileDate) {
 		processIO(new IOCallback<Object>() {
-			public Object doInProcessIO() throws IOException, NullPointerException {
+			public Object doInProcessIO() throws IOException {
 				IOFileFilter suffixFilter = FileFilterUtils.suffixFileFilter(extension);
 				FileFilter filter = FileFilterUtils.orFileFilter(DirectoryFileFilter.DIRECTORY, suffixFilter);
 				FileUtils.copyDirectory(new File(srcDir), new File(destDir), filter, preserveFileDate);
@@ -239,13 +239,13 @@ public class FileSystemUtil extends SystemUtilBase {
 	 *
 	 * @param srcDir source directory
 	 * @param destDir destination directory
-	 * @param date base date(yyyy-MM-dd)
+	 * @param cutoffDate base date(yyyy-MM-dd)
 	 * @param acceptOlder if true, older files get accepted, if false, newer
 	 */
 	public static void copyDirectory(final String srcDir, final String destDir, final Date cutoffDate,
 			final boolean acceptOlder) {
 		processIO(new IOCallback<Object>() {
-			public Object doInProcessIO() throws IOException, NullPointerException {
+			public Object doInProcessIO() throws IOException {
 				copyDirectory(srcDir, destDir, cutoffDate, acceptOlder, true);
 				return null;
 			}
@@ -261,7 +261,7 @@ public class FileSystemUtil extends SystemUtilBase {
 	 *
 	 * @param srcDir source directory
 	 * @param destDir destination directory
-	 * @param date base date (yyyy-MM-dd)
+	 * @param cutoffDate base date (yyyy-MM-dd)
 	 * @param acceptOlder if true, older files get accepted, if false, newer
 	 * @param preserveFileDate whether the date of source directory is preserved
 	 * @see FileUtils#copyDirectory(File, File, FileFilter, boolean)
@@ -271,7 +271,7 @@ public class FileSystemUtil extends SystemUtilBase {
 	public static void copyDirectory(final String srcDir, final String destDir, final Date cutoffDate,
 			final boolean acceptOlder, final boolean preserveFileDate) {
 		processIO(new IOCallback<Object>() {
-			public Object doInProcessIO() throws IOException, NullPointerException {
+			public Object doInProcessIO() throws IOException {
 				IOFileFilter ageFilter = FileFilterUtils.ageFileFilter(cutoffDate, acceptOlder);
 				FileFilter filter = FileFilterUtils.orFileFilter(DirectoryFileFilter.DIRECTORY, ageFilter);
 				FileUtils.copyDirectory(new File(srcDir), new File(destDir), filter, preserveFileDate);
@@ -293,7 +293,7 @@ public class FileSystemUtil extends SystemUtilBase {
 	public static void copyDirectory(final String srcDir, final String destDir, final long threshold,
 			final boolean acceptLarger) {
 		processIO(new IOCallback<Object>() {
-			public Object doInProcessIO() throws IOException, NullPointerException, IllegalArgumentException {
+			public Object doInProcessIO() throws IOException {
 				copyDirectory(srcDir, destDir, threshold, acceptLarger, true);
 				return null;
 			}
@@ -320,7 +320,7 @@ public class FileSystemUtil extends SystemUtilBase {
 	public static void copyDirectory(final String srcDir, final String destDir, final long threshold,
 			final boolean acceptLarger, final boolean preserveFileDate) {
 		processIO(new IOCallback<Object>() {
-			public Object doInProcessIO() throws IOException, NullPointerException, IllegalArgumentException {
+			public Object doInProcessIO() throws IOException {
 				IOFileFilter sizeFilter = FileFilterUtils.sizeFileFilter(threshold, acceptLarger);
 				IOFileFilter sizeFiles = FileFilterUtils.orFileFilter(DirectoryFileFilter.DIRECTORY, sizeFilter);
 				FileUtils.copyDirectory(new File(srcDir), new File(destDir), sizeFiles, preserveFileDate);
@@ -340,7 +340,7 @@ public class FileSystemUtil extends SystemUtilBase {
 	 */
 	public static void copyDirectory(final String srcDir, final String destDir, final long minSize, final long maxSize) {
 		processIO(new IOCallback<Object>() {
-			public Object doInProcessIO() throws IOException, NullPointerException, IllegalArgumentException {
+			public Object doInProcessIO() throws IOException {
 				copyDirectory(srcDir, destDir, minSize, maxSize, true);
 				return null;
 			}
@@ -366,7 +366,7 @@ public class FileSystemUtil extends SystemUtilBase {
 	public static void copyDirectory(final String srcDir, final String destDir, final long minSize, final long maxSize,
 			final boolean preserveFileDate) {
 		processIO(new IOCallback<Object>() {
-			public Object doInProcessIO() throws IOException, NullPointerException, IllegalArgumentException {
+			public Object doInProcessIO() throws IOException {
 				IOFileFilter sizeFileFilter = FileFilterUtils.sizeRangeFileFilter(minSize, maxSize);
 				IOFileFilter sizeFiles = FileFilterUtils.orFileFilter(DirectoryFileFilter.DIRECTORY, sizeFileFilter);
 				FileUtils.copyDirectory(new File(srcDir), new File(destDir), sizeFiles, preserveFileDate);
@@ -388,7 +388,7 @@ public class FileSystemUtil extends SystemUtilBase {
 	public static void copyDirectory(final String srcDir, final String destDir, final String name,
 			final FileNameSearch fileNameSearch) {
 		processIO(new IOCallback<Object>() {
-			public Object doInProcessIO() throws IOException, NullPointerException, IllegalArgumentException {
+			public Object doInProcessIO() throws IOException {
 				copyDirectory(srcDir, destDir, name, fileNameSearch, true);
 				return null;
 			}
@@ -417,7 +417,7 @@ public class FileSystemUtil extends SystemUtilBase {
 	public static void copyDirectory(final String srcDir, final String destDir, final String name,
 			final FileNameSearch fileNameSearch, final boolean preserveFileDate) {
 		processIO(new IOCallback<Object>() {
-			public Object doInProcessIO() throws IOException, NullPointerException, IllegalArgumentException {
+			public Object doInProcessIO() throws IOException {
 				IOFileFilter fileFilter;
 				switch (fileNameSearch) {
 				case FullMatch:
@@ -450,7 +450,7 @@ public class FileSystemUtil extends SystemUtilBase {
 	 */
 	public static void copyDirectoryToDirectory(final String srcDir, final String destDir) {
 		processIO(new IOCallback<Object>() {
-			public Object doInProcessIO() throws IOException, NullPointerException {
+			public Object doInProcessIO() throws IOException {
 				FileUtils.copyDirectoryToDirectory(new File(srcDir), new File(destDir));
 				return null;
 			}
@@ -466,7 +466,7 @@ public class FileSystemUtil extends SystemUtilBase {
 	 */
 	public static void moveDirectory(final String srcDir, final String destDir) {
 		processIO(new IOCallback<Object>() {
-			public Object doInProcessIO() throws IOException, NullPointerException {
+			public Object doInProcessIO() throws IOException {
 				FileUtils.moveDirectory(new File(srcDir), new File(destDir));
 				return null;
 			}
@@ -476,14 +476,14 @@ public class FileSystemUtil extends SystemUtilBase {
 	/**
 	 * directory move- source directory moves to destination directory.
 	 *
-	 * @param srcDir source directory
+	 * @param src source directory
 	 * @param destDir destination directory
 	 * @param createDestDir if<code>true</code>, create destination directory
 	 * @see FileUtils#moveDirectoryToDirectory(File, File, boolean)
 	 */
 	public static void moveDirectoryToDirectory(final String src, final String destDir, final boolean createDestDir) {
 		processIO(new IOCallback<Object>() {
-			public Object doInProcessIO() throws IOException, NullPointerException {
+			public Object doInProcessIO() throws IOException {
 				FileUtils.moveDirectoryToDirectory(new File(src), new File(destDir), createDestDir);
 				return null;
 			}
@@ -498,7 +498,7 @@ public class FileSystemUtil extends SystemUtilBase {
 	 */
 	public static void makeDirectory(final String directory) {
 		processIO(new IOCallback<Object>() {
-			public Object doInProcessIO() throws IOException, NullPointerException {
+			public Object doInProcessIO() throws IOException {
 				FileUtils.forceMkdir(new File(directory));
 				return null;
 			}
@@ -508,12 +508,12 @@ public class FileSystemUtil extends SystemUtilBase {
 	/**
 	 * delete the directory and file.
 	 *
-	 * @param file and directory path
+	 * @param src and directory path
 	 * @see FileUtils#forceDelete(File)
 	 */
 	public static void deleteFileDirectory(final String src) {
 		processIO(new IOCallback<Object>() {
-			public Object doInProcessIO() throws IOException, NullPointerException {
+			public Object doInProcessIO() throws IOException {
 				FileUtils.forceDelete(new File(src));
 				return null;
 			}
@@ -529,7 +529,7 @@ public class FileSystemUtil extends SystemUtilBase {
 	 */
 	public static void copyFile(final String srcFile, final String destFile) {
 		processIO(new IOCallback<Object>() {
-			public Object doInProcessIO() throws IOException, NullPointerException {
+			public Object doInProcessIO() throws IOException {
 				FileUtils.copyFile(new File(srcFile), new File(destFile));
 				return null;
 			}
@@ -549,7 +549,7 @@ public class FileSystemUtil extends SystemUtilBase {
 	 */
 	public static void copyFile(final String srcFile, final String destFile, final boolean preserveFileDate) {
 		processIO(new IOCallback<Object>() {
-			public Object doInProcessIO() throws IOException, NullPointerException {
+			public Object doInProcessIO() throws IOException {
 				FileUtils.copyFile(new File(srcFile), new File(destFile), preserveFileDate);
 				return null;
 			}
@@ -565,7 +565,7 @@ public class FileSystemUtil extends SystemUtilBase {
 	 */
 	public static void copyFileToDirectory(final String srcFile, final String destDir) {
 		processIO(new IOCallback<Object>() {
-			public Object doInProcessIO() throws IOException, NullPointerException {
+			public Object doInProcessIO() throws IOException {
 				FileUtils.copyFileToDirectory(new File(srcFile), new File(destDir));
 				return null;
 			}
@@ -585,7 +585,7 @@ public class FileSystemUtil extends SystemUtilBase {
 	 */
 	public static void copyFileToDirectory(final String srcFile, final String destDir, final boolean preserveFileDate) {
 		processIO(new IOCallback<Object>() {
-			public Object doInProcessIO() throws IOException, NullPointerException {
+			public Object doInProcessIO() throws IOException {
 				FileUtils.copyFileToDirectory(new File(srcFile), new File(destDir), preserveFileDate);
 				return null;
 			}
@@ -601,7 +601,7 @@ public class FileSystemUtil extends SystemUtilBase {
 	 */
 	public static void moveFile(final String srcFile, final String destFile) {
 		processIO(new IOCallback<Object>() {
-			public Object doInProcessIO() throws IOException, NullPointerException {
+			public Object doInProcessIO() throws IOException {
 				FileUtils.moveFile(new File(srcFile), new File(destFile));
 				return null;
 			}
@@ -618,7 +618,7 @@ public class FileSystemUtil extends SystemUtilBase {
 	 */
 	public static void moveFileToDirectory(final String srcFile, final String destDir, final boolean createDestDir) {
 		processIO(new IOCallback<Object>() {
-			public Object doInProcessIO() throws IOException, NullPointerException {
+			public Object doInProcessIO() throws IOException {
 				FileUtils.moveFileToDirectory(new File(srcFile), new File(destDir), createDestDir);
 				return null;
 			}
@@ -651,7 +651,7 @@ public class FileSystemUtil extends SystemUtilBase {
 	 */
 	public static File[] getFileList(final String directory, final String[] extensions, final boolean recursive) {
 		return processIO(new IOCallback<File[]>() {
-			public File[] doInProcessIO() throws IOException, NullPointerException {
+			public File[] doInProcessIO() throws IOException {
 				Collection<?> files;
 				if (extensions[0].equals("all")) {
 					files = FileUtils.listFiles(new File(directory), null, recursive);
@@ -677,7 +677,7 @@ public class FileSystemUtil extends SystemUtilBase {
 	 */
 	public static File[] getFileList(final String directory, final Date date, final boolean acceptOlder) {
 		return processIO(new IOCallback<File[]>() {
-			public File[] doInProcessIO() throws IOException, NullPointerException {
+			public File[] doInProcessIO() throws IOException {
 				// Date lastModifiedDate = DateUtils.string2Date(date,
 				// "yyyy-MM-dd");
 				IOFileFilter ageFileFilter = FileFilterUtils.ageFileFilter(date, acceptOlder);
@@ -701,7 +701,7 @@ public class FileSystemUtil extends SystemUtilBase {
 	 */
 	public static File[] getFileList(final String directory, final long size, final boolean acceptLarger) {
 		return processIO(new IOCallback<File[]>() {
-			public File[] doInProcessIO() throws IOException, NullPointerException {
+			public File[] doInProcessIO() throws IOException {
 				IOFileFilter sizeFileFilter = FileFilterUtils.sizeFileFilter(size, acceptLarger);
 
 				Collection<?> files = FileUtils.listFiles(new File(directory), sizeFileFilter,
@@ -724,7 +724,7 @@ public class FileSystemUtil extends SystemUtilBase {
 	 */
 	public static File[] getFileList(final String directory, final long minSizeInclusive, final long maxSizeInclusive) {
 		return processIO(new IOCallback<File[]>() {
-			public File[] doInProcessIO() throws IOException, NullPointerException {
+			public File[] doInProcessIO() throws IOException {
 				IOFileFilter sizeFileFilter = FileFilterUtils.sizeRangeFileFilter(minSizeInclusive, maxSizeInclusive);
 
 				Collection<?> files = FileUtils.listFiles(new File(directory), sizeFileFilter,
@@ -749,7 +749,7 @@ public class FileSystemUtil extends SystemUtilBase {
 	 */
 	public static File[] getFileList(final String directory, final String name, final FileNameSearch fileNameSearch) {
 		return processIO(new IOCallback<File[]>() {
-			public File[] doInProcessIO() throws IOException, NullPointerException {
+			public File[] doInProcessIO() throws IOException {
 				IOFileFilter fileFilter;
 				switch (fileNameSearch) {
 				case FullMatch:
@@ -781,7 +781,7 @@ public class FileSystemUtil extends SystemUtilBase {
 	 */
 	public static boolean existsFile(final String filepath) {
 		return processIO(new IOCallback<Boolean>() {
-			public Boolean doInProcessIO() throws NullPointerException, SecurityException {
+			public Boolean doInProcessIO() {
 				File file = new File(filepath);
 				if (file.exists() && file.isFile()) {
 					return true;
@@ -802,7 +802,7 @@ public class FileSystemUtil extends SystemUtilBase {
 	 */
 	public static boolean existsDir(final String dirpath) {
 		return processIO(new IOCallback<Boolean>() {
-			public Boolean doInProcessIO() throws NullPointerException, SecurityException {
+			public Boolean doInProcessIO() {
 				File dir = new File(dirpath);
 				if (dir.exists() && dir.isDirectory()) {
 					return true;
@@ -826,7 +826,7 @@ public class FileSystemUtil extends SystemUtilBase {
 	 */
 	public static boolean existsDir(final String srcDir, final String fromDate, final String toDate) {
 		return processIO(new IOCallback<Boolean>() {
-			public Boolean doInProcessIO() throws NullPointerException, SecurityException {
+			public Boolean doInProcessIO() {
 				File file = new File(srcDir);
 
 				if (existsDir(srcDir)) {

@@ -30,8 +30,10 @@ import org.springframework.web.multipart.MultipartFile;
 @Controller("flexQueryUploadController")
 public class UploadController {
 
+	//Velocity-Support-contextProperties-START
 	@Value("#{contextProperties['repository.path']}")
 	private String repositoryPath;
+	//Velocity-Support-contextProperties-END
 
 	@RequestMapping("/flexQueryUpload.do")
 	public String upload(

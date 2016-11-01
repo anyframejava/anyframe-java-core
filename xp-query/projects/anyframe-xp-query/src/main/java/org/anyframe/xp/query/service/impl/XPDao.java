@@ -32,14 +32,14 @@ import com.tobesoft.xplatform.data.VariableList;
  * @author Youngmin Jo
  * 
  */
-public class XPDao {
+public class XPDao { 
 
 	public final short TYPE_NORMAL = DataSet.ROW_TYPE_NORMAL;
 	public final short TYPE_INSERT = DataSet.ROW_TYPE_INSERTED;
 	public final short TYPE_UPDATE = DataSet.ROW_TYPE_UPDATED;
 	public final short TYPE_DELETE = DataSet.ROW_TYPE_DELETED;
 
-	private XPQueryService xpQueryService;
+	private final XPQueryService xpQueryService;
 
 	public XPDao(XPQueryService xpQueryService) {
 		this.xpQueryService = xpQueryService;

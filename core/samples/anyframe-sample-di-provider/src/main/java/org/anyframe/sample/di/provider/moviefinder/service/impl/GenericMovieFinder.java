@@ -47,7 +47,7 @@ public class GenericMovieFinder<T> implements Provider<T> {
 		}
 	}
 
-	@SuppressWarnings({ "unchecked"})
+	@SuppressWarnings("unchecked")
 	public T get() {
 		Class<T> type = (Class<T>) ((ParameterizedType) getClass()
 				.getGenericSuperclass()).getActualTypeArguments()[0];

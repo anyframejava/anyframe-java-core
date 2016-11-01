@@ -5,7 +5,7 @@
 
 <head>
 <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
-<title>Anyframe 5.5.0.RC1 Main</title>
+<title>Anyframe 5.5.1 Main</title>
 <link rel="stylesheet" type="text/css" href="<c:url value='/sample/css/layout.css'/>"/>
 <link rel="stylesheet" type="text/css" href="<c:url value='/sample/css/common.css'/>"/>
 <!-- jQuery component -->
@@ -31,7 +31,7 @@
     <div id="header">
     	<div class="toplogo"><h1><a href="<c:url value='/anyframe.jsp'/>"><img src="<c:url value='/sample/images/h1_toplogo.jpg'/>" alt="anyframe"/></a></h1></div>
 
-		<div class="location"><a href="<c:url value='/anyframe.jsp'/>">Home</a> &gt; <a href="<c:url value='/utilSystem/utilSystemList.do'/>">Util-System 1.0.3.RC1</a></div>
+		<div class="location"><a href="<c:url value='/anyframe.jsp'/>">Home</a> &gt; <a href="<c:url value='/utilSystem/utilSystemList.do'/>">Util-System 1.5.1</a></div>
     </div>
     <hr />
     
@@ -42,6 +42,7 @@
 <script type="text/javascript" src="<c:url value='/chart/javascript/fusionchart-free/jquery.fusioncharts.debug.js'/>"></script>
 
 <script type="text/javascript">
+<!--
 function makeUrl(path){
 	return "<c:url value='/utilSystem/"+path+".do'/>";
 }
@@ -133,6 +134,7 @@ $(document).ready(function() {
 
 	$("#searchAll" ).trigger("click");
 });
+//-->
 </script>
 
 <div id="container">

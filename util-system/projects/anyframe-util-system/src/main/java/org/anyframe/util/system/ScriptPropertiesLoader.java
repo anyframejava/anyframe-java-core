@@ -30,7 +30,7 @@ import org.springframework.core.io.ResourceLoader;
  */
 public class ScriptPropertiesLoader {
 
-	private Properties scripts = new Properties();
+	private final Properties scripts = new Properties(); 
 
 	/**
 	 * Basic scripts.properties path -
@@ -61,7 +61,6 @@ public class ScriptPropertiesLoader {
 			loaded = true;
 		}
 		catch (IOException e) {
-			e.printStackTrace();
 			throw new IllegalStateException("scripts.properteis Loading Error", e);
 		}
 	}

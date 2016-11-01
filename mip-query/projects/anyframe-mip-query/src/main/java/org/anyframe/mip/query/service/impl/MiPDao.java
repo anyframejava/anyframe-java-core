@@ -35,11 +35,11 @@ import com.tobesoft.platform.data.VariableList;
 public class MiPDao {
 
 	public final short TYPE_NORMAL = 1;
-	public final short TYPE_INSERT = 2;
+	public final short TYPE_INSERT = 2; 
 	public final short TYPE_UPDATE = 4;
 	public final short TYPE_DELETE = 8;
 
-	private MiPQueryService miPQueryService;
+	private final MiPQueryService miPQueryService;
 
 	public MiPDao(MiPQueryService miPQueryService) {
 		this.miPQueryService = miPQueryService;

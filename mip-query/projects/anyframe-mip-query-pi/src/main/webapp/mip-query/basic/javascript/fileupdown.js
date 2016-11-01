@@ -121,7 +121,7 @@ function gfn_FileRead( httpfileObj, file_url, str_cookie, str_size, nRow, strCol
 		return	rtn_arr;
 	}
 
-	if( length( str_size ) < 1 || str_size == 0 ) {
+	if( str_size == 0 ) {
 		rtn_arr[1]	= "Not Found File Size!";
 		return	rtn_arr;
 	}

@@ -165,6 +165,27 @@ public class QueryServiceBatchUpdateTest {
 		Assert.assertTrue("Fail to batch remove.",
 				results.size() == 0 + initCount);
 	}
+	
+	@Test
+	public void testBatchRemoveWithString() {
+		// 1. insert data
+		batchInsert();		
+		
+		// 2. set data for delete
+		List<String> args = new ArrayList<String>();
+		args.add("I1");
+		args.add("I2");
+		args.add("I3");
+
+		// 3. execute query
+		queryService.batchUpdate("batchDelete", args);
+
+		// 4. assert
+		List<Map<String, Object>> results = queryService.find("findBatchTest",
+				new Object[] {});
+		Assert.assertTrue("Fail to batch remove.",
+				results.size() == 0 + initCount);		
+	}
 
 	/**
 	 * [Flow #-2] Positive Case : By calling for batchRemove()method of

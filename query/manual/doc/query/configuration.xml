@@ -4,6 +4,7 @@
 		Query 서비스를 활용하기 위해서는 다음과 같은 속성들이 정의되어 있어야 한다. 다음에서 각 속성이 가지는 의미에 대해 알아보기로 하자.
 	</para>
     <informaltable>
+    	<caption>Query 서비스 속성</caption>
 		<tgroup cols="4">
 		<colspec colname="col1" colnum="1" colwidth="2.5*" />
 		<colspec colname="col2" colnum="2" colwidth="6*" />
@@ -108,7 +109,7 @@
 	    <para>
 	      	Query 서비스에서는 DataSource 서비스를 이용하여 해당하는 DB에 접근하고, java.sql.Connection 객체를 얻어내어 정의된 쿼리문을 
 	      	실행시키기 위해 org.anyframe.query.impl.jdbc 패키지 하위에 Spring의 JdbcTemplate을 확장한 PagingJdbcTemplate, PagingNamedParamJdbcTemplate, 
-	      	OraclePagingJdbcTemplate를 제공하고 있다.
+	      	OraclePagingJdbcTemplate 클래스를 제공하고 있다.
 	    </para>
 
       	<itemizedlist>
@@ -143,6 +144,7 @@
       	</para>
 
 		<informaltable>
+			<caption>PagingJdbcTemplate 설정 정보</caption>
         	<tgroup cols="4">
 				<colspec colname="col1" colnum="1" colwidth="2.5*" />
 				<colspec colname="col2" colnum="2" colwidth="6*" />
@@ -173,7 +175,7 @@
 							발생한 경우 별도 Exception 객체에 해당하는 SQL Error Code와 Error Message 정보를 셋팅하여 throw하도록 
 							하는 역할을 수행하며, Query 서비스에서는 org.anyframe.query.impl.util.RawSQLExceptionTranslator를 
 							제공하고 있다. 따라서, ExceptionTranslator를 별도 셋팅하면, 데이터 조작으로 인한 오류가 발생한 경우
-							Query 서비스를 통해 throw된 QueryServiceException으로부터 SQL Error Code와 Error Message 정보를 
+							Query 서비스를 통해 throw된 QueryException으로부터 SQL Error Code와 Error Message 정보를 
 							추출할 수 있게 된다.
 						</entry>
               			<entry align="center">N</entry>
@@ -216,6 +218,7 @@
 			Query 서비스에서는 테이블 매핑 정보 및 쿼리문을 정의한 매핑 정보를 처리하기 위해 다음과 같은 SqlLoader를 제공한다.
 		</para>		
       	<informaltable>
+      		<caption>SqlLoader 종류</caption>
         	<tgroup cols="2">
           		<colspec colname="col1" colnum="1" colwidth="2*" />
           		<colspec colname="col2" colnum="2" colwidth="8*" />
@@ -242,6 +245,7 @@
 		</para>
 
 		<informaltable>
+			<caption>org.anyframe.query.impl.config.loader.MappingXMLLoader 주요 설정 정보</caption>
         	<tgroup cols="4">
 				<colspec colname="col1" colnum="1" colwidth="2.5*" />
 				<colspec colname="col2" colnum="2" colwidth="6*" />
@@ -318,6 +322,7 @@
       	</para>
 
       	<informaltable>
+      		<caption>PagingSQLGenerator 종류</caption>
         	<tgroup cols="2">
           		<colspec colname="col1" colnum="1" colwidth="2*" />
           		<colspec colname="col2" colnum="2" colwidth="8*" />
@@ -426,7 +431,11 @@ public int[] setQueryArgTypes(int[] originalArgTypes) {
 			조회할 때 Query 서비스에서는 일단 해당되는 전체 목록을 모두 조회한다. 그리고 ScrollableResultSet의 Cursor를 이용하여 해당 페이지에 
 			속한 데이터들을 추출하게 된다. 따라서, 해당 페이지에 속한 데이터만을 조회하는 PagingSQLGenerator에 비해 성능이 저하된다는 점에 유의하도록 한다.
 		</para>
-	</section>      
+		<para>
+			pagingSQLGenerator는 사용중인 DBMS에서 이용되는 페이징 관련 구문을 정의된 기본 쿼리문의 앞 뒤에 추가 하는 방식으로 동작을 하기 때문에
+			정의된 기본쿼리가 복잡하거나, inner table, function 등이 사용되었을 경우에는 성능이 저하 될 수 있음을 유의하도록 한다. 
+		</para>
+	</section>
 
 	<section id="query_configuration_lobhandler">
 		<title>lobHandler</title>
@@ -456,6 +465,7 @@ public int[] setQueryArgTypes(int[] originalArgTypes) {
 		</para>
 
       	<informaltable>
+      		<caption>Oracle8iLobHandler 설정 정보</caption>
         	<tgroup cols="4">
           		<colspec colname="col1" colnum="1" colwidth="2*" />
           		<colspec colname="col2" colnum="2" colwidth="6*" />
@@ -563,33 +573,33 @@ public int[] setQueryArgTypes(int[] originalArgTypes) {
 		</para>
 			
 		<programlisting language="xml"><![CDATA[
-   <bean name="sqlLoader" class="org.anyframe.query.impl.config.loader.MappingXMLLoader">
-		<property name="mappingFiles">
-			<value>
-			    <!-- xml files in folder -->
-			    file:./src/test/resources/foldermappings/**/testcase-*.xml,
-				file:./src/test/resources/dynamicreload/testcase-queries-dynamicreload.xml,
-				<!-- xml files in classpath -->
-  		    	classpath*:/mappings/testcase-queries-dynamic.xml,
-  		    	classpath*:/mappings/testcase-queries-general.xml,
-  		   		classpath*:/mappings/testcase-queries-resultmapping.xml,
-  		    	classpath*:/mappings/testcase-queries-resultsetmapper.xml,
-  		    	classpath*:/mappings/testcase-table-mappings.xml,
-  		    	classpath*:/mappings/testcase-queries-extended.xml,
-  		    	classpath*:/mappings/testcase-queries-mappingstyle.xml,
-  		   		<!-- xml files in jar  --> 
-  		    	classpath*:/jarmappings/testcase-queries-lob.xml
-			</value>
-		</property>	
-		<property name="nullchecks">
-			<map>
-			    <!-- key: type, value: default-value -->
-		    	<entry key="VARCHAR" value=""/>
-		    </map>
-		</property>
- 		<property name="dynamicReload" value="5" />	    
-		<property name="skipError" value="true" />
-	</bean>]]></programlisting>      		
+<bean name="sqlLoader" class="org.anyframe.query.impl.config.loader.MappingXMLLoader">
+    <property name="mappingFiles">
+        <value>
+            <!-- xml files in folder -->
+            file:./src/test/resources/foldermappings/**/testcase-*.xml,
+            file:./src/test/resources/dynamicreload/testcase-queries-dynamicreload.xml,
+            <!-- xml files in classpath -->
+            classpath*:/mappings/testcase-queries-dynamic.xml,
+            classpath*:/mappings/testcase-queries-general.xml,
+            classpath*:/mappings/testcase-queries-resultmapping.xml,
+            classpath*:/mappings/testcase-queries-resultsetmapper.xml,
+            classpath*:/mappings/testcase-table-mappings.xml,
+            classpath*:/mappings/testcase-queries-extended.xml,
+            classpath*:/mappings/testcase-queries-mappingstyle.xml,
+            <!-- xml files in jar  --> 
+            classpath*:/jarmappings/testcase-queries-lob.xml
+        </value>
+    </property>	
+    <property name="nullchecks">
+        <map>
+            <!-- key: type, value: default-value -->
+            <entry key="VARCHAR" value=""/>
+        </map>
+    </property>
+    <property name="dynamicReload" value="5" />	    
+    <property name="skipError" value="true" />
+</bean>]]></programlisting>      		
 	</section>
 
 	<section id="query_configuration_testcase">
@@ -606,8 +616,8 @@ public int[] setQueryArgTypes(int[] originalArgTypes) {
 				다음은 INSERT 예제이다.
 			</para>
             	
-            <programlisting language="java"><![CDATA[public void insertQuery() throws Exception{
-    IQueryService queryService = (IQueryService) context.getBean("queryService");
+            <programlisting language="java"><![CDATA[public void insertQuery() throws Exception {
+    QueryService queryService = (QueryService) context.getBean("queryService");
     //create() : XML mapping파일에 정의되어 있는 SQL query를 이용하여 INSERT를 실행한다.
     int rs = queryService.create
             ("create", new Object[] { "1234567890123", "AAAAA" , "seoul"});
@@ -623,16 +633,16 @@ public int[] setQueryArgTypes(int[] originalArgTypes) {
 				다음은 SELECT 예제이다.
 			</para>
 
-            <programlisting language="java"><![CDATA[public void selectQuery() throws Exception{
-    IQueryService queryService = (IQueryService) context.getBean("queryService");
+            <programlisting language="java"><![CDATA[public void selectQuery() {
+    QueryService queryService = (QueryService) context.getBean("queryService");
     ]]><emphasis role="bold">//find() : XML mapping파일에 정의되어 있는 SQL query를 이용하여 SELECT를 실행한다.</emphasis><![CDATA[
 
     //일반적인 경우(table과 class를 mapping하지 않은 경우)
-    ArrayList rsquery  = (ArrayList) queryService
+    List<Map<String, Object>> rsquery  = queryService
             .find("selectGeneral", new Object[] { "%12345%" });
-    Map hsRsquery = new HashMap();
+    Map<String, Object> hsRsquery = new HashMap<String, Object>();
     for( int i = 0 ; i < rsquery.size() ; i ++ ){
-        hsRsquery = (Map) rsquery.get(i);
+        hsRsquery = rsquery.get(i);
         String name = (String) hsRsquery.get("name");
     }
     
@@ -643,21 +653,20 @@ public int[] setQueryArgTypes(int[] originalArgTypes) {
     ]]><emphasis role="bold">*/</emphasis><![CDATA[
 
     //Table - Class mapping을 사용한 경우
-    Collection rsqueryNotUsingResultMapping = queryService
+    List<Customer> rsqueryNotUsingResultMapping = queryService
             .find("selectNotUsingResultMapping", new Object[] { "%12345%" });
-    Iterator rsqueryItr = rsqueryNotUsingResultMapping.iterator();
+    Iterator<Customer> rsqueryItr = rsqueryNotUsingResultMapping.iterator();
     while (rsqueryItr.hasNext()) {
-        Customer customer = (Customer) rsqueryItr.next();
+        Customer customer = rsqueryItr.next();
         String name =  customer.getNm();
     }
 
     //result-mapping을 사용한 경우
-    Collection rsqueryUsingResultMapping = queryService
+    List<CompositionCustomer> rsqueryUsingResultMapping = queryService
             .find("selectUsingResultMapping", new Object[] { "%12345%" });
-    Iterator rsqueryItr_01 = rsqueryUsingResultMapping.iterator();
+    Iterator<CompositionCustomer> rsqueryItr_01 = rsqueryUsingResultMapping.iterator();
     while (rsqueryItr_01.hasNext()) {
-        CompositionCustomer compositionCustomer 
-                = (CompositionCustomer) rsqueryItr_01.next();
+        CompositionCustomer compositionCustomer = rsqueryItr_01.next();
         String name =  compositionCustomer.getCompositionName();
     }
 
@@ -677,7 +686,7 @@ public int[] setQueryArgTypes(int[] originalArgTypes) {
             </para>			
 
             <programlisting language="java"><![CDATA[public void updateQuery() throws Exception {
-    IQueryService queryService = (IQueryService) context
+    QueryService queryService = (QueryService) context
             .getBean("queryService");
     //update() : XML mapping파일에 정의되어 있는 SQL query를 이용하여 UPDATE를 실행한다.
     int rs = queryService.update("update"
@@ -695,7 +704,7 @@ public int[] setQueryArgTypes(int[] originalArgTypes) {
 			</para>	
 
 			<programlisting language="java"><![CDATA[public void deleteQuery() throws Exception {
-    IQueryService queryService = (IQueryService) context
+    QueryService queryService = (QueryService) context
             .getBean("queryService");
     //remove() : XML mapping파일에 정의되어 있는 SQL query를 이용하여 DELETE를  실행한다.
     int rs = queryService.remove("delete", new Object[] { "9999999999999" });
@@ -722,6 +731,7 @@ public int[] setQueryArgTypes(int[] originalArgTypes) {
 	      		query namespace는 auto-config라는 태그를 제공하고 있으며 auto-config는 다음과 같은 속성을 가진다.
 	      	</para>  	
 		    <informaltable>
+		    	<caption>auto-config 속정 정보</caption>
 				<tgroup cols="4">
 					<colspec colname="col1" colnum="1" colwidth="2.5*" />
 					<colspec colname="col2" colnum="2" colwidth="6*" />
@@ -837,63 +847,63 @@ public int[] setQueryArgTypes(int[] originalArgTypes) {
 	    	<para>
 	    		query namespace를 활용하기 위해서는 다음과 같은 namespace 정의가 선행되어야 함에 주의하도록 한다.
 	    	</para>
-	      	<programlisting language="java"><![CDATA[<beans xmlns="http://www.springframework.org/schema/beans" 
+	      	<programlisting language="xml"><![CDATA[<beans xmlns="http://www.springframework.org/schema/beans" 
 	    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
 	    ]]><emphasis role="bold">xmlns:query="http://www.anyframejava.org/schema/query"</emphasis><![CDATA[
 	    xsi:schemaLocation="http://www.springframework.org/schema/beans 
 	    http://www.springframework.org/schema/beans/spring-beans-3.1.xsd
 	    ]]><emphasis role="bold">http://www.anyframejava.org/schema/query 
 	    http://www.anyframejava.org/schema/query/anyframe-query-1.1.xsd</emphasis><![CDATA[">
-	    <]]><emphasis role="bold">query</emphasis><![CDATA[:auto-config dbType="oracle"/>
-	</beans>]]></programlisting>		
+    <]]><emphasis role="bold">query</emphasis><![CDATA[:auto-config dbType="oracle"/>
+</beans>]]></programlisting>		
 			<para>
 				위에서 보여진 query namespace를 이용한 속성 정의는 다음에서 보이는 속성 정의와 동일한 의미를 가진다. 
 			</para> 
-	      	<programlisting language="java"><![CDATA[<beans xmlns="http://www.springframework.org/schema/beans" 
+	      	<programlisting language="xml"><![CDATA[<beans xmlns="http://www.springframework.org/schema/beans" 
 	    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
 	    xsi:schemaLocation="http://www.springframework.org/schema/beans 
 	    http://www.springframework.org/schema/beans/spring-beans-3.1.xsd">
 		
-	    <bean name="]]><emphasis role="bold">queryService</emphasis><![CDATA[" class="org.anyframe.query.impl.QueryServiceImpl">
-	        <property name="jdbcTemplate" ref="jdbcTemplate"/>
-	        <property name="pagingSQLGenerator" ref="pagingSQLGenerator"/>
-	        <property name="sqlRepository" ref="sqlLoader"/>
-	        <property name="lobHandler" ref="lobHandler"/>
-	    </bean>
+    <bean name="]]><emphasis role="bold">queryService</emphasis><![CDATA[" class="org.anyframe.query.impl.QueryServiceImpl">
+        <property name="jdbcTemplate" ref="jdbcTemplate"/>
+        <property name="pagingSQLGenerator" ref="pagingSQLGenerator"/>
+        <property name="sqlRepository" ref="sqlLoader"/>
+        <property name="lobHandler" ref="lobHandler"/>
+    </bean>
 		
-	    <bean name="]]><emphasis role="bold">sqlLoader</emphasis><![CDATA[" 
-	        class="org.anyframe.query.impl.config.loader.MappingXMLLoader">
-	        <property name="mappingFiles">
-	            <value>classpath:sql/query/*.xml</value>
-	        </property>	
-	        <property name="nullchecks">
-	            <map>
-	                <entry key="VARCHAR" value=""/>
-	            </map>
-	        </property>
-	        <property name="skipError" value="true" />	
-	    </bean>
+    <bean name="]]><emphasis role="bold">sqlLoader</emphasis><![CDATA[" 
+        class="org.anyframe.query.impl.config.loader.MappingXMLLoader">
+        <property name="mappingFiles">
+            <value>classpath:sql/query/*.xml</value>
+        </property>	
+        <property name="nullchecks">
+            <map>
+                <entry key="VARCHAR" value=""/>
+            </map>
+        </property>
+        <property name="skipError" value="true" />	
+    </bean>
 		
-	    <bean id="]]><emphasis role="bold">jdbcTemplate</emphasis><![CDATA[" 
-	        class="org.anyframe.query.impl.jdbc.PagingJdbcTemplate">
-	        <property name="dataSource" ref="dataSource" />
-	        <property name="exceptionTranslator" ref="exceptionTranslator" />
-	    </bean>
+    <bean id="]]><emphasis role="bold">jdbcTemplate</emphasis><![CDATA[" 
+        class="org.anyframe.query.impl.jdbc.PagingJdbcTemplate">
+        <property name="dataSource" ref="dataSource" />
+        <property name="exceptionTranslator" ref="exceptionTranslator" />
+    </bean>
 	    
-	    <bean id="]]><emphasis role="bold">exceptionTranslator</emphasis><![CDATA[" 
-	        class="org.anyframe.query.impl.util.RawSQLExceptionTranslator"/>
+    <bean id="]]><emphasis role="bold">exceptionTranslator</emphasis><![CDATA[" 
+        class="org.anyframe.query.impl.util.RawSQLExceptionTranslator"/>
 	    
-	    <bean id="]]><emphasis role="bold">pagingSQLGenerator</emphasis><![CDATA[" 
-	        class="org.anyframe.query.impl.jdbc.generator.OraclePagingSQLGenerator"/>
+    <bean id="]]><emphasis role="bold">pagingSQLGenerator</emphasis><![CDATA[" 
+        class="org.anyframe.query.impl.jdbc.generator.OraclePagingSQLGenerator"/>
 		
-	    <bean id="]]><emphasis role="bold">lobHandler</emphasis><![CDATA[" 
-	        class="org.springframework.jdbc.support.lob.OracleLobHandler" lazy-init="true">
-	        <property name="nativeJdbcExtractor" ref="nativeJdbcExtractor"/>
-	    </bean>
+    <bean id="]]><emphasis role="bold">lobHandler</emphasis><![CDATA[" 
+        class="org.springframework.jdbc.support.lob.OracleLobHandler" lazy-init="true">
+        <property name="nativeJdbcExtractor" ref="nativeJdbcExtractor"/>
+    </bean>
 	
-	    <bean id="]]><emphasis role="bold">nativeJdbcExtractor</emphasis><![CDATA[" 
-	        class="org.springframework.jdbc.support.nativejdbc.CommonsDbcpNativeJdbcExtractor" lazy-init="true"/>
-	</beans>]]></programlisting>
+    <bean id="]]><emphasis role="bold">nativeJdbcExtractor</emphasis><![CDATA[" 
+        class="org.springframework.jdbc.support.nativejdbc.CommonsDbcpNativeJdbcExtractor" lazy-init="true"/>
+</beans>]]></programlisting>
 			<para>
 				단, auto-config에 의해 정의되는 jdbcTemplate, pagingSQLGenerator, lobHandler, sqlLoader Bean의 식별자는 랜덤 문자열로 생성됨에 유의해야 한다.
 				다양한 DB를 이용하여 DB 접근 로직을 수행하려는 경우 QueryService가 여러개 정의되어야 하고, QueryService에 의해 참조되는 jdbcTemplate, pagingSQLGenerator, lobHandler, sqlLoader Bean들은 
@@ -928,37 +938,36 @@ import org.springframework.transaction.annotation.EnableTransactionManagement;
 @EnableTransactionManagement
 ]]><emphasis role="bold">@EnableQueryService(dbType="hsqldb")</emphasis><![CDATA[
 @ComponentScan(basePackages = "org.anyframe.sample.javaconfig.moviefinder", useDefaultFilters = false, includeFilters = {
-		@ComponentScan.Filter(Service.class),
-		@ComponentScan.Filter(Repository.class) })
+    @ComponentScan.Filter(Service.class),
+    @ComponentScan.Filter(Repository.class) })
 public class AppConfig {
 
-	private @Value("#{contextProperties['driver']}") String driver;
-	private @Value("#{contextProperties['url']}") String url;
-	private @Value("#{contextProperties['username']}") String username;
-	private @Value("#{contextProperties['password']}") String password;
+    private @Value("#{contextProperties['driver']}") String driver;
+    private @Value("#{contextProperties['url']}") String url;
+    private @Value("#{contextProperties['username']}") String username;
+    private @Value("#{contextProperties['password']}") String password;
 	
-	@Bean
-	public PropertiesFactoryBean contextProperties() {
-		PropertiesFactoryBean contextProperties = new PropertiesFactoryBean();
-		contextProperties.setLocation(new ClassPathResource("context.properties"));
-		return contextProperties;
-	}
+    @Bean
+    public PropertiesFactoryBean contextProperties() {
+        PropertiesFactoryBean contextProperties = new PropertiesFactoryBean();
+        contextProperties.setLocation(new ClassPathResource("context.properties"));
+        return contextProperties;
+    }
 	
-	@Bean
-	public DataSource dataSource() {
-		BasicDataSource dataSource = new BasicDataSource();
-		dataSource.setDriverClassName(driver);
-		dataSource.setUrl(url);
-		dataSource.setUsername(username);
-		dataSource.setPassword(password);
-		return dataSource;
-	}
+    @Bean
+    public DataSource dataSource() {
+        BasicDataSource dataSource = new BasicDataSource();
+        dataSource.setDriverClassName(driver);
+        dataSource.setUrl(url);
+        dataSource.setUsername(username);
+        dataSource.setPassword(password);
+        return dataSource;
+    }
 
-	@Bean
-	public PlatformTransactionManager transactionManager() {
-		return new DataSourceTransactionManager(dataSource());
-	}
-	
+    @Bean
+    public PlatformTransactionManager transactionManager() {
+        return new DataSourceTransactionManager(dataSource());
+    }
 }
     		]]></programlisting>
 			<para>본 예제 코드는 Spring Business Layser 관련 설정을 모아놓은 Application Configuration class이며, @EnableWebMvcAnyframe 어노테이션이 @Configuration과 같이 사용되었고, <![CDATA[<query:auto-config/>]]>와 동일하게 사용가능하다</para>
@@ -999,7 +1008,7 @@ public class AppConfig {
 								<tbody>										
 									<row>
 										<entry align="center">anyframe-sample-javaconfig-mvc.zip</entry>
-										<entry align="center"><ulink url="http://dev.anyframejava.org/docs/anyframe/plugin/essential/core/1.5.0.RC1/reference/sample/anyframe-sample-javaconfig-mvc.zip">Download</ulink>
+										<entry align="center"><ulink url="http://dev.anyframejava.org/docs/anyframe/plugin/essential/core/1.5.1/reference/sample/anyframe-sample-javaconfig-mvc.zip">Download</ulink>
 										</entry>
 									</row>														
 								</tbody>

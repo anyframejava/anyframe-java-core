@@ -33,7 +33,7 @@
 			<year>2007-2012</year>
 			<holder>삼성SDS</holder>
 		</copyright>
-		<releaseinfo>Version 1.5.0.RC1</releaseinfo>
+		<releaseinfo>Version 1.5.1</releaseinfo>
 
 		<productname>Anyframe Generic Plugin</productname>
 		
@@ -45,6 +45,9 @@
 			<imageobject>
 				<imagedata fileref="../image/common/logo_pdf.jpg"/>
 			</imageobject>
+			<textobject>
+				<phrase>Anyframe Java Logo</phrase>
+			</textobject>
 		</mediaobject>
 		<legalnotice>
 			<para>
@@ -71,8 +74,8 @@
 			<para>
 				installed(mvn anyframe:installed) 혹은 jetty:run(mvn clean jetty:run) command를 이용하여 설치 결과를 확인해볼 수 있다. 
 			</para>
-			<para role="introduction_title"><emphasis role="bold">Dependent Plugins</emphasis></para>
 			<informaltable>
+				<caption>Dependent Plugins</caption>
 				<tgroup cols="2">
 					<colspec colnum="1" colname="col1" colwidth="5*" />
 					<colspec colnum="2" colname="col2" colwidth="5*" />
@@ -84,7 +87,7 @@
 					</thead>
 					<tbody>
 						<row>
-							<entry align="center"><ulink url="http://dev.anyframejava.org/docs/anyframe/plugin/optional/query/1.5.0.RC1/reference/htmlsingle/query.html">query</ulink></entry>
+							<entry align="center"><ulink url="http://dev.anyframejava.org/docs/anyframe/plugin/optional/query/1.5.1/reference/htmlsingle/query.html">query</ulink></entry>
 							<entry align="center" valign="middle">2.0.0 > * > 1.4.0</entry>
 						</row>
 					</tbody>
@@ -126,10 +129,16 @@
 				<imageobject>
 					<imagedata align="center" fileref="../image/generic/generic-flow.jpg" />
 				</imageobject>
+				<textobject>
+					<phrase>
+						Generic Service 클래스들의 관계를 나타낸 그림으로써 서비스 인터페이스와 구현 클래스 그리고 DAO 인터페이스, QueryService용 DAO 구현 클래스,
+						Hibernate용 DAO 구현 클래스들이 표현되어 있다.
+					</phrase>
+				</textobject>
 			</mediaobject>
 			Generic 개념은 Java 5의 가장 큰 특징 중의 하나로 Collection이 포함하게 될 객체의 타입을 미리 선언하는 것을 말한다.
 			
-					과거에 List list = new ArrayList(); 로 표현했던 것을 Generic을 적용하면 List&lt;String&gt; list = new ArrayList(); 으로 
+					과거에 List list = new ArrayList(); 로 표현했던 것을 Generic을 적용하면 List&lt;String&gt; list = new ArrayList&lt;String&gt;(); 으로 
 		표현할 수 있으며, 지정된 타입 이외의 객체를 사용할 경우 컴파일 에러가 발생한다. 따라서, 캐스팅 작업은 없어지고 명시적으로
 		어떤 타입을 사용할 것인지 표현하여 가독성을 향상시킬 수 있다. 또한, Generic 타입을 사용하면 프로그래머가 원하는 객체의 타입을
 		명시해서 의도하지 않은 객체는 저장될 수 없도록 컴파일 시에 오류를 확인할 수 있게 된다.

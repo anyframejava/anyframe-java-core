@@ -27,7 +27,7 @@ import java.util.List;
  * @author modified by ByungHun Woo
  */
 public enum OsType {
-	// @formatter:off
+	// @formatter:off 
 	OS(null),
 		Windows(OS),
 			WindowsNT(Windows),
@@ -118,7 +118,7 @@ public enum OsType {
 		}
 
 		for (OsType osType = this; osType != null; osType = osType.parent()) {
-			if (other == osType) {
+			if (other.equals(osType)) {
 				return true;
 			}
 		}

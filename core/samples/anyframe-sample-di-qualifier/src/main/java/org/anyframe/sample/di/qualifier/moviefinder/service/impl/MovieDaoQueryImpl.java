@@ -31,7 +31,7 @@ import org.anyframe.sample.di.qualifier.moviefinder.domain.Movie;
 @DaoQualifier
 public class MovieDaoQueryImpl implements MovieDao {
 
-	public Movie get(String movieId) throws Exception {
+	public Movie get(String movieId) {
 		System.out.println("call get() in MovieDaoQueryImpl");
 		Movie movie = new Movie();
 		movie.setTitle("Alice in Wonderland");

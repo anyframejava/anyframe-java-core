@@ -88,7 +88,7 @@ public abstract class ZipUtil extends SystemUtilBase {
 	/**
 	 * ZipUtils Logger
 	 */
-	private static final Logger logger = LoggerFactory.getLogger(ZipUtil.class);
+	private static final Logger LOGGER = LoggerFactory.getLogger(ZipUtil.class);
 
 	/**
 	 * Provide interface so that decompress logic according to case can be
@@ -118,7 +118,7 @@ public abstract class ZipUtil extends SystemUtilBase {
 		// check zipFile
 		final File file = new File(targetZipFileStr);
 		if (!file.exists() || !file.canRead()) {
-			logger.error(
+			LOGGER.error(
 					"could not decompress. {} does not exists or can not read.",
 					file.getAbsolutePath());
 			return false;
@@ -171,7 +171,7 @@ public abstract class ZipUtil extends SystemUtilBase {
 				bos = new BufferedOutputStream(fos);
 				IOUtils.copy(ais, bos);
 			} catch (IOException e) {
-				logger.error("fail to process each content.", e);
+				LOGGER.error("fail to process each content.", e);
 				throw e;
 			} finally {
 				if (bos != null) {
@@ -427,7 +427,7 @@ public abstract class ZipUtil extends SystemUtilBase {
 				// check targetDir or targetFile
 				final File targetDirFile = new File(targetDir);
 				if (!targetDirFile.exists() || !targetDirFile.canRead()) {
-					logger.error(
+					LOGGER.error(
 							"could not compress. {} does not exists or can not read.",
 							targetDirFile.getAbsolutePath());
 					return false;

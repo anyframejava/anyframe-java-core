@@ -39,7 +39,7 @@ import org.springframework.util.StringUtils;
  *         int beginUnitPage: begin page <br>
  *         int endUnitPage: end page<br>
  * 
- * 
+ *  
  */
 
 public class PageNavigatorTag extends TagSupport {
@@ -48,16 +48,16 @@ public class PageNavigatorTag extends TagSupport {
 
 	private String formName = "forms[0]";
 
-	private String pageFirstImageStyleClass = "btn_first";
-	private String pagePreviousImageStyleClass = "btn_prev";
-	private String pageNextImageStyleClass = "btn_next";
-	private String pageLastImageStyleClass = "btn_last";
+	private final String pageFirstImageStyleClass = "btn_first";
+	private final String pagePreviousImageStyleClass = "btn_prev";
+	private final String pageNextImageStyleClass = "btn_next";
+	private final String pageLastImageStyleClass = "btn_last";
 
 	private String linkClass = "linkClass";
 	private String render = "all";
 	private String linkFragment = "";
 	private String linkPopup = "";
-	private String PARTIAL_RENDERING = "<script type=\"text/javascript\">function {elementId}(){document.{formId}.pageIndex.value={pageIndex};}Spring.addDecoration(new Spring.AjaxEventDecoration({ elementId:\"{elementId}\",event:\"onclick\",formId:\"{formId}\",params:{fragments:\"{dynamicAttrName}\"}, func:{elementId}}));</script>";
+	private static final String PARTIAL_RENDERING = "<script type=\"text/javascript\">function {elementId}(){document.{formId}.pageIndex.value={pageIndex};}Spring.addDecoration(new Spring.AjaxEventDecoration({ elementId:\"{elementId}\",event:\"onclick\",formId:\"{formId}\",params:{fragments:\"{dynamicAttrName}\"}, func:{elementId}}));</script>";
 
 	private String firstImg = "";
 	private String prevImg = "";

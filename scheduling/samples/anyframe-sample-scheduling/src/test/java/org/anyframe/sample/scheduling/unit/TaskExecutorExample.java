@@ -23,6 +23,7 @@ import org.springframework.core.task.TaskExecutor;
  */
 public class TaskExecutorExample {
 
+	@SuppressWarnings("unused")
 	private class MessagePrinterTask implements Runnable {
 
 		private String message;

@@ -31,10 +31,9 @@ import org.slf4j.LoggerFactory;
  */
 @Deprecated
 public class ClasspathUtil {
-	private static final Logger logger = LoggerFactory
+	private static final Logger LOGGER = LoggerFactory
 			.getLogger(ClasspathUtil.class);
 
-	@SuppressWarnings("restriction")
 	public static sun.misc.URLClassPath getURLClassPath(ClassLoader loader)
 			throws IllegalArgumentException, IllegalAccessException {
 		if (!(loader instanceof URLClassLoader)) {
@@ -58,13 +57,13 @@ public class ClasspathUtil {
 								ucp.setAccessible(true);
 
 							} catch (SecurityException e) {
-								logger
+								LOGGER
 										.error(
 												"Cannot access field 'ucp'. Error : {}",
 												new Object[] { e.getMessage() });
 
 							} catch (NoSuchFieldException e) {
-								logger.error(
+								LOGGER.error(
 										"Cannot find field 'ucp'. Error : {}",
 										new Object[] { e.getMessage() });
 							}

@@ -51,7 +51,7 @@ public class PropertiesServiceImpl implements PropertiesService,
 	private ResourceLoader resourceLoader = null;
 
 	private Watcher watcher;
-	private long dynamicReload = -1;
+	private long dynamicReload = -1; 
 	private String fileNames = "";
 	private String encoding = "";
 
@@ -280,8 +280,7 @@ public class PropertiesServiceImpl implements PropertiesService,
 	 *            The default value of the resource
 	 * @return The value of the named resource as a vector
 	 */
-	@SuppressWarnings("unchecked")
-	public Vector<?> getVector(String name, Vector def) {
+	public Vector<?> getVector(String name, Vector<?> def) {
 		return getConfiguration().getVector(name, def);
 	}
 
@@ -300,6 +299,7 @@ public class PropertiesServiceImpl implements PropertiesService,
 	 * some configuration resources is changed.
 	 * 
 	 * @throws FileReloadException
+	 *             if there is any problem refreshing the property files
 	 * 
 	 */
 	public void refreshPropertyFiles() {
@@ -422,9 +422,9 @@ public class PropertiesServiceImpl implements PropertiesService,
 
 		private final int scanRate = 10;
 
-		private Hashtable<Resource, Long> resources = new Hashtable<Resource, Long>();
+		private final Hashtable<Resource, Long> resources = new Hashtable<Resource, Long>();
 
-		private boolean done = false;
+		private final boolean done = false;
 
 		private long refreshRate = 0;
 

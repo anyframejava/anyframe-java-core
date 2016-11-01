@@ -81,7 +81,7 @@ useChangeInfo="true"/>]]></programlisting>
 				아래는 DataSet과 DataService를 이용해 조회하는 쿼리를 실행하는 예이다.
 			</para>
 			<para>
-				<programlisting language="xml"><![CDATA[protected function search():void{
+				<programlisting language="java"><![CDATA[protected function search():void{
     var searchParam:Object = new Object;
     searchParam["firstName"] = searchStr.text;
     dataService.getList( ['dsContact'], searchParam );
@@ -107,17 +107,17 @@ useChangeInfo="true"/>]]></programlisting>
 				선언되어 있고 수정,삭제,신규생성을 한번에 처리하는  메소드도 선언되어 있다.
 				<programlisting language="java"><![CDATA[public interface FlexService {
 	
-    public List findList(List dataSetList, Map param) throws Exception ;
+    public List<DataSet> findList(List<DataSet> dataSetList, Map<String, Object> param) throws Exception ;
 	
-    public Map saveAll(List dataSetList, Map param) throws Exception ;
+    public Map<String, Map<String,Integer>> saveAll(List<DataSet> dataSetList, Map<String, Object> param) throws Exception ;
 	
-    public Map find(String queryId, DataRow dataRow, Map param )throws Exception;
+    public Map<String, Object> find(String queryId, DataRow dataRow, Map<String, Object> param) throws Exception;
 	
-    public Map create(String queryId, DataRow dataRow, Map param )throws Exception;
+    public Map<String, Integer> create(String queryId, DataRow dataRow, Map<String, Object> param) throws Exception;
 	
-    public Map update(String queryId, DataRow dataRow, Map param )throws Exception;
+    public Map<String, Integer> update(String queryId, DataRow dataRow, Map<String, Object> param) throws Exception;
 	
-    public Map remove(String queryId, DataRow dataRow, Map param )throws Exception;
+    public Map<String, Integer> remove(String queryId, DataRow dataRow, Map<String, Object> param) throws Exception;
 }]]></programlisting>
 			</para>
 		</section>
@@ -144,7 +144,7 @@ useChangeInfo="true"/>]]></programlisting>
 	
     public Map saveAll(List dataSetList, Map param) throws Exception {
 		
-        Map result = new LinkedHashMap();
+        Map<String, Object> result = new LinkedHashMap<String, Object>();
 		
         for(int i=0; i<dataSetList.size(); i++) {
 			
@@ -157,7 +157,7 @@ useChangeInfo="true"/>]]></programlisting>
                     String queryId = ds.deleteQueryId;
                     int deleteCnt = flexDao.delete(queryId, dr, param);
                     if(result.containsKey(queryId)) {
-                        deleteCnt += ((Integer)result.get(queryId)).intValue();
+                        deleteCnt += result.get(queryId).intValue();
                     }
                     result.put(queryId, deleteCnt);
                 }
@@ -179,7 +179,7 @@ useChangeInfo="true"/>]]></programlisting>
                         List generatedKeys = (List) result.get("generatedKeys");
                         generatedKeys.add(generatedKey);
                     } else {
-                        List generatedKeys = new ArrayList();
+                        List<Object> generatedKeys = new ArrayList<Object>();
                         generatedKeys.add(generatedKey);
                         result.put("generatedKeys", generatedKeys);
                     }

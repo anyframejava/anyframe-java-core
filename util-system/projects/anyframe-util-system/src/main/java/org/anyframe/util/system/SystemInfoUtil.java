@@ -55,17 +55,17 @@ import org.springframework.util.StringUtils;
  * @author ByungHun Woo
  *
  */
-public abstract class SystemInfoUtil extends SystemUtilBase {
+public abstract class SystemInfoUtil extends SystemUtilBase { 
 	
 	// just famous smart devices
-	private static final String[] mobileOs = new String[] { "Android", "iPhone OS",
+	private static final String[] MOBILE_OS = new String[] { "Android", "iPhone OS",
 			"iPhone", "iPod", "iPad" };
 	// ref.
 	// http://user-agents.my-addr.com/user_agent_request/user_agent_examples-and-user_agent_types.php
-	private static final String[] deskOs = new String[] { "Windows", "Win9", "Linux",
+	private static final String[] DESK_OS = new String[] { "Windows", "Win9", "Linux",
 			"Macintosh", "Mac", "FreeBSD", "IRIX", "SunOS", "BeOS" };
 
-	private static final Pattern firstParenPattern = Pattern.compile("^.*?\\((.+?)\\).*$");
+	private static final Pattern FIRST_PAREN_PATTERN = Pattern.compile("^.*?\\((.+?)\\).*$");
 
 	/**
 	 * Total, Used, Free
@@ -435,7 +435,7 @@ public abstract class SystemInfoUtil extends SystemUtilBase {
 	}
 	
 	protected static String findOsIfPossible(String str) {
-		Matcher matcher = firstParenPattern.matcher(str);
+		Matcher matcher = FIRST_PAREN_PATTERN.matcher(str);
 		if (matcher.find()) {
 			return StringUtils
 					.trimWhitespace(tryWithDelimiter(matcher.group(1)));
@@ -466,13 +466,13 @@ public abstract class SystemInfoUtil extends SystemUtilBase {
 	}
 
 	private static boolean candidateCheck(String candidate) {
-		for (String os : mobileOs) {
+		for (String os : MOBILE_OS) {
 			if (candidate.contains(os)) {
 				return true;
 			}
 		}
 
-		for (String os : deskOs) {
+		for (String os : DESK_OS) {
 			if (candidate.contains(os)) {
 				return true;
 			}

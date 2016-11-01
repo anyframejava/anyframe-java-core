@@ -44,8 +44,6 @@ import org.anyframe.scheduling.JobInfo;
 import org.anyframe.scheduling.TriggerInfo;
 import org.anyframe.scheduling.exception.SchedulingException;
 import org.springframework.scheduling.quartz.CronTriggerFactoryBean;
-import org.springframework.scheduling.quartz.JobDetailFactoryBean;
-import org.springframework.scheduling.quartz.SchedulerFactoryBean;
 import org.springframework.scheduling.quartz.SimpleTriggerFactoryBean;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
@@ -60,25 +58,24 @@ import org.xml.sax.SAXException;
  * 
  * @author Sujeong Lee
  */
-public class JobFileManager {
+public class JobFileManager { 
 	// context-scheduling.xml file parsing, CRUD
 
-	private String schedulingFile = this.getClass().getResource("/").getPath()
+	private final String schedulingFile = this.getClass().getResource("/")
+			.getPath()
 			+ "spring/" + "context-scheduling.xml";
 	private Document document;
 	// jobList transfered from service implemantation class
-	private List<JobInfo> jobList;
+	private final List<JobInfo> jobList;
 	// parsing Trigger List
 	private List<TriggerInfo> triggerInfoList;
-	private JobDBManager jobDBManager;
 
 	/**
 	 * @param jobList
 	 * @param jobContextDao
 	 */
-	public JobFileManager(List<JobInfo> jobList, JobDBManager jobDBManager) {
+	public JobFileManager(List<JobInfo> jobList) {
 		this.jobList = jobList;
-		this.jobDBManager = jobDBManager;
 	}
 
 	/**
@@ -103,16 +100,17 @@ public class JobFileManager {
 			// 4. check the usage of DB
 			// 4-1. N - insert other jobs in xml
 			// 4.2. N - remove jobs in xml
-			if (jobDBManager == null) {
-				                          
-			}
+			// if (jobDBManager == null) {
+			//
+			// }
 
 			// 5. save file
 			exportContextDocument();
 
 			return (List<JobInfo>) xmlJobMap.get("insert");
 		} catch (Exception ex) {
-			throw new SchedulingException("Fail to change job in context file", ex);
+			throw new SchedulingException("Fail to change job in context file",
+					ex);
 		}
 	}
 
@@ -158,11 +156,11 @@ public class JobFileManager {
 					for (int n = 0; n < childNodeList.getLength(); n++) {
 						Node childNode = childNodeList.item(n);
 						NamedNodeMap childAttr = childNode.getAttributes();
-						if (childNode.getNodeName()
-								.equalsIgnoreCase("property")) {
+						if ("property"
+								.equalsIgnoreCase(childNode.getNodeName())) {
 							String jobDetail = childAttr.getNamedItem("name")
 									.getNodeValue();
-							if (jobDetail.equalsIgnoreCase("jobDetail")) {
+							if ("jobDetail".equalsIgnoreCase(jobDetail)) {
 								trigger.setJobDetail(childAttr.getNamedItem(
 										"ref").getNodeValue());
 							}
@@ -179,13 +177,13 @@ public class JobFileManager {
 		NodeList childNodeList = node.getChildNodes();
 		for (int j = 0; j < childNodeList.getLength(); j++) {
 			Node child = childNodeList.item(j);
-			if (child.getNodeName().equals("property")) {
+			if ("property".equals(child.getNodeName())) {
 				NamedNodeMap propertyAttr = child.getAttributes();
 				String name = propertyAttr.getNamedItem("name").getNodeValue();
-				if (trigger.getType().equals("simple")
-						&& name.equals("repeatInterval")
-						|| trigger.getType().equals("cron")
-						&& name.equals("cronExpression")) {
+				if ("simple".equals(trigger.getType())
+						&& "repeatInterval".equals(name)
+						|| "cron".equals(trigger.getType())
+						&& "cronExpression".equals(name)) {
 					trigger.setSchedule(propertyAttr.getNamedItem("value")
 							.getNodeValue());
 				}
@@ -240,8 +238,8 @@ public class JobFileManager {
 				NodeList childNodeList = node.getChildNodes();
 
 				String beanId = attr.getNamedItem("id").getNodeValue();
-				if (!beanId.equals("") && beanId.equalsIgnoreCase(triggerName)) {
-					if (jobInfo.getFlagScheduleType().equals("simple")) {
+				if (!"".equals(beanId) && beanId.equalsIgnoreCase(triggerName)) {
+					if ("simple".equals(jobInfo.getFlagScheduleType())) {
 						// if update result is simple trigger
 						((Element) node).setAttribute("class",
 								SimpleTriggerFactoryBean.class
@@ -250,25 +248,25 @@ public class JobFileManager {
 						for (int n = 0; n < childNodeList.getLength(); n++) {
 							Node childNode = childNodeList.item(n);
 							NamedNodeMap childAttr = childNode.getAttributes();
-							if (childNode.getNodeName().equalsIgnoreCase(
-									"property")) {
+							if ("property".equalsIgnoreCase(childNode
+									.getNodeName())) {
 								String schedule = childAttr
 										.getNamedItem("name").getNodeValue();
-								if (schedule.equalsIgnoreCase("repeatInterval")) {
+								if ("repeatInterval".equalsIgnoreCase(schedule)) {
 									// if, from simple trigger -> modify only
 									// repeatInterval value
 									((Element) childNode).setAttribute("value",
 											jobInfo.getJobSchedule());
-								} else if (schedule
-										.equalsIgnoreCase("cronExpression")) {
+								} else if ("cronExpression"
+										.equalsIgnoreCase(schedule)) {
 									// if, from cron trigger -> modify property
 									// to repeatInterval
 									((Element) childNode).setAttribute("name",
 											"repeatInterval");
 									((Element) childNode).setAttribute("value",
 											jobInfo.getJobSchedule());
-								} else if (schedule
-										.equalsIgnoreCase("startTime")) {
+								} else if ("startTime"
+										.equalsIgnoreCase(schedule)) {
 									// modify startDate
 									((Element) childNode).setAttribute("value",
 											jobInfo.getStartDate().toString());
@@ -276,7 +274,7 @@ public class JobFileManager {
 							}
 						}
 
-					} else if (jobInfo.getFlagScheduleType().equals("cron")) {
+					} else if ("cron".equals(jobInfo.getFlagScheduleType())) {
 						// if update result is cron trigger
 						((Element) node)
 								.setAttribute("class",
@@ -286,25 +284,25 @@ public class JobFileManager {
 						for (int n = 0; n < childNodeList.getLength(); n++) {
 							Node childNode = childNodeList.item(n);
 							NamedNodeMap childAttr = childNode.getAttributes();
-							if (childNode.getNodeName().equalsIgnoreCase(
-									"property")) {
+							if ("property".equalsIgnoreCase(childNode
+									.getNodeName())) {
 								String schedule = childAttr
 										.getNamedItem("name").getNodeValue();
-								if (schedule.equalsIgnoreCase("cronExpression")) {
+								if ("cronExpression".equalsIgnoreCase(schedule)) {
 									// if, from cron trigger -> modify only
 									// cronExpression value
 									((Element) childNode).setAttribute("value",
 											jobInfo.getJobSchedule());
-								} else if (schedule
-										.equalsIgnoreCase("repeatInterval")) {
+								} else if ("repeatInterval"
+										.equalsIgnoreCase(schedule)) {
 									// if, from simple trigger -> modify
 									// property to cronExpression
 									((Element) childNode).setAttribute("name",
 											"cronExpression");
 									((Element) childNode).setAttribute("value",
 											jobInfo.getJobSchedule());
-								} else if (schedule
-										.equalsIgnoreCase("startTime")) {
+								} else if ("startTime"
+										.equalsIgnoreCase(schedule)) {
 									// modify startDate
 									((Element) childNode).setAttribute("value",
 											jobInfo.getStartDate().toString());
@@ -315,173 +313,6 @@ public class JobFileManager {
 					} else {
 						throw new InvalidPropertyException(
 								"invalid schedule type");
-					}
-				}
-			}
-		}
-	}
-
-	@SuppressWarnings("unchecked")
-	private void reflectJobChanges(Map<String, List<?>> map) {
-		// map : execpt updated jobs in xml which jobs in memory.(insert,
-		// remove)
-		List<JobInfo> insertList = (List<JobInfo>) map.get("insert");
-		List<TriggerInfo> removeList = (List<TriggerInfo>) map
-				.get("remove");
-
-		Iterator<JobInfo> insertItr = insertList.iterator();
-		while (insertItr.hasNext()) {
-			JobInfo jobInfo = insertItr.next();
-			insert(jobInfo);
-		}
-		Iterator<TriggerInfo> removeItr = removeList.iterator();
-		while (removeItr.hasNext()) {
-			TriggerInfo triggerInfo = removeItr.next();
-			remove(triggerInfo);
-		}
-	}
-
-	private void insert(JobInfo jobInfo) {
-		insertJobBean(jobInfo);
-		insertTriggerBean(jobInfo);
-		insertTriggerInScheduler(jobInfo);
-	}
-
-	private void insertTriggerInScheduler(JobInfo jobInfo) {
-		NodeList list = document.getElementsByTagName("bean");
-		for (int i = 0; i < list.getLength(); i++) {
-			Node node = list.item(i);
-			NamedNodeMap attr = node.getAttributes();
-
-			if (attr.getNamedItem("class").getNodeValue().equals(
-					SchedulerFactoryBean.class.getName())) {
-				NodeList beanChildList = node.getChildNodes();
-				for (int n = 0; n < beanChildList.getLength(); n++) {
-					Node propertyNode = beanChildList.item(n);
-					if (propertyNode.getNodeName().equalsIgnoreCase("property")) {
-						NodeList propertyChildList = propertyNode
-								.getChildNodes();
-						for (int m = 0; m < propertyChildList.getLength(); m++) {
-							Node listNode = propertyChildList.item(m);
-							if (listNode.getNodeName().equalsIgnoreCase("list")) {
-
-								Element refTrigger = document
-										.createElement("ref");
-								refTrigger.setAttribute("bean", jobInfo
-										.getTriggerName());
-
-								listNode.appendChild(refTrigger);
-
-							}
-						}
-					}
-				}
-			}
-		}
-	}
-
-	private void insertTriggerBean(JobInfo jobInfo) {
-		NodeList nodeList = document.getElementsByTagName("beans");
-
-		Element triggerBean = document.createElement("bean");
-		triggerBean.setAttribute("id", jobInfo.getTriggerName());
-
-		Element triggerSchedule = document.createElement("property");
-
-		if (jobInfo.getFlagScheduleType().equals("simple")) {
-			triggerBean.setAttribute("class", SimpleTriggerFactoryBean.class
-					.getName());
-			triggerSchedule.setAttribute("name", "repeatInterval");
-		} else {
-			triggerBean.setAttribute("class", CronTriggerFactoryBean.class
-					.getName());
-			triggerSchedule.setAttribute("name", "cronExpression");
-		}
-
-		triggerSchedule.setAttribute("value", jobInfo.getJobSchedule());
-
-		Element targetObject = document.createElement("property");
-		targetObject.setAttribute("name", "jobDetail");
-		targetObject.setAttribute("ref", jobInfo.getJobName());
-
-		triggerBean.appendChild(targetObject);
-		triggerBean.appendChild(triggerSchedule);
-
-		nodeList.item(nodeList.getLength() - 1).appendChild(triggerBean);
-	}
-
-	private void insertJobBean(JobInfo jobInfo) {
-		NodeList nodeList = document.getElementsByTagName("beans");
-
-		Element jobBean = document.createElement("bean");
-		jobBean.setAttribute("id", jobInfo.getJobName());
-		jobBean.setAttribute("class", JobDetailFactoryBean.class.getName());
-
-		Element jobClass = document.createElement("property");
-		jobClass.setAttribute("name", "jobClass");
-		jobClass.setAttribute("value", jobInfo.getJobTarget());
-
-		jobBean.appendChild(jobClass);
-		nodeList.item(nodeList.getLength() - 1).appendChild(jobBean);
-	}
-
-	private void remove(TriggerInfo triggerInfo) {
-		NodeList list = document.getElementsByTagName("bean");
-
-		for (int i = list.getLength() - 1; i > -1; i--) {
-			Node node = list.item(i);
-			NamedNodeMap attr = node.getAttributes();
-			if (attr.getNamedItem("id") != null) {
-
-				String beanId = attr.getNamedItem("id").getNodeValue();
-				// job
-				if (beanId.equals(triggerInfo.getJobDetail())) {
-					node.getParentNode().removeChild(node);
-				}
-				// trigger
-				if (beanId.equals(triggerInfo.getId())) {
-					node.getParentNode().removeChild(node);
-					removeTriggerInScheduler(beanId);
-				}
-			}
-		}
-	}
-
-	private void removeTriggerInScheduler(String beanId) {
-		NodeList list = document.getElementsByTagName("bean");
-		for (int i = 0; i < list.getLength(); i++) {
-			Node node = list.item(i);
-			NamedNodeMap attr = node.getAttributes();
-
-			if (attr.getNamedItem("class").getNodeValue().equals(
-					SchedulerFactoryBean.class.getName())) {
-				NodeList beanChildList = node.getChildNodes();
-				for (int n = 0; n < beanChildList.getLength(); n++) {
-					Node propertyNode = beanChildList.item(n);
-					if (propertyNode.getNodeName().equalsIgnoreCase("property")) {
-						NodeList propertyChildList = propertyNode
-								.getChildNodes();
-						for (int m = 0; m < propertyChildList.getLength(); m++) {
-							Node listNode = propertyChildList.item(m);
-							if (listNode.getNodeName().equalsIgnoreCase("list")) {
-								NodeList listChildList = listNode
-										.getChildNodes();
-								for (int l = 0; l < listChildList.getLength(); l++) {
-									Node refNode = listChildList.item(l);
-									if (refNode.getNodeName().equalsIgnoreCase(
-											"ref")) {
-										NamedNodeMap refAttr = refNode
-												.getAttributes();
-										String ref = refAttr.getNamedItem(
-												"bean").getNodeValue();
-										if (ref.equals(beanId)) {
-											refNode.getParentNode()
-													.removeChild(refNode);
-										}
-									}
-								}
-							}
-						}
 					}
 				}
 			}

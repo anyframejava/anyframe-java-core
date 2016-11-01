@@ -24,7 +24,7 @@ import org.anyframe.sample.domain.Genre;
 import org.springframework.jdbc.core.BeanPropertyRowMapper;
 import org.springframework.jdbc.core.support.JdbcDaoSupport;
 import org.springframework.stereotype.Repository;
- 
+
 /**
  * This GenreDao class is a DAO class to provide genre list functionality.
  * 
@@ -38,9 +38,9 @@ public class GenreDao extends JdbcDaoSupport {
 		super.setDataSource(dataSource);
 	}
 
-	public List<Genre> getList() throws Exception {
+	public List<Genre> getList() {
 		String sql = "SELECT GENRE_ID, NAME FROM GENRE ORDER BY NAME";
-		return getJdbcTemplate().query(sql,
+		return super.getJdbcTemplate().query(sql,
 				new BeanPropertyRowMapper<Genre>(Genre.class));
 	}
 

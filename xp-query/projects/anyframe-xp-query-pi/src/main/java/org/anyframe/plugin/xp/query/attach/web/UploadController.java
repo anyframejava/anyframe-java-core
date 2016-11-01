@@ -24,47 +24,40 @@ import java.util.Map;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
+import org.anyframe.xp.query.web.handler.XPResponseHandler;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.stereotype.Controller;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.multipart.MultipartHttpServletRequest;
-import org.springframework.web.servlet.ModelAndView;
-import org.springframework.web.servlet.mvc.AbstractController;
 
 import com.tobesoft.xplatform.data.ColumnHeader;
 import com.tobesoft.xplatform.data.DataSet;
+import com.tobesoft.xplatform.data.DataSetList;
 import com.tobesoft.xplatform.data.DataTypes;
-import com.tobesoft.xplatform.data.PlatformData;
 import com.tobesoft.xplatform.data.VariableList;
-import com.tobesoft.xplatform.tx.HttpPlatformResponse;
-import com.tobesoft.xplatform.tx.PlatformType;
 
 /**
  * Upload Controller Class for file upload function
  * 
  * @author Youngmin Jo
  */
-public class UploadController extends AbstractController {
-	private String contentType = PlatformType.CONTENT_TYPE_XML; // Default - XML
+@Controller
+public class UploadController {
 	
-	private String charset = PlatformType.DEFAULT_CHAR_SET; // Default CharSet = utf - 8
-
-	public void setContentType(String contentsType) {
-		this.contentType = contentsType;
-	}
-
-	public void setCharset(String charset) {
-		this.charset = charset;
-	}
-	
+	//Velocity-Support-contextProperties-START
 	@Value("#{contextProperties['repository.path']}")
 	private String repositoryPath;
+	//Velocity-Support-contextProperties-END
 
-	@Override
-	protected ModelAndView handleRequestInternal(HttpServletRequest request,
+	@RequestMapping("/xpQueryUpload.do")
+	@ResponseBody
+	protected XPResponseHandler uploadFile(HttpServletRequest request,
 			HttpServletResponse response) throws Exception {
 		
-		PlatformData outPlatformData = new PlatformData();
-		VariableList outVL = outPlatformData.getVariableList();
+		VariableList outputVariableList = new VariableList();
+		DataSetList outputDataSetList = new DataSetList();
 		DataSet resultDs = new DataSet("dsUploadResult");
 
 		MultipartHttpServletRequest multipartRequest = (MultipartHttpServletRequest) request;
@@ -97,27 +90,24 @@ public class UploadController extends AbstractController {
 						.getOriginalFilename());
 				resultDs.set(row, "ID", id);
 			}
+
+			outputDataSetList.add(resultDs);
 			
-			outPlatformData.addDataSet(resultDs);
-			outVL.add("ErrorCode", 0);
-			outVL.add("ErrorMsg", "Success");
+			XPResponseHandler responseHandler = new XPResponseHandler(outputDataSetList, outputVariableList);
+			responseHandler.setResultMessage(0, "Success");
+			
+			return responseHandler;
 		} catch (Exception e) {
 			String msg = e.getMessage();
 
 			if (msg == null)
 				msg = "Fail to process client request.";
 			
-			outVL.add("ErrorCode", -1);
-			outVL.add("ErrorMsg", msg);
-		} finally {
-			HttpPlatformResponse platformResponse = new HttpPlatformResponse(
-					response);
-			platformResponse.setContentType(contentType);
-			platformResponse.setCharset(charset);
-			platformResponse.setData(outPlatformData);
-			platformResponse.sendData();
-		}
-
-		return null;
+			XPResponseHandler responseHandler = new XPResponseHandler(outputDataSetList, outputVariableList);
+			responseHandler.setResultMessage(-1, msg);
+			
+			return responseHandler;
+			
+		} 
 	}
 }

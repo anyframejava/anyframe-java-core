@@ -22,7 +22,7 @@ import org.anyframe.exception.PersistenceException;
  * 
  * @author Jongpil Park
  * 
- * @since 1.1.4
+ * @since 1.5.0
  */
 public class PagingSQLCreationException extends PersistenceException {
 

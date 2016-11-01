@@ -18,60 +18,45 @@ package org.anyframe.plugin.xp.query.security.web;
 import javax.inject.Inject;
 import javax.inject.Named;
 import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
 
 import org.anyframe.plugin.xp.query.security.service.AuthenticationService;
-import org.anyframe.xp.query.web.controller.AbstractXPController;
-import org.springframework.web.servlet.ModelAndView;
+import org.anyframe.xp.query.web.handler.XPRequestHandler;
+import org.anyframe.xp.query.web.handler.XPResponseHandler;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.stereotype.Controller;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.ResponseBody;
 
 import com.tobesoft.xplatform.data.DataSet;
 import com.tobesoft.xplatform.data.DataSetList;
 import com.tobesoft.xplatform.data.Debugger;
-import com.tobesoft.xplatform.data.PlatformData;
 import com.tobesoft.xplatform.data.VariableList;
-import com.tobesoft.xplatform.tx.HttpPlatformRequest;
-import com.tobesoft.xplatform.tx.HttpPlatformResponse;
-import com.tobesoft.xplatform.tx.PlatformType;
 
 /**
  * Operate user login and store USER_ID in the session.
  * 
  * @author Youngmin Jo
  */
-public class LoginController extends AbstractXPController {
+@Controller
+public class LoginController {
+	
+	Logger logger = LoggerFactory.getLogger(LoginController.class);
+	
 	@Inject
 	@Named("xpSecurityService")
 	private AuthenticationService securityService;
 	
-	private String contentType = PlatformType.CONTENT_TYPE_XML; // Default - XML
-
-	private String encoding = PlatformType.DEFAULT_CHAR_SET; // Default CharSet
-																// = utf - 8
-
-	public void setContentType(String contentsType) {
-		this.contentType = contentsType;
-	}
-
-	public void setEncoding(String encoding) {
-		this.encoding = encoding;
-	}
-
-	public ModelAndView handleRequestInternal(HttpServletRequest request,
-			HttpServletResponse response) throws Exception {
-		VariableList inVl = null;
-		DataSetList inDl = null;
+	@RequestMapping("/xpQueryLogin.do")
+	@ResponseBody
+	public XPResponseHandler doLogin(@RequestBody XPRequestHandler requestHandler, HttpServletRequest request) throws Exception {
+		VariableList inVl = requestHandler.getInputVariableList();
+		DataSetList inDl = requestHandler.getInputDataSetList();
 		VariableList outVl = null;
 		DataSetList outDl = null;
 
-		HttpPlatformRequest httpPlatformRequest = new HttpPlatformRequest(
-				request, contentType, encoding);
 		try {
-			httpPlatformRequest.receiveData();
-
-			PlatformData inPlatformData = httpPlatformRequest.getData();
-			inVl = inPlatformData.getVariableList();
-			inDl = inPlatformData.getDataSetList();
-
 			outVl = new VariableList();
 			outDl = new DataSetList();
 
@@ -84,8 +69,11 @@ public class LoginController extends AbstractXPController {
 			logger.debug("Input DataSetList");
 			logger.debug(debugger.detail(inDl));
 
-			operate(httpPlatformRequest, inVl, inDl, outVl, outDl);
+			securityService.get(inVl, inDl, outVl, outDl);
+			DataSet gdsUser = outDl.get("gdsUser");
 
+			outDl.set(0, gdsUser);
+			
 			logger.debug("{}.operate() ended", new Object[] { this.getClass()
 					.getName() });
 			logger.debug("Output VariableList");
@@ -97,9 +85,10 @@ public class LoginController extends AbstractXPController {
 			String userId = outDl.get(0).getString(0, "USER_ID");
 			request.getSession().setAttribute("userId", userId);
 			
-			setResultMessage(outVl, 0,
-					"Request has been processed successfully");
+			XPResponseHandler responseHandler = new XPResponseHandler(outDl, outVl); 
+			responseHandler.setResultMessage(0, "Request has been processed successfully");
 
+			return responseHandler; 
 		} catch (Exception e) {
 			String msg = e.getMessage();
 
@@ -107,29 +96,12 @@ public class LoginController extends AbstractXPController {
 				msg = "Fail to process client request.";
 
 			logger.error(msg);
-			setResultMessage(outVl, -1, msg);
 
-		} finally {
-			HttpPlatformResponse httpPlatformResponse = new HttpPlatformResponse(
-					response, contentType, encoding);
-
-			PlatformData outPlatformData = new PlatformData();
-			outPlatformData.setDataSetList(outDl);
-			outPlatformData.setVariableList(outVl);
-			httpPlatformResponse.setData(outPlatformData);
-			httpPlatformResponse.sendData();
-		}
-		return null;
-	}
-
-	@Override
-	public void operate(HttpPlatformRequest httpPlatformRequest,
-			VariableList inVl, DataSetList inDl, VariableList outVl,
-			DataSetList outDl) throws Exception {
-		securityService.get(inVl, inDl, outVl, outDl);
-		DataSet gdsUser = outDl.get("gdsUser");
-
-		outDl.set(0, gdsUser);
+			XPResponseHandler responseHandler = new XPResponseHandler(outDl, outVl); 
+			responseHandler.setResultMessage(-1, msg);
+			
+			return responseHandler;
+		} 
 	}
 
 }

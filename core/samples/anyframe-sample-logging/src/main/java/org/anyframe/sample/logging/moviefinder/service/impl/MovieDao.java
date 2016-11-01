@@ -26,11 +26,11 @@ import org.springframework.stereotype.Repository;
 @Repository("movieDao")
 public class MovieDao {
 
-	public void create(Movie movie) throws Exception {
+	public void create(Movie movie) {
 		System.out.println("movieDao - call create");
 	}
 
-	public Movie get() throws Exception {
+	public Movie get() {
 		System.out.println("movieDao - call get");
 		return null;
 	}

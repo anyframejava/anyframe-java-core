@@ -282,7 +282,7 @@ public String getOsInfo(ModelMap map) {
 		        		<para>
 		        			The following is part of the UtilSystemController.java source code. It is an example of first setting data in the Jaxb Model class to convert to Pie2d chart data xml and then converting to XML using marshallingView
 		        		  	to draw a Pie2d chart of FusionChart Free.	        		   
-		        			<programlisting language="xml"><![CDATA[@RequestMapping("/utilSystem/getMemoryUsageChart.do")
+		        			<programlisting language="java"><![CDATA[@RequestMapping("/utilSystem/getMemoryUsageChart.do")
 public String getMemoryUsageChart(ModelMap map) throws Exception {
     SigarAccessor.gatherMemoryInfo();
     MemoryInfo memoryInfo = SigarAccessor.getSysInfo().getMemoryInfo();
@@ -317,7 +317,7 @@ public String getMemoryUsageChart(ModelMap map) throws Exception {
     set2.setColor("F6BD0F");
     set2.setIsSliced(1);
 
-    List sets = new ArrayList();
+    List<Pie2dSet> sets = new ArrayList<Pie2dSet>();
     sets.add(set1);
     sets.add(set2);
 
@@ -334,7 +334,7 @@ public String getMemoryUsageChart(ModelMap map) throws Exception {
 							The code for implementing the graph is as follows. The following is part of the systemUsageChartTest.jsp source code.
 							Using the FusionChart Free for jQuery plugin (jquery.fusionchart.js), it easily integrates charts into web pages by designating 
 							various options in the fields to insert charts (div).
-							<programlisting language="xml"><![CDATA[if($(this).parent().text() == "CpuPercChart") {
+							<programlisting language="java"><![CDATA[if($(this).parent().text() == "CpuPercChart") {
     $('#cpuPercChart').insertFusionCharts({
         swfPath: "<c:url value='/chart/javascript/fusionchart-free/charts/'/>",
         type: "Pie2D",

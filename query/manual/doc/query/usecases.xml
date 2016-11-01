@@ -23,12 +23,12 @@
 				조회 결과값을 추출하기 위해서는 각 Map으로부터 get("칼럼명")을 통해 해당 칼럼의 값을 얻어낼 수 있다.
 				<programlisting language="xml"><![CDATA[<queryservice>
     <queries>
-       <query id="selectGeneral" isDynamic="false">
-          <statement>
-             SELECT * FROM TBL_CUSTOMER WHERE SSNO like ?
-          </statement>
-          <param type="VARCHAR" />
-       </query>
+        <query id="selectGeneral" isDynamic="false">
+            <statement>
+                SELECT * FROM TBL_CUSTOMER WHERE SSNO like ?
+            </statement>
+            <param type="VARCHAR" />
+        </query>
     </queries>
 </queryservice>]]></programlisting>
 			</para>	
@@ -66,15 +66,15 @@
         </table>
     </table-mapping>    
     <queries>
-       <query id="select" isDynamic="false">
-          <statement>
-             SELECT * FROM TBL_CUSTOMER WHERE SSNO like ?
-          </statement>
-          <param type="VARCHAR" />
-          <]]><emphasis role="bold">result class="org.anyframe.sample.domain.Customer"</emphasis><![CDATA[/>
-       </query>
+        <query id="select" isDynamic="false">
+            <statement>
+                SELECT * FROM TBL_CUSTOMER WHERE SSNO like ?
+            </statement>
+            <param type="VARCHAR" />
+            <]]><emphasis role="bold">result class="org.anyframe.sample.domain.Customer"</emphasis><![CDATA[/>
+        </query>
     </queries>
-</queryservice>]]>	</programlisting>
+</queryservice>]]></programlisting>
 			</para>
 		</section>
 
@@ -224,46 +224,44 @@
 				<programlisting language="java">/**
  * Query 서비스를 통해 DB에 입력된 데이터를 조회하는 테스트 코드
  */
-public void selectCustomer() throws Exception{
+public void selectCustomer() {
     QueryService queryService = (QueryService) context.getBean("queryService");
 
     //find() : 매핑 XML 파일에 정의되어 있는 query id를 이용하여 SELECT를 실행한다.
 
     //별도 Result Mapping을 정의하지 않은 경우
-    ArrayList rsquery  = <emphasis role="bold">(ArrayList) queryService
+    <![CDATA[List<Map<String, Object>> rsquery]]> = <emphasis role="bold">queryService
                                  .find("selectGeneral", new Object[] { "%12345%" });</emphasis>
-    Map hsRsquery = new HashMap();
+    <![CDATA[Map<String, Object> hsRsquery = new HashMap<String, Object>();]]>
     <![CDATA[for( int i = 0 ; i < rsquery.size() ; i ++ ){]]>
-        <emphasis role="bold">hsRsquery = (Map) rsquery.get(i);</emphasis>
+        <emphasis role="bold">hsRsquery = rsquery.get(i);</emphasis>
         String name = (String) hsRsquery.get("name");
     }
 
     // table-mapping을 정의한 경우
-    Collection rsqueryUsingTableMapping = queryService.find(
+    <![CDATA[List<Customer> rsqueryUsingTableMapping]]> = queryService.find(
             "selectUsingTableMapping", new Object[] { "%12345%" });
-    Iterator rsqueryItr = rsqueryUsingTableMapping.iterator();
+    <![CDATA[Iterator<Customer> rsqueryItr]]> = rsqueryUsingTableMapping.iterator();
     while (rsqueryItr.hasNext()) {
-        <emphasis role="bold">Customer customer = (Customer) rsqueryItr.next();</emphasis>
+        <emphasis role="bold">Customer customer = rsqueryItr.next();</emphasis>
         String name = customer.getNm();
     }
 
     // result-mapping을 정의한 경우
-    Collection rsqueryUsingResultMapping = <emphasis role="bold">queryService.find("selectUsingResultMapping"
+    <![CDATA[List<CompositionCustomer> rsqueryUsingResultMapping]]> = <emphasis role="bold">queryService.find("selectUsingResultMapping"
             , new Object[] { "%12345%" });</emphasis>
-    Iterator rsqueryItr_01 = rsqueryUsingResultMapping.iterator();
+    <![CDATA[Iterator<CompositionCustomer> rsqueryItr_01]]> = rsqueryUsingResultMapping.iterator();
     while (rsqueryItr_01.hasNext()) {
-        <emphasis role="bold">CompositionCustomer compositionCustomer 
-                = (CompositionCustomer) rsqueryItr_01.next();</emphasis>
+        <emphasis role="bold">CompositionCustomer compositionCustomer = rsqueryItr_01.next();</emphasis>
         String name =  compositionCustomer.getCompositionName();
     }
 
     // result class만 정의한 경우
-    Collection rsqueryUsingOnlyResultClass = <emphasis role="bold">queryService.find(
+    <![CDATA[List<CamelCasedCustomer> rsqueryUsingOnlyResultClass]]> = <emphasis role="bold">queryService.find(
             "selectUsingOnlyResultClass", new Object[] { "%12345%" });</emphasis>
-    Iterator rsqueryItr_02 = rsqueryUsingOnlyResultClass.iterator();
+    <![CDATA[Iterator<CamelCasedCustomer> rsqueryItr_02]]> = rsqueryUsingOnlyResultClass.iterator();
     while (rsqueryItr_02.hasNext()) {
-        <emphasis role="bold">CamelCasedCustomer camelCasedCustomer
-                (CamelCasedCustomer) rsqueryItr_02.next();</emphasis>
+        <emphasis role="bold">CamelCasedCustomer camelCasedCustomer = rsqueryItr_02.next();</emphasis>
         String name = camelCasedCustomer.getName();
     }
 }</programlisting>
@@ -320,17 +318,17 @@ public void insertCustomer() throws Exception{
 /**
  * Query 서비스를 통해 DB에 입력된 데이터를 조회하는 테스트 코드
  */	
-public void selectCustomer() throws Exception{
+public void selectCustomer() {
     QueryService queryService = (QueryService) context.getBean("queryService");
 	
     //findBySQL() :  매핑 XML 파일에 쿼리문이 정의되어 있지 않을 때 SELECT를 실행한다.
-    Collection result = <emphasis role="bold">queryService.findBySQL(
+    <![CDATA[List<Map<String, Object>> result]]> = <emphasis role="bold">queryService.findBySQL(
             "select NAME, ADDRESS from TBL_CUSTOMER where SSNO like ?",
             new String[] { "VARCHAR" }, 
             new Object[] { "%4567890123" });</emphasis>
-    Iterator resultItr = result.iterator();
+    <![CDATA[Iterator<Map<String, Object>> resultItr]]> = result.iterator();
     while( resultItr.hasNext() ){
-        Map resultMap = (Map) resultItr.next();
+        <![CDATA[Map<String, Object> resultMap]]> = resultItr.next();
         resultMap.get("name");
     }
 	
@@ -340,7 +338,7 @@ public void selectCustomer() throws Exception{
 /**
  * Query 서비스를 통해 DB에 입력된 데이터를 수정하는 테스트 코드
  */	
-public void updateCustomer() throws Exception{
+public void updateCustomer() {
     QueryService queryService = (QueryService) context.getBean("queryService");
 
     //updateBySQL() : 매핑 XML 파일에 쿼리문이 정의되어 있지 않을 때 UPDATE를 실행한다.
@@ -355,7 +353,7 @@ public void updateCustomer() throws Exception{
 /**
  * Query 서비스를 통해 DB에 입력된 데이터를 삭제하는 테스트 코드
  */
-public void deleteCustomer() throws Exception{
+public void deleteCustomer() {
     QueryService queryService = (QueryService) context.getBean("queryService");
 
     //removeBySQL() : 매핑 XML 파일에 쿼리문이 정의되어 있지 않을 때 DELETE를 실행한다.
@@ -396,25 +394,25 @@ public void deleteCustomer() throws Exception{
 
 			<para>
 				<programlisting language="xml"><![CDATA[<bean name="sqlLoader" class="org.anyframe.query.impl.config.loader.MappingXMLLoader">
-		<property name="mappingFiles">
-			<value>
-			    <!-- xml files in folder -->
-			    file:./src/test/resources/foldermappings/**/testcase-*.xml,
-				file:./src/test/resources/dynamicreload/testcase-queries-dynamicreload.xml,
-				<!-- xml files in classpath -->
-  		    	classpath*:/mappings/testcase-queries-dynamic.xml,
-  		    	classpath*:/mappings/testcase-queries-general.xml,
-  		   		classpath*:/mappings/testcase-queries-resultmapping.xml,
-  		    	classpath*:/mappings/testcase-queries-resultsetmapper.xml,
-  		    	classpath*:/mappings/testcase-table-mappings.xml,
-  		    	classpath*:/mappings/testcase-queries-extended.xml,
-  		    	classpath*:/mappings/testcase-queries-mappingstyle.xml,
-  		   		<!-- xml files in jar  --> 
-  		    	classpath*:/jarmappings/testcase-queries-lob.xml
-			</value>
-		</property>
-		중략 ...
-	</bean>]]></programlisting>
+    <property name="mappingFiles">
+        <value>
+            <!-- xml files in folder -->
+            file:./src/test/resources/foldermappings/**/testcase-*.xml,
+            file:./src/test/resources/dynamicreload/testcase-queries-dynamicreload.xml,
+            <!-- xml files in classpath -->
+            classpath*:/mappings/testcase-queries-dynamic.xml,
+            classpath*:/mappings/testcase-queries-general.xml,
+            classpath*:/mappings/testcase-queries-resultmapping.xml,
+            classpath*:/mappings/testcase-queries-resultsetmapper.xml,
+            classpath*:/mappings/testcase-table-mappings.xml,
+            classpath*:/mappings/testcase-queries-extended.xml,
+            classpath*:/mappings/testcase-queries-mappingstyle.xml,
+            <!-- xml files in jar  --> 
+            classpath*:/jarmappings/testcase-queries-lob.xml
+        </value>
+    </property>
+        중략 ...
+</bean>]]></programlisting>
 			</para>
 		</section>
 
@@ -485,7 +483,7 @@ public void deleteCustomer() throws Exception{
 				<programlisting language="java">/**
  * Query 서비스를 통해 DB에 신규 데이터를 입력하는 테스트 코드
  */
-public void insertORMapping() throws Exception {
+public void insertORMapping() {
     QueryService queryService = (QueryService) context.getBean("queryService");
 
     ORMapping ormapping = new ORMapping("1234567890123", "HonggilDong", "Ansan");
@@ -511,7 +509,7 @@ public void selectORMapping() throws Exception {
     // find를 실행하면 primary-key를 조회 조건으로  하는 SELECT를 실행한다.
     // 다음 코드에 의해 실행되는 쿼리문은 
     // SELECT NAME, ADDRESS FROM TBL_ORMAPPING WHERE ID = '1234567890123'
-    Collection result = <emphasis role="bold">queryService.find(ormapping);</emphasis>
+    <![CDATA[List<ORMapping> result]]> = <emphasis role="bold">queryService.find(ormapping);</emphasis>
     if ( result.size() != 1 ){
         throw new Exception("Select failed");
     }
@@ -611,9 +609,9 @@ public void deleteORMapping() throws Exception {
 </bean>]]></programlisting>
 			</para>
 
-        	<para>
-        		<programlisting language="xml"><![CDATA[<bean name="sqlLoader" class="org.anyframe.query.impl.config.loader.MappingXMLLoader">
-   	<config:configuration>
+			<para>
+				<programlisting language="xml"><![CDATA[<bean name="sqlLoader" class="org.anyframe.query.impl.config.loader.MappingXMLLoader">
+    <config:configuration>
         <filename>classpath:/query/mapping-query-dynamic.xml</filename>
         중략...
     </config:configuration>		
@@ -691,15 +689,15 @@ public void deleteORMapping() throws Exception {
  * 다음과 같다.
  * SELECT LOGON_ID FROM TBL_USER WHERE LOGON_ID BETWEEN 'a' AND 'z'
  */
-public void dynamicQueryUsingNamedParameter() throws Exception {
+public void dynamicQueryUsingNamedParameter() {
     QueryService queryService = (QueryService) context.getBean("queryService");
 
     Object[] iVal = new Object[2];
     iVal[0] = new Object[]{"lowId", "a"};
     iVal[1] = new Object[]{"highId", "z"};
 
-    ArrayList rtList
-        <emphasis role="bold">= (ArrayList)(queryService.find("getLogonIdByNamedParam", iVal));</emphasis>
+    <![CDATA[List<Map<String, Object>> rtList]]>
+        <emphasis role="bold">= queryService.find("getLogonIdByNamedParam", iVal);</emphasis>
     System.out.println("rtList.size() : " + rtList.size());
 }
 
@@ -712,15 +710,15 @@ public void dynamicQueryUsingNamedParameter() throws Exception {
  * 다음과 같다.
  * SELECT * FROM TBL_USER ORDER BY NAME
  */
-public void dynamicQueryUsingTextreplace() throws Exception {
+public void dynamicQueryUsingTextreplace() {
     QueryService queryService = (QueryService) context.getBean("queryService");
 
     Object[] iVal = new Object[2];
     iVal[0] = new Object[]{"schema", "TBL_USER"};
     iVal[1] = new Object[]{"sortColumn", "NAME"};
 
-    ArrayList rtList
-        <emphasis role="bold">= (ArrayList)(queryService.find("getEmployeesByTextReplacement", iVal));</emphasis>
+    <![CDATA[List<Map<String, Object>> rtList]]>
+        <emphasis role="bold">= queryService.find("getEmployeesByTextReplacement", iVal);</emphasis>
     System.out.println("rtList.size() : " + rtList.size());
 }
 
@@ -739,7 +737,7 @@ public void dynamicQueryUsingTextreplace() throws Exception {
  * WHERE LOGON_ID like '%test%'
  * ORDER BY NAME
  */
-public void dynamicQueryUsingCondition() throws Exception {
+public void dynamicQueryUsingCondition() {
     QueryService queryService = (QueryService) context.getBean("queryService");
 
     Object[] iVal = new Object[3];
@@ -747,8 +745,8 @@ public void dynamicQueryUsingCondition() throws Exception {
     iVal[1] = new Object[]{"logonId", "test"};
     iVal[2] = new Object[]{"sortColumn", "NAME"};
 
-    ArrayList rtList
-        <emphasis role="bold">= (ArrayList)(queryService.find("getLogonIdByIf", iVal));</emphasis>
+    <![CDATA[List<Map<String, Object>> rtList]]>
+        <emphasis role="bold">= queryService.find("getLogonIdByIf", iVal);</emphasis>
     System.out.println("rtList.size() : " + rtList.size());
 }
 
@@ -770,14 +768,14 @@ public void dynamicQueryUsingCondition() throws Exception {
 public void dynamicQueryUsingLoop() throws Exception {
     QueryService queryService = (QueryService) context.getBean("queryService");
 
-    List logonIdList = new ArrayList();
+    <![CDATA[List<String> logonIdList = new ArrayList<String>();]]>
     logonIdList.add("admin");
     logonIdList.add("test");
 
     Object[] iVal = new Object[]{"logonIdList", logonIdList};
 
-    ArrayList rtList 
-        <emphasis role="bold">= (ArrayList) (queryService.find("getLogonIdByForeach", new Object[]{ iVal }));</emphasis> 
+    <![CDATA[List<Map<String, Object>> rtList]]> 
+        <emphasis role="bold">= queryService.find("getLogonIdByForeach", new Object[]{ iVal });</emphasis> 
 
     if (rtList.size() != 1) {
         throw new Exception("Dynamic Query Using Condition failed");
@@ -973,16 +971,15 @@ public void selectCustomer() throws Exception {
      *                       얻을 수 있는 전체 데이터의 개수와 특정 페이지에 해당하는
      *                       결과값들을 얻어 올 수 있다.
      */
-    HashMap resultMap = <emphasis role="bold">queryService.findWithRowCount("selectUsingPagination",
+    <![CDATA[Map<String, Object> resultMap]]> = <emphasis role="bold">queryService.findWithRowCount("selectUsingPagination",
             new Object[] { "%1234%" }, 3, 5);</emphasis>
 
     Customer customer = new Customer();
-    Map rsMap = new HashMap();
 
     // 특정 페이지에 속한 결과값들 추출
-    List resultList = (List) resultMap.get(<emphasis role="bold">QueryService.LIST</emphasis>);
+    <![CDATA[List<Customer> resultList]]> = (List) resultMap.get(<emphasis role="bold">QueryService.LIST</emphasis>);
     <![CDATA[for(int i = 0 ; i < resultList.size() ; i ++){
-        customer = (Customer)resultList.get(i);
+        customer = resultList.get(i);
         customer.getNm();
     }]]>
 
@@ -1129,8 +1126,8 @@ public void selectCustomer() throws Exception {
 public void insertCustomer() throws Exception {
     QueryService queryService = (QueryService) context.getBean("queryService");
 
-    //ArrayList에 입력할 데이터를 저장한다.
-    ArrayList args = new ArrayList();
+    //List에 입력할 데이터를 저장한다.
+    <![CDATA[List<Object[]> args = new ArrayList<Object[]>();]]>
     Object[] arg = new Object[3];
     arg[0] = "1234567890123";
     arg[1] = "KimMinsu";
@@ -1147,7 +1144,7 @@ public void insertCustomer() throws Exception {
     arg[2] = "Seoul";
     args.add(arg);
 
-    //ArrayList에 3개의 Object가 포함되어 있으므로 query id가 insertbatch인
+    //List에 3개의 Object가 포함되어 있으므로 query id가 insertbatch인
     //쿼리문이 3번 실행된다.
     int[] results = queryService.batchUpdate("insertbatch", args);
     <![CDATA[for (int i = 0; i < results.length; i++) {
@@ -1173,8 +1170,8 @@ public void insertCustomerBySQLQuery() throws Exception {
     types[1] = "VARCHAR";
     types[2] = "VARCHAR";
 
-    //ArrayList에 입력할 데이터를 저장한다.
-    ArrayList args = new ArrayList();
+    //List에 입력할 데이터를 저장한다.
+    <![CDATA[List<Object[]> args = new ArrayList<Object[]>();]]>
     Object[] arg = new Object[3];
     arg[0] = "1234567890126";
     arg[1] = "HongGildong";
@@ -1191,7 +1188,7 @@ public void insertCustomerBySQLQuery() throws Exception {
     arg[2] = "Seoul";
     args.add(arg);
 
-    //ArrayList에 3개의 Object가 포함되어 있으므로 해당 쿼리문이 3번 실행된다.	
+    //List에 3개의 Object가 포함되어 있으므로 해당 쿼리문이 3번 실행된다.	
     int[] results = queryService.batchUpdateBySQL(sql, types, args);
 
     <![CDATA[for (int i = 0; i < results.length; i++) {
@@ -1206,8 +1203,8 @@ public void insertCustomerBySQLQuery() throws Exception {
  */
 public void insertCustomerByObject() throws Exception {
     QueryService queryService = (QueryService) context.getBean("queryService");
-
-    ArrayList args = new ArrayList();
+    
+    <![CDATA[List<Customer> args = new ArrayList<Object[]>();]]>
     Customer customer = new Customer();
 
     customer.setSsno("1234567890129");
@@ -1272,7 +1269,7 @@ public void insertCustomerByObject() throws Exception {
 			<para>
 				다음은 Query 서비스를 정의한 context-query.xml 과 Query 서비스에서 읽어들일 매핑 XML 파일의 위치를 정의한
 				context-query-sqlloader.xml 파일의 일부이다.
-				<programlisting language="java"><![CDATA[<bean name="oracle_queryservice" class="org.anyframe.query.impl.QueryServiceImpl">
+				<programlisting language="xml"><![CDATA[<bean name="oracle_queryservice" class="org.anyframe.query.impl.QueryServiceImpl">
     <property name="jdbcTemplate" ref="jdbcTemplate"/>
     <property name="sqlRepository" ref="sqlLoader"/>
     중략...
@@ -1322,10 +1319,10 @@ public void insertCustomerByObject() throws Exception {
 public void callableStatementFunction() throws Exception {
     QueryService queryService = (QueryService) context.getBean("queryService");
 
-    HashMap inVal = new HashMap();
+    <![CDATA[Map<String, Integer> inVal = new HashMap<String, Integer>();]]>
     inVal.put("inVal", new Integer(10));
 
-    Map results = <emphasis role="bold">queryService.execute("callFunction", inVal);</emphasis>
+    <![CDATA[Map<String, Object> results]]> = <emphasis role="bold">queryService.execute("callFunction", inVal);</emphasis>
     BigDecimal rtVal = (BigDecimal) results.get("outVal");
 
     if (rtVal.intValue() != 1 ){
@@ -1346,10 +1343,10 @@ public void callableStatementBySQL() throws Exception {
     String[] bindings = { "OUT", "IN" };
     String[] names = { "outVal", "inVal" };
 
-    HashMap inVal = new HashMap();
+    <![CDATA[Map<String, Integer> inVal = new HashMap<String, Integer>();]]>
     inVal.put("inVal", new Integer(10));
 
-    Map results = <emphasis role="bold">queryService.executeBySQL(sql, types, names, bindings, inVal);</emphasis>
+    <![CDATA[Map<String, Object> results]]> = <emphasis role="bold">queryService.executeBySQL(sql, types, names, bindings, inVal);</emphasis>
     BigDecimal rtVal = (BigDecimal) results.get("outVal");
 
     if (rtVal.intValue() != 1 ){
@@ -1371,10 +1368,10 @@ public void callableStatementBySQLWithPaging() throws Exception {
     String[] bindings = { "OUT", "IN" };
     String[] names = { "outVal", "inVal" };
 
-    HashMap inVal = new HashMap();
+    <![CDATA[Map<String, Integer> inVal = new HashMap<String, Integer>();]]>
     inVal.put("inVal", new Integer(10));
 
-    Map results = <emphasis role="bold">queryService.executeBySQL(sql, types, names, bindings, inVal, 1, 1);</emphasis>
+    <![CDATA[Map<String, Object> results]]> = <emphasis role="bold">queryService.executeBySQL(sql, types, names, bindings, inVal, 1, 1);</emphasis>
     BigDecimal rtVal = (BigDecimal) results.get("outVal");
 
     if (rtVal.intValue() != 1 ){
@@ -1472,7 +1469,7 @@ public void callableStatementBySQLWithPaging() throws Exception {
 					<programlisting language="java">/**
  * Query 서비스를 통해 DB에 신규 LOB 유형의 데이터를 입력하는 테스트 코드
  */
-public void insertLOB() throws Exception{
+public void insertLOB() {
     QueryService queryService = (QueryService) context.getBean("oracle_queryservice");
 
     String strVal1 = "0무궁화꽃이피었습니다";
@@ -1495,16 +1492,16 @@ public void insertLOB() throws Exception{
 /**
  * Query 서비스를 통해 DB에 입력된 LOB 유형의 데이터를 조회하는 테스트 코드
  */
-public void selectLOB() throws Exception {
+public void selectLOB() {
     QueryService queryService = (QueryService) context.getBean("oracle_queryservice");
 
-    Collection result = <emphasis role="bold">queryService.find("selectLOB", new Object[] { new Integer(5) });</emphasis>
+    <![CDATA[List<Map<String, byte[]>> result]]> = <emphasis role="bold">queryService.find("selectLOB", new Object[] { new Integer(5) });</emphasis>
 
-    Iterator resultItr = result.iterator();
+    <![CDATA[Iterator<Map<String, byte[]>> resultItr]]> = result.iterator();
     while (resultItr.hasNext()) {
-        Map binary = (Map) resultItr.next();
-        String myCLOB = (String) binary.get("myclob");
-        String myBLOB = new String((byte[]) binary.get("myblob"));
+        <![CDATA[Map<String, byte[]> binary]]> = resultItr.next();
+        String myCLOB = binary.get("myclob");
+        String myBLOB = new String(binary.get("myblob"));
     }
 
     System.out.println("result : " + result);
@@ -1513,7 +1510,7 @@ public void selectLOB() throws Exception {
 /**
  * Query 서비스를 통해 DB에 입력된 LOB 유형의 데이터를 수정하는 테스트 코드
  */
-public void updateLOB() throws Exception{
+public void updateLOB() {
     QueryService queryService = (QueryService) context.getBean("oracle_queryservice");
 
     String strVal1 =  "0장미꽃이피었습니다";
@@ -1535,7 +1532,7 @@ public void updateLOB() throws Exception{
 /**
  * Query 서비스를 통해 DB에 입력된 LOB 유형의 데이터를 삭제하는 테스트 코드
  */
-public void deleteLOB() throws Exception{
+public void deleteLOB() {
 	QueryService queryService = (QueryService) context.getBean("oracle_queryservice");
 	<emphasis role="bold">queryService.remove("deleteLOB", new Object[]{new Integer(5)});</emphasis>
 }						</programlisting>
@@ -1779,7 +1776,7 @@ public void deleteCategory(Category category) throws Exception {
     }
 
     args = new Object[] { "vo", category };
-    Collection rtCollection = queryService.find("findCategory",
+    <![CDATA[List<Category> rtCollection]]> = queryService.find("findCategory",
         new Object[] { args });
 
     if (rtCollection.size() != 0) {
@@ -1800,14 +1797,14 @@ public void findCategory(String categoryNo, String categoryName)
     searchVO.setCategoryNo(categoryNo);
 
     Object[] args = new Object[] { "vo", searchVO };
-    Collection rtCollection = queryService.find("findCategory",
+    <![CDATA[List<Category> rtCollection]]> = queryService.find("findCategory",
         new Object[] { args });
 
     if (rtCollection.size() != 1) {
         throw new Exception("Find category failed");
     }
 
-    Category category = (Category) rtCollection.iterator().next();
+    Category category = rtCollection.iterator().next();
     if (!(categoryNo.equals(category.getCategoryNo()) &amp;&amp; categoryName
         .equals(category.getCategoryName()))) {
         throw new Exception("Find category failed");
@@ -1973,35 +1970,35 @@ return new Page(resultList, (new Integer(pageIndex)).intValue(),
 				<programlisting language="java">public class ProductDaoImpl <emphasis
               role="bold">extends QueryServiceDaoSupport</emphasis> {
     // <emphasis role="bold">query id가 'createProduct'인 INSERT문을 실행</emphasis>
-    public int createProduct(Product vo) throws Exception {
-        return <emphasis role="bold">create("createProduct", vo);</emphasis>
+    public int createProduct(Product vo) {
+        return <emphasis role="bold">super.create("createProduct", vo);</emphasis>
     }
 
     // <emphasis role="bold">query id가 'deleteProduct'인 DELETE문을 실행</emphasis>
-    public int deleteProduct(Product vo) throws Exception {
-        return remove("deleteProduct", vo);
+    public int deleteProduct(Product vo) {
+        return super.remove("deleteProduct", vo);
     }
 
     // <emphasis role="bold">query id가 'findProductByPk'인 SELECT문을 실행하고 </emphasis>
     // <emphasis role="bold">조회 결과인 Product 객체를 전달 </emphasis>
-    public Product selectProduct(String prodNo) throws Exception {
+    public Product selectProduct(String prodNo) {
         Product vo = new Product();
         vo.setProdNo(prodNo);
-        <emphasis role="bold">Product resultVo = (Product) findByPk("findProductByPk", vo);</emphasis>
+        <emphasis role="bold">Product resultVo = super.findByPk("findProductByPk", vo);</emphasis>
         return resultVo;
     }
 
     // <emphasis role="bold">query id가 'findProductList'인 SELECT문을 실행하고</emphasis> 
     // <emphasis role="bold">조회 결과인 Page 객체를 전달</emphasis>
     public Page selectProductList(Product vo, int pageIndex, int pageSize,
-        int pageUnit) throws Exception {
-        return <emphasis role="bold">findListWithPaging("findProductList", vo, pageIndex,</emphasis>
+        int pageUnit) {
+        return <emphasis role="bold">super.findListWithPaging("findProductList", vo, pageIndex,</emphasis>
                 <emphasis role="bold">pageSize, pageUnit);</emphasis>
     }
 
     // <emphasis role="bold">query id가 'updateProduct'인 UPDATE문을 실행</emphasis>
-    public int updateProduct(Product vo) throws Exception {
-        return <emphasis role="bold">update("updateProduct", vo);</emphasis>
+    public int updateProduct(Product vo) {
+        return <emphasis role="bold">super.update("updateProduct", vo);</emphasis>
     }
 }</programlisting>
 			</para>
@@ -2180,7 +2177,7 @@ public void deleteProduct(String prodNo) throws Exception {
 				<programlisting language="java">public class CustomerMapper <emphasis
               role="bold">implements ResultSetMapper</emphasis> {
 
-    <emphasis role="bold">public Object mapRow(ResultSet resultSet) throws SQLException</emphasis> {
+    <emphasis role="bold">public Customer mapRow(ResultSet resultSet) throws SQLException</emphasis> {
         Customer customer = new Customer();
         customer.setNm(resultSet.getString("name"));
         customer.setAddr(resultSet.getString("address"));
@@ -2198,23 +2195,23 @@ public void deleteProduct(String prodNo) throws Exception {
 				일부이다.
 				<programlisting language="java">/**
  * QueryService의 find() 메소드를 호출하여 매핑 XML에 정의된 쿼리문을 실행시키고, 매핑 XML에 정의된
- * IResultSestMapper 유형의 Mapper를 이용하여, 결과값이 매핑되는지 체크하기 위한 테스트 코드
+ * ResultSetMapper 유형의 Mapper를 이용하여, 결과값이 매핑되는지 체크하기 위한 테스트 코드
  */
 public void findWithCustomResultSetMapper() throws Exception {
     QueryService queryService = (QueryService) context
             .getBean("queryService");
 
     // execute query
-    Collection rtList = queryService.find(
+    <![CDATA[List<Customer> rtList]]> = queryService.find(
             "findCustomerWithResultSetMapper", new Object[] { "%123456%" });
     // assert a size of result
     if (rtList.size() != 3)
         throw new Exception("Fail to select with custom ResultSetMapper.");
 
     // assert in detail
-    Iterator resultItr = rtList.iterator();
+    <![CDATA[Iterator<Customer> resultItr]]> = rtList.iterator();
     while (resultItr.hasNext()) {
-        Customer customer = (Customer) resultItr.next();
+        Customer customer = resultItr.next();
         if (!customer.getAddr().equals("Seoul"))
             throw new Exception("Fail to compare result in defail.");
     }

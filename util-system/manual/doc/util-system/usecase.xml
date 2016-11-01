@@ -3,6 +3,7 @@
 	<para>Util System Plugin을 통해 제공되는 화면들은 아래와 같다.</para>
 	
 	<informaltable>
+		<caption>Util System Plugin을 통해 제공되는 화면</caption>
 		<tgroup cols="2">
 			<colspec colnum="1" colname="col1" colwidth="3*" />
 			<colspec colnum="2" colname="col2" colwidth="7*" />
@@ -40,6 +41,9 @@
 	      <imageobject>
 	        <imagedata align="center" fileref="../image/util-system/util-system-PluginArchitecture.jpg" />
 	      </imageobject>
+	      <textobject>
+			<phrase>Util System Plugin을 통해 제공되는 샘플 어플리케이션의 Architecture</phrase>
+		  </textobject>
 	    </mediaobject>
 	    <itemizedlist>
      		<listitem><para>util-system의 라이브러리들을 사용해서 시스템 정보들을 수집한다. </para></listitem>
@@ -103,6 +107,9 @@ public String getOsInfo(ModelMap map) {
 			      <imageobject>
 			        <imagedata align="center" fileref="../image/util-system/util-system-SystemUtility.jpg" />
 			      </imageobject>
+			      <textobject>
+					<phrase>System Utility</phrase>
+		  		</textobject>
 			    </mediaobject>
 			</para>
 			<para>
@@ -111,6 +118,7 @@ public String getOsInfo(ModelMap map) {
 				Header 에 있는 refresh 아이콘이나 접힘/펼침 아이콘을 클릭하여 데이터 재조회와 화면 표시를 제어할 수 있다.
 			</para>
 			<informaltable>
+				<caption>Util System Plugin을 통해 제공되는 화면</caption>
 				<tgroup cols="2">
 					<colspec colnum="1" colname="col1" colwidth="3*" />
 					<colspec colnum="2" colname="col2" colwidth="7*" />
@@ -169,6 +177,7 @@ public String getOsInfo(ModelMap map) {
 		<section id="utilsystem_usecase_implementation_network">
 			<title>Network Utility Test List</title>
 			<informaltable>
+				<caption>Network Utility</caption>
 				<tgroup cols="2">
 					<colspec colnum="1" colname="col1" colwidth="3*" />
 					<colspec colnum="2" colname="col2" colwidth="7*" />
@@ -223,9 +232,13 @@ public String getOsInfo(ModelMap map) {
 			      <imageobject>
 			        <imagedata align="center" fileref="../image/util-system/util-system-SystemUsageInfo.jpg" />
 			      </imageobject>
+			      <textobject>
+					<phrase>SystemUsageInfo</phrase>
+		  		</textobject>
 			    </mediaobject>
 			</para>
 			<informaltable>
+				<caption>SystemUsageInfo Utility</caption>
 				<tgroup cols="2">
 					<colspec colnum="1" colname="col1" colwidth="3*" />
 					<colspec colnum="2" colname="col2" colwidth="7*" />
@@ -268,6 +281,9 @@ public String getOsInfo(ModelMap map) {
 			      <imageobject>
 			        <imagedata align="center" fileref="../image/util-system/util-system-SystemUsageChart.jpg" />
 			      </imageobject>
+			      <textobject>
+					<phrase>SystemUsageChart</phrase>
+		  		</textobject>
 			    </mediaobject>
 			</para>
 			<para>그래프를 구현하기 위한 코드는 아래와 같다.
@@ -277,7 +293,7 @@ public String getOsInfo(ModelMap map) {
 		        		<para>
 		        			다음은 UtilSystemController.java 소스 코드중의 일부로 FusionChart Free 의 Pie2d 차트를 그리기 위해
 		        			먼저 Pie2d 차트 data xml 로 변환하기 위한 Jaxb Model class 로 데이터를 세팅한 후 marshallingView 를 통해 XML 로 변환하는 예이다.
-		        			<programlisting language="xml"><![CDATA[@RequestMapping("/utilSystem/getMemoryUsageChart.do")
+		        			<programlisting language="java"><![CDATA[@RequestMapping("/utilSystem/getMemoryUsageChart.do")
 public String getMemoryUsageChart(ModelMap map) throws Exception {
     SigarAccessor.gatherMemoryInfo();
     MemoryInfo memoryInfo = SigarAccessor.getSysInfo().getMemoryInfo();
@@ -312,7 +328,7 @@ public String getMemoryUsageChart(ModelMap map) throws Exception {
     set2.setColor("F6BD0F");
     set2.setIsSliced(1);
 
-    List sets = new ArrayList();
+    List<Pie2dSet> sets = new ArrayList<Pie2dSet>();
     sets.add(set1);
     sets.add(set2);
 
@@ -329,7 +345,7 @@ public String getMemoryUsageChart(ModelMap map) throws Exception {
 							그래프 구현 코드는 아래와 같다. 다음은 systemUsageChartTest.jsp 소스 코드중의 일부이다.
 							FusionChart Free for jQuery 플러그인(jquery.fusionchart.js) 을 사용하여 차트를 삽입하고자 하는 영역(div)에 원하는 옵션을 다양하게 지정하여 손쉽게
 							웹페이지에 차트를 통합하고 있다.
-							<programlisting language="xml"><![CDATA[if($(this).parent().text() == "CpuPercChart") {
+							<programlisting language="java"><![CDATA[if($(this).parent().text() == "CpuPercChart") {
     $('#cpuPercChart').insertFusionCharts({
         swfPath: "<c:url value='/chart/javascript/fusionchart-free/charts/'/>",
         type: "Pie2D",
@@ -391,6 +407,9 @@ public String getMemoryUsageChart(ModelMap map) throws Exception {
 			      <imageobject>
 			        <imagedata align="center" fileref="../image/util-system/util-system-DiskUsageChart.jpg" />
 			      </imageobject>
+			      <textobject>
+					<phrase>DiskUsageChart</phrase>
+		  		</textobject>
 			    </mediaobject>
 		    	<para>
 		    		확대된 그래프 관련 구현 사례는 아래와 같다.

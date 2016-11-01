@@ -51,7 +51,7 @@ import com.tobesoft.xplatform.data.VariableList;
  * @author Soyon Lim
  */
 public class XPQueryServiceImpl extends AbstractRiaQueryService implements
-		XPQueryService, InitializingBean {
+		XPQueryService, InitializingBean { 
 
 	public RiaRowCallback getRowCallbackHandler() {
 		return null;
@@ -409,25 +409,31 @@ public class XPQueryServiceImpl extends AbstractRiaQueryService implements
 		// 조회 조건이 없을 경우 Dataset Id는 queryId + 0
 		if (dataSet == null || dataSet.getRowCount() == 0) {
 			dataSet = new DataSet();
-			DataSet resultDs = (DataSet) this.execute(queryId,
+			DataSetList resultDl = (DataSetList) this.execute(queryId,
 					new XPDataSetSQLParameterSource(dataSet, 0,
 							columnValueExtractor),
 					callableStatementCallbackHandler);
-			if (resultDs != null) {
-				resultDs.setName(queryId + 0);
-				datasetList.add(resultDs);
+			if (resultDl != null) {
+				for (int j = 0; j < resultDl.size(); j++) {
+					DataSet outDs = resultDl.get(j);
+					outDs.setName(outDs.getName() + 0);
+					datasetList.add(outDs);
+				}
 			}
 		} else {
 			// input Dataset여러 row일 경우 각 row의 실행 결과 Dataset Id는 queryId + row가
 			// 된다.
 			for (int i = 0; i < dataSet.getRowCount(); i++) {
-				DataSet resultDs = (DataSet) this.execute(queryId,
+				DataSetList resultDl = (DataSetList) this.execute(queryId,
 						new XPDataSetSQLParameterSource(dataSet, i,
 								columnValueExtractor),
 						callableStatementCallbackHandler);
-				if (resultDs != null) {
-					resultDs.setName(queryId + i);
-					datasetList.add(resultDs);
+				if (resultDl != null) {
+					for (int j = 0; j < resultDl.size(); j++) {
+						DataSet outDs = resultDl.get(j);
+						outDs.setName(outDs.getName() + i);
+						datasetList.add(outDs);
+					}
 				}
 			}
 		}
@@ -489,7 +495,7 @@ public class XPQueryServiceImpl extends AbstractRiaQueryService implements
 	class InternalMap extends HashMap<String, String> {
 		private static final long serialVersionUID = 1L;
 
-		private XPActionCommand actionCommand = null;
+		private final XPActionCommand actionCommand;
 
 		InternalMap(Map<String, String> queries, XPActionCommand actionCommand) {
 			super(queries);

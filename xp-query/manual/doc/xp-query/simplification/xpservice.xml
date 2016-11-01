@@ -58,7 +58,7 @@
 	<itemizedlist>
       	<listitem>
       		<para>
-      			<emphasis role="bold">Controller</emphasis> – XPController : AbstractXPController의 operate()를 확장한 클래스로 사용자 요청에 따라 비즈니스 서비스의 메소드를 호출하고 결과값을 화면으로 전달한다.
+      			<emphasis role="bold">Controller</emphasis> – XPController : 사용자 요청에 따라 비즈니스 서비스의 메소드를 호출하고 결과값을 화면으로 전달하는 공통 컨트롤러 역할을 담당한다.
       		</para>
       	</listitem>
       	<listitem>
@@ -81,11 +81,10 @@
  	 <section id="xp_query_simplification_xpservice_controller">
  	 	<title>Controller</title>
  	 	<para>
-    		Anyframe에서는 XPLATFORM 기반의 UI를 통한 사용자 요청을 처리할 수 있도록 Spring
-			MVC의 AbstractController를 구현한 AbstractXPController, AbstractXPDispatchController를 제공하고 있다.
-			이 두 클래스를 상속받아 Controller 클래스를 구현하려면 사용자의 요청 별로 Controller 클래스를 구현해야
+			일반적인 Spring MVC 형태의 Controller 클래스를 구현하려면 사용자의 요청 별로 Controller 클래스를 구현해야
 			하므로 개발해야 할 Controller 클래스 수가 많아지고 유지보수 또한 어려워지는 단점이 있다.
-			이러한 단점을 보완하기 위해서 Anyframe XP Query에서는 XPController를 제공한다.
+    		Anyframe에서는 이러한 단점을 보완하기 위해서 XPLATFORM 기반의 UI를 통한 사용자 요청을 처리할 수 있도록 Spring
+			MVC의 AbstractController를 구현한 공통 컨트롤러 클래스인 XPController를 제공한다.
  	 	</para>
  	 	
  	 	<section id="xp_query_simplification_controller_xpcontroller">
@@ -99,32 +98,56 @@
  	 		</para>
  	 		
 			<para>
-				아래는 XPController의 operate()의 일부로, 화면에서 전달받은 비즈니스 서비스의 Bean Id 를
+				아래는 XPController의 handleRequestInternal()의 일부로, 화면에서 전달받은 비즈니스 서비스의 Bean Id 를
 				이용해 WebApplicationContext에서 비즈니스 서비스 객체를 얻어온다. 실행할 비즈니스 서비스의 Bean Id와
-				메소드 이름은 dsService의 SERVICE(예: movieService.getPagingList)의 값에 의해 결정된다.
+				메소드 이름은 Client에서 선언한 dsService DataSet의 SERVICE Column 값(예: movieService.getPagingList)에 의해 결정된다.
 			</para>
 			
-			<programlisting language="java"><![CDATA[public class XPController extends AbstractXPController {
+			<programlisting language="java"><![CDATA[public class XPController extends AbstractController {
 	
-	public void operate(HttpPlatformRequest request, VariableList inVl,
-			DataSetList inDl, VariableList outVl, DataSetList outDl)
+	public ModelAndView handleRequestInternal(HttpServletRequest request, HttpServletResponse response)
 			throws Exception {
 
-		String serviceName = inVl.getString("service");
+		HttpInputMessage inputMessage = new ServletServerHttpRequest(request);
+		HttpOutputMessage outputMessage = new ServletServerHttpResponse(response);
+
+		XPRequestHandler requestHandler = (XPRequestHandler) messageConverter
+				.read(XPRequestHandler.class, inputMessage);
+		XPResponseHandler responseHandler = null;
+
+		VariableList inputVariableList = requestHandler.getInputVariableList();
+		DataSetList inputDataSetList = requestHandler.getInputDataSetList();
 		
-		Object bean = getWebApplicationContext().getBean(serviceName);
+		// ... 중략
 		
-		Method method = getMethod(bean, inVl.getString("method"));
+		String serviceName = inputVariableList.getString(SERVICE_NAME);
+		Object bean = getApplicationContext().getBean(serviceName);
+		Method method = getMethod(bean, inputVariableList.getString(METHOD_NAME));
 		
-		try{
-			method.invoke(bean, new Object[] {inVl, inDl, outVl, outDl });
-		} catch (Exception e){
-			Throwable te = e.getCause();
-			if (te instanceof BaseException)
-				throw (BaseException) te;
-			else 
-				throw new BaseException("Fail to process client request.", te);
+		DataSetList outputDataSetList = new DataSetList();
+		VariableList outputVariableList = new VariableList();
+		try {
+			method.invoke(bean,
+					new Object[] { requestHandler.getInputVariableList(), requestHandler.getInputDataSetList(),
+							outputVariableList, outputDataSetList });
+
+			// ...중략
+				// in case of using general PlatformResponse
+				responseHandler = new XPResponseHandler(outputDataSetList, outputVariableList);
+				responseHandler.setResultMessage(0, "Success");
+		} catch (Exception e) {
+			logger.error("Can not invoke a dispatch method name", e);
+
+			String msg = e.getMessage();
+
+			if (msg == null)
+				msg = "Fail to process client request.";
+
+			responseHandler = new XPResponseHandler(outputDataSetList, outputVariableList);
+			responseHandler.setResultMessage(-1, msg);
 		}
+		messageConverter.write(responseHandler, MediaType.APPLICATION_XML, outputMessage);
+		return null;
 	}
 ..중략]]></programlisting>
 			<para>
@@ -136,6 +159,9 @@
           			<imagedata align="center"
                      	fileref="../image/xp-query/simplification/riaxp-exampleofdsservice.png" />
         		</imageobject>
+        		<textobject>
+					<phrase>dsService 설정</phrase>
+		  		</textobject>
         	</mediaobject>
         	<para>
         		prefix로는 get, getList, getPagingList, create, update, remove, saveAll이 올 수 있다.
@@ -180,6 +206,9 @@
           			<imagedata align="center"
                      	fileref="../image/xp-query/simplification/riaxp-exampleofdsservice.png" />
         		</imageobject>
+        		<textobject>
+					<phrase>dsService 설정</phrase>
+		  		</textobject>
         	</mediaobject>
         	<para>
         		위의 2번 Row와 같이 dsService를 설정 했다면 VariableList에 아래 그림과 같이 값이 서버로 전달된다.
@@ -189,6 +218,9 @@
           			<imagedata align="center"
                      	fileref="../image/xp-query/simplification/riaxp-xpserviceimpl.PNG" />
         		</imageobject>
+        		<textobject>
+					<phrase>VariableList</phrase>
+		  		</textobject>
         	</mediaobject>
         	<para>
         		아래는 XPServiceImpl의 getPagingList() 메소드의 코드중 일부분이다. 이 메소드는 특정 페이지에 속한 데이터를 조회 하는 기능을 제공한다.
@@ -229,6 +261,9 @@
         			<imagedata align="center"
                     	fileref="../image/xp-query/simplification/riaxp-exampleofdsservice.png" />
         		</imageobject>
+        		<textobject>
+					<phrase>dsService DataSet을 설정</phrase>
+		  		</textobject>
         	</mediaobject>
         	<para>
         		dsService의 값을 정의할 때 SVC_ID의 prefix에 따라 querySet에 정의할 수 있는 queryId의 갯수가 달라진다.
@@ -249,7 +284,7 @@
  	 	<para>
  	 		아래의 Java 코드는 서버로 전송된 DataSet Record를 DB Table에 저장(추가, 수정, 삭제) 하는 saveAll() 메소드 구현 부분이다.
  	 	</para>
-    		<programlisting language="java"><![CDATA[public int saveAll(Map<String, String> queryMap, DataSet inDs, XPActionCommand actionCommand) throws Exception {
+    		<programlisting language="java"><![CDATA[public int saveAll(Map<String, String> queryMap, DataSet inDs, XPActionCommand actionCommand) throws QueryException {
 	if (actionCommand == null) {
 		return xpQueryService.update(queryMap, inDs);
 	}

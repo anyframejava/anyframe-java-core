@@ -616,7 +616,7 @@ public class XPDataSetMapper {
 		int deleteRowCount = dataList.getRemovedRowCount();
 		for (int i = 0; i < deleteRowCount; i++) {
 			Map<String, Object> row = VariableListPropertyValues
-					.getVariableMap(dataList, i, false, converToCamelCase);
+					.getVariableMap(dataList, i, true, converToCamelCase);
 			row.put("rowType", "delete");
 			resultList.add(row);
 		}

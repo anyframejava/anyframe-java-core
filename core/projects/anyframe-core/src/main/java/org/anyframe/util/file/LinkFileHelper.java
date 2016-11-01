@@ -30,12 +30,12 @@ import org.slf4j.LoggerFactory;
  */
 public abstract class LinkFileHelper {
 
-	private static final Logger logger = LoggerFactory
+	private static final Logger LOGGER = LoggerFactory
 			.getLogger(LinkFileHelper.class);
 
 	public static interface LinkLineItemHandler {
 		public boolean processItem(String itemString);
-	}
+	} 
 
 	public static void processingLinkDirectory(File linkFile,
 			LinkLineItemHandler handler) {
@@ -50,7 +50,7 @@ public abstract class LinkFileHelper {
 					break;
 			}
 		} catch (Exception e) {
-			logger.error("I/O Error occurs. Error : {}", new Object[] { e
+			LOGGER.error("I/O Error occurs. Error : {}", new Object[] { e
 					.getMessage() });
 
 			return;
@@ -59,6 +59,8 @@ public abstract class LinkFileHelper {
 				try {
 					reader.close();
 				} catch (Exception e) {
+					LOGGER.warn("I/O Error occurs. Error : {}", new Object[] { e
+							.getMessage() });
 				}
 		}
 	}

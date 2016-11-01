@@ -32,35 +32,35 @@ import org.springframework.stereotype.Repository;
 @Repository("communityDao")
 public class CommunityDao extends QueryServiceDaoSupport {
 
+	//Velocity-Support-contextProperties-START
 	@Value("#{contextProperties['pageSize'] ?: 10}")
 	int pageSize;
 
 	@Value("#{contextProperties['pageUnit'] ?: 10}")
 	int pageUnit;
-	
+	//Velocity-Support-contextProperties-END
+
 	@Inject
 	public void setQueryService(QueryService queryService) {
 		super.setQueryService(queryService);
 	}
 
 	public int create(Community community) {
-		return create("flex.createCommunity", community);
+		return super.create("flex.createCommunity", community);
 	}
 
 	public List<Community> getList(SearchVO searchVO) {
-		List<Community> results = this.findList("flex.findCommunityList",
-				searchVO);
-		return results;
+		return super.findList("flex.findCommunityList", searchVO);
 	}
 
 	public Page getPagingList(SearchVO searchVO) {
 		int pageIndex = searchVO.getPageIndex();
-		return this.findListWithPaging("flex.findCommunityList", searchVO,
+		return super.findListWithPaging("flex.findCommunityList", searchVO,
 				pageIndex, pageSize, pageUnit);
 	}
 
 	public int remove(Community community) {
-		return remove("flex.removeCommunity", community);
+		return super.remove("flex.removeCommunity", community);
 	}
 
 	public Map<String, Integer> saveAll(List<Community> list) {
@@ -89,11 +89,12 @@ public class CommunityDao extends QueryServiceDaoSupport {
 		resultCount.put("INSERT", createRowCount);
 		resultCount.put("UPDATE", updateRowCount);
 		resultCount.put("DELETE", removeRowCount);
+
 		return resultCount;
 	}
 
 	public int update(Community community) {
-		return update("flex.updateCommunity", community);
+		return super.update("flex.updateCommunity", community);
 	}
-	
+
 }

@@ -39,6 +39,7 @@ import com.tobesoft.xplatform.tx.PlatformRequest;
  * </ul>
  * 
  * @author Jonghoon Kim
+ * @deprecated
  */
 public class AbstractXPDispatchController extends AbstractXPController {
 	/**

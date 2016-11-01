@@ -33,35 +33,35 @@ import org.springframework.stereotype.Repository;
 @Repository("categoryDao")
 public class CategoryDao extends QueryServiceDaoSupport {
 
+	//Velocity-Support-contextProperties-START
 	@Value("#{contextProperties['pageSize'] ?: 10}")
 	int pageSize;
 
 	@Value("#{contextProperties['pageUnit'] ?: 10}")
 	int pageUnit;
-	
+	//Velocity-Support-contextProperties-END
+
 	@Inject
 	public void setQueryService(QueryService queryService) {
 		super.setQueryService(queryService);
 	}
 
 	public int create(Category category) {
-		return create("flex.createCategory", category);
+		return super.create("flex.createCategory", category);
 	}
 
 	public List<Category> getList(SearchVO searchVO) {
-		List<Category> results = this.findList("flex.findCategoryList",
-				searchVO);
-		return results;
+		return super.findList("flex.findCategoryList", searchVO);
 	}
 
 	public Page getPagingList(SearchVO searchVO) {
 		int pageIndex = searchVO.getPageIndex();
-		return this.findListWithPaging("flex.findCategoryList", searchVO,
+		return super.findListWithPaging("flex.findCategoryList", searchVO,
 				pageIndex, pageSize, pageUnit);
 	}
 
 	public int remove(Category category) {
-		return remove("flex.removeCategory", category);
+		return super.remove("flex.removeCategory", category);
 	}
 
 	public Map<String, Integer> saveAll(List<Category> list) {
@@ -90,24 +90,27 @@ public class CategoryDao extends QueryServiceDaoSupport {
 		resultCount.put("INSERT", createRowCount);
 		resultCount.put("UPDATE", updateRowCount);
 		resultCount.put("DELETE", removeRowCount);
+
 		return resultCount;
 	}
 
 	public int update(Category category) {
-		return update("flex.updateCategory", category);
+		return super.update("flex.updateCategory", category);
 	}
 
 	public List<Category> getTree(SearchVO searchVO) {
-		List<Category> categoryList = this.findList(
-				"flex.findCategoryForTreeList", new Object[] {});
+		List<Category> categoryList = findList("flex.findCategoryForTreeList",
+				new Object[] {});
+
 		for (int i = 0; i < categoryList.size(); i++) {
 			Category category = categoryList.get(i);
 			searchVO.setSearchKeyword(category.getCategoryId());
-			List<Community> communityList = this.findList(
+			List<Community> communityList = super.findList(
 					"flex.findCommunityForTreeList", searchVO);
 			category.setChildren(communityList);
 		}
+
 		return categoryList;
 	}
-	
+
 }

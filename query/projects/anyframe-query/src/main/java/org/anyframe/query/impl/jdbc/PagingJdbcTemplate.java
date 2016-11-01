@@ -65,7 +65,7 @@ import org.springframework.util.Assert;
  * @author SoYon Lim
  * @author JongHoon Kim
  */
-public class PagingJdbcTemplate extends JdbcTemplate {
+public class PagingJdbcTemplate extends JdbcTemplate { 
 
 	// 2011.05.11
 	private PagingSQLGenerator paginationSQLGetter;
@@ -221,7 +221,7 @@ public class PagingJdbcTemplate extends JdbcTemplate {
 		}
 
 		if (paginationVO.isCountRecordSize()) {
-			long recordCount = queryForLong(getCountSQL(sql), args, argTypes);
+			long recordCount = queryForObject(getCountSQL(sql), args, argTypes, Long.class);
 			paginationVO.setRecordCount(recordCount);
 			paginationVO.setPageIndexToLast();
 		}
@@ -579,10 +579,10 @@ public class PagingJdbcTemplate extends JdbcTemplate {
 	// return type int -> long
 	public long executeCountSQL(String sql, Object[] args, int[] argTypes) {
 		if (args == null)
-			return queryForLong(getCountSQL(sql));
+			return queryForObject(getCountSQL(sql), Long.class);
 		if (argTypes == null)
-			return queryForLong(getCountSQL(sql), args);
-		return queryForLong(getCountSQL(sql), args, argTypes);
+			return queryForObject(getCountSQL(sql), args, Long.class);
+		return queryForObject(getCountSQL(sql), args, argTypes, Long.class);
 	}
 
 	/** ************* INNER CLASSES ************** */
@@ -614,9 +614,9 @@ public class PagingJdbcTemplate extends JdbcTemplate {
 
 		private final RowMapper rowMapper;
 
-		private Pagination paginationVO;
+		private final Pagination paginationVO;
 
-		private int queryMaxFetchSize;
+		private final int queryMaxFetchSize;
 
 		public PagingRowMapperResultSetExtractor(RowMapper rowMapper,
 				Pagination paginationVO) {
@@ -683,8 +683,8 @@ public class PagingJdbcTemplate extends JdbcTemplate {
 			ResultSetExtractor {
 
 		private final RowCallbackHandler rch;
-		private Pagination paginationVO;
-		private int queryMaxFetchSize;
+		private final Pagination paginationVO;
+		private final int queryMaxFetchSize;
 
 		public PagingRowCallbackHandlerResultSetExtractor(
 				RowCallbackHandler rch, Pagination paginationVO,
@@ -763,7 +763,7 @@ public class PagingJdbcTemplate extends JdbcTemplate {
 
 		private final RowCallbackHandler rch;
 
-		private int queryMaxFetchSize;
+		private final int queryMaxFetchSize;
 
 		public NonPagingRowCallbackHandlerResultSetExtractor(
 				RowCallbackHandler rch, int queryMaxFetchSize) {
@@ -808,7 +808,7 @@ public class PagingJdbcTemplate extends JdbcTemplate {
 
 		private final RowMapper rowMapper;
 
-		private int queryMaxFetchSize;
+		private final int queryMaxFetchSize;
 
 		public NonPagingRowMapperResultSetExtractor(RowMapper rowMapper,
 				int queryMaxFetchSize) {
@@ -852,9 +852,9 @@ public class PagingJdbcTemplate extends JdbcTemplate {
 	@SuppressWarnings("unchecked")
 	private class Oracle8iResultSetExtractor implements ResultSetExtractor {
 
-		private Oracle8iLobHandler lobHandler;
+		private final Oracle8iLobHandler lobHandler;
 
-		private Object[] lobValues;
+		private final Object[] lobValues;
 
 		public Oracle8iResultSetExtractor(Oracle8iLobHandler lobHandler,
 				Object[] lobValues) {

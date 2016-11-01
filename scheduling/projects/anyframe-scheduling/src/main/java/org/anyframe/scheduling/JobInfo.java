@@ -27,7 +27,7 @@ import org.quartz.Scheduler;
  * 
  * @author Sujeong Lee
  */
-public class JobInfo implements Serializable {
+public class JobInfo implements Serializable { 
 
 	private static final long serialVersionUID = 1L;
 
@@ -44,7 +44,7 @@ public class JobInfo implements Serializable {
 
 	String description = "";
 
-	private boolean isInXml = false;
+	private boolean inXml = false;
 
 	private String flagScheduleType; // simple, cron
 
@@ -201,7 +201,7 @@ public class JobInfo implements Serializable {
 	 * @return The boolean value of job saved in xml file
 	 */
 	public boolean isInXml() {
-		return isInXml;
+		return inXml;
 	}
 
 	/**
@@ -210,8 +210,8 @@ public class JobInfo implements Serializable {
 	 * @param isInXml
 	 *            The boolean value of job saved in xml file
 	 */
-	public void setInXml(boolean isInXml) {
-		this.isInXml = isInXml;
+	public void setInXml(boolean inXml) {
+		this.inXml = inXml;
 	}
 
 	/**
@@ -261,7 +261,7 @@ public class JobInfo implements Serializable {
 				+ ", jobTarget=" + jobTarget + ", jobTargetMethod="
 				+ jobTargetMethod + ", jobSchedule=" + jobSchedule
 				+ ", startDate=" + startDate + ", endDate=" + endDate
-				+ ", description=" + description + ", isInXml=" + isInXml
+				+ ", description=" + description + ", isInXml=" + inXml
 				+ ", flagScheduleType=" + flagScheduleType + "]";
 	}
 }

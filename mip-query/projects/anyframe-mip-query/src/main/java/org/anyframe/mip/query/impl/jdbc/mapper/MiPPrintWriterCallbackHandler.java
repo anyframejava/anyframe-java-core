@@ -34,14 +34,12 @@ import org.anyframe.query.ria.RiaPrintWriterCallback;
 public class MiPPrintWriterCallbackHandler extends MiPCallbackSupport implements
 		RiaPrintWriterCallback {
 
-	private String encoding = "utf-8";
+	private String encoding = "utf-8"; 
 	private PrintWriter writer;
 	private int rowCount;
 	private int columnCount;
-	private int[] columnTypes;
-	private String[] fieldNames;
 	private String[] columnNames;
-	private Map<String, Integer> columnIndexMap = new HashMap<String, Integer>();
+	private final Map<String, Integer> columnIndexMap = new HashMap<String, Integer>();
 
 	public void setEncoding(String encoding) {
 		this.encoding = encoding;
@@ -75,8 +73,8 @@ public class MiPPrintWriterCallbackHandler extends MiPCallbackSupport implements
 		if (rowCount == 0) {
 			ResultSetMetaData rsmd = rs.getMetaData();
 			columnCount = rsmd.getColumnCount();
-			columnTypes = new int[rsmd.getColumnCount()];
-			fieldNames = new String[rsmd.getColumnCount()];
+			int[] columnTypes = new int[rsmd.getColumnCount()];
+			String[] fieldNames = new String[rsmd.getColumnCount()];
 			columnNames = new String[rsmd.getColumnCount()];
 			printString = new StringBuilder();
 			for (int i = 0; i < columnCount; i++) {

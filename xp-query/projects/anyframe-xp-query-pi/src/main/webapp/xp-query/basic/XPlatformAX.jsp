@@ -7,10 +7,10 @@
 <SCRIPT LANGUAGE="JavaScript">
 var sKey = "xpsample";
 
-var Server_Path = "http://localhost:8080/";
-var sAdl = Server_Path + "<c:url value='/xp-query/basic/'/>" + "basic.xadl";
+var Server_Path = "http://" + window.location.host;
+var sAdl = Server_Path + "<c:url value='/xp-query/basic/basic.xadl'/>";
 var bOnError = false;
-var XPLATFORM_CAB_VER = "9.1.1.150";
+var XPLATFORM_CAB_VER = "2012,6,12,1";
 
 function fn_onload()
 {

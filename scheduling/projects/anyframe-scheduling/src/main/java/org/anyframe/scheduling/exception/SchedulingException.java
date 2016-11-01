@@ -21,6 +21,8 @@ import org.anyframe.exception.BaseRuntimeException;
  * This is an exception class for scheduling execution
  * 
  * @author Jongpil Park
+ * 
+ * @since 1.5.0
  */
 public class SchedulingException extends BaseRuntimeException {
 

@@ -25,12 +25,12 @@
 				The search result can be gotten through calling get("column name") method from each Map.
 				<programlisting language="xml"><![CDATA[<queryservice>
     <queries>
-       <query id="selectGeneral" isDynamic="false">
-          <statement>
-             SELECT * FROM TBL_CUSTOMER WHERE SSNO like ?
-          </statement>
-          <param type="VARCHAR" />
-       </query>
+        <query id="selectGeneral" isDynamic="false">
+            <statement>
+                SELECT * FROM TBL_CUSTOMER WHERE SSNO like ?
+            </statement>
+            <param type="VARCHAR" />
+        </query>
     </queries>
 </queryservice>]]></programlisting>
 			</para>	
@@ -70,15 +70,15 @@
                 <dbms-column>ssno</dbms-column>
             </primary-key>
         </table>
-    </table-mapping>    
+    </table-mapping>
     <queries>
-       <query id="select" isDynamic="false">
-          <statement>
-             SELECT * FROM TBL_CUSTOMER WHERE SSNO like ?
-          </statement>
-          <param type="VARCHAR" />
-          <]]><emphasis role="bold">result class="anyframe.sample.domain.Customer"</emphasis><![CDATA[/>
-       </query>
+        <query id="select" isDynamic="false">
+            <statement>
+                SELECT * FROM TBL_CUSTOMER WHERE SSNO like ?
+            </statement>
+            <param type="VARCHAR" />
+            <]]><emphasis role="bold">result class="anyframe.sample.domain.Customer"</emphasis><![CDATA[/>
+        </query>
     </queries>
 </queryservice>]]>	</programlisting>
 			</para>				
@@ -239,47 +239,47 @@
 				<programlisting language="java">/**
 				* Test code searching for data inserted in DB through Query service
 				*/
-				public void selectCustomer() throws Exception{
+				public void selectCustomer() {
 				QueryService queryService = (QueryService) context.getBean("queryService");
 
 				//find() : By using query id defined in mapping XML file, execute SELECT.
 						
 				//When result mapping is not defined
 
-    ArrayList rsquery  = <emphasis role="bold">(ArrayList) queryService
+    <![CDATA[List<Map<String, Object>> rsquery]]>  = <emphasis role="bold">queryService
                                  .find("selectGeneral", new Object[] { "%12345%" });</emphasis>
-    Map hsRsquery = new HashMap();
+    <![CDATA[Map<String, Object> hsRsquery = new HashMap<String, Object>();]]>
     <![CDATA[for( int i = 0 ; i < rsquery.size() ; i ++ ){]]>
-        <emphasis role="bold">hsRsquery = (Map) rsquery.get(i);</emphasis>
+        <emphasis role="bold">hsRsquery = rsquery.get(i);</emphasis>
         String name = (String) hsRsquery.get("name");
     }
 	
     // When defining table-mapping
-    Collection rsqueryUsingTableMapping = queryService.find(
+    <![CDATA[List<Customer> rsqueryUsingTableMapping]]> = queryService.find(
             "selectUsingTableMapping", new Object[] { "%12345%" });
-    Iterator rsqueryItr = rsqueryUsingTableMapping.iterator();
+    <![CDATA[Iterator<Customer> rsqueryItr]]> = rsqueryUsingTableMapping.iterator();
     while (rsqueryItr.hasNext()) {
-        <emphasis role="bold">Customer customer = (Customer) rsqueryItr.next();</emphasis>
+        <emphasis role="bold">Customer customer = rsqueryItr.next();</emphasis>
         String name = customer.getNm();
     }
 
     // When defining result-mapping
-    Collection rsqueryUsingResultMapping = <emphasis role="bold">queryService.find("selectUsingResultMapping"
+    <![CDATA[List<CompositionCustomer> rsqueryUsingResultMapping]]> = <emphasis role="bold">queryService.find("selectUsingResultMapping"
             , new Object[] { "%12345%" });</emphasis>
-    Iterator rsqueryItr_01 = rsqueryUsingResultMapping.iterator();
+    <![CDATA[Iterator<CompositionCustomer> rsqueryItr_01]]> = rsqueryUsingResultMapping.iterator();
     while (rsqueryItr_01.hasNext()) {
         <emphasis role="bold">CompositionCustomer compositionCustomer 
-                = (CompositionCustomer) rsqueryItr_01.next();</emphasis>
+                = rsqueryItr_01.next();</emphasis>
         String name =  compositionCustomer.getCompositionName();
     }
 	
     // When defining result class only
-    Collection rsqueryUsingOnlyResultClass = <emphasis role="bold">queryService.find(
+    <![CDATA[List<CamelCasedCustomer> rsqueryUsingOnlyResultClass]]> = <emphasis role="bold">queryService.find(
             "selectUsingOnlyResultClass", new Object[] { "%12345%" });</emphasis>
-    Iterator rsqueryItr_02 = rsqueryUsingOnlyResultClass.iterator();
+    <![CDATA[Iterator<CamelCasedCustomer> rsqueryItr_02]]> = rsqueryUsingOnlyResultClass.iterator();
     while (rsqueryItr_02.hasNext()) {
         <emphasis role="bold">CamelCasedCustomer camelCasedCustomer
-                (CamelCasedCustomer) rsqueryItr_02.next();</emphasis>
+                = rsqueryItr_02.next();</emphasis>
         String name = camelCasedCustomer.getName();
     }	
 }</programlisting>
@@ -339,18 +339,18 @@ public void insertCustomer() throws Exception{
 /**
  * Test code for searching data in DB using Query service.
  */	
-public void selectCustomer() throws Exception{
+public void selectCustomer() {
     QueryService queryService = (QueryService) context.getBean("queryService");
 	
     //findBySQL() : Execute SELECT even if SQL statement is not defined in mapping XML file.
     
-    Collection result = <emphasis role="bold">queryService.findBySQL(
+    <![CDATA[List<Map<String, Object>> result]]> = <emphasis role="bold">queryService.findBySQL(
             "select NAME, ADDRESS from TBL_CUSTOMER where SSNO like ?",
             new String[] { "VARCHAR" }, 
             new Object[] { "%4567890123" });</emphasis>
-    Iterator resultItr = result.iterator();
+    <![CDATA[Iterator<Map<String, Object>> resultItr]]> = result.iterator();
     while( resultItr.hasNext() ){
-        Map resultMap = (Map) resultItr.next();
+        Map resultMap = resultItr.next();
         resultMap.get("name");
     }
 	
@@ -360,7 +360,7 @@ public void selectCustomer() throws Exception{
 /**
  * Test code to update data in DB through Query service
  */	
-public void updateCustomer() throws Exception{
+public void updateCustomer() {
     QueryService queryService = (QueryService) context.getBean("queryService");
 	
     //updateBySQL() : Execute UPDATE even if SQL statement is not defined in mapping XML file.
@@ -375,7 +375,7 @@ public void updateCustomer() throws Exception{
 /**
  * Test code to delete data in DB through Query service
  */
-public void deleteCustomer() throws Exception{
+public void deleteCustomer() {
     QueryService queryService = (QueryService) context.getBean("queryService");
 	
     //removeBySQL() : Execute DELETE even if SQL statement is not defined in mapping XML file.
@@ -418,23 +418,23 @@ public void deleteCustomer() throws Exception{
 			<para>
 				<programlisting language="xml"><![CDATA[<bean name="sqlLoader" class="org.anyframe.query.impl.config.loader.MappingXMLLoader">
    	<property name="mappingFiles">
-		<value>
-		    <!-- xml files in folder -->
-		    file:./src/test/resources/foldermappings/**/testcase-*.xml,
-			file:./src/test/resources/dynamicreload/testcase-queries-dynamicreload.xml,
-			<!-- xml files in classpath -->
- 		    	classpath*:/mappings/testcase-queries-dynamic.xml,
- 		    	classpath*:/mappings/testcase-queries-general.xml,
- 		   		classpath*:/mappings/testcase-queries-resultmapping.xml,
- 		    	classpath*:/mappings/testcase-queries-resultsetmapper.xml,
- 		    	classpath*:/mappings/testcase-table-mappings.xml,
- 		    	classpath*:/mappings/testcase-queries-extended.xml,
- 		    	classpath*:/mappings/testcase-queries-mappingstyle.xml,
- 		   		<!-- xml files in jar  --> 
- 		    	classpath*:/jarmappings/testcase-queries-lob.xml
-		</value>
-	</property>	
-	 ...
+   	   	<value>
+   	   	   	<!-- xml files in folder -->
+   	   	   	file:./src/test/resources/foldermappings/**/testcase-*.xml,
+   	   	   	file:./src/test/resources/dynamicreload/testcase-queries-dynamicreload.xml,
+   	   	   	<!-- xml files in classpath -->
+   	   	   	classpath*:/mappings/testcase-queries-dynamic.xml,
+   	   	   	classpath*:/mappings/testcase-queries-general.xml,
+   	   	   	classpath*:/mappings/testcase-queries-resultmapping.xml,
+   	   	   	classpath*:/mappings/testcase-queries-resultsetmapper.xml,
+   	   	   	classpath*:/mappings/testcase-table-mappings.xml,
+   	   	   	classpath*:/mappings/testcase-queries-extended.xml,
+   	   	   	classpath*:/mappings/testcase-queries-mappingstyle.xml,
+   	   	   	<!-- xml files in jar  --> 
+   	   	   	classpath*:/jarmappings/testcase-queries-lob.xml
+   	   	</value>
+   	</property>	
+   	...
 </bean>]]></programlisting>
 			</para>
 		</section>
@@ -507,7 +507,7 @@ public void deleteCustomer() throws Exception{
 				<programlisting language="java">/**
  * Test code to insert new data to DB through Query service
  */	
-public void insertORMapping() throws Exception {
+public void insertORMapping() {
     QueryService queryService = (QueryService) context.getBean("queryService");
 	
     ORMapping ormapping = new ORMapping("1234567890123", "HonggilDong", "Ansan");
@@ -533,7 +533,7 @@ public void selectORMapping() throws Exception {
     // execute find, then execute SELECT having primary-key as search condition.
     // The SQL statement executed in the following code is
     // SELECT NAME, ADDRESS FROM TBL_ORMAPPING WHERE ID = '1234567890123'
-    Collection result = <emphasis role="bold">queryService.find(ormapping);</emphasis>
+    <![CDATA[List<ORMapping> result]]> = <emphasis role="bold">queryService.find(ormapping);</emphasis>
     if ( result.size() != 1 ){
         throw new Exception("Select failed");
     }
@@ -727,8 +727,8 @@ public void dynamicQueryUsingNamedParameter() throws Exception {
     iVal[0] = new Object[]{"lowId", "a"};
     iVal[1] = new Object[]{"highId", "z"};
 	
-    ArrayList rtList 
-        <emphasis role="bold">= (ArrayList)(queryService.find("getLogonIdByNamedParam", iVal));</emphasis>
+    <![CDATA[List<Map<String, Object>> rtList]]> 
+        <emphasis role="bold">= queryService.find("getLogonIdByNamedParam", iVal);</emphasis>
     System.out.println("rtList.size() : " + rtList.size());
 }
 
@@ -746,9 +746,9 @@ public void dynamicQueryUsingTextreplace() throws Exception {
     Object[] iVal = new Object[2];
     iVal[0] = new Object[]{"schema", "TBL_USER"};
     iVal[1] = new Object[]{"sortColumn", "NAME"};
-	
-    ArrayList rtList 
-        <emphasis role="bold">= (ArrayList)(queryService.find("getEmployeesByTextReplacement", iVal));</emphasis>
+    
+	<![CDATA[List<Map<String, Object>> rtList]]>
+        <emphasis role="bold">= queryService.find("getEmployeesByTextReplacement", iVal);</emphasis>        
     System.out.println("rtList.size() : " + rtList.size());
 }
 
@@ -776,8 +776,8 @@ public void dynamicQueryUsingCondition() throws Exception {
     iVal[1] = new Object[]{"logonId", "test"};
     iVal[2] = new Object[]{"sortColumn", "NAME"};
 	
-    ArrayList rtList 
-        <emphasis role="bold">= (ArrayList)(queryService.find("getLogonIdByIf", iVal));</emphasis>
+    <![CDATA[List<Map<String, Object>> rtList]]>
+        <emphasis role="bold">= queryService.find("getLogonIdByIf", iVal);</emphasis>
     System.out.println("rtList.size() : " + rtList.size());
 }
 
@@ -799,14 +799,14 @@ public void dynamicQueryUsingCondition() throws Exception {
 public void dynamicQueryUsingLoop() throws Exception {
     QueryService queryService = (QueryService) context.getBean("queryService");
 
-    List logonIdList = new ArrayList();
+    <![CDATA[List<String> logonIdList = new ArrayList<String>();]]>
     logonIdList.add("admin");
     logonIdList.add("test");
 
     Object[] iVal = new Object[]{"logonIdList", logonIdList};
 
-    ArrayList rtList 
-        <emphasis role="bold">= (ArrayList) (queryService.find("getLogonIdByForeach", new Object[]{ iVal }));</emphasis> 
+    <![CDATA[List<Map<String, Object>> rtList]]> 
+        <emphasis role="bold">= queryService.find("getLogonIdByForeach", new Object[]{ iVal });</emphasis> 
 
     if (rtList.size() != 1) {
         throw new Exception("Dynamic Query Using Condition failed");
@@ -1020,16 +1020,15 @@ public void selectCustomer() throws Exception {
      *                       findWithRowCount() returns the total number of data which can be fetched from SELECT
      *                       and the result value relevant to a specific page through single calling.
      */
-    HashMap resultMap = <emphasis role="bold">queryService.findWithRowCount("selectUsingPagination",
+    <![CDATA[Map<String, Object> resultMap]]> = <emphasis role="bold">queryService.findWithRowCount("selectUsingPagination",
             new Object[] { "%1234%" }, 3, 5);</emphasis>
 			
     Customer customer = new Customer();
-    Map rsMap = new HashMap();
 
     // Extract result values relevant to a specific page
-    List resultList = (List) resultMap.get(<emphasis role="bold">QueryService.LIST</emphasis>);
+    <![CDATA[List<Customer> resultList]]> = (List) resultMap.get(<emphasis role="bold">QueryService.LIST</emphasis>);
     <![CDATA[for(int i = 0 ; i < resultList.size() ; i ++){
-        customer = (Customer)resultList.get(i);
+        customer = resultList.get(i);
         customer.getNm();
     }]]>  
 	
@@ -1187,7 +1186,7 @@ public void insertCustomer() throws Exception {
     QueryService queryService = (QueryService) context.getBean("queryService");
 
     //Save input data in ArrayList.
-    ArrayList args = new ArrayList();
+    <![CDATA[List<Object[]> args = new ArrayList<Object[]>();]]>
     Object[] arg = new Object[3];
     arg[0] = "1234567890123";
     arg[1] = "KimMinsu";
@@ -1231,7 +1230,7 @@ public void insertCustomerBySQLQuery() throws Exception {
     types[2] = "VARCHAR";
 
     //Save input data in ArrayList.
-    ArrayList args = new ArrayList();
+    <![CDATA[List<Object[]> args = new ArrayList<Object[]>();]]>
     Object[] arg = new Object[3];
     arg[0] = "1234567890126";
     arg[1] = "HongGildong";
@@ -1264,7 +1263,7 @@ public void insertCustomerBySQLQuery() throws Exception {
 public void insertCustomerByObject() throws Exception {
     QueryService queryService = (QueryService) context.getBean("queryService");
 
-    ArrayList args = new ArrayList();
+    <![CDATA[List<Customer> args = new ArrayList<Object[]>();]]>
     Customer customer = new Customer();
 
     customer.setSsno("1234567890129");
@@ -1384,10 +1383,10 @@ public void insertCustomerByObject() throws Exception {
 public void callableStatementFunction() throws Exception {
     QueryService queryService = (QueryService) context.getBean("queryService");
 	
-    HashMap inVal = new HashMap();
+    <![CDATA[Map<String, Integer> inVal = new HashMap<String, Integer>();]]>
     inVal.put("inVal", new Integer(10));
-	
-    Map results = <emphasis role="bold">queryService.execute("callFunction", inVal);</emphasis>
+	    
+    <![CDATA[Map<String, Object> results]]> = <emphasis role="bold">queryService.execute("callFunction", inVal);</emphasis>
     BigDecimal rtVal = (BigDecimal) results.get("outVal");
 	
     if (rtVal.intValue() != 1 ){
@@ -1408,10 +1407,10 @@ public void callableStatementBySQL() throws Exception {
     String[] bindings = { "OUT", "IN" };
     String[] names = { "outVal", "inVal" };
 	
-    HashMap inVal = new HashMap();
+    <![CDATA[Map<String, Integer> inVal = new HashMap<String, Integer>();]]>
     inVal.put("inVal", new Integer(10));
-	
-    Map results = <emphasis role="bold">queryService.executeBySQL(sql, types, names, bindings, inVal);</emphasis>
+	    
+    <![CDATA[Map<String, Object> results]]> = <emphasis role="bold">queryService.executeBySQL(sql, types, names, bindings, inVal);</emphasis>
     BigDecimal rtVal = (BigDecimal) results.get("outVal");
 
     if (rtVal.intValue() != 1 ){
@@ -1433,10 +1432,10 @@ public void callableStatementBySQLWithPaging() throws Exception {
     String[] bindings = { "OUT", "IN" };
     String[] names = { "outVal", "inVal" };
 	
-    HashMap inVal = new HashMap();
+    <![CDATA[Map<String, Integer> inVal = new HashMap<String, Integer>();]]>
     inVal.put("inVal", new Integer(10));
 	
-    Map results = <emphasis role="bold">queryService.executeBySQL(sql, types, names, bindings, inVal, 1, 1);</emphasis>
+    <![CDATA[Map<String, Object> results]]> = <emphasis role="bold">queryService.executeBySQL(sql, types, names, bindings, inVal, 1, 1);</emphasis>
     BigDecimal rtVal = (BigDecimal) results.get("outVal");
 
     if (rtVal.intValue() != 1 ){
@@ -1561,14 +1560,14 @@ public void insertLOB() throws Exception{
  */
 public void selectLOB() throws Exception {
     QueryService queryService = (QueryService) context.getBean("oracle_queryservice");
-	
-    Collection result = <emphasis role="bold">queryService.find("selectLOB", new Object[] { new Integer(5) });</emphasis>
+	    
+    <![CDATA[List<Map<String, byte[]>> result]]> = <emphasis role="bold">queryService.find("selectLOB", new Object[] { new Integer(5) });</emphasis>
 
-    Iterator resultItr = result.iterator();
+    <![CDATA[Iterator<Map<String, byte[]>> resultItr]]> = result.iterator();
     while (resultItr.hasNext()) {
-        Map binary = (Map) resultItr.next();
-        String myCLOB = (String) binary.get("myclob");
-        String myBLOB = new String((byte[]) binary.get("myblob"));
+        <![CDATA[Map<String, byte[]> binary]]> = resultItr.next();
+        String myCLOB = binary.get("myclob");
+        String myBLOB = new String(binary.get("myblob"));
     }
 	
     System.out.println("result : " + result);
@@ -1846,7 +1845,7 @@ public void deleteCategory(Category category) throws Exception {
     }
 
     args = new Object[] { "vo", category };
-    Collection rtCollection = queryService.find("findCategory",
+    <![CDATA[List<Category> rtCollection]]> = queryService.find("findCategory",
         new Object[] { args });
 
     if (rtCollection.size() != 0) {
@@ -1866,7 +1865,7 @@ public void findCategory(String categoryNo, String categoryName)
     searchVO.setCategoryNo(categoryNo);
 
     Object[] args = new Object[] { "vo", searchVO };
-    Collection rtCollection = queryService.find("findCategory",
+    <![CDATA[List<Category> rtCollection]]> = queryService.find("findCategory",
         new Object[] { args });
 
     if (rtCollection.size() != 1) {
@@ -2031,13 +2030,13 @@ return new Page(resultList, (new Integer(pageIndex)).intValue(),
 				<programlisting language="java">public class ProductDaoImpl <emphasis
               role="bold">extends QueryServiceDaoSupport</emphasis> {
     // <emphasis role="bold">Execute INSERT statement whose query id is 'createProduct'</emphasis>
-    public int createProduct(Product vo) throws Exception {
-        return <emphasis role="bold">create("createProduct", vo);</emphasis>
+    public int createProduct(Product vo) {
+        return <emphasis role="bold">super.create("createProduct", vo);</emphasis>
     }
 	
     // <emphasis role="bold">Execute DELETE statement whose query id is 'deleteProduct'.</emphasis>
     public int deleteProduct(Product vo) throws Exception {
-        return remove("removeProduct", vo);
+        return super.remove("removeProduct", vo);
     }
 	
     // <emphasis role="bold">Execute SELECT statement whose query id is 'findProductByPk'.</emphasis>
@@ -2045,7 +2044,7 @@ return new Page(resultList, (new Integer(pageIndex)).intValue(),
     public Product selectProduct(String prodNo) throws Exception {
         Product vo = new Product();
         vo.setProdNo(prodNo);
-        <emphasis role="bold">Product resultVo = (Product) findByPk("findProductByPk", vo);</emphasis>
+        <emphasis role="bold">Product resultVo = super.findByPk("findProductByPk", vo);</emphasis>
         return resultVo;
     }
 	
@@ -2053,13 +2052,13 @@ return new Page(resultList, (new Integer(pageIndex)).intValue(),
     // <emphasis role="bold">Transfer page object, the search result.</emphasis>
     public Page selectProductList(Product vo, int pageIndex, int pageSize,
         int pageUnit) throws Exception {
-        return <emphasis role="bold">findListWithPaging("findProductList", vo, pageIndex,</emphasis>
+        return <emphasis role="bold">super.findListWithPaging("findProductList", vo, pageIndex,</emphasis>
                 <emphasis role="bold">pageSize, pageUnit);</emphasis>
     }
 	
     // <emphasis role="bold">Execute UPDATE statement whose query id is 'updateProduct'.</emphasis>
     public int updateProduct(Product vo) throws Exception {
-        return <emphasis role="bold">update("updateProduct", vo);</emphasis>
+        return <emphasis role="bold">super.update("updateProduct", vo);</emphasis>
     }
 }</programlisting>
 			</para>
@@ -2242,7 +2241,7 @@ public void deleteProduct(String prodNo) throws Exception {
 				<programlisting language="java">public class CustomerMapper <emphasis
               role="bold">implements IResultSetMapper</emphasis> {
 
-    <emphasis role="bold">public Object mapRow(ResultSet resultSet) throws SQLException</emphasis> {
+    <emphasis role="bold">public Customer mapRow(ResultSet resultSet) throws SQLException</emphasis> {
         Customer customer = new Customer();
         customer.setNm(resultSet.getString("name"));
         customer.setAddr(resultSet.getString("address"));
@@ -2267,14 +2266,14 @@ public void findWithCustomResultSetMapper() throws Exception {
             .getBean("queryService");
 
     // execute query
-    Collection rtList = queryService.find(
+    <![CDATA[List<Customer> rtList]]> = queryService.find(
             "findCustomerWithResultSetMapper", new Object[] { "%123456%" });
     // assert a size of result
     if (rtList.size() != 3)
         throw new Exception("Fail to select with custom ResultSetMapper.");
 
     // assert in detail
-    Iterator resultItr = rtList.iterator();
+    <![CDATA[Iterator<Customer> resultItr]]> = rtList.iterator();
     while (resultItr.hasNext()) {
         Customer customer = (Customer) resultItr.next();
         if (!customer.getAddr().equals("Seoul"))

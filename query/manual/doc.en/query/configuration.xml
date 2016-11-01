@@ -183,7 +183,7 @@
 							and then throws.	
 							Query service provides org.anyframe.query.impl.util.RawSQLExceptionTranslator.
 							Therefore, if ExceptionTranslator is set, 
-							SQL error code and error message can be extracted from QueryServiceException, 
+							SQL error code and error message can be extracted from QueryException, 
 							which was thrown through Query service, when SQLException occurs.
 						</entry>
               			<entry align="center">N</entry>
@@ -324,12 +324,6 @@
           		</tbody>
         	</tgroup>
       	</informaltable>
-		<para>
-			이 외, SqlLoader가 필요한 경우에는 org.anyframe.query.impl.config.loader.AbstractSqlLoader를 
-			확장하여 신규 SqlLoader를 생성하고, loadMappings() 메소드를 구현해주면 된다. loadMappings() 메소드에는 
-			다양한 형태로 저장된 매핑 정보를 읽어들여서 tableMappings, queryInfos 변수에 저장되도록 로직을 정의하면 된다.
-			읽어들인 매핑 정보 저장은 putTableMappingInfo(), putQueryMappingInfo() 호출을 통해 처리한다.
-		</para> 
 		<para>
 			On top of this, when SqlLoader is needed,
 			by extending org.anyframe.query.impl.config.loader.AbstractSqlLoader, create
@@ -601,31 +595,31 @@ public int[] setQueryArgTypes(int[] originalArgTypes) {
 			
 		<programlisting language="xml"><![CDATA[<bean id="sqlLoader" class="org.anyframe.query.impl.config.loader.MappingXMLLoader">
     <property name="mappingFiles">
-			<value>
-			    <!-- xml files in folder -->
-			    file:./src/test/resources/foldermappings/**/testcase-*.xml,
-				file:./src/test/resources/dynamicreload/testcase-queries-dynamicreload.xml,
-				<!-- xml files in classpath -->
-  		    	classpath*:/mappings/testcase-queries-dynamic.xml,
-  		    	classpath*:/mappings/testcase-queries-general.xml,
-  		   		classpath*:/mappings/testcase-queries-resultmapping.xml,
-  		    	classpath*:/mappings/testcase-queries-resultsetmapper.xml,
-  		    	classpath*:/mappings/testcase-table-mappings.xml,
-  		    	classpath*:/mappings/testcase-queries-extended.xml,
-  		    	classpath*:/mappings/testcase-queries-mappingstyle.xml,
-  		   		<!-- xml files in jar  --> 
-  		    	classpath*:/jarmappings/testcase-queries-lob.xml
-			</value>
-		</property>	
-		<property name="nullchecks">
-			<map>
-			    <!-- key: type, value: default-value -->
-		    	<entry key="VARCHAR" value=""/>
-		    </map>
-		</property>
- 		<property name="dynamicReload" value="5" />	    
-		<property name="skipError" value="true" />
-	</bean>]]></programlisting>      		
+        <value>
+            <!-- xml files in folder -->
+            file:./src/test/resources/foldermappings/**/testcase-*.xml,
+            file:./src/test/resources/dynamicreload/testcase-queries-dynamicreload.xml,
+            <!-- xml files in classpath -->
+            classpath*:/mappings/testcase-queries-dynamic.xml,
+            classpath*:/mappings/testcase-queries-general.xml,
+            classpath*:/mappings/testcase-queries-resultmapping.xml,
+            classpath*:/mappings/testcase-queries-resultsetmapper.xml,
+            classpath*:/mappings/testcase-table-mappings.xml,
+            classpath*:/mappings/testcase-queries-extended.xml,
+            classpath*:/mappings/testcase-queries-mappingstyle.xml,
+            <!-- xml files in jar  --> 
+            classpath*:/jarmappings/testcase-queries-lob.xml
+        </value>
+    </property>	
+    <property name="nullchecks">
+        <map>
+            <!-- key: type, value: default-value -->
+            <entry key="VARCHAR" value=""/>
+        </map>
+    </property>
+    <property name="dynamicReload" value="5" />	    
+    <property name="skipError" value="true" />
+</bean>]]></programlisting>      		
 	</section>
 
 	<section id="query_configuration_testcase">
@@ -643,7 +637,7 @@ public int[] setQueryArgTypes(int[] originalArgTypes) {
 			</para>
             	
             <programlisting language="java"><![CDATA[public void insertQuery() throws Exception{
-    IQueryService queryService = (IQueryService) context.getBean("queryService");
+    QueryService queryService = (QueryService) context.getBean("queryService");
     //create() : By using SQL statement defined in XML mapping file, execute INSERT. 
     int rs = queryService.create
             ("create", new Object[] { "1234567890123", "AAAAA" , "seoul"});
@@ -660,15 +654,15 @@ public int[] setQueryArgTypes(int[] originalArgTypes) {
 			</para>
 
             <programlisting language="java"><![CDATA[public void selectQuery() throws Exception{
-    IQueryService queryService = (IQueryService) context.getBean("queryService");
+    QueryService queryService = (QueryService) context.getBean("queryService");
     ]]><emphasis role="bold">//find() : By using SQL statement defined in XML mapping, execute SELECT.</emphasis><![CDATA[
 
     //In general cases (when not mapping table and class)
-    ArrayList rsquery  = (ArrayList) queryService
+    List<Map<String, Object>> rsquery  = queryService
             .find("selectGeneral", new Object[] { "%12345%" });
-    Map hsRsquery = new HashMap();
+    Map<String, Object> hsRsquery = new HashMap<String, Object>();
     for( int i = 0 ; i < rsquery.size() ; i ++ ){
-        hsRsquery = (Map) rsquery.get(i);
+        hsRsquery = rsquery.get(i);
         String name = (String) hsRsquery.get("name");
     }
     
@@ -679,22 +673,21 @@ public int[] setQueryArgTypes(int[] originalArgTypes) {
     ]]><emphasis role="bold">*/</emphasis><![CDATA[
 
     //Table - When using class mapping
-    Collection rsqueryNotUsingResultMapping = queryService
+    List<Customer> rsqueryNotUsingResultMapping = queryService
             .find("selectNotUsingResultMapping", new Object[] { "%12345%" });
-    Iterator rsqueryItr = rsqueryNotUsingResultMapping.iterator();
+    Iterator<Customer> rsqueryItr = rsqueryNotUsingResultMapping.iterator();
     while (rsqueryItr.hasNext()) {
-        Customer customer = (Customer) rsqueryItr.next();
+        Customer customer = rsqueryItr.next();
         String name =  customer.getNm();
     }
 
     //When using result-mapping   
-    Collection rsqueryUsingResultMapping = queryService
+    List<CompositionCustomer> rsqueryUsingResultMapping = queryService
             .find("selectUsingResultMapping", new Object[] { "%12345%" });
-    Iterator rsqueryItr_01 = rsqueryUsingResultMapping.iterator();
+    Iterator<CompositionCustomer> rsqueryItr_01 = rsqueryUsingResultMapping.iterator();
     while (rsqueryItr_01.hasNext()) {
-        CompositionCustomer compositionCustomer 
-                = (CompositionCustomer) rsqueryItr_01.next();
-        String name =  compositionCustomer.getCompositionName();
+        CompositionCustomer compositionCustomer = rsqueryItr_01.next();
+        String name = compositionCustomer.getCompositionName();
     }
 
     System.out.println("rsquery.size() : " 
@@ -713,7 +706,7 @@ public int[] setQueryArgTypes(int[] originalArgTypes) {
             </para>			
 
             <programlisting language="java"><![CDATA[public void updateQuery() throws Exception {
-    IQueryService queryService = (IQueryService) context
+    QueryService queryService = (QueryService) context
             .getBean("queryService");
     //update() : By using SQL statement defined in XML mapping, execute UPDATE.
     int rs = queryService.update("update"
@@ -731,7 +724,7 @@ public int[] setQueryArgTypes(int[] originalArgTypes) {
 			</para>	
 
 			<programlisting language="java"><![CDATA[public void deleteQuery() throws Exception {
-    IQueryService queryService = (IQueryService) context
+    QueryService queryService = (QueryService) context
             .getBean("queryService");
     //remove() : By using SQL statement defined in XML mapping file, execute DELETE.
     int rs = queryService.remove("delete", new Object[] { "9999999999999" });

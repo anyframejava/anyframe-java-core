@@ -41,7 +41,7 @@
 	            <entry>strategy</entry>
 	            <entry>Defines ID Generation Strategy. Basically,
 							this uses MixPrefix which returns id combining prefix, new id and
-							fillChar.
+							paddingChar.
 	           </entry>
 	            <entry align="center">N</entry>
 	            <entry align="center">N/A</entry>
@@ -118,7 +118,7 @@
 					
           			<programlisting language="java">
 @Test
-public void testSimpleTableId() throws Exception {
+public void testSimpleTableId() {
     // 1. get id twice to compare with each other
     String id1 = tableidSimple.getNextStringId(<emphasis role="bold">"IDGEN_MOVIE</emphasis>);
     String id2 = tableidSimple.getNextStringId(<emphasis role="bold">"IDGEN_MOVIE</emphasis>);
@@ -138,7 +138,7 @@ IIdGenerationService idGenerationService;
  * Create product using idGenerationService.
  
  */
-public void create(Product product) throws Exception {
+public void create(Product product) {
     // Get new ID and set prodNo.	
     product.setProdNo(<emphasis role="bold">idGenerationService.getNextStringId()</emphasis>);
     productDao.create(product);

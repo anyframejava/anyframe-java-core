@@ -45,7 +45,7 @@ import com.tobesoft.platform.data.Variant;
  * @author Youngmin Jo
  */
 public abstract class AbstractMiPController extends AbstractController {
-	private int dataFormat = PlatformRequest.XML;
+	private int dataFormat = PlatformRequest.XML; 
 
 	protected Logger logger = LoggerFactory
 			.getLogger(AbstractMiPController.class);
@@ -53,7 +53,7 @@ public abstract class AbstractMiPController extends AbstractController {
 	private String encoding = PlatformRequest.CHARSET_UTF8;
 
 	public void setDataFormat(String dataFormat) {
-		if (dataFormat.equals("BIN")) {
+		if ("BIN".equals(dataFormat)) {
 			this.dataFormat = PlatformRequest.ZLIB_COMP;
 		}
 	}

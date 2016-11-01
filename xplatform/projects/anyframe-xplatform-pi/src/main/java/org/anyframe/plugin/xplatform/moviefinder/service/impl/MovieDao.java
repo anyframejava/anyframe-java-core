@@ -42,24 +42,22 @@ public class MovieDao extends QueryServiceDaoSupport {
 
 	public List<Map<String, Object>> getList(Map<String, Object> searchParamMap) {
 		Object[] args = new Object[] { "vo", searchParamMap };
-		List<Map<String, Object>> results = this.findList(
-				"findXPLATFORMMovieList", new Object[] { args });
-		return results;
+		return super.findList("findXPLATFORMMovieList", new Object[] { args });
 	}
 
 	public void create(Movie movie) {
 		movie.setMovieId("MV-" + System.currentTimeMillis());
-		create("createXPLATFORMMovie", movie);
+		super.create("createXPLATFORMMovie", movie);
 	}
 
 	public void remove(String movieId) {
 		Movie movie = new Movie();
 		movie.setMovieId(movieId);
-		remove("removeXPLATFORMMovie", movie);
+		super.remove("removeXPLATFORMMovie", movie);
 	}
 
 	public void update(Movie movie) {
-		update("updateXPLATFORMMovie", movie);
+		super.update("updateXPLATFORMMovie", movie);
 	}
 
 }

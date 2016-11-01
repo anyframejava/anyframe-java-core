@@ -281,7 +281,7 @@ public interface MiPQueryService {
 	 * 
 	 * @param queryId
 	 *            identifier of query statement to execute
-	 * @param datasetlist
+	 * @param dataset
 	 *            the DatasetList including the query conditions
 	 * @return Dataset of extracted out parameters
 	 * @throws QueryException

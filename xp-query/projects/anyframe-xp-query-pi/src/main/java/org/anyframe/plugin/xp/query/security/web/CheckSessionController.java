@@ -3,35 +3,27 @@ package org.anyframe.plugin.xp.query.security.web;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
-import org.springframework.web.servlet.ModelAndView;
-import org.springframework.web.servlet.mvc.AbstractController;
+import org.anyframe.xp.query.web.handler.XPResponseHandler;
+import org.springframework.stereotype.Controller;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.ResponseBody;
 
-import com.tobesoft.xplatform.data.PlatformData;
+import com.tobesoft.xplatform.data.DataSetList;
 import com.tobesoft.xplatform.data.VariableList;
-import com.tobesoft.xplatform.tx.HttpPlatformResponse;
-import com.tobesoft.xplatform.tx.PlatformType;
 
 /**
  * Check session for user information(userId). 
  * 
  * @author Youngmin Jo
  */
-public class CheckSessionController extends AbstractController{
-	private String contentType = PlatformType.CONTENT_TYPE_XML; // Default - XML
-	
-	private String encoding = PlatformType.DEFAULT_CHAR_SET; // Default CharSet = utf - 8
+@Controller
+public class CheckSessionController{
 
-	public void setContentType(String contentsType) {
-		this.contentType = contentsType;
-	}
-
-	public void setEncoding(String encoding) {
-		this.encoding = encoding;
-	}
-	
-	protected ModelAndView handleRequestInternal(HttpServletRequest request, HttpServletResponse response) throws Exception{
-		PlatformData outPlatformData = new PlatformData();
-		VariableList outVl = outPlatformData.getVariableList();
+	@RequestMapping("/checkSession.do")
+	@ResponseBody
+	protected XPResponseHandler handleRequestInternal(HttpServletRequest request, HttpServletResponse response) throws Exception{
+		VariableList outVl = new VariableList();
+		DataSetList outDl = new DataSetList();
 		
 		String userId = (String) request.getSession().getAttribute("userId");
 		
@@ -39,10 +31,6 @@ public class CheckSessionController extends AbstractController{
 		outVl.add("ErrorCode", 0);
 		outVl.add("ErrorMsg", "");
 		
-		HttpPlatformResponse httpPlatformResponse = new HttpPlatformResponse(
-				response, contentType, encoding);
-		httpPlatformResponse.setData(outPlatformData);
-		httpPlatformResponse.sendData();
-		return null;
+		return new XPResponseHandler(outDl, outVl);
 	}
 }

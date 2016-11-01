@@ -19,53 +19,142 @@ import javax.inject.Inject;
 import javax.inject.Named;
 
 import org.anyframe.plugin.xp.query.moviefinder.service.MovieService;
-import org.anyframe.xp.query.web.controller.AbstractXPDispatchController;
+import org.anyframe.xp.query.web.handler.XPRequestHandler;
+import org.anyframe.xp.query.web.handler.XPResponseHandler;
+import org.springframework.stereotype.Controller;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.ResponseBody;
 
 import com.tobesoft.xplatform.data.DataSet;
 import com.tobesoft.xplatform.data.DataSetList;
 import com.tobesoft.xplatform.data.VariableList;
-import com.tobesoft.xplatform.tx.HttpPlatformRequest;
 
 /**
  * Movie Controller class for operate user-defined service.
  * 
  * @author Youngmin Jo
  */
-public class MovieController extends AbstractXPDispatchController {
+@Controller("xpMovieController")
+@RequestMapping("/xpQueryMovie.do")
+public class MovieController {
 
 	@Inject
 	@Named("xpQueryMovieService")
 	private MovieService movieService;
 
-	public void getList(HttpPlatformRequest platformRequest, VariableList inVl,
-			DataSetList inDl, VariableList outVl, DataSetList outDl)
-			throws Exception {
-		movieService.getList(inVl, inDl, outVl, outDl);
+	@RequestMapping(params = "method=getList")
+	@ResponseBody
+	public XPResponseHandler getList(
+			@RequestBody XPRequestHandler requestHandler) throws Exception {
+		VariableList inputVariableList = requestHandler.getInputVariableList();
+		DataSetList inputDataSetList = requestHandler.getInputDataSetList();
+
+		VariableList outputVariableList = new VariableList();
+		DataSetList outputDataSetList = new DataSetList();
+
+		try {
+			movieService.getList(inputVariableList, inputDataSetList,
+					outputVariableList, outputDataSetList);
+
+			return new XPResponseHandler(outputDataSetList, outputVariableList);
+		} catch (Exception e) {
+			return setFailMessage(outputDataSetList, outputVariableList, e);
+		}
+
 	}
 
-	public void saveAll(HttpPlatformRequest platformRequest, VariableList inVl,
-			DataSetList inDl, VariableList outVl, DataSetList outDl)
-			throws Exception {
-		movieService.saveAll(inVl, inDl, outVl, outDl);
+	@ResponseBody
+	@RequestMapping(params = "method=saveAll")
+	public XPResponseHandler saveAll(
+			@RequestBody XPRequestHandler requestHandler) throws Exception {
+		VariableList inputVariableList = requestHandler.getInputVariableList();
+		DataSetList inputDataSetList = requestHandler.getInputDataSetList();
+
+		VariableList outputVariableList = new VariableList();
+		DataSetList outputDataSetList = new DataSetList();
+
+		try {
+			movieService.saveAll(inputVariableList, inputDataSetList,
+					outputVariableList, outputDataSetList);
+
+			return new XPResponseHandler(outputDataSetList, outputVariableList);
+		} catch (Exception e) {
+			return setFailMessage(outputDataSetList, outputVariableList, e);
+		}
 	}
 
-	public void create(HttpPlatformRequest platformRequest, VariableList inVl,
-			DataSetList inDl, VariableList outVl, DataSetList outDl)
+	@ResponseBody
+	@RequestMapping(params = "method=create")
+	public XPResponseHandler create(@RequestBody XPRequestHandler requestHandler)
 			throws Exception {
-		DataSet ds = inDl.get("dsMovie");
-		movieService.create(ds);
+		DataSetList inputDataSetList = requestHandler.getInputDataSetList();
+
+		VariableList outputVariableList = new VariableList();
+		DataSetList outputDataSetList = new DataSetList();
+
+		DataSet ds = inputDataSetList.get("dsMovie");
+
+		try {
+			movieService.create(ds);
+			return new XPResponseHandler(outputDataSetList, outputVariableList);
+		} catch (Exception e) {
+			return setFailMessage(outputDataSetList, outputVariableList, e);
+		}
 	}
 
-	public void get(HttpPlatformRequest platformRequest, VariableList inVl,
-			DataSetList inDl, VariableList outVl, DataSetList outDl)
+	@ResponseBody
+	@RequestMapping(params = "method=get")
+	public XPResponseHandler get(@RequestBody XPRequestHandler requestHandler)
 			throws Exception {
-		movieService.get(inVl, inDl, outVl, outDl);
+		VariableList inputVariableList = requestHandler.getInputVariableList();
+		DataSetList inputDataSetList = requestHandler.getInputDataSetList();
+
+		VariableList outputVariableList = new VariableList();
+		DataSetList outputDataSetList = new DataSetList();
+
+		try {
+			movieService.get(inputVariableList, inputDataSetList,
+					outputVariableList, outputDataSetList);
+
+			return new XPResponseHandler(outputDataSetList, outputVariableList);
+		} catch (Exception e) {
+			return setFailMessage(outputDataSetList, outputVariableList, e);
+		}
 	}
-	
-	public void update(HttpPlatformRequest platformRequest, VariableList inVl,
-			DataSetList inDl, VariableList outVl, DataSetList outDl)
+
+	@ResponseBody
+	@RequestMapping(params = "method=update")
+	public XPResponseHandler update(@RequestBody XPRequestHandler requestHandler)
 			throws Exception {
-		movieService.update(inVl, inDl, outVl, outDl);
+		VariableList inputVariableList = requestHandler.getInputVariableList();
+		DataSetList inputDataSetList = requestHandler.getInputDataSetList();
+
+		VariableList outputVariableList = new VariableList();
+		DataSetList outputDataSetList = new DataSetList();
+
+		try {
+			movieService.update(inputVariableList, inputDataSetList,
+					outputVariableList, outputDataSetList);
+
+			return new XPResponseHandler(outputDataSetList, outputVariableList);
+		} catch (Exception e) {
+			return setFailMessage(outputDataSetList, outputVariableList, e);
+		}
+	}
+
+	private XPResponseHandler setFailMessage(DataSetList outputDataSetList,
+			VariableList outputVariableList, Exception e) {
+		String msg = e.getMessage();
+
+		if (msg == null)
+			msg = "Fail to process client request.";
+
+		XPResponseHandler responseHandler = new XPResponseHandler(
+				outputDataSetList, outputVariableList);
+		responseHandler.setResultMessage(-1, msg);
+
+		return responseHandler;
 	}
 
 }

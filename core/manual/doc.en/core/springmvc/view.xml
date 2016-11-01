@@ -45,7 +45,7 @@
       			This commandName basic value is "command", 
       			and the transfer object to match with input value should be set as request value. 
       			This value can be defined in formBackingObject() method when using SimpleFormController. 
-      			<programlisting language="xml">protected Object formBackingObject(HttpServletRequest request)
+      			<programlisting language="java">protected Object formBackingObject(HttpServletRequest request)
     throws Exception {
     <emphasis role="bold">UserVO vo=new UserVO();</emphasis>
     <emphasis role="bold">request.setAttribute</emphasis>("<emphasis
@@ -93,13 +93,13 @@
 				(However, when sent as Array or List, label value is the same with value.) 
 				The following is an example.
 				<programlisting language="java">protected Object formBackingObject(HttpServletRequest request) throws Exception {
-    UserVO vo=new UserVO();
-    <emphasis role="bold">Map interest = new HashMap();
+    UserVO vo = new UserVO();
+    <emphasis role="bold"><![CDATA[Map<String, String> interest = new HashMap<String, String>()]]>;
     interest.put("reading", "reading");
     interest.put("listeningMusic", "listening to music");
     interest.put("study", "studying");
     request.setAttribute("interest", interest);
-    request.setAttribute("user",vo);</emphasis>
+    request.setAttribute("user", vo);</emphasis>
     return new UserVO();
 }
 </programlisting>
@@ -178,13 +178,13 @@
 				like the above <![CDATA[<checkboxes>]]> or <![CDATA[<radiobuttons>]]>.
 				<programlisting language="java">protected Object formBackingObject(HttpServletRequest request)
                 throws Exception {
-    UserVO vo=new UserVO();
-    <emphasis role="bold">Map address = new HashMap();
-    address.put("seoul","Seoul");
-    address.put("daegu","Daegu");
-    address.put("busan","Busan");
+    UserVO vo = new UserVO();
+    <emphasis role="bold"><![CDATA[Map<String, String> address = new HashMap<String, String>()]]>;
+    address.put("seoul", "Seoul");
+    address.put("daegu", "Daegu");
+    address.put("busan", "Busan");
     request.setAttribute("address", address);
-    request.setAttribute("user",vo);</emphasis>
+    request.setAttribute("user", vo);</emphasis>
     
 	return new UserVO();
 }
@@ -359,12 +359,12 @@
 
     protected Object formBackingObject(HttpServletRequest request)
             throws Exception {
-        Map address = new HashMap();
+        <![CDATA[Map<String, String> address = new HashMap<String, String>();]]>
         address.put("seoul", "Seoul");
         address.put("daegu", "Daegu");
         address.put("busan", "Busan");
 
-        Map hobby = new HashMap();
+        <![CDATA[Map<String, String> hobby = new HashMap<String, String>();]]>
         hobby.put("reading", "reading");
         hobby.put("listeningMusic", "listening to music");
         hobby.put("study", "studying");

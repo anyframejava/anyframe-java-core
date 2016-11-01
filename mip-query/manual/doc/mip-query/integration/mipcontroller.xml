@@ -5,10 +5,10 @@
 		MiPlatform을 사용하여 개발 시, Client UI Component에서 조회/저장 이벤트가 발생하면 호출하는
     	Controller 클래스는 Business Service를 실행하여 결과값을 XML로 변환하여 전송한다. Anyframe은 개발자
     	편의를 위하여 AbstractMipController를 제공하며 개발자는 복잡한 변환로직을 신경쓰지 않고 개발이 가능하다.
-    	<programlisting language="xml"><![CDATA[public abstract class AbstractMiPController extends AbstractController  {
+    	<programlisting language="java"><![CDATA[public abstract class AbstractMiPController extends AbstractController  {
 <!-- 중략 -->
-  public ModelAndView handleRequestInternal(HttpServletRequest request,
-			HttpServletResponse response) throws Exception {
+    public ModelAndView handleRequestInternal(HttpServletRequest request,
+            HttpServletResponse response) throws Exception {
         VariableList inVl = null;
         DatasetList inDl = null;
         VariableList outVl = null;
@@ -20,7 +20,6 @@
             new PlatformResponse(response, defaultEncodeMethod, defaultCharset);
 
         try {
-
             platformRequest.receiveData();
 
             inVl = platformRequest.getVariableList();
@@ -86,6 +85,7 @@
 
         	<para>
         		<informaltable>
+        			<caption>operate 메소드 내 이용변수 설명</caption>
 	          		<tgroup cols="3">
 	          			<colspec colnum="1" colname="col1" colwidth="3*"/>
 						<colspec colnum="2" colname="col2" colwidth="2*"/>
@@ -147,6 +147,7 @@
 			<para>
 				아래는 Firstrow 처리를 위해 클라이언트에서 전송해야 하는 파라미터에 대한 설명이다.
         		<informaltable>
+        			<caption>Firstrow 처리를 위해 클라이언트에서 전송해야 하는 파라미터에 대한 설명</caption>
 	          		<tgroup cols="2">
 	          			<colspec colnum="1" colname="col1" colwidth="3*"/>
 						<colspec colnum="2" colname="col2" colwidth="2*"/>

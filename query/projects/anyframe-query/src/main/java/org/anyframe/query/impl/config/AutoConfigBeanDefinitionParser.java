@@ -31,6 +31,7 @@ import org.anyframe.query.impl.jdbc.generator.MSSQLPagingSQLGenerator;
 import org.anyframe.query.impl.jdbc.generator.MySQLPagingSQLGenerator;
 import org.anyframe.query.impl.jdbc.generator.OraclePagingSQLGenerator;
 import org.anyframe.query.impl.util.RawSQLExceptionTranslator;
+import org.anyframe.util.StringUtil;
 import org.springframework.beans.factory.config.BeanDefinition;
 import org.springframework.beans.factory.config.RuntimeBeanReference;
 import org.springframework.beans.factory.parsing.BeanComponentDefinition;
@@ -39,7 +40,6 @@ import org.springframework.beans.factory.xml.BeanDefinitionParser;
 import org.springframework.beans.factory.xml.ParserContext;
 import org.springframework.jdbc.support.lob.AbstractLobHandler;
 import org.springframework.jdbc.support.lob.DefaultLobHandler;
-import org.springframework.jdbc.support.lob.OracleLobHandler;
 import org.springframework.jdbc.support.nativejdbc.CommonsDbcpNativeJdbcExtractor;
 import org.w3c.dom.Element;
 
@@ -92,27 +92,27 @@ import org.w3c.dom.Element;
  */
 public class AutoConfigBeanDefinitionParser implements BeanDefinitionParser {
 
-	private String[] dbTypes = new String[] { "altibase", "db2", "hsqldb",
+	private final String[] dbTypes = new String[] { "altibase", "db2", "hsqldb",
 			"mssql", "mysql", "oracle", "default" };
-	private Class<?>[] pagingSQLGenerators = new Class[] {
+	private final Class<?>[] pagingSQLGenerators = new Class[] {
 			AltibasePagingSQLGenerator.class, DB2PagingSQLGenerator.class,
 			HSQLPagingSQLGenerator.class, MSSQLPagingSQLGenerator.class,
 			MySQLPagingSQLGenerator.class, OraclePagingSQLGenerator.class,
 			DefaultPagingSQLGenerator.class };
 
-	private static String QUERY_BEAN_NAME = "queryService";
+	private final static String QUERY_BEAN_NAME = "queryService";
 
-	private static String JDBC_TEMPLATE_BEAN_NAME = "jdbcTemplate";
-	private static String EXCEPTION_TRANSLATOR_BEAN_NAME = "exceptionTranslator";
-	private static String DATASOURCE_BEAN_NAME = "dataSource";
+	private final static String JDBC_TEMPLATE_BEAN_NAME = "jdbcTemplate";
+	private final static String EXCEPTION_TRANSLATOR_BEAN_NAME = "exceptionTranslator";
+	private final static String DATASOURCE_BEAN_NAME = "dataSource";
 
-	private static String SQL_REPOSITORY_PROPERTY_NAME = "sqlRepository";
-	private static String SQL_REPOSITORY_BEAN_NAME = "sqlLoader";
+	private final static String SQL_REPOSITORY_PROPERTY_NAME = "sqlRepository";
+	private final static String SQL_REPOSITORY_BEAN_NAME = "sqlLoader";
 
-	private static String PAGING_SQL_GENRERATOR_BEAN_NAME = "pagingSQLGenerator";
+	private final static String PAGING_SQL_GENRERATOR_BEAN_NAME = "pagingSQLGenerator";
 
-	private static String LOB_HANDLER_BEAN_NAME = "lobHandler";
-	private static String NATIVE_JDBC_EXTRACTOR_BEAN_NAME = "nativeJdbcExtractor";
+	private final static String LOB_HANDLER_BEAN_NAME = "lobHandler";
+//	private final static String NATIVE_JDBC_EXTRACTOR_BEAN_NAME = "nativeJdbcExtractor";
 
 	/**
 	 * Parse the <query:auto-config/> element and register the resulting
@@ -186,7 +186,7 @@ public class AutoConfigBeanDefinitionParser implements BeanDefinitionParser {
 	 */
 	private RuntimeBeanReference getJdbcTemplate(ParserContext parserContext,
 			Object source, String jdbcTemplateRefId, String dataSourceRefId) {
-		if (jdbcTemplateRefId.equals("")) {
+		if ("".equals(jdbcTemplateRefId)) {
 			String jdbcTemplateBeanName = JDBC_TEMPLATE_BEAN_NAME
 					+ generateRandomString();
 			String dataSourceBeanName = getDefaultBeanName(dataSourceRefId,
@@ -233,7 +233,7 @@ public class AutoConfigBeanDefinitionParser implements BeanDefinitionParser {
 	private RuntimeBeanReference getSqlLoader(ParserContext parserContext,
 			Object source, String sqlLoaderRefId) {
 
-		if (sqlLoaderRefId.equals("")) {
+		if ("".equals(sqlLoaderRefId)) {
 			String sqlRepositoryBeanName = SQL_REPOSITORY_BEAN_NAME
 					+ generateRandomString();
 
@@ -332,8 +332,8 @@ public class AutoConfigBeanDefinitionParser implements BeanDefinitionParser {
 		String lobHandlerBeanName = LOB_HANDLER_BEAN_NAME;
 
 		Class<? extends AbstractLobHandler> lobHandler = DefaultLobHandler.class;
-		if (dbType.equals("oracle")) {
-			lobHandler = OracleLobHandler.class;
+		if ("oracle".equals(dbType)) {
+			lobHandler = DefaultLobHandler.class;
 			lobHandlerBeanName = "oracle"
 					+ LOB_HANDLER_BEAN_NAME.substring(0, 1).toUpperCase()
 					+ LOB_HANDLER_BEAN_NAME.substring(1);
@@ -345,16 +345,11 @@ public class AutoConfigBeanDefinitionParser implements BeanDefinitionParser {
 		parserContext.getRegistry().registerBeanDefinition(lobHandlerBeanName,
 				lobHandlerDef);
 
-		if (dbType.equals("oracle")) {
+		if ("oracle".equals(dbType)) {
 			RootBeanDefinition nativeJdbcExtractorDef = new RootBeanDefinition(
 					CommonsDbcpNativeJdbcExtractor.class);
 			nativeJdbcExtractorDef.setSource(source);
 			nativeJdbcExtractorDef.setLazyInit(true);
-			parserContext.getRegistry().registerBeanDefinition(
-					NATIVE_JDBC_EXTRACTOR_BEAN_NAME, nativeJdbcExtractorDef);
-			lobHandlerDef.getPropertyValues().add(
-					NATIVE_JDBC_EXTRACTOR_BEAN_NAME,
-					new RuntimeBeanReference(NATIVE_JDBC_EXTRACTOR_BEAN_NAME));
 		} else {
 			lobHandlerDef.getPropertyValues().add("wrapAsLob", true);
 		}
@@ -372,7 +367,7 @@ public class AutoConfigBeanDefinitionParser implements BeanDefinitionParser {
 	 * @return If defined value is empty, return default value
 	 */
 	private String getDefaultBeanName(String value, String defaultValue) {
-		if (value.equals("")) {
+		if (StringUtil.isEmpty(value)) {
 			return defaultValue;
 		}
 		return value;

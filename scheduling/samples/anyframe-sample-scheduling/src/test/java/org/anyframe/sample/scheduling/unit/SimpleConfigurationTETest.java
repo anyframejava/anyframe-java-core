@@ -15,8 +15,6 @@
 */
 package org.anyframe.sample.scheduling.unit;
 
-import junit.framework.TestCase;
-
 import org.junit.Assert;
 import org.junit.Test;
 import org.junit.runner.RunWith;

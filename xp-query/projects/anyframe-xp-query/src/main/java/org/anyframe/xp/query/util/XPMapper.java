@@ -48,6 +48,11 @@ import com.tobesoft.xplatform.data.VariableList;
  */
 public class XPMapper {
 
+	public static final String KEY_DELETE = "delete";
+	public static final String KEY_UPDATE = "update";
+	public static final String KEY_INSERT = "insert";
+	public static final String KEY_NORMAL = "normal";
+
 	/**
 	 * <p>
 	 * This method converts Value Object(VO) List into Dataset(XPlatform).
@@ -271,20 +276,28 @@ public class XPMapper {
 		List<Object> insertList = new ArrayList<Object>();
 		List<Object> updateList = new ArrayList<Object>();
 		List<Object> deleteList = new ArrayList<Object>();
+		List<Object> normalList = new ArrayList<Object>();
 
 		Map<String, List<Object>> resultMap = new HashMap<String, List<Object>>();
-		resultMap.put("insert", insertList);
-		resultMap.put("update", updateList);
-		resultMap.put("delete", deleteList);
+		resultMap.put(KEY_INSERT, insertList);
+		resultMap.put(KEY_UPDATE, updateList);
+		resultMap.put(KEY_DELETE, deleteList);
+		resultMap.put(KEY_NORMAL, normalList);
+		
 
 		Object vo = null;
 		int rowCount = dataList.getRowCount();
 		for (int i = 0; i < rowCount; i++) {
 			vo = voClazz.newInstance();
-			if (DataSet.ROW_TYPE_INSERTED == dataList.getRowType(i))
+			if (DataSet.ROW_TYPE_INSERTED == dataList.getRowType(i)) {
 				insertList.add(vo);
-			else if (DataSet.ROW_TYPE_UPDATED == dataList.getRowType(i))
+			}
+			else if (DataSet.ROW_TYPE_UPDATED == dataList.getRowType(i)) {
 				updateList.add(vo);
+			}
+			else if (DataSet.ROW_TYPE_NORMAL == dataList.getRowType(i)) {
+				normalList.add(vo);
+			}
 
 			new XPDataBinder(vo, converToCamelCase).bind(dataList, i);
 		}

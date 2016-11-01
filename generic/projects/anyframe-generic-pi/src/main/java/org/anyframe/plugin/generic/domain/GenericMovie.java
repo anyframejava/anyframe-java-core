@@ -20,6 +20,7 @@ import java.util.Date;
 
 import javax.persistence.Id;
 import javax.validation.constraints.DecimalMax;
+import javax.validation.constraints.DecimalMin;
 import javax.validation.constraints.Digits;
 import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Past;
@@ -60,9 +61,12 @@ public class GenericMovie implements Serializable {
 	@Past
 	private Date releaseDate;
 
-		@NumberFormat(pattern = "#,###")
-	@Digits(integer=4, fraction=0)
+	//Velocity-Support-ticketPrice-START
+	@NumberFormat(pattern = "#,###")
+	@DecimalMin(value = "1")
+	@Digits(integer = 4, fraction = 0)
 	private Float ticketPrice;
+	//Velocity-Support-ticketPrice-END
 
 	private String posterFile;
 

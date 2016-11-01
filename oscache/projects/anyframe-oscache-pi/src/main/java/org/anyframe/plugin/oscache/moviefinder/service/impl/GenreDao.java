@@ -38,23 +38,21 @@ public class GenreDao extends QueryServiceDaoSupport {
 	}
 
 	public List<Genre> getList() {
-		List<Genre> results = this.findList("findOSCacheGenreList",
-				new Object[] {});
-		return results;
+		return super.findList("findOSCacheGenreList", new Object[] {});
 	}
 
 	public void create(Genre genre) {
-		create("createOSCacheGenre", genre);
+		super.create("createOSCacheGenre", genre);
 	}
 
 	public void remove(String genreId) {
 		Genre genre = new Genre();
 		genre.setGenreId(genreId);
-		remove("removeOSCacheGenre", genre);
+		super.remove("removeOSCacheGenre", genre);
 	}
 
 	public void update(Genre genre) {
-		update("updateOSCacheGenre", genre);
+		super.update("updateOSCacheGenre", genre);
 	}
 
 }

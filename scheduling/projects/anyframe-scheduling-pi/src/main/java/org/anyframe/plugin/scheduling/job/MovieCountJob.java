@@ -32,39 +32,43 @@ import org.springframework.scheduling.quartz.QuartzJobBean;
  * @author Sujeong Lee
  */
 public class MovieCountJob extends QuartzJobBean {
-	
+
 	@Override
 	protected void executeInternal(JobExecutionContext context)
 			throws JobExecutionException {
 		new MovieCountInnerJob().execute();
 	}
-	
-	class MovieCountInnerJob extends JdbcDaoSupport{
 
-		public void execute(){
-			
+	class MovieCountInnerJob extends JdbcDaoSupport {
+
+		public void execute() {
+
 			initDataSource();
-			
+
 			String sql = "SELECT count(*) totalCount from MOVIE";
-			this.getJdbcTemplate().queryForObject(sql,
+			getJdbcTemplate().queryForObject(sql,
 					new BeanPropertyRowMapper<String>(String.class) {
 						public String mapRow(ResultSet rs, int i)
 								throws SQLException {
 							String totalCount = rs.getString("totalCount");
-							System.out.println("------------------------------------------------------");
-							System.out.println("Movie Table Row Count : " + totalCount);
-							System.out.println("------------------------------------------------------");
+							System.out
+									.println("------------------------------------------------------");
+							System.out.println("Movie Table Row Count : "
+									+ totalCount);
+							System.out
+									.println("------------------------------------------------------");
 							return null;
 						}
 					}, new Object[] {});
 		}
-		
+
 		private void initDataSource() {
 			ApplicationContext context = new ClassPathXmlApplicationContext(
-					new String[] { "classpath:spring/context-transaction.xml", "classpath:spring/context-hibernate*.xml" });
+					new String[] { "classpath:spring/context-transaction.xml",
+							"classpath:spring/context-hibernate*.xml" });
 			DataSource dataSource = (DataSource) context.getBean("dataSource");
 			super.setDataSource(dataSource);
 		}
-		
+
 	}
 }

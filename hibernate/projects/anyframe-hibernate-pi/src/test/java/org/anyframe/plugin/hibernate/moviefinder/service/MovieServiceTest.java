@@ -30,6 +30,7 @@ import org.junit.runner.RunWith;
 import org.springframework.test.annotation.Rollback;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
+import org.springframework.transaction.annotation.Transactional;
 
 @RunWith(SpringJUnit4ClassRunner.class)
 @ContextConfiguration(locations = { "file:./src/main/resources/spring/context-*.xml" })
@@ -43,6 +44,7 @@ public class MovieServiceTest {
 	private MovieFinder movieFinder;
 
 	@Test
+	@Transactional(value = "txManager")
 	@Rollback(value = true)
 	public void manageMovie() throws Exception {
 		// 1. create a new movie

@@ -25,6 +25,7 @@ import org.anyframe.pagination.Page;
 import org.anyframe.query.QueryService;
 import org.anyframe.query.dao.UserSupportDaoWithResultClass;
 import org.anyframe.query.vo.UsersVO;
+import org.anyframe.util.DateUtil;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -103,6 +104,7 @@ public class SupportDaoWithResultTest {
 		usersVO1.setUserId("admin");
 		usersVO1.setUserName("ADMIN");
 		usersVO1.setPassword("admin123");
+		usersVO1.setRegDate(DateUtil.stringToDate("2012-11-22 11:11:11", "yyyy-MM-dd HH:mm:ss"));
 		userSupportDaoWithResultClass.createUsers(usersVO1);
 
 		// 2. insert another new user
@@ -114,6 +116,7 @@ public class SupportDaoWithResultTest {
 
 		// 3. check for inserting
 		UsersVO result = userSupportDaoWithResultClass.findUsers(usersVO1);
+		Assert.assertEquals("2012-11-22 11:11:11", DateUtil.dateToString(result.getRegDate(), "yyyy-MM-dd HH:mm:ss"));
 		Assert.assertEquals(usersVO1.getUserName(), result.getUserName());
 
 		// 4. check for inserting

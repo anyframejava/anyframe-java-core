@@ -1130,7 +1130,7 @@ public String displayHeaderInfo(<emphasis role="bold">@CookieValue("JSESSIONID")
 	          	
 	          	<para>
 	          		Saving should be done using ModelAndView, ModelMap, etc. as the following example.
-	          		<programlisting language="xml">@RequestMapping(params = "param=addView")
+	          		<programlisting language="java">@RequestMapping(params = "param=addView")
 public ModelAndView addMovieView() {
     ModelAndView mnv = 
         new ModelAndView("/WEB-INF/jsp/annotation/sales/movie/movieForm.jsp");
@@ -1148,7 +1148,7 @@ public ModelAndView addMovieView() {
 
 				<para>
 	         	 	Defined the Controller class declarative section as @SessionAttributes("movie"), as shown in the following example.
-					<programlisting language="xml">@Controller
+					<programlisting language="java">@Controller
 @RequestMapping("/movie.do")
 <emphasis role="bold">@SessionAttributes</emphasis>("<emphasis role="bold">movie")</emphasis>
 public class EditMovieController {
@@ -1162,7 +1162,7 @@ public class EditMovieController {
 					<emphasis role="bold">Change session status after form handling is completed in controller method</emphasis>
 				</para>
 				
-				<programlisting language="xml">@RequestMapping(params = "param=add")
+				<programlisting language="java">@RequestMapping(params = "param=add")
 public String addMovie(HttpServletRequest request, Movie movie, BindingResult result
         , <emphasis role="bold">SessionStatus status</emphasis>) throws Exception {
     movieService.addMovie(movie);
@@ -1183,7 +1183,7 @@ public String addMovie(HttpServletRequest request, Movie movie, BindingResult re
 					 org.springframework.web.HttpSessionRequiredException occurs as below because model saved in session is deleted</emphasis>
 				</para>
 
-                   <programlisting language="xml">org.springframework.web.HttpSessionRequiredException: 
+                   <programlisting language="java">org.springframework.web.HttpSessionRequiredException: 
        Session attribute 'dept' required - not found in session</programlisting>
         	</listitem>
         

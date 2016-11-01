@@ -53,13 +53,13 @@ public interface GenericService<T, PK extends Serializable> {
 	public GenericDao<T, PK> getGenericDao();
 
 	/**
-	 * Generic method to get an object based on class and identifier. An
-	 * anyframe.common.exception.BaseException is thrown if nothing is found.
+	 * Generic method to get an object based on class and identifier.
 	 * 
 	 * @param id
 	 *            the identifier (primary key) of the object to get
 	 * @return a populated object
-	 * @see anyframe.common.exception.BaseException
+	 * @throws Exception
+	 *             if there is any problem getting object
 	 */
 	T get(PK id) throws Exception;
 
@@ -69,6 +69,8 @@ public interface GenericService<T, PK extends Serializable> {
 	 * @param id
 	 *            the identifier (primary key) of the object to get
 	 * @return - true if it exists, false if it doesn't
+	 * @throws Exception
+	 *             if there is any problem checking for existence of an object
 	 */
 	boolean exists(PK id) throws Exception;
 
@@ -77,6 +79,8 @@ public interface GenericService<T, PK extends Serializable> {
 	 * 
 	 * @param object
 	 *            the object to create
+	 * @throws Exception
+	 *             if there is any problem creating an object
 	 */
 	void create(T object) throws Exception;
 
@@ -85,6 +89,8 @@ public interface GenericService<T, PK extends Serializable> {
 	 * 
 	 * @param object
 	 *            the object to save
+	 * @throws Exception
+	 *             if there is any problem updating an object
 	 */
 	void update(T object) throws Exception;
 
@@ -93,6 +99,8 @@ public interface GenericService<T, PK extends Serializable> {
 	 * 
 	 * @param id
 	 *            the identifier (primary key) of the object to remove
+	 * @throws Exception
+	 *             if there is any problem remove an object
 	 */
 	void remove(PK id) throws Exception;
 
@@ -103,17 +111,23 @@ public interface GenericService<T, PK extends Serializable> {
 	 * @param searchVO
 	 *            search condition and search keyword
 	 * @return result page object with total count
+	 * @throws Exception
+	 *             if there is any problem getting object list
 	 */
-	public Page getPagingList(SearchVO searchVO) throws Exception;
+	Page getPagingList(SearchVO searchVO) throws Exception;
 
 	/**
 	 * Generic method to get object list based on object
 	 * 
 	 * @param object
 	 *            domain object
+	 * @param pageIndex
+	 *            page number which expected to be displayed (pageIndex > 0)
 	 * @return result page object with total count
+	 * @throws Exception
+	 *             if there is any problem getting object list
 	 */
-	public Page getPagingList(T object, int pageIndex) throws Exception;
+	Page getPagingList(T object, int pageIndex) throws Exception;
 
 	/**
 	 * Generic method to get object list based
@@ -121,15 +135,19 @@ public interface GenericService<T, PK extends Serializable> {
 	 * @param searchVO
 	 *            search condition and search keyword
 	 * @return List
+	 * @throws Exception
+	 *             if there is any problem getting object list
 	 */
-	public List<T> getList(SearchVO searchVO) throws Exception;
+	List<T> getList(SearchVO searchVO) throws Exception;
 
 	/**
-	 * Generic method to get object list based
+	 * Generic method to get object list based object
 	 * 
 	 * @param object
 	 *            domain object
 	 * @return List
+	 * @throws Exception
+	 *             if there is any problem getting object list
 	 */
-	public List<T> getList(T object) throws Exception;
+	List<T> getList(T object) throws Exception;
 }

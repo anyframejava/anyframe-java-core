@@ -32,8 +32,10 @@ import org.springframework.web.bind.annotation.RequestParam;
 @Controller("flexQueryDownloadController")
 public class DownloadController {
 
+	//Velocity-Support-contextProperties-START
 	@Value("#{contextProperties['repository.path']}")
 	private String repositoryPath;
+	//Velocity-Support-contextProperties-END
 
 	@RequestMapping("/flexQueryDownload.do")
 	public void download(

@@ -20,7 +20,7 @@ package org.anyframe.exception;
  * 
  * @author Jongpil Park
  * 
- * @since 1.0.5
+ * @since 1.5.0
  */
 public class MethodInvocationException extends ObjectHandlingException {
 

@@ -461,7 +461,7 @@ public class QueryServiceDaoSupport {
 	 * @throws QueryException
 	 *             if there is any problem executing the query
 	 */
-	protected <E> List<E> findList(String queryId, Object targetObj) {
+	protected <T> List<T> findList(String queryId, Object targetObj) {
 		Object[] params = convertParams(targetObj);
 		return queryService.find(queryId, params);
 	}
@@ -482,7 +482,7 @@ public class QueryServiceDaoSupport {
 	 * @throws QueryException
 	 *             if there is any problem executing the query
 	 */
-	protected <E> List<E> findList(String queryId, Map<String, ?> targetMap) {
+	protected <T> List<T> findList(String queryId, Map<String, ?> targetMap) {
 		Object[] params = convertParams(targetMap);
 		return queryService.find(queryId, params);
 	}
@@ -503,7 +503,7 @@ public class QueryServiceDaoSupport {
 	 * @throws QueryException
 	 *             if there is any problem executing the query
 	 */
-	protected <E> List<E> findList(String queryId, List<?> targetObjs) {
+	protected <T> List<T> findList(String queryId, List<?> targetObjs) {
 		Object[] params = convertParams(targetObjs);
 		return queryService.find(queryId, params);
 	}
@@ -521,7 +521,7 @@ public class QueryServiceDaoSupport {
 	 * @throws QueryException
 	 *             if there is any problem executing the query
 	 */
-	protected <E> List<E> findList(String queryId, Object[] targetObjs) {
+	protected <T> List<T> findList(String queryId, Object[] targetObjs) {
 		return queryService.find(queryId, targetObjs);
 	}
 

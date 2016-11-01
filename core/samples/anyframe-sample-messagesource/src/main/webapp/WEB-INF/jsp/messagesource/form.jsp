@@ -4,7 +4,7 @@
 <div class="location">
 	<a href="<c:url value='/anyframe.jsp'/>">Home</a> &gt; <a
 		href="<c:url value='/messageSource.do?method=list'/>">MessageSource
-		Sample - 1.5.0.RC1</a>
+		Sample - 1.5.0-SNAPSHOT</a>
 </div>
 </div>
 <hr />

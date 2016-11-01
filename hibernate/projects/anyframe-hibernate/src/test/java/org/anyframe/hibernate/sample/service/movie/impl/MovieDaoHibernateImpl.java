@@ -34,7 +34,7 @@ public class MovieDaoHibernateImpl extends HibernateDaoSupport implements
 	}
 
 	public void createMovie(Movie movie) {
-		this.getHibernateTemplate().save(movie);
+		super.getHibernateTemplate().save(movie);
 	}
 
 	public void createMovieList(List<Movie> movieList) {
@@ -49,7 +49,7 @@ public class MovieDaoHibernateImpl extends HibernateDaoSupport implements
 	}
 
 	public Movie findMovie(String movieId) {
-		return (Movie) this.getHibernateTemplate().get(Movie.class, movieId);
+		return super.getHibernateTemplate().get(Movie.class, movieId);
 	}
 
 	public List<Movie> findMovieList(int conditionType, String condition) {
@@ -97,16 +97,16 @@ public class MovieDaoHibernateImpl extends HibernateDaoSupport implements
 
 	@SuppressWarnings("unchecked")
 	public List<Movie> findMovieListAll() {
-		return this.getHibernateTemplate().find(
+		return super.getHibernateTemplate().find(
 				"FROM Movie movie ORDER BY movie.title");
 	}
 
 	public void removeMovie(Movie movie) {
-		this.getHibernateTemplate().delete(movie);
+		super.getHibernateTemplate().delete(movie);
 	}
 
 	public void updateMovie(Movie movie) {
-		this.getHibernateTemplate().update(movie);
+		super.getHibernateTemplate().update(movie);
 	}
 
 	public void updateMovieByBulk(Movie movie) {
@@ -115,16 +115,16 @@ public class MovieDaoHibernateImpl extends HibernateDaoSupport implements
 		hqlBuf.append("SET movie.director = ? ");
 		hqlBuf.append("WHERE movie.movieId = ? ");
 
-		this.getHibernateTemplate().bulkUpdate(hqlBuf.toString(),
+		super.getHibernateTemplate().bulkUpdate(hqlBuf.toString(),
 				new Object[] { movie.getDirector(), movie.getMovieId() });
 	}
 
 	public void createCategory(Category category) {
-		this.getHibernateTemplate().save(category);
+		super.getHibernateTemplate().save(category);
 	}
 
 	public void createCountry(Country country) {
-		this.getHibernateTemplate().save(country);
+		super.getHibernateTemplate().save(country);
 	}
 
 	private Object[] makeArguments(int conditionType, String condition) {

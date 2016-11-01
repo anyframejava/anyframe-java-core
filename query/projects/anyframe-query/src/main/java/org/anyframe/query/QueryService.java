@@ -313,8 +313,7 @@ public interface QueryService {
 	 * @param queryId
 	 *            identifier of query statement to execute
 	 * @param targets
-	 *            a set of variable for executing query (is the List of
-	 *            Object[])
+	 *            a set of variable for executing query
 	 * @return an array of the number of rows affected by each statement
 	 * @throws QueryException
 	 *             if there is any problem issuing the update
@@ -540,7 +539,7 @@ public interface QueryService {
 	 * @throws QueryException
 	 *             if there is any problem executing the query
 	 */
-	<E> List<E> find(Object obj) throws QueryException;
+	<T> List<T> find(Object obj) throws QueryException;
 
 	/**
 	 * Execute a SELECT query, Using given queryId which defined in mapping xml
@@ -555,7 +554,7 @@ public interface QueryService {
 	 * @throws QueryException
 	 *             if there is any problem executing the query
 	 */
-	<E> List<E> find(String queryId, Object[] values) throws QueryException;
+	<T> List<T> find(String queryId, Object[] values) throws QueryException;
 
 	/**
 	 * Execute a SELECT query, Using given queryId which defined in mapping xml
@@ -572,7 +571,7 @@ public interface QueryService {
 	 * @throws QueryException
 	 *             if there is any problem executing the query
 	 */
-	<E> List<E> find(String queryId, Object[] values, int pageIndex)
+	<T> List<T> find(String queryId, Object[] values, int pageIndex)
 			throws QueryException;
 
 	/**
@@ -593,7 +592,7 @@ public interface QueryService {
 	 * @throws QueryException
 	 *             if there is any problem executing the query
 	 */
-	<E> List<E> find(String queryId, Object[] values, int pageIndex,
+	<T> List<T> find(String queryId, Object[] values, int pageIndex,
 			int pageSize) throws QueryException;
 
 	/**
@@ -613,7 +612,7 @@ public interface QueryService {
 	 * @throws QueryException
 	 *             if there is any problem executing the query
 	 */
-	<E> List<E> findBySQL(String sql, String[] types, Object[] values)
+	<T> List<T> findBySQL(String sql, String[] types, Object[] values)
 			throws QueryException;
 
 	/**
@@ -637,7 +636,7 @@ public interface QueryService {
 	 * @throws QueryException
 	 *             if there is any problem executing the query
 	 */
-	<E> List<E> findBySQL(String sql, String[] types, Object[] values,
+	<T> List<T> findBySQL(String sql, String[] types, Object[] values,
 			int pageIndex, int pageSize) throws QueryException;
 
 	/**

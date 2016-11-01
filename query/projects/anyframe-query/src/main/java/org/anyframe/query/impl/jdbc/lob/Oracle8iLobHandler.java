@@ -41,12 +41,12 @@ import org.anyframe.exception.InitializationException;
 import org.anyframe.query.exception.QueryException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.jdbc.support.lob.DefaultLobHandler;
 import org.springframework.jdbc.support.lob.LobCreator;
-import org.springframework.jdbc.support.lob.OracleLobHandler;
 import org.springframework.jdbc.support.nativejdbc.NativeJdbcExtractor;
 import org.springframework.util.FileCopyUtils;
 
-/**
+/** 
  * LobHandler implementation for Oracle databases. Uses proprietary API to
  * create oracle.sql.BLOB and oracle.sql.CLOB instances, as necessary when
  * working with Oracle's JDBC driver. Developed and tested on Oracle 9i.
@@ -80,7 +80,7 @@ import org.springframework.util.FileCopyUtils;
  * @author Juergen Hoeller
  * @author modified by SoYon Lim
  */
-public class Oracle8iLobHandler extends OracleLobHandler {
+public class Oracle8iLobHandler extends DefaultLobHandler {
 
 	private static Logger log = LoggerFactory
 			.getLogger(Oracle8iLobHandler.class);
@@ -101,8 +101,8 @@ public class Oracle8iLobHandler extends OracleLobHandler {
 
 	private final Method getBLOBMethod;
 
-	@SuppressWarnings("unused")
-	private final Method getCLOBStream;
+//	@SuppressWarnings("unused")
+//	private final Method getCLOBStream;
 
 	private final Method getBLOBStream;
 
@@ -151,8 +151,8 @@ public class Oracle8iLobHandler extends OracleLobHandler {
 						new Class[] { int.class });
 			}
 
-			this.getCLOBStream = clobClass.getMethod(
-					"getCharacterOutputStream", new Class[] {});
+//			this.getCLOBStream = clobClass.getMethod(
+//					"getCharacterOutputStream", new Class[] {});
 			this.getBLOBStream = blobClass.getMethod("getBinaryOutputStream",
 					new Class[] {});
 		} catch (Exception ex) {

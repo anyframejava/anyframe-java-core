@@ -24,6 +24,7 @@ import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
 
+import org.anyframe.exception.BaseRuntimeException;
 import org.apache.commons.beanutils.PropertyUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -49,7 +50,7 @@ public class ObjectUtil {
 	private static Map<String, Class<?>> classCache = new HashMap<String, Class<?>>();
 
 	public static Class<?> loadClass(String className) {
-		return loadClass(className, null);
+		return loadClass(className, null); 
 	}
 
 	/**
@@ -81,7 +82,7 @@ public class ObjectUtil {
 						try {
 							theClass = Class.forName(className);
 						} catch (ClassNotFoundException e1) {
-							throw new RuntimeException("Class is not found. ["
+							throw new BaseRuntimeException("Class is not found. ["
 									+ className + "]");
 						}
 						if (theClass != null) {
@@ -113,12 +114,12 @@ public class ObjectUtil {
 		} catch (InstantiationException e) {
 			logger.error("{} : Class is cant instantialized.",
 					new Object[] { className });
-			throw new RuntimeException(className
+			throw new BaseRuntimeException(className
 					+ " : Class is cant instantialized.");
 		} catch (IllegalAccessException e) {
 			logger.error("{} : Class is not accessed.",
 					new Object[] { className });
-			throw new RuntimeException(className + " : Class is not accessed.");
+			throw new BaseRuntimeException(className + " : Class is not accessed.");
 		}
 	}
 
@@ -154,16 +155,16 @@ public class ObjectUtil {
 				} catch (IllegalAccessException e) {
 					logger.error("{} : Class is not accessed.",
 							new Object[] { name });
-					throw new RuntimeException(name
+					throw new BaseRuntimeException(name
 							+ " : Class is not accessed.");
 				} catch (InvocationTargetException e) {
 					logger.error("{} : Invocation error.",
 							new Object[] { name });
-					throw new RuntimeException(name + " : Invocation error.");
+					throw new BaseRuntimeException(name + " : Invocation error.");
 				} catch (NoSuchMethodException e) {
 					logger.error("{} : Class has no such method.",
 							new Object[] { name });
-					throw new RuntimeException(name
+					throw new BaseRuntimeException(name
 							+ " : Class has no such method.");
 				}
 			}
@@ -202,16 +203,16 @@ public class ObjectUtil {
 				} catch (IllegalAccessException e) {
 					logger.error("{} : Class is not accessed.",
 							new Object[] { name });
-					throw new RuntimeException(name
+					throw new BaseRuntimeException(name
 							+ " : Class is not accessed.");
 				} catch (InvocationTargetException e) {
 					logger.error("{} : Invocation error.",
 							new Object[] { name });
-					throw new RuntimeException(name + " : Invocation error.");
+					throw new BaseRuntimeException(name + " : Invocation error.");
 				} catch (NoSuchMethodException e) {
 					logger.error("{} : Class has no such method.",
 							new Object[] { name });
-					throw new RuntimeException(name
+					throw new BaseRuntimeException(name
 							+ " : Class has no such method.");
 				}
 			}
@@ -245,16 +246,16 @@ public class ObjectUtil {
 				} catch (IllegalAccessException e) {
 					logger.error("{} : Class is not accessed.",
 							new Object[] { name });
-					throw new RuntimeException(name
+					throw new BaseRuntimeException(name
 							+ " : Class is not accessed.");
 				} catch (InvocationTargetException e) {
 					logger.error("{} : Invocation error.",
 							new Object[] { name });
-					throw new RuntimeException(name + " : Invocation error.");
+					throw new BaseRuntimeException(name + " : Invocation error.");
 				} catch (NoSuchMethodException e) {
 					logger.error("{} : Class has no such method.",
 							new Object[] { name });
-					throw new RuntimeException(name
+					throw new BaseRuntimeException(name
 							+ " : Class has no such method.");
 				}
 				setProperty(destObject, name, origValue, type.getName());
@@ -281,7 +282,7 @@ public class ObjectUtil {
 			}
 		} catch (SecurityException e) {
 			logger.error("{} : Class is not Security.", new Object[] { name });
-			throw new RuntimeException(name + " : Class is not Security.");
+			throw new BaseRuntimeException(name + " : Class is not Security.");
 		} catch (NoSuchFieldException e) {
 			return false;
 		}
@@ -303,14 +304,14 @@ public class ObjectUtil {
 			return PropertyUtils.getProperty(object, name);
 		} catch (IllegalAccessException e) {
 			logger.error("{} : Class is not accessed.", new Object[] { name });
-			throw new RuntimeException(name + " : Class is not accessed.");
+			throw new BaseRuntimeException(name + " : Class is not accessed.");
 		} catch (InvocationTargetException e) {
 			logger.error("{} : Invocation error.", new Object[] { name });
-			throw new RuntimeException(name + " : Invocation error.");
+			throw new BaseRuntimeException(name + " : Invocation error.");
 		} catch (NoSuchMethodException e) {
 			logger.error("{} : Class has no such method.",
 					new Object[] { name });
-			throw new RuntimeException(name + " : Class has no such method.");
+			throw new BaseRuntimeException(name + " : Class has no such method.");
 		}
 	}
 
@@ -356,14 +357,14 @@ public class ObjectUtil {
 			}
 		} catch (IllegalAccessException e) {
 			logger.error("{} : Class is not accessed.", new Object[] { name });
-			throw new RuntimeException(name + " : Class is not accessed.");
+			throw new BaseRuntimeException(name + " : Class is not accessed.");
 		} catch (InvocationTargetException e) {
 			logger.error("{} : Invocation error.", new Object[] { name });
-			throw new RuntimeException(name + " : Invocation error.");
+			throw new BaseRuntimeException(name + " : Invocation error.");
 		} catch (NoSuchMethodException e) {
 			logger.error("{} : Class has no such method.",
 					new Object[] { name });
-			throw new RuntimeException(name + " : Class has no such method.");
+			throw new BaseRuntimeException(name + " : Class has no such method.");
 		}
 	}
 
@@ -383,15 +384,14 @@ public class ObjectUtil {
 		} catch (IllegalAccessException e) {
 			logger.error("{} : Class is not accessed.",
 					new Object[] { propName });
-			throw new RuntimeException(propName + " : Class is not accessed.");
+			throw new BaseRuntimeException(propName + " : Class is not accessed.");
 		} catch (InvocationTargetException e) {
 			logger.error("{} : Invocation error.");
-			throw new RuntimeException(propName + " : Invocation error.");
+			throw new BaseRuntimeException(propName + " : Invocation error.");
 		} catch (NoSuchMethodException e) {
-			e.printStackTrace();
 			logger.error("{} : Class has no such method.",
 					new Object[] { propName });
-			throw new RuntimeException(propName
+			throw new BaseRuntimeException(propName
 					+ " : Class has no such method.");
 		}
 	}
@@ -423,7 +423,7 @@ public class ObjectUtil {
 		} catch (NoSuchFieldException e) {
 			logger.error("{} : Class has no such Field. {}", new Object[] {
 					fieldName, e.toString() });
-			throw new RuntimeException(fieldName
+			throw new BaseRuntimeException(fieldName
 					+ " : Class has no such field.");
 		}
 		return field;
@@ -518,13 +518,13 @@ public class ObjectUtil {
 			method.invoke(object, new Object[] { value });
 		} catch (IllegalArgumentException e) {
 			logger.error("Argument is illegal.");
-			throw new RuntimeException("Argument is illegal.");
+			throw new BaseRuntimeException("Argument is illegal.");
 		} catch (IllegalAccessException e) {
 			logger.error("{} : Class is not accessed.", new Object[] { name });
-			throw new RuntimeException(name + " : Class is not accessed.");
+			throw new BaseRuntimeException(name + " : Class is not accessed.");
 		} catch (InvocationTargetException e) {
 			logger.error("{} : Invocation error.", new Object[] { name });
-			throw new RuntimeException(name + " : Invocation error.");
+			throw new BaseRuntimeException(name + " : Invocation error.");
 		}
 	}
 
@@ -544,13 +544,13 @@ public class ObjectUtil {
 			method.invoke(object, new Object[] { value });
 		} catch (IllegalArgumentException e) {
 			logger.error("Argument is illegal.");
-			throw new RuntimeException("Argument is illegal.");
+			throw new BaseRuntimeException("Argument is illegal.");
 		} catch (IllegalAccessException e) {
 			logger.error("{} : Class is not accessed.", new Object[] { name });
-			throw new RuntimeException(name + " : Class is not accessed.");
+			throw new BaseRuntimeException(name + " : Class is not accessed.");
 		} catch (InvocationTargetException e) {
 			logger.error("{} : Invocation error.", new Object[] { name });
-			throw new RuntimeException(name + " : Invocation error.");
+			throw new BaseRuntimeException(name + " : Invocation error.");
 		}
 	}
 }

@@ -124,10 +124,8 @@
             method.invoke(bean, new Object[] { inVl, inDl, outVl, outDl });
         } catch (Exception e) {
             Throwable te = e.getCause();
-            if (te instanceof BaseException)
-                throw (BaseException) te;
-            else
-                throw new BaseException("Fail to process client request.", te);
+            logger.error("Can not invoke a dispatch method name", te);
+            throw new Exception("Fail to process client request.", te);
         }
     }
 ...]]></programlisting>
@@ -209,7 +207,7 @@
 				Then, call MiPDao method using queryId and inDs.
 			</para>
         	<programlisting language="java"><![CDATA[public void getPagingList(VariableList inVl, DatasetList inDl,
-        VariableList outVl, DatasetList outDl) throws Exception {
+        VariableList outVl, DatasetList outDl) throws QueryException {
 
     int querySetCount = getQuerySetCount(inVl, outVl);
     String queryId = null;
@@ -254,7 +252,7 @@
 		    	and functions of DB work that can be done with Dataset and VariableList include most functions.
 			</para>
 			<programlisting language="java"><![CDATA[public int saveAll(Map queryMap, Dataset inDs,
-    IMiPActionCommand actionCommand) throws Exception {
+    MiPActionCommand actionCommand) throws QueryException {
 	
     if(actionCommand == null){
         return miPQueryService.update(queryMap, inDs);
@@ -294,7 +292,8 @@ public class MovieServiceImpl extends MiPServiceImpl implements MovieService {
    public void saveAll(VariableList inVl, DatasetList inDl,
 			VariableList outVl, DatasetList outDl) throws Exception {
 
-		Map sqlMap = new HashMap();
+		Map<String, String> sqlMap = new HashMap<String, String>();
+		
 		sqlMap.put(MiPQueryServiceImpl.QUERY_INSERT, "createMovie");
 		sqlMap.put(MiPQueryServiceImpl.QUERY_UPDATE, "updateMovie");
 		sqlMap.put(MiPQueryServiceImpl.QUERY_DELETE, "removeMovie");
@@ -304,9 +303,9 @@ public class MovieServiceImpl extends MiPServiceImpl implements MovieService {
 	
 }]]></programlisting>
     	<para>
-    		ProductActionCommand that is the implementation of IMiPActionCommand provided by Anyframe, 
+    		ProductActionCommand that is the implementation of MiPActionCommand provided by Anyframe, 
     		is being transferred to the saveAll() parameter of MiPDao. 
-    		When using IMiPActionCommand, Necessary business logic can be executed before and after executing specific string.
+    		When using MiPActionCommand, Necessary business logic can be executed before and after executing specific string.
     	</para>
     	
     	<section id="mip_query_simplification_mipservice_extension_commend">

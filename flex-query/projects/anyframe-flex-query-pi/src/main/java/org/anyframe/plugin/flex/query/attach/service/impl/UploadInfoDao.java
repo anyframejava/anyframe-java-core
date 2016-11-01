@@ -25,26 +25,25 @@ import org.anyframe.query.dao.QueryServiceDaoSupport;
 import org.springframework.stereotype.Repository;
 
 @Repository("flexQueryUploadInfoDao")
-public class UploadInfoDao extends QueryServiceDaoSupport{
-	
+public class UploadInfoDao extends QueryServiceDaoSupport {
+
 	@Inject
 	public void setQueryService(QueryService queryService) {
 		super.setQueryService(queryService);
 	}
-	
+
 	public int create(Attached attached) {
-		return create("createFlexQueryAttached", attached);
+		return super.create("createFlexQueryAttached", attached);
 	}
-	
+
 	public List<Attached> getList(String refId) {
 		Attached attached = new Attached();
-		attached.setRefId(refId);		
-		List<Attached> results =  this.findList("findFlexQueryAttachedList", attached);
-		return results;
+		attached.setRefId(refId);
+		return super.findList("findFlexQueryAttachedList", attached);
 	}
-	
+
 	public int remove(Attached attached) {
-		return remove("removeFlexQueryAttached", attached);
+		return super.remove("removeFlexQueryAttached", attached);
 	}
-	
+
 }

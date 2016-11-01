@@ -376,7 +376,7 @@ public class MiPQueryServiceImpl extends AbstractRiaQueryService implements
 		 * @uml.property name="actionCommand"
 		 * @uml.associationEnd
 		 */
-		private MiPActionCommand actionCommand = null;
+		private final MiPActionCommand actionCommand;
 
 		InternalMap(Map<String, String> queries, MiPActionCommand actionCommand) {
 			super(queries);

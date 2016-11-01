@@ -1,6 +1,6 @@
 <%@ page language="java" errorPage="/sample/common/error.jsp" pageEncoding="UTF-8" contentType="text/html;charset=utf-8" %>
 <%@ include file="/sample/common/top.jsp"%>
-		<div class="location"><a href="<c:url value='/anyframe.jsp'/>">Home</a> &gt; <a href="<c:url value='/scheduling.do?method=list'/>">Scheduling 1.5.0.RC1</a></div>
+		<div class="location"><a href="<c:url value='/anyframe.jsp'/>">Home</a> &gt; <a href="<c:url value='/scheduling.do?method=list'/>">Scheduling 1.5.1</a></div>
     </div>
     <hr />
 <script type="text/javascript" src="<c:url value='/sample/javascript/InputCalendar.js'/>"></script>
@@ -77,16 +77,11 @@
                     	<td><form:input path="jobSchedule" cssClass="w_normal" /><form:errors path="jobSchedule" cssClass="errors" /></td>
                     </tr>
                     <tr>
-                    	<th><label for="startDate"><spring:message code='scheduling.startdate'/></label></th>
-                        <td><form:input path="startDate" cssClass="w_normal"  maxlength="16" />(pattern : yyyy-MM-dd HH:mm)<form:errors path="startDate" cssClass="errors" /></td>
-                    </tr>
-                    <tr>
-                    	<th><label for="endDate"><spring:message code='scheduling.enddate'/></label></th>
-                        <td><form:input path="endDate" cssClass="w_normal"  maxlength="16" />(pattern : yyyy-MM-dd HH:mm)<form:errors path="endDate" cssClass="errors" /></td>
-                    </tr>
-                    <tr>
                     	<th><label for="description"><spring:message code='scheduling.description'/></label></th>
-                        <td><form:textarea path="description" rows="5" cols="100"/><form:errors path="description" cssClass="errors" /></td>
+                        <td>
+                        <form:textarea path="description" rows="5" cols="100"/><form:errors path="description" cssClass="errors" />
+                        <form:hidden path="startDate" />
+                        </td>
                     </tr>
                 </tbody>
             </table>

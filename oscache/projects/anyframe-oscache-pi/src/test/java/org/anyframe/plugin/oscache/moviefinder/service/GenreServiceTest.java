@@ -32,6 +32,7 @@ import org.junit.runner.RunWith;
 import org.springframework.test.annotation.Rollback;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
+import org.springframework.transaction.annotation.Transactional;
 
 /**
  * This GenreServiceTest class is a Test Case class for GenreService.
@@ -50,6 +51,7 @@ public class GenreServiceTest {
 	OSCacheService cacheService;
 
 	@Test
+	@Transactional(value = "txManager")
 	@Rollback(value = true)
 	public void manageGenre() throws Exception {
 		// 1. create a new genre

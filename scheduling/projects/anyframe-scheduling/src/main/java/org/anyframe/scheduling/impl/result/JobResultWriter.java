@@ -43,22 +43,22 @@ import org.slf4j.LoggerFactory;
 public class JobResultWriter {
 
 	// default path
-	private String resultPath = "C:/Anyframe/SchedulingResultFiles";
+	private String resultPath = "C:/Anyframe/SchedulingResultFiles"; 
 	private String resultJobRootPath = resultPath + "/jobs";
 
-	private static String PATH_SEPARATOR = System.getProperty("file.separator");
-	private static String FILE_SEPARATOR_START = "[";
-	private static String FILE_SEPARATOR_END = "]";
-	private static String FILE_EXTENTION = ".log";
-	private static String JOB_SUCCESS = "S";
-	private static String JOB_FAIL = "F";
+	private static final String PATH_SEPARATOR = System.getProperty("file.separator");
+	private static final String FILE_SEPARATOR_START = "[";
+	private static final String FILE_SEPARATOR_END = "]";
+	private static final String FILE_EXTENTION = ".log";
+	private static final String JOB_SUCCESS = "S";
+	private static final String JOB_FAIL = "F";
 
-	private static String KEY_SF = "key_sf";
-	private static String KEY_START_DATE = "key_start";
-	private static String KEY_END_DATE = "key_end";
+	private static final String KEY_SF = "key_sf";
+	private static final String KEY_START_DATE = "key_start";
+	private static final String KEY_END_DATE = "key_end";
 
-	private static String FULL_DATE_DIR_PATTERN = "yyyy-MM-dd_HH-mm-ss-SSS";
-	private static String DATE_DIR_PATTERN = "yyyy-MM-dd";
+	private static final String FULL_DATE_DIR_PATTERN = "yyyy-MM-dd_HH-mm-ss-SSS";
+	private static final String DATE_DIR_PATTERN = "yyyy-MM-dd";
 
 	Logger logger = LoggerFactory.getLogger(SchedulingService.class);
 

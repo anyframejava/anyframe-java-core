@@ -14,6 +14,7 @@
  * limitations under the License.
  */
 package org.anyframe.sample.query.moviefinder.service.impl;
+
 import java.util.List;
 
 import javax.inject.Inject;
@@ -36,9 +37,8 @@ public class GenreDao extends QueryServiceDaoSupport {
 		super.setQueryService(queryService);
 	}
 
-	@SuppressWarnings("unchecked")
-	public List<Genre> getList() throws Exception {
-		return (List<Genre>) this.findList("findGenreList", new Object[] {});
+	public List<Genre> getList() {
+		return super.findList("findGenreList", new Object[] {});
 	}
 
 }

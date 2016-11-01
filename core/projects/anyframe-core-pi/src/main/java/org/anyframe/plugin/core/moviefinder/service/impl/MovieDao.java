@@ -43,11 +43,13 @@ import org.springframework.stereotype.Repository;
 @Repository("coreMovieDao")
 public class MovieDao extends JdbcDaoSupport {
 
+	//Velocity-Support-contextProperties-START
 	@Value("#{contextProperties['pageSize'] ?: 10}")
 	int pageSize;
 
 	@Value("#{contextProperties['pageUnit'] ?: 10}")
 	int pageUnit;
+	//Velocity-Support-contextProperties-END
 
 	@Inject
 	public void setJdbcDaoDataSource(DataSource dataSource) {
@@ -60,7 +62,7 @@ public class MovieDao extends JdbcDaoSupport {
 		String sql = "INSERT INTO MOVIE (movie_id, title, director, genre_id, actors, runtime, release_date, ticket_price, now_playing) "
 				+ "VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)";
 
-		this.getJdbcTemplate().update(
+		super.getJdbcTemplate().update(
 				sql,
 				new Object[] { movie.getMovieId(), movie.getTitle(),
 						movie.getDirector(), movie.getGenre().getGenreId(),
@@ -71,12 +73,12 @@ public class MovieDao extends JdbcDaoSupport {
 
 	public void remove(String movieId) {
 		String sql = "DELETE FROM MOVIE WHERE movie_id = ?";
-		this.getJdbcTemplate().update(sql, new Object[] { movieId });
+		super.getJdbcTemplate().update(sql, new Object[] { movieId });
 	}
 
 	public void update(Movie movie) {
 		String sql = "UPDATE MOVIE SET title = ?, director = ?, genre_id = ?, actors = ?, runtime = ?, release_date = ?, ticket_price = ?, now_playing = ? WHERE movie_id = ?";
-		this.getJdbcTemplate().update(
+		super.getJdbcTemplate().update(
 				sql,
 				new Object[] { movie.getTitle(), movie.getDirector(),
 						movie.getGenre().getGenreId(), movie.getActors(),
@@ -88,7 +90,7 @@ public class MovieDao extends JdbcDaoSupport {
 
 	public Movie get(String movieId) {
 		String sql = "SELECT movie_id, title, director, genre_id, release_date, ticket_price, actors, runtime, now_playing FROM MOVIE WHERE movie_id = ?";
-		return this.getJdbcTemplate().queryForObject(sql,
+		return super.getJdbcTemplate().queryForObject(sql,
 				new BeanPropertyRowMapper<Movie>(Movie.class) {
 					public Movie mapRow(ResultSet rs, int i)
 							throws SQLException {
@@ -113,12 +115,12 @@ public class MovieDao extends JdbcDaoSupport {
 				+ CONCAT + " AND movie.now_playing = ?";
 
 		Page result = fetchPage(
-				this.getJdbcTemplate(),
+				super.getJdbcTemplate(),
 				"SELECT count(*)" + fromSql + whereSql,
 				"SELECT movie.movie_id, movie.title, movie.director, genre.genre_id, genre.name, "
 						+ "movie.release_date, movie.ticket_price, movie.actors, movie.runtime, movie.now_playing "
-						+ fromSql + whereSql,
-				new Object[] { movie.getNowPlaying() }, pageIndex,
+						+ fromSql + whereSql, new Object[] { movie
+						.getNowPlaying() }, pageIndex,
 				new ParameterizedRowMapper<Movie>() {
 					public Movie mapRow(ResultSet rs, int i)
 							throws SQLException {
@@ -139,7 +141,7 @@ public class MovieDao extends JdbcDaoSupport {
 			final ParameterizedRowMapper<Movie> rowMapper) {
 
 		// determine how many rows are available
-		final int rowCount = jt.queryForInt(sqlCountRows, args);
+		final int rowCount = jt.queryForObject(sqlCountRows, args, Integer.class);
 
 		// create the page object
 		final Page page = new Page(new ArrayList<Movie>(), pageNo, rowCount,
