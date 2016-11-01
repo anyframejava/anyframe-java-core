@@ -22,6 +22,7 @@ import javax.inject.Inject;
 import org.anyframe.pagination.Page;
 import org.anyframe.plugin.ibatis2.domain.Movie;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.orm.ibatis.support.SqlMapClientDaoSupport;
 import org.springframework.stereotype.Repository;
 
 import com.ibatis.sqlmap.client.SqlMapClient;
@@ -32,7 +33,7 @@ import com.ibatis.sqlmap.client.SqlMapClient;
  * @author Sooyeon Park
  */
 @Repository("ibatis2MovieDao")
-public class MovieDao {
+public class MovieDao extends SqlMapClientDaoSupport {
 
 	@Value("#{contextProperties['pageSize'] ?: 10}")
 	int pageSize;
@@ -41,34 +42,39 @@ public class MovieDao {
 	int pageUnit;
 
 	@Inject
-	protected SqlMapClient sqlMap = null;
+	public void setSuperSqlMapClient(SqlMapClient sqlMapClient) {
+		super.setSqlMapClient(sqlMapClient);
+	}
 
-	public void create(Movie movie) throws Exception {
+	public void create(Movie movie) {
 		movie.setMovieId("MV-" + System.currentTimeMillis());
-		sqlMap.insert("insertMovie", movie);
+		getSqlMapClientTemplate().insert("insertMovie", movie);
 	}
 
-	public void update(Movie movie) throws Exception {
-		sqlMap.update("updateMovie", movie);
+	public void update(Movie movie) {
+		getSqlMapClientTemplate().update("updateMovie", movie);
 	}
 
-	public void remove(String movieId) throws Exception {
-		sqlMap.delete("deleteMovie", movieId);
+	public void remove(String movieId) {
+		getSqlMapClientTemplate().delete("deleteMovie", movieId);
 	}
 
-	public Movie get(String movieId) throws Exception {
-		return (Movie) sqlMap.queryForObject("getMovie", movieId);
+	public Movie get(String movieId) {
+		return (Movie) getSqlMapClientTemplate().queryForObject("getMovie",
+				movieId);
 	}
 
 	@SuppressWarnings("unchecked")
-	public Page getPagingList(Movie movie, int pageIndex) throws Exception {
+	public Page getPagingList(Movie movie, int pageIndex) {
 		Movie searchArgs = new Movie();
 		searchArgs.setTitle("%" + movie.getTitle() + "%");
+		searchArgs.setNowPlaying(movie.getNowPlaying());
 
-		List<Movie> list = sqlMap.queryForList("getMovieList", searchArgs,
-				pageSize * (pageIndex - 1), pageSize);
-		int rowCount = (Integer) sqlMap
-				.queryForObject("getMovieListCnt", searchArgs);
+		List<Movie> list = getSqlMapClientTemplate().queryForList(
+				"getMovieList", searchArgs, pageSize * (pageIndex - 1),
+				pageSize);
+		int rowCount = (Integer) getSqlMapClientTemplate().queryForObject(
+				"getMovieListCnt", searchArgs);
 
 		return new Page(list, pageIndex, rowCount, pageUnit, pageSize);
 	}

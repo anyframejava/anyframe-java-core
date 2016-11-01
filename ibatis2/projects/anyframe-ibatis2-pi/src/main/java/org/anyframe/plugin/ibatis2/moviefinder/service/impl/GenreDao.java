@@ -16,10 +16,13 @@
 package org.anyframe.plugin.ibatis2.moviefinder.service.impl;
 
 import java.util.List;
+
 import javax.inject.Inject;
 
 import org.anyframe.plugin.ibatis2.domain.Genre;
+import org.springframework.orm.ibatis.support.SqlMapClientDaoSupport;
 import org.springframework.stereotype.Repository;
+
 import com.ibatis.sqlmap.client.SqlMapClient;
 
 /**
@@ -28,14 +31,16 @@ import com.ibatis.sqlmap.client.SqlMapClient;
  * @author Sooyeon Park
  */
 @Repository("ibatis2GenreDao")
-public class GenreDao {
+public class GenreDao extends SqlMapClientDaoSupport {
 
 	@Inject
-	protected SqlMapClient sqlMap = null;
+	public void setSuperSqlMapClient(SqlMapClient sqlMapClient) {
+		super.setSqlMapClient(sqlMapClient);
+	}
 
 	@SuppressWarnings("unchecked")
-	public List<Genre> getList() throws Exception {
-		return sqlMap.queryForList("getGenreList");
+	public List<Genre> getList() {
+		return getSqlMapClientTemplate().queryForList("getGenreList");
 	}
 
 }

@@ -74,7 +74,7 @@
 					<td align="left">${movie.director}</td>
 					<td align="left">${movie.actors}</td>
 					<td align="center">${movie.ticketPrice}</td>
-					<td align="center">${movie.releaseDate}</td>
+					<td align="center"><fmt:formatDate pattern="yyyy-MM-dd" value="${movie.releaseDate}" /></td>
 				</tr>
 			</c:forEach>
 		</tbody>
@@ -87,7 +87,7 @@
 					firstImg="${ctx}/sample/images/pagenav/page_before1.gif" 
 					lastImg="${ctx}/sample/images/pagenav/page_after1.gif" 
 					prevImg="${ctx}/sample/images/pagenav/page_before.gif" 
-					nextImg="${ctx}/sample/images/pagenav/page_after.gif"/>
+					nextImg="${ctx}/sample/images/pagenav/page_after.gif"/>					
 			</td>
 		</tr>
 	</table>	
