@@ -1,5 +1,5 @@
 /*
- * Copyright 2008-2011 the original author or authors.
+ * Copyright 2008-2012 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -20,8 +20,8 @@ import java.util.List;
 import javax.jws.WebService;
 
 import org.anyframe.sample.cxf.jaxws.domain.Movie;
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * This class is a temporary class to generate MovieAsynchService.wsdl file. If
@@ -34,7 +34,7 @@ import org.apache.commons.logging.LogFactory;
 @WebService(targetNamespace = "http://service.asynch.moviefinder.jaxws.cxf.sample.anyframe.org/asynch_soap_http")
 public interface MovieServiceAsynch {
 
-	Log LOGGER = LogFactory.getLog(MovieServiceAsynch.class);
+	Logger LOGGER = LoggerFactory.getLogger(MovieServiceAsynch.class);
 
 	public List<Movie> findMovieListAll() throws Exception;
 

@@ -1,6 +1,6 @@
 <%@ page language="java" errorPage="/sample/common/error.jsp" pageEncoding="UTF-8" contentType="text/html;charset=utf-8" %>
 <%@ include file="/sample/common/top.jsp"%>
-		<div class="location"><a href="<c:url value='/anyframe.jsp'/>">Home</a> &gt; <a href="<c:url value='/logmanagerMovieFinder.do?method=list'/>">Log Manager 1.0.2</a></div>
+		<div class="location"><a href="<c:url value='/anyframe.jsp'/>">Home</a> &gt; <a href="<c:url value='/logmanagerMovieFinder.do?method=list'/>">Log Manager 1.0.3-SNAPSHOT</a></div>
     </div>
     <hr />
 <script type="text/javascript" src="<c:url value='/sample/javascript/InputCalendar.js'/>"></script>
@@ -107,7 +107,7 @@
                     <tr>
                     	<th><label for="nowPlaying"><spring:message code="movie.nowPlaying" /></label></th>
                         <td><span class="float_left"><spring:message code="movie.isNowPlaying" /></span>
-                        <span class="float_left margin_left5"><form:checkbox id="nowPlaying" path="nowPlaying" value="Y" /></span></td>
+                        <span class="float_left margin_left5"><form:checkbox id="nowPlaying" path="nowPlaying" value="Y" /><input type="hidden" name="!nowPlaying" value="N" /></span></td>
                     </tr>
                 </tbody>
             </table>

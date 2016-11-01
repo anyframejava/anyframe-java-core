@@ -1,5 +1,5 @@
 /*
- * Copyright 2008-2011 the original author or authors.
+ * Copyright 2008-2012 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -22,7 +22,7 @@ import javax.inject.Named;
 
 import org.anyframe.plugin.jquery.domain.Attached;
 import org.anyframe.query.QueryService;
-import org.anyframe.query.dao.AbstractDao;
+import org.anyframe.query.dao.QueryServiceDaoSupport;
 import org.springframework.stereotype.Repository;
 
 /**
@@ -32,7 +32,7 @@ import org.springframework.stereotype.Repository;
  *
  */
 @Repository("jqueryUploadInfoDao")
-public class UploadInfoDao extends AbstractDao {
+public class UploadInfoDao extends QueryServiceDaoSupport {
 	
 	@Inject
 	@Named("queryService")
@@ -45,7 +45,7 @@ public class UploadInfoDao extends AbstractDao {
 	 * @throws Exception
 	 */
 	public void create(Attached param) throws Exception {
-		super.create("JqueryAttached", param);
+		super.create("createJqueryAttached", param);
 	}
 	
 	/**
@@ -55,7 +55,7 @@ public class UploadInfoDao extends AbstractDao {
 	public void remove(String id) throws Exception {
 		Attached param = new Attached();        
     	param.setId(id);    
-		super.remove("JqueryAttached", param);
+		super.remove("removeJqueryAttached", param);
 	}
 
 	/**
@@ -76,7 +76,7 @@ public class UploadInfoDao extends AbstractDao {
 		Attached param = new Attached();		
 		param.setId(id);
 				
-		return (Attached) super.findByPk("JqueryAttached", param);
+		return (Attached) super.findByPk("findJqueryAttachedByPk", param);
 	}
 	
 	/**

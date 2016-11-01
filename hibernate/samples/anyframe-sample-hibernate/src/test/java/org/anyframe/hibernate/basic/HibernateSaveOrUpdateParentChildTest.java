@@ -258,7 +258,7 @@ public class HibernateSaveOrUpdateParentChildTest extends
 		movie2.setReleaseDate(DateUtil.string2Date("2004-04-02", "yyyy-MM-dd"));
 		movie2.setTitle("My Little Bride");
 
-		Set movies = new HashSet();
+		Set<Movie> movies = new HashSet<Movie>();
 		movie1.setCountry(country);
 		movies.add(movie1);
 		movie2.setCountry(country);

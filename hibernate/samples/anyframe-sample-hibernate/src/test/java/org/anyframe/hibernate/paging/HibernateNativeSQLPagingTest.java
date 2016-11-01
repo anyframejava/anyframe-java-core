@@ -43,6 +43,7 @@ public class HibernateNativeSQLPagingTest extends
 	 * @throws Exception
 	 */
 	@Test
+	@SuppressWarnings("unchecked")
 	public void testMovieListWithPaging() throws Exception {
 		// 1. insert init data
 		SetUpInitData.initializeData(session);

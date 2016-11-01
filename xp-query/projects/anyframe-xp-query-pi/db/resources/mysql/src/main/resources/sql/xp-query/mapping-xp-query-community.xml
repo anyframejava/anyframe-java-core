@@ -1,0 +1,47 @@
+		<!--xp-query-findXPCommunityList-START-->
+			SELECT
+			COMMUNITY_ID, COMMUNITY_NAME, COMMUNITY_DESC, CATEGORY_ID, REG_ID, REG_DATE
+			FROM XP_COMMUNITY
+			<!--Velocity-Support-findXPCommunityList-START-->
+			#if ($SEARCH_CONDITION.length() &gt; 0 &amp;&amp; "0" == $SEARCH_CONDITION)
+				WHERE COMMUNITY_NAME like CONCAT('%' , :SEARCH_KEYWORD , '%')
+			#elseif ($SEARCH_CONDITION.length() &gt; 0 &amp;&amp; "1" == $SEARCH_CONDITION)
+			    WHERE COMMUNITY_DESC like CONCAT('%' , :SEARCH_KEYWORD , '%')
+			#end
+			<!--Velocity-Support-findXPCommunityList-END-->
+			ORDER BY REG_DATE DESC		
+		<!--xp-query-findXPCommunityList-END-->
+		<!--xp-query-findXPCommunityListForTree-START-->
+			SELECT * FROM (
+				SELECT	CATE.CATEGORY_ID, CATE.CATEGORY_NAME TEXT_NAME, CATE.CATEGORY_NAME, CATE.CATEGORY_DESC, CATE.REG_DATE CATE_REGDATE,
+				'' COMMUNITY_ID, '' COMMUNITY_NAME,	'' COMMUNITY_DESC,	'' REG_ID, now() REG_DATE, 0 DEPTH
+				FROM	XP_CATEGORY CATE
+
+				UNION
+
+				SELECT	COMM.CATEGORY_ID, COMM.COMMUNITY_NAME TEXT_NAME,'' CATEGORY_NAME, '' CATEGORY_DESC, now() REGDATE,
+				COMM.COMMUNITY_ID,	COMM.COMMUNITY_NAME, COMM.COMMUNITY_DESC, COMM.REG_ID, COMM.REG_DATE, 1 DEPTH
+				FROM XP_COMMUNITY COMM
+				) AS CATEGORY_AND_COMMUNITY
+			ORDER BY CATEGORY_ID, DEPTH		
+		<!--xp-query-findXPCommunityListForTree-END-->
+		<!--xp-query-findXPCommunityListBySearchCondition-START-->
+			SELECT
+			COMMUNITY_ID, COMMUNITY_NAME, COMMUNITY_DESC, CATEGORY_ID, REG_ID, REG_DATE
+			FROM XP_COMMUNITY
+			WHERE CATEGORY_ID = :CATEGORY_ID
+			<!--Velocity-Support-findXPCommunityListBySearchCondition-START-->
+			#if ($SEARCH_CONDITION.length() &gt; 0 &amp;&amp; "0" == $SEARCH_CONDITION)
+				AND COMMUNITY_NAME like CONCAT('%' , :SEARCH_KEYWORD , '%')
+			#else
+			    AND COMMUNITY_DESC like CONCAT('%' , :SEARCH_KEYWORD , '%')
+			#end
+			<!--Velocity-Support-findXPCommunityListBySearchCondition-END-->
+			ORDER BY REG_DATE DESC		
+		<!--xp-query-findXPCommunityListBySearchCondition-END-->
+		<!--xp-query-createXPCommunity-START-->
+			INSERT INTO XP_COMMUNITY
+			(COMMUNITY_ID, COMMUNITY_NAME, COMMUNITY_DESC, REG_ID, REG_DATE, CATEGORY_ID)
+			VALUES (CONCAT('COMMUNITY-' , XP_COMMUNITY_ID_SEQ_NEXT_VALUE()), :COMMUNITY_NAME, :COMMUNITY_DESC, :REG_ID, now(), :CATEGORY_ID)		
+		<!--xp-query-createXPCommunity-END-->
+		

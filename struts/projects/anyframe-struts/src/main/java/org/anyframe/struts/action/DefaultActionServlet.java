@@ -1,5 +1,5 @@
 /*
- * Copyright 2002-2008 the original author or authors.
+ * Copyright 2007-2012 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -175,23 +175,28 @@ public class DefaultActionServlet extends ActionServlet
 //    }
 
 	/**
+	 * 
+	 */
+	private static final long serialVersionUID = 1185620210474123256L;
+
+	/**
 	 * <p>
 	 * Remove RequestProcessors from this servlet context.
 	 * </p>
 	 */
-    protected void destroyRequestProcessors() {
-        ArrayList values = new ArrayList();
-        Enumeration names = getServletContext().getAttributeNames();
+    @SuppressWarnings("unchecked")
+	protected void destroyRequestProcessors() {
+        ArrayList<Object> values = new ArrayList<Object>();
+        Enumeration<Object> names = (Enumeration<Object>)getServletContext().getAttributeNames();
         while (names.hasMoreElements()) {
             values.add(names.nextElement());
         }
 
-        Iterator keys = values.iterator();
+        Iterator<Object> keys = values.iterator();
         while (keys.hasNext()) {
             String name = (String) keys.next();
             Object value = getServletContext().getAttribute(name);
             if (value instanceof RequestProcessor) {
-                RequestProcessor processor = (RequestProcessor) value;
                 try {
                     getServletContext().removeAttribute(name);
                 } catch (Throwable t) {

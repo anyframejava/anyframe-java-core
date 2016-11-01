@@ -42,7 +42,7 @@ public class MiPPQueryServiceDynamicTest extends
 	}
 
 	/**
-	 * Spring Configuration 파일을 읽는다.
+	 * Spring Configuration file is read. 
 	 */
 	protected String[] getConfigLocations() {
 		return new String[] { "classpath:/spring/context-*.xml" };
@@ -54,7 +54,7 @@ public class MiPPQueryServiceDynamicTest extends
 
 
 	/**
-	 * 테스트를 위한 기본 테이블 생성 및 기본 데이터 입력
+	 * Basic table is created for test and and basic data is entered. 
 	 */
 	public void onSetUp() throws Exception {
 		super.onSetUp();
@@ -125,7 +125,7 @@ public class MiPPQueryServiceDynamicTest extends
     
     public void testDynamicQueryUsingIfVariableList() throws Exception {
         
-    	//SEARCH_CONDITION이 NULL일 때 
+    	//When SEARCH_CONDITION is NULL
     	// 1. set data for test
     	VariableList variableList = new VariableList();
 		
@@ -137,7 +137,7 @@ public class MiPPQueryServiceDynamicTest extends
         Dataset resultDs =  mipQueryService.search("dynamicQueryUsingIfVariableList", variableList);
         assertEquals( 2 , resultDs.getRowCount() );
         
-        //LOGON_ID가 admin인 USER 조회
+        //USER whose LOGON_I.D. is admin is searched.
         variableList.clear();
         
 		variableList.add("SEARCH_CONDITION", "LOGON_ID");
@@ -148,7 +148,7 @@ public class MiPPQueryServiceDynamicTest extends
 		assertEquals( 1 , resultDs.getRowCount() );
 		assertEquals( "admin" , resultDs.getColumnAsString( 0 , "logonId") );
 		
-		//NAME가 test123인  USER 조회
+		//USER whose LOGON_I.D. is test123 is searched.
         variableList.clear();
         
 		variableList.add("SEARCH_CONDITION", "NAME");
@@ -162,7 +162,7 @@ public class MiPPQueryServiceDynamicTest extends
     
     public void testDynamicQueryUsingIfDataSet() throws Exception {
         
-    	//SEARCH_CONDITION이 NULL일 때 
+    	//When SEARCH_CONDITION is NULL
     	// 1. set data for test
 		Dataset dsSearch = new Dataset();
 		dsSearch.addStringColumn("SEARCH_CONDITION");
@@ -175,7 +175,7 @@ public class MiPPQueryServiceDynamicTest extends
         Dataset resultDs =  mipQueryService.search("dynamicQueryUsingIfDataSet", dsSearch);
         assertEquals( 2 , resultDs.getRowCount() );
         
-        //LOGON_ID가 admin인 USER 조회
+        //USER whose LOGON_I.D. is admin is searched.
 		dsSearch.setColumn( 0, "SEARCH_CONDITION", "LOGON_ID" );
 		dsSearch.setColumn( 0, "SEARCH_KEYWORD", "admin" );
 		
@@ -184,7 +184,7 @@ public class MiPPQueryServiceDynamicTest extends
 		assertEquals( 1 , resultDs.getRowCount() );
 		assertEquals( "admin" , resultDs.getColumnAsString( 0 , "logonId") );
 		
-		//NAME가 test123인  USER 조회
+		//USER whose LOGON_I.D. is test123 is searched.
 		dsSearch.setColumn( 0, "SEARCH_CONDITION", "NAME" );
 		dsSearch.setColumn( 0, "SEARCH_KEYWORD", "TESTER" );
 		

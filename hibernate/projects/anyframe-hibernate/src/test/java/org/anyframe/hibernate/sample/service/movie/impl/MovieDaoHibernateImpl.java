@@ -1,3 +1,18 @@
+/*
+ * Copyright 2008-2012 the original author or authors.
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *      http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
 package org.anyframe.hibernate.sample.service.movie.impl;
 
 import java.util.List;
@@ -8,6 +23,7 @@ import org.anyframe.hibernate.sample.model.bidirection.Country;
 import org.anyframe.hibernate.sample.model.bidirection.Movie;
 import org.springframework.orm.hibernate3.support.HibernateDaoSupport;
 
+@SuppressWarnings("unchecked")
 public class MovieDaoHibernateImpl extends HibernateDaoSupport implements
 		MovieDao {
 
@@ -51,8 +67,9 @@ public class MovieDaoHibernateImpl extends HibernateDaoSupport implements
 
 	public List findMovieListWithoutReturn(int conditionType, String condition)
 			throws Exception {
-		return dynamicHibernateService.findList("dynamicFindMovieListWithoutReturn",
-				makeArguments(conditionType, condition));
+		return dynamicHibernateService.findList(
+				"dynamicFindMovieListWithoutReturn", makeArguments(
+						conditionType, condition));
 	}
 
 	public List findMovieListWithScalar(int conditionType, String condition)
@@ -67,8 +84,8 @@ public class MovieDaoHibernateImpl extends HibernateDaoSupport implements
 		}
 		args[2] = "sortDirection=ASC";
 
-		return dynamicHibernateService
-				.findList("dynamicFindMovieListWithScalar", args);
+		return dynamicHibernateService.findList(
+				"dynamicFindMovieListWithScalar", args);
 	}
 
 	public List findMovieListByCountry(String countryCode) throws Exception {
@@ -77,8 +94,8 @@ public class MovieDaoHibernateImpl extends HibernateDaoSupport implements
 		args[1] = "sortColumn=movie.director";
 		args[2] = "sortDirection=ASC";
 
-		return dynamicHibernateService
-				.findList("dynamicFindMovieListByCountry", args);
+		return dynamicHibernateService.findList(
+				"dynamicFindMovieListByCountry", args);
 	}
 
 	public List findMovieListAll() throws Exception {

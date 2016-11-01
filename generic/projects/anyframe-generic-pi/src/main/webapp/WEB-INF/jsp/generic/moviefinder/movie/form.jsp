@@ -1,6 +1,6 @@
 <%@ page language="java" errorPage="/sample/common/error.jsp" pageEncoding="UTF-8" contentType="text/html;charset=utf-8" %>
 <%@ include file="/sample/common/top.jsp"%>
-		<div class="location"><a href="<c:url value='/anyframe.jsp'/>">Home</a> &gt; <a href="<c:url value='/genericMovieFinder.do?method=list'/>">Generic 1.0.2</a></div>
+		<div class="location"><a href="<c:url value='/anyframe.jsp'/>">Home</a> &gt; <a href="<c:url value='/genericMovieFinder.do?method=list'/>">Generic 1.0.3</a></div>
     </div>
     <hr />
 <script type="text/javascript" src="<c:url value='/sample/javascript/InputCalendar.js'/>"></script>
@@ -77,7 +77,7 @@
                     	<th><label for="releaseDate"><spring:message code="movie.releaseDate" /></label></th>
                         <td>
                         <form:input path="releaseDate" cssClass="w_date"  maxlength="10" />
-                        <a class="underline_none" href="javascript:popUpCalendar(document.genericMovieForm.releaseDate, 'yyyy-mm-dd');">
+                        <a class="underline_none" href="javascript:popUpCalendar(document.genericMovieForm.releaseDate, '-');">
                         	<img id="calendar" src="<c:url value='sample/images/btn_calendar_i.gif'/>" alt="Calendar" />
                         </a>	
                         <form:errors path="releaseDate" cssClass="errors" /></td>
@@ -89,7 +89,8 @@
                     <tr>
                     	<th><label for="nowPlaying"><spring:message code="movie.nowPlaying" /></label></th>
                         <td><span class="float_left"><spring:message code="movie.isNowPlaying" /></span>
-                        <span class="float_left margin_left5"><form:checkbox id="nowPlaying" path="nowPlaying" value="Y" /></span></td>
+                        <span class="float_left margin_left5"><form:checkbox id="nowPlaying" path="nowPlaying" value="Y" /></span>
+                        <input type="hidden" name="!nowPlaying" value="N" /></td>
                     </tr>
                 </tbody>
             </table>

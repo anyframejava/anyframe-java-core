@@ -5,7 +5,7 @@
   	<div id="container">
     	<div class="main_greeting">
         	<dl>
-                <dt>Welcome to Anyframe 5.2.0</dt>
+                <dt>Welcome to Anyframe 5.5.0</dt>
                 <dd>Congratulations! Anyframe application has been successfully installed. Anyframe is an open source project and application framework that provides basic architecture, common technical services, templates to help you develop web applications on the Java platform quickly and efficiently.</dd>
             </dl>
         </div>
@@ -22,11 +22,11 @@
                 	<th>Installed Plugins</th>
                     <td>
                     	<ul>
-                    	<!--routingdatasource-menu-START-->
-                            <li><a href="<c:url value='/routingDataSourceMovieFinder.do?method=list'/>">RoutingDataSource 1.0.2</a></li>
-                       <!--routingdatasource-menu-END-->
+                    	<!--routingdatasource-configuration-START-->
+                            <li><a href="<c:url value='/routingDataSourceMovieFinder.do?method=list'/>">RoutingDataSource 1.0.3</a></li>
+                       <!--routingdatasource-configuration-END-->
                         </ul>
-                        <!--Add new menu here-->
+                        <!--Add new configuration here-->
                     </td>
                 </tr>
             </table>

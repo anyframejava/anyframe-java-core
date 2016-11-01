@@ -1,30 +1,24 @@
 	<chapter id="cache_samples">
 		<title>Samples</title>
-			<para>다음은 CacheServiceImpl의 속성 설정 및 테스트 코드에 대한 예제이다.</para>
+			<para>다음은 CacheService의 속성 설정 및 테스트 코드에 대한 예제이다.</para>
 			<itemizedlist>
 				<listitem>
 					<para>
 						<emphasis role="bold">Configuration</emphasis>
 					</para>
 					<para>
-						다음은 CacheServiceImpl과 사용할 Cache의 속성을 정의한 context-cache.xml 의 일부이다. 아래 속성 정의 파일 내용에 따르면,
-						cacheAdministrator Bean에 테스트에서 사용할 Cache의 속성이 정의되어 있다. 또한 cacheService Bean에서 cacheAdministrator의 getCache 메소드를 통해 
-						도출한 캐시를 참조하고 있다.
-						<programlisting language="xml"><![CDATA[<bean id="cacheService" class="org.anyframe.cache.impl.CacheServiceImpl">
-    <property name="cache" ref="cache" />
-</bean>
+						다음은 CacheService에서 사용할 Cache의 속성을 정의한 context-cache.xml 의 일부이다. 아래 속성 정의 파일 내용에 따르면,
+						cacheManager 속성으로 EhCacheCacheManager 가 정의되어 있다. 이 때 EhCache 를 세부 설정하기 위한 ehcache.xml 설정은 별도의 ehcache.xml 에 정의되어 있다.
+						<programlisting language="xml"><![CDATA[<!-- enable declarative annotation-based caching -->
+<cache:annotation-driven />
 
-<bean id="cache" factory-bean="cacheAdministrator" factory-method="getCache" />
+<!-- configuring the cache storage -->
+<bean id="cacheManager" class="org.springframework.cache.ehcache.EhCacheCacheManager"
+  p:cache-manager-ref="ehcache" />
 
-<bean id="cacheAdministrator"
-    class="com.opensymphony.oscache.general.GeneralCacheAdministrator"
-    destroy-method="destroy">
-    <constructor-arg index="0">
-        <props>
-            <prop key="cache.capacity">10</prop>
-        </props>
-    </constructor-arg>
-</bean>]]></programlisting>
+<!-- Ehcache-based Cache -->
+<bean id="ehcache" class="org.springframework.cache.ehcache.EhCacheManagerFactoryBean"
+  p:config-location="classpath:cache/ehcache.xml" />]]></programlisting>
 					</para>
 				</listitem>
 				<listitem>
@@ -34,37 +28,43 @@
 					<para>
 						다음은 앞서 정의한 속성 설정을 기반으로 하여 Cache 내에 특정 데이터를 저장하고 추출하는 테스트케이스 코드의 일부이다.
 						<programlisting language="java">public void manageGenre() throws Exception {
-    // 1. create a new genre
-    Genre genre = new Genre();
-    genre.setName("Western");
-    genreService.create(genre);
-    putInCache(genre);
+  GenreService.LOGGER.info("------ manageGenre test ------");
 
-    // 2. assert - create
-    genre = getGenreByPk(genre.getGenreId());
-    assertNotNull("fail to fetch a genre", genre);
-    assertEquals("fail to compare a genre name", "Western", genre.getName());
+  // 1. create a new genre
+  Genre genre = new Genre();
+  genre.setName("Western");
+  genreService.create(genre);
 
-    // 3. update a name of genre
-    String name = "Western " + System.currentTimeMillis();
-    genre.setName(name);
-    genreService.update(genre);
-    putInCache(genre);
+  // 2. assert - create
+  String genreId = genre.getGenreId();
+  genre = genreService.get(genreId);
+  assertNotNull("fail to fetch a genre", genre);
+  assertEquals("fail to compare a genre name", "Western", genre.getName());
 
-    // 4. assert - update
-    genre = getGenreByPk(genre.getGenreId());
-    assertNotNull("fail to fetch a genre", genre);
-    assertEquals("fail to compare a updated name", name, genre.getName());
+  // 3. update a name of genre
+  String name = "Western " + System.currentTimeMillis();
+  genre.setName(name);
+  genreService.update(genre);
 
-    // 5. remove a genre
-    genreService.remove(genre.getGenreId());
-}
+  // 4. assert - update
+  Genre updatedGenre = genreService.get(genreId);
+  assertNotNull("fail to fetch a genre", updatedGenre);
+  assertEquals("fail to compare a updated name", name, updatedGenre.getName());
 
-private Genre getGenreByPk(String genreId) throws Exception{
-    Map&lt;String, Genre&gt; resultMap = (HashMap&lt;String, Genre&gt;) cacheService
-        .getFromCache("genreList");
-    Genre genre = resultMap.get(genreId);
-    return genre;
+  // 5. update a name of genre and get an updated genre
+  String newName = "Western " + System.currentTimeMillis();
+  genre.setName(newName);
+  Genre updatedAndCachedGenre = genreService.updateAndGet(genre);
+  assertNotNull("fail to fetch a genre", updatedAndCachedGenre);
+  assertEquals("fail to compare a updated name", newName,
+        updatedAndCachedGenre.getName());
+
+  Genre cachedGenre = genreService.get(genreId);
+  assertNotNull("fail to fetch a cached genre", cachedGenre);
+  assertEquals("fail to compare a updated name of a cached genre", newName, cachedGenre.getName());
+
+  // 6. remove a genre
+  genreService.remove(updatedGenre.getGenreId());
 }</programlisting>
 					</para>
 				</listitem>

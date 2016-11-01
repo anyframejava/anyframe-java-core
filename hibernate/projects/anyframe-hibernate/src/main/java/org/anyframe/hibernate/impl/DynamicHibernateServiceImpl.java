@@ -1,3 +1,18 @@
+/*
+ * Copyright 2002-2012 the original author or authors.
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *      http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
 package org.anyframe.hibernate.impl;
 
 import java.io.IOException;
@@ -117,6 +132,7 @@ import org.xml.sax.XMLReader;
  * 
  * @author SoYon Lim
  */
+@SuppressWarnings("unchecked")
 public class DynamicHibernateServiceImpl implements DynamicHibernateService,
 		InitializingBean, ResourceLoaderAware {
 
@@ -124,6 +140,7 @@ public class DynamicHibernateServiceImpl implements DynamicHibernateService,
 
 	private HashMap queries = new HashMap();
 
+	@SuppressWarnings("unused")
 	private SessionFactory sessionFactory;
 
 	private List fileNames;
@@ -602,6 +619,7 @@ public class DynamicHibernateServiceImpl implements DynamicHibernateService,
 
 			Element root = doc.getRootElement();
 
+			@SuppressWarnings("unused")
 			Element queryElements = root.element("query");
 			queries.putAll(buildQueryMap("hql", root, "query"));
 
@@ -658,7 +676,7 @@ public class DynamicHibernateServiceImpl implements DynamicHibernateService,
 			Iterator returnScalarsItr = queryElement
 					.elementIterator("return-scalar");
 
-			Map returnScalarMap = new HashMap();
+			Map returnScalarMap = new HashMap();			
 			while (returnScalarsItr.hasNext()) {
 				Element element = (Element) returnScalarsItr.next();
 				String column = element.attributeValue("column");
@@ -764,9 +782,8 @@ public class DynamicHibernateServiceImpl implements DynamicHibernateService,
 			} else if (values[i] instanceof Object[]) {
 				localArray = (Object[]) values[i];
 				if (localArray.length != 2) {
-					if (DynamicHibernateService.LOGGER.isErrorEnabled())
-						DynamicHibernateService.LOGGER
-								.error("DynamicHibernate Service : Fail to generate value map from Object[]{var1=value1,var2=value2,...} or Object[]{Object[]{var1,value1}, Object[]{var2,value2}, ...}");
+					DynamicHibernateService.LOGGER
+							.error("DynamicHibernate Service : Fail to generate value map from Object[]{var1=value1,var2=value2,...} or Object[]{Object[]{var1,value1}, Object[]{var2,value2}, ...}");
 					throw new BaseException(
 							"DynamicHibernate Service : Fail to generate value map from Object[]{var1=value1,var2=value2,...} or Object[]{Object[]{var1,value1}, Object[]{var2,value2}, ...}");
 				}
@@ -804,7 +821,7 @@ public class DynamicHibernateServiceImpl implements DynamicHibernateService,
 		parser.setEntityResolver(new BeansDtdResolver());
 		return new DefaultConfigurationBuilder(parser);
 	}
-
+	
 	private class QueryInfo {
 		private String type;
 		private String statement;
@@ -826,6 +843,8 @@ public class DynamicHibernateServiceImpl implements DynamicHibernateService,
 			return returnList;
 		}
 
+		
+		@SuppressWarnings("unused")
 		public void setReturnList(List returnList) {
 			this.returnList = returnList;
 		}
@@ -834,6 +853,7 @@ public class DynamicHibernateServiceImpl implements DynamicHibernateService,
 			return returnJoinMap;
 		}
 
+		@SuppressWarnings("unused")
 		public void setReturnJoinMap(Map returnJoinMap) {
 			this.returnJoinMap = returnJoinMap;
 		}
@@ -842,6 +862,7 @@ public class DynamicHibernateServiceImpl implements DynamicHibernateService,
 			return returnScalarMap;
 		}
 
+		@SuppressWarnings("unused")
 		public void setReturnScalarMap(Map returnScalarMap) {
 			this.returnScalarMap = returnScalarMap;
 		}
@@ -871,6 +892,7 @@ public class DynamicHibernateServiceImpl implements DynamicHibernateService,
 			return alias;
 		}
 
+		@SuppressWarnings("unused")
 		public void setAlias(String alias) {
 			this.alias = alias;
 		}
@@ -879,6 +901,7 @@ public class DynamicHibernateServiceImpl implements DynamicHibernateService,
 			return clazz;
 		}
 
+		@SuppressWarnings("unused")
 		public void setClazz(Class clazz) {
 			this.clazz = clazz;
 		}
@@ -887,6 +910,7 @@ public class DynamicHibernateServiceImpl implements DynamicHibernateService,
 			return entityName;
 		}
 
+		@SuppressWarnings("unused")
 		public void setEntityName(String entityName) {
 			this.entityName = entityName;
 		}

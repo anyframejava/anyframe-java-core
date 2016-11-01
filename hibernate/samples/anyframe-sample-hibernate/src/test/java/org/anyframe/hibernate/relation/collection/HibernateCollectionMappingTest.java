@@ -60,6 +60,7 @@ public class HibernateCollectionMappingTest extends AbstractTest {
 	 * @throws Exception
 	 *             throws exception which is from hibernate
 	 */
+	@SuppressWarnings("unchecked")
 	public void testAddMovieWithSet() throws Exception {
 		// 1. insert init data
 		newSession("org/anyframe/hibernate/relation/collection/set/hibernate.cfg.xml");
@@ -70,7 +71,7 @@ public class HibernateCollectionMappingTest extends AbstractTest {
 		country.setCountryName("Korea");
 
 		Movie[] movies = makeMovies(countryCode);
-		Set movieSet = new HashSet();
+		Set<Movie> movieSet = new HashSet<Movie>();
 		movieSet.add(movies[0]);
 		movieSet.add(movies[1]);
 		movieSet.add(movies[2]);
@@ -106,6 +107,7 @@ public class HibernateCollectionMappingTest extends AbstractTest {
 	 * @throws Exception
 	 *             throws exception which is from hibernate
 	 */
+	@SuppressWarnings("unchecked")
 	public void testAddMovieWithList() throws Exception {
 		// 1. insert init data
 		newSession("org/anyframe/hibernate/relation/collection/list/hibernate.cfg.xml");
@@ -116,7 +118,7 @@ public class HibernateCollectionMappingTest extends AbstractTest {
 		country.setCountryName("Korea");
 
 		Movie[] movies = makeMovies(countryCode);
-		List movieList = new ArrayList();
+		List<Movie> movieList = new ArrayList<Movie>();
 		movieList.add(movies[0]);
 		movieList.add(movies[1]);
 		movieList.add(movies[2]);
@@ -153,6 +155,7 @@ public class HibernateCollectionMappingTest extends AbstractTest {
 	 * @throws Exception
 	 *             throws exception which is from hibernate
 	 */
+	@SuppressWarnings("unchecked")
 	public void testAddMovieWithMap() throws Exception {
 		// 1. insert init data
 		newSession("org/anyframe/hibernate/relation/collection/map/hibernate.cfg.xml");
@@ -163,7 +166,7 @@ public class HibernateCollectionMappingTest extends AbstractTest {
 		country.setCountryName("Korea");
 
 		Movie[] movies = makeMovies(countryCode);
-		Map movieMap = new HashMap();
+		Map<String, Movie> movieMap = new HashMap<String, Movie>();
 		movieMap.put("first", movies[0]);
 		movieMap.put("second", movies[1]);
 		movieMap.put("third", movies[2]);
@@ -202,6 +205,7 @@ public class HibernateCollectionMappingTest extends AbstractTest {
 	 * @throws Exception
 	 *             throws exception which is from hibernate
 	 */
+	@SuppressWarnings("unchecked")
 	public void testAddMovieWithBag() throws Exception {
 		// 1. insert init data
 		newSession("org/anyframe/hibernate/relation/collection/bag/hibernate.cfg.xml");
@@ -212,7 +216,7 @@ public class HibernateCollectionMappingTest extends AbstractTest {
 		country.setCountryName("Korea");
 
 		Movie[] movies = makeMovies(countryCode);
-		List movieList = new ArrayList();
+		List<Movie> movieList = new ArrayList<Movie>();
 		movieList.add(movies[0]);
 		movieList.add(movies[1]);
 		movieList.add(movies[2]);
@@ -245,6 +249,7 @@ public class HibernateCollectionMappingTest extends AbstractTest {
 	 * @throws Exception
 	 *             throws exception which is from hibernate
 	 */
+	@SuppressWarnings("unchecked")
 	public void testAddMovieWithIdBag() throws Exception {
 		// 1. insert init data
 		newSession("org/anyframe/hibernate/relation/collection/idbag/hibernate.cfg.xml");
@@ -255,7 +260,7 @@ public class HibernateCollectionMappingTest extends AbstractTest {
 		country.setCountryName("Korea");
 
 		Movie[] movies = makeMovies(countryCode);
-		List movieList = new ArrayList();
+		List<Movie> movieList = new ArrayList<Movie>();
 		movieList.add(movies[0]);
 		movieList.add(movies[1]);
 		movieList.add(movies[2]);

@@ -4,8 +4,6 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.fail;
 
-import java.util.Map;
-
 import javax.sql.DataSource;
 
 import org.anyframe.jdbc.support.InjectionPatternPostProcessor;
@@ -16,7 +14,6 @@ import org.springframework.core.io.ClassPathResource;
 import org.springframework.jdbc.BadSqlGrammarException;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.simple.SimpleJdbcTemplate;
-import org.springframework.test.annotation.ExpectedException;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 import org.springframework.test.jdbc.SimpleJdbcTestUtils;
@@ -46,8 +43,7 @@ public class InjectionPatternPostProcessorTest {
 				changedSql);
 	}
 
-	@Test
-	@ExpectedException(BadSqlGrammarException.class)
+	@Test(expected = BadSqlGrammarException.class)
 	public void testInjectionPatternPostProcessorWithJdbc() {
 		// initialize data
 		// TODO : SimpleJdbcTemplate is deprecated

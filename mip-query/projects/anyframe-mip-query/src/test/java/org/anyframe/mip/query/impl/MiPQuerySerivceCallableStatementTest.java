@@ -31,15 +31,19 @@ import com.tobesoft.platform.data.Variant;
 /**
  * TestCase Name : MiPQueryServiceCallableStatementTest <br>
  * <br>
- * [Description] : CallableStatement를 실행시키고 결과값을 검증한다.<br>
+ * [Description] : CallableStatement is executed and its return value is
+ * verified. <br>
  * [Main Flow]
  * <ul>
- * <li>#-1 Positive Case : MiPQueryService의 execute() 메소드를 통해 DBMS에 정의된 Function
- * FUNC_RETURN_NUM를 호출하는 쿼리문을 실행시키고 결과값을 검증한다.</li>
- * <li>#-2 Positive Case : MiPQueryService의 execute() 메소드를 통해 DBMS에 정의된
- * Procedure PROC_TOCHAR를 호출하는 쿼리문을 실행시키고 결과값을 검증한다.</li>
- * <li>#-3 Positive Case : MiPQueryService의 execute() 메소드를 통해 DBMS에 정의된 Package
- * PKG_REFCURSOR_TEST.PROC_RECORD_SET를 호출하는 쿼리문을 실행시키고 결과값을 검증한다.</li>
+ * <li>#-1 Positive Case : Query statement calling for Function FUNC_RETURN_NUM
+ * defined at DBMS via execute() method of MiPQueryService and its return value
+ * is verified.</li>
+ * <li>#-2 Positive Case : Query statement calling for Procedure PROC_TOCHAR
+ * defined at DBMS via execute() method of MiPQueryService and its return value
+ * is verified.</li>
+ * <li>#-3 Positive Case : Query statement calling for
+ * PKG_REFCURSOR_TEST.PROC_RECORD_SET defined at DBMS via execute() method of
+ * MiPQueryService and its return value is verified.</li>
  * </ul>
  * 
  * @author Jonghoon Kim
@@ -65,8 +69,8 @@ public class MiPQuerySerivceCallableStatementTest extends
 	}
 
 	/**
-	 * 테스트를 위해 Function FUNC_RETURN_NUM, Procedure PROC_TOCHAR_SYSDATE, PACKAGE
-	 * PKG_REFCURSOR_TEST를 생성한다.
+	 * Function FUNC_RETURN_NUM, Procedure PROC_TOCHAR_SYSDATE, PACKAGE
+	 * PKG_REFCURSOR_TEST is created for test.
 	 */
 	public void onSetUp() throws Exception {
 		Connection conn = null;
@@ -162,8 +166,9 @@ public class MiPQuerySerivceCallableStatementTest extends
 	}
 
 	/**
-	 * [Flow #-1] Positive Case : QueryService의 execute() 메소드를 통해 DBMS에 정의된
-	 * Function FUNC_RETURN_NUM를 호출하는 쿼리문을 실행시키고 결과값을 검증한다. 실행되는 쿼리문은 다음과 같다. {?
+	 * [Flow #-1] Positive Case : Query statement calling for Function
+	 * FUNC_RETURN_NUM defined at DBMS via execute()method of QueryService and
+	 * its return value is verified. Executed query statement is as follows. {?
 	 * = call FUNC_RETURN_NUM(?)}
 	 * 
 	 * @throws Exception
@@ -199,9 +204,10 @@ public class MiPQuerySerivceCallableStatementTest extends
 	}
 
 	/**
-	 * [Flow #-2] Positive Case : MiPQueryService의 execute() 메소드를 통해 DBMS에 정의된
-	 * Procedure PROC_TOCHAR_SYSDATE를 호출하는 쿼리문을 실행시키고 결과값을 검증한다. 실행되는 쿼리문은 다음과
-	 * 같다. {call PROC_TOCHAR_SYSDATE (?,?)}
+	 * [Flow #-2] Positive Case : Query statement calling for Procedure
+	 * PROC_TOCHAR_SYSDATE defined at DBMS via execute()method of
+	 * MiPQueryService and its return value is verified. Executed query
+	 * statement is as follows. {call PROC_TOCHAR_SYSDATE (?,?)}
 	 * 
 	 * @throws Exception
 	 *             throws exception which is from QueryService
@@ -231,9 +237,10 @@ public class MiPQuerySerivceCallableStatementTest extends
 	}
 
 	/**
-	 * [Flow #-3] Positive Case : MiPQueryService의 execute() 메소드를 통해 DBMS에 정의된
-	 * Package PKG_REFCURSOR_TEST.PROC_RECORD_SET를 호출하는 쿼리문을 실행시키고 결과값을 검증한다.
-	 * 실행되는 쿼리문은 다음과 같다. {call PKG_REFCURSOR_TEST.PROC_RECORD_SET(?, ?)}
+	 * [Flow #-3] Positive Case : Query statement calling for Procedure
+	 * PROC_TOCHAR_SYSDATE defined at DBMS via execute()method of
+	 * MiPQueryService and its return value is verified. Executed query
+	 * statement is as follows. {call PKG_REFCURSOR_TEST.PROC_RECORD_SET(?, ?)}
 	 * 
 	 * @throws Exception
 	 *             throws exception which is from QueryService

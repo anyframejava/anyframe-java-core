@@ -14,6 +14,7 @@
  * limitations under the License.
  */
 package org.anyframe.plugin.routingdatasource.moviefinder.service.impl;
+
 import java.util.List;
 
 import javax.inject.Inject;
@@ -38,9 +39,8 @@ public class GenreDao extends QueryServiceDaoSupport {
 		super.setQueryService(queryService);
 	}
 
-	@SuppressWarnings("unchecked")
-	public List<Genre> getList() throws Exception {
-		return (List<Genre>) this.findList("findRoutingDataSourceGenreList", new Object[] {});
+	public List<Genre> getList() {
+		return super.findList("findRoutingDataSourceGenreList", new Object[] {});
 	}
 
 }

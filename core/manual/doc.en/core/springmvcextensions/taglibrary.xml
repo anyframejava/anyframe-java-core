@@ -1,0 +1,151 @@
+<chapter id="core_springmvcextensions_taglibrary">
+	<title>Tag library</title>
+	    <para>
+    		Anyframe provides the following Anyframe Tag Library so that 
+    		developers can implement JSP page more easily without using java code. 
+    	</para>
+
+	<section id="core_springmvcextensions_taglibrary_pagenavigator">
+	<title>Page Navigator Tag</title>
+
+		<para>
+			Anyframe provides Page Navigator Tag which is Tag Library related to page 
+      		so that implementation on Page handling can be done more easily. 
+      		You can easily show Page Navigator by using Tag Library when showing list view by using this tag. 
+      		To use this tag, define anyframe-pagenavigator.tld file as taglib on the top of JSP as the following. 
+      		<programlisting
+      		language="xml"><![CDATA[<%@ taglib uri='/WEB-INF/anyframe-page.tld' prefix='anyframe' %>]]></programlisting>
+      	</para>
+
+		<para>
+      		When prefix is defined as 'anyframe', the following tag can be used. 
+      		<programlisting	language="xml"><![CDATA[<anyframe:pagenavigator linkUrl="javascript:fncGetUserList(2);"]]> 
+<emphasis role="bold">pages</emphasis><![CDATA[="<%=resultPage%>" formName="listForm"/>]]></programlisting>
+		</para>
+
+		<para>
+			Yet, it should be remembered that the style of Page Navigator generated through Page Navigator Tag provided by Anyframe is defined based on CSS (Cascading Style Sheet).
+			It is to support developers in changing the style of Page Navigator freely. (From Core 1.0.1) 
+			Thus, the classes in the following formats should be recognized in JSP that contains Page Navigator Tag. 
+		</para>
+
+		<programlisting	language="xml">.page           {font-size: 12px; color: #3D3D3D; text-decoration: none; font-family: "verdana";}
+.page A:link    {font-size: 12px; color: #3D3D3D; text-decoration: none; font-family: "verdana";}  
+.page A:visited {font-size: 12px; color: #3D3D3D; text-decoration: none; font-family: "verdana";}
+.page A:active  {font-size: 12px; color: #3D3D3D; text-decoration: none; font-family: "verdana";}
+.page A:hover   {font-size: 12px; color: #5980a4; text-decoration:underline; font-family: "verdana";}
+
+.page_first 	{width: 15; height: 13; border: 0; background: url(../images/pagenav/page_before1.gif) no-repeat; display:block;}
+.page_previous 	{width: 15; height: 13; border: 0; background: url(../images/pagenav/page_before.gif) no-repeat; display:block;}
+.page_next 		{width: 15px; height: 13px; border: 0; background: url(../images/pagenav/page_after.gif) no-repeat; display:block;}
+.page_last 		{width: 15; height: 13; border: 0; background: url(../images/pagenav/page_after1.gif) no-repeat; display:block;}
+
+.page_selected  {font-size: 12px; color: #000000; text-decoration: underline; font-weight:bold; font-family: "verdana"}
+
+.page_img_space {width: 3;}
+.page_num_space {width: 3;}</programlisting>
+
+		<para>
+			Each of the formats shown above can be used for the following uses. 
+		</para>
+		
+		<itemizedlist>
+   			<listitem>
+   				<para>
+   					page: Definition of the format for the whole Page Navigator section and the format of the Anchor Tag when events such as visited and hover occur in the Anchor Tag section
+   				</para>
+   			</listitem>
+   			<listitem>
+   				<para>
+   					page_first/page_previous/page_next/page_last: Defines the format of the button related to page movement in the Page Navigator section
+   					("Defines in the order of Move to the first page/Move to the previous page of the selected page/Move to the following page of the selected page/Move to the last page" buttons.) 
+   				</para>
+   			</listitem>
+   			<listitem>
+   				<para>
+   					page_selected: Defines the format of the number of the selected page
+				</para>
+   			</listitem> 
+   			<listitem>
+   				<para>
+   					page_img_space: Defines the format of the space between the buttons related to Page movement
+				</para>
+   			</listitem>
+   			<listitem>
+   				<para>
+   					page_num_space: Defines the format of the space between Page numbers
+				</para>
+   			</listitem>    			    			  			   			
+   		</itemizedlist>	
+   		
+   		<para>
+   			To change the style of Page Navigator (button image, Page number interval, Page number format, etc.) expressed through Page Navigator Tag, 
+   			change the contents of each format explained above. 
+   		</para>	
+   		
+    	<para>
+	      	Tag whose prefix is anyframe. Tag name is pagenavigator. 
+	      	Note that, in this case, attribute named pages should be set as anyframe.common.Page type object. 
+      	</para>
+	</section>
+
+    <section id="core_springmvcextensions_taglibrary_messagetag">
+	<title>Message Tag</title>
+		<para>
+			<![CDATA[Spring MVC provides the basic <message> tag for suppporting to print a message based 
+			on multi-language as mentioned in Spring Tag Library. But Anyframe supports expanded message 
+			tag for folling reasons:]]>
+      	</para>
+		<itemizedlist>
+   			<listitem>
+   				<para>
+   					Spring Message Tag supports to output only Korean message file encoded in Unicode regarding Korean output. 
+   					Therefore, it is necessary for functionality to output Korean message encoded in either UTF-8 or 
+   					ECU-KR rather than Unicode. 
+   				</para>  				
+   			</listitem>
+   			<listitem>
+   				<para>
+            Given that Spring Message Tag is to find messages by referring to one bean named ‘messageSource’ internally, 
+   					internationalization cannot be carried out by using various types of Message Resource with Spring Message Tag. 
+      				(However, in the case of defining <link linkend="core_aggregating_messagesource">
+      				org.anyframe.spring.message.AggregatingMessageSource</link> provided by Anyframe as bean named ‘messageSource’, 
+      				it is possible for internationalization to use diverse types of Message Resource via AggregatingMessageSource. 
+   				</para>
+				<para>
+					It is processed through property definition of 'messageSource' of  Anyframe Message Tag. 
+					MessageSource bean name referring to as ‘messageSource’ property value can be defined. 
+					(Without definition, bean named ‘messageSource’ is referred to as default.)
+					Namely, message section with Anyframe Message Tag  will be extracted from MessageSource bean defined as 
+					‘messageSource’ property value. 
+				</para>   				 				
+   			</listitem>
+   		</itemizedlist>
+   		
+      	<para>
+      		To use Anyframe Message Tag, anyframe-message.tld file as taglib as below is registered. 
+      		<programlisting
+      		language="xml"><![CDATA[<%@ taglib uri='/WEB-INF/anyframe-message.tld' prefix='anyframe' %>]]></programlisting>
+		</para>
+
+		<para>
+			In the case of defining prefix as ‘anyframe’, tags can be used as below. 
+			<programlisting
+			language="xml"><![CDATA[<anyframe:]]><emphasis role="bold">message code</emphasis><![CDATA[="error.get.userList"/>]]></programlisting>
+		</para>
+
+		<para>
+			<![CDATA[As above, tag name should be defined as message and property of <message> tag is the same as that of 
+			<message> tag of Spring MVC and the usage method is identical, too. Namely, ‘error.get.userLst’, code’ property value, 
+			serves as Key and string belonging to relevant Key will be read from Message Resource ]]>
+      	</para>
+      	
+      	<para>
+      		Also, in the case of defining ‘messageSource’ property as below, message Key ‘error.get.userList’ and user’s Locale serves 
+      		as input value and proper message will be found by using bean named ‘dbMessageSource’. And the section 
+      		where Anyframe Message Tag is defined displays a relevant message. 
+      	</para>
+      	
+		<programlisting language="xml"><![CDATA[<anyframe:message ]]><emphasis role="bold">messageSource="dbMessageSource"</emphasis><![CDATA[ code="error.get.userList"/>]]></programlisting>
+    </section> 
+</chapter>

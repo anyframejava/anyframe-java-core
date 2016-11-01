@@ -71,7 +71,7 @@ public class JdbcAspect implements MethodInterceptor, InitializingBean {
 	/**
 	 * Using P6ILFactory
 	 */
-	public void afterPropertiesSet() throws Exception {
+	public void afterPropertiesSet() {
 		this.factory = new P6ILFactory(injectionPatternPostProcessor, completeQueryPostProcessor);
 	}
 

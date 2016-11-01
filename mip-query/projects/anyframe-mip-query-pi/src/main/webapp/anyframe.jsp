@@ -13,7 +13,7 @@
 <!-- Top -->
   <tr>
     <td height="100%" align="left" valign="middle">
-		<font size="5">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Anyframe Java 5.0.1</font>
+		<font size="5">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Anyframe Java 5.0.2</font>
     </td>
   </tr>
 </table>
@@ -30,7 +30,7 @@
 		<tr class="board">
 				<td class="underline">
 					<!--mip-query-menu-START-->
-					- Mip-Query 1.0.2<br/>
+					- Mip-Query 1.0.3<br/>
 					&nbsp;&nbsp;&nbsp;<a href="${ctx}/mip-query/basic/mipQuery.jsp"><font size="2">Use MipService</font></a><br/>					
 					&nbsp;&nbsp;&nbsp;<a href="${ctx}/mipQueryMovieFinder.do"><font size="2">Use MipService Extensions</font></a><br/>
 					<!--mip-query-menu-END-->

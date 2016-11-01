@@ -11,9 +11,9 @@ import org.anyframe.simpleweb.jquery.jstree.JSTreeNode;
 
 public class MovieTreeController extends SimpleJSONTreeController {
 
+	@SuppressWarnings("unchecked")
 	@Override
-	protected void setTreeData(ArrayList<JSTreeNode> listNode, List jsTreeList,
-			String id) throws Exception {
+	protected void setTreeData(ArrayList<JSTreeNode> listNode, List jsTreeList, String id) throws Exception {
 		JSTreeNode node;
 		Attributes attribute;
 		if (id.equals("0")) {
@@ -24,11 +24,11 @@ public class MovieTreeController extends SimpleJSONTreeController {
 				attribute = new Attributes();
 
 				attribute.setId(genre.getGenreId());
-				
+
 				node.setAttr(attribute);
 				node.setData(genre.getName());
 				node.setState(genre.getState());
-				if(genre.getState()==null || genre.getState()=="")
+				if (genre.getState() == null || genre.getState() == "")
 					attribute.setRel("lockedroot");
 				else
 					attribute.setRel("root");

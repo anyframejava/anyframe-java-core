@@ -1,5 +1,5 @@
 /*
- * Copyright 2008-2011 the original author or authors.
+ * Copyright 2008-2012 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -22,7 +22,7 @@ import javax.inject.Inject;
 import org.anyframe.pagination.Page;
 import org.anyframe.plugin.jquery.domain.JqueryBoard;
 import org.anyframe.query.QueryService;
-import org.anyframe.query.dao.AbstractDao;
+import org.anyframe.query.dao.QueryServiceDaoSupport;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Repository;
 
@@ -33,7 +33,7 @@ import org.springframework.stereotype.Repository;
  *
  */
 @Repository("jqueryBoardDao")
-public class JqueryBoardDao extends AbstractDao {
+public class JqueryBoardDao extends QueryServiceDaoSupport {
 
 	@Inject
 	public void setQueryService(QueryService queryService) {
@@ -47,32 +47,32 @@ public class JqueryBoardDao extends AbstractDao {
 	int pageUnit;
 
 	public int create(JqueryBoard board) throws Exception {
-		return create("JqueryBoard", board);
+		return create("createJqueryBoard", board);
 	}
 
 	public int remove(String boardId) throws Exception {
 		JqueryBoard board = new JqueryBoard();
 		board.setPostId(boardId);
-		return remove("JqueryBoard", board);
+		return remove("removeJqueryBoard", board);
 	}
 
 	public int update(JqueryBoard board) throws Exception {
-		return update("JqueryBoard", board);
+		return update("updateJqueryBoard", board);
 	}
 
 	public JqueryBoard get(String boardId) throws Exception {
 		JqueryBoard board = new JqueryBoard();
 		board.setPostId(boardId);
-		return (JqueryBoard) findByPk("JqueryBoard", board);
+		return (JqueryBoard) findByPk("findJqueryBoardByPk", board);
 	}
 
 	public Page getPagingList(JqueryBoard board, int pageIndex) throws Exception {
-		return this.findListWithPaging("JqueryBoard", board, pageIndex, pageSize, pageUnit);
+		return this.findListWithPaging("findJqueryBoardList", board, pageIndex, pageSize, pageUnit);
 	}
 	
 	@SuppressWarnings("unchecked")
 	public List<JqueryBoard> getList(JqueryBoard board) throws Exception {
-		return (List<JqueryBoard>)this.findList("JqueryBoard", board);
+		return (List<JqueryBoard>)this.findList("findJqueryBoardList", board);
 	}
 
 }

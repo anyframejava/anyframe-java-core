@@ -1,5 +1,5 @@
 /*
- * Copyright 2008-2011 the original author or authors.
+ * Copyright 2008-2012 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -23,7 +23,7 @@ import javax.inject.Inject;
 import org.anyframe.pagination.Page;
 import org.anyframe.plugin.cxf.jaxws.domain.Movie;
 import org.anyframe.query.QueryService;
-import org.anyframe.query.dao.AbstractDao;
+import org.anyframe.query.dao.QueryServiceDaoSupport;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Repository;
 
@@ -33,7 +33,7 @@ import org.springframework.stereotype.Repository;
  * @author Jeryeon Kim
  */
 @Repository("cxfJaxWsMovieDao")
-public class MovieDao extends AbstractDao {
+public class MovieDao extends QueryServiceDaoSupport {
 	@Value("#{contextProperties['pageSize'] ?: 10}")
 	int pageSize;
 
@@ -48,13 +48,13 @@ public class MovieDao extends AbstractDao {
 	public void create(Movie movie) throws Exception {
 		// set movie id
 		movie.setMovieId("MV-" + System.currentTimeMillis());
-		super.create("CxfJaxWsMovie", movie);
+		super.create("createCxfJaxWsMovie", movie);
 	}
 
 	public Map<String, Movie> get(String movieId) throws Exception {
 		Movie movie = new Movie();
 		movie.setMovieId(movieId);
-		movie = (Movie) findByPk("CxfJaxWsMovie", movie);
+		movie = (Movie) findByPk("findCxfJaxWsMovieByPk", movie);
 
 		Map<String, Movie> resultMap = new HashMap<String, Movie>();
 		resultMap.put("movie", movie);
@@ -63,17 +63,17 @@ public class MovieDao extends AbstractDao {
 	}
 
 	public void update(Movie movie) throws Exception {
-		super.update("CxfJaxWsMovie", movie);
+		super.update("updateCxfJaxWsMovie", movie);
 	}
 
 	public void remove(String movieId) throws Exception {
 		Movie movie = new Movie();
 		movie.setMovieId(movieId);
-		super.remove("CxfJaxWsMovie", movie);
+		super.remove("removeCxfJaxWsMovie", movie);
 	}
 
 	public Page getPagingList(Movie movie, int pageIndex) throws Exception {
-		return this.findListWithPaging("CxfJaxWsMovie", movie, pageIndex,
+		return this.findListWithPaging("findCxfJaxWsMovieList", movie, pageIndex,
 				pageSize, pageUnit);
 	}
 }

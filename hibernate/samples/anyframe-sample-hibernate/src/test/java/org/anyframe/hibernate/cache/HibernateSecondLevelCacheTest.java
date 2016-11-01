@@ -44,6 +44,7 @@ public class HibernateSecondLevelCacheTest extends AbstractConfigurationalTest {
 	 * @throws Exception
 	 */
 	@Test
+	@SuppressWarnings("unchecked")
 	public void testFindCountry() throws Exception {
 		// 1. insert init data. hibernate put initial data into 1LC.
 		newSession();
@@ -76,6 +77,7 @@ public class HibernateSecondLevelCacheTest extends AbstractConfigurationalTest {
 	 * @throws Exception
 	 */
 	@Test
+	@SuppressWarnings("unchecked")
 	public void testFindMovie() throws Exception {
 		// 1. insert init data. hibernate put initial data into 1LC.
 		newSession();

@@ -76,7 +76,8 @@ public class HibernatePessimisticLockingTest extends
 
 		// 5. start second thread after 1000 milliseconds
 		scdThread.start();
-		scdThread.sleep(1000);
+//		scdThread.sleep(1000);
+		CountryThread.sleep(1000);
 
 		// 6. assert the country name of second thread
 		Assert.assertEquals("fail to wait for commiting of first transaction.",
@@ -130,7 +131,8 @@ public class HibernatePessimisticLockingTest extends
 
 		// 5. start second thread after 1000 milliseconds
 		scdThread.start();
-		scdThread.sleep(1000);
+//		scdThread.sleep(1000);
+		CountryThread.sleep(1000);
 
 		// 6. assert the country name of second thread
 		Assert.assertEquals("fail to wait for commiting of first transaction.",
@@ -182,7 +184,8 @@ public class HibernatePessimisticLockingTest extends
 
 		// 5. start second thread after 1000 milliseconds
 		scdThread.start();
-		scdThread.sleep(1000);
+//		scdThread.sleep(1000);
+		CountryThread.sleep(1000);
 
 		// 6. assert the country name of second thread
 		Assert.assertEquals("fail to no wait",
@@ -229,7 +232,8 @@ public class HibernatePessimisticLockingTest extends
 				this.beforeCountryName = country.getCountryName();
 
 				country.setCountryName(id + " : Republic of Korea");
-				this.sleep(sleepTime);
+//				this.sleep(sleepTime);
+				CountryThread.sleep(sleepTime);
 
 				session.flush();
 
@@ -276,7 +280,7 @@ public class HibernatePessimisticLockingTest extends
 		country1.setCountryId("KR");
 		country1.setCountryName("Korea");
 
-		Set movies = new HashSet();
+		Set<Movie> movies = new HashSet<Movie>();
 		movie1.setCountry(country1);
 		movies.add(movie1);
 		movie2.setCountry(country1);

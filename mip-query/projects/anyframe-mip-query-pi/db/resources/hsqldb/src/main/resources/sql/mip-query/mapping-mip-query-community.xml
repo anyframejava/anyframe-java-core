@@ -1,75 +1,47 @@
-		<!--mip-query-queryCommunity-START-->
-		<query id="findCommunityList" mappingStyle="upper">
-			<statement><![CDATA[
-				SELECT
-				COMMUNITY_ID, COMMUNITY_NAME, COMMUNITY_DESC, CATEGORY_ID, REG_ID, REG_DATE
-				FROM MIP_COMMUNITY
-				#if ($SEARCH_CONDITION.length()>0 && "0" == $SEARCH_CONDITION)
-					WHERE COMMUNITY_NAME like '%' || :SEARCH_KEYWORD || '%'
-				#elseif ($SEARCH_CONDITION.length()>0 && "1" == $SEARCH_CONDITION)
-				    WHERE COMMUNITY_DESC like '%' || :SEARCH_KEYWORD || '%'
-				#end
-				ORDER BY REG_DATE DESC
-			]]></statement>
-		</query>
-		<query id="findCommunityListForTree" isDynamic="true" mappingStyle="upper">
-			<statement><![CDATA[
-				SELECT * FROM (
-					SELECT	CATE.CATEGORY_ID, CATE.CATEGORY_NAME TEXT_NAME, CATE.CATEGORY_NAME, CATE.CATEGORY_DESC, CATE.REG_DATE CATE_REGDATE,
-					'' COMMUNITY_ID, '' COMMUNITY_NAME,	'' COMMUNITY_DESC,	'' REG_ID, sysdate REG_DATE, 0 DEPTH
-					FROM	MIP_CATEGORY CATE
+		<!--mip-query-findCommunityList-START-->
+			SELECT
+			COMMUNITY_ID, COMMUNITY_NAME, COMMUNITY_DESC, CATEGORY_ID, REG_ID, REG_DATE
+			FROM MIP_COMMUNITY
+			<!--Velocity-Support-findCommunityList-START-->
+			#if ($SEARCH_CONDITION.length() &gt; 0 &amp;&amp; "0" == $SEARCH_CONDITION)
+				WHERE COMMUNITY_NAME like '%' || :SEARCH_KEYWORD || '%'
+			#elseif ($SEARCH_CONDITION.length() &gt; 0 &amp;&amp; "1" == $SEARCH_CONDITION)
+			    WHERE COMMUNITY_DESC like '%' || :SEARCH_KEYWORD || '%'
+			#end
+			<!--Velocity-Support-findCommunityList-END-->
+			ORDER BY REG_DATE DESC		
+		<!--mip-query-findCommunityList-END-->
+		<!--mip-query-findCommunityListForTree-START-->
+			SELECT * FROM (
+				SELECT	CATE.CATEGORY_ID, CATE.CATEGORY_NAME TEXT_NAME, CATE.CATEGORY_NAME, CATE.CATEGORY_DESC, CATE.REG_DATE CATE_REGDATE,
+				'' COMMUNITY_ID, '' COMMUNITY_NAME,	'' COMMUNITY_DESC,	'' REG_ID, sysdate REG_DATE, 0 DEPTH
+				FROM	MIP_CATEGORY CATE
 
-					UNION
+				UNION
 
-					SELECT	COMM.CATEGORY_ID, COMM.COMMUNITY_NAME TEXT_NAME,'' CATEGORY_NAME, '' CATEGORY_DESC, sysdate REGDATE,
-					COMM.COMMUNITY_ID,	COMM.COMMUNITY_NAME, COMM.COMMUNITY_DESC, COMM.REG_ID, COMM.REG_DATE, 1 DEPTH
-					FROM MIP_COMMUNITY COMM
-					)
-					ORDER BY CATEGORY_ID, DEPTH
-			]]></statement>
-		</query>
-		<query id="findCommunityListByCategory" mappingStyle="upper">
-			<statement><![CDATA[
-				SELECT
-				COMMUNITY_ID, COMMUNITY_NAME, COMMUNITY_DESC, CATEGORY_ID, REG_ID, REG_DATE, '' UPDATE_YN
-				FROM MIP_COMMUNITY
-				WHERE CATEGORY_ID = :CATEGORY_ID
-				ORDER BY REG_DATE DESC
-			]]></statement>
-		</query>
-		<query id="findCommunityListBySearchCondition" mappingStyle="upper">
-			<statement><![CDATA[
-				SELECT
-				COMMUNITY_ID, COMMUNITY_NAME, COMMUNITY_DESC, CATEGORY_ID, REG_ID, REG_DATE
-				FROM MIP_COMMUNITY
-				WHERE CATEGORY_ID = :CATEGORY_ID
-				#if ($SEARCH_CONDITION.length()>0 && "0" == $SEARCH_CONDITION)
-					AND COMMUNITY_NAME like '%' || :SEARCH_KEYWORD || '%'
-				#else
-				    AND COMMUNITY_DESC like '%' || :SEARCH_KEYWORD || '%'
-				#end
-				ORDER BY REG_DATE DESC
-			]]></statement>
-		</query>
-		<query id="createCommunity" isDynamic="true" mappingStyle="upper">
-			<statement><![CDATA[
-				INSERT INTO MIP_COMMUNITY
-				(COMMUNITY_ID, COMMUNITY_NAME, COMMUNITY_DESC, REG_ID, REG_DATE, CATEGORY_ID)
-				VALUES ('COMMUNITY-'|| NEXT VALUE FOR COMMUNITY_ID_SEQ, :COMMUNITY_NAME, :COMMUNITY_DESC, :REG_ID, sysdate, :CATEGORY_ID)
-			]]></statement>
-		</query>
-		<query id="updateCommunity" isDynamic="true" mappingStyle="upper">
-			<statement><![CDATA[
-				UPDATE MIP_COMMUNITY
-				SET
-				COMMUNITY_NAME = :COMMUNITY_NAME, COMMUNITY_DESC = :COMMUNITY_DESC, CATEGORY_ID =  :CATEGORY_ID, REG_ID = :REG_ID
-				WHERE COMMUNITY_ID = :COMMUNITY_ID
-			]]></statement>
-		</query>
-		<query id="removeCommunity" isDynamic="true" mappingStyle="upper">
-			<statement><![CDATA[
-				DELETE FROM MIP_COMMUNITY
-				WHERE COMMUNITY_ID = :COMMUNITY_ID
-			]]></statement>
-		</query>
-		<!--mip-query-queryCommunity-END-->
+				SELECT	COMM.CATEGORY_ID, COMM.COMMUNITY_NAME TEXT_NAME,'' CATEGORY_NAME, '' CATEGORY_DESC, sysdate REGDATE,
+				COMM.COMMUNITY_ID,	COMM.COMMUNITY_NAME, COMM.COMMUNITY_DESC, COMM.REG_ID, COMM.REG_DATE, 1 DEPTH
+				FROM MIP_COMMUNITY COMM
+				)
+			ORDER BY CATEGORY_ID, DEPTH		
+		<!--mip-query-findCommunityListForTree-END-->
+		<!--mip-query-findCommunityListBySearchCondition-START-->
+			SELECT
+			COMMUNITY_ID, COMMUNITY_NAME, COMMUNITY_DESC, CATEGORY_ID, REG_ID, REG_DATE
+			FROM MIP_COMMUNITY
+			WHERE CATEGORY_ID = :CATEGORY_ID
+			<!--Velocity-Support-findCommunityListBySearchCondition-START-->
+			#if ($SEARCH_CONDITION.length() &gt; 0 &amp;&amp; "0" == $SEARCH_CONDITION)
+				AND COMMUNITY_NAME like '%' || :SEARCH_KEYWORD || '%'
+			#else
+			    AND COMMUNITY_DESC like '%' || :SEARCH_KEYWORD || '%'
+			#end
+			<!--Velocity-Support-findCommunityListBySearchCondition-END-->
+			ORDER BY REG_DATE DESC		
+		<!--mip-query-findCommunityListBySearchCondition-END-->
+		<!--mip-query-createCommunity-START-->
+			INSERT INTO MIP_COMMUNITY
+			(COMMUNITY_ID, COMMUNITY_NAME, COMMUNITY_DESC, REG_ID, REG_DATE, CATEGORY_ID)
+			VALUES ('COMMUNITY-'|| NEXT VALUE FOR COMMUNITY_ID_SEQ, :COMMUNITY_NAME, :COMMUNITY_DESC, :REG_ID, sysdate, :CATEGORY_ID)		
+		<!--mip-query-createCommunity-END-->
+		

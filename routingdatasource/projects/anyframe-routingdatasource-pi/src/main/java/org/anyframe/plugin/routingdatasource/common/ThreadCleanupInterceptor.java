@@ -21,24 +21,27 @@ import javax.servlet.http.HttpServletResponse;
 import org.springframework.web.servlet.handler.HandlerInterceptorAdapter;
 
 /**
- * ThreadCleanupIntnterceptor is an Interceptor class that sets theater information to ThreadLocal.
- * After then, clean up the Thread Local.
+ * ThreadCleanupIntnterceptor is an Interceptor class that sets theater
+ * information to ThreadLocal. After then, clean up the Thread Local.
  * 
  * @author Youngmin Jo
- *
+ * 
  */
-public class ThreadCleanupInterceptor extends HandlerInterceptorAdapter{
+public class ThreadCleanupInterceptor extends HandlerInterceptorAdapter {
 
 	@Override
-	public boolean preHandle(HttpServletRequest request, HttpServletResponse response, Object handler) throws Exception{
+	public boolean preHandle(HttpServletRequest request,
+			HttpServletResponse response, Object handler) throws Exception {
 		String theater = request.getParameter("theater");
 		TheaterInfoContextHolder.setTheater(theater);
-		
+
 		return super.preHandle(request, response, handler);
 	}
-	
+
 	@Override
-	public void afterCompletion(HttpServletRequest request, HttpServletResponse response, Object handler, Exception ex) throws Exception{
+	public void afterCompletion(HttpServletRequest request,
+			HttpServletResponse response, Object handler, Exception ex)
+			throws Exception {
 		TheaterInfoContextHolder.clearTheaterInfo();
 	}
 }

@@ -1,5 +1,5 @@
 /*
- * Copyright 2008-2011 the original author or authors.
+ * Copyright 2008-2012 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -14,8 +14,6 @@
  * limitations under the License.
  */
 package org.anyframe.sample.cxf.jaxws;
-
-import javax.xml.ws.WebServiceException;
 
 import org.anyframe.sample.cxf.jaxws.client.Client;
 import org.anyframe.sample.cxf.jaxws.client.ClientInfo;
@@ -95,27 +93,6 @@ public class JaxWsFrontendServerFactoryAnnotationTest extends ServerRunner {
     // ====== TestCase methods ======================================
     // ==============================================================
     
-    /**
-     * [Flow #-1] Positive Case : Using @WebMethod annotation, specific method is not exposed by WebService Method.
-	 *                            One of the property exclude of @WebMethod's is set by true.
-     *                            (ex. @WebMethod(exclude=true) )
-     */      
-	@Test
-    public void testAnnotationMethodExclude() {
-        Client client = new JaxWsClient();
-        MovieService movieService =
-            (MovieService) client.getClient(new ClientInfo(MovieService.class,
-                "http://localhost:9002/Movie", false));
-
-        try {
-            movieService.testAnnotationMethodExclude();
-            Assert.fail();
-        } catch (Exception e) {
-            // Exception should be occurred.
-            if (!(e instanceof WebServiceException))
-            	Assert.fail();
-        }
-    }
 
     /**
      * [Flow #-2] Positive Case : @WebMethod annotation을 이용하여

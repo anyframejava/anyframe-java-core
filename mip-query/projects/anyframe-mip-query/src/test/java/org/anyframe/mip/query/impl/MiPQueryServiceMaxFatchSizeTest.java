@@ -37,33 +37,37 @@ import com.tobesoft.platform.data.Variant;
 /**
  * TestCase Name : MiPQueryServiceMaxFatchSizeTest <br>
  * <br>
- * [Description] : MaxFatchSize를 설정하고 결과를 검증한다.<br>
+ * [Description] : MaxFatchSize is set and its result is verified. <br>
  * [Main Flow]
  * <ul>
- * <li>#-1 Positive Case : Positive Case : VariantList에 조회조건을 세팅하고 MiPQueryService의 find
- * method를 호출 하여  maxFetchSize를 초과하는 조회 결과가 검색되었을 경우
- * DataRetrievalFailureException이 발생하는지 검증한다.</li>
- * <li>#-2 Positive Case : VariantList에 조회조건을 세팅하고 MiPQueryService의 find
- * method를 호출 하여 XML에 정의된 쿼리를 실행하고  maxFetchSize를 초과하는 조회 결과가 검색되었을 경우
- * DataRetrievalFailureException이 발생하는지 검증한다.</li>
- * <li>#-3 Positive Case : VariantList에 조회조건을 세팅하고 MiPQueryService의 searchWithPaging
- * method를 호출 하여  페이지 사이즈가 maxFetchSize를 초과할 경우
- * DataRetrievalFailureException이 발생하는지 검증한다.</li>
- * <li>#-4 Positive Case : Dataset에 조회조건을 세팅하고 MiPQueryService의 find
- * method를 호출 하여  페이지 사이즈가 maxFetchSize를 초과할 경우
- * DataRetrievalFailureException이 발생하는지 검증한다.</li>
+ * <li>#-1 Positive Case : Positive Case : In the case where search result shows
+ * larger than maxFetchSize by setting search condition at VariantList and
+ * calling for find method of MiPQueryService, it is verified whether
+ * DataRetrievalFailureException takes place.</li>
+ * <li>#-2 Positive Case : In the case where search result shows larger than
+ * maxFetchSize and query defined at XML is executed by setting search condition
+ * at VariantList and calling for find method of MiPQueryService, it is verified
+ * whether DataRetrievalFailureException takes place.</li>
+ * <li>#-3 Positive Case : In the case where page size shows larger than
+ * maxFetchSize and by setting search condition at VariantList and calling for
+ * searchWithPaging method of MiPQueryService, it is verified whether
+ * DataRetrievalFailureException takes place.</li>
+ * <li>#-4 Positive Case : In the case where page size shows larger than
+ * maxFetchSize and by setting search condition at VariantList and calling for
+ * searchWithPaging method of MiPQueryService, it is verified whether
+ * DataRetrievalFailureException takes place.</li>
  * </ul>
  * 
  * @author Jonghoon Kim
  */
 public class MiPQueryServiceMaxFatchSizeTest extends
 		AbstractDependencyInjectionSpringContextTests {
-	
+
 	private DataSource dataSource;
 	private MiPQueryService mipQueryService;
 
 	/**
-	 * Spring Configuration 파일을 읽는다.
+	 * Spring Configuration file is read.
 	 */
 	protected String[] getConfigLocations() {
 		return new String[] { "classpath:/spring/maxfatchsize/context-*.xml" };
@@ -78,7 +82,7 @@ public class MiPQueryServiceMaxFatchSizeTest extends
 	}
 
 	/**
-	 * 테스트를 위한 기본 테이블 생성 및 기본 데이터 입력
+	 * Basic table is created for test and basic data is entered.
 	 */
 	public void onSetUp() throws Exception {
 		super.onSetUp();
@@ -93,7 +97,7 @@ public class MiPQueryServiceMaxFatchSizeTest extends
 					System.out.println("Fail to DROP Table.");
 				}
 
-				statement.executeUpdate("CREATE TABLE TB_MIP_CUSTOMER ( "
+statement.executeUpdate("CREATE TABLE TB_MIP_CUSTOMER ( "
 						+ "SSNO varchar2(13) NOT NULL, " + "NAME varchar2(20), "
 						+ "ADDRESS varchar2(20), " + "PRIMARY KEY (SSNO))");
 			} finally {
@@ -104,7 +108,6 @@ public class MiPQueryServiceMaxFatchSizeTest extends
 			fail("Unable to initialize database for test. " + e);
 		}
 	}
-
 
 	/**
 	 * [Flow #-1] Positive Case : VariantList에 조회조건을 세팅하고 MiPQueryService의 find
@@ -127,9 +130,10 @@ public class MiPQueryServiceMaxFatchSizeTest extends
 	}
 	
 	/**
-	 * [Flow #-2] Positive Case : VariantList에 조회조건을 세팅하고 MiPQueryService의 find
-	 * method를 호출 하여 XML에 정의된 쿼리를 실행하고  maxFetchSize를 초과하는 조회 결과가 검색되었을 경우
-	 * DataRetrievalFailureException이 발생하는지 검증한다.
+	 * [Flow #-2] Positive Case : In the case where search result shows larger
+	 * than maxFetchSize and query defined at XML is executed by setting search
+	 * condition at VariantList and calling for find method of MiPQueryService,
+	 * it is verified whether DataRetrievalFailureException takes place.
 	 * 
 	 * @throws Exception
 	 */
@@ -147,9 +151,10 @@ public class MiPQueryServiceMaxFatchSizeTest extends
 	}
 	
 	/**
-	 * [Flow #-3] Positive Case : VariantList에 조회조건을 세팅하고 MiPQueryService의 searchWithPaging
-	 * method를 호출 하여  페이지 사이즈가 maxFetchSize를 초과할 경우
-	 * DataRetrievalFailureException이 발생하는지 검증한다.
+	 * [Flow #-3] Positive Case : In the case where page size shows larger than
+	 * maxFetchSize and by setting search condition at VariantList and calling
+	 * for searchWithPaging method of MiPQueryService, it is verified whether
+	 * DataRetrievalFailureException takes place.
 	 * 
 	 * @throws Exception
 	 */
@@ -160,7 +165,6 @@ public class MiPQueryServiceMaxFatchSizeTest extends
 		Map queryMap = new HashMap();
 		
 		queryMap.put(MiPQueryService.QUERY_INSERT, "createMiPMaxfatchSizeQueryService");
-
 		Dataset insertDataSet = new Dataset();
 		insertDataSet.setUpdate(true);
 		insertDataSet.setDataSetID("mip_insert");
@@ -193,22 +197,22 @@ public class MiPQueryServiceMaxFatchSizeTest extends
 					e.getCause() instanceof DataRetrievalFailureException);
 		}
 	}
-	
+
 	/**
-	 * [Flow #-4] Positive Case : Dataset에 조회조건을 세팅하고 MiPQueryService의 find
-	 * method를 호출 하여  페이지 사이즈가 maxFetchSize를 초과할 경우
-	 * DataRetrievalFailureException이 발생하는지 검증한다.
+	 * [Flow #-4] Positive Case : In the case where page size shows larger than
+	 * maxFetchSize and by setting search condition at Dataset and calling for
+	 * find method of MiPQueryService, it is verified whether
+	 * DataRetrievalFailureException takes place.
 	 * 
 	 * @throws Exception
 	 */
 	public void testFindDataSetWithPagingDataset() throws Exception {
 		insertDataSet();
 
-		// 테스트 데이터 1Row 추가
+		// Test Data 1Row Test
 		Map queryMap = new HashMap();
 		
 		queryMap.put(MiPQueryService.QUERY_INSERT, "createMiPMaxfatchSizeQueryService");
-
 		Dataset insertDataSet = new Dataset();
 		insertDataSet.setUpdate(true);
 		insertDataSet.setDataSetID("mip_insert");
@@ -247,12 +251,12 @@ public class MiPQueryServiceMaxFatchSizeTest extends
 	}
 	
 	/**
-	 * 데스트를 위한 초기 데이터 값 세팅
+	 * Initial Data Value Setting for Test
 	 * @throws Exception
 	 */
 	private void insertDataSet() throws Exception {
 		Map queryMap = new HashMap();
-		queryMap.put(MiPQueryService.QUERY_INSERT, "createMiPMaxfatchSizeQueryService");
+queryMap.put(MiPQueryService.QUERY_INSERT, "createMiPMaxfatchSizeQueryService");
 
 		int resultInsert = mipQueryService
 				.update(queryMap, makeInsertDataSet());
@@ -262,7 +266,7 @@ public class MiPQueryServiceMaxFatchSizeTest extends
 	}
 	
 	/**
-	 * 테스트를 실행 한 후 결과값을 검증하기 위해 조회
+	 * Test is conducted and then searched to verify the result value.
 	 * @param expected
 	 * @throws Exception
 	 */
@@ -284,8 +288,9 @@ public class MiPQueryServiceMaxFatchSizeTest extends
 
 		}
 	}
+
 	/**
-	 * 테스트를 실행 한 후 결과값을 검증하기 위해 조회
+	 * Test is conducted and then searched to verify the return value.
 	 * @param searchKeyword
 	 * @return
 	 * @throws QueryServiceException
@@ -300,7 +305,7 @@ public class MiPQueryServiceMaxFatchSizeTest extends
 	}
 
 	/**
-	 * Dataset 세팅
+	 * Dataset Setting
 	 * @return
 	 */
 	private Dataset makeInsertDataSet() {
@@ -348,7 +353,7 @@ public class MiPQueryServiceMaxFatchSizeTest extends
 	}
 
 	/**
-	 * 조회 조건이 들어 있는 Dataset세팅
+	 * Setting with Search Condition
 	 * @param searchKeyword
 	 * @return
 	 */
@@ -363,9 +368,9 @@ public class MiPQueryServiceMaxFatchSizeTest extends
 		selectDataSet.setColumn(0, "SSNO", variant);
 		return selectDataSet;
 	}
-	
+
 	/**
-	 * 조회 조건이 들어 있는 VariableList 세팅
+	 * VariableList Setting with Search Condition
 	 * @return
 	 */
 	private VariableList makeVariantList() {

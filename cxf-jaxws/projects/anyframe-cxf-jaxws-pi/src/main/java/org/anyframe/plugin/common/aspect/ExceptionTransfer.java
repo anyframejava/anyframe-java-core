@@ -1,5 +1,5 @@
 /*
- * Copyright 2008-2011 the original author or authors.
+ * Copyright 2008-2012 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -19,19 +19,16 @@ import java.util.Locale;
 
 import javax.inject.Inject;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
+import org.anyframe.exception.BaseException;
+import org.anyframe.plugin.common.MovieFinderException;
 import org.aspectj.lang.JoinPoint;
 import org.aspectj.lang.annotation.AfterThrowing;
 import org.aspectj.lang.annotation.Aspect;
-import org.aspectj.lang.annotation.Pointcut;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.aop.framework.Advised;
 import org.springframework.context.MessageSource;
 import org.springframework.stereotype.Service;
-
-import org.anyframe.exception.BaseException;
-
-import org.anyframe.plugin.common.MovieFinderException;
 
 /**
  * This ExceptionTransfer class is an Aspect class to provide exception handling
@@ -43,14 +40,10 @@ import org.anyframe.plugin.common.MovieFinderException;
 @Service
 public class ExceptionTransfer {
 
-	@Pointcut("execution(* org.anyframe.plugin..*Impl.*(..))")
-	public void serviceMethod() {
-	}
-
 	@Inject
 	private MessageSource messageSource;
 
-	@AfterThrowing(pointcut = "serviceMethod()", throwing = "exception")
+	@AfterThrowing(pointcut = "execution(* org.anyframe.plugin..*Impl.*(..))", throwing = "exception")
 	public void transfer(JoinPoint thisJoinPoint, Exception exception)
 			throws MovieFinderException {
 		Object target = thisJoinPoint.getTarget();
@@ -58,7 +51,7 @@ public class ExceptionTransfer {
 			try {
 				target = ((Advised) target).getTargetSource().getTarget();
 			} catch (Exception e) {
-				LogFactory.getLog(this.getClass()).error(
+				LoggerFactory.getLogger(this.getClass()).error(
 						"Fail to get target object from JointPoint.", e);
 				break;
 			}
@@ -66,7 +59,7 @@ public class ExceptionTransfer {
 
 		String className = target.getClass().getSimpleName().toLowerCase();
 		String opName = (thisJoinPoint.getSignature().getName()).toLowerCase();
-		Log logger = LogFactory.getLog(target.getClass());
+		Logger logger = LoggerFactory.getLogger(target.getClass());
 
 		if (exception instanceof MovieFinderException) {
 			MovieFinderException movieFinderEx = (MovieFinderException) exception;
@@ -85,8 +78,8 @@ public class ExceptionTransfer {
 		} catch(Exception e){
 			logger.error(messageSource.getMessage("error.common", new String[] {}, Locale.getDefault()),
 					exception);
-			throw new MovieFinderException("error.common");
+			throw new MovieFinderException(messageSource, "error.common");
 		}
-		throw new MovieFinderException("error." + className	+ "." + opName);
+		throw new MovieFinderException(messageSource, "error." + className	+ "." + opName);
 	}
 }

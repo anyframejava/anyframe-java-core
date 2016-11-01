@@ -1,5 +1,5 @@
 /*
- * Copyright 2002-2008 the original author or authors.
+ * Copyright 2002-2012 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -47,7 +47,7 @@ public class AbstractXPDispatchController extends AbstractXPController {
 	 * method name. This collection is populated as different methods are
 	 * called, so that introspection needs to occur only once per method name.
 	 */
-	protected HashMap methods = new HashMap();
+	protected HashMap<String, Object> methods = new HashMap<String, Object>();
 
 	/**
 	 * The Class instance of this <code>AnyframeMiPDispatchConroller</code>
@@ -98,9 +98,8 @@ public class AbstractXPDispatchController extends AbstractXPController {
 			dispatchMethod(httpPlatformRequest, name, inVl, inDl, outVl, outDl);
 		} catch (Exception e) {
 			logger.error("Can not excute dispatch method.");
-			if (e instanceof BaseException)
-				throw (BaseException) e;
-			throw new Exception(e.getMessage());
+			logger.error(e.getCause());
+			throw new Exception("Fail to process client request.", e.getCause());
 		}
 	}
 

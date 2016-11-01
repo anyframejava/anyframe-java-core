@@ -1,5 +1,5 @@
 /*
- * Copyright 2002-2008 the original author or authors.
+ * Copyright 2002-2012 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -22,32 +22,33 @@ import org.springframework.core.io.ClassPathResource;
 import org.xml.sax.EntityResolver;
 import org.xml.sax.InputSource;
 
-
 /**
+ * DTD resolver for anyframe-dynamic-hibernate-mapping
+ * 
  * @author SoYon Lim
  */
 public class DynamicDtdResolver implements EntityResolver {
 
-    private static final String DYNAMICHIBERNATE_MAPPING_DTD_NAME =
-        "/dtd/anyframe-dynamic-hibernate-mapping-4.0.dtd";
+	private static final String DYNAMICHIBERNATE_MAPPING_DTD_NAME = "/dtd/anyframe-dynamic-hibernate-mapping-4.0.dtd";
 
-    public InputSource resolveEntity(String publicId, String systemId)
-            throws IOException {
-        if (systemId != null) {
-            try {
-                InputSource source =
-                    new InputSource(new ClassPathResource(
-                    		DYNAMICHIBERNATE_MAPPING_DTD_NAME).getInputStream());
-                source.setPublicId(publicId);
+	public InputSource resolveEntity(String publicId, String systemId)
+			throws IOException {
+		if (systemId != null) {
+			try {
+				InputSource source = new InputSource(new ClassPathResource(
+						DYNAMICHIBERNATE_MAPPING_DTD_NAME).getInputStream());
+				source.setPublicId(publicId);
 
-                return source;
-            } catch (Exception ex) {
-            	DynamicHibernateService.LOGGER.warn(
-                    "Dynamic Hibernate Service : Fail to resolve mapping xml files.", ex);
-            }
-        }
-        // use the default behaviour -> download from
-        // website or wherever
-        return null;
-    }
+				return source;
+			} catch (Exception ex) {
+				DynamicHibernateService.LOGGER
+						.warn(
+								"Dynamic Hibernate Service : Fail to resolve mapping xml files.",
+								ex);
+			}
+		}
+		// use the default behaviour -> download from
+		// website or wherever
+		return null;
+	}
 }

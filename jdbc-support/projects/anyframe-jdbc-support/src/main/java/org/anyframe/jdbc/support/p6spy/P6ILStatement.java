@@ -61,6 +61,7 @@
 package org.anyframe.jdbc.support.p6spy;
 
 import java.sql.ResultSet;
+import java.sql.SQLException;
 import java.sql.Statement;
 
 import org.anyframe.jdbc.support.CompleteQueryPostProcessor;
@@ -78,11 +79,11 @@ import com.p6spy.engine.spy.P6Statement;
  * @author Byunghun Woo
  *
  */
-public class P6ILStatement extends P6Statement {
+public class P6ILStatement extends P6Statement { 
 
-	private InjectionPatternPostProcessor injectionPatternPostProcessor;
+	private final InjectionPatternPostProcessor injectionPatternPostProcessor;
 
-	private CompleteQueryPostProcessor completeQueryPostProcessor;
+	private final CompleteQueryPostProcessor completeQueryPostProcessor;
 
 	public P6ILStatement(P6CoreFactory factory, Statement statement, P6Connection conn,
 			InjectionPatternPostProcessor injectionPatternPostProcessor,
@@ -93,7 +94,7 @@ public class P6ILStatement extends P6Statement {
 	}
 
 	@Override
-	public boolean execute(String sql) throws java.sql.SQLException {
+	public boolean execute(String sql) throws SQLException {
 		injectionPatternPostProcessor.warningPattern(sql);
 		statementQuery = injectionPatternPostProcessor.replacePattern(sql);
 		completeQueryPostProcessor.processCompleteQuery(statementQuery);
@@ -102,7 +103,7 @@ public class P6ILStatement extends P6Statement {
 	}
 
 	@Override
-	public ResultSet executeQuery(String sql) throws java.sql.SQLException {
+	public ResultSet executeQuery(String sql) throws SQLException {
 		injectionPatternPostProcessor.warningPattern(sql);
 		statementQuery = injectionPatternPostProcessor.replacePattern(sql);
 		completeQueryPostProcessor.processCompleteQuery(statementQuery);
@@ -111,7 +112,7 @@ public class P6ILStatement extends P6Statement {
 	}
 
 	@Override
-	public int executeUpdate(String sql) throws java.sql.SQLException {
+	public int executeUpdate(String sql) throws SQLException {
 		injectionPatternPostProcessor.warningPattern(sql);
 		statementQuery = injectionPatternPostProcessor.replacePattern(sql);
 		completeQueryPostProcessor.processCompleteQuery(statementQuery);
@@ -120,7 +121,7 @@ public class P6ILStatement extends P6Statement {
 	}
 
 	@Override
-	public void addBatch(String sql) throws java.sql.SQLException {
+	public void addBatch(String sql) throws SQLException {
 		injectionPatternPostProcessor.warningPattern(sql);
 		statementQuery = injectionPatternPostProcessor.replacePattern(sql);
 		completeQueryPostProcessor.processCompleteQuery(statementQuery);
@@ -129,7 +130,7 @@ public class P6ILStatement extends P6Statement {
 	}
 
 	@Override
-	public int[] executeBatch() throws java.sql.SQLException {
+	public int[] executeBatch() throws SQLException {
 		injectionPatternPostProcessor.warningPattern(statementQuery);
 		statementQuery = injectionPatternPostProcessor.replacePattern(statementQuery);
 		completeQueryPostProcessor.processCompleteQuery(statementQuery);

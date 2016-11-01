@@ -142,9 +142,9 @@ import com.p6spy.engine.spy.P6Connection;
  * @author Byunghun Woo
  *
  */
-public class P6ILConnection extends P6Connection {
+public class P6ILConnection extends P6Connection { 
 
-	private InjectionPatternPostProcessor injectionPatternPostProcessor;
+	private final InjectionPatternPostProcessor injectionPatternPostProcessor;
 
 	public P6ILConnection(P6ILFactory factory, Connection conn,
 			InjectionPatternPostProcessor injectionPatternPostProcessor) throws SQLException {

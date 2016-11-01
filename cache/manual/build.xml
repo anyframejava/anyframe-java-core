@@ -8,13 +8,17 @@
             This Ant build.xml file is used to transform DocBook XML to various
     </description>
 
-	<property name="book.name" value="cache" />
-	<property name="version" value="1.0.2"/>	
 	<!--
 	  - set dbf installer folder and sample project folder
 	 -->
-	<property name="dbf.home" value="D:/eclipse-workspace/workspace/docbook" />
-	<property name="sample.home" value="/Users/aromy/Devel/anyframe-opensource/anyframe/trunk/plugin/${book.name}/sample" />
+	<property name="dbf.home" value="E:/workspace/docbook" />
+	<property name="sample.home" value="E:/workspace/sample"/>
+	<property name="plugin.type" value="optional" />
+	<property name="result.dir" value="E:/Repo/anyframe-opensource/docs/anyframe/plugin/${plugin.type}"/>
+	
+	<property name="book.name" value="cache" />
+	<property name="version" value="1.0.3"/>	
+	
 	<!--
       - Configure basic properties that will be used in the file.
       -->
@@ -32,7 +36,7 @@
 	<property name="src.dir" value="doc" />
 	<property name="src.tmp" value="doc/temp" />
 	<property name="xalan.lib.dir" value="${dbf.home}/software/fop/lib" />
-
+	
 	<!--
 		- Usage of the differect style sheets which will be used for the transformation
 	-->
@@ -172,17 +176,17 @@
 		</fop>
 	</target>
 	
-	<target name="copy-sample" depends="depends" >
-		<zip destfile="${target.dir}/sample/anyframe-sample-cache.zip" basedir="${sample.home}/anyframe-sample-cache" 
-			update="true" excludes="target/**, **/.svn/**, **/*.jar"/>	
-		
-		<copy todir="${target.dir}/sample">
-			<fileset dir="${sample.home}/">
-				<include name="*.jar" />
+	<target name="deploy-manual">
+		<copy todir="${result.dir}">
+			<fileset dir="target">
+				<include name="**/**" />
 			</fileset>
-		</copy>		
+		</copy>
 	</target>
-	
-	<target name="all" depends="clean, copy, build-html, build-chunks, build-pdf, copy-sample" />
+
+	<!-- target for local build -->
+	<target name="all" depends="clean, copy, build-html, build-chunks, build-pdf" />
+	<!-- target for CI build -->
+	<target name="all-CI" depends="all, deploy-manual"/>
 
 </project>

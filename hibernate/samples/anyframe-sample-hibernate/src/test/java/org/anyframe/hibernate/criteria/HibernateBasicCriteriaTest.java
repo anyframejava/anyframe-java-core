@@ -53,6 +53,7 @@ public class HibernateBasicCriteriaTest extends
 	 *             throws exception which is from hibernate
 	 */
 	@Test
+	@SuppressWarnings("unchecked")
 	public void testFindCountryList() throws Exception {
 		// 1. insert init data
 		SetUpInitData.initializeData(session);
@@ -64,8 +65,8 @@ public class HibernateBasicCriteriaTest extends
 		List countryList = criteria.list();
 
 		// 3. assert result - country
-		Assert.assertEquals("fail to match the size of country list.", 3, countryList
-				.size());
+		Assert.assertEquals("fail to match the size of country list.", 3,
+				countryList.size());
 
 		Country country = (Country) countryList.get(0);
 		Assert.assertEquals("fail to match a country name.", "Japan", country
@@ -73,15 +74,16 @@ public class HibernateBasicCriteriaTest extends
 
 		// 4. assert result - movies
 		Set movies = country.getMovies();
-Assert.assertEquals("fail to match the size of movie list.", 1, movies.size());
+		Assert.assertEquals("fail to match the size of movie list.", 1, movies
+				.size());
 		Movie movie = (Movie) movies.iterator().next();
 		Assert.assertTrue("fail to match the title of movie.", movie.getTitle()
 				.equals("Ring 2"));
 
 		// 5. assert result - categories
 		Set categories = movie.getCategories();
-		Assert.assertEquals("fail to match the size of category list.", 1, categories
-				.size());
+		Assert.assertEquals("fail to match the size of category list.", 1,
+				categories.size());
 
 		Iterator categoryItr = categories.iterator();
 		Category category = (Category) categoryItr.next();
@@ -97,6 +99,7 @@ Assert.assertEquals("fail to match the size of movie list.", 1, movies.size());
 	 *             throws exception which is from hibernate
 	 */
 	@Test
+	@SuppressWarnings("unchecked")
 	public void testFindMovieListByCategory() throws Exception {
 		// 1. insert init data
 		SetUpInitData.initializeData(session);
@@ -108,19 +111,19 @@ Assert.assertEquals("fail to match the size of movie list.", 1, movies.size());
 		List movieList = movieCriteria.list();
 
 		// 3. assert result - movie
-		Assert.assertEquals("fail to match the size of movie list.", 2, movieList
-				.size());
+		Assert.assertEquals("fail to match the size of movie list.", 2,
+				movieList.size());
 
 		Movie movie1 = (Movie) movieList.get(0);
-		Assert.assertEquals("fail to match a movie title.", "My Sassy Girl", movie1
-				.getTitle());
-		Assert.assertEquals("fail to match a movie title.", "Jaeyong Gwak", movie1
-				.getDirector());
+		Assert.assertEquals("fail to match a movie title.", "My Sassy Girl",
+				movie1.getTitle());
+		Assert.assertEquals("fail to match a movie title.", "Jaeyong Gwak",
+				movie1.getDirector());
 
 		// 4. asssert result - categories
 		Set categories = movie1.getCategories();
-		Assert.assertEquals("fail to match the size of category list.", 2, movie1
-				.getCategories().size());
+		Assert.assertEquals("fail to match the size of category list.", 2,
+				movie1.getCategories().size());
 
 		Iterator categoryItr = categories.iterator();
 		Category category = (Category) categoryItr.next();
@@ -137,6 +140,7 @@ Assert.assertEquals("fail to match the size of movie list.", 1, movies.size());
 	 *             throws exception which is from hibernate
 	 */
 	@Test
+	@SuppressWarnings("unchecked")
 	public void testFindMovieListByCountry() throws Exception {
 		// 1. insert init data
 		SetUpInitData.initializeData(session);
@@ -149,19 +153,19 @@ Assert.assertEquals("fail to match the size of movie list.", 1, movies.size());
 		List movieList = movieCriteria.list();
 
 		// 3. assert result - movie
-		Assert.assertEquals("fail to match the size of movie list.", 2, movieList
-				.size());
+		Assert.assertEquals("fail to match the size of movie list.", 2,
+				movieList.size());
 
 		Movie movie1 = (Movie) movieList.get(0);
-		Assert.assertEquals("fail to match a movie title.", "My Sassy Girl", movie1
-				.getTitle());
-		Assert.assertEquals("fail to match a movie title.", "Jaeyong Gwak", movie1
-				.getDirector());
+		Assert.assertEquals("fail to match a movie title.", "My Sassy Girl",
+				movie1.getTitle());
+		Assert.assertEquals("fail to match a movie title.", "Jaeyong Gwak",
+				movie1.getDirector());
 
 		// 4. assert result - categories
 		Set categories = movie1.getCategories();
-		Assert.assertEquals("fail to match the size of category list.", 2, movie1
-				.getCategories().size());
+		Assert.assertEquals("fail to match the size of category list.", 2,
+				movie1.getCategories().size());
 
 		Iterator categoryItr = categories.iterator();
 		Category category = (Category) categoryItr.next();
@@ -179,12 +183,14 @@ Assert.assertEquals("fail to match the size of movie list.", 1, movies.size());
 	 *             throws exception which is from hibernate
 	 */
 	@Test
+	@SuppressWarnings("unchecked")
 	public void testFindCategoryList() throws Exception {
 		// 1. insert init data
 		SetUpInitData.initializeData(session);
 
 		// 2. execute criteria
 		Criteria categoryCriteria = session.createCriteria(Category.class);
+		@SuppressWarnings("unused")
 		Criteria movieCriteria = categoryCriteria.createCriteria("movies",
 				CriteriaSpecification.LEFT_JOIN);
 		categoryCriteria.addOrder(Order.asc("categoryName"));
@@ -197,22 +203,23 @@ Assert.assertEquals("fail to match the size of movie list.", 1, movies.size());
 				categoryList.size());
 
 		Category category1 = (Category) categoryList.get(0);
-		Assert.assertEquals("fail to match the name of category.", "Comedy", category1
-				.getCategoryName());
+		Assert.assertEquals("fail to match the name of category.", "Comedy",
+				category1.getCategoryName());
 
 		Set movies = category1.getMovies();
-		Assert.assertTrue("fail to match the size of movie list.", movies.size() == 0);
+		Assert.assertTrue("fail to match the size of movie list.", movies
+				.size() == 0);
 
 		Category category2 = (Category) categoryList.get(1);
-		Assert.assertEquals("fail to match the name of category.", "Horror", category2
-				.getCategoryName());
+		Assert.assertEquals("fail to match the name of category.", "Horror",
+				category2.getCategoryName());
 
 		Category category3 = (Category) categoryList.get(2);
 		Assert.assertEquals("fail to match the name of category.", "Romantic",
 				category3.getCategoryName());
 
 		Category category4 = (Category) categoryList.get(3);
-		Assert.assertEquals("fail to match the name of category.", "SF", category4
-				.getCategoryName());
+		Assert.assertEquals("fail to match the name of category.", "SF",
+				category4.getCategoryName());
 	}
 }

@@ -42,6 +42,7 @@ public class HibernateFetchWithDefaultLazyLoadingTest extends
 	 *             throws exception which is from hibernate
 	 */
 	@Test
+	@SuppressWarnings("unchecked")
 	public void testCategoryList() throws Exception {
 		// 1. insert init data
 		session = initialSessionFactory.openSession();

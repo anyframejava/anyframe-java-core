@@ -1,5 +1,5 @@
 /*
- * Copyright 2008-2011 the original author or authors.
+ * Copyright 2008-2012 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -21,39 +21,45 @@ import javax.inject.Inject;
 
 import org.anyframe.plugin.cache.domain.Genre;
 import org.anyframe.query.QueryService;
-import org.anyframe.query.dao.AbstractDao;
+import org.anyframe.query.dao.QueryServiceDaoSupport;
 import org.springframework.stereotype.Repository;
 
 /**
  * This GenreDao class is a DAO class to provide genre list functionality.
  * 
- * @author Sujeong Lee
+ * @author Sooyeon Park
  */
 @Repository("cacheGenreDao")
-public class GenreDao extends AbstractDao {
+public class GenreDao extends QueryServiceDaoSupport {
 
 	@Inject
 	public void setQueryService(QueryService queryService) {
 		super.setQueryService(queryService);
 	}
 
-	@SuppressWarnings("unchecked")
-	public List<Genre> getList() throws Exception {
-		return (List<Genre>) this.findList("CacheGenre", new Object[] {});
-	}
-	
 	public void create(Genre genre) throws Exception {
-		create("CacheGenre", genre);
+		create("createCacheGenre", genre);
+	}
+
+	public Genre get(String genreId) throws Exception {
+		Genre genre = new Genre();
+		genre.setGenreId(genreId);
+		return (Genre) findByPk("findCacheGenreByPk", genre);
+	}
+
+	public void update(Genre genre) throws Exception {
+		update("updateCacheGenre", genre);
 	}
 
 	public void remove(String genreId) throws Exception {
 		Genre genre = new Genre();
 		genre.setGenreId(genreId);
-		remove("CacheGenre", genre);
+		remove("removeCacheGenre", genre);
 	}
 
-	public void update(Genre genre) throws Exception {
-		update("CacheGenre", genre);
+	@SuppressWarnings("unchecked")
+	public List<Genre> getList() throws Exception {
+		return (List<Genre>) this.findList("findCacheGenreList", new Object[] {});
 	}
 
 }

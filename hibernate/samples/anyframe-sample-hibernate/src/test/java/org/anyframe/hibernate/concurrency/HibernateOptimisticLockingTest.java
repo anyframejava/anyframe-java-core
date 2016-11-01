@@ -154,7 +154,7 @@ public class HibernateOptimisticLockingTest extends AbstractConfigurationalTest 
 		country1.setCountryId("KR");
 		country1.setCountryName("Korea");
 
-		Set movies = new HashSet();
+		Set<Movie> movies = new HashSet<Movie>();
 		movie1.setCountry(country1);
 		movies.add(movie1);
 		movie2.setCountry(country1);

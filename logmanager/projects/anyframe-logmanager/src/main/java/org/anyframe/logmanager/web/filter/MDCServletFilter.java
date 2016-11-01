@@ -31,6 +31,8 @@ import javax.servlet.http.HttpSession;
 import org.apache.commons.beanutils.BeanUtils;
 import org.apache.log4j.helpers.Loader;
 import org.apache.log4j.xml.DOMConfigurator;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.slf4j.MDC;
 
 /**
@@ -49,6 +51,8 @@ public class MDCServletFilter implements Filter {
 	public static final String LOG4J_INIT_FILE_PARAM = "log4jFile";
 	public static final String LOG4J_ENABLE_PARAM = "log4jDynamicReload";
 	public static final String LOG4J_PERIOD_PARAM = "log4jDynamicReloadPeriod";
+	
+	public static Logger logger = LoggerFactory.getLogger(MDCServletFilter.class);
 
 	private FilterConfig config;
 
@@ -59,6 +63,7 @@ public class MDCServletFilter implements Filter {
 		if (isLog4jReloadEnable) {
 			String log4jFileName = getLog4jInitFileName();
 			long log4jPeriod = getLog4jReloadPeriod();
+			
 			try{
 				URL url = Loader.getResource(log4jFileName);
 				if (log4jPeriod == 0) {
@@ -68,6 +73,7 @@ public class MDCServletFilter implements Filter {
 				}	
 			}catch(Exception e){
 				// not support log4j case
+				logger.info("this application use \"Logback\"");
 			}
 		}
 	}
@@ -126,11 +132,11 @@ public class MDCServletFilter implements Filter {
 						try {
 							propValue = BeanUtils.getProperty(sessionObject, propKey);
 						} catch (IllegalAccessException e) {
-							e.printStackTrace();
+							logger.warn(e.getMessage(), e);
 						} catch (InvocationTargetException e) {
-							e.printStackTrace();
+							logger.warn(e.getMessage(), e);
 						} catch (NoSuchMethodException e) {
-							e.printStackTrace();
+							logger.warn(e.getMessage(), e);
 						}
 						if (propValue == null)
 							MDC.put(propValue, "N/A");

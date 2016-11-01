@@ -1,5 +1,5 @@
 /*
- * Copyright 2002-2008 the original author or authors.
+ * Copyright 2007-2012 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -57,7 +57,8 @@ public class DefaultRequestProcessor extends TilesRequestProcessor {
 	/**
 	 * check authentication and authorization.
 	 */
-    protected boolean processRoles(HttpServletRequest request,
+    @SuppressWarnings("unchecked")
+	protected boolean processRoles(HttpServletRequest request,
             HttpServletResponse response, ActionMapping mapping)
             throws IOException, ServletException {
         // [public] Is this action protected by role requirements?
@@ -174,7 +175,8 @@ public class DefaultRequestProcessor extends TilesRequestProcessor {
      * @param role
      * @return
      */
-    private boolean _isUserInRole(Subject _subject, String role) {
+    @SuppressWarnings("unchecked")
+	private boolean _isUserInRole(Subject _subject, String role) {
 
         // let's see what Principals we have
         Iterator principalIterator = _subject.getPrincipals().iterator();

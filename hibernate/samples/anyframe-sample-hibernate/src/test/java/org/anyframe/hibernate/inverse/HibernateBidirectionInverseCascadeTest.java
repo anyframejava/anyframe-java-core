@@ -50,7 +50,7 @@ public class HibernateBidirectionInverseCascadeTest extends AbstractTest {
 		Country country = makeCountry();
 		Movie movie = makeMovie();
 
-		// 2. try to make a relation between country and movie
+		// 2. try to make a relation between country and movie		
 		country.getMovies().add(movie);
 		// movie.setCountry(country);
 

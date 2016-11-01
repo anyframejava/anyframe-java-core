@@ -2,7 +2,7 @@
 <plugin name="mip-query" description="Mip-Query Plugin consists of sample code that provides basic guidelines on how to use MiPlatform connection modules and common server modules provided by Anyframe, and reference libraries needed to use open sources.">
 	<groupId>org.anyframe.plugin</groupId>
 	<artifactId>anyframe-mip-query-pi</artifactId>
-	<version>1.0.2</version>
+	<version>1.0.3</version>
 	<dependent-plugins>
 		<dependent-plugin name="query-ria" version="2.0.0&gt;*" />
 	</dependent-plugins>
@@ -29,6 +29,10 @@
 			<include name="**/mip_query_mdi.xml" />
 			<include name="**/mip_query_sdi.xml" />
 		</resource>
+		<resource dir="src/main/webapp/mip-query/basic/javascript" filtered="true"
+			packaged="false">
+			<include name="**/fileupdown.js" />
+		</resource>
 		<resource dir="db" filtered="false" packaged="false">
 			<include name="**/*.sql" />
 		</resource>
@@ -42,6 +46,7 @@
 				<include name="**/*mip-query*.xml" />
 				<include name="**/mip-query/**/*.xml" />
 				<include name="**/mip-generation-servlet.xml"/>
+				<include name="**/context.properties" />
 			</fileset>
 			<fileset dir="src/test/java" filtered="true" packaged="true">
 				<include name="**/org/anyframe/plugin/mip/query/**/*.java" />
@@ -59,6 +64,10 @@
 				packaged="false">
 				<include name="**/mip_query_mdi.xml" />
 				<include name="**/mip_query_sdi.xml" />
+			</fileset>
+			<fileset dir="src/main/webapp/mip-query/basic/javascript" filtered="true"
+				packaged="false">
+				<include name="**/fileupdown.js" />
 			</fileset>
 			<fileset dir="db" filtered="false" packaged="false">
 				<include name="**/scripts/*.sql" />

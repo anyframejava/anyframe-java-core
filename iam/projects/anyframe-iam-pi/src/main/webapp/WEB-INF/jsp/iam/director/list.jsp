@@ -6,7 +6,7 @@
 
 <head>
 <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
-<title>Anyframe 5.1.0 Main</title>
+<title>Anyframe 5.2.0 Main</title>
 <link rel="stylesheet" type="text/css" href="<c:url value='/sample/css/layout.css'/>"/>
 <link rel="stylesheet" type="text/css" href="<c:url value='/sample/css/common.css'/>"/>
 <!-- jQuery popup component : nyromodal -->
@@ -23,7 +23,7 @@
     <div id="header">
     	<div class="toplogo"><h1><a href="<c:url value='/anyframe.jsp'/>"><img src="<c:url value='/sample/images/h1_toplogo.jpg'/>" alt="anyframe"/></a></h1></div>
 
-		<div class="location"><a href="<c:url value='/anyframe.jsp'/>">Home</a> &gt; <a href="<c:url value='/iamListDirector.do'/>">IAM 1.0.1</a></div>
+		<div class="location"><a href="<c:url value='/anyframe.jsp'/>">Home</a> &gt; <a href="<c:url value='/iamListDirector.do'/>">IAM 1.0.3</a></div>
     </div>
     <hr />
  <!-- jQuery include -->
@@ -80,9 +80,9 @@
         <div class="listunder_container none_listpaging">
         	<div class="list_underbtn_left">        	
                 <a href="#test" class="nyroModal">
-                <span class="button default icon">   
-                    <span>&nbsp;</span>
-                    <span class="none_a txt_num4">Help</span>
+                <span class="button default">   
+                	<span></span>
+                    <span class="none_a txt_num4 align_center"> Help</span>
                 </span>
                 </a>         	
                 <iam:access hasPermission="${iam:getPermissionMask(\"READ\")}" viewName="View Management">

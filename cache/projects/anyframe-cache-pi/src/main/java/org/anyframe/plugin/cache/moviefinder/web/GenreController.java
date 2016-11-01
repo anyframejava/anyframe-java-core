@@ -1,5 +1,5 @@
 /*
- * Copyright 2008-2011 the original author or authors.
+ * Copyright 2008-2012 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -15,14 +15,9 @@
  */
 package org.anyframe.plugin.cache.moviefinder.web;
 
-import java.util.Collection;
-import java.util.HashMap;
-import java.util.Map;
-
 import javax.inject.Inject;
 import javax.inject.Named;
 
-import org.anyframe.cache.CacheService;
 import org.anyframe.plugin.cache.domain.Genre;
 import org.anyframe.plugin.cache.moviefinder.service.GenreService;
 import org.apache.commons.lang.StringUtils;
@@ -35,7 +30,7 @@ import org.springframework.web.bind.annotation.RequestParam;
  * This GenreController class is a Controller class to provide genre crud and
  * list functionality.
  * 
- * @author Sujeong Lee
+ * @author Sooyeon Park
  */
 @Controller("cacheGenreController")
 @RequestMapping("/cacheGenre.do")
@@ -44,10 +39,6 @@ public class GenreController {
 	@Inject
 	@Named("cacheGenreService")
 	private GenreService genreService;
-
-	@Inject
-	@Named("cacheService")
-	CacheService cacheService;
 
 	@RequestMapping(params = "method=createView")
 	public String createView(Model model) throws Exception {
@@ -62,16 +53,13 @@ public class GenreController {
 		return "redirect:/cacheGenre.do?method=list";
 	}
 
-	@SuppressWarnings("unchecked")
 	@RequestMapping(params = "method=get")
 	public String get(@RequestParam("genreId") String genreId, Model model)
 			throws Exception {
 
 		if (!StringUtils.isBlank(genreId)) {
-			Map<String, Genre> resultMap = (HashMap<String, Genre>) cacheService
-					.getFromCache("genreList");
-			Genre cachedGenre = resultMap.get(genreId);
-			model.addAttribute("genre", cachedGenre);
+			Genre genre = this.genreService.get(genreId);
+			model.addAttribute("genre", genre);
 		}
 
 		return "cache/moviefinder/genre/form";
@@ -80,7 +68,6 @@ public class GenreController {
 	@RequestMapping(params = "method=update")
 	public String update(Genre genre) throws Exception {
 		this.genreService.update(genre);
-
 		return "redirect:/cacheGenre.do?method=list";
 	}
 
@@ -90,16 +77,10 @@ public class GenreController {
 		this.genreService.remove(genreId);
 		return "redirect:/cacheGenre.do?method=list";
 	}
-	
-	@SuppressWarnings("unchecked")
+
 	@RequestMapping(params = "method=list")
 	public String list(Model model) throws Exception {
-
-		Map<String, Genre> resultMap = (HashMap<String, Genre>) cacheService
-		.getFromCache("genreList");
-		Collection<Genre> genreList = resultMap.values();
-
-		model.addAttribute("genres", genreList);
+		model.addAttribute("genres", this.genreService.getList());
 		return "cache/moviefinder/genre/list";
-	}	
+	}
 }

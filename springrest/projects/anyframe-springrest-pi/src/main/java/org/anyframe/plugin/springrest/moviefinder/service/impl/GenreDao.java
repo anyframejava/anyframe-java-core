@@ -37,9 +37,8 @@ public class GenreDao extends QueryServiceDaoSupport {
 		super.setQueryService(queryService);
 	}
 
-	@SuppressWarnings("unchecked")
-	public List<Genre> getList() throws Exception {
-		return (List<Genre>) this.findList("findSpringrestGenreList", new Object[] {});
+	public List<Genre> getList() {
+		return super.findList("findSpringrestGenreList", new Object[] {});
 	}
 
 }

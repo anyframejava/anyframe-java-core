@@ -1,5 +1,5 @@
 /*
- * Copyright 2002-2008 the original author or authors.
+ * Copyright 2007-2012 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -23,12 +23,11 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 import org.anyframe.struts.util.mip.MiPMapper;
-import org.apache.commons.logging.Log;
 import org.apache.struts.action.ActionForm;
 import org.apache.struts.action.ActionForward;
 import org.apache.struts.action.ActionMapping;
+import org.slf4j.Logger;
 import org.springframework.web.struts.ActionSupport;
-
 
 import com.tobesoft.platform.PlatformRequest;
 import com.tobesoft.platform.PlatformResponse;
@@ -61,14 +60,16 @@ import com.tobesoft.platform.data.Variant;
  * @author Byunghun Woo
  */
 public abstract class AbstractMiPAction extends ActionSupport {
+	@SuppressWarnings("unused")
 	private static String SUCCESS_MSG_CODE = "common.success";
 	final public int default_encode_method = PlatformRequest.XML;
 	public String default_charset = "euc-kr";
 	
-	Log log;
+	Logger logger;
     /**
      * get Logger
      */
+	@SuppressWarnings("deprecation")
 	protected void onInit() {
 		super.onInit();
 		getLogger();
@@ -78,7 +79,7 @@ public abstract class AbstractMiPAction extends ActionSupport {
 	 * Anyframe Core Delegation Util Method to get Logger
 	 * </p>
 	 */
-	public abstract Log getLogger();
+	public abstract Logger getLogger();
 
 	/**
 	 * <p>
@@ -323,6 +324,7 @@ public abstract class AbstractMiPAction extends ActionSupport {
 	 * @throws ServletException
 	 * @throws Exception
 	 */
+	@SuppressWarnings("unchecked")
 	public Dataset convertVoListToDataset(String dataSetName, List voList, boolean isCheck)  throws ServletException, Exception{
 		Dataset dataSet = new Dataset(dataSetName);
 		MiPMapper.populate(dataSet, voList, isCheck);
@@ -367,6 +369,7 @@ public abstract class AbstractMiPAction extends ActionSupport {
 	 * @throws ServletException
 	 * @throws Exception
 	 */
+	@SuppressWarnings("unchecked")
 	public HashMap convertDatasetToListMap(Class cls, Dataset ds)  throws ServletException, Exception{
 		return MiPMapper.populateCudList(cls, ds);
 	}
@@ -391,6 +394,7 @@ public abstract class AbstractMiPAction extends ActionSupport {
 	 * @throws ServletException
 	 * @throws Exception
 	 */
+	@SuppressWarnings("unchecked")
 	public HashMap convertDatasetToListMap(Class cls, Dataset ds, boolean convertToCamenCase)  throws ServletException, Exception{
 		return MiPMapper.populateCudList(cls, ds, convertToCamenCase);
 	}
@@ -401,6 +405,7 @@ public abstract class AbstractMiPAction extends ActionSupport {
 	 * 			a name of Service which in registered to container.(Bean name or Bean id)
 	 * @return Object
 	 */
+	@SuppressWarnings("deprecation")
 	protected Object getService(String name) {
 		return getWebApplicationContext().getBean(name);
 	}	

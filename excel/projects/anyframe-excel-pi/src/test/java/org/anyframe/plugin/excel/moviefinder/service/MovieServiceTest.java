@@ -1,5 +1,5 @@
 /*
- * Copyright 2008-2011 the original author or authors.
+ * Copyright 2008-2012 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -18,20 +18,15 @@ package org.anyframe.plugin.excel.moviefinder.service;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 
-import java.util.Date;
-
 import javax.inject.Inject;
 import javax.inject.Named;
 
-import org.anyframe.plugin.common.MovieFinderException;
+import org.anyframe.pagination.Page;
 import org.anyframe.plugin.excel.domain.Movie;
 import org.junit.Test;
 import org.junit.runner.RunWith;
-import org.springframework.test.annotation.Rollback;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
-
-import org.anyframe.pagination.Page;
 
 /**
  * This MovieServiceTest class is a Test Case class for MovieService.
@@ -44,7 +39,6 @@ public class MovieServiceTest {
 	@Inject
 	@Named("excelMovieFinder")
 	private MovieFinder movieFinder;
-
 
 	@Test
 	public void findMovieList() throws Exception {

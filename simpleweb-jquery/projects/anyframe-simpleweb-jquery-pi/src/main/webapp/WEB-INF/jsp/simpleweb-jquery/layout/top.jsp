@@ -4,7 +4,7 @@
 
 <head>
 <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
-<title>Anyframe 5.1.0 Main</title>
+<title>Anyframe 5.2.0 Main</title>
 <link type="text/css" rel="stylesheet" href="<c:url value="/resources/dijit/themes/tundra/tundra.css" />" />
 <link type="text/css" rel="stylesheet" href="<c:url value='/sample/css/tundra-customized.css'/>" />
 

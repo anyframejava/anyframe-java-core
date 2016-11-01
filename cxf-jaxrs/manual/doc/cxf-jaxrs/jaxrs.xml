@@ -380,18 +380,14 @@ public class ResultPage implements Serializable {
 @Service("cxfJaxRsExceptionTransfer")
 public class ExceptionTransfer {
 
-	@Pointcut("execution(* myproject.cxf.jaxrs..*Impl.*(..))")
-	public void serviceMethod() {
-	}
-	
-    ]]><emphasis role="bold">@Around("serviceMethod()")</emphasis><![CDATA[
+    ]]><emphasis role="bold">@Around("execution(* myproject.cxf.jaxrs..*Impl.*(..))")</emphasis><![CDATA[
 	public Object aroundExecuteServiceMethod(ProceedingJoinPoint thisJoinPoint)
 			throws Throwable {
 		Object target = thisJoinPoint.getTarget();
 		String className = target.getClass().getSimpleName().toLowerCase();
 		String opName = (thisJoinPoint.getSignature().getName()).toLowerCase();
 
-		Log logger = LogFactory.getLog(target.getClass());
+		Log logger = LogFactory.getLogger(target.getClass());
 
 		logger.debug("***** Around Advice of ExceptionTransfer [" + className + "."
 				+ opName + "()]");
@@ -499,7 +495,7 @@ public class ExceptionTransfer {
   xmlns:cxf="http://cxf.apache.org/core"
   ]]><emphasis role="bold">xmlns:jaxrs="http://cxf.apache.org/jaxrs"</emphasis><![CDATA[	
   xsi:schemaLocation="http://www.springframework.org/schema/beans
-  http://www.springframework.org/schema/beans/spring-beans-3.0.xsd
+  http://www.springframework.org/schema/beans/spring-beans-3.1.xsd
   http://cxf.apache.org/core http://cxf.apache.org/schemas/core.xsd
   ]]><emphasis role="bold">http://cxf.apache.org/jaxrs http://cxf.apache.org/schemas/jaxrs.xsd</emphasis><![CDATA["> 
           			
@@ -590,7 +586,7 @@ public class ExceptionTransfer {
     xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
     ]]><emphasis role="bold">xmlns:jaxrs="http://cxf.apache.org/jaxrs"</emphasis><![CDATA[
     xsi:schemaLocation="http://www.springframework.org/schema/beans
-    http://www.springframework.org/schema/beans/spring-beans-3.0.xsd
+    http://www.springframework.org/schema/beans/spring-beans-3.1.xsd
     ]]><emphasis role="bold">http://cxf.apache.org/jaxrs http://cxf.apache.org/schemas/jaxrs.xsd</emphasis><![CDATA[">
     
 	<]]><emphasis role="bold">jaxrs:client</emphasis><![CDATA[ id="cxfJaxRsClientMovieService"
@@ -706,8 +702,6 @@ public class MovieController {
 					<itemizedlist>
 					<listitem><para><ulink url="http://www.ics.uci.edu/~fielding/pubs/dissertation/top.htm">Architectural Styles and the Design of Network-based Software Architectures, Roy Thomas Fielding, 2000</ulink></para></listitem>
 					<listitem><para><ulink url="http://java.sun.com/developer/technicalArticles/WebServices/restful/">Sun Article: RESTful Web Services</ulink></para></listitem>
-					<listitem><para><ulink url="http://www.stefan-marr.de/downloads/RESTful-Web-Services.slides.pdf">RESTful Web Services slides</ulink></para></listitem>
-					<listitem><para><ulink url="http://rest.blueoxen.net/cgi-bin/wiki.pl?FrontPage">REST Wiki FrontPage</ulink></para></listitem>
 					<listitem><para><ulink url="http://mercury.ccil.org/~cowan/restws.pdf">RESTful Web Services, John Cowan, 2005</ulink></para></listitem>
 					<listitem><para><ulink url="http://www.xfront.com/REST-Web-Services.html">Building Web Services the REST Way</ulink></para></listitem>
 				</itemizedlist>

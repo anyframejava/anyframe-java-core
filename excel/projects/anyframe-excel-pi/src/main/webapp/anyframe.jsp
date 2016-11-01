@@ -5,7 +5,7 @@
   	<div id="container">
     	<div class="main_greeting">
         	<dl>
-                <dt>Welcome to Anyframe 5.1.0</dt>
+                <dt>Welcome to Anyframe 5.2.0-SANPSHOT</dt>
                 <dd>Congratulations! Anyframe application has been successfully installed. Anyframe is an open source project and application framework that provides basic architecture, common technical services, templates to help you develop web applications on the Java platform quickly and efficiently.</dd>
             </dl>
         </div>
@@ -22,10 +22,10 @@
                 	<th>Installed Plugins</th>
                     <td>
                         <ul>
-                        	 <!--Add new menu here-->
-                        	<!--excel-menu-START-->
-                            <li><a href="<c:url value='/excelMovieFinder.do?method=list'/>">Excel 1.0.2</a></li>
-                        	<!--excel-menu-END-->
+                        <!--Add new menu here-->
+                        <!--excel-menu-START-->
+                            <li><a href="<c:url value='/excelMovieFinder.do?method=list'/>">Excel 1.0.3</a></li>
+                        <!--excel-menu-END-->
                         </ul>
                     </td>
                 </tr>

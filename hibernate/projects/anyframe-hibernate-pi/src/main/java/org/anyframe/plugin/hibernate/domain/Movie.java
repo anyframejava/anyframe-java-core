@@ -1,5 +1,5 @@
 /*
- * Copyright 2008-2011 the original author or authors.
+ * Copyright 2008-2012 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -35,17 +35,17 @@ import org.springframework.format.annotation.NumberFormat;
 public class Movie implements Serializable {
 
 	private static final long serialVersionUID = 1L;
-	
+
 	private String movieId;
 
 	@NotNull
 	@Size(min = 1, max = 50)
 	private String title = "";
-	
+
 	@NotNull
 	@Size(min = 1, max = 50)
 	private String director;
-	
+
 	private Genre genre;
 
 	@NotNull
@@ -54,13 +54,13 @@ public class Movie implements Serializable {
 
 	@DecimalMax(value = "180")
 	private Long runtime;
-		
-	@DateTimeFormat(pattern="yyyy-MM-dd")
+
+	@DateTimeFormat(pattern = "yyyy-MM-dd")
 	@Past
 	private Date releaseDate;
-	
+
 	@NumberFormat(pattern = "#,###")
-	@Digits(integer=4, fraction=0)
+	@Digits(integer = 4, fraction = 0)
 	private Float ticketPrice;
 
 	private String posterFile;
@@ -146,7 +146,7 @@ public class Movie implements Serializable {
 	public void setPosterFile(String posterFile) {
 		this.posterFile = posterFile;
 	}
-	
+
 	@Override
 	public String toString() {
 		String genreId = "";
@@ -158,5 +158,5 @@ public class Movie implements Serializable {
 				+ posterFile + ", releaseDate=" + releaseDate + ", runtime="
 				+ runtime + ", ticketPrice=" + ticketPrice + ", \ntitle="
 				+ title + ", genreId=" + genreId + "]";
-	}	
+	}
 }

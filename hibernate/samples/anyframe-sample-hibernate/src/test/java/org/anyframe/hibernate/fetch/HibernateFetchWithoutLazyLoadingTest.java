@@ -46,6 +46,7 @@ public class HibernateFetchWithoutLazyLoadingTest extends
 	 *             throws exception which is from hibernate
 	 */
 	@Test
+	@SuppressWarnings("unchecked")
 	public void testFindMovieList() throws Exception {
 		// 1. insert init data
 		session = initialSessionFactory.openSession();

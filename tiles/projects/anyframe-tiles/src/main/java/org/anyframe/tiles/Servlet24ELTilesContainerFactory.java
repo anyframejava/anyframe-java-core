@@ -48,10 +48,10 @@ import org.jboss.el.ExpressionFactoryImpl;
  * @author Changje Kim
  */
 public class Servlet24ELTilesContainerFactory extends BasicTilesContainerFactory {
-	private String[] definitions;
+	private final String[] definitions;
 
     public Servlet24ELTilesContainerFactory(String[] definitions) {
-        this.definitions = definitions;
+        this.definitions = definitions; 
     }
 
     @Override

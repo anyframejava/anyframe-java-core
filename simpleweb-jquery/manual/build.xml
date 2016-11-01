@@ -8,12 +8,21 @@
             This Ant build.xml file is used to transform DocBook XML to various
     </description>
 
-	<property name="book.name" value="simpleweb-jquery" />
-	<property name="version" value="1.0.2"/>
+	<!-- set env for using svn id/password -->
+	<property environment="env" />
+	<property name="subv.username" value="${env.SVN_USER}" />
+	<property name="subv.password" value="${env.SVN_PASSWORD}" />
+		
 	<!--
 	  - set dbf installer folder and sample project folder
 	 -->
-	<property name="dbf.home" value="D:\development\anyframe-svn\docbook" />
+	<property name="dbf.home" value="E:/workspace/docbook" />
+	<property name="plugin.type" value="optional" />
+	<property name="result.dir" value="E:/Repo/anyframe-opensource/docs/anyframe/plugin/${plugin.type}"/>
+	
+	<property name="book.name" value="simpleweb-jquery" />
+	<property name="version" value="1.0.3"/>
+
 	<!--
       - Configure basic properties that will be used in the file.
       -->
@@ -32,6 +41,10 @@
 	<property name="src.tmp" value="doc/temp" />
 	<property name="xalan.lib.dir" value="${dbf.home}/software/fop/lib" />
 
+	<!-- svn repository properties -->
+	<property name="subv.url.sample.trunk" value="http://dev.anyframejava.org/subv/anyframe-opensource/anyframe/trunk/plugin/${plugin.type}/${book.name}/samples" />
+	<property name="subv.url.sample.tags" value="http://dev.anyframejava.org/subv/anyframe-opensource/anyframe/tags/plugin/${plugin.type}/${book.name}/${version}/samples" />
+	
 	<!--
 		- Usage of the differect style sheets which will be used for the transformation
 	-->
@@ -52,6 +65,23 @@
 		</classpath>
 	</taskdef>
 
+	<!-- Ant Contrib Settings -->
+	<taskdef resource="net/sf/antcontrib/antlib.xml">
+		<classpath>
+			<pathelement location="${env.ANT_HOME}/lib/ant-contrib-1.0b3.jar" />
+		</classpath>
+	</taskdef>
+	
+	<!-- Subversion_ANT Settings -->
+	<path id="svnant.classpath">
+		<fileset dir="${env.ANT_HOME}/lib">
+			<include name="svnjavahl.jar" />
+			<include name="svnant.jar" />
+			<include name="svnClientAdapter.jar" />
+		</fileset>
+	</path>
+	<typedef resource="svntask.properties" classpathref="svnant.classpath" />
+	
 	<!--
       - Sets up the classpath for the Xalan and Xerces implementations
       - that are to be used in this script, since the versions that ship
@@ -171,6 +201,16 @@
 		</fop>
 	</target>
 	
+	<target name="deploy-manual">
+		<copy todir="${result.dir}">
+			<fileset dir="target">
+				<include name="**/**" />
+			</fileset>
+		</copy>
+	</target>
+	
+	<!-- target for local build -->
 	<target name="all" depends="clean, copy, build-html, build-chunks, build-pdf" />
-
+	<!-- target for CI build -->
+	<target name="all-CI" depends="all, deploy-manual"/>
 </project>

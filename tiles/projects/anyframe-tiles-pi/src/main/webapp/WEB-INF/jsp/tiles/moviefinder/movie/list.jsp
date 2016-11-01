@@ -17,7 +17,7 @@
       		<div class="search_list">
                 <fieldset>
                     <legend>Search</legend>
-                    <label for="txtSearch" class="float_left margin_right5"><spring:message code="movie.title"/>: <form:input path="title" cssClass="w_search" /></label>
+                    <label for="title" class="float_left margin_right5"><spring:message code="movie.title"/>: <form:input path="title" cssClass="w_search" /></label>
                     <label for="nowPlaying" class="float_left margin_right5"><spring:message code="movie.nowPlaying" />: 
                     <form:select path="nowPlaying" id="nowPlaying" cssClass="w_search" >
                     	<form:option value="Y">Playing</form:option>

@@ -1,5 +1,5 @@
 /*
- * Copyright 2008-2011 the original author or authors.
+ * Copyright 2008-2012 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -22,7 +22,7 @@ import javax.inject.Inject;
 import org.anyframe.pagination.Page;
 import org.anyframe.plugin.jquery.domain.JqueryCommunity;
 import org.anyframe.query.QueryService;
-import org.anyframe.query.dao.AbstractDao;
+import org.anyframe.query.dao.QueryServiceDaoSupport;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Repository;
 
@@ -33,7 +33,7 @@ import org.springframework.stereotype.Repository;
  *
  */
 @Repository("jqueryCommunityDao")
-public class JqueryCommunityDao extends AbstractDao {
+public class JqueryCommunityDao extends QueryServiceDaoSupport {
 
 	@Value("#{contextProperties['pageSize'] ?: 10}")
 	int pageSize;
@@ -47,31 +47,31 @@ public class JqueryCommunityDao extends AbstractDao {
 	}
 
 	public int create(JqueryCommunity community) throws Exception {
-		return create("JqueryCommunity", community);
+		return create("createJqueryCommunity", community);
 	}
 
 	public int remove(JqueryCommunity community) throws Exception {
-		return remove("JqueryCommunity", community);
+		return remove("removeJqueryCommunity", community);
 	}
 
 	public int update(JqueryCommunity community) throws Exception {
-		return update("JqueryCommunity", community);
+		return update("updateJqueryCommunity", community);
 	}
 	
 	public int updateCell(JqueryCommunity community) throws Exception {
-		return update("JqueryCommunityCell", community);
+		return update("updateJqueryCommunityCell", community);
 	}
 
 	public JqueryCommunity get(JqueryCommunity community) throws Exception {
-		return (JqueryCommunity) findByPk("JqueryCommunity", community);
+		return (JqueryCommunity) findByPk("findJqueryCommunityByPk", community);
 	}
 	
 	public Page getPagingList(JqueryCommunity community, int pageIndex) throws Exception{
-		return (Page) findListWithPaging("JqueryCommunity", community, pageIndex, pageSize, pageUnit);
+		return (Page) findListWithPaging("findJqueryCommunityList", community, pageIndex, pageSize, pageUnit);
 	}
 
 	@SuppressWarnings("unchecked")
 	public List<JqueryCommunity> getList(JqueryCommunity community) throws Exception{
-		return (List<JqueryCommunity>)findList("JqueryCommunity", community);
+		return (List<JqueryCommunity>)findList("findJqueryCommunityList", community);
 	}
 }

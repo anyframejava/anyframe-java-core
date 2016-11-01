@@ -6,17 +6,14 @@
 	<queries>
 		<query id="createMovie" isDynamic="true" mappingStyle="upper">
 			<statement>
-				<![CDATA[
 				INSERT INTO 
 				MOVIE (MOVIE_ID, TITLE, DIRECTOR, GENRE_ID, ACTORS, RUNTIME, RELEASE_DATE, TICKET_PRICE, NOW_PLAYING, POSTER_FILE)
 				VALUES (:MOVIE_ID, :TITLE, :DIRECTOR, :GENRE_ID, :ACTORS, :RUNTIME, :RELEASE_DATE, :TICKET_PRICE, :NOW_PLAYING, :POSTER_FILE)
-				]]>
 			</statement>
 		</query>
 
 		<query id="updateMovie" isDynamic="true" mappingStyle="upper">
 			<statement>
-				<![CDATA[
 				UPDATE MOVIE
 				SET 
 					TITLE = :TITLE, 
@@ -29,36 +26,30 @@
 					NOW_PLAYING = :NOW_PLAYING
 				WHERE
 					MOVIE_ID = :MOVIE_ID
-				]]> 
 			</statement>
 		</query>
 
 		<query id="removeMovie" isDynamic="true" mappingStyle="upper">
 			<statement>
-				<![CDATA[	
 				DELETE FROM MOVIE 
 				WHERE 
 					MOVIE_ID = :MOVIE_ID
-					]]>
 			</statement>
 		</query>
 
 		<query id="findMovieByPk" isDynamic="true" mappingStyle="upper">
 			<statement>
-			<![CDATA[
 				SELECT 
 					MOVIE_ID, TITLE, DIRECTOR, GENRE_ID, ACTORS, RUNTIME, RELEASE_DATE, TICKET_PRICE, NOW_PLAYING, POSTER_FILE
 				FROM MOVIE
 				WHERE 
 					MOVIE_ID = :MOVIE_ID
-					]]>
 			</statement>
 		</query>
 
 		<query id="findMovieList" isDynamic="true" mappingStyle="upper">
 			<statement>
-			<!--mip-query-findMovieList-START-->
-				<![CDATA[
+				<!--mip-query-findMovieList-START-->
 				SELECT 
 					MOVIE_ID, TITLE, DIRECTOR, GENRE_ID, ACTORS, RUNTIME, RELEASE_DATE, TICKET_PRICE, NOW_PLAYING, POSTER_FILE
 				FROM MOVIE
@@ -66,8 +57,7 @@
 					TITLE like '%' || :SEARCH_TITLE || '%'
 					AND	NOW_PLAYING = :SEARCH_NOW_PLAYING 
 				ORDER BY RELEASE_DATE DESC
-				]]>
-			<!--mip-query-findMovieList-END-->
+				<!--mip-query-findMovieList-END-->
 			</statement>
 		</query>
 	</queries>

@@ -49,6 +49,7 @@ public class HibernateNamedNativeSQLTest extends
 	 *             throws exception which is from hibernate
 	 */
 	@Test
+	@SuppressWarnings("unchecked")
 	public void testFindCountryList() throws Exception {
 		// 1. insert init data
 		SetUpInitData.initializeData(session);
@@ -94,6 +95,7 @@ public class HibernateNamedNativeSQLTest extends
 	 *             throws exception which is from hibernate
 	 */
 	@Test
+	@SuppressWarnings("unchecked")
 	public void testFindMovieListByCategory() throws Exception {
 		// 1. insert init data
 		SetUpInitData.initializeData(session);
@@ -114,6 +116,7 @@ public class HibernateNamedNativeSQLTest extends
 				.getDirector());
 
 		// 4. asssert result - categories
+		@SuppressWarnings("unused")
 		Set categories = movie1.getCategories();
 		Assert.assertEquals("fail to match the size of category list.", 2, movie1
 				.getCategories().size());
@@ -127,6 +130,7 @@ public class HibernateNamedNativeSQLTest extends
 	 *             throws exception which is from hibernate
 	 */
 	@Test
+	@SuppressWarnings("unchecked")
 	public void testFindMovieListByCountry() throws Exception {
 		// 1. insert init data
 		SetUpInitData.initializeData(session);
@@ -167,6 +171,7 @@ public class HibernateNamedNativeSQLTest extends
 	 *             throws exception which is from hibernate
 	 */
 	@Test
+	@SuppressWarnings("unchecked")
 	public void testFindCategoryList() throws Exception {
 		// 1. insert init data
 		SetUpInitData.initializeData(session);

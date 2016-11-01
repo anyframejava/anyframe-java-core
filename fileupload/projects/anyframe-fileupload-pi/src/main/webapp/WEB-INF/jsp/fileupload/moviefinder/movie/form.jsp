@@ -1,6 +1,6 @@
 <%@ page language="java" errorPage="/sample/common/error.jsp" pageEncoding="UTF-8" contentType="text/html;charset=utf-8" %>
 <%@ include file="/sample/common/top.jsp"%>
-		<div class="location"><a href="<c:url value='/anyframe.jsp'/>">Home</a> &gt; <a href="<c:url value='/fileUploadMovieFinder.do?method=list'/>">FileUpload 1.0.2</a></div>
+		<div class="location"><a href="<c:url value='/anyframe.jsp'/>">Home</a> &gt; <a href="<c:url value='/fileUploadMovieFinder.do?method=list'/>">FileUpload 1.0.3</a></div>
     </div>
     <hr />
 <script type="text/javascript" src="<c:url value='/sample/javascript/InputCalendar.js'/>"></script>
@@ -96,12 +96,11 @@
                     <tr>
                     	<th><label for="releaseDate"><spring:message code="movie.releaseDate" /></label></th>
                         <td>
-                        <span class="float_left margin_right5"><form:input path="releaseDate" cssClass="w_date"  maxlength="10" /></span>
-                        <label for="calendar" class="float_left">
-                        <a href="javascript:popUpCalendar(document.movieForm.releaseDate, 'yyyy-mm-dd');">
-                        	<img id="calendar" src="<c:url value='sample/images/btn_calendar_i.gif'/>" alt="Calendar" />
-                        </a>	
-                        </label></td>
+                        <form:input path="releaseDate" cssClass="w_date"  maxlength="10" />
+                        <a class="underline_none" href="javascript:popUpCalendar(document.movieForm.releaseDate, '-');">
+                        	<img id="calendar" src="<c:url value='/sample/images/btn_calendar_i.gif'/>" alt="Calendar" />
+                        </a>
+                        <form:errors path="releaseDate" cssClass="errors" /></td>
                     </tr>
                     <tr>
                     	<th><label for="ticketPrice"><spring:message code="movie.ticketPrice" /></label></th>

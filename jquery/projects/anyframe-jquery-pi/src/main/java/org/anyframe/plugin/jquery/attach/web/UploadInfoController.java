@@ -1,5 +1,5 @@
 /*
- * Copyright 2008-2011 the original author or authors.
+ * Copyright 2008-2012 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -25,8 +25,8 @@ import javax.inject.Named;
 
 import org.anyframe.plugin.jquery.attach.service.UploadInfoService;
 import org.anyframe.plugin.jquery.domain.Attached;
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
@@ -43,7 +43,7 @@ import org.springframework.web.bind.annotation.RequestParam;
 @Controller
 @RequestMapping("/jquery/uploadInfo.do")
 public class UploadInfoController {
-public static Log logger = LogFactory.getLog(UploadInfoController.class);
+public static Logger logger = LoggerFactory.getLogger(UploadInfoController.class);
 	
 	@Inject
 	@Named("jqueryUploadInfoService")
@@ -157,7 +157,7 @@ public static Log logger = LogFactory.getLog(UploadInfoController.class);
 			return "jsonView";
 		}
     	
-    	logger.debug("param.getId()=" + param.getId());
+    	logger.debug("param.getId()={}", param.getId());
     	
     	if("".equals(param.getRefId()) || param.getRefId() == null) {
     		SimpleDateFormat formatter = new SimpleDateFormat("yyyyMMddHHmmssSSS", new Locale("ko", "KR"));

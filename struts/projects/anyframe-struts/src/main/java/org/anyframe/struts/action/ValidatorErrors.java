@@ -1,5 +1,5 @@
 /*
- * Copyright 2002-2008 the original author or authors.
+ * Copyright 2007-2012 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,7 +16,6 @@
 package org.anyframe.struts.action;
 
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.Iterator;
 
 import org.apache.struts.action.ActionErrors;
@@ -28,6 +27,11 @@ import org.apache.struts.action.ActionMessage;
  * @author Byunghun Woo
  */
 public class ValidatorErrors extends ActionErrors {
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = -5602567750898858524L;
+
 	/**
 	 * This method which returns a validation check value.
 	 */
@@ -43,6 +47,7 @@ public class ValidatorErrors extends ActionErrors {
 	 * @return
 	 * 		validation error message
 	 */
+	@SuppressWarnings("unchecked")
 	public String getErrorMessage(){
 		Iterator it = this.properties();
 		ArrayList fileIdList = new ArrayList();

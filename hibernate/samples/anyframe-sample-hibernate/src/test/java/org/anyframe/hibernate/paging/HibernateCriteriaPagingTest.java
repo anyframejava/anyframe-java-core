@@ -43,6 +43,7 @@ public class HibernateCriteriaPagingTest extends
 	 *             throws exception which is from hibernate
 	 */
 	@Test
+	@SuppressWarnings("unchecked")
 	public void testMovieListWithCriteria() throws Exception {
 		// 1. insert init data
 		SetUpInitData.initializeData(session);

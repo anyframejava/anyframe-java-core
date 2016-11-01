@@ -32,30 +32,36 @@ import com.tobesoft.platform.data.VariableList;
 /**
  * TestCase Name : MiPServiceTest <br>
  * <br>
- * [Description] : MiPService가 제공하는 메소드를 호출 해 원하는 기능이 정상적으로 동작하는지 테스트한다. <br>
+ * [Description] : By calling for method provided by MiPService, it is tested
+ * whether targeted function is operated in normal fashion. <br>
  * [Main Flow]
  * <ul>
- * <li>#-1 Positive Case : Dataset에 조회필드와 검색어가 세팅 되어 있을 때 Dataset을 이용해 목록 조회를
- * 한다. 검색조건과 검색키워드를 두 개의 Dataset에 세팅한 후 쿼리 문이 정상적으로 동작해 기대했던 값과 조회 결과 값을 비교한다.</li>
- * <li>#-2 Positive Case : VariantList에 조회 필드와,검색어를 세팅하고 그것을 이용해 조회 쿼리를 실행한 후 조회
- * 결과 값을 비교해 조회가 정상적으로 실행 됐는지 확인한다.</li>
- * <li>#-3 Positive Case : Dataset에 검색하고자 하는 Page번호와 한 페이지에 디스플레이 하고자 하는 목록의 갯수
- * page unit등을 Constant Column에 세팅 한 후 그것을 이용해 페이징 조회를 했을 때 원하는 목록이 조회 되었는지
- * 확인한다.</li>
- * <li>#-4 Positive Case : VariantList에 저장할 데이터를 세팅한 후 create메소드를 호출해 Database에
- * 값이 추가되는 것을 확인한다.</li>
- * <li>#-5 Positive Case : Dataset에 저장할 데이터를 세팅한 후 create메소드를 호출해 Database에 값이
- * 추가되는 것을 확인한다.</li>
- * <li>#-6 Positive Case : VariantList에 수정할 데이터를 세팅한 후 update메소드를 호출해 Database에
- * 값이 수정되는 것을 확인한다.</li>
- * <li>#-7 Positive Case : Dataset에 수장할 데이터를 세팅한 후 update메소드를 호출해 Database에 값이
- * 수정되는 것을 확인한다.</li>
- * <li>#-8 Positive Case : VariantList에 삭제할 데이터를 세팅한 후 remove메소드를 호출해 Database에
- * 값이 삭제되는 것을 확인한다.</li>
- * <li>#-9 Positive Case : Dataset에 삭제할 데이터를 세팅한 후 remove메소드를 호출해 Database에 값이
- * 삭제되는 것을 확인한다.</li>
- * <li>#-10 Positive Case : Dataset에 추가, 수정, 삭제 할 데이터를 세팅한 후 saveAll메소드를 호출해
- * Database에 값이 추가, 수정 삭제 되는 것을 확인한다.</li>
+ * <li>#1 - Positive Case : When search field and keyword area are set at
+ * Dataset, list is searched with Dataset. After setting search condition and
+ * search keyword at two Datasets, expected value and search return value are
+ * compared by executing query statement in normal fashion.</li>
+ * <li>#2 - Positive Case : After setting search field and search word at
+ * VariantList, executing search query with it and compare search return values,
+ * it is checked whether search is correctively executed.</li>
+ * <li>#3 - Positive Case : After setting the number of list displaying at one
+ * page with page number and page unit at Constant Column. When paging is
+ * searched with it, it is checked whether targeted list is searched.</li>
+ * <li>#4 - Positive Case : After setting data for storing at VariantList, it is
+ * checked whether value is added at Database by calling create method.</li>
+ * <li>#5 - Negative Case : After setting data for storing at Dataset, it is
+ * checked whether value is added at Database by calling create method.</li>
+ * <li>#6 - Negative Case : After setting data for modification at VariantList,
+ * it is checked whether value is modified at Database by calling update method.
+ * </li>
+ * <li>#7 - Negative Case : After setting data for modification at Dataset, it
+ * is checked whether value is modified at Database by calling update method.</li>
+ * <li>#-8 Positive Case : After setting data for deletion at VariantList, it is
+ * checked whether value is deleted at Database by calling remove method.</li>
+ * <li>#-9 Positive Case : After setting data for deletion at Dataset, it is
+ * checked whether value is deleted at Database by calling remove method.</li>
+ * <li>#-10 Positive Case : After setting data for addition, modification and
+ * deletion at Dataset, it is checked whether value is added, modified and
+ * deleted at Database by calling saveALL method.</li>
  * 
  * </li>
  * </ul>
@@ -68,7 +74,7 @@ public class MiPServiceTest extends
 	private static short TYPE_NORMAL = 1;
 	private static short TYPE_INSERT = 2;
 	private static short TYPE_UPDATE = 4;
-	
+
 	public void setMiPService(MiPService mipService) {
 		this.mipService = mipService;
 	}
@@ -76,7 +82,7 @@ public class MiPServiceTest extends
 	private MiPService mipService;
 
 	public final void onSetUp() throws Exception {
-		// Test DB 세팅
+		// Test DB Setting
 		try {
 			DataSource dataSource = (DataSource) applicationContext
 					.getBean("dataSource");
@@ -115,9 +121,10 @@ public class MiPServiceTest extends
 	}
 
 	/**
-	 * [Flow #-1] Positive Case : Dataset에 검색 조건이 세팅 되어 있을 때 Dataset을 이용해 목록 조회를
-	 * 한다. 검색조건과 검색키워드를 두 개의 Dataset에 세팅한 후 쿼리 문이 정상적으로 동작해 기대했던 값과 조회 결과 값을
-	 * 비교한다.
+	 * [Flow #-1] Positive Case : When search condition is set at Dataset, list
+	 * is searched with Dataset. After setting search condition and search
+	 * keyword at two Datasets, expected value and search return value are
+	 * compared by executing query statement in normal fashion.
 	 */
 	public void testGetListUsingDataset() throws Exception {
 		DatasetList inDl = new DatasetList();
@@ -159,8 +166,9 @@ public class MiPServiceTest extends
 	}
 
 	/**
-	 * [Flow #-2] Positive Case :VariantList에 조회 필드와,검색어를 세팅하고 그것을 이용해 조회 쿼리를
-	 * 실행한 후 조회 결과 값을 비교해 조회가 정상적으로 실행 됐는지 확인한다.
+	 * [Flow #-2] Positive Case :After setting search field and search word at
+	 * VariantList, executing search query with it and compare search return
+	 * values, it is checked whether search is correctively executed.
 	 */
 	public void testGetListUsingVriableList() throws Exception {
 		DatasetList inDl = new DatasetList();
@@ -181,9 +189,9 @@ public class MiPServiceTest extends
 	}
 
 	/**
-	 * [Flow #-3] Positive Case :Dataset에 검색하고자 하는 Page번호와 한 페이지에 디스플레이 하고자 하는
-	 * 목록의 갯수 page unit등을 Constant Column에 세팅 한 후 그것을 이용해 페이징 조회를 했을 때 원하는 목록이
-	 * 조회 되었는지 확인한다.
+	 * [Flow #-3] Positive Case :After setting the number of list displaying at
+	 * one page with page number and page unit at Constant Column. When paging
+	 * is searched with it, it is checked whether targeted list is searched.
 	 */
 	public void testGetListWithPage() throws Exception {
 		DatasetList inDl = new DatasetList();
@@ -211,8 +219,9 @@ public class MiPServiceTest extends
 	}
 
 	/**
-	 * [Flow #-4] Positive Case : VariantList에 저장할 데이터를 세팅한 후 create메소드를 호출해
-	 * Database에 값이 추가되는 것을 확인한다.
+	 * [Flow #-4] Positive Case : After setting data for storing at VariantList,
+	 * it is checked whether value is added at Database by calling for create
+	 * method.
 	 */
 	public void testInsertVariantList() throws Exception {
 		DatasetList inDl = new DatasetList();
@@ -234,8 +243,9 @@ public class MiPServiceTest extends
 	}
 
 	/**
-	 * [Flow #-5] Positive Case : Dataset에 저장할 데이터를 세팅한 후 create메소드를 호출해
-	 * Database에 값이 추가되는 것을 확인한다.
+	 * [Flow #-5] Positive Case : After setting data for storing at VariantList,
+	 * it is checked whether value is added at Database by calling for create
+	 * method.
 	 */
 	public void testInsertDataset() throws Exception {
 		DatasetList inDl = new DatasetList();
@@ -307,8 +317,9 @@ public class MiPServiceTest extends
 	}
 
 	/**
-	 * [Flow #-6] Positive Case : VariantList에 수정할 데이터를 세팅한 후 update메소드를 호출해
-	 * Database에 값이 수정되는 것을 확인한다.
+	 * [Flow #-6] Positive Case : After setting data for modification at
+	 * VariantList, it is checked whether value is modified at Database by
+	 * calling for update method.
 	 */
 	public void testUpdateVariantList() throws Exception {
 		DatasetList inDl = new DatasetList();
@@ -330,8 +341,9 @@ public class MiPServiceTest extends
 	}
 
 	/**
-	 * [Flow #-7] Positive Case :Dataset에 수장할 데이터를 세팅한 후 update메소드를 호출해
-	 * Database에 값이 수정되는 것을 확인한다.
+	 * [Flow #-7] Positive Case :After setting data for modification at Dataset,
+	 * it is checked whether value is deleted at Database by calling for update
+	 * method.
 	 */
 	public void testUpdateDataset() throws Exception {
 		DatasetList inDl = new DatasetList();
@@ -396,8 +408,9 @@ public class MiPServiceTest extends
 	}
 
 	/**
-	 * [Flow #-8] Positive Case :VariantList에 삭제할 데이터를 세팅한 후 remove메소드를 호출해
-	 * Database에 값이 삭제되는 것을 확인한다.
+	 * [Flow #-8] Positive Case :After setting data for deletion at VariantList,
+	 * it is checked whether value is deleted at Database by calling for remove
+	 * method.
 	 */
 	public void testRemoveVariantList() throws Exception {
 		DatasetList inDl = new DatasetList();
@@ -415,8 +428,8 @@ public class MiPServiceTest extends
 	}
 
 	/**
-	 * [Flow #-9] Positive Case :Dataset에 삭제할 데이터를 세팅한 후 remove메소드를 호출해
-	 * Database에 값이 삭제되는 것을 확인한다.
+	 * [Flow #-9] Positive Case :After setting data for deletion at Dataset, it
+	 * is checked whether value is deleted at Database.
 	 */
 	public void testRemoveDataset() throws Exception {
 		DatasetList inDl = new DatasetList();
@@ -456,8 +469,9 @@ public class MiPServiceTest extends
 	}
 
 	/**
-	 * [Flow #-10] Positive Case :Dataset에 추가, 수정, 삭제 할 데이터를 세팅한 후 saveAll메소드를
-	 * 호출해 Database에 값이 추가, 수정 삭제 되는 것을 확인한다.
+	 * [Flow #-10] Positive Case :After setting data for addition, modification,
+	 * and deletion at Dataset, by calling for saveALLmethod, it is checked
+	 * whether value is added, modified and deleted at Dataset.
 	 */
 	public void testSaveAll() throws Exception {
 		DatasetList inDl = new DatasetList();

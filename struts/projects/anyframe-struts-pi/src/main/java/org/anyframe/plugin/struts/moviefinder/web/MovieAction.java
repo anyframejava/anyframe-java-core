@@ -1,5 +1,5 @@
 /*
- * Copyright 2008-2011 the original author or authors.
+ * Copyright 2008-2012 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -15,8 +15,6 @@
  */
 package org.anyframe.plugin.struts.moviefinder.web;
 
-import java.io.File;
-import java.io.FileOutputStream;
 import java.util.Locale;
 
 import javax.servlet.http.HttpServletRequest;
@@ -28,8 +26,8 @@ import org.anyframe.plugin.struts.moviefinder.service.GenreService;
 import org.anyframe.plugin.struts.moviefinder.service.MovieFinder;
 import org.anyframe.plugin.struts.moviefinder.service.MovieService;
 import org.anyframe.plugin.struts.moviefinder.web.form.MovieForm;
-import org.anyframe.util.StringUtil;
 import org.anyframe.struts.action.DefaultDispatchActionSupport;
+import org.anyframe.util.StringUtil;
 import org.apache.commons.beanutils.BeanUtils;
 import org.apache.commons.beanutils.ConvertUtils;
 import org.apache.commons.beanutils.locale.converters.DateLocaleConverter;
@@ -37,8 +35,6 @@ import org.apache.commons.lang.StringUtils;
 import org.apache.struts.action.ActionForm;
 import org.apache.struts.action.ActionForward;
 import org.apache.struts.action.ActionMapping;
-import org.apache.struts.upload.FormFile;
-import org.springframework.util.FileCopyUtils;
 
 /**
  * This MovieAction class is an action class to provide movie crud
@@ -52,7 +48,9 @@ public class MovieAction extends DefaultDispatchActionSupport {
 			HttpServletResponse response) throws Exception {
 		GenreService genreService = (GenreService) getService("strutsGenreService");
 		request.setAttribute("genreList", genreService.getList());
-		request.setAttribute("movieForm", new MovieForm());
+		MovieForm movieForm = new MovieForm();
+		movieForm.setNowPlaying("Y");
+		request.setAttribute("movieForm", movieForm);
 
 		return mapping.findForward("success_createView");
 	}
@@ -65,8 +63,6 @@ public class MovieAction extends DefaultDispatchActionSupport {
 
 		MovieForm movieForm = (MovieForm) form;
 
-		FormFile posterFile = movieForm.getRealPosterFile();
-
 		DateLocaleConverter converter = new DateLocaleConverter(null, Locale.getDefault(), "yyyy-MM-dd");
 		ConvertUtils.register(converter, java.util.Date.class);
 		BeanUtils.copyProperties(movie, movieForm);
@@ -75,27 +71,6 @@ public class MovieAction extends DefaultDispatchActionSupport {
 			movie.setNowPlaying("N");
 		}
 
-		if (posterFile != null && !posterFile.getFileName().equals("")) {
-
-			String pictureName = posterFile.getFileName();
-
-			String destDir = request.getSession().getServletContext().getRealPath("/sample/images/posters/");
-
-			File dirPath = new File(destDir);
-			if (!dirPath.exists()) {
-				boolean created = dirPath.mkdirs();
-				if (!created) {
-					throw new Exception("Fail to create a directory for movie poster. [" + destDir + "]");
-				}
-			}
-			File destination = File.createTempFile("file", pictureName
-					.substring(pictureName.indexOf(".")), dirPath);
-
-			FileCopyUtils.copy(posterFile.getInputStream(), new FileOutputStream(destination));
-
-			movie.setPosterFile("sample/images/posters/" + destination.getName());
-
-		}
 		movieService.create(movie);
 
 		return mapping.findForward("success_create");
@@ -142,7 +117,6 @@ public class MovieAction extends DefaultDispatchActionSupport {
 
 	public ActionForward list(ActionMapping mapping, ActionForm form, HttpServletRequest request,
 			HttpServletResponse response) throws Exception {
-
 		MovieFinder movieFinder = (MovieFinder) getService("strutsMovieFinder");
 
 		Movie movie = new Movie();

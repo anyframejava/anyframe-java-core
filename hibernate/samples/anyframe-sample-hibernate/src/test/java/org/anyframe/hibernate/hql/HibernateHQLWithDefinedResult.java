@@ -44,6 +44,7 @@ public class HibernateHQLWithDefinedResult extends
 	 *             throws exception which is from hibernate
 	 */
 	@Test
+	@SuppressWarnings("unchecked")
 	public void testFindMoviesByCategory() throws Exception {
 		// 1. insert init data
 		SetUpInitData.initializeData(session);
@@ -93,6 +94,7 @@ public class HibernateHQLWithDefinedResult extends
 	 *             throws exception which is from hibernate
 	 */
 	@Test
+	@SuppressWarnings("unchecked")
 	public void testFindMovieMapByCategory() throws Exception {
 		// 1. insert init data
 		SetUpInitData.initializeData(session);
@@ -142,6 +144,7 @@ public class HibernateHQLWithDefinedResult extends
 	 *             throws exception which is from hibernate
 	 */
 	@Test
+	@SuppressWarnings("unchecked")
 	public void testFindMovieListByCategory() throws Exception {
 		// 1. insert init data
 		SetUpInitData.initializeData(session);

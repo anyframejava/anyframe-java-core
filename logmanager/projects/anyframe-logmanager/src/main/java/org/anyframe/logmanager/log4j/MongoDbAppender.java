@@ -20,11 +20,12 @@ import java.net.InetAddress;
 import java.net.UnknownHostException;
 import java.util.Date;
 
+import org.anyframe.logmanager.exception.AuthenticationException;
+import org.anyframe.util.StringUtil;
 import org.apache.log4j.AppenderSkeleton;
 import org.apache.log4j.spi.ErrorCode;
 import org.apache.log4j.spi.LoggingEvent;
 
-import com.mongodb.BasicDBObject;
 import com.mongodb.BasicDBObjectBuilder;
 import com.mongodb.DB;
 import com.mongodb.DBCollection;
@@ -39,7 +40,7 @@ import com.mongodb.MongoException;
  */
 public class MongoDbAppender extends AppenderSkeleton {
 
-	private static final String KEY_APP_NAME = "appName";
+	private static final String KEY_APP_NAME = "appName"; 
 	private static final String KEY_TIMESTAMP = "timestamp";
 	private static final String KEY_MESSAGE = "message";
 	private static final String KEY_LEVEL = "level";
@@ -49,7 +50,6 @@ public class MongoDbAppender extends AppenderSkeleton {
 	private static final String KEY_METHOD = "methodName";
 	private static final String KEY_FILENAME = "fileName";
 	private static final String KEY_LINENUMBER = "lineNumber";
-	private static final String KEY_MDC = "mdc";
 	private static final String KEY_SERVER_ID = "serverId";
 	
 	private String hostname = "localhost";
@@ -59,8 +59,8 @@ public class MongoDbAppender extends AppenderSkeleton {
 	private String databaseName = "logging";
 	private String collectionName = "moviefinderlogs";
 
-	private Mongo _mongo;
-	private DBCollection _collection;
+	private Mongo mongo;
+	private DBCollection collection;
 
 	/**
 	 * @param hostname the hostname to set
@@ -107,26 +107,26 @@ public class MongoDbAppender extends AppenderSkeleton {
 	@Override
 	public void activateOptions() {
 		try {
-            _mongo = new Mongo(hostname, port);
-            DB db = _mongo.getDB(databaseName);
+            mongo = new Mongo(hostname, port);
+            DB db = mongo.getDB(databaseName);
             
-            if (userName != null && userName.trim().length() > 0) {
+            if (!StringUtil.isEmptyTrimmed(userName)) {
                 if (!db.authenticate(userName, password.toCharArray())) {
-                    throw new RuntimeException("Unable to authenticate with MongoDB server.");
+                    throw new AuthenticationException("Unable to authenticate with MongoDB server.");
                 }
                 password = null;
             }
             
-            _collection = db.getCollection(collectionName);
+            collection = db.getCollection(collectionName);
         } catch (Exception e) {
         	errorHandler.error("Failed to initialize MondoDB", e, ErrorCode.FILE_OPEN_FAILURE);
         }
 	}
 
 	public void close() {
-		if (_mongo != null) {
-            _collection = null;
-            _mongo.close();
+		if (mongo != null) {
+            collection = null;
+            mongo.close();
         }
 	}
 
@@ -136,10 +136,17 @@ public class MongoDbAppender extends AppenderSkeleton {
 
 	@Override
 	protected void append(LoggingEvent loggingEvent) {
-
+		BasicDBObjectBuilder objectBuilder = null;
 		try {
-			BasicDBObjectBuilder objectBuilder = BasicDBObjectBuilder.start()
-					.add(KEY_TIMESTAMP, new Date(loggingEvent.getTimeStamp()))
+			if(loggingEvent.getProperties() != null && !loggingEvent.getProperties().isEmpty()) {
+				objectBuilder = BasicDBObjectBuilder.start(loggingEvent.getProperties());
+				objectBuilder.add(KEY_APP_NAME, loggingEvent.getProperties().get(KEY_APP_NAME));	
+			}else{
+				objectBuilder = BasicDBObjectBuilder.start();
+				objectBuilder.add(KEY_APP_NAME, "UNKNOWN");
+			}
+			
+			objectBuilder.add(KEY_TIMESTAMP, new Date(loggingEvent.getTimeStamp()))
 					.add(KEY_MESSAGE, loggingEvent.getRenderedMessage())
 					.add(KEY_LEVEL, loggingEvent.getLevel().toString())
 					.add(KEY_LOGGER, loggingEvent.getLoggerName())
@@ -154,12 +161,7 @@ public class MongoDbAppender extends AppenderSkeleton {
 				objectBuilder.add(KEY_SERVER_ID, null);
 			}
 			
-			if(loggingEvent.getProperties() != null && !loggingEvent.getProperties().isEmpty()) {
-				objectBuilder.add(KEY_MDC, new BasicDBObject(loggingEvent.getProperties()))
-				.add(KEY_APP_NAME, loggingEvent.getProperties().get(KEY_APP_NAME));	
-			}
-
-			_collection.insert(objectBuilder.get());
+			collection.insert(objectBuilder.get());
 
 		} catch (MongoException e) {
 			errorHandler.error("Failed to insert document to MongoDB", e, ErrorCode.WRITE_FAILURE);

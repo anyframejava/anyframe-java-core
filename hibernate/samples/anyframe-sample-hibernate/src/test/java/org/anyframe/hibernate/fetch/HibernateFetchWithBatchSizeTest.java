@@ -48,6 +48,7 @@ public class HibernateFetchWithBatchSizeTest extends
 	 *             throws exception which is from hibernate
 	 */
 	@Test
+	@SuppressWarnings("unchecked")
 	public void testFindCountryList() throws Exception {
 		// 1. insert init data
 		session = initialSessionFactory.openSession();

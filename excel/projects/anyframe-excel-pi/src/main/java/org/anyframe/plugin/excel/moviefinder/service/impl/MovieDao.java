@@ -1,5 +1,5 @@
 /*
- * Copyright 2008-2011 the original author or authors.
+ * Copyright 2008-2012 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -20,10 +20,9 @@ import javax.inject.Inject;
 import org.anyframe.pagination.Page;
 import org.anyframe.plugin.excel.domain.Movie;
 import org.anyframe.query.QueryService;
-import org.anyframe.query.dao.AbstractDao;
+import org.anyframe.query.dao.QueryServiceDaoSupport;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Repository;
-
 
 /**
  * This MovieDao class is a DAO class to provide Movie list functionality.
@@ -31,7 +30,7 @@ import org.springframework.stereotype.Repository;
  * @author Jonghoon Kim
  */
 @Repository("excelMovieDao")
-public class MovieDao extends AbstractDao {
+public class MovieDao extends QueryServiceDaoSupport {
 	@Value("#{contextProperties['pageSize'] ?: 10}")
 	int pageSize;
 
@@ -40,15 +39,11 @@ public class MovieDao extends AbstractDao {
 
 	@Inject
 	public void setQueryService(QueryService queryService) {
-		super.setFindPrefix("excel.find");
-		super.setCreateId("excel.create");
-		super.setUpdateId("excel.update");
-		super.setRemoveId("excel.remove");
 		super.setQueryService(queryService);
 	}
 
 	public Page getPagingList(Movie movie, int pageIndex) throws Exception {
-		return this.findListWithPaging("Movie", movie, pageIndex, pageSize,
+		return this.findListWithPaging("excel.findMovieList", movie, pageIndex, pageSize,
 				pageUnit);
 	}
 }

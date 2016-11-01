@@ -1,5 +1,5 @@
 /*
- * Copyright 2008-2011 the original author or authors.
+ * Copyright 2008-2012 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -26,31 +26,40 @@ import org.anyframe.plugin.excel.service.ExcelService;
 import org.apache.commons.collections.map.ListOrderedMap;
 import org.springframework.stereotype.Service;
 
+/**
+ * This ExcelServiceImpl class is an Implementation class to provide excel
+ * download and upload functionality.
+ * 
+ * @author Jonghoon Kim
+ */
+@SuppressWarnings({ "unchecked", "rawtypes" })
 @Service("excelService")
-public class ExcelServiceImpl implements ExcelService{
-	
+public class ExcelServiceImpl implements ExcelService {
+
 	@Inject
 	@Named("excelDao")
 	private ExcelDao excelDao;
-	
+
 	public List<Map> download(Map map) throws Exception {
 		String queryId = (String) map.get("queryId");
-		
+
 		List resultList = new ArrayList();
-		if ( map.get("pageIndex") != null ){
-			resultList = excelDao.getPagingList(queryId, (Integer)map.get("pageIndex") , map);
-		}else{
+		if (map.get("pageIndex") != null) {
+			resultList = excelDao.getPagingList(queryId,
+					(Integer) map.get("pageIndex"), map);
+		} else {
 			resultList = excelDao.getList(queryId, map);
 		}
 		return resultList;
 	}
 
-	public int upload(Map infoMap, List<ListOrderedMap> insertList) throws Exception {
+	public int upload(Map infoMap, List<ListOrderedMap> insertList)
+			throws Exception {
 		String queryId = (String) infoMap.get("queryId");
-		
+
 		int returnValue = 0;
-		for ( int i = 0 ; i < insertList.size() ; i ++ ){
-			if ( excelDao.create(queryId, insertList.get(i)) != -1 ){
+		for (int i = 0; i < insertList.size(); i++) {
+			if (excelDao.create(queryId, insertList.get(i)) != -1) {
 				returnValue = returnValue + 1;
 			}
 		}

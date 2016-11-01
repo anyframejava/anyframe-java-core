@@ -35,23 +35,35 @@ import com.tobesoft.platform.data.VariableList;
 import com.tobesoft.platform.data.Variant;
 
 /**
- * TestCase Name :  MiPQueryServiceTest<br>
+ * TestCase Name : MiPQueryServiceTest<br>
  * <br>
- * [Description] : MiPlatform의 data 전달 객체인 Dataset과 VariableList를 이용해 Database에 접근하는 MiPQueryService의 TestCase다.
- * <br>
+ * [Description] : This TestCase accesses Database by using Dataset(MiPlatform’s
+ * data return object) and VariableList. <br>
  * [Main Flow]
  * <ul>
- * <li>#1 - Positive Case :  미리 세팅되어 있는 Database의 값을 MiPQueryService의 update method를 호출해 값을 수정하는 TestCase다.
- * 수정될 값이 세팅되어 있는 Dataset를 MiPQueryService update()의 argument로 직접 사용해 Database의 값이 제대로 수정 됐는지 검증한다.</li>
- * <li>#2 - Positive Case : Dataset의 Record별 Stauts값을 이용해 insert, update, delete에 해당하는 query 실행을 검증한다.</li>
- * <li>#3 - Positive Case : query가 실행 되기 전 비즈니스 로직의 있을 경우 ActionComman클래스의 해당메소드를 구현해서 Query실행 전, 후 
- * ActionCommand의 메소드가 정상적으로 호출 되는지 Query 실행이 정상적으로 동작하는지 검증한다.</li>
- * <li>#4 - Positive Case : VariantList에 조회조건을 세팅하고 MiPQueryService의 find method를 호출 했을 때 조회조건에 맞는 데이터가
- * 조회되는지 검증한다.</li>  
- * <li>#5 - Negative Case : 잘못된 Query Id를 입력했을 때 Exception 메세지가 정확하게 전달되는지 검증한다.</li>
- * <li>#6 - Negative Case : query mapping xml파일에 등록된 query가 dynamic가 아닐 경우 발생하는 exception과 메세지를 검증한다.</li>
- * <li>#7 - Negative Case : query mapping xml파일에 등록된 query가 잘못된 문법일 경우 발생하는 exception과 메세지를 검증한다.</li>
+ * <li>#1 - Positive Case : This TestCase modifies preset Database value by
+ * calling for update method of MiPQueryService. It is verified to see whether
+ * Database value is correctively modified by directly using Dataset setting
+ * value to be modified as argument of MiPQueryService update().</li>
+ * <li>#2 - Positive Case : It is verified to see whether query regarding
+ * insert, update and delete is executed by using Dataset’s Status per Record.</li>
+ * <li>#3 - Positive Case : In the case where there is business logic before
+ * query execution, it is verified to see whether ActionCommand method is
+ * correctively called for before and after Query execution and Query is
+ * normally executed by implementing relevant method of ActionCommand class.</li>
+ * <li>#4 - Positive Case : It is verified to see whether data matching search
+ * condition comes out when search condition is set at VariantList and find
+ * method of MiPQeryService is called for.</li>
+ * <li>#5 - Negative Case : It is verified to see whether Exception message is
+ * normally passed when wrong Query I.D. is entered.</li>
+ * <li>#6 - Negative Case : It is verified to see whether Exception and message
+ * take place in the case where query registered at query mapping xml file is
+ * not dynamic.</li>
+ * <li>#7 - Negative Case : It is verified to see whether Exception and message
+ * take place in the case where query registered at query mapping xml file has
+ * incorrect grammar.</li>
  * </ul>
+ * 
  * @author JongHoon Kim
  */
 public class MiPQueryServiceTest extends
@@ -60,7 +72,7 @@ public class MiPQueryServiceTest extends
 	private MiPQueryService mipQueryService;
 
 	/**
-	 * Spring Configuration 파일을 읽는다.
+	 * Spring Configuration is read.
 	 */
 	protected String[] getConfigLocations() {
 		return new String[] { "classpath:/spring/context-*.xml" };
@@ -75,7 +87,7 @@ public class MiPQueryServiceTest extends
 	}
 
 	/**
-	 * 테스트를 위한 기본 테이블 생성 및 기본 데이터 입력
+	 * Basic table is created for test and basic data is entered.
 	 */
 	public void onSetUp() throws Exception {
 		super.onSetUp();
@@ -106,9 +118,10 @@ public class MiPQueryServiceTest extends
 	}
 
 	/**
-	 * [Flow #-1] Positive Case : 미리 세팅되어 있는 Database의 값을 MiPQueryService의
-	 * update method를 호출해 값을 수정하는 TestCase다. 수정될 값이 세팅되어 있는 Dataset를
-	 * MiPQueryService update()의 argument로 직접 사용해 Database의 값이 제대로 수정 됐는지 검증한다.
+	 * [Flow #-1] Positive Case : This TestCase modifies preset Database value
+	 * by calling for update method of MiPQueryService. It is verified to see
+	 * whether Database value is correctively modified by directly using Dataset
+	 * setting value to be modified as argument of MiPQueryService update().
 	 * 
 	 * @throws Exception
 	 */
@@ -128,8 +141,9 @@ public class MiPQueryServiceTest extends
 	}
 
 	/**
-	 * [Flow #-2] Positive Case : Dataset의 Record별 Stauts값을 이용해 insert, update,
-	 * delete에 해당하는 query 실행을 검증한다.
+	 * [Flow #-2] Positive Case : It is verified to see whether query regarding
+	 * insert, update and delete is executed by using Dataset’s Status per
+	 * Record.
 	 * 
 	 * @throws Exception
 	 */
@@ -151,9 +165,11 @@ public class MiPQueryServiceTest extends
 	}
 
 	/**
-	 * [Flow #-3] Positive Case : query가 실행 되기 전 비즈니스 로직의 있을 경우 ActionComman클래스의
-	 * 해당메소드를 구현해서 Query실행 전, 후 ActionCommand의 메소드가 정상적으로 호출 되는지 Query 실행이 정상적으로
-	 * 동작하는지 검증한다.
+	 * [Flow #-3] Positive Case : In the case where there is business logic
+	 * before query execution, it is verified to see whether ActionCommand
+	 * method is correctively called for before and after Query execution and
+	 * Query is normally executed by implementing relevant method of
+	 * ActionCommand class.
 	 * 
 	 * @throws Exception
 	 */
@@ -197,8 +213,7 @@ public class MiPQueryServiceTest extends
 	}
 
 	/**
-	 * [Flow #-4] Positive Case : VariantList에 조회조건을 세팅하고 MiPQueryService의 find
-	 * method를 호출 했을 때 조회조건에 맞는 데이터가 조회되는지 검증한다.
+	 * [Flow #-4] Positive Case : It is verified to see whether data matching search condition comes out when search condition is set at VariantList and find method of MiPQeryService is called for. 
 	 * 
 	 * @throws Exception
 	 */
@@ -214,8 +229,7 @@ public class MiPQueryServiceTest extends
 	}
 
 	/**
-	 * [Flow #-5] Negative Case : 잘못된 Query Id를 입력했을 때 Exception 메세지가 정확하게 전달되는지
-	 * 검증한다.
+	 * [Flow #-5] Negative Case : It is verified to see whether Exception message is normally passed when wrong Query I.D. is entered. 
 	 * 
 	 * @throws Exception
 	 */
@@ -234,8 +248,7 @@ public class MiPQueryServiceTest extends
 	}
 
 	/**
-	 * [Flow #-6] Negative Case : query mapping xml파일에 등록된 query가 dynamic가 아닐 경우
-	 * 발생하는 exception과 메세지를 검증한다.
+	 * [Flow #-6] Negative Case : It is verified to see whether Exception and message take place in the case where query registered at query mapping xml file is not dynamic. 
 	 * 
 	 * @throws Exception
 	 */
@@ -255,8 +268,7 @@ public class MiPQueryServiceTest extends
 	}
 
 	/**
-	 * [Flow #-7] Negative Case : Negative Case : query mapping xml파일에 등록된
-	 * query가 잘못된 문법일 경우 발생하는 exception과 메세지를 검증한다.
+	 * [Flow #-7] Negative Case : It is verified to see whether Exception and message take place in the case where query registered at query mapping xml file has incorrect grammar. 
 	 * 
 	 * @throws Exception
 	 */
@@ -275,8 +287,10 @@ public class MiPQueryServiceTest extends
 							.getSqlErrorMessage());
 		}
 	}
+
 	/**
-	 * 데스트를 위한 초기 데이터 값 세팅
+	 * initial data value setting for test
+	 * 
 	 * @throws Exception
 	 */
 	private void insertDataSet() throws Exception {
@@ -290,7 +304,7 @@ public class MiPQueryServiceTest extends
 		findListDataSet(3);
 	}
 	/**
-	 * 테스트를 실행 한 후 결과값을 검증하기 위해 조회
+	 * Return value is searched for verification after test execution. 
 	 * @param expected
 	 * @throws Exception
 	 */
@@ -325,7 +339,7 @@ public class MiPQueryServiceTest extends
 		}
 	}
 	/**
-	 * 테스트를 실행 한 후 결과값을 검증하기 위해 조회
+	 * Return value is searched for verification after test execution. 
 	 * @param searchKeyword
 	 * @return
 	 * @throws QueryServiceException
@@ -340,7 +354,7 @@ public class MiPQueryServiceTest extends
 	}
 
 	/**
-	 * Dataset의 결과값을 테스트
+	 * Dataset return value is tested. 
 	 * @param resultDataSet
 	 * @param col1
 	 * @param col2
@@ -368,9 +382,9 @@ public class MiPQueryServiceTest extends
 		Variant testVarchar = resultDataSet.getColumn(0, "TEST_VARCHAR2");
 		assertEquals("Fail to check result.", col5, testVarchar.getString());
 	}
-	
+
 	/**
-	 * Dataset 세팅
+	 * Dataset Setting
 	 * @return
 	 */
 	private Dataset makeInsertDataSet() {
@@ -437,7 +451,7 @@ public class MiPQueryServiceTest extends
 	}
 
 	/**
-	 * update 테스트를 위하 Dataset 세팅
+	 * Dataset setting for update test
 	 * @return
 	 */
 	private Dataset makeUpdateDataSet() {
@@ -471,7 +485,7 @@ public class MiPQueryServiceTest extends
 	}
 
 	/**
-	 * update, insert, delete테스트를 위한 Dataset 세팅
+	 * Dataset setting for upate, insert and delete test
 	 * @return
 	 * @throws Exception
 	 */
@@ -545,7 +559,7 @@ public class MiPQueryServiceTest extends
 	}
 	
 	/**
-	 * 조회 조건이 들어 있는 Dataset세팅
+	 * Dataset setting with search condition
 	 * @param searchKeyword
 	 * @return
 	 */
@@ -562,7 +576,7 @@ public class MiPQueryServiceTest extends
 	}
 	
 	/**
-	 * 조회 조건이 들어 있는 VariableList 세팅
+	 * VariableList setting with search condition
 	 * @return
 	 */
 	private VariableList makeVariantList() {

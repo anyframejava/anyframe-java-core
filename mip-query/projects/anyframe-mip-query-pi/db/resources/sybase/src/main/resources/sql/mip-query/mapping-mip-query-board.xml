@@ -1,44 +1,19 @@
-		<!--mip-query-queryBoard-START-->
-		<query id="findBoardList" isDynamic="true" mappingStyle="upper">
-			<statement><![CDATA[
-				SELECT
-				TITLE, CONTENTS, REG_ID, REG_DATE, COMMUNITY_ID, POST_ID
-				FROM MIP_BOARD
-				#if ($SEARCH_CONDITION.length()>0 && "0" == $SEARCH_CONDITION)
-					WHERE TITLE like '%' || :SEARCH_KEYWORD || '%'
-				#elseif ($SEARCH_CONDITION.length()>0 && "1" == $SEARCH_CONDITION)
-				    WHERE REG_ID like '%' || :SEARCH_KEYWORD || '%'
-				#end
-				ORDER BY REG_DATE DESC
-			]]></statement>
-		</query>
-		<query id="createBoard" isDynamic="true" mappingStyle="upper">
-			<statement><![CDATA[
-				INSERT INTO MIP_BOARD
-				(TITLE, CONTENTS, REG_ID, REG_DATE, COMMUNITY_ID, POST_ID)
-				VALUES (:TITLE, :CONTENTS, :REG_ID, GETDATE(), :COMMUNITY_ID, 'POST-'|| POST_ID_SEQ.NEXTVAL)
-			]]></statement>
-		</query>
-		<query id="updateBoard" isDynamic="true" mappingStyle="upper">
-			<statement><![CDATA[
-				UPDATE MIP_BOARD
-				SET
-				TITLE = :TITLE, CONTENTS = :CONTENTS, REG_ID =:REG_ID, COMMUNITY_ID = :COMMUNITY_ID
-				WHERE POST_ID = :POST_ID
-			]]></statement>
-		</query>
-		<query id="removeBoard" isDynamic="true" mappingStyle="upper">
-			<statement><![CDATA[
-				DELETE FROM MIP_BOARD
-				WHERE POST_ID = :POST_ID
-			]]></statement>
-		</query>
-		<query id="findBoardByPk" isDynamic="true" mappingStyle="upper">
-			<statement><![CDATA[
-				SELECT
-				TITLE, CONTENTS, REG_ID, REG_DATE, COMMUNITY_ID, POST_ID
-				FROM MIP_BOARD
-				WHERE POST_ID = :POST_ID
-			]]></statement>
-		</query>
-		<!--mip-query-queryBoard-END-->
+		<!--mip-query-findBoardList-START-->
+			SELECT
+			TITLE, CONTENTS, REG_ID, REG_DATE, COMMUNITY_ID, POST_ID
+			FROM MIP_BOARD
+			<!--Velocity-Support-findBoardList-START-->
+			#if ($SEARCH_CONDITION.length() &gt; 0 &amp;&amp; "0" == $SEARCH_CONDITION)
+				WHERE TITLE like '%' || :SEARCH_KEYWORD || '%'
+			#elseif ($SEARCH_CONDITION.length() &gt; 0 &amp;&amp; "1" == $SEARCH_CONDITION)
+			    WHERE REG_ID like '%' || :SEARCH_KEYWORD || '%'
+			#end
+			<!--Velocity-Support-findBoardList-END-->
+			ORDER BY REG_DATE DESC		
+		<!--mip-query-findBoardList-END-->
+		<!--mip-query-createBoard-START-->
+			INSERT INTO MIP_BOARD
+			(TITLE, CONTENTS, REG_ID, REG_DATE, COMMUNITY_ID, POST_ID)
+			VALUES (:TITLE, :CONTENTS, :REG_ID, GETDATE(), :COMMUNITY_ID, 'POST-'|| POST_ID_SEQ.NEXTVAL)		
+		<!--mip-query-createBoard-END-->
+		

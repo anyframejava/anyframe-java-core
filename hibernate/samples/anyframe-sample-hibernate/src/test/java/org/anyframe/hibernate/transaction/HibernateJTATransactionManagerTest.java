@@ -1,7 +1,5 @@
 package org.anyframe.hibernate.transaction;
 
-import javax.inject.Inject;
-
 import org.anyframe.hibernate.SetUpInitData;
 import org.anyframe.sample.hibernate.model.bidirection.Movie;
 import org.hibernate.Session;

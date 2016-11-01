@@ -15,8 +15,8 @@
  */
 package org.anyframe.sample.cxf.rest.client;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * When you use Apache CXF framework to implement web
@@ -38,7 +38,7 @@ public interface Client {
     /**
      * Logger for Client
      */
-    Log LOGGER = LogFactory.getLog(Client.class.getName());
+    Logger LOGGER = LoggerFactory.getLogger(Client.class.getName());
 
     /**
      * get ProxyFactoryBean instance with Client

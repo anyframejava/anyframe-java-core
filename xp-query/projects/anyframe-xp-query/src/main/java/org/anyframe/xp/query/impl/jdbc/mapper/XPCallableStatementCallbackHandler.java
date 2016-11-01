@@ -1,3 +1,18 @@
+/*
+ * Copyright 2002-2012 the original author or authors.
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *      http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
 package org.anyframe.xp.query.impl.jdbc.mapper;
 
 import java.sql.CallableStatement;
@@ -15,13 +30,18 @@ import org.springframework.jdbc.support.lob.LobHandler;
 import com.tobesoft.xplatform.data.DataSet;
 import com.tobesoft.xplatform.data.DataTypes;
 
+/**
+ * Callback Handler Class for CallableStatement
+ * 
+ * @author Youngmin Jo
+ */
 public class XPCallableStatementCallbackHandler extends XPCallbackSupport
 		implements RiaCallableStatementCallback {
 
 	public XPCallableStatementCallbackHandler() {
 	}
 
-	private ArrayList sqlParams;
+	private ArrayList<SqlOutParameter> sqlParams;
 	private LobHandler lobHandler;
 
 	public void setSQLParams(ArrayList sqlParams) {

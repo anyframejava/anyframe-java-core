@@ -1,5 +1,5 @@
 /*
- * Copyright 2008-2011 the original author or authors.
+ * Copyright 2008-2012 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -22,7 +22,7 @@ import javax.sql.DataSource;
 
 import org.anyframe.plugin.fileupload.domain.Genre;
 import org.springframework.jdbc.core.BeanPropertyRowMapper;
-import org.springframework.jdbc.core.simple.SimpleJdbcDaoSupport;
+import org.springframework.jdbc.core.support.JdbcDaoSupport;
 import org.springframework.stereotype.Repository;
 
 /**
@@ -31,7 +31,7 @@ import org.springframework.stereotype.Repository;
  * @author Sooyeon Park
  */
 @Repository("fileUploadGenreDao")
-public class GenreDao extends SimpleJdbcDaoSupport {
+public class GenreDao extends JdbcDaoSupport {
 
 	@Inject
 	public void setJdbcDaoDataSource(DataSource dataSource) {
@@ -40,7 +40,7 @@ public class GenreDao extends SimpleJdbcDaoSupport {
 
 	public List<Genre> getList() throws Exception {
 		String sql = "SELECT GENRE_ID, NAME FROM FILEUPLOAD_GENRE ORDER BY NAME";
-		return getSimpleJdbcTemplate().query(sql,
+		return getJdbcTemplate().query(sql,
 				new BeanPropertyRowMapper<Genre>(Genre.class));
 	}
 

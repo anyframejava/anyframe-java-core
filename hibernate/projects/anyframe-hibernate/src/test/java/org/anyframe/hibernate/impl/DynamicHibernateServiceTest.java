@@ -1,33 +1,51 @@
+/*
+ * Copyright 2008-2012 the original author or authors.
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *      http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
 package org.anyframe.hibernate.impl;
+
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertTrue;
 
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
+
+import javax.inject.Inject;
+import javax.inject.Named;
 
 import org.anyframe.hibernate.sample.model.bidirection.Category;
 import org.anyframe.hibernate.sample.model.bidirection.Country;
 import org.anyframe.hibernate.sample.model.bidirection.Movie;
 import org.anyframe.hibernate.sample.service.movie.MovieService;
 import org.anyframe.util.DateUtil;
-import org.springframework.test.AbstractDependencyInjectionSpringContextTests;
+import org.junit.Before;
+import org.junit.Test;
+import org.junit.runner.RunWith;
+import org.springframework.test.context.ContextConfiguration;
+import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 
+@RunWith(SpringJUnit4ClassRunner.class)
+@ContextConfiguration(locations = { "classpath*:/org/anyframe/hibernate/spring/context-*.xml" })
+public class DynamicHibernateServiceTest {
 
-public class DynamicHibernateServiceTest extends
-		AbstractDependencyInjectionSpringContextTests {
-
+	@Inject
+	@Named("movieService")
 	private MovieService movieService;
 
-	protected String[] getConfigLocations() {
-		return new String[] { "classpath*:/org/anyframe/hibernate/spring/context-*.xml" };
-	}
-
-	public void setMovieService(MovieService movieService) {
-		this.movieService = movieService;
-	}
-
-	protected void onSetUp() throws Exception {
-		// TODO Auto-generated method stub
-		super.onSetUp();
+	@Before
+	public void onSetUp() throws Exception {
 		initializeData();
 	}
 
@@ -38,6 +56,8 @@ public class DynamicHibernateServiceTest extends
 	 * @throws Exception
 	 *             throws exception which is from MovieService
 	 */
+	@Test
+	@SuppressWarnings("unchecked")
 	public void testDynamicHibernateService() throws Exception {
 		// Dynamic HQL
 		List movieList = movieService.findMovieList(0, "Hojun");
@@ -125,7 +145,7 @@ public class DynamicHibernateServiceTest extends
 		movie1.setTitle("My Sassy Girl");
 		movie1.setRank(new Integer(1));
 
-		Set categories = new HashSet();
+		Set<Category> categories = new HashSet<Category>();
 		categories.add(category1);
 		categories.add(category2);
 		movie1.setCategories(categories);
@@ -137,7 +157,7 @@ public class DynamicHibernateServiceTest extends
 		movie2.setTitle("My Little Bride");
 		movie1.setRank(new Integer(2));
 
-		categories = new HashSet();
+		categories = new HashSet<Category>();
 		categories.add(category1);
 		categories.add(category2);
 		movie2.setCategories(categories);
@@ -148,7 +168,7 @@ public class DynamicHibernateServiceTest extends
 		country1.setCountryId("KR");
 		country1.setCountryName("Korea");
 
-		Set movies = new HashSet();
+		Set<Movie> movies = new HashSet<Movie>();
 		movie1.setCountry(country1);
 		movies.add(movie1);
 		movie2.setCountry(country1);

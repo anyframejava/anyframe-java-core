@@ -45,7 +45,7 @@ public class HibernateJavaTypeTest extends
 	@Test
 	public void testInsertJavaDataType() {
 		// 1. insert init data
-		List typeList = insertJavaDataType();
+		List<JavaDataType> typeList = insertJavaDataType();
 
 		JavaDataType source = (JavaDataType) typeList.get(0);
 
@@ -79,8 +79,9 @@ public class HibernateJavaTypeTest extends
 	@Test
 	public void testUpdateJavaDataType() {
 		// 1. insert init data
-		List typeList = insertJavaDataType();
+		List<JavaDataType> typeList = insertJavaDataType();
 
+		@SuppressWarnings("unused")
 		JavaDataType source = (JavaDataType) typeList.get(0);
 
 		// 2. select a javaDateType data
@@ -109,8 +110,9 @@ public class HibernateJavaTypeTest extends
 	@Test
 	public void testDeleteJavaDataType() {
 		// 1. insert init data
-		List typeList = insertJavaDataType();
+		List<JavaDataType> typeList = insertJavaDataType();
 
+		@SuppressWarnings("unused")
 		JavaDataType source = (JavaDataType) typeList.get(0);
 
 		// 2. select a javaDateType data
@@ -132,7 +134,7 @@ public class HibernateJavaTypeTest extends
 	 * 
 	 * @return List Inserted JavaDataType List
 	 */
-	private List insertJavaDataType() {
+	private List<JavaDataType> insertJavaDataType() {
 		JavaDataType javaDataType1 = new JavaDataType();
 		javaDataType1.setId(4491);
 		javaDataType1.setIntType(2147483647);
@@ -184,7 +186,7 @@ public class HibernateJavaTypeTest extends
 		javaDataType3.setTrueFalseType(true);
 		session.save(javaDataType3);
 
-		List typeList = new ArrayList();
+		List<JavaDataType> typeList = new ArrayList<JavaDataType>();
 		typeList.add(javaDataType1);
 		typeList.add(javaDataType2);
 		typeList.add(javaDataType3);

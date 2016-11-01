@@ -2,7 +2,7 @@
 <%@ taglib uri="http://struts.apache.org/tags-bean" prefix="bean"%>
 <%@ taglib uri="http://struts.apache.org/tags-html" prefix="html"%>
 <%@ include file="/sample/common/top.jsp"%>
-		<div class="location"><a href="<c:url value='/anyframe.jsp'/>">Home</a> &gt; <a href="<c:url value='/strutsMovie.action?method=list'/>">Struts 1.0.2</a></div>
+		<div class="location"><a href="<c:url value='/anyframe.jsp'/>">Home</a> &gt; <a href="<c:url value='/strutsMovie.action?method=list'/>">Struts 1.0.3</a></div>
     </div>
     <hr />
 <script type="text/javascript" src="<c:url value='/sample/javascript/InputCalendar.js'/>"></script>
@@ -44,7 +44,7 @@
 			</h2>
         </div>
         <div class="view">
-        <html:form method="post" action="/strutsMovie.action" enctype="multipart/form-data">
+        <html:form method="post" action="/strutsMovie.action">
         <c:if test="${not empty movieForm.movieId}">
 			<html:hidden property="movieId" />
 		</c:if>
@@ -86,7 +86,7 @@
                     	<th><label for="releaseDate"><bean:message key="movie.releaseDate" /></label></th>
                         <td>
                         <html:text property="releaseDate" styleClass="w_date" />
-							<a href="javascript:popUpCalendar(document.movieForm.releaseDate, 'yyyy-mm-dd');">
+							<a href="javascript:popUpCalendar(document.movieForm.releaseDate, '-');">
 								<img id="calendar" src="<c:url value='/sample/images/btn_calendar_i.gif'/>" alt="Calendar" />
 							</a>
 						<html:errors property="releaseDate" /></td>

@@ -34,6 +34,7 @@ import org.junit.runner.RunWith;
 import org.springframework.test.annotation.Rollback;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
+import org.springframework.transaction.annotation.Transactional;
 
 /**
  * This MovieServiceTest class is a Test Case class for MovieService.
@@ -52,6 +53,7 @@ public class MovieServiceTest {
 	private MovieFinder movieFinder;
 
 	@Test
+	@Transactional(value = "txManager")
 	@Rollback(value = true)
 	public void manageMovie() throws Exception {
 		// 1. create a new movie
@@ -139,7 +141,7 @@ public class MovieServiceTest {
 		assertEquals(3, page.getSize());
 	}
 
-	private Movie getMovie() throws Exception {
+	private Movie getMovie() {
 		Genre genre = new Genre();
 		genre.setGenreId("GR-03");
 

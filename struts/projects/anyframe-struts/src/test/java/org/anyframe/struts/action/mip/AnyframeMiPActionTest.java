@@ -1,5 +1,5 @@
 /*
- * Copyright 2002-2008 the original author or authors.
+ * Copyright 2007-2012 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -23,10 +23,9 @@ import java.util.HashMap;
 import junit.framework.TestCase;
 
 import org.anyframe.struts.action.DefaultActionMapping;
-import org.anyframe.struts.action.mip.AbstractMiPAction;
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
 import org.apache.struts.action.ActionMapping;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.mock.web.MockHttpServletRequest;
 import org.springframework.mock.web.MockHttpServletResponse;
 
@@ -188,7 +187,7 @@ public class AnyframeMiPActionTest extends TestCase {
         DefaultActionMapping mapping = new DefaultActionMapping();
         action.execute( mapping, null , request, response);
         
-        ArrayList voList = new ArrayList();
+        ArrayList<MiPTestVO> voList = new ArrayList<MiPTestVO>();
         
         voList.add(initTestVO());
         voList.add(initTestVO());
@@ -214,7 +213,8 @@ public class AnyframeMiPActionTest extends TestCase {
 	 * 
 	 * @throws Exception
 	 */
-    public void testConvertDatasetToListMap() throws Exception{
+    @SuppressWarnings("unchecked")
+	public void testConvertDatasetToListMap() throws Exception{
         MockHttpServletRequest request = new MockHttpServletRequest();
         MockHttpServletResponse response = new MockHttpServletResponse();
         
@@ -251,7 +251,8 @@ public class AnyframeMiPActionTest extends TestCase {
 	 * 
 	 * @throws Exception
 	 */
-    public void testConvertDatasetToListMapCamelCase() throws Exception{
+    @SuppressWarnings("unchecked")
+	public void testConvertDatasetToListMapCamelCase() throws Exception{
         MockHttpServletRequest request = new MockHttpServletRequest();
         MockHttpServletResponse response = new MockHttpServletResponse();
         
@@ -291,8 +292,8 @@ public class AnyframeMiPActionTest extends TestCase {
         private VariableList outVl;
         private DatasetList outDl;
         
-		public Log getLogger() {
-			return LogFactory.getLog(MiPAction.class);
+		public Logger getLogger() {
+			return LoggerFactory.getLogger(MiPAction.class);
 		}
 
 		public void process(ActionMapping mapping, PlatformRequest request,

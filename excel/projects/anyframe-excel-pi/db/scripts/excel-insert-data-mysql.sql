@@ -9,7 +9,7 @@ CREATE TABLE EXCEL_MOVIE(
 	TICKET_PRICE DECIMAL(6,2),
 	POSTER_FILE VARCHAR(1000),
 	NOW_PLAYING CHAR(1),
-	CONSTRAINT PK__EXCEL_MOVIE PRIMARY KEY(MOVIE_ID));
+	CONSTRAINT PK_EXCEL_MOVIE PRIMARY KEY(MOVIE_ID));
 	
 INSERT INTO EXCEL_MOVIE VALUES('MV-00001','Adventure','Alice in Wonderland','Tim Burton','Johnny Depp',110,'2010-03-04',8000,'sample/images/posters/aliceinwonderland.jpg','Y');
 INSERT INTO EXCEL_MOVIE VALUES('MV-00002','Sci-Fi','Avatar','James Cameron','Sigourney Weaver',100,'2010-02-16',7000,'sample/images/posters/avatar.jpg','Y');

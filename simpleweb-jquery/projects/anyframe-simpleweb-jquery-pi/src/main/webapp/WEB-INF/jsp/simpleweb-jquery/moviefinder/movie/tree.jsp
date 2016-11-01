@@ -274,7 +274,7 @@ function showResponse(data, responseText, statusText, xhr, $form)  {
     
     <div id="lefttree">
         <div id="treeSearchForm">
-		    <form method="post" id="searchForm" name="searchForm">
+		    <form method="post" id="searchForm" name="searchForm" onsubmit="javascript:return false;">
                 <label for="searchKeyword">Genre: <input type="text" name="searchKeyword" id="searchKeyword" class="ct_input_g" /></label>
 				<input type="image" id="movieSearch" name="movieSearch" alt="Search" src="<c:url value='/sample/images/btn_search_i.gif'/>"/>
 				<input type="image" id="refresh" name="refresh" alt="Refresh" src="<c:url value='/sample/images/btn_refresh_i.gif'/>"/>

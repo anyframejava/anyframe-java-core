@@ -2,12 +2,12 @@
 	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
 	xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-3.0.xsd">
 	<bean id="messageSource"
-		class="org.anyframe.spring.message.EncodingResourceBundleMessageSource">
+		class="org.springframework.context.support.ReloadableResourceBundleMessageSource">
 		<property name="basenames">
 			<list>
-				<value>message/message-generation</value>
-				<value>message/message-moviefinder</value>
-				<value>message/message-converter</value>
+				<value>classpath:message/message-generation</value>
+				<value>classpath:message/message-moviefinder</value>
+				<value>classpath:message/message-converter</value>
 			</list>
 		</property>
 		<property name="defaultEncoding">

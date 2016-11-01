@@ -1,5 +1,5 @@
 /*
- * Copyright 2002-2009 the original author or authors.
+ * Copyright 2008-2012 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -24,27 +24,29 @@ import java.util.Map;
 import javax.persistence.EmbeddedId;
 import javax.persistence.Id;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
 import org.hibernate.annotations.common.reflection.XClass;
 import org.hibernate.annotations.common.reflection.XProperty;
 import org.hibernate.annotations.common.reflection.java.JavaReflectionManager;
 import org.hibernate.util.ReflectHelper;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.util.ClassUtils;
 
 /**
- * General QueryService Utilities class with rules for primary keys.
- * The original code of this class comes from Appfuse framework.
+ * General QueryService Utilities class with rules for primary keys. The
+ * original code of this class comes from Appfuse framework.
  * 
  * @author Bobby Diaz, Bryan Noll
  * @author modified by SooYeon Park
  */
 public final class QueryDaoUtil {
 	/**
-	 * Log variable for all child classes. Uses LogFactory.getLog(getClass())
-	 * from Commons Logging
+	 * Log variable for all child classes. Uses
+	 * LoggerFactory.getLogger(getClass()) from Slf4j
 	 */
-	protected static final Log log = LogFactory.getLog(QueryDaoUtil.class);
+	protected static final Logger logger = LoggerFactory
+			.getLogger(QueryDaoUtil.class);
+
 	private static Map<String, XProperty> primaryKeyPropertyMap = new HashMap<String, XProperty>();
 
 	/**
@@ -53,27 +55,37 @@ public final class QueryDaoUtil {
 	private QueryDaoUtil() {
 	}
 
+	/**
+	 * Get primary key property from object
+	 * 
+	 * @param o
+	 *            the object to examine
+	 * @return the primary key property
+	 */
 	protected static XProperty getPrimaryKeyProperty(Object o) {
 		String clazzName = o.getClass().getCanonicalName();
 
 		if (primaryKeyPropertyMap.get(clazzName) != null) {
 			return primaryKeyPropertyMap.get(clazzName);
 		}
-		try { 
+		try {
 			JavaReflectionManager reflectionManager = new JavaReflectionManager();
 			Class<?> loadedClass = ReflectHelper.classForName(clazzName);
 			XClass persistentXClass = reflectionManager.toXClass(loadedClass);
-			List<XProperty> properties = persistentXClass.getDeclaredProperties("property");
+			List<XProperty> properties = persistentXClass
+					.getDeclaredProperties("property");
 
 			for (XProperty property : properties) {
 
-				if (property.isAnnotationPresent(Id.class) || property.isAnnotationPresent(EmbeddedId.class)) {
+				if (property.isAnnotationPresent(Id.class)
+						|| property.isAnnotationPresent(EmbeddedId.class)) {
 					primaryKeyPropertyMap.put(clazzName, property);
 					return property;
 				}
 			}
 		} catch (Exception e) {
-			log.error("Could not find primary key of " + clazzName);
+			logger.error("Could not find primary key of {} ",
+					new Object[] { clazzName });
 		}
 
 		return null;
@@ -100,13 +112,17 @@ public final class QueryDaoUtil {
 	protected static Object getPrimaryKeyValue(Object o) {
 		// Use reflection to find the first property
 		String fieldName = getPrimaryKeyFieldName(o);
-		String getterMethod = "get" + Character.toUpperCase(fieldName.charAt(0)) + fieldName.substring(1);
+		String getterMethod = "get"
+				+ Character.toUpperCase(fieldName.charAt(0))
+				+ fieldName.substring(1);
 
 		try {
-			Method getMethod = o.getClass().getMethod(getterMethod, (Class[]) null);
+			Method getMethod = o.getClass().getMethod(getterMethod,
+					(Class[]) null);
 			return getMethod.invoke(o, (Object[]) null);
 		} catch (Exception e) {
-			log.error("Could not invoke method '" + getterMethod + "' on " + ClassUtils.getShortName(o.getClass()));
+			logger.error("Could not invoke method '{}' on {}", new Object[] {
+					getterMethod, ClassUtils.getShortName(o.getClass()) });
 		}
 		return null;
 	}
@@ -121,9 +137,12 @@ public final class QueryDaoUtil {
 	 * @param value
 	 *            the value of the new primary key
 	 */
+	@SuppressWarnings("rawtypes")
 	protected static void setPrimaryKey(Object o, Class clazz, Object value) {
 		String fieldName = getPrimaryKeyFieldName(o);
-		String setMethodName = "set" + Character.toUpperCase(fieldName.charAt(0)) + fieldName.substring(1);
+		String setMethodName = "set"
+				+ Character.toUpperCase(fieldName.charAt(0))
+				+ fieldName.substring(1);
 
 		try {
 			Method setMethod = o.getClass().getMethod(setMethodName, clazz);
@@ -131,8 +150,11 @@ public final class QueryDaoUtil {
 				setMethod.invoke(o, value);
 			}
 		} catch (Exception e) {
-			log.error(MessageFormat.format("Could not set ''{0}.{1} with value {2}", ClassUtils.getShortName(o
-					.getClass()), fieldName, value));
+			logger.error(MessageFormat.format(
+					"Could not set ''{}.{} with value {}", new Object[] {
+							ClassUtils.getShortName(o.getClass()), fieldName,
+							value }));
+
 		}
 	}
 

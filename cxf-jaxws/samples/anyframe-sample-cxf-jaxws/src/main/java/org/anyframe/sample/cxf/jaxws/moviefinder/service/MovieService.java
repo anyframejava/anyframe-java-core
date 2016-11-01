@@ -1,5 +1,5 @@
 /*
- * Copyright 2008-2011 the original author or authors.
+ * Copyright 2008-2012 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -29,13 +29,13 @@ import org.anyframe.cxf.adapter.CXFMapAdapter;
 import org.anyframe.sample.cxf.jaxws.domain.Category;
 import org.anyframe.sample.cxf.jaxws.domain.Country;
 import org.anyframe.sample.cxf.jaxws.domain.Movie;
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 @WebService
 public interface MovieService {
 
-    Log LOGGER = LogFactory.getLog(MovieService.class);
+    Logger LOGGER = LoggerFactory.getLogger(MovieService.class);
 
     public List<Movie> findMovieListAll() throws Exception;
 
@@ -54,8 +54,6 @@ public interface MovieService {
     public void removeMovie(Movie movie) throws Exception;
 
     // ================= method for Annotation tests
-    @WebMethod(exclude = true)
-    public void testAnnotationMethodExclude();
 
     @WebMethod(operationName = "testAnnotationMethodInclude")
     public void testAnnotationMethod();

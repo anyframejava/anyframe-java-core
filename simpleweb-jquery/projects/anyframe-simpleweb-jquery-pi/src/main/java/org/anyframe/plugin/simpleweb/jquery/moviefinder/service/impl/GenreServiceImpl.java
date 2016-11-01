@@ -29,7 +29,7 @@ public class GenreServiceImpl implements GenreService {
 		return genreDao.getGenreList(searchVO);
 	}
 
-	public List getGenreNameList(String title) throws Exception {
+	public List<String> getGenreNameList(String title) throws Exception {
 		return genreDao.getGenreNameList(title);
 	}
 	

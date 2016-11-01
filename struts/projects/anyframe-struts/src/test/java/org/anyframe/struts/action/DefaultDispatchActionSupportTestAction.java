@@ -1,5 +1,5 @@
 /*
- * Copyright 2002-2008 the original author or authors.
+ * Copyright 2007-2012 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -20,12 +20,10 @@ import java.lang.reflect.InvocationTargetException;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
-import org.anyframe.struts.action.DefaultActionUtil;
-import org.anyframe.struts.action.DefaultDispatchActionSupport;
-import org.apache.commons.logging.Log;
 import org.apache.struts.action.ActionForm;
 import org.apache.struts.action.ActionForward;
 import org.apache.struts.action.ActionMapping;
+import org.slf4j.Logger;
 
 /**
  * DefaultDispatchActionSupportTestAction is for testing DefaultDispatchActionSupport
@@ -91,7 +89,7 @@ public class DefaultDispatchActionSupportTestAction extends DefaultDispatchActio
         return (mapping.findForward("success"));
     }
 
-	public Log getLogger() throws Exception {
+	public Logger getLogger() throws Exception {
 		return DefaultActionUtil.getLogger(this.getClass().getName());
 	}
 }

@@ -1,5 +1,5 @@
 /*
- * Copyright 2002-2008 the original author or authors.
+ * Copyright 2002-2012 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -22,12 +22,12 @@ import java.util.Map;
 import org.anyframe.sample.remoting.domain.Category;
 import org.anyframe.sample.remoting.domain.Country;
 import org.anyframe.sample.remoting.domain.Movie;
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 public interface MovieService {
 
-	Log LOGGER = LogFactory.getLog(MovieService.class.getName());
+	Logger LOGGER = LoggerFactory.getLogger(MovieService.class.getName());
 
 	public List<Movie> findMovieListAll() throws Exception;
 
@@ -61,5 +61,4 @@ public interface MovieService {
 
 	public Character testMovieCharacterVal(Character val);
 
-	// public char testMovieCharVal(char val);
 }

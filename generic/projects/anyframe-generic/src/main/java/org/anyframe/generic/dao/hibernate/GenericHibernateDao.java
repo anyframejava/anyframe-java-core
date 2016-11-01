@@ -1,5 +1,5 @@
 /*
- * Copyright 2002-2009 the original author or authors.
+ * Copyright 2008-2012 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -24,10 +24,11 @@ import org.anyframe.exception.BaseException;
 import org.anyframe.generic.dao.GenericDao;
 import org.anyframe.hibernate.DynamicHibernateService;
 import org.anyframe.pagination.Page;
+import org.anyframe.util.NumberUtil;
 import org.anyframe.util.StringUtil;
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
 import org.hibernate.SessionFactory;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Required;
 import org.springframework.beans.factory.annotation.Value;
@@ -58,10 +59,11 @@ public class GenericHibernateDao<T, PK extends Serializable> implements
 	int pageUnit;
 
 	/**
-	 * Log variable for all child classes. Uses LogFactory.getLog(getClass())
-	 * from Commons Logging
+	 * Log variable for all child classes. Uses
+	 * LoggerFactory.getLogger(getClass()) from Slf4j
 	 */
-	protected final Log log = LogFactory.getLog(getClass());
+	protected final Logger logger = LoggerFactory.getLogger(getClass());
+
 	private Class<T> persistentClass;
 	private HibernateTemplate hibernateTemplate;
 	private SessionFactory sessionFactory;
@@ -91,6 +93,7 @@ public class GenericHibernateDao<T, PK extends Serializable> implements
 	 * default constructor
 	 * 
 	 */
+	@SuppressWarnings("unchecked")
 	public GenericHibernateDao() {
 		if (!getClass().equals(this.getClass())) {
 			this.persistentClass = (Class<T>) ((ParameterizedType) getClass()
@@ -137,7 +140,6 @@ public class GenericHibernateDao<T, PK extends Serializable> implements
 	/**
 	 * {@inheritDoc}
 	 */
-	@SuppressWarnings("unchecked")
 	public T get(PK id) throws Exception {
 		T entity = (T) hibernateTemplate.get(this.persistentClass, id);
 
@@ -151,7 +153,6 @@ public class GenericHibernateDao<T, PK extends Serializable> implements
 	/**
 	 * {@inheritDoc}
 	 */
-	@SuppressWarnings("unchecked")
 	public boolean exists(PK id) throws Exception {
 		T entity = (T) hibernateTemplate.get(this.persistentClass, id);
 		return entity != null;
@@ -188,69 +189,69 @@ public class GenericHibernateDao<T, PK extends Serializable> implements
 	 * 
 	 * @param searchVO
 	 *            search condition and search keyword
-	 * @return result page object with total count            
-	 *
-	 * <br/>
-	 * Dynamic Hibernate Mapping XML Example:
+	 * @return result page object with total count
 	 * 
-	 * <pre>
-	 *	&lt;dynamic-hibernate&gt;
-	 *		&lt;query name="findBoardList"&gt;
-	 *			&lt;![CDATA[
-	 *			FROM Board board 
-	 *			#if ($keywordNum != "")			
-	 *				WHERE 		
-	 *				#if ($condition == "All" || $condition == "")
-	 *					(
-	 *					  board.boardName like :keywordStr
-	 *					 #if($isNumeric == "true")
-	 *					 	or board.id.boardId = {{keywordNum}}  or board.id.boardMasterId = {{keywordNum}}  or board.boardTopics = {{keywordNum}} 
-	 *					 #end
-	 *					)	
-	 *				#elseif($condition == "id.boardId" || $condition == "id.boardMasterId" || $condition == "boardTopics")
-	 *					board.{{condition}} = {{keywordNum}}			
-	 *				#elseif($condition == "boardName")
-	 *					board.{{condition}} like :keywordStr			
-	 *				#end
-	 *			#end			
-	 *				order by							
-	 *					board.id.boardId
-	 *			]]&gt;
-	 *		&lt;/query&gt;
-	 *	
-	 *		&lt;query name="countBoardList"&gt;
-	 *			&lt;![CDATA[
-	 *			SELECT count(*) 
-	 *			FROM Board board 
-	 *			#if ($keywordNum != "")			
-	 *				WHERE 		
-	 *				#if ($condition == "All" || $condition == "")
-	 *					(
-	 *					  board.boardName like :keywordStr
-	 *					 #if($isNumeric == "true")
-	 *					 	or board.id.boardId = {{keywordNum}}  or board.id.boardMasterId = {{keywordNum}}  or board.boardTopics = {{keywordNum}} 
-	 *					 #end
-	 *					)	
-	 *				#elseif($condition == "id.boardId" || $condition == "id.boardMasterId" || $condition == "boardTopics")
-	 *					board.{{condition}} = {{keywordNum}}			
-	 *				#elseif($condition == "boardName")
-	 *					board.{{condition}} like :keywordStr			
-	 *				#end
-	 *			#end					
-	 *			]]&gt;
-	 *		&lt;/query&gt;	
-	 *	&lt;/dynamic-hibernate&gt;
+	 * <br/>
+	 *         Dynamic Hibernate Mapping XML Example:
+	 * 
+	 *         <pre>
+	 * &lt;dynamic-hibernate&gt;
+	 * 	&lt;query name="findBoardList"&gt;
+	 * 		&lt;![CDATA[
+	 * 		FROM Board board 
+	 * 		#if ($keywordNum != "")			
+	 * 			WHERE 		
+	 * 			#if ($condition == "All" || $condition == "")
+	 * 				(
+	 * 				  board.boardName like :keywordStr
+	 * 				 #if($isNumeric == "true")
+	 * 				 	or board.id.boardId = {{keywordNum}}  or board.id.boardMasterId = {{keywordNum}}  or board.boardTopics = {{keywordNum}} 
+	 * 				 #end
+	 * 				)	
+	 * 			#elseif($condition == "id.boardId" || $condition == "id.boardMasterId" || $condition == "boardTopics")
+	 * 				board.{{condition}} = {{keywordNum}}			
+	 * 			#elseif($condition == "boardName")
+	 * 				board.{{condition}} like :keywordStr			
+	 * 			#end
+	 * 		#end			
+	 * 			order by							
+	 * 				board.id.boardId
+	 * 		]]&gt;
+	 * 	&lt;/query&gt;
+	 * 
+	 * 	&lt;query name="countBoardList"&gt;
+	 * 		&lt;![CDATA[
+	 * 		SELECT count(*) 
+	 * 		FROM Board board 
+	 * 		#if ($keywordNum != "")			
+	 * 			WHERE 		
+	 * 			#if ($condition == "All" || $condition == "")
+	 * 				(
+	 * 				  board.boardName like :keywordStr
+	 * 				 #if($isNumeric == "true")
+	 * 				 	or board.id.boardId = {{keywordNum}}  or board.id.boardMasterId = {{keywordNum}}  or board.boardTopics = {{keywordNum}} 
+	 * 				 #end
+	 * 				)	
+	 * 			#elseif($condition == "id.boardId" || $condition == "id.boardMasterId" || $condition == "boardTopics")
+	 * 				board.{{condition}} = {{keywordNum}}			
+	 * 			#elseif($condition == "boardName")
+	 * 				board.{{condition}} like :keywordStr			
+	 * 			#end
+	 * 		#end					
+	 * 		]]&gt;
+	 * 	&lt;/query&gt;	
+	 * &lt;/dynamic-hibernate&gt;
 	 * </pre>
-	 *
+	 * 
 	 */
-
+	@SuppressWarnings("rawtypes")
 	public Page getPagingList(SearchVO searchVO) throws Exception {
 		int pageIndex = searchVO.getPageIndex();
 
 		String searchCondition = StringUtil.null2str(searchVO
 				.getSearchCondition());
 		String searchKeyword = StringUtil.null2str(searchVO.getSearchKeyword());
-		String isNumeric = StringUtil.isNumeric(searchKeyword) ? "true"
+		String isNumeric = NumberUtil.isNumber(searchKeyword) ? "true"
 				: "false";
 
 		Object[] args = new Object[4];
@@ -288,7 +289,7 @@ public class GenericHibernateDao<T, PK extends Serializable> implements
 		String searchCondition = StringUtil.null2str(searchVO
 				.getSearchCondition());
 		String searchKeyword = StringUtil.null2str(searchVO.getSearchKeyword());
-		String isNumeric = StringUtil.isNumeric(searchKeyword) ? "true"
+		String isNumeric = NumberUtil.isNumber(searchKeyword) ? "true"
 				: "false";
 
 		Object[] args = new Object[4];

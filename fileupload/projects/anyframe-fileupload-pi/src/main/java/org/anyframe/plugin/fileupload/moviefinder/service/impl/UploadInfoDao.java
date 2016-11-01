@@ -1,5 +1,5 @@
 /*
- * Copyright 2008-2011 the original author or authors.
+ * Copyright 2008-2012 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -22,7 +22,7 @@ import javax.sql.DataSource;
 
 import org.anyframe.plugin.fileupload.domain.AttachedFile;
 import org.springframework.jdbc.core.BeanPropertyRowMapper;
-import org.springframework.jdbc.core.simple.SimpleJdbcDaoSupport;
+import org.springframework.jdbc.core.support.JdbcDaoSupport;
 import org.springframework.stereotype.Repository;
 
 /**
@@ -31,7 +31,7 @@ import org.springframework.stereotype.Repository;
  * @author Sooyeon Park
  */
 @Repository("fileUploadInfoDao")
-public class UploadInfoDao extends SimpleJdbcDaoSupport {
+public class UploadInfoDao extends JdbcDaoSupport {
 
 	@Inject
 	public void setJdbcDaoDataSource(DataSource dataSource) throws Exception {
@@ -41,7 +41,7 @@ public class UploadInfoDao extends SimpleJdbcDaoSupport {
 		String sql = "INSERT INTO FILEUPLOAD_ATTACHED (ref_id, id, name, file_size) "
 				+ "VALUES (?, ?, ?, ?)";
 
-		this.getSimpleJdbcTemplate().update(
+		this.getJdbcTemplate().update(
 				sql,
 				new Object[] { attachedFile.getRefId(), attachedFile.getId(),
 						attachedFile.getName(), attachedFile.getFileSize()});
@@ -50,13 +50,13 @@ public class UploadInfoDao extends SimpleJdbcDaoSupport {
 	public List<AttachedFile> list(String refId) throws Exception{
 		String sql = "SELECT ref_id, id, name, file_size FROM FILEUPLOAD_ATTACHED "
 			 + "WHERE ref_id = ?";
-		return this.getSimpleJdbcTemplate().query(sql,
+		return this.getJdbcTemplate().query(sql,
 				new BeanPropertyRowMapper<AttachedFile>(AttachedFile.class), new Object[] { refId });
 	}
 
 	public void remove(String refId) throws Exception {
 		String sql = "DELETE FROM FILEUPLOAD_ATTACHED WHERE ref_id = ?";
-		this.getSimpleJdbcTemplate().update(sql, new Object[] { refId });
+		this.getJdbcTemplate().update(sql, new Object[] { refId });
 	}
 
 }

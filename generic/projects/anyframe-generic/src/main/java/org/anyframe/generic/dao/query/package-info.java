@@ -1,5 +1,5 @@
 /*
- * Copyright 2002-2009 the original author or authors.
+ * Copyright 2008-2012 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -19,7 +19,7 @@
  * might all use. You should only need to extend this
  * class when your require custom CRUD logic. 
  * 
- * @since 3.2.1
+ * @since 1.0.0
  */
 package org.anyframe.generic.dao.query;
 

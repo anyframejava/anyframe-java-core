@@ -10,7 +10,7 @@ public interface GenreService {
 	
 	List<Genre> getGenreList(SearchVO searchVO) throws Exception;
 	
-	List getGenreNameList(String title)throws Exception;
+	List<String> getGenreNameList(String title)throws Exception;
 	
 	Genre getGenre(String id) throws Exception;
 }

@@ -1,0 +1,20 @@
+<chapter id="core_properties_dynamic">
+	<title>Dynamic Reloading</title>
+	<para>
+		PropertiesService는 관리하는 Property 파일에 대한 Dynamic Reload 기능을 제공한다. (PropertiesService 4.2.0 이후) 
+		Dynamic Reload 기능을 사용하게 되면 시스템 운영 중 관리 대상이 되는 Property 파일이 변경되었을 경우 이를 감지하여 내부적으로 Reload를 수행함으로써 서버를 재시작하지 
+		않고서도 변경된 Property 정보를 읽을 수 있게 된다. 
+	</para>
+	<para>
+		Dynamic Reload 기능을 적용하기 위해서는 'dynamicReload' 속성 정의가 추가되어야 한다.
+	</para>
+	<important>
+		<title>Dynamic Reload 기능 사용시 유의할 점</title>
+		<para>
+			Dynamic Reload 기능은 Properties Service이 XML 내에 정의된 개별 Property나 클래스패스 내에 존재하는 Property File이 아닌 파일시스템을 통해 로드한 
+			Property File에만 적용됨에 유의하도록 한다.
+			또한 Dynamic Reload 기능 수행시 이전에 로드되어 있던 Properties를 Clear하고 새로운 Properties를 반영하도록 구현되어 있으므로 PropertiesService Bean 
+			속성 정의시 개별 Property 정의 및 클래스패스 내에 존재하는 Property File은 사용하지 말고 파일 시스템 기반의 Property File만을 활용하도록 한다.				
+		</para>
+	</important>
+</chapter>

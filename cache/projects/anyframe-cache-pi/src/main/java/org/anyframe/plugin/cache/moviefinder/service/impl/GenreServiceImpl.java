@@ -1,5 +1,5 @@
 /*
- * Copyright 2008-2011 the original author or authors.
+ * Copyright 2008-2012 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -15,27 +15,26 @@
  */
 package org.anyframe.plugin.cache.moviefinder.service.impl;
 
-import java.util.Collection;
-import java.util.HashMap;
-import java.util.Iterator;
-import java.util.Map;
+import java.util.List;
 
-import javax.annotation.PostConstruct;
 import javax.inject.Inject;
 import javax.inject.Named;
 
-import org.anyframe.cache.CacheService;
 import org.anyframe.plugin.cache.domain.Genre;
 import org.anyframe.plugin.cache.moviefinder.service.GenreService;
+import org.springframework.cache.annotation.CacheEvict;
+import org.springframework.cache.annotation.CachePut;
+import org.springframework.cache.annotation.Cacheable;
+import org.springframework.cache.annotation.Caching;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
 
 /**
- * This GenreServiceImpl class is an Implementation class to provide genre list
+ * This GenreServiceImpl class is an Implementation class to provide genre CRUD
  * functionality.
  * 
- * @author Sujeong Lee
+ * @author Sooyeon Park
  */
 @Service("cacheGenreService")
 @Transactional(rollbackFor = { Exception.class }, propagation = Propagation.REQUIRED)
@@ -45,51 +44,53 @@ public class GenreServiceImpl implements GenreService {
 	@Named("cacheGenreDao")
 	private GenreDao genreDao;
 
-	@Inject
-	@Named("cacheService")
-	CacheService cacheService;
-
-	@PostConstruct
-	public void getList() throws Exception {
-		Collection<Genre> list = genreDao.getList();
-
-		Iterator<Genre> itr = list.iterator();
-
-		Map<String, Genre> genreList = new HashMap<String, Genre>();
-		while (itr.hasNext()) {
-			Genre genre = (Genre) itr.next();
-			genreList.put(genre.getGenreId(), genre);
-		}
-
-		cacheService.putInCache("genreList", genreList);
-	}
-
+	/*
+	 * Declarative annotation-based caching example
+	 * 
+	 * @Cacheable, @CacheEvict, @CachePut
+	 */
+	@CacheEvict(value = "genreList", allEntries = true)
 	public void create(Genre genre) throws Exception {
 		genre.setGenreId("GR-" + System.currentTimeMillis());
+		GenreService.LOGGER.info("always execute create method - genreId = {}",
+				genre.getGenreId());
 		genreDao.create(genre);
-		putInCache(genre);
 	}
 
-	@SuppressWarnings("unchecked")
-	public void remove(String genreId) throws Exception {
-		genreDao.remove(genreId);
-
-		Map<String, Genre> genreList = (HashMap<String, Genre>) cacheService
-				.getFromCache("genreList");
-		genreList.remove(genreId);
-		cacheService.putInCache("genreList", genreList);
+	@Cacheable(value = "genre")
+	public Genre get(String genreId) throws Exception {
+		GenreService.LOGGER.info("execute get method - genreId = {}", genreId);
+		Genre genre = genreDao.get(genreId);
+		return genre;
 	}
 
+	@Caching(evict = { @CacheEvict(value = "genre", key = "#genre.genreId"),
+			@CacheEvict(value = "genreList", allEntries = true) })
 	public void update(Genre genre) throws Exception {
+		GenreService.LOGGER.info("always execute update method - genreId = {}",
+				genre.getGenreId());
 		genreDao.update(genre);
-		putInCache(genre);
 	}
 
-	@SuppressWarnings("unchecked")
-	private void putInCache(Genre genre) throws Exception {
-		Map<String, Genre> genreList = (HashMap<String, Genre>) cacheService
-				.getFromCache("genreList");
-		genreList.put(genre.getGenreId(), genre);
-		cacheService.putInCache("genreList", genreList);
+	@CachePut(value = "genre", key = "#genre.genreId")
+	public Genre updateAndGet(Genre genre) throws Exception {
+		GenreService.LOGGER.info("always execute update method - genreId = {}",
+				genre.getGenreId());
+		genreDao.update(genre);
+		return genre;
+	}
+
+	@Caching(evict = { @CacheEvict("genre"),
+			@CacheEvict(value = "genreList", allEntries = true) })
+	public void remove(String genreId) throws Exception {
+		GenreService.LOGGER.info("always execute remove method - genreId = {}",
+				genreId);
+		genreDao.remove(genreId);
+	}
+
+	@Cacheable(value = "genreList")
+	public List<Genre> getList() throws Exception {
+		GenreService.LOGGER.info("execute getList method");
+		return genreDao.getList();
 	}
 }

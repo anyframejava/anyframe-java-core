@@ -1,5 +1,5 @@
 /*
- * Copyright 2008-2011 the original author or authors.
+ * Copyright 2008-2012 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -27,8 +27,8 @@ import org.anyframe.pagination.Page;
 import org.anyframe.plugin.jquery.board.service.JqueryBoardService;
 import org.anyframe.plugin.jquery.community.service.JqueryCommunityService;
 import org.anyframe.plugin.jquery.domain.JqueryBoard;
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -44,7 +44,7 @@ import org.springframework.web.bind.annotation.RequestParam;
 @RequestMapping("/jqueryBoard.do")
 public class JqueryBoardController {
 
-	public static Log logger = LogFactory.getLog(JqueryBoardController.class);
+	public static Logger logger = LoggerFactory.getLogger(JqueryBoardController.class);
 	
 	@Inject
 	@Named("jqueryBoardService")
@@ -106,10 +106,10 @@ public class JqueryBoardController {
 	public String update(JqueryBoard board, Model model, HttpServletRequest request)
 			throws Exception {
 		
-		logger.debug("board.getCommunityId()=" + board.getCommunityId());
-		logger.debug("board.getCommunityName()=" + board.getCommunityName());
-		logger.debug("board.getPostId()=" + board.getPostId());
-		logger.debug("board.getTitle()=" + board.getTitle());
+		logger.debug("board.getCommunityId()={}", board.getCommunityId());
+		logger.debug("board.getCommunityName()={}", board.getCommunityName());
+		logger.debug("board.getPostId()={}", board.getPostId());
+		logger.debug("board.getTitle()={}", board.getTitle());
 		
 		boardService.update(board);
 		return "jsonView";

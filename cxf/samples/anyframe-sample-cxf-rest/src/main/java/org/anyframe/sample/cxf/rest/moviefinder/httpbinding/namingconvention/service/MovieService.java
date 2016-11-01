@@ -20,13 +20,13 @@ import java.util.Collection;
 import javax.jws.WebService;
 
 import org.anyframe.sample.cxf.rest.moviefinder.httpbinding.namingconvention.domain.Movie;
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 @WebService(targetNamespace = "http://org.anyframe.sample.cxf.rest.moviefinder.httpbinding.namingconvention.service")
 public interface MovieService {
 
-	Log LOGGER = LogFactory.getLog(MovieService.class.getName());
+	Logger LOGGER = LoggerFactory.getLogger(MovieService.class.getName());
 
 	public Collection<Movie> getMovies() throws Exception;
 

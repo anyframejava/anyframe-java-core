@@ -113,6 +113,8 @@ public class HibernateProcedureTest extends
 		// 1. execute procedure
 		Query query = session.getNamedQuery("callFindCategoryList");
 		query.setParameter("condition", "%%");
+		
+		@SuppressWarnings("unchecked")
 		List categoryList = query.list();
 
 		// 2. assert result - category
@@ -153,6 +155,8 @@ public class HibernateProcedureTest extends
 		hqlBuf.append("WHERE movie.releaseDate > FIND_MOVIE(:condition)");
 		Query query = session.createQuery(hqlBuf.toString());
 		query.setParameter("condition", "MV-00002");
+		
+		@SuppressWarnings("unchecked")
 		List movieList = query.list();
 
 		// 2. assert result - movie

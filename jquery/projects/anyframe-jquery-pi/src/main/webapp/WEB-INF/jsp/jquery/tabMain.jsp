@@ -1,6 +1,6 @@
 <%@ page language="java" errorPage="/sample/common/error.jsp" pageEncoding="UTF-8" contentType="text/html;charset=utf-8" %>
 <%@ include file="/sample/common/top.jsp"%>
-		<div class="location"><a href="<c:url value='/anyframe.jsp'/>">Home</a> &gt; <a href="<c:url value='/jqueryBoard.do?method=tabMain'/>">jQuery 1.0.2</a></div>
+		<div class="location"><a href="<c:url value='/anyframe.jsp'/>">Home</a> &gt; <a href="<c:url value='/jqueryBoard.do?method=tabMain'/>">jQuery 1.0.3</a></div>
     </div>
     <hr />
 <%
@@ -14,7 +14,7 @@
 
 <!-- jquery ui -->
 <script type="text/javascript" src="<c:url value='/jquery/jquery/jquery-ui/jquery-ui-1.8.16.custom.min.js'/>"></script>
-<link id='uiTheme' href="<c:url value='/jquery/jquery/jquery-ui/themes/redmond/jquery-ui-1.8.16.custom.css'/>" rel="stylesheet" type="text/css" />
+<link id="uiTheme" href="<c:url value='/jquery/jquery/jquery-ui/themes/redmond/jquery-ui-1.8.16.custom.css'/>" rel="stylesheet" type="text/css" />
 
 <!-- jqGrid -->
 <script type="text/javascript" src="<c:url value='/jquery/jquery/jqgrid/i18n/grid.locale-en.js'/>"></script>
@@ -37,7 +37,7 @@
 <!-- tree about End -->
 
 <!-- File Attachement Start -->
-<link type="text/css" href="<c:url value='/jquery/jquery/uploadify/uploadify.css'/>" rel="stylesheet">
+<link type="text/css" href="<c:url value='/jquery/jquery/uploadify/uploadify.css'/>" rel="stylesheet" />
 <script src="<c:url value='/jquery/jquery/uploadify/swfobject.js'/>" type="text/javascript"></script>
 <script src="<c:url value='/jquery/jquery/uploadify/jquery.uploadify.v2.1.4.min.js'/>" type="text/javascript"></script>
 <script src="<c:url value='/jquery/jquery/jqueryUpload.js'/>" type="text/javascript"></script>
@@ -964,7 +964,7 @@ $(document).ready(function(){
 </script>
 
 
-<div id="wrapper container">
+<div id="wrapper_container">
 	<div class="cont_top">
 		<h2><spring:message code="jquery.title" /></h2>
 		<div class="theme_switcher search_list">
@@ -976,7 +976,7 @@ $(document).ready(function(){
 				<option value="excite-bike">excite-bike</option>
 				<option value="humanity">humanity</option>
 				<option value="overcast">overcast</option>
-				<option value="redmond" selected>redmond</option>
+				<option value="redmond" selected="selected">redmond</option>
 				<option value="south-street">south-street</option>
 				<option value="start">start</option>
 				<option value="sunny">sunny</option>
@@ -1008,14 +1008,14 @@ $(document).ready(function(){
 							</c:if>
 						   	<c:if test="${prevDepth > node.depth}">
 						   		<c:forEach begin="${node.depth}" end="${prevDepth - 1}" step="1">
-				    				</ul></li>
+				    				</li></ul></li>
 						   		</c:forEach>
+						   	</c:if>
+						   	<c:if test="${prevDepth == node.depth}">
+						   		</li>
 						   	</c:if>
 				    			<li id="${node.nodeId}" parentId="${node.parentId}" depth="${node.depth}" rel="${node.type}">
 				    				<a href='#'>${node.nodeName}</a>
-							<c:if test="${node.hasChild == 0}">
-				    			</li>
-						   	</c:if>
 						   	<c:set var="prevDepth" value="${node.depth}"/>
 						</c:forEach>
 					</li>
@@ -1035,7 +1035,7 @@ $(document).ready(function(){
 							<option value="desc"><spring:message code="jquery.board.contents" /></option>
 						</select>
 						<input id="grid_ROOT_searchKeyword" maxlength="50"/>
-						<img id="grid_ROOT_btnSearch" class="btnSearch" width="25" height="18" border="0" align="middle" src="${ctx}/sample/images/btn_search_i.gif">
+						<img id="grid_ROOT_btnSearch" class="btnSearch" width="25" height="18" border="0" align="middle" src="${ctx}/sample/images/btn_search_i.gif" alt="Search" />
 					</div>
 					<form:form method="post" id="grid_ROOT_Form" name="grid_ROOTForm" onsubmit="javascript:return false;">
 						<!-- jqGrid -->
@@ -1059,22 +1059,22 @@ $(document).ready(function(){
 <!-- board form start -->
 <form:form id="board-form" name="board-form" title="Board Form">
 	<fieldset>
-		<input type="hidden" name="postId" id="boardPostId">
-		<input type="hidden" name="regId" id="boardRegId">
-		<input type="hidden" name="regDate" id="boardRegDate">
+		<input type="hidden" name="postId" id="boardPostId"/>
+		<input type="hidden" name="regId" id="boardRegId"/>
+		<input type="hidden" name="regDate" id="boardRegDate"/>
 		<div class="view">
 			<table summary="jquery" width="100%">
 				<tbody>
 					<tr>
 						<td><spring:message code="jquery.board.title" /></td>
-					<td><input type="text" name="title" id="boardTitle" class="dialog_text required" maxlength="25"></td>
+					<td><input type="text" name="title" id="boardTitle" class="dialog_text required" maxlength="25"/></td>
 				</tr>
 				<tr>
 					<td><spring:message code="jquery.board.contents" /></td>
-					<td><textarea name="contents" id="boardContents" class="dialog_text required" maxlength="128"></textarea></td>
+					<td><textarea name="contents" id="boardContents" class="dialog_text required" cols="25" rows="3"></textarea></td>
 				</tr>
 				<tr>
-					<td><label for="deploy"><spring:message code="jquery.community" /></label></td>
+					<td><label><spring:message code="jquery.community" /></label></td>
 					<td>
 						<select name="communityId" id="community" class="selectbox">
 							<c:forEach var="comm" items="${communityList}">
@@ -1101,16 +1101,16 @@ $(document).ready(function(){
 <form:form id="category-form" name="category-form" title='Category From'>
 	<fieldset>
 		<input type="hidden" name="categoryId" id="hidCategoryId"/>
-		<input type="hidden" name="regDate" id="hidRegDate">
+		<input type="hidden" name="regDate" id="hidRegDate"/>
 		<div class="view">
 			<table summary="Create Category" width="100%">
 				<tr>
 					<td><spring:message code="jquery.category.name" /></td>
-					<td><input type="text" name="categoryName" id="txtCategoryName" class="dialog_text required" maxlength="25"></td>
+					<td><input type="text" name="categoryName" id="txtCategoryName" class="dialog_text required" maxlength="25"/></td>
 				</tr>
 				<tr>
 					<td><spring:message code="jquery.category.desc" /></td>
-					<td><textarea name="categoryDesc" id="txtCategoryDesc" class="dialog_text required" maxlength="25"></textarea></td>
+					<td><textarea name="categoryDesc" id="txtCategoryDesc" class="dialog_text required" rows="2" cols="25"></textarea></td>
 				</tr>
 			</table>
 		</div>
@@ -1123,17 +1123,17 @@ $(document).ready(function(){
 	<fieldset>
 		<input type="hidden" name="categoryId" id="hidParentCategoryId"/>
 		<input type="hidden" name="communityId" id="hidCommunityId"/>
-		<input type="hidden" name="regDate" id="hidCommunityRegDate">
-		<input type="hidden" name="regId" id="hidRegId">
+		<input type="hidden" name="regDate" id="hidCommunityRegDate"/>
+		<input type="hidden" name="regId" id="hidRegId"/>
 		<div class="view">
 			<table summary="Create Community" width="100%">
 				<tr>
 					<td><spring:message code="jquery.community.name" /></td>
-					<td><input type="text" name="communityName" id="txtCommunityName" class="dialog_text required" maxlength="25"></td>
+					<td><input type="text" name="communityName" id="txtCommunityName" class="dialog_text required" maxlength="25"/></td>
 				</tr>
 				<tr>
 					<td><spring:message code="jquery.community.desc" /></td>
-					<td><textarea name="communityDesc" id="txtCommunityDesc" class="dialog_text required" maxlength="128"></textarea></td>
+					<td><textarea name="communityDesc" id="txtCommunityDesc" class="dialog_text required" cols="25" rows="3"></textarea></td>
 				</tr>
 			</table>
 		</div>

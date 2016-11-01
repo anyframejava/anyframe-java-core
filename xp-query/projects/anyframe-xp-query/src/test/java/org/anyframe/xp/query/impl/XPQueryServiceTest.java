@@ -1,5 +1,5 @@
 /*
- * Copyright 2002-2008 the original author or authors.
+ * Copyright 2002-2012 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -131,7 +131,7 @@ public class XPQueryServiceTest extends AbstractDependencyInjectionSpringContext
 
 		DataSet resultDataSet = findDataSet("bbnydory00");
 
-		assertDataSet(resultDataSet, "bbnydory00", "2008-12-01", 12345678, 1234.5678,
+		assertDataSet(resultDataSet, "bbnydory00", "2012-12-01", 12345678, 1234.5678,
 				"Anyframe XPQueryService Test. - UPDATE");
 	}
 
@@ -154,7 +154,7 @@ public class XPQueryServiceTest extends AbstractDependencyInjectionSpringContext
 		findListDataSet(5);
 
 		DataSet resultDataSet = findDataSet("bbnydory00");
-		assertDataSet(resultDataSet, "bbnydory00", "2008-12-01", 12345678, 1234.5678,
+		assertDataSet(resultDataSet, "bbnydory00", "2012-12-01", 12345678, 1234.5678,
 				"Anyframe XPQueryService Test. - UPDATE");
 	}
 
@@ -197,7 +197,7 @@ public class XPQueryServiceTest extends AbstractDependencyInjectionSpringContext
 
 		DataSet resultDataSet = findDataSet("bbnydory88");
 
-		assertDataSet(resultDataSet, "bbnydory88", "2008-12-01", 12345678, 1234.5678, "Anyframe preUpdate");
+		assertDataSet(resultDataSet, "bbnydory88", "2012-12-01", 12345678, 1234.5678, "Anyframe preUpdate");
 	}
 
 	/**
@@ -212,7 +212,7 @@ public class XPQueryServiceTest extends AbstractDependencyInjectionSpringContext
 		DataSet resultDataSet = xpQueryService.search("findXPQueryService", makeVariantList());
 		assertEquals(1, resultDataSet.getRowCount());
 
-		assertDataSet(resultDataSet, "bbnydory00", "2008-12-01", 12345678, 1234.5678, "Anyframe XPQueryService Test.");
+		assertDataSet(resultDataSet, "bbnydory00", "2012-12-01", 12345678, 1234.5678, "Anyframe XPQueryService Test.");
 	}
 
 	/**
@@ -300,7 +300,7 @@ public class XPQueryServiceTest extends AbstractDependencyInjectionSpringContext
 		for (int rowNum = 0; rowNum < totalRowCount; rowNum++) {
 			assertTrue("Fail to check result.", resultDataSet.getString(rowNum, "TEST_CHAR").startsWith("bbnydory"));
 
-			assertEquals("Fail to check result.", "2008-12-01", DateUtil.date2String(resultDataSet.getDateTime(rowNum,
+			assertEquals("Fail to check result.", "2012-12-01", DateUtil.date2String(resultDataSet.getDateTime(rowNum,
 					"TEST_DATE"), DATE_PATTERN));
 
 			assertEquals("Fail to check result.", 12345678, ((BigDecimal) resultDataSet
@@ -497,6 +497,6 @@ public class XPQueryServiceTest extends AbstractDependencyInjectionSpringContext
 	}
 
 	private Timestamp getDate() {
-		return DateUtil.string2Timestamp("2008-12-01", "yyyy-MM-dd");
+		return DateUtil.string2Timestamp("2012-12-01", "yyyy-MM-dd");
 	}
 }

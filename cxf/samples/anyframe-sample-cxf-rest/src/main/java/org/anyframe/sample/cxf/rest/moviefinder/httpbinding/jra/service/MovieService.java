@@ -23,17 +23,17 @@ import org.anyframe.sample.cxf.rest.moviefinder.httpbinding.jra.domain.FindMovie
 import org.anyframe.sample.cxf.rest.moviefinder.httpbinding.jra.domain.Movie;
 import org.anyframe.sample.cxf.rest.moviefinder.httpbinding.jra.domain.Movies;
 import org.anyframe.sample.cxf.rest.moviefinder.httpbinding.jra.domain.RemoveMovie;
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
 import org.codehaus.jra.Delete;
 import org.codehaus.jra.Get;
 import org.codehaus.jra.HttpResource;
 import org.codehaus.jra.Post;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 @WebService
 public interface MovieService {
 
-	Log LOGGER = LogFactory.getLog(MovieService.class.getName());
+	Logger LOGGER = LoggerFactory.getLogger(MovieService.class.getName());
 
 	@Get
 	@HttpResource(location = "/movies")

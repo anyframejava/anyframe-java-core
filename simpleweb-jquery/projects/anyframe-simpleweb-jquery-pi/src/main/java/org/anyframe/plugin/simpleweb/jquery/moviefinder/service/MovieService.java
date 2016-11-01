@@ -8,8 +8,7 @@ public interface MovieService {
 
 	Movie get(String id) throws Exception;
 
-	List getMovieTitleList(String title)
-	throws Exception;
+	List<String> getMovieTitleList(String title) throws Exception;
 
 	void create(Movie movie) throws Exception;
 

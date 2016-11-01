@@ -12,7 +12,7 @@
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
  * See the License for the specific language governing permissions and
  * limitations under the License.
-*/
+ */
 package org.anyframe.mip.query.web.controller;
 
 import java.io.IOException;
@@ -36,49 +36,57 @@ import com.tobesoft.platform.data.VariableList;
 /**
  * TestCase Name : AnyframeMiPControllerTest <br>
  * <br>
- * [Description] : AnyframeMiPController를 확장한 Controller 클래스의 메소드가 정상적으로 호출 되는지
- * 검증한다.<br>
+ * [Description] : It is verified whether method of Controller class extending
+ * AnyframeMiPController is normally called for. <br>
  * [Main Flow]
  * <ul>
- * <li>#1- Positive Case : AnyframeMiPController를 상속 받은 MiPController의 process가
- * 호출 되었을 때 AnyframeMiPController의 process method에서 HttpRequest로 넘어온 사용자 입력값을
- * 입출력 DatasetList, VariableList를 분리하는 것을 검증한다.</li>
- * <li>#2- Positive Case : process method가 호출 되었을 때 AnyframeMiPController를
- * extends한 MiPController의 operate가 제대로 호출 되고 결과 메세지를 output VariableList에 저장하는
- * 것을 검증한다.</li>
- * <li>#3- Positive Case : MiPController의 operate method에서 Exception이 발생했을 경우
- * output VariableList에 Exception 메세지가 저장되는 것을 검증한다.</li>
- * <li>#4- Positive Case : Sever Side Value전달 객체인 VO클래스를 MiPlatform의 Dataset로
- * 변환하는 함수 convertVoToDataset을 검증한다. 값이 미리 세팅되어 있는 MiPTestVO를 'test_ds'란 아이디의
- * Dataset으로 변환 한 후 Dataset값과 MiPTestVO의 값들을 비교하여 타입에 따라서 값이 제대로 매핑 되는지 확인한다.</li>
- * <li>#5- Positive Case : Dataset에는 여러 개의 Record가 들어있고 한개의 Record당 한개의 VO가
- * 매핑된다. 여러개의 VO List를 Dataset으로 변환하는 경우 모든 VO의 값들이 제대로 매핑되는지 검증한다.</li>
- * <li>#6- Positive Case : Dataset의 Record의 Status값에 따라 insert, update, delete에
- * 해당하는 VO List에 매핑한 후 data 값이 제대로 매핑됐는지 검증한다.</li>
- * <li>#7- Positive Case : Dataset의 Column Name이 Underscore('_')로 되어 있고 VO의 Attribute
- * Name가 CamelCase로 되어 있을 경우 isCamelCase Option을 주어 Column의 값이 VO에 정상적으로
- * 매핑되는지 검증한다.</li>
+ * <li>#1- Positive Case : It is verified whether user input value passing from
+ * AnyframeMiPController process method to HttpRequest is separated into
+ * input/output DatasetList and VariableList when process of MiPController
+ * inheriting AnyframeMiPController is called for.</li>
+ * <li>#2- Positive Case : It is verified whether MiPController’s operate
+ * extending AnyframeMiPController is properly called for and result message is
+ * stored at output VariableList.</li>
+ * <li>#3- Positive Case : It is verified whether MiPController’s operate
+ * extending AnyframeMiPController is properly called for and result message is
+ * stored at output VariableList.</li>
+ * <li>#4- Positive Case : Function convertVoToDataset is verified. The function
+ * changes VO class(Sever side Value delivery object) into Dataset. It is
+ * checked whether value is correctively mapped according to type by comparing
+ * between Dataset value and MiPTestVO value after changing MiPTestVO whose
+ * value is preset into Data whose I.D. is ‘test ds’.</li>
+ * <li>#5- Positive Case : Dataset has various Records and VO is mapped per each
+ * Record. In the case of changing various VO Lists into Dataset, it is verified
+ * whether all VO values are correctively mapped.</li>
+ * <li>#6- Positive Case : In the case where data is mapped onto VO List
+ * regarding insert, update and delete according to Dataset Record Status, it is
+ * verified whether data value is correctively mapped.</li>
+ * <li>#7- Positive Case : In the case where Dataset Column Name is expressed
+ * with Underscore(‘_’), VO Attribute Name is CamelCase, it is verified whether
+ * Column value is correctively mapped by giving isCamelCase Option.</li>
  * </ul>
+ * 
  * @author Jonghoon Kim
  */
 public class AnyframeMiPControllerTest extends TestCase {
 	
 	/**
-	 * AnyframeMiPController를 상속받은 MiPController를 맴버 변수로 선언한다.
+	 * MiPController inheriting AnyframeMiPController is declared as member
+	 * variable.
 	 */
     private TestMiPController controller;
 
-    /**
-     * 테스트를 위해 MiPController의 인스턴스를 생성한다.
+	/**
+	 * MiPcontroller’s instance is created for test.
      */
     protected void setUp() throws Exception {
             controller = new TestMiPController();
     }
 
-    /**
-	 * [Flow #-1] Positive Case : AnyframeMiPController를 상속 받은
-	 * MiPController의 process가 호출 되었을 때 AnyframeMiPController의 process method에서
-	 * HttpRequest로 넘어온 사용자 입력값을 입출력 DatasetList, VariableList를 분리하는 것을 검증한다.
+	/**
+	 * [Flow #-1] Positive Case : When process of MiPController is called for,
+	 * it is verified whether user input value from HttpRequest is separated
+	 * into DatasetList and VariableList.
 	 * 
 	 * @throws Exception
 	 */
@@ -95,9 +103,9 @@ public class AnyframeMiPControllerTest extends TestCase {
     }
     
     /**
-	 * [Flow #-2] Positive Case : process method가 호출 되었을 때
-	 * AnyframeMiPController를 extends한 MiPController의 operate가 제대로 호출 되고 결과 메세지를
-	 * output VariableList에 저장하는 것을 검증한다.
+	 * [Flow #-2] Positive Case : When process method is called for, it is
+	 * verified whether operate of MiPController extending AnyframeMiPController
+	 * is called for and result message is stored at output VariableList.
 	 * 
 	 * @throws Exception
 	 */
@@ -112,8 +120,9 @@ public class AnyframeMiPControllerTest extends TestCase {
     }
     
     /**
-	 * [Flow #-3] Positive Case : MiPController의 operate method에서 Exception이
-	 * 발생했을 경우 output VariableList에 Exception 메세지가 저장되는 것을 검증한다.
+	 * [Flow #-3] Positive Case : In the case where Exception takes place at
+	 * operate method of MiPController, it is verified whether Exception message
+	 * is restored at output VaribaleList.
 	 * 
 	 * @throws Exception
 	 */
@@ -130,10 +139,12 @@ public class AnyframeMiPControllerTest extends TestCase {
     }
     
     /**
-	 * [Flow #-4] Positive Case : Sever Side Value전달 객체인 VO클래스를 MiPlatform의
-	 * Dataset로 변환하는 함수 convertVoToDataset을 검증한다. 값이 미리 세팅되어 있는 MiPTestVO를
-	 * 'test_ds'란 아이디의 Dataset으로 변환 한 후 Dataset값과 MiPTestVO의 값들을 비교하여
-	 * 타입에 따라서 값이 제대로 매핑 되는지 확인한다.
+	 * [Flow #-4] Positive Case : Function convertVoToDataset is verified. The
+	 * function changes VO class (Sever side Value delivery object) into
+	 * Dataset. It is checked whether value is correctively mapped according to
+	 * type by comparing between Dataset value and MiPTestVO value after
+	 * changing MiPTestVO whose value is preset into Data whose I.D. is ‘test
+	 * ds’.
 	 * 
 	 * @throws Exception
 	 */
@@ -157,8 +168,9 @@ public class AnyframeMiPControllerTest extends TestCase {
         assertEquals("123.0", ds.getColumnAsString(0, "testBigDecimal"));
     }
     /**
-	 * [Flow #-5] Positive Case : Dataset에는 여러 개의 Record가 들어있고 한개의 Record당 한개의
-	 * VO가 매핑된다. 여러개의 VO로 된 List를 Dataset으로 변환하는 경우 모든 VO의 값들이 제대로 매핑되는지 검증한다.
+	 * [Flow #-5] Positive Case : Dataset has various Records and one Record has
+	 * one mapped VO. In the case where List with various VOs is changed into
+	 * Dataset, it is verified whether all VO values are correctively mapped.
 	 * 
 	 * @throws Exception
 	 */
@@ -187,8 +199,9 @@ public class AnyframeMiPControllerTest extends TestCase {
         assertEquals("123.0", ds.getColumnAsString(0, "testBigDecimal"));
     }
     /**
-	 * [Flow #-6] Positive Case : Dataset의 Record의 Status값에 따라 insert, update,
-	 * delete에 해당하는 VO List에 매핑한 후 data 값이 제대로 매핑됐는지 검증한다.
+	 * [Flow #-6] Positive Case : In the case where data is mapped onto VO List
+	 * regarding insert, update and delete according to Dataset Record Status,
+	 * it is verified whether data value is correctively mapped.
 	 * 
 	 * @throws Exception
 	 */
@@ -220,9 +233,10 @@ public class AnyframeMiPControllerTest extends TestCase {
         assertEquals("update2", updateVO2.getTestString());
     }
     /**
-	 * [Flow #-7] Positive Case : Dataset의 Column Name이 Underscore('_')로 되어 있고
-	 * VO의 Attribute Name가 CamelCase로 되어 있을 경우 isCamelCase Option을 주어 Column의 값이
-	 * VO에 정상적으로 매핑되는지 검증한다.
+	 * [Flow #-7] Positive Case : In the case where Dataset Column Name is
+	 * expressed with Underscore('_') and VO Attribute Name is CamelCase, it is
+	 * verified whether Column value is correctively mapped onto VO by giving
+	 * isCamelCase Option.
 	 * 
 	 * @throws Exception
 	 */
@@ -256,7 +270,7 @@ public class AnyframeMiPControllerTest extends TestCase {
     }
     
     /**
-     * 테스트를 위한 Controller 클래스
+	 * Controller class for test 
      */
     class TestMiPController extends AbstractMiPController{
     
@@ -283,7 +297,7 @@ public class AnyframeMiPControllerTest extends TestCase {
     }
     
     /**
-     * 테스트를 위한 VO클래스에 값 세팅
+	 * value setting at VO class for test
      * @return
      */
     public MiPTestVO initTestVO(){
@@ -299,7 +313,7 @@ public class AnyframeMiPControllerTest extends TestCase {
     }
     
     /**
-     * 테스트를 위한 Dataset 세팅
+	 * Dataset setting for test
      * @return
      * @throws IOException
      */
@@ -348,7 +362,7 @@ public class AnyframeMiPControllerTest extends TestCase {
     }
     
     /**
-     * 테스트를 위한 Datsset 세팅, Dataset을 Column을 Undersocre가 포함된 문자열로 생성
+	 * Dataset setting for test and Dataset and Column are created as string including Underscore. 
      * @return
      * @throws IOException
      */

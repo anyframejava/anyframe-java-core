@@ -8,42 +8,13 @@
         </layout>   
     </appender>
 
-	<logger name="org.anyframe.plugin" additivity="false">	
+	<logger name="org.anyframe.sample" additivity="false">	
         <level value="INFO"/>
         <appender-ref ref="console"/>
     </logger>   
-    
-    <!--log SQL (pre-execution) plus exceptions caused by SQL-->
-	<logger name="jdbc.sqlonly" additivity="false">
-		<level value="DEBUG" />
-		<appender-ref ref="console" />
-	</logger>
-	
-	<!--log SQL with timing information, post execution, all jdbc calls except ResultSet calls, jdbc ResultSet calls-->
-	<logger name="jdbc" additivity="false">
-		<level value="OFF" />
-		<appender-ref ref="console" />
-	</logger>
-
-    <!--CXF IN/OUT Bound Message-->
-	<logger name="org.apache.cxf.interceptor.LoggingInInterceptor" additivity="false">	
-        <level value="DEBUG"/>
-        <appender-ref ref="console"/>
-    </logger>  
-    
-	<logger name="org.apache.cxf.interceptor.LoggingOutInterceptor" additivity="false">	
-        <level value="DEBUG"/>
-        <appender-ref ref="console"/>
-    </logger>
-    
-    <!--SimpleWeb BeanMethod Message-->
-	<logger name="org.anyframe.simpleweb.beans.support" additivity="false">	
-        <level value="WARN"/>
-        <appender-ref ref="console"/>
-    </logger>   
-        
+            
     <root>
-    	<level value="OFF"/>
+    	<level value="ERROR"/>
     	<appender-ref ref="console"/>
     </root>
 </log4j:configuration>

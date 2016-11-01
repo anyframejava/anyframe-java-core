@@ -1,5 +1,5 @@
 /*
- * Copyright 2002-2009 the original author or authors.
+ * Copyright 2008-2012 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -23,10 +23,11 @@ import org.anyframe.datatype.SearchVO;
 import org.anyframe.exception.BaseException;
 import org.anyframe.generic.dao.GenericDao;
 import org.anyframe.pagination.Page;
-import org.anyframe.query.dao.AbstractDao;
+import org.anyframe.query.dao.QueryServiceDaoSupport;
+import org.anyframe.util.NumberUtil;
 import org.anyframe.util.StringUtil;
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.util.ClassUtils;
 
@@ -44,7 +45,7 @@ import org.springframework.util.ClassUtils;
  * @param <PK>
  *            the primary key for that type
  */
-public class GenericQueryDao<T, PK extends Serializable> extends AbstractDao
+public class GenericQueryDao<T, PK extends Serializable> extends QueryServiceDaoSupport
 		implements GenericDao<T, PK> {
 
 	@Value("#{contextProperties['pageSize'] ?: 10}")
@@ -54,10 +55,10 @@ public class GenericQueryDao<T, PK extends Serializable> extends AbstractDao
 	int pageUnit;
 
 	/**
-	 * Log variable for all child classes. Uses LogFactory.getLog(getClass())
-	 * from Commons Logging
+	 * Log variable for all child classes. Uses
+	 * LoggerFactory.getLogger(getClass()) from Slf4j
 	 */
-	protected final Log log = LogFactory.getLog(getClass());
+	protected final Logger logger = LoggerFactory.getLogger(getClass());
 	private Class<T> persistentClass;
 
 	public Class<T> getPersistentClass() {
@@ -68,6 +69,7 @@ public class GenericQueryDao<T, PK extends Serializable> extends AbstractDao
 	 * default constructor
 	 * 
 	 */
+	@SuppressWarnings("unchecked")
 	public GenericQueryDao() {
 		if (!getClass().equals(this.getClass())) {
 			this.persistentClass = (Class<T>) ((ParameterizedType) getClass()
@@ -98,8 +100,8 @@ public class GenericQueryDao<T, PK extends Serializable> extends AbstractDao
 
 	private Object getObject(PK id) throws InstantiationException,
 			IllegalAccessException, ClassNotFoundException {
-		Object obj = Thread.currentThread().getContextClassLoader().loadClass(
-				this.persistentClass.getName()).newInstance();
+		Object obj = Thread.currentThread().getContextClassLoader()
+				.loadClass(this.persistentClass.getName()).newInstance();
 		QueryDaoUtil.setPrimaryKey(obj, id.getClass(), id);
 		return obj;
 	}
@@ -109,7 +111,7 @@ public class GenericQueryDao<T, PK extends Serializable> extends AbstractDao
 	 */
 	@SuppressWarnings("unchecked")
 	public T get(PK id) throws Exception {
-		T object = (T) findByPk(ClassUtils.getShortName(this.persistentClass),
+		T object = (T) findByPk("find" + ClassUtils.getShortName(this.persistentClass) + "ByPk",
 				getObject(id));
 
 		if (object == null)
@@ -124,7 +126,7 @@ public class GenericQueryDao<T, PK extends Serializable> extends AbstractDao
 	 */
 	@SuppressWarnings("unchecked")
 	public boolean exists(PK id) throws Exception {
-		T object = (T) findByPk(ClassUtils.getShortName(this.persistentClass),
+		T object = (T) findByPk("find" + ClassUtils.getShortName(this.persistentClass) + "ByPk",
 				getObject(id));
 		return object != null;
 	}
@@ -134,7 +136,7 @@ public class GenericQueryDao<T, PK extends Serializable> extends AbstractDao
 	 */
 	public void create(T object) throws Exception {
 		String className = ClassUtils.getShortName(object.getClass());
-		create(className, object);
+		create("create" + className, object);
 	}
 
 	/**
@@ -142,14 +144,14 @@ public class GenericQueryDao<T, PK extends Serializable> extends AbstractDao
 	 */
 	public void update(T object) throws Exception {
 		String className = ClassUtils.getShortName(object.getClass());
-		update(className, object);
+		update("update" + className, object);
 	}
 
 	/**
 	 * {@inheritDoc}
 	 */
 	public void remove(PK id) throws Exception {
-		remove(ClassUtils.getShortName(this.persistentClass), getObject(id));
+		remove("remove" + ClassUtils.getShortName(this.persistentClass), getObject(id));
 	}
 
 	/**
@@ -214,7 +216,7 @@ public class GenericQueryDao<T, PK extends Serializable> extends AbstractDao
 		String searchCondition = StringUtil.null2str(searchVO
 				.getSearchCondition());
 		String searchKeyword = StringUtil.null2str(searchVO.getSearchKeyword());
-		String isNumeric = StringUtil.isNumeric(searchKeyword) ? "true"
+		String isNumeric = NumberUtil.isNumber(searchKeyword) ? "true"
 				: "false";
 
 		Object[] args = new Object[4];
@@ -223,29 +225,29 @@ public class GenericQueryDao<T, PK extends Serializable> extends AbstractDao
 		args[2] = "keywordNum=" + searchKeyword + "";
 		args[3] = "isNumeric=" + isNumeric;
 
-		return this.findListWithPaging(ClassUtils
-				.getShortName(getPersistentClass()), args, pageIndex, pageSize,
-				pageUnit);
+		return this.findListWithPaging("find" + 
+				ClassUtils.getShortName(getPersistentClass()) + "List", args, pageIndex,
+				pageSize, pageUnit);
 	}
 
 	/**
 	 * {@inheritDoc}
 	 */
 	public Page getPagingList(T object, int pageIndex) throws Exception {
-		return this.findListWithPaging(ClassUtils
-				.getShortName(getPersistentClass()), object, pageIndex,
-				pageSize);
+		return this.findListWithPaging("find" + 
+				ClassUtils.getShortName(getPersistentClass()) + "List", object,
+				pageIndex, pageSize);
 	}
 
 	/**
 	 * {@inheritDoc}
 	 */
-	@SuppressWarnings("unchecked")
+	@SuppressWarnings({ "unchecked", "rawtypes" })
 	public List<T> getList(SearchVO searchVO) throws Exception {
 		String searchCondition = StringUtil.null2str(searchVO
 				.getSearchCondition());
 		String searchKeyword = StringUtil.null2str(searchVO.getSearchKeyword());
-		String isNumeric = StringUtil.isNumeric(searchKeyword) ? "true"
+		String isNumeric = NumberUtil.isNumber(searchKeyword) ? "true"
 				: "false";
 
 		Object[] args = new Object[4];
@@ -254,17 +256,17 @@ public class GenericQueryDao<T, PK extends Serializable> extends AbstractDao
 		args[2] = "keywordNum=" + searchKeyword + "";
 		args[3] = "isNumeric=" + isNumeric;
 
-		return (List) this.findList(ClassUtils
-				.getShortName(this.persistentClass), args);
+		return (List) this.findList("find" + 
+				ClassUtils.getShortName(this.persistentClass) + "List", args);
 	}
 
 	/**
 	 * {@inheritDoc}
 	 */
-	@SuppressWarnings("unchecked")
+	@SuppressWarnings({ "unchecked", "rawtypes" })
 	public List<T> getList(T object) throws Exception {
-		return (List) this.findList(ClassUtils
-				.getShortName(this.persistentClass), object);
+		return (List) this.findList("find" + 
+				ClassUtils.getShortName(this.persistentClass) + "List", object);
 	}
 
 }

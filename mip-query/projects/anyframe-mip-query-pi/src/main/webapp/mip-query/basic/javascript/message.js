@@ -1,4 +1,4 @@
-﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿/*
+﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿/*
     File Name	: message.js
     Description	: 화면 출력용 메세지 모음
     Author		: 공통팀
@@ -67,6 +67,7 @@ var MSG_INVALID_DATE8_GRID_KO = "$1 항목의 날짜 정보가 잘못된 형태�
 var MSG_INVALID_DATE10_GRID_KO = "$1 항목의 날짜 정보가 잘못된 형태로 입력되었습니다.($2행)\n\n 입력 예) 2005-10-31";
 var MSG_REQUIRED_DATE_GRID_KO = "$1 항목의 날짜 정보를 입력하세요.($2행)";
 var MSG_INVALID_PERIOD_GRID_KO = "$1 항목의 날짜 정보가 $2 항목의 날짜 정보의 이전 날짜로 입력되었습니다.\n\n다시 입력하세요.($3행)";
+var MSG_INVALID_FILE_NAME_KO = ") 또는 ( 는 첨부 파일명에 사용할 수 없습니다.";
 
 
 

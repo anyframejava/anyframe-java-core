@@ -1,5 +1,5 @@
 /*
- * Copyright 2008-2011 the original author or authors.
+ * Copyright 2008-2012 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -18,18 +18,12 @@ package org.anyframe.plugin.cache.moviefinder.service;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 
-import java.util.Collection;
-import java.util.HashMap;
-import java.util.Iterator;
-import java.util.Map;
+import java.util.List;
 
-import javax.annotation.PostConstruct;
 import javax.inject.Inject;
 import javax.inject.Named;
 
-import org.anyframe.cache.CacheService;
 import org.anyframe.plugin.cache.domain.Genre;
-import org.anyframe.plugin.cache.moviefinder.service.impl.GenreDao;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.test.annotation.Rollback;
@@ -39,30 +33,29 @@ import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 /**
  * This GenreServiceTest class is a Test Case class for GenreService.
  * 
- * @author Sujeong Lee
+ * @author Sooyeon Park
  */
 @RunWith(SpringJUnit4ClassRunner.class)
 @ContextConfiguration(locations = { "file:./src/main/resources/spring/context-*.xml" })
 public class GenreServiceTest {
+
 	@Inject
 	@Named("cacheGenreService")
 	private GenreService genreService;
 
-	@Inject
-	@Named("cacheService")
-	CacheService cacheService;
-
 	@Test
 	@Rollback(value = true)
 	public void manageGenre() throws Exception {
+		GenreService.LOGGER.info("------ manageGenre test ------");
+
 		// 1. create a new genre
 		Genre genre = new Genre();
 		genre.setName("Western");
 		genreService.create(genre);
-		putInCache(genre);
 
 		// 2. assert - create
-		genre = getGenreByPk(genre.getGenreId());
+		String genreId = genre.getGenreId();
+		genre = genreService.get(genreId);
 		assertNotNull("fail to fetch a genre", genre);
 		assertEquals("fail to compare a genre name", "Western", genre.getName());
 
@@ -70,39 +63,51 @@ public class GenreServiceTest {
 		String name = "Western " + System.currentTimeMillis();
 		genre.setName(name);
 		genreService.update(genre);
-		putInCache(genre);
 
 		// 4. assert - update
-		genre = getGenreByPk(genre.getGenreId());
-		assertNotNull("fail to fetch a genre", genre);
-		assertEquals("fail to compare a updated name", name, genre.getName());
+		Genre updatedGenre = genreService.get(genreId);
+		assertNotNull("fail to fetch a genre", updatedGenre);
+		assertEquals("fail to compare a updated name", name,
+				updatedGenre.getName());
 
-		// 5. remove a genre
-		genreService.remove(genre.getGenreId());
+		// 5. update a name of genre and get an updated genre
+		String newName = "Western " + System.currentTimeMillis();
+		genre.setName(newName);
+		Genre updatedAndCachedGenre = genreService.updateAndGet(genre);
+		assertNotNull("fail to fetch a genre", updatedAndCachedGenre);
+		assertEquals("fail to compare a updated name", newName,
+				updatedAndCachedGenre.getName());
+
+		Genre cachedGenre = genreService.get(genreId);
+		assertNotNull("fail to fetch a cached genre", cachedGenre);
+		assertEquals("fail to compare a updated name of a cached genre",
+				newName, cachedGenre.getName());
+
+		// 6. remove a genre
+		genreService.remove(updatedGenre.getGenreId());
 	}
 
-	@SuppressWarnings("unchecked")
 	@Test
 	public void findGenre() throws Exception {
-		Map<String, Genre> resultMap = (HashMap<String, Genre>) cacheService
-				.getFromCache("genreList");
-		Genre genre = resultMap.get("GR-01");
+		GenreService.LOGGER.info("------ findGenre test ------");
+
+		Genre genre = genreService.get("GR-01");
 		assertNotNull("fail to fetch a genre", genre);
+
+		Genre cachedGenre = genreService.get("GR-01");
+		assertNotNull("fail to fetch a cached genre", cachedGenre);
 	}
 
-	@SuppressWarnings("unchecked")
-	private void putInCache(Genre genre) throws Exception {
-		Map<String, Genre> genreList = (HashMap<String, Genre>) cacheService
-				.getFromCache("genreList");
-		genreList.put(genre.getGenreId(), genre);
-		cacheService.putInCache("genreList", genreList);
-	}
+	@Test
+	public void findGenreList() throws Exception {
+		GenreService.LOGGER.info("------ findGenreList test ------");
 
-	@SuppressWarnings("unchecked")
-	private Genre getGenreByPk(String genreId) throws Exception{
-		Map<String, Genre> resultMap = (HashMap<String, Genre>) cacheService
-		.getFromCache("genreList");
-		Genre genre = resultMap.get(genreId);
-		return genre;
+		List<Genre> genreList = genreService.getList();
+		assertNotNull("genreList is not null", genreList);
+		assertEquals(10, genreList.size());
+
+		List<Genre> cachedGenreList = genreService.getList();
+		assertNotNull("cached genreList is not null", cachedGenreList);
+		assertEquals(10, cachedGenreList.size());
 	}
 }

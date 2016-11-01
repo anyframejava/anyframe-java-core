@@ -1,5 +1,5 @@
 /*
- * Copyright 2008-2011 the original author or authors.
+ * Copyright 2008-2012 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -24,8 +24,8 @@ import org.anyframe.plugin.hibernate.moviefinder.service.GenreService;
 import org.springframework.stereotype.Service;
 
 /**
- * The GenreServiceImpl class is an Implementation class to provide a function about
- * list of Genre
+ * The GenreServiceImpl class is an Implementation class to provide a function
+ * about list of Genre
  * 
  * @author Youngmin Jo
  */

@@ -1,5 +1,5 @@
 /*
- * Copyright 2002-2008 the original author or authors.
+ * Copyright 2007-2012 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -24,12 +24,12 @@ import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
 import org.apache.struts.action.ActionForm;
 import org.apache.struts.action.ActionForward;
 import org.apache.struts.action.ActionMapping;
 import org.apache.struts.util.MessageResources;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * <p>Public Dispatch Action Class which provide token, exception, error logging, pre/post execution features</p>
@@ -38,21 +38,22 @@ import org.apache.struts.util.MessageResources;
  * @author modified by Byunghun Woo
  * 
  */
+@SuppressWarnings("unchecked")
 public class DefaultDispatchActionSupport extends AbstractActionSupport {
 
     /**
      * The Class instance of this <code>DispatchAction</code> class.
      */
-    protected Class clazz = this.getClass();
+	protected Class clazz = this.getClass();
 
 	/**
 	 * <p>
 	 * Anyframe Core Delegation Util Method to get Logger
 	 * </p>
 	 */
-    public Log getLogger() throws Exception{
-    	return LogFactory.getLog(this.getClass().getName());
-    }
+    public Logger getLogger() throws Exception{
+		return LoggerFactory.getLogger(this.getClass().getName());
+	}
 
     /**
 	 * Returns with bean name the Bean registered with WebApplicationContext.

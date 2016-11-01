@@ -40,9 +40,8 @@ public class MovieServiceImpl implements MovieService {
 		return movieDao.get(id);
 	}
 
-	public List getMovieTitleList(String title)
-			throws Exception {
-		return movieDao.getMovieTitleList(title);
+	public List<String> getMovieTitleList(String title) throws Exception {
+		return (List<String>)movieDao.getMovieTitleList(title);
 	}
 
 	public void removeMovieList(String[] ids) throws Exception {

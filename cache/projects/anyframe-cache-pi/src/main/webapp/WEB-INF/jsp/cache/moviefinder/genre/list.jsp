@@ -1,6 +1,6 @@
 <%@ page language="java" errorPage="/sample/common/error.jsp" pageEncoding="UTF-8" contentType="text/html;charset=utf-8" %>
 <%@ include file="/sample/common/top.jsp"%>
-		<div class="location"><a href="<c:url value='/anyframe.jsp'/>">Home</a> &gt; <a href="<c:url value='/cacheGenre.do?method=list'/>">Cache 1.0.2</a></div>
+		<div class="location"><a href="<c:url value='/anyframe.jsp'/>">Home</a> &gt; <a href="<c:url value='/cacheGenre.do?method=list'/>">Cache 1.0.3</a></div>
     </div>
     <hr />
 <script type="text/javascript" src="<c:url value='/sample/javascript/CommonScript.js'/>"></script>    
@@ -34,7 +34,7 @@
                 <tbody>
                 	<c:forEach var="genre" items="${genres}">
 	                	<tr>
-	                        <td><a class="linkClass" href="${ctx}/cacheGenre.do?method=get&genreId=${genre.genreId}">${genre.genreId}</a></td>
+	                        <td><a class="linkClass" href="${ctx}/cacheGenre.do?method=get&amp;genreId=${genre.genreId}">${genre.genreId}</a></td>
 	                        <td align="left">${genre.name}</td>
 	                    </tr>
                     </c:forEach>

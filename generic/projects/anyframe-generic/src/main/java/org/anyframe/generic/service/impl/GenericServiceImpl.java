@@ -1,5 +1,5 @@
 /*
- * Copyright 2002-2009 the original author or authors.
+ * Copyright 2008-2012 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -22,8 +22,8 @@ import org.anyframe.datatype.SearchVO;
 import org.anyframe.generic.dao.GenericDao;
 import org.anyframe.generic.service.GenericService;
 import org.anyframe.pagination.Page;
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * This class serves as the Generic class for all other Services - namely to
@@ -41,11 +41,12 @@ import org.apache.commons.logging.LogFactory;
  */
 public class GenericServiceImpl<T, PK extends Serializable> implements
 		GenericService<T, PK> {
+
 	/**
-	 * Log variable for all child classes. Uses LogFactory.getLog(getClass())
-	 * from Commons Logging
+	 * Log variable for all child classes. Uses
+	 * LoggerFactory.getLogger(getClass()) from Slf4j
 	 */
-	protected final Log log = LogFactory.getLog(getClass());
+	protected final Logger logger = LoggerFactory.getLogger(getClass());
 
 	/**
 	 * GenericDao instance, set by constructor of child classes
@@ -66,6 +67,9 @@ public class GenericServiceImpl<T, PK extends Serializable> implements
 		this.genericDao = genericDao;
 	}
 
+	/**
+	 * {@inheritDoc}
+	 */
 	public GenericDao<T, PK> getGenericDao() {
 		return genericDao;
 	}

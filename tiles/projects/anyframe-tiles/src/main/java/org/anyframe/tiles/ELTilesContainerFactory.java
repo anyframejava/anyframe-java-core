@@ -24,9 +24,9 @@ import org.apache.tiles.TilesApplicationContext;
 import org.apache.tiles.TilesContainer;
 import org.apache.tiles.context.TilesRequestContextFactory;
 import org.apache.tiles.definition.DefinitionsFactoryException;
+import org.apache.tiles.el.ELAttributeEvaluator;
 import org.apache.tiles.evaluator.AttributeEvaluatorFactory;
 import org.apache.tiles.evaluator.BasicAttributeEvaluatorFactory;
-import org.apache.tiles.evaluator.el.ELAttributeEvaluator;
 import org.apache.tiles.factory.BasicTilesContainerFactory;
 import org.apache.tiles.impl.BasicTilesContainer;
 import org.apache.tiles.locale.LocaleResolver;
@@ -38,7 +38,7 @@ import org.apache.tiles.locale.LocaleResolver;
  * @author Changje Kim
  */
 public class ELTilesContainerFactory extends BasicTilesContainerFactory {
-    private String[] definitions;
+    private final String[] definitions; 
 
     public ELTilesContainerFactory(String[] definitions) {
         this.definitions = definitions;
@@ -71,7 +71,6 @@ public class ELTilesContainerFactory extends BasicTilesContainerFactory {
     private AttributeEvaluatorFactory createAttributeEvaluatorFactory(
             TilesApplicationContext applicationContext,
             TilesRequestContextFactory contextFactory, LocaleResolver resolver,BasicTilesContainer container) {
-      
         ELAttributeEvaluator evaluator = new ELAttributeEvaluator();
         evaluator.setApplicationContext(container.getApplicationContext());
         evaluator.init(new HashMap<String, String>());

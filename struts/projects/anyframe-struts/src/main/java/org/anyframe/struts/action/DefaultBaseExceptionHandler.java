@@ -1,5 +1,5 @@
 /*
- * Copyright 2002-2008 the original author or authors.
+ * Copyright 2007-2012 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -23,7 +23,6 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 import org.anyframe.exception.BaseException;
-import org.apache.commons.logging.Log;
 import org.apache.struts.Globals;
 import org.apache.struts.action.ActionForm;
 import org.apache.struts.action.ActionForward;
@@ -34,7 +33,7 @@ import org.apache.struts.config.ExceptionConfig;
 import org.apache.struts.util.MessageResources;
 import org.apache.struts.util.MessageResourcesFactory;
 import org.apache.struts.util.ModuleException;
-
+import org.slf4j.Logger;
 
 /**
  * 
@@ -47,18 +46,15 @@ import org.apache.struts.util.ModuleException;
  * @author Byunghun Woo
  */
 public class DefaultBaseExceptionHandler extends ExceptionHandler {
-	Log logger = null;
+	Logger logger = null;
 	protected String defaultBundle = "org.anyframe.struts.CommonResource";
 
 	public DefaultBaseExceptionHandler() {
-		logger = DefaultActionUtil.getLogger(DefaultBaseExceptionHandler.class
-				.getName());
+		logger = DefaultActionUtil.getLogger(DefaultBaseExceptionHandler.class.getName());
 	}
 
-	public ActionForward execute(Exception ex, ExceptionConfig ae,
-			ActionMapping mapping, ActionForm formInstance,
-			HttpServletRequest request, HttpServletResponse response)
-			throws ServletException {
+	public ActionForward execute(Exception ex, ExceptionConfig ae, ActionMapping mapping, ActionForm formInstance, HttpServletRequest request,
+			HttpServletResponse response) throws ServletException {
 
 		ActionForward forward = null;
 		if (ae.getPath() != null) {
@@ -84,10 +80,8 @@ public class DefaultBaseExceptionHandler extends ExceptionHandler {
 				request.setAttribute(Globals.EXCEPTION_KEY, ex);
 				logException("runtime exception is occurred! ", ex);
 
-				MessageResourcesFactory factory = MessageResourcesFactory
-						.createFactory();
-				MessageResources messageResources = factory
-						.createResources(defaultBundle);
+				MessageResourcesFactory factory = MessageResourcesFactory.createFactory();
+				MessageResources messageResources = factory.createResources(defaultBundle);
 
 				if (ex instanceof ModuleException) {
 
@@ -99,10 +93,8 @@ public class DefaultBaseExceptionHandler extends ExceptionHandler {
 					String[] messages = new String[2];
 					String[] args = { "" };
 
-					messages[0] = messageResources.getMessage(Locale
-							.getDefault(), messageKey, args);
-					messages[1] = messageResources.getMessage(Locale
-							.getDefault(), messageKey + ".solution", args);
+					messages[0] = messageResources.getMessage(Locale.getDefault(), messageKey, args);
+					messages[1] = messageResources.getMessage(Locale.getDefault(), messageKey + ".solution", args);
 
 					storeException(request, messages, forward, ae.getScope());
 				} else {
@@ -110,11 +102,10 @@ public class DefaultBaseExceptionHandler extends ExceptionHandler {
 					String[] messages = new String[3];
 					String[] args = { "" };
 					// messages[0] = ae.getKey();
-					messages[0] = messageResources.getMessage(Locale
-							.getDefault(), ae.getKey(), args);
+					messages[0] = messageResources.getMessage(Locale.getDefault(), ae.getKey(), args);
 					messages[1] = ""; // solution is empty
 					messages[2] = ex.getMessage(); // reason is exception
-													// message
+					// message
 
 					storeException(request, messages, forward, ae.getScope());
 				}
@@ -122,15 +113,13 @@ public class DefaultBaseExceptionHandler extends ExceptionHandler {
 
 		} catch (Exception e) {
 			StackTraceElement element = e.getCause().getStackTrace()[0];
-			logger.debug(element.getClassName() + ":" + element.getMethodName()
-					+ ":" + element.getLineNumber());
+			logger.debug(element.getClassName() + ":" + element.getMethodName() + ":" + element.getLineNumber());
 			logger.debug(e.getMessage());
 		}
 		return forward;
 	}
 
-	protected void storeException(HttpServletRequest request,
-			String[] messages, ActionForward forward, String scope) {
+	protected void storeException(HttpServletRequest request, String[] messages, ActionForward forward, String scope) {
 
 		if ("request".equals(scope)) {
 			request.setAttribute(Globals.MESSAGE_KEY, messages);
@@ -141,7 +130,7 @@ public class DefaultBaseExceptionHandler extends ExceptionHandler {
 
 	/**
 	 * <p>
-	 * Logs the <code>Exception</code> using commons-logging.
+	 * Logs the <code>Exception</code> using slf4j.
 	 * </p>
 	 * 
 	 * @param e

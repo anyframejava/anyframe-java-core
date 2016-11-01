@@ -1,5 +1,5 @@
 /*
- * Copyright 2008-2011 the original author or authors.
+ * Copyright 2008-2012 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -15,8 +15,6 @@
  */
 package org.anyframe.plugin.hibernate.moviefinder.web;
 
-import java.io.File;
-import java.io.FileOutputStream;
 import java.util.Collection;
 
 import javax.inject.Inject;
@@ -30,19 +28,18 @@ import org.anyframe.plugin.hibernate.moviefinder.service.GenreService;
 import org.anyframe.plugin.hibernate.moviefinder.service.MovieService;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
-import org.springframework.util.FileCopyUtils;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.support.SessionStatus;
-import org.springframework.web.multipart.MultipartFile;
 
 /**
- * The MovieController class is a Controller class to manage web flows about Movie domain.
+ * The MovieController class is a Controller class to manage web flows about
+ * Movie domain.
  * 
  * @author Youngmin Jo
- *
+ * 
  */
 @Controller("hibernateMovieController")
 @RequestMapping("/hibernateMovie.do")
@@ -68,14 +65,13 @@ public class MovieController {
 	}
 
 	@RequestMapping(params = "method=create")
-	public String create(
-			@Valid Movie movie, BindingResult results, SessionStatus status, HttpSession session)
-			throws Exception {
-		
+	public String create(@Valid Movie movie, BindingResult results,
+			SessionStatus status, HttpSession session) throws Exception {
+
 		if (results.hasErrors()) {
 			return "hibernate/moviefinder/movie/form";
 		}
-		
+
 		this.movieService.create(movie);
 		status.setComplete();
 
@@ -95,13 +91,13 @@ public class MovieController {
 	}
 
 	@RequestMapping(params = "method=update")
-	public String update(@Valid Movie movie, BindingResult results, 
+	public String update(@Valid Movie movie, BindingResult results,
 			SessionStatus status) throws Exception {
-		
+
 		if (results.hasErrors()) {
 			return "hibernate/moviefinder/movie/form";
 		}
-		
+
 		this.movieService.update(movie);
 		status.setComplete();
 

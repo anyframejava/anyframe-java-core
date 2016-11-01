@@ -1,5 +1,5 @@
 /*
- * Copyright 2008-2011 the original author or authors.
+ * Copyright 2008-2012 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -22,8 +22,8 @@ import javax.xml.ws.Response;
 
 import org.anyframe.sample.cxf.jaxws.moviefinder.asynch.service.asynch_soap_http.FindMovieListAllResponse;
 import org.anyframe.sample.cxf.jaxws.moviefinder.asynch.service.asynch_soap_http.Movie;
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * Out of JaxWsAsynchTest TestCase test methods, for Asynchronous Method Invocation of Callback way, MovieAsyncHandler class is developed. 
@@ -34,7 +34,7 @@ import org.apache.commons.logging.LogFactory;
 public class MovieAsyncHandler implements
 		AsyncHandler<FindMovieListAllResponse> {
 
-	private Log LOGGER = LogFactory.getLog(MovieAsyncHandler.class);
+	private Logger LOGGER = LoggerFactory.getLogger(MovieAsyncHandler.class);
 	private FindMovieListAllResponse reply;
 
 	public void handleResponse(Response<FindMovieListAllResponse> response) {

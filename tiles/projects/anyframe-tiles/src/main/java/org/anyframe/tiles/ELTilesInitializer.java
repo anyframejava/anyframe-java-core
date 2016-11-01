@@ -31,7 +31,7 @@ public class ELTilesInitializer extends AbstractTilesInitializer {
     
     protected final Logger logger = LoggerFactory.getLogger(getClass());
     
-    private String[] definitions;
+    private String[] definitions; 
     
     public void setDefinitions(String[] definitions) {
         this.definitions = definitions;
@@ -42,8 +42,7 @@ public class ELTilesInitializer extends AbstractTilesInitializer {
      }
  
     protected AbstractTilesContainerFactory createContainerFactory(TilesApplicationContext context) { 
-            ELTilesContainerFactory containerFactory=  new ELTilesContainerFactory(definitions);
-            return containerFactory;
+            return  new ELTilesContainerFactory(definitions);
     }
             
 }

@@ -19,19 +19,15 @@ import java.util.Locale;
 
 import javax.inject.Inject;
 
+import org.anyframe.springrest.example.common.MovieFinderException;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.aspectj.lang.JoinPoint;
 import org.aspectj.lang.annotation.AfterThrowing;
 import org.aspectj.lang.annotation.Aspect;
-import org.aspectj.lang.annotation.Pointcut;
 import org.springframework.aop.framework.Advised;
 import org.springframework.context.MessageSource;
 import org.springframework.stereotype.Service;
-
-import org.anyframe.exception.BaseException;
-
-import org.anyframe.springrest.example.common.MovieFinderException;
 
 /**
  * This ExceptionTransfer class is an Aspect class to provide exception handling
@@ -43,14 +39,10 @@ import org.anyframe.springrest.example.common.MovieFinderException;
 @Service
 public class ExceptionTransfer {
 
-	@Pointcut("execution(* org.anyframe.springrest.example..*Impl.*(..))")
-	public void serviceMethod() {
-	}
-
 	@Inject
 	private MessageSource messageSource;
 
-	@AfterThrowing(pointcut = "serviceMethod()", throwing = "exception")
+	@AfterThrowing(pointcut = "execution(* org.anyframe.springrest.example..*Impl.*(..))", throwing = "exception")
 	public void transfer(JoinPoint thisJoinPoint, Exception exception)
 			throws MovieFinderException {
 		Object target = thisJoinPoint.getTarget();
@@ -74,19 +66,15 @@ public class ExceptionTransfer {
 			throw movieFinderEx;
 		}
 
-		if (exception instanceof BaseException) {
-			BaseException baseEx = (BaseException) exception;
-			logger.error(baseEx.getMessage(), baseEx);
-		}
-
-		try{
-			logger.error(messageSource.getMessage("error." + className	+ "." + opName, new String[] {}, Locale.getDefault()),
-					exception);
-		} catch(Exception e){
-			logger.error(messageSource.getMessage("error.common", new String[] {}, Locale.getDefault()),
-					exception);
+		try {
+			logger.error(messageSource.getMessage("error." + className + "."
+					+ opName, new String[] {}, Locale.getDefault()), exception);
+		} catch (Exception e) {
+			logger.error(messageSource.getMessage("error.common",
+					new String[] {}, Locale.getDefault()), exception);
 			throw new MovieFinderException("error.common");
 		}
-		throw new MovieFinderException("error." + className	+ "." + opName);
+		throw new MovieFinderException(messageSource, "error." + className
+				+ "." + opName);
 	}
 }

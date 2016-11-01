@@ -1,5 +1,5 @@
 /* 
- * Copyright 2002-2008 the original author or authors.
+ * Copyright 2007-2012 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -19,12 +19,10 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 import org.anyframe.exception.BaseException;
-import org.anyframe.struts.action.AbstractActionSupport;
-import org.anyframe.struts.action.DefaultActionUtil;
-import org.apache.commons.logging.Log;
 import org.apache.struts.action.ActionForm;
 import org.apache.struts.action.ActionForward;
 import org.apache.struts.action.ActionMapping;
+import org.slf4j.Logger;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.MessageSource;
 
@@ -69,7 +67,7 @@ public class DefaultActionSupportExceptionTestAction extends AbstractActionSuppo
         return null;
     }
 
-	public Log getLogger() throws Exception {
+	public Logger getLogger() throws Exception {
 		return DefaultActionUtil.getLogger(this.getClass().getName());
 	}
 }

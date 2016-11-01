@@ -45,7 +45,7 @@ public class HibernateTimeDateTest extends
 	@Test
 	public void testInsertTimeDateType() {
 		// 1. insert init data
-		List typeList = insertTimeDateType();
+		List<TimeDateType> typeList = insertTimeDateType();
 		TimeDateType source = (TimeDateType) typeList.get(0);
 
 		// 2. select a timeDateType data
@@ -116,7 +116,7 @@ public class HibernateTimeDateTest extends
 	 * 
 	 * @return List entered JavaDataType List
 	 */
-	private List insertTimeDateType() {
+	private List<TimeDateType> insertTimeDateType() {
 		long currentTime1 = new java.util.Date().getTime();
 
 		TimeDateType timeDateType1 = new TimeDateType();
@@ -153,7 +153,7 @@ public class HibernateTimeDateTest extends
 
 		session.save(timeDateType3);
 
-		List typeList = new ArrayList();
+		List<TimeDateType> typeList = new ArrayList<TimeDateType>();
 		typeList.add(timeDateType1);
 		typeList.add(timeDateType2);
 		typeList.add(timeDateType3);

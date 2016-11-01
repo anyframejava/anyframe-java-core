@@ -5,7 +5,7 @@
   	<div id="container">
     	<div class="main_greeting">
         	<dl>
-                <dt>Welcome to Anyframe 5.1.0-SANPSHOT</dt>
+                <dt>Welcome to Anyframe 5.2.0-SANPSHOT</dt>
                 <dd>Congratulations! Anyframe application has been successfully installed. Anyframe is an open source project and application framework that provides basic architecture, common technical services, templates to help you develop web applications on the Java platform quickly and efficiently.</dd>
             </dl>
         </div>
@@ -24,7 +24,7 @@
                     	<ul>
 							<!--Add new menu here-->
 							<!--jquery-menu-START-->
-                            <li><a href="<c:url value='/jqueryBoard.do?method=tabMain'/>">jQuery 1.0.2</a></li>
+                            <li><a href="<c:url value='/jqueryBoard.do?method=tabMain'/>">jQuery 1.0.3</a></li>
 							<!--jquery-menu-END-->
                         </ul>
                     </td>

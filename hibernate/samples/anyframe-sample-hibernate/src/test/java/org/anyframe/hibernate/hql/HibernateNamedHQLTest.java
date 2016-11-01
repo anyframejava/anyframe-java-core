@@ -49,6 +49,7 @@ public class HibernateNamedHQLTest extends
 	 *             throws exception which is from hibernate
 	 */
 	@Test
+	@SuppressWarnings("unchecked")
 	public void testFindCountryList() throws Exception {
 		// 1. insert init data
 		SetUpInitData.initializeData(session);
@@ -94,6 +95,7 @@ public class HibernateNamedHQLTest extends
 	 *             throws exception which is from hibernate
 	 */
 	@Test
+	@SuppressWarnings("unchecked")
 	public void testFindMovieListByCategory() throws Exception {
 		// 1. insert init data
 		SetUpInitData.initializeData(session);
@@ -133,6 +135,7 @@ public class HibernateNamedHQLTest extends
 	 *             throws exception which is from hibernate
 	 */
 	@Test
+	@SuppressWarnings("unchecked")
 	public void testFindMovieListByCountry() throws Exception {
 		// 1. insert init data
 		SetUpInitData.initializeData(session);
@@ -173,6 +176,7 @@ public class HibernateNamedHQLTest extends
 	 *             throws exception which is from hibernate
 	 */
 	@Test
+	@SuppressWarnings("unchecked")
 	public void testFindCategoryList() throws Exception {
 		// 1. insert init data
 		SetUpInitData.initializeData(session);

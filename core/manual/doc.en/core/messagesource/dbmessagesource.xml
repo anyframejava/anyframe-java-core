@@ -1,0 +1,194 @@
+<chapter id="core_db_messagesource">
+	<title>DatabaseMessageSource</title>
+	<para>
+		ResourceBundleMessageSource provided by Spring and Anyframe's EncodingResourceBundleMessageSource developed by extending it support messages based on files.  
+		Anyframe provides DB-based MessageSource function in case processing of large volume messages and safer management are required. 
+	</para>
+	<para>
+		The implementation that provides this function is org.anyframe.spring.message.DatabaseMessageSource. 
+		Since DatabaseMessageSource assumes that the messages for each locale is defined in one table, 
+		the tables managing Messages should be composed to include the following columns and add the messages for each Locale.
+		(The table names and column names can be changed.)	
+		<itemizedlist>
+	    	<listitem>
+	      		<para>KEY column: Stores KEY information to identify Message Resources (VARCHAR type, PRIMARY KEY)</para>
+	      	</listitem>
+	      	<listitem>
+	      		<para>LANGUAGE column: Stores <ulink url="http://www.ics.uci.edu/pub/ietf/http/related/iso639.txt">ISO Language Code</ulink> information to retrieve the right message for the designated Locale  (VARCHAR type, PRIMARY KEY)</para>
+	      	</listitem>
+			<listitem>
+	      		<para>COUNTRY column: Stores <ulink url="http://www.chemie.fu-berlin.de/diverse/doc/ISO_3166.html">ISO Country Code</ulink> information to retrieve the right message for the designated Locale (VARCHAR type, PRIMARY KEY)</para>
+	      	</listitem>
+			<listitem>
+	      		<para>TEXT column: Stores the Messages to be retrieved (VARCHAR type)</para>
+	      	</listitem>
+		</itemizedlist>
+		Globalization of applications is supported as DatabaseMessageSource delivers proper messages based on the entered Locale information (Language information, Country information) and Message Key using the tables constituted as above.  
+		
+	</para>
+	<section id="core_db_messagesource_configuration">
+		<title>Configuration</title>
+		<para>
+			To utilize DatabaseMessageSource, the following properties should be defined. Let us look at the meaning of each property below.
+		</para>
+	    <informaltable>
+			<tgroup cols="4">
+				<colspec colname="col1" colnum="1" colwidth="2.5*" />
+				<colspec colname="col2" colnum="2" colwidth="6*" />
+				<colspec colname="col3" colnum="3" colwidth="1*" />
+				<colspec colname="col4" colnum="4" colwidth="1*" />
+		
+				<thead>
+					<row>
+						<entry align="center">Property</entry>
+						<entry align="center">Description</entry>
+						<entry align="center">Required</entry>
+						<entry align="center">Default Value</entry>
+					</row>
+				</thead>
+		
+				<tbody>
+					<row>
+						<entry>dataSource</entry>
+						<entry>Defines the id of dataSource Bean to be referenced. 
+						Property necessary to access the DB that stores Messages.</entry>
+						<entry>Y</entry>
+						<entry>N/A</entry>
+					</row>
+					<row>
+						<entry>messageTable</entry>
+						<entry>
+							Defines the information on the tables that manage Messages in the Properties type.
+							The following properties can be defined in Properties.
+							<itemizedlist>
+								<listitem>
+									<para>table: Name of the table managing messages (Default = MESSAGE_SOURCE)</para>
+								</listitem>
+								<listitem>
+									<para>key.column: Name of the column to store Message KEY (Default = KEY)</para>
+								</listitem>
+								<listitem>
+									<para>language.column: Name of the column to store ISO language code where the relevant Message belongs (Default = LANGUAGE) </para>
+								</listitem>
+								<listitem>
+									<para>country.column: Name of the column to store ISO country code where the relevant Message belongs (Default = COUNTRY)</para>
+								</listitem>
+								<listitem>
+									<para>text.column: Name of the column to store the contents of the Message (Default = TEXT)</para>
+								</listitem>
+							</itemizedlist>
+						</entry>
+						<entry>N</entry>
+						<entry>N/A</entry>
+					</row>
+					<row>
+						<entry>defaultLanguage</entry>
+						<entry>
+							DatabaseMessageSource sets the basic locale information based on defaultLanguage and defaultCountry property information. 
+							If the proper message for the entered locale is not found, the message for the basic locale is delivered.
+							If there is not the message for the basic locale either, NoSuchMessageException will occur.
+							Therefore, define <ulink url="http://www.ics.uci.edu/pub/ietf/http/related/iso639.txt">ISO language code</ulink> that will be applied as the default. 
+						</entry>
+						<entry>N</entry>
+						<entry>en</entry>
+					</row>	
+					<row>
+						<entry>defaultCountry</entry>
+						<entry>
+							DatabaseMessageSource sets the default locale information based on the defaultLanguage and defaultCountry property information. 
+							If a proper message is not found for the entered locale, deliver the message for the default locale.
+							If there is not the message for the default locale either, NoSuchMessageException will occur.
+							Therefore, define <ulink url="http://www.chemie.fu-berlin.de/diverse/doc/ISO_3166.html">ISO country code</ulink> that will be applied as the default.						
+						</entry>
+						<entry>N</entry>
+						<entry>US</entry>
+					</row>
+					<row>
+						<entry>cacheConfiguration</entry>
+						<entry>
+							DatabaseMessageSource uses Ehcache internally to search messages effectively. 
+							Since the message once searched is stored in Cache, it is not necessary to access the DB again when it is searched next time. 
+							(Yet, it can be different depending on the Cache property definition.)
+							Basically, Ehcache manages cached objects according to the internal definition of ehcache-failsafe.xml, 
+							but when a separate property is defined, it can be changed. 
+							For this, define the path of XML file that defined the policy for caching with the value of cacheConfiguration.
+							CacheConfiguration can be defined using the absolute/relative path (file:...) or classpath (classpath:...).
+							For more details on definition of XML, refer to <ulink url="http://ehcache.org/documentation/configuration.html">Ehcache manual</ulink>.
+						</entry>
+						<entry>N</entry>
+						<entry>Ehcache-failsafe.xml in ehcache library</entry>
+					</row>					
+					<row>
+						<entry>lazyLoad</entry>
+						<entry>
+							Defines whether to load all messages managed by a specific table in advance. 
+							If lazyLoad is true, the relevant message is found by accessing DB and stored in internal Cache when individual messages are found by calling the getMessage() method.
+							If lazyLoad is false, all messages are found in the relevant table and stored in Cache after DatabaseMessageSource bean becomes an instance.
+							In this case, timeToLive and timeToIdle properties defined in cacheConfiguration and the number of maximum caching data are ignored.  
+						</entry>
+						<entry>N</entry>
+						<entry>true</entry>
+					</row>																		
+				</tbody>
+		</tgroup>
+		</informaltable>
+		<para>
+			The following is part of context-message.xml that contains the property definition of DatabaseMessageSource mentioned above.  		
+		</para>
+		<programlisting language="xml"><![CDATA[<bean id="messageSource" 
+    class="]]><emphasis role="bold"><![CDATA[org.anyframe.spring.message.DatabaseMessageSource]]></emphasis><![CDATA[">
+    <property name="dataSource" ref="dataSource"/>
+    <property name="messageTable">
+        <props>
+            <prop key="table">TEST_MESSAGE_SOURCE</prop>
+            <prop key="text.column">MESSAGE</prop>
+        </props>
+    </property>
+    <property name="cacheConfiguration" value="classpath:/spring/message/ehcache.xml"/>
+</bean>]]></programlisting>	
+	</section>
+	<section id="core_db_messagesource_import_export">
+		<title>Import/Export/Refresh Messages</title>
+		<para>
+			DatabaseMessageSource provides the import function to reflect a large amount of messages in the message management table at one time.
+			For this, importMessages(final List<![CDATA[<Message>]]> messages) method of DatabaseMessageSource can be called. 
+			It should be noted that each message should be contained in the org.anyframe.spring.message.Message object.
+		</para>
+		<para>
+			It also provides the Export function to retrieve all messages stored in the message management table.
+			For this, the List<![CDATA[<Message>]]> exportMessages() method of DatabaseMessageSource can be called. 
+			The result of calling the exportMessages() method is delivered in the list type of the org.anyframe.spring.message.Message object. 
+			Each Message information is stored in the org.anyframe.spring.message.Message object. 		
+		</para>
+		<para>
+			The following is part of MessageMgmtServiceImpl that executes Message Import/Export using DatabaseMessageSource.
+		</para>
+		<programlisting language="xml"><![CDATA[public class MessageMgmtServiceImpl implements MessageMgmtService {
+    @Inject
+    MessageSource messageSource;
+    
+    public void importMessages() throws Exception {
+        List<Message> messages = new ArrayList<Message>();
+        Message message = new Message("error.moviefinderimpl.getpaginglist", "en",
+            "US", "Movie List not displayed.");
+        messages.add(message);  
+        
+        // ...
+        // add messages to ArrayList
+        
+        ((DatabaseMessageSource) messageSource).importMessages(messages);  
+    }	
+    
+    public 	List<Message> exportMessages() throws Exception {
+        return ((DatabaseMessageSource) messageSource).exportMessages();  
+    }
+}]]></programlisting>	
+	 	<para>
+	 		In addition, it will be necessary to reflect the changes in the Cache inside DatabaseMessageSource when there are changes in the Message management table. 
+	 		For this, DatabaseMessageSource provides the refresh() method, and it operates as follows when called.  
+	 		If lazyLoad is true, all the data cached in DatabaseMessageSource is deleted. 
+	 		If lazyLoad is false, all the cached data in DatabaseMessageSource is deleted, 
+	 		and all message information is retrieved from the Message management table and stored in Cache.
+	 	</para>
+	</section>	
+</chapter>

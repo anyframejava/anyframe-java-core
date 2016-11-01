@@ -1,5 +1,5 @@
 /*
- * Copyright 2002-2008 the original author or authors.
+ * Copyright 2002-2012 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -26,6 +26,8 @@ import org.anyframe.query.QueryInfo;
 import org.anyframe.query.ria.RiaPrintWriterCallback;
 
 /**
+ * Class for Print Writer XP DataSet 
+ * 
  * @author Soyon Lim
  * @author JongHoon Kim
  */
@@ -39,7 +41,7 @@ public class XPPrintWriterCallbackHandler extends XPCallbackSupport
 	private int[] columnTypes;
 	private String[] fieldNames;
 	private String[] columnNames;
-	private Map columnIndexMap = new HashMap();
+	private Map<String, Integer> columnIndexMap = new HashMap<String, Integer>();
 
 	public void setEncoding(String encoding) {
 		this.encoding = encoding;

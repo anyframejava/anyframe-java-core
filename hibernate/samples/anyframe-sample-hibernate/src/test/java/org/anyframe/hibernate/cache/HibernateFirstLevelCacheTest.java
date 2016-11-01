@@ -37,6 +37,7 @@ public class HibernateFirstLevelCacheTest extends AbstractConfigurationalTest {
 	 * @throws Exception
 	 */
 	@Test
+	@SuppressWarnings("unchecked")
 	public void testFindMovie() throws Exception {
 		// 1. insert init data. hibernate put initial data into 1LC.
 		newSession();

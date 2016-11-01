@@ -16,6 +16,9 @@
 			<imageobject>
 				<imagedata align="center" fileref="../image/springrest/formsubmitmessage.png" />
 			</imageobject>
+			<textobject>
+				<phrase>submit된 HTTP Request Message</phrase>
+			</textobject>
 		</mediaobject>
 	</para>
 	
@@ -32,6 +35,9 @@ public void update(<emphasis role="bold">Movie updateMovie</emphasis>) throws Ex
 			<imageobject>
 				<imagedata align="center" fileref="../image/springrest/xmlrequestmessage.png" />
 			</imageobject>
+			<textobject>
+				<phrase>RESTful 방식을 통해 들어온 데이터 형식</phrase>
+			</textobject>
 		</mediaobject>
 		그래서 Spring에서는 다양한 형태의 HTTP Request Message를 직접 처리할 수 있도록 <emphasis role="bold">@RequestBody</emphasis>를 제공한다.
 	 	또한, 클라이언트로 다양한 형태의 HTTP Response Message를 직접 리턴할 수 있도록 <emphasis role="bold">@ResponseBody</emphasis>를 제공한다.
@@ -72,12 +78,16 @@ public <emphasis role="bold">ResponseEntity<![CDATA[<String>]]></emphasis> creat
 		일반적으로 POST method의 경우 요청에 의해 Resource가 생성되었다면 '201 CREATED' status code와 새로 생성된 Resource를 조회할 수 있는 정보를 기술한 Location header를 리턴한다.
 	</para>
 	
-	<note id="springrest_restsupport_contentnegotiation_responsestatuscode">
+	<!--note id="springrest_restsupport_contentnegotiation_responsestatuscode"-->
+	<note>
 		<title>HTTP Response Status Code</title>
 		<mediaobject>
 			<imageobject>
 				<imagedata align="center" fileref="../image/springrest/httpstatuscodetable.png" />
 			</imageobject>
+			<textobject>
+				<phrase>HTTP Response Status Code</phrase>
+			</textobject>
 		</mediaobject>		  
 		자세한 내용은 <ulink url="http://www.w3.org/Protocols/rfc2616/rfc2616-sec10.html">HTTP Status Code Definitions</ulink>와 <ulink url="http://www.w3.org/Protocols/rfc2616/rfc2616-sec9.html">Method Definitions</ulink>를 참조하기 바란다.
 	</note>
@@ -178,7 +188,8 @@ public <emphasis role="bold">ResponseEntity<![CDATA[<String>]]></emphasis> creat
 		View Resolver들이 리턴한 View의 Content-Type과 요청들어온 미디어 타입의 매칭여부를 확인해서 가장 적합한 View를 찾아서 클라이언트로 응답한다.
 	</para>
 	
-	<note id="springrest_restsupport_contentnegotiation_errorhandling">
+	<!--note id="springrest_restsupport_contentnegotiation_errorhandling"-->
+	<note>
 		<title>Response Status Code와 에러 페이지</title>
 		<para>
 			Controller의 메소드에서 Exception이 발생했을 때, 
@@ -190,12 +201,13 @@ public <emphasis role="bold">ResponseEntity<![CDATA[<String>]]></emphasis> creat
 			에러가 발생했음에도 불구하고 REST 클라이언트에게는 '200 OK'라는 Response Status와 함께 error 페이지 HTML 내용이 리턴되는 문제가 있다.
 		</para>
 		
-		<para>
+		<!--para>
 			자세한 내용은 <link linkend="springrest_restsupport_exceptionhandling_errorresponsehandling">Response Status Code와 HandlerExceptionResolver</link>를 참조하기 바란다.
-		</para>
+		</para-->
 	</note>
 	
-	<note id="springrest_simplemediatypeviewresolver">
+	<!--note id="springrest_simplemediatypeviewresolver"-->
+	<note>
 		<title>SimpleMediaTypeViewResolver</title>
 		<para>위에서 설명한 대로 ContentNegotiatingViewResolver는 주어진 요청에 "가장 가까운" View를 찾아서 반환하도록 설계되었다. 하지만 이 때문에 설정이 복잡하고 Spring의 ViewResolve 로직을 이해하여야만 하는 직관적이지 못한 설정방법을 제공하고 있다.</para>
 		<para>이에 Anyframe에서는 Core 플러그인 1.0.4 버전부터 "Negotiation"은 제외하고 요청받은 View를 직관적으로 서비스할 수 있는 간략화된 형태의 ViewResolver를 별도로 제공하고 있다. SimpleMediaTypeViewResolver이다.</para>
@@ -244,6 +256,6 @@ public <emphasis role="bold">ResponseEntity<![CDATA[<String>]]></emphasis> creat
 		</para>
 		<para>SimpleMediaTypeViewResolver는 요청받은 request uri의 media type(=extension)을 서비스할 ViewResolver 또는 View를 직접 지정하는 mapping 기반의 설정 방식을 통해 직관적이고 비교적 간단한 설정으로 Multiple Representation을 제공하도록 설계되었다. 
 		</para>
-		<para>위에서 언급한 SimpleMediaTypeViewResolver에 관한 샘플 코드는 본 섹션 내의 다운로드 - <ulink url="http://dev.anyframejava.org/docs/anyframe/plugin/optional/springrest/1.0.2/reference/sample/anyframe-sample-springrest.zip">anyframe-sample-springrest</ulink>를 통해 다운로드받을 수 있다.</para>
+		<para>위에서 언급한 SimpleMediaTypeViewResolver에 관한 샘플 코드는 본 섹션 내의 다운로드 - <ulink url="http://dev.anyframejava.org/docs/anyframe/plugin/optional/springrest/1.0.3/reference/sample/anyframe-sample-springrest.zip">anyframe-sample-springrest</ulink>를 통해 다운로드받을 수 있다.</para>
 	</note>
 </chapter>

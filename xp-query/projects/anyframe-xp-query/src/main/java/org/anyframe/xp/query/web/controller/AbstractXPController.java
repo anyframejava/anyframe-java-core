@@ -1,5 +1,5 @@
 /*
- * Copyright 2002-2008 the original author or authors.
+ * Copyright 2002-2012 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -52,7 +52,7 @@ public abstract class AbstractXPController extends AbstractController {
 	 * CONTENT_TYPE_MI_XML "MiXml"  
 	 * CONTENT_TYPE_XML "PlatformXml"  
 	 */
-	private String contentType = PlatformType.CONTENT_TYPE_XML; //기본 XML
+	private String contentType = PlatformType.CONTENT_TYPE_XML; // Default - XML
 	
 	protected Log logger=LogFactory.getLog(AbstractXPController.class);
 	
@@ -104,15 +104,12 @@ public abstract class AbstractXPController extends AbstractController {
 		HttpPlatformResponse httpPlatformResponse = new HttpPlatformResponse(response, contentType, charset);
 
 		try {
-			//InputStream 또는 Reader로부터 데이터를 수신받는다. 
 			httpPlatformRequest.receiveData();
 			
 			PlatformData inPlatformData = httpPlatformRequest.getData();
-			// Client로 부터 전달 받은 데이터 
 			inVl = inPlatformData.getVariableList();
 			inDl = inPlatformData.getDataSetList();
 			
-			// Client로 전달 할 데이터
 			outVl = new VariableList();
 			outDl = new DataSetList();
 

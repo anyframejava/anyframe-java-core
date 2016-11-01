@@ -1,5 +1,5 @@
 /*
- * Copyright 2002-2008 the original author or authors.
+ * Copyright 2007-2012 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -23,12 +23,12 @@ import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
 import org.apache.struts.action.ActionForm;
 import org.apache.struts.action.ActionForward;
 import org.apache.struts.action.ActionMapping;
 import org.apache.struts.util.MessageResources;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import com.tobesoft.platform.PlatformRequest;
 import com.tobesoft.platform.data.DatasetList;
@@ -44,6 +44,7 @@ public class AbstractMiPDispatchAction extends AbstractMiPAction{
 	/**
      * The Class instance of this <code>DispatchAction</code> class.
      */
+	@SuppressWarnings("unchecked")
 	protected Class clazz = this.getClass();
 	 
 	/**
@@ -52,7 +53,7 @@ public class AbstractMiPDispatchAction extends AbstractMiPAction{
     protected static MessageResources messages = MessageResources
     		.getMessageResources("org.apache.struts.actions.LocalStrings");
 
-    public Log log;
+    public Logger logger;
      
     /**
      * get Logger
@@ -67,6 +68,7 @@ public class AbstractMiPDispatchAction extends AbstractMiPAction{
      * method name. This collection is populated as different methods are
      * called, so that introspection needs to occur only once per method name.
      */
+	@SuppressWarnings("unchecked")
 	protected HashMap methods = new HashMap();
 	
 	 /**
@@ -74,7 +76,8 @@ public class AbstractMiPDispatchAction extends AbstractMiPAction{
      * method name. This collection is populated as different methods are
      * called, so that introspection needs to occur only once per method name.
      */
-    protected Class[] types = { ActionMapping.class, PlatformRequest.class, VariableList.class,
+    @SuppressWarnings("unchecked")
+	protected Class[] types = { ActionMapping.class, PlatformRequest.class, VariableList.class,
     		DatasetList.class, VariableList.class,DatasetList.class };    
     
     /**
@@ -211,7 +214,8 @@ public class AbstractMiPDispatchAction extends AbstractMiPAction{
      * @exception NoSuchMethodException
      *                if no such method can be found
      */
-    protected Method getMethod(String name) throws NoSuchMethodException {
+    @SuppressWarnings("unchecked")
+	protected Method getMethod(String name) throws NoSuchMethodException {
         synchronized (methods) {
             Method method = (Method) methods.get(name);
             if (method == null) {
@@ -225,8 +229,8 @@ public class AbstractMiPDispatchAction extends AbstractMiPAction{
     /**
      * get Logger
      */
-	public Log getLogger() {
-		return LogFactory.getLog(this.getClass().getName());
+	public Logger getLogger() {
+		return LoggerFactory.getLogger(this.getClass().getName());
 	}
 
 	public ActionForward process(ActionMapping arg0, ActionForm arg1,

@@ -286,7 +286,7 @@ public class HibernateSaveParentChildTest extends AbstractConfigurationalTest {
 		country1.setCountryId("KR");
 		country1.setCountryName("Korea");
 
-		Set movies = new HashSet();
+		Set<Movie> movies = new HashSet<Movie>();
 		movie1.setCountry(country1);
 		movies.add(movie1);
 		movie2.setCountry(country1);
@@ -324,7 +324,7 @@ public class HibernateSaveParentChildTest extends AbstractConfigurationalTest {
 		movie2.setReleaseDate(DateUtil.string2Date("2004-04-02", "yyyy-MM-dd"));
 		movie2.setTitle("My Little Bride");
 
-		Set movies = new HashSet();
+		Set<Movie> movies = new HashSet<Movie>();
 		movie1.setCountry(country1);
 		movies.add(movie1);
 		movie2.setCountry(country1);
@@ -365,7 +365,7 @@ public class HibernateSaveParentChildTest extends AbstractConfigurationalTest {
 		movie2.setReleaseDate(DateUtil.string2Date("2004-04-02", "yyyy-MM-dd"));
 		movie2.setTitle("My Little Bride");
 
-		Set movies = new HashSet();
+		Set<Movie> movies = new HashSet<Movie>();
 		movie1.setCountry(country);
 		movies.add(movie1);
 		movie2.setCountry(country);
@@ -390,6 +390,7 @@ public class HibernateSaveParentChildTest extends AbstractConfigurationalTest {
 	 * @param countryCode
 	 * @throws Exception
 	 */
+	@SuppressWarnings("unchecked")
 	private void updateMovies(String countryCode) throws Exception {
 		Country country = (Country) session.get(Country.class, countryCode);
 
@@ -409,6 +410,7 @@ public class HibernateSaveParentChildTest extends AbstractConfigurationalTest {
 		session.update(country);
 	}
 
+	@SuppressWarnings("unchecked")
 	private void updateMoveAddMovieAtOnce(String countryCode) throws Exception {
 		Country country = (Country) session.get(Country.class, countryCode);
 

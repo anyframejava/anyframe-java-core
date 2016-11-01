@@ -19,13 +19,14 @@ package org.anyframe.logmanager.logback;
 import java.net.InetAddress;
 import java.net.UnknownHostException;
 import java.util.Date;
-import java.util.Map;
+
+import org.anyframe.logmanager.exception.AuthenticationException;
+import org.anyframe.util.StringUtil;
 
 import ch.qos.logback.classic.spi.ILoggingEvent;
 import ch.qos.logback.core.AppenderBase;
 import ch.qos.logback.core.status.ErrorStatus;
 
-import com.mongodb.BasicDBObject;
 import com.mongodb.BasicDBObjectBuilder;
 import com.mongodb.DB;
 import com.mongodb.DBCollection;
@@ -39,7 +40,7 @@ import com.mongodb.Mongo;
  */
 public class MongoDbAppender extends AppenderBase<ILoggingEvent> {
 	
-	private static final String KEY_APP_NAME = "appName";
+	private static final String KEY_APP_NAME = "appName"; 
 	private static final String KEY_TIMESTAMP = "timestamp";
 	private static final String KEY_MESSAGE = "message";
 	private static final String KEY_LEVEL = "level";
@@ -49,7 +50,6 @@ public class MongoDbAppender extends AppenderBase<ILoggingEvent> {
 	private static final String KEY_FILENAME = "fileName";
 	private static final String KEY_LINENUMBER = "lineNumber";
 	private static final String KEY_THREAD = "thread";
-	private static final String KEY_MDC = "mdc";
 	private static final String KEY_SERVER_ID = "serverId";
 	
     private String hostname = "localhost";
@@ -59,8 +59,8 @@ public class MongoDbAppender extends AppenderBase<ILoggingEvent> {
     private String databaseName = "logging";
     private String collectionName = "moviefinderlogs";
     
-    private Mongo _mongo;
-    private DBCollection _collection;
+    private Mongo mongo;
+    private DBCollection collection;
     
     
     
@@ -115,17 +115,17 @@ public class MongoDbAppender extends AppenderBase<ILoggingEvent> {
 	@Override
     public void start() {
         try {
-            _mongo = new Mongo(hostname, port);
-            DB db = _mongo.getDB(databaseName);
+            mongo = new Mongo(hostname, port);
+            DB db = mongo.getDB(databaseName);
             
-            if (userName != null && userName.trim().length() > 0) {
+            if (!StringUtil.isEmptyTrimmed(userName)) {
                 if (!db.authenticate(userName, password.toCharArray())) {
-                    throw new RuntimeException("Unable to authenticate with MongoDB server.");
+                    throw new AuthenticationException("Unable to authenticate with MongoDB server.");
                 }
                 password = null;
             }
             
-            _collection = db.getCollection(collectionName);
+            collection = db.getCollection(collectionName);
         } catch (Exception e) {
             addStatus(new ErrorStatus("Failed to initialize MondoDB", this, e));
             return;
@@ -136,19 +136,27 @@ public class MongoDbAppender extends AppenderBase<ILoggingEvent> {
     
     @Override
     public void stop() {
-        _mongo.close();
+        mongo.close();
         super.stop();
     }
 
     @Override
     protected void append(ILoggingEvent loggingEvent) {
 
-        BasicDBObjectBuilder objectBuilder = BasicDBObjectBuilder.start()
-                .add(KEY_TIMESTAMP, new Date(loggingEvent.getTimeStamp()))
-                .add(KEY_MESSAGE, loggingEvent.getFormattedMessage())
-                .add(KEY_LEVEL, loggingEvent.getLevel().toString())
-                .add(KEY_LOGGER, loggingEvent.getLoggerName())
-                .add(KEY_THREAD, loggingEvent.getThreadName());
+        BasicDBObjectBuilder objectBuilder = null;
+        if(loggingEvent.getMDCPropertyMap() != null && !loggingEvent.getMDCPropertyMap().isEmpty()) {
+        	objectBuilder = BasicDBObjectBuilder.start(loggingEvent.getMDCPropertyMap());
+            objectBuilder.add(KEY_APP_NAME, loggingEvent.getMDCPropertyMap().get(KEY_APP_NAME));
+        }else{
+        	objectBuilder = BasicDBObjectBuilder.start();
+        	objectBuilder.add(KEY_APP_NAME, "UNKNOWN");
+        }
+        
+        objectBuilder.add(KEY_TIMESTAMP, new Date(loggingEvent.getTimeStamp()))
+        	.add(KEY_MESSAGE, loggingEvent.getFormattedMessage())
+        	.add(KEY_LEVEL, loggingEvent.getLevel().toString())
+        	.add(KEY_LOGGER, loggingEvent.getLoggerName())
+        	.add(KEY_THREAD, loggingEvent.getThreadName());
         
         if(loggingEvent.getCallerData() != null) {
        		objectBuilder.add(KEY_CLASS, loggingEvent.getCallerData()[0].getClassName())
@@ -163,11 +171,6 @@ public class MongoDbAppender extends AppenderBase<ILoggingEvent> {
 			objectBuilder.add(KEY_SERVER_ID, null);
 		}
         
-        Map<String, String> mdc = loggingEvent.getMDCPropertyMap();
-        if(mdc != null && !mdc.isEmpty()) {
-            objectBuilder.add(KEY_MDC, new BasicDBObject(mdc))
-            		.add(KEY_APP_NAME, mdc.get(KEY_APP_NAME));
-        }
-        _collection.insert(objectBuilder.get());
+        collection.insert(objectBuilder.get());
     }
 }

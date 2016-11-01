@@ -1,5 +1,5 @@
 /*
- * Copyright 2008-2011 the original author or authors.
+ * Copyright 2008-2012 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -26,26 +26,28 @@ import org.apache.commons.vfs.provider.local.DefaultLocalFileProvider;
 import org.apache.commons.vfs.provider.sftp.SftpFileObject;
 import org.apache.commons.vfs.provider.sftp.SftpFileProvider;
 import org.apache.commons.vfs.provider.sftp.SftpFileSystemConfigBuilder;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
 @Service("sftpService")
 public class SftpServiceImpl implements SftpService {
 
+	private static final Logger logger = LoggerFactory.getLogger(SftpServiceImpl.class);
+
 	@Value("#{contextProperties['ftpPath']}")
 	private String ftpPath;
-	
+
 	// file download
-	public void download(File localFile, String fileId)
-			throws Exception {
+	public void download(File localFile, String fileId) throws Exception {
 		FileSystemOptions fsOptions = null;
 		DefaultFileSystemManager fsManager = null;
 		SftpFileProvider sftp = null;
-		
+
 		try {
 			fsOptions = new FileSystemOptions();
-			SftpFileSystemConfigBuilder.getInstance()
-					.setStrictHostKeyChecking(fsOptions, "no");
+			SftpFileSystemConfigBuilder.getInstance().setStrictHostKeyChecking(fsOptions, "no");
 			fsManager = new DefaultFileSystemManager();
 			sftp = new SftpFileProvider();
 			DefaultLocalFileProvider fspath = null;
@@ -62,14 +64,12 @@ public class SftpServiceImpl implements SftpService {
 			SftpFileObject fo = null;
 
 			try {
-				fo = (SftpFileObject) fsManager.resolveFile(ftpPath
-						+ fileId, fsOptions);
+				fo = (SftpFileObject) fsManager.resolveFile(ftpPath + fileId, fsOptions);
 
-				FileObject localFileObject = fsManager
-						.toFileObject(localFile);
+				FileObject localFileObject = fsManager.toFileObject(localFile);
 				localFileObject.copyFrom(fo, Selectors.SELECT_SELF);
 				logger.debug(localFileObject.getName() + " 파일이 저장되었습니다.");
-				
+
 			} catch (Exception e) {
 				e.printStackTrace();
 			} finally {
@@ -85,36 +85,33 @@ public class SftpServiceImpl implements SftpService {
 				fsManager.close();
 		}
 	}
-	
+
 	// get file object
-	public SftpFileObject getSftpFileObject(String fileId)
-		throws Exception {
+	public SftpFileObject getSftpFileObject(String fileId) throws Exception {
 		FileSystemOptions fsOptions = null;
 		DefaultFileSystemManager fsManager = null;
 		SftpFileProvider sftp = null;
-		
+
 		SftpFileObject fo = null;
-		
+
 		try {
 			fsOptions = new FileSystemOptions();
-			SftpFileSystemConfigBuilder.getInstance()
-					.setStrictHostKeyChecking(fsOptions, "no");
+			SftpFileSystemConfigBuilder.getInstance().setStrictHostKeyChecking(fsOptions, "no");
 			fsManager = new DefaultFileSystemManager();
 			sftp = new SftpFileProvider();
 			DefaultLocalFileProvider fspath = null;
-		
+
 			fspath = new DefaultLocalFileProvider();
-		
+
 			fspath.init();
 			sftp.init();
-		
+
 			fsManager.addProvider("sftp", sftp);
 			fsManager.addProvider("file", fspath);
 			fsManager.init();
-		
+
 			try {
-				fo = (SftpFileObject) fsManager.resolveFile(ftpPath
-						+ fileId, fsOptions);
+				fo = (SftpFileObject) fsManager.resolveFile(ftpPath + fileId, fsOptions);
 			} catch (Exception e) {
 				e.printStackTrace();
 			} finally {
@@ -132,18 +129,17 @@ public class SftpServiceImpl implements SftpService {
 		}
 		return fo;
 	}
-	
-	//remove file
+
+	// remove file
 	public void remove(String fileId) throws Exception {
-		
+
 		FileSystemOptions fsOptions = null;
 		DefaultFileSystemManager fsManager = null;
 		SftpFileProvider sftp = null;
-		
+
 		try {
 			fsOptions = new FileSystemOptions();
-			SftpFileSystemConfigBuilder.getInstance()
-					.setStrictHostKeyChecking(fsOptions, "no");
+			SftpFileSystemConfigBuilder.getInstance().setStrictHostKeyChecking(fsOptions, "no");
 			fsManager = new DefaultFileSystemManager();
 			sftp = new SftpFileProvider();
 			DefaultLocalFileProvider fspath = null;
@@ -160,7 +156,7 @@ public class SftpServiceImpl implements SftpService {
 			SftpFileObject fo = null;
 
 			try {
-				fo = (SftpFileObject) fsManager.resolveFile(ftpPath	+ fileId, fsOptions);
+				fo = (SftpFileObject) fsManager.resolveFile(ftpPath + fileId, fsOptions);
 				fo.delete();
 			} catch (Exception e) {
 				e.printStackTrace();
@@ -179,17 +175,15 @@ public class SftpServiceImpl implements SftpService {
 		}
 	}
 
-	//upload file
-	public void upload(File localFile, String fileId)
-			throws Exception {
+	// upload file
+	public void upload(File localFile, String fileId) throws Exception {
 		FileSystemOptions fsOptions = null;
 		DefaultFileSystemManager fsManager = null;
 		SftpFileProvider sftp = null;
 
 		try {
 			fsOptions = new FileSystemOptions();
-			SftpFileSystemConfigBuilder.getInstance()
-					.setStrictHostKeyChecking(fsOptions, "no");
+			SftpFileSystemConfigBuilder.getInstance().setStrictHostKeyChecking(fsOptions, "no");
 			fsManager = new DefaultFileSystemManager();
 			sftp = new SftpFileProvider();
 			DefaultLocalFileProvider fspath = null;
@@ -206,7 +200,7 @@ public class SftpServiceImpl implements SftpService {
 			SftpFileObject fo = null;
 
 			try {
-				fo = (SftpFileObject) fsManager.resolveFile(ftpPath	+ fileId, fsOptions);
+				fo = (SftpFileObject) fsManager.resolveFile(ftpPath + fileId, fsOptions);
 				FileObject localFileObject = fsManager.toFileObject(localFile);
 				fo.copyFrom(localFileObject, Selectors.SELECT_SELF);
 			} catch (Exception e) {

@@ -55,7 +55,7 @@ public class MovieFinderExceptionResolver extends SimpleMappingExceptionResolver
 			} catch(Exception e){
 				movieFinderException = new MovieFinderException("error.common");
 			}
-			
+					
 		}else{
 			movieFinderException = (MovieFinderException) ex;
 		}

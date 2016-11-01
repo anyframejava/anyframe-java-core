@@ -1,5 +1,5 @@
 /*
- * Copyright 2002-2008 the original author or authors.
+ * Copyright 2007-2012 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -24,13 +24,13 @@ import javax.servlet.http.HttpServletResponse;
 import org.anyframe.struts.util.InvalidTokenException;
 import org.apache.commons.beanutils.ConvertUtils;
 import org.apache.commons.beanutils.locale.converters.DateLocaleConverter;
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
 import org.apache.struts.action.ActionForm;
 import org.apache.struts.action.ActionForward;
 import org.apache.struts.action.ActionMapping;
 import org.apache.struts.action.ActionMessage;
 import org.apache.struts.action.ActionMessages;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.web.struts.ActionSupport;
 
 /**  
@@ -56,8 +56,8 @@ public abstract class AbstractActionSupport extends ActionSupport {
 	/**
 	 * Core Framework Delegation Util Method to get Logger
 	 */
-	public Log getLogger() throws Exception{
-		return LogFactory.getLog(this.getClass().getName());
+	public Logger getLogger() throws Exception{
+		return LoggerFactory.getLogger(this.getClass().getName());
 	}
 
 	/**

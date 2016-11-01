@@ -8,13 +8,22 @@
             This Ant build.xml file is used to transform DocBook XML to various
     </description>
 
-	<property name="book.name" value="remoting" />
-	<property name="version" value="1.0.2"/>		
+	<!-- set env for using svn id/password -->
+	<property environment="env" />
+	<property name="subv.username" value="${env.SVN_USER}" />
+	<property name="subv.password" value="${env.SVN_PASSWORD}" />
+		
 	<!--
 	  - set dbf installer folder and sample project folder
 	 -->
-	<property name="dbf.home" value="/Users/aromy/Devel/anyframe-opensource/3rd-party/docbook" />
-	<property name="sample.home" value="/Users/aromy/Devel/anyframe-opensource/anyframe/trunk/plugin/${book.name}/sample" />
+	<property name="book.name" value="remoting" />
+	<property name="version" value="1.0.3"/>		
+
+	<property name="dbf.home" value="E:/workspace/docbook" />
+	<property name="sample.home" value="E:/workspace/sample/${book.name}/${version}" />
+	<property name="plugin.type" value="optional" />
+	<property name="result.dir" value="E:/Repo/anyframe-opensource/docs/anyframe/plugin/${plugin.type}"/>
+
 	<!--
       - Configure basic properties that will be used in the file.
       -->
@@ -33,6 +42,10 @@
 	<property name="src.tmp" value="doc/temp" />
 	<property name="xalan.lib.dir" value="${dbf.home}/software/fop/lib" />
 
+	<!-- svn repository properties -->
+	<property name="subv.url.sample.trunk" value="http://dev.anyframejava.org/subv/anyframe-opensource/anyframe/trunk/plugin/${plugin.type}/${book.name}/samples" />
+	<property name="subv.url.sample.tags" value="http://dev.anyframejava.org/subv/anyframe-opensource/anyframe/tags/plugin/${plugin.type}/${book.name}/${version}/samples" />
+	
 	<!--
 		- Usage of the differect style sheets which will be used for the transformation
 	-->
@@ -53,6 +66,24 @@
 		</classpath>
 	</taskdef>
 
+	<!-- Ant Contrib Settings -->
+	<taskdef resource="net/sf/antcontrib/antlib.xml">
+		<classpath>
+			<pathelement location="${env.ANT_HOME}/lib/ant-contrib-1.0b3.jar" />
+		</classpath>
+	</taskdef>
+	
+	<!-- Subversion_ANT Settings -->
+	<path id="svnant.classpath">
+		<fileset dir="${env.ANT_HOME}/lib">
+			<include name="svnjavahl.jar" />
+			<include name="svnant.jar" />
+			<include name="svnClientAdapter.jar" />
+		</fileset>
+	</path>
+	<typedef resource="svntask.properties" classpathref="svnant.classpath" />
+		
+	
 	<!--
       - Sets up the classpath for the Xalan and Xerces implementations
       - that are to be used in this script, since the versions that ship
@@ -172,7 +203,23 @@
 		</fop>
 	</target>
 	
-	<target name="copy-sample" depends="depends" >
+	<target name="checkout-sample">
+		<if>
+			<contains string="${version}" substring="SNAPSHOT" casesensitive="false"/>
+			<then>
+				<svn username="${subv.username}" password="${subv.password}">
+					<checkout url="${subv.url.sample.trunk}" revision="HEAD" destPath="${sample.home}" />
+				</svn>
+			</then>
+			<else>
+				<svn username="${subv.username}" password="${subv.password}">
+					<checkout url="${subv.url.sample.tags}" revision="HEAD" destPath="${sample.home}" />
+				</svn>
+			</else>
+		</if>
+	</target>
+	
+	<target name="copy-sample">
 		<zip destfile="${target.dir}/sample/anyframe-sample-remoting.zip" basedir="${sample.home}/anyframe-sample-remoting" 
 			update="true" excludes="target/**, **/.svn/**, **/*.jar"/>	
 		
@@ -182,7 +229,18 @@
 			</fileset>
 		</copy>		
 	</target>
-	
-	<target name="all" depends="clean, copy, build-html, build-chunks, build-pdf, copy-sample" />
 
+	<target name="deploy-manual">
+		<copy todir="${result.dir}">
+			<fileset dir="target">
+				<include name="**/**" />
+			</fileset>
+		</copy>
+	</target>
+	
+	<!-- target for local build -->
+	<target name="all" depends="clean, copy, build-html, build-chunks, build-pdf" />
+	<!-- target for CI build -->
+	<target name="all-CI" depends="all, checkout-sample, copy-sample, deploy-manual"/>
+		
 </project>

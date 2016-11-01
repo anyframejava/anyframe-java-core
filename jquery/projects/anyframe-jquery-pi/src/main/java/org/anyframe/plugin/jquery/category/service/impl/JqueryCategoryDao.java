@@ -1,5 +1,5 @@
 /*
- * Copyright 2008-2011 the original author or authors.
+ * Copyright 2008-2012 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -22,7 +22,7 @@ import javax.inject.Inject;
 import org.anyframe.pagination.Page;
 import org.anyframe.plugin.jquery.domain.JqueryCategory;
 import org.anyframe.query.QueryService;
-import org.anyframe.query.dao.AbstractDao;
+import org.anyframe.query.dao.QueryServiceDaoSupport;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Repository;
 
@@ -33,7 +33,7 @@ import org.springframework.stereotype.Repository;
  *
  */
 @Repository("jqueryCategoryDao")
-public class JqueryCategoryDao extends AbstractDao {
+public class JqueryCategoryDao extends QueryServiceDaoSupport {
 
 	@Value("#{contextProperties['pageSize'] ?: 10}")
 	int pageSize;
@@ -47,27 +47,27 @@ public class JqueryCategoryDao extends AbstractDao {
 	}
 
 	public int create(JqueryCategory category) throws Exception {
-		return create("JqueryCategory", category);
+		return create("createJqueryCategory", category);
 	}
 
 	public int remove(JqueryCategory category) throws Exception {
-		return remove("JqueryCategory", category);
+		return remove("removeJqueryCategory", category);
 	}
 
 	public int update(JqueryCategory category) throws Exception {
-		return update("JqueryCategory", category);
+		return update("updateJqueryCategory", category);
 	}
 
 	public JqueryCategory get(JqueryCategory category) throws Exception {
-		return (JqueryCategory) findByPk("JqueryCategory", category);
+		return (JqueryCategory) findByPk("findJqueryCategoryByPk", category);
 	}
 	
 	@SuppressWarnings("unchecked")
 	public List<JqueryCategory> getList(JqueryCategory category) throws Exception{
-		return (List<JqueryCategory>) findList("JqueryCategory", category);
+		return (List<JqueryCategory>) findList("findJqueryCategoryList", category);
 	}
 
 	public Page getPagingList(JqueryCategory category, int pageIndex) throws Exception {
-		return this.findListWithPaging("JqueryCategory", category, pageIndex, pageSize, pageUnit);
+		return this.findListWithPaging("findJqueryCategoryList", category, pageIndex, pageSize, pageUnit);
 	}
 }

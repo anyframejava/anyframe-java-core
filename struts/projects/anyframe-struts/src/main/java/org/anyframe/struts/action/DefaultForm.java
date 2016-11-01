@@ -1,5 +1,5 @@
 /*
- * Copyright 2002-2008 the original author or authors.
+ * Copyright 2007-2012 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -33,6 +33,11 @@ import org.apache.struts.action.ActionForm;
 public class DefaultForm extends ActionForm {
 
     /**
+	 * 
+	 */
+	private static final long serialVersionUID = -792877494000323446L;
+
+	/**
      * return false when string contains invalid characters return true when
      * string do not contains invalid characters
      * 

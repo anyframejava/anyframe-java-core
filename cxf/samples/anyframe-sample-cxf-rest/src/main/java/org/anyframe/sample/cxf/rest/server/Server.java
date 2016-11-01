@@ -15,8 +15,8 @@
 */
 package org.anyframe.sample.cxf.rest.server;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * When you use Apache CXF framework to implement web services, you can use two 
@@ -33,7 +33,7 @@ import org.apache.commons.logging.LogFactory;
  */
 public interface Server {
 	
-	Log LOGGER = LogFactory.getLog(Server.class.getName());
+	Logger LOGGER = LoggerFactory.getLogger(Server.class.getName());
 	
 	public void setServerInfo(ServerInfo serverInfo);
 	

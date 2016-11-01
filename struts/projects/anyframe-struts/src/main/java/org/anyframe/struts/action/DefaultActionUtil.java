@@ -1,5 +1,5 @@
 /*
- * Copyright 2002-2008 the original author or authors.
+ * Copyright 2007-2012 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,8 +16,9 @@
 
 package org.anyframe.struts.action;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 
 
 /**
@@ -33,9 +34,8 @@ public class DefaultActionUtil {
 	 * @param loggerCategory loggerCategory name
 	 * @return Logger Core Framework logger
 	 */
-    public static Log getLogger(String loggerCategory) {
-        Log logger = LogFactory.getLog(loggerCategory);
-        return logger;
+    public static Logger getLogger(String loggerCategory) {
+        return LoggerFactory.getLogger(loggerCategory);
     }
 
 }

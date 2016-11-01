@@ -1,5 +1,5 @@
 /*
- * Copyright 2008-2011 the original author or authors.
+ * Copyright 2008-2012 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -17,22 +17,18 @@ package org.anyframe.plugin.fileupload.sftp.service;
 
 import java.io.File;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
 import org.apache.commons.vfs.provider.sftp.SftpFileObject;
 
 public interface SftpService {
-	
-	Log logger = LogFactory.getLog(SftpService.class);
-	
+
 	/**
 	 * 
 	 * @param localFile
 	 * @param fileId
 	 * @throws Exception
 	 */
-	public void upload(File localFile, String fileId) throws Exception;		
-	
+	public void upload(File localFile, String fileId) throws Exception;
+
 	/**
 	 * 
 	 * @param localFile
@@ -47,7 +43,7 @@ public interface SftpService {
 	 * @throws Exception
 	 */
 	public void remove(String fileId) throws Exception;
-	
+
 	/**
 	 * 
 	 * @param fileId

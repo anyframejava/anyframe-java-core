@@ -60,7 +60,7 @@ public class SetUpInitData {
 		movie1.setReleaseDate(DateUtil.string2Date("2001-07-27", "yyyy-MM-dd"));
 		movie1.setTitle("My Sassy Girl");
 
-		Set categories = new HashSet();
+		Set<Category> categories = new HashSet<Category>();
 		categories.add(category1);
 		categories.add(category2);
 		movie1.setCategories(categories);
@@ -71,7 +71,7 @@ public class SetUpInitData {
 		movie2.setReleaseDate(DateUtil.string2Date("2004-04-02", "yyyy-MM-dd"));
 		movie2.setTitle("My Little Bride");
 
-		categories = new HashSet();
+		categories = new HashSet<Category>();
 		categories.add(category1);
 		categories.add(category2);
 		movie2.setCategories(categories);
@@ -82,7 +82,7 @@ public class SetUpInitData {
 		country1.setCountryId("KR");
 		country1.setCountryName("Korea");
 
-		Set movies = new HashSet();
+		Set<Movie> movies = new HashSet<Movie>();
 		movie1.setCountry(country1);
 		movies.add(movie1);
 		movie2.setCountry(country1);
@@ -97,7 +97,7 @@ public class SetUpInitData {
 		movie3.setReleaseDate(DateUtil.string2Date("2005-06-03", "yyyy-MM-dd"));
 		movie3.setTitle("Ring 2");
 
-		categories = new HashSet();
+		categories = new HashSet<Category>();
 		categories.add(category3);
 		movie3.setCategories(categories);
 
@@ -107,7 +107,7 @@ public class SetUpInitData {
 		country2.setCountryId("JP");
 		country2.setCountryName("Japan");
 
-		movies = new HashSet();
+		movies = new HashSet<Movie>();
 		movie3.setCountry(country2);
 		movies.add(movie3);
 		country2.setMovies(movies);

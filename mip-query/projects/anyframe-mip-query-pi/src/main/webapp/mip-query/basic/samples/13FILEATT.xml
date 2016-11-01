@@ -2,18 +2,6 @@
 <Window>
 	<Form BKColor="white" DomainID="title.board_detail" Height="640" Id="frm13FILEATT" Left="8" OnLoadCompleted="frm13FILEATT_OnLoadCompleted" PidAttrib="7" Style="stlFrm" Top="8" Ver="1.0" Width="834" WorkArea="true">
 		<Datasets>
-			<Dataset DataSetType="Dataset" Id="dsBoardFile" OnColumnChanged="dsBoardFile_OnColumnChanged" OnRowPosChanged="dsBoardFile_OnRowPosChanged">
-				<Contents>
-					<colinfo id="_chk" size="256" summ="default" type="STRING"/>
-					<colinfo id="FILE_ID" size="256" summ="default" type="STRING"/>
-					<colinfo id="FILE_PATH" size="256" summ="default" type="STRING"/>
-					<colinfo id="FILE_NAME" size="256" summ="default" type="STRING"/>
-					<colinfo id="FILE_EXT" size="256" summ="default" type="STRING"/>
-					<colinfo id="FILE_SIZE" size="256" summ="default" type="STRING"/>
-					<colinfo id="POST_ID" size="256" summ="default" type="STRING"/>
-					<colinfo encrypt="base64" id="CONTENTS" size="256" summ="default" type="BLOB"/>
-				</Contents>
-			</Dataset>
 			<Dataset DataSetType="Dataset" Id="dsService">
 				<Contents>
 					<colinfo id="SVC_ID" size="100" summ="default" type="STRING"/>
@@ -93,6 +81,17 @@
 					</record>
 				</Contents>
 			</Dataset>
+			<Dataset DataSetType="Dataset" Id="dsBoardFile" OnColumnChanged="dsBoardFile_OnColumnChanged" OnRowPosChanged="dsBoardFile_OnRowPosChanged">
+				<Contents>
+					<colinfo id="_chk" size="256" summ="default" type="STRING"/>
+					<colinfo id="ID" size="256" summ="default" type="STRING"/>
+					<colinfo id="NAME" size="256" summ="default" type="STRING"/>
+					<colinfo id="REF_ID" size="256" summ="default" type="STRING"/>
+					<colinfo id="FILE_SIZE" size="256" summ="default" type="STRING"/>
+					<colinfo id="FILE_PATH" size="256" summ="default" type="STRING"/>
+					<colinfo id="prog_bar" size="256" summ="default" type="STRING"/>
+				</Contents>
+			</Dataset>
 		</Datasets>
 		<Div BKColor="user26" Border="Flat" Height="571" Id="divManage" Left="14" Style="stlDivManage" TabOrder="2" Text="Div0" Top="53" UserData="RESIZE=TWH" Width="814">
 			<Contents>
@@ -114,8 +113,8 @@
 							<columns>
 								<col width="29"/>
 								<col width="40"/>
-								<col width="380"/>
-								<col width="220"/>
+								<col width="412"/>
+								<col width="263"/>
 							</columns>
 							<head>
 								<cell col="0" color="user11" display="checkbox" edit="checkbox" text="0"/>
@@ -126,7 +125,7 @@
 							<body>
 								<cell col="0" colid="_chk" display="checkbox" edit="checkbox"/>
 								<cell align="center" col="1" display="text" expr="currow+1"/>
-								<cell align="left" col="2" colid="FILE_NAME" display="text"/>
+								<cell align="left" col="2" colid="NAME" display="text"/>
 								<cell align="right" col="3" colid="FILE_SIZE" display="number"/>
 							</body>
 						</format>
@@ -135,9 +134,9 @@
 				<Button ButtonStyle="TRUE" Color="user3" Cursor="HAND" DomainID="button.add" Height="18" Id="btnAdd2" ImageID="btn_adds" Left="31" LeftMargin="12" OnClick="divManage_btnAdd_OnClick" Style="stlBtn2" TabOrder="12" Text="추가" Top="216" UserData="TYPE=I,DIM=TWMV" Width="49"></Button>
 				<Button ButtonStyle="TRUE" Color="user3" Cursor="HAND" DomainID="button.delete" Height="18" Id="btnDelete2" ImageID="btn_deletes" Left="83" LeftMargin="12" OnClick="divManage_btnDelete_OnClick" Style="stlBtn2" TabOrder="13" Text="삭제" Top="216" UserData="TYPE=D,DIM=TWMV" Width="49"></Button>
 				<Button ButtonStyle="TRUE" Color="user3" Cursor="HAND" DomainID="biz.file_att.download" Height="18" Id="btnDown2" ImageID="btn_downs" Left="707" LeftMargin="15" OnClick="divManage_btnDown_OnClick" Style="stlBtn2" TabOrder="13" Text="다운로드" Top="216" UserData="TYPE=S,DIM=TWMV" Width="71"></Button>
-				<File Bottom="370" Height="24" Id="File" Left="680" Right="704" TabOrder="17" Top="346" Width="24"></File>
+				<HttpFile Height="24" Id="HttpFile" Left="632" Top="345" Width="24"></HttpFile>
 				<FileDialog Bottom="370" Height="24" Id="FileDialog" Left="656" Right="680" TabOrder="17" Top="346" Width="24"></FileDialog>
-				<Static Align="Right" Color="user35" Height="22" Id="stFileSize" Left="601" Style="stlLbl" TabOrder="17" Text="0KB/MB" Top="215" VAlign="Middle" Width="95"></Static>
+				<Static Align="Right" Color="user35" Height="22" Id="stFileSize" Left="601" Style="stlLbl" TabOrder="17" Text="0KB" Top="215" VAlign="Middle" Width="95"></Static>
 				<MaskEdit BindDataset="dsGrdBoard" Border="Flat" Column="REG_DATE" Enable="FALSE" Height="20" Id="mdtRegDate" Left="103" LeftMargin="2" Mask="####-##-##" Style="stlMdt" TabOrder="18" Top="156" Type="STRING" Width="190"></MaskEdit>
 			</Contents>
 		</Div>
@@ -145,25 +144,13 @@
 		<Image Align="Left" DomainID="title.board_detail" Height="16" Id="imgTitle" ImageID="b_title_icon1" Left="14" LeftMargin="12" Style="stlTitle" TabOrder="9" Text="제목" Top="24" VAlign="Top" Width="400"></Image>
 	</Form>
 	<Script><![CDATA[#include "javascript::common.js";
+#include "javascript::fileupdown.js"
 
 var strPostId = "";
 var nMaxSize, nMaxRow, nTotalSize;
 
 // 화면 로딩 시에 게시글과 첨부파일목록 출력
 function frm13FILEATT_OnLoadCompleted(obj) {
-	// 최대 첨부 파일 갯수, 최대 용량
-	var arrUserData = split(divManage.grdFile.userData, ",");
-	
-	for(var i = 0 ; i < length(arrUserData) ; i++) {
-		if(indexOf(arrUserData[i], "ATTACH_MAXROW=") > -1) {
-			nMaxRow = toNumber(trim(replace(arrUserData[i], "ATTACH_MAXROW=", "")));
-		}
-		
-		if(indexOf(arrUserData[i], "ATTACH_SIZE=") > -1) {
-			nMaxSize = toNumber(trim(replace(arrUserData[i], "ATTACH_SIZE=", "")));
-		}
-	}
-	
 	// 테스트용
 	strPostId = "POST-00001";
 	dsSearch.setColumn(0, "POST_ID", strPostId);
@@ -174,32 +161,40 @@ function frm13FILEATT_OnLoadCompleted(obj) {
 
 // 첨부파일 더블클릭 시 다운로드 창 오픈
 function divManage_grdFile_OnCellDblClick(obj, nRow, nCell, nX, nY, nPivotIndex) {	
-	var blContents = dsBoardFile.getColumn(nRow, "CONTENTS");
-	var strFileName = dsBoardFile.getColumn(nRow, "FILE_NAME");
-	var strFileExt = gfnGetFileExt(strFileName);
-	
+
+	var	strFileId	= dsBoardFile.getColumn(nRow, "ID");
+	var	strFileName = dsBoardFile.getColumn(nRow, "NAME");	
+	var	strFileSize	= dsBoardFile.getColumn(nRow, "FILE_SIZE");
+	var	strFileExt	= gfnGetFileExt(strFileName);
+		
 	DivManage.FileDialog.filter = "*." + strFileExt + "|*."+strFileExt;
 	DivManage.FileDialog.type = "Save";
 	DivManage.FileDialog.appendExtDefault = true;
+	DivManage.FileDialog.FileName= strFileName;
 	
-	if(DivManage.FileDialog.open()){
-		DivManage.File.fileName = DivManage.FileDialog.filePath + "\\" + DivManage.FileDialog.fileName;
-		DivManage.File.open("wb");
-		DivManage.File.writeBinary( blContents );
-		DivManage.File.close();
+	if(DivManage.FileDialog.open()) {
+		var	strFullPath = DivManage.FileDialog.FilePath + "/" + strFileName;
+		
+		var ret = gfn_FileRead(DivManage.HttpFile, strFullPath, strFileId, strFileSize, nRow, "prog_bar", DivManage.grdFile);
+		if ( ret[0] == "FAIL" )
+		{
+			alert(ret[1]);
+		}
 	}
 }
 
 // 첨부 파일 다운로드 버튼 클릭 시
 function divManage_btnDown_OnClick(obj) {
-	var nCount = 0;
-	var strFilePath ="";
+	var	nCount		= 0;
+	var	strFilePath	= "";
 	
-	for( var i = 0 ; i < dsBoardFile.rowcount ; i ++ ){
-		if( dsBoardFile.getColumn(i, "_chk") == 1 ){
-						
-			var strFileName = dsBoardFile.getColumn(i, "FILE_NAME");
-			var blContents = dsBoardFile.getColumn(i, "CONTENTS");
+	for( var i = 0 ; i < dsBoardFile.rowcount ; i ++ ) {
+		if( dsBoardFile.getColumn(i, "_chk") == 1 ) {
+		
+			var	strFileId	= dsBoardFile.getColumn(i, "ID");
+			var	strFileName	= dsBoardFile.getColumn(i, "NAME");
+			var	strFileSize	= dsBoardFile.getColumn(i, "FILE_SIZE");
+			var	strFileExt	= gfnGetFileExt(strFileName);
 			
 			if (nCount == 0) {
 				DivManage.FileDialog.type = "Dir";
@@ -207,13 +202,16 @@ function divManage_btnDown_OnClick(obj) {
 				strFilePath = DivManage.FileDialog.filePath;
 			}
 			
-			DivManage.File.fileName = strFilePath + "\\" + strFileName;
-			DivManage.File.open("wb");
-		
-			DivManage.File.writeBinary( blContents );
+			var	strFullPath	= strFilePath + "\\" + strFileName;
+			
+			var ret = gfn_FileRead(DivManage.HttpFile, strFullPath, strFileId, strFileSize, i, "prog_bar", DivManage.grdFile);
+
+			if ( ret[0] == "FAIL" )
+			{
+				alert(ret[1]);
+			}
 			
 			nCount = nCount + 1;
-			DivManage.File.close();
 		}
 	}
 	if(nCount == 0){
@@ -223,47 +221,58 @@ function divManage_btnDown_OnClick(obj) {
 
 // 첨부 파일 추가 버튼 클릭 시
 function divManage_btnAdd_OnClick(obj) {
-	var arrUserData = split(divManage.grdFile.userData, ",");
 	
-	// 첨부파일 최대Row 체크
-	if(nMaxRow <= dsBoardFile.getRowCount()) {
-		gfnMsg("MSG_ATTACH_MAX", "WARN", nMaxRow);
-		return;
-	}
+	DivManage.FileDialog.type = "Open";	
 	
-	DivManage.FileDialog.type = "Open";
-	
-	if(DivManage.FileDialog.open()){
+	if(DivManage.FileDialog.open()) {
 		
-		var strFilePath = DivManage.FileDialog.filePath;
-		var strFileName = DivManage.FileDialog.fileName;
-		var strFileExt = gfnGetFileExt(DivManage.FileDialog.fileName);
+		var strFilePath	= DivManage.FileDialog.filePath;
+		var strFileName	= DivManage.FileDialog.fileName;
+		var strFileExt	= gfnGetFileExt(DivManage.FileDialog.fileName);
+		var strFullPath = strFilePath + "/" + strFileName;
+		var nFileSize	= DivManage.HttpFile.GetFileSizeLocal(strFullPath);
 		
-		DivManage.File.fileName = strFilePath + "\\" + strFileName;
-		var nFileSize = DivManage.File.getLength();
+				
+		if( IndexOf( strFileName, "(" ) == -1 || IndexOf( strFileName, ")" ) == -1 ) {
+			dsBoardFile.AddColumn("FILE_PATH");
+			dsBoardFile.AddColumn("POST_ID");
+			
+			var nNewRow = dsBoardFile.AppendRow();
 		
-		// 첨부파일 용량 제한
-		if( nFileSize >= 0 && (nTotalSize + nFileSize) <= parseInt(nMaxSize)*1024*1024 ){
-			DivManage.File.open("rb");
-			var blContents = DivManage.File.readBinary();
-			var nNewRow = dsBoardFile.addRow();
-		
-			dsBoardFile.setColumn(nNewRow, "FILE_NAME", strFileName);
-			dsBoardFile.setColumn(nNewRow, "FILE_EXT", strFileExt);
-			dsBoardFile.setColumn(nNewRow, "CONTENTS", blContents);
+			dsBoardFile.setColumn(nNewRow, "FILE_PATH", strFilePath);
+			dsBoardFile.setColumn(nNewRow, "NAME", strFileName);
 			dsBoardFile.setColumn(nNewRow, "FILE_SIZE", nFileSize);
 			dsBoardFile.setColumn(nNewRow, "POST_ID", strPostId);
-			
 		} else {
-			gfnMsg("MSG_ATTACH_SIZE_OVER", "WARN", nMaxSize);
+			gfnMsg("MSG_INVALID_FILE_NAME");
 		}
-		
-		DivManage.File.close();
 	}
 }
 
 // 저장 버튼 클릭 시
 function btnSave_OnClick(obj) {
+	var ret;
+	
+	for( var i = 0 ; i < dsBoardFile.rowcount ; i++ )
+	{
+		if ( dsBoardFile.GetRowType(i) == "insert") {
+			var	strFileName	= dsBoardFile.getColumn(i, "NAME");
+			var	strFilePath	= dsBoardFile.getColumn(i, "FILE_PATH");
+			var strFullPath = strFilePath + "/" + strFileName;
+		
+			ret	= gfn_FileWrite(DivManage.HttpFile, strFullPath, strFileName, i, "prog_bar", DivManage.grdFile);
+		
+			if( ret[0] == "FAIL" )
+			{
+				alert( ret[1] );
+				break;
+			}
+			
+			dsBoardFile.SetColumn(i, "REF_ID", strPostId);
+			dsBoardFile.SetColumn(i, "ID", ret[0] );
+		}
+	}
+	
 	gfnService("saveAllBoardFile");
 }
 
@@ -278,7 +287,7 @@ function divManage_grdFile_OnHeadClick(obj, nCell, nX, nY, nPivotIndex) {
 }
 
 // 첨부 파일 목록 Dataset의 Column 변경 시
-function dsBoardFile_OnColumnChanged(obj, nRow, strColumnID, varOldValue, varNewValue, nPivotIndex) {
+function dsBoardFile_OnColumnChanged(obj, nRow, strColumnID, varOldValue, varNewValue, nPivotIndex) {	
 	fnCalcTotalFileSize();
 }
 // 첨부 파일 목록 Dataset의 Row 변경 시
@@ -287,13 +296,14 @@ function dsBoardFile_OnRowPosChanged(obj, nOldRow, nRow) {
 }
 
 // 첨부 파일 전체 용량 계산 및 divManage.stFileSize 값 변경
-function fnCalcTotalFileSize() {
+function fnCalcTotalFileSize() {	
 	nTotalSize = 0;
+	
 	for(var i = 0 ; i < dsBoardFile.rowcount ; i++) {
 		nTotalSize += parseInt(dsBoardFile.getColumn(i, "FILE_SIZE"));
 	}
-			
-	divManage.stFileSize.value = ceil(nTotalSize/1024) + "KB" + "/" + nMaxSize + "MB";
+	
+	DivManage.stFileSize.value = ceil(nTotalSize/1024) + "KB";
 }
 
 // callback 메소드 정의
@@ -310,5 +320,8 @@ function fnCallback(strServiceId, strErrorCode, strErrorMsg) {
 		}
 	}
 }
+
+
+
 ]]></Script>
 </Window>

@@ -1,5 +1,5 @@
 /*
- * Copyright 2008-2011 the original author or authors.
+ * Copyright 2008-2012 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -17,7 +17,6 @@ package org.anyframe.plugin.hibernate.moviefinder.service.impl;
 
 import java.util.List;
 
-import javax.annotation.Resource;
 import javax.inject.Inject;
 
 import org.anyframe.hibernate.DynamicHibernateService;
@@ -29,7 +28,8 @@ import org.springframework.orm.hibernate3.support.HibernateDaoSupport;
 import org.springframework.stereotype.Repository;
 
 /**
- * The MovieDao class is a DAO class to provide CRUD functions about Movie domain.
+ * The MovieDao class is a DAO class to provide CRUD functions about Movie
+ * domain.
  * 
  * @author Youngmin Jo
  */
@@ -52,7 +52,7 @@ public class MovieDao extends HibernateDaoSupport {
 	public void create(Movie movie) throws Exception {
 		// set movie id
 		movie.setMovieId("MV-" + System.currentTimeMillis());
-		
+
 		super.getHibernateTemplate().save(movie);
 	}
 

@@ -47,6 +47,7 @@ public class HibernateCriteriaWithDefinedResult extends
 	 *             throws exception which is from hibernate
 	 */
 	@Test
+	@SuppressWarnings("unchecked")
 	public void testFindMoviesByCategory() throws Exception {
 		// 1. insert init data
 		SetUpInitData.initializeData(session);
@@ -108,6 +109,7 @@ public class HibernateCriteriaWithDefinedResult extends
 	 *             throws exception which is from hibernate
 	 */
 	@Test
+	@SuppressWarnings("unchecked")
 	public void testFindMovieMapByCategory() throws Exception {
 		// 1. insert init data
 		SetUpInitData.initializeData(session);
