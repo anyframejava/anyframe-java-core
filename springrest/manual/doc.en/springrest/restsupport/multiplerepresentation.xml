@@ -1,0 +1,216 @@
+<chapter id="springrest_restsupport_contentnegotiation">
+	<title>Multiple Representation</title>
+	
+	<para>
+		As explained in the previous chapter, one Resource in RESTful architecture can have multiple Representations. 
+		In other words, there can be various types of transferred data for client to create or modify in server, 
+		and there also can be various types of responses which are transferred after server handles client request. 
+		
+		Let's look into the functions Spring provides to support Content Negotiation.
+	</para>
+	
+	<para>
+		In previous web applications, data to be saved or updated were transferred to server through form submit in web page. 
+		This submitted data comes into server as HTTP Request message as below.
+		<mediaobject>
+			<imageobject>
+				<imagedata align="center" fileref="../image/springrest/formsubmitmessage.png" />
+			</imageobject>
+		</mediaobject>
+	</para>
+	
+	<para>
+		In general web application, the Controller method binds the above HTTP message body information to Command object. 
+		<programlisting language="java">@RequestMapping(value = "/{movieId}", method = RequestMethod.POST)
+public void update(<emphasis role="bold">Movie updateMovie</emphasis>) throws Exception {
+	this.movieService.update(updateMovie);
+}</programlisting>
+	</para>
+	<para>
+		However, in method exposed as RESTful web service, request data can come in various forms such as xml and json as the below figure.
+		<mediaobject>
+			<imageobject>
+				<imagedata align="center" fileref="../image/springrest/xmlrequestmessage.png" />
+			</imageobject>
+		</mediaobject>
+		Therefore, <emphasis role="bold">@RequestBody</emphasis> is provided so that HTTP Request Message in various forms can be handled directly in Spring. 
+	 	Also, <emphasis role="bold">@ResponseBody</emphasis> is provided so that HTTP Response Message in various forms can be directly returned to Client.
+	
+		<programlisting language="java">@RequestMapping(value = "/{movieId}", method = RequestMethod.PUT)
+<emphasis role="bold">@ResponseBody</emphasis>
+public void update(<emphasis role="bold">@RequestBody Movie updateMovie</emphasis>) throws Exception {
+	this.movieService.update(updateMovie);
+}</programlisting>
+	</para>
+
+	<para>
+		When @RequestBody and @ResponseBody are handled as Request/Response message respectively, 
+        <emphasis role="bold"><ulink url="http://static.springsource.org/spring/docs/3.0.x/javadoc-api/org/springframework/http/converter/HttpMessageConverter.html">HttpMessageConverter</ulink> 
+        converts message and Java object.</emphasis> 
+        Spring provides various HttpMessageConverter implementations including Jaxb2RootElementHttpMessageConverter, StringHttpMessageConverter, and MappingJacksonHttpMessageConverter 
+        according to media type (e.g., html, xml, json, etc.). 
+        For more information refer to <link linkend="springrest_restsupport_httpmessageconversion">HTTP Message Conversion</link> in this manual. 
+        @RequestBody is applied to use appropriate HttpMessageConverter 
+        <emphasis role="bold">according to Content-Type header value when handling Request message.</emphasis> 
+        Likewise, HttpMessageConverter is used with @ResponseBody <emphasis role="bold">according to the Accept header value returned as Request when creating Response message.</emphasis>
+	</para>
+	
+	<para>
+		When client wishes to compose Response returned as client in a more detailed way, 
+		<emphasis role="bold">ResponseEntity<![CDATA[<?>]]></emphasis> can be used.
+		<programlisting language="java">@RequestMapping(method = RequestMethod.POST)
+public <emphasis role="bold">ResponseEntity<![CDATA[<String>]]></emphasis> create(@RequestBody Movie movie) throws Exception {
+
+    this.movieService.create(movie);
+
+    HttpHeaders responseHeaders = new HttpHeaders();
+    responseHeaders.set("Location", "http://localhost:8080/mypjt2/movies/" + movie.getMovieId());
+    
+    // 201 CREATED, Location header
+    <emphasis role="bold">return new ResponseEntity<![CDATA[<String>]]>("Created resource " + movie.getMovieId(), responseHeaders, HttpStatus.CREATED);</emphasis>
+}</programlisting>
+	</para>
+	
+	<para>
+		In the above example code, ResponseEntity is used instead of @ResponseBody to form Response with Location header and status code called '201 CREATED'. 
+		Generally, in case of POST method, when Resource is created by request, 
+		'201 CREATED' status code and Location header which states information that can search created Resource, is returned.
+	</para>
+	
+	<note id="springrest_restsupport_contentnegotiation_responsestatuscode">
+		<title>HTTP Response Status Code</title>
+		<mediaobject>
+			<imageobject>
+				<imagedata align="center" fileref="../image/springrest/httpstatuscodetable.png" />
+			</imageobject>
+		</mediaobject>		  
+		For more information, refer to <ulink url="http://www.w3.org/Protocols/rfc2616/rfc2616-sec10.html">HTTP Status Code Definitions</ulink> and 
+		<ulink url="http://www.w3.org/Protocols/rfc2616/rfc2616-sec9.html">Method Definitions</ulink>.
+		
+	</note>
+	
+	<para>
+		Spring provides <emphasis role="bold">ContentNegotiatingViewResolver</emphasis> so that Content Negotiation is possible, 
+		even when returning View name like previous web application, without using @ResponseBody or ResponseEntity.
+	</para>
+		
+	<para>
+		ContentNegotiatingViewResolver does not directly compose View, but delegates finding View for all other registered View Resolvers. 
+		It compares Content-Type of View returned by other View Resolvers and media type (Content-Type value) stated as Accept header value of HTTP Request or file extension, 
+		and selects View that is most appropriate to Content-Type requested by client as a response.
+	</para>
+	<para>
+		As such, ContentNegotiatingViewResolver should be used along with other View Resolvers, 
+		so order should be defined when setting View Resolver. 
+		Of course, ContentNegotiatingViewResolver should have the highest priority (the lowest number).
+	</para>
+	<para>
+		To handle Content Negotiation based on file extension, 
+		file extension and media type is mapped and defined in <emphasis role="bold">mediaTypes</emphasis> property of ContentNegotiatingViewResolver.
+	</para>
+	<para>
+		The following is setting example for using ContentNegotiatingViewResolver.
+		<programlisting language="xml"><emphasis role="bold"><![CDATA[<bean class="org.springframework.web.servlet.view.ContentNegotiatingViewResolver">
+    <property name="mediaTypes">
+        <map>
+            <entry key="html" value="text/html"/>
+            <entry key="xml" value="application/xml" />
+        </map>
+    </property>
+    <property name="order" value="0"/>
+</bean>]]></emphasis></programlisting>
+	</para>					  					
+		 
+	<para>
+		Basically, ContentNegotiatingViewResolver automatically finds View Resolvers registered in WebApplicationContext, 
+		but other View Resolvers can be explicitly defined using <emphasis role="bold">viewResolvers</emphasis> property as below. 
+		Also, when View is stated in <emphasis role="bold">defaultViews</emphasis> property, 
+		it is used as default View when View that supports Content-Type requested by client cannot be found in View Resolver chain.
+		
+		<programlisting language="xml"><![CDATA[<bean class="org.springframework.web.servlet.view.ContentNegotiatingViewResolver">
+    ]]><emphasis role="bold"><![CDATA[<property name="mediaTypes">]]></emphasis><![CDATA[
+        <map>
+            <entry key="html" value="text/html"/>
+            <entry key="atom" value="application/atom+xml"/>
+            <entry key="json" value="application/json"/>
+        </map>
+    </property>
+  
+     ]]><emphasis role="bold"><![CDATA[<property name="viewResolvers">]]></emphasis><![CDATA[
+        <list>
+            <bean class="org.springframework.web.servlet.view.BeanNameViewResolver"/>
+            <bean class="org.springframework.web.servlet.view.InternalResourceViewResolver">
+                <property name="prefix" value="/WEB-INF/jsp/"/>
+                <property name="suffix" value=".jsp"/>
+            </bean>
+        </list>
+    </property>
+    
+    ]]><emphasis role="bold"><![CDATA[<property name="defaultViews">]]></emphasis><![CDATA[
+        <list>
+            <bean class="org.springframework.web.servlet.view.json.MappingJacksonJsonView"/>
+        </list>
+    </property>
+</bean>]]></programlisting>
+	</para>
+	
+	<para>
+		To select appropriate View to return after handling request, 
+		ContentNegotiatingViewResolver uses media type requested from client. 
+		The following is the process of finding out this media type.
+		<orderedlist>
+			<listitem>
+				<para>
+					If favorPathExtension property is true (default value is true) and Request path includes file extension,
+					the mediaTypes property is inspected for a matching media type. 
+					When appropriate media type is not found, 
+					the return value of FileTypeMap.getContentType(String filename) method is used as media type. 
+				</para>
+			</listitem>
+			
+			<listitem>
+				<para>
+					When favorParameter is true (default value is false) and Request includes parameter that defines media type, 
+					the mediaTypes property is inspected for a matching media type. 
+					Default parameter name is 'format' and this can be changed into a property called parameterName.
+				</para>
+			</listitem>
+			
+			<listitem>
+				<para>When media type cannot be found through the above process, 
+				use Accept header value of Request when ignoreAcceptHeader of ContentNegotiatingViewResolver is defined as false.</para>
+			</listitem>
+			
+			<listitem>
+				<para>
+					When media type cannot be found even after following all the processes above, 
+					the value becomes the media type requested by client 
+					if defaultContentType of ContentNegotiatingViewResolver is defined finally.
+				</para>
+			</listitem>
+		</orderedlist>
+		Once the requested media type has been determined, this resolver queries each delegate view resolver for a View 
+		and determines if the requested media type is compatible with the view's content type). 
+		The most compatible view is returned.
+	</para>
+	
+	<note id="springrest_restsupport_contentnegotiation_errorhandling">
+		<title>Response Status Code and Error Page</title>
+		<para>
+			When Exception occurs in controller method, 
+			catch Exception in method when directly returning Response, and set Error Status Code in Response and return. 
+			However, when Response is not directly returned, Exception is handled by exceptionResolver. 
+		</para>
+		<para>
+			Even if an error occurs, REST client has the problem that error page HTML content is returned with '200 OK' Response Status, 
+			because SimpleMappingExceptionResolver is set by Anyframe Foundation Plugin and error.jsp is rendered as defaultErrorView. 
+		</para>
+		<!-- 
+		<para>
+			springrest plugin has added MarshallingViewForError that inherited MarshallingView to return error status code to client (Accept: application/xml).
+		    Internally, error status code is sent to each exception instead of page rendering. 
+		    (DefaultHandlerExceptionResolver code has been used to handle Exception that occurs in Spring.)
+		</para>
+		 -->
+	</note>
+</chapter>

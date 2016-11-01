@@ -1,0 +1,97 @@
+<chapter id="springrest_restsupport_redirection">
+	<title>Redirection</title>
+	<para>
+		Spring 3.1에서는 REST 환경에서 Redirect 요청을 처리할 때 속성값을 쉽게 전달할 수 있도록
+		FlashMap과 RedirectAttributes class를 제공한다.
+	</para>
+	<section id="springrest_restsupport_uritemplate_redirectattribute">
+		<title>RedirectAttributes</title>
+		<para>
+			RedirectAttributes는 Redirect 동작을 수행 할 때 속성값을 URI variable, 혹은 parameter 형태로 쉽게 전달하기 위해 Spring에서 제공하는 Class이다.
+		</para>
+		<para>
+			<programlisting language="java"><![CDATA[@RequestMapping(method = RequestMethod.POST, consumes = "application/x-www-form-urlencoded")
+public String create(@Valid Movie movie, BindingResult results,
+		RedirectAttributes redirectAttr) throws Exception {
+
+	this.movieService.create(movie);
+	redirectAttr.addAttribute("movieId", movie.getMovieId())
+			.addAttribute("title", movie.getTitle())
+			.addFlashAttribute("message", "save successed!");
+
+	return "redirect:/springrest/test/{movieId}";
+}
+]]></programlisting>
+		</para>
+		<para>
+			위의 예제에서 RedirectAttributes를 이용하여 Redirect URI의 {movieId} 값을 설정하는 내용을 
+			확인할 수 있다. URI에 포함 되지 않은 attribute에 대해서는 request의 parameter형태로 전송 한다.
+			또한 FlashMap에 특정 값을 추가 하기 위한 API도 제공 하고 있다. 
+		</para>
+	</section>
+	<section id="springrest_restsupport_uritemplate_flashmap">
+		<title>FlashMap</title>
+		<para>
+			FlashMap은 하나의 URL에서 Redirect 요청을 수행 할 때, 특정 값을 다른 URL에서 사용 하기 위해
+			제공되는 Class이다. Redirect 동작을 수행 하기 전 session에 값을 저장한 후, 
+			한 번 사용 후 제거되는 특징을 가지고 있다.
+		</para>
+		<para>
+			FlashMap은 크게 두 가지 방법으로 사용 가능하다.
+		</para>
+		<para>
+			첫 번째 방법은 RedirectAttributes의 addFlashAttribute 메소드를 사용하는 방법이다.
+		</para>
+		<para>
+			두 번째 방법은 RequestContextUtils의 getOutputFlashMap 메소드를 사용하는 방법이다.
+			RequestContextUtils class는 DispatcherServlet에서 설정된 request의 특정 값으로 접근을 도와주기위해
+			Spring에서 제공하는 Util class이다.
+		</para>
+		<para>
+			FlashMap에 저장한 값을 꺼내서 사용하기 위해서는 RequestContextUtils의 getInputFlashMap 메소드를 사용한다.
+		</para>
+		<para>
+			아래는 FlashMap을 사용하는 예제 코드이다.
+		</para>
+		<para>
+			<programlisting language="java"><![CDATA[
+@RequestMapping(method = RequestMethod.POST, consumes = "application/x-www-form-urlencoded")
+public String create(@Valid Movie movie, BindingResult results,
+		RedirectAttributes redirectAttr) throws Exception {
+
+	this.movieService.create(movie);
+	
+	// RedirectAttribute를 이용하여 FlashMap에 "message" 값을 저장
+	redirectAttr.addAttribute("movieId", movie.getMovieId())
+			.addFlashAttribute("message", "save successed!");
+	return "redirect:/springrest/test/{movieId}";
+}	
+			
+@RequestMapping(method = RequestMethod.PUT, consumes = "application/x-www-form-urlencoded")
+public String update(@Valid Movie movie, BindingResult results, HttpServletRequest request)
+		throws Exception {	
+
+	this.movieService.update(movie);
+	
+	// RequestContextUtils를 이용하여 FlashMap에 "message" 값을 저장			
+	FlashMap fm = RequestContextUtils.getOutputFlashMap(request);
+	fm.put("message", "update successed");
+	return "redirect:" + redirectUri.toUriString();
+}
+
+
+@RequestMapping(value = "/{movieId}", method = RequestMethod.GET)
+public String get(@PathVariable String movieId, Model model,
+		HttpServletRequest request) throws Exception {
+
+	// FlashMap에 저장된 message 값을 꺼내옴
+	Map<String, ?> fm = RequestContextUtils.getInputFlashMap(request);
+	if (fm != null) {
+		String message = (String) fm.get("message");
+		System.out.println(message);
+	}
+}	
+]]></programlisting>
+		</para>
+	</section>
+</chapter>

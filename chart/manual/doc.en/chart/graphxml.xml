@@ -1,0 +1,62 @@
+<chapter id="chart_graphxml">
+	<title> FusionChart Free XML Data</title>
+
+	<section id="chart_graphxml_data">
+		<title> XML Data Generation</title>
+		<para>
+		 	The following is the table of sales for a year to be shown in a chart.
+			<mediaobject>
+		      <imageobject>
+		        <imagedata align="center"  fileref="../image/chart/chart_graphxml_table.jpg" />
+		      </imageobject>
+		    </mediaobject>
+		</para>
+	</section>
+
+	<section id="chart_graphxml_xmldata">
+		<title> XML Data Conversion</title>
+		<para>
+		    The XML document converted for the chart is as follows.
+			<programlisting language="xml"><![CDATA[<graph caption='Monthly Unit Sales' xAxisName='Month' yAxisName='Units' showNames='1' decimalPrecision='0' formatNumberScale='0'>
+   <set name='Jan' value='462' color='AFD8F8' />
+   <set name='Feb' value='857' color='F6BD0F' />
+   <set name='Mar' value='671' color='8BBA00' />
+   <set name='Apr' value='494' color='FF8E46' />
+   <set name='May' value='761' color='008E8E' />
+   <set name='Jun' value='960' color='D64646' />
+   <set name='Jul' value='629' color='8E468E' />
+   <set name='Aug' value='622' color='588526' />
+   <set name='Sep' value='376' color='B3AA00' />
+   <set name='Oct' value='494' color='008ED6' />
+   <set name='Nov' value='761' color='9D080D' />
+   <set name='Dec' value='960' color='A186BE' />
+</graph>]]></programlisting>
+		</para>
+	</section>
+
+	<section id="chart_graphxml_htmlcontainer">
+		<title> HTML Container Generation</title>
+		<para>
+			Each chart is inserted and runs in the page in the Flash component type as follows.
+			<programlisting language="xml"><![CDATA[<html>
+   <head>
+      <title>My First FusionCharts</title>
+   </head>
+   <body bgcolor="#ffffff">
+      <object classid="clsid:D27CDB6E-AE6D-11cf-96B8-444553540000" 
+         codebase=http://download.macromedia.com/pub/shockwave/cabs/flash/swflash.cab#version=6,0,0,0" width="600" height="500" id="Column3D" >
+         <param name="movie" value="../FusionCharts/FCF_Column2D.swf" />
+         <param name="FlashVars" value="&dataURL=Data.xml&chartWidth=600&chartHeight=500">
+         <param name="quality" value="high" />
+         <embed src="../FusionCharts/FCF_Column2D.swf" flashVars="&dataURL=Data.xml&chartWidth=600&chartHeight=500" quality="high" width="600" height="500" 
+            name="Column3D" type="application/x-shockwave-flash" pluginspage="http://www.macromedia.com/go/getflashplayer" />
+      </object>
+</body>
+</html>]]></programlisting>
+		</para>
+		<para>
+			Using the FusionChart jQuery plugin (jquery.fusioncharts.js) is recommended since using the plugin enables automatic linkage through simple jQuery java script code without writing Flash components on the web page as above.
+		</para>
+	</section>
+
+</chapter>

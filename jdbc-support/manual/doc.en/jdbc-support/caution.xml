@@ -1,0 +1,71 @@
+<chapter id="jdbcsupport_injectionandlogging_caution">
+		<title>Other considerations</title>
+
+
+		<section id="jdbcsupport_injectionandlogging_caution_native">
+        	<title>Applying P6spyNativeJdbcExtractor to use DBMS Vendor specific functionality</title>
+
+        	<para>
+				In the case of using OracleLobHandler 
+			</para>
+			<para>
+				In the case of Oracle, the use of OracleLobHandler allows casting into native connection object internally. 
+				But, it can cause an exception issue. 
+				<programlisting language="java"><![CDATA[org.springframework.dao.InvalidDataAccessApiUsageException: OracleLobCreator needs to work on [oracle.jdbc.OracleConnection], not on [org.anyframe.jdbc.support.p6spy.P6ILConnection]: 
+				specify a corresponding NativeJdbcExtractor; nested exception is java.lang.ClassCastException: org.anyframe.jdbc.support.p6spy.P6ILConnection]]></programlisting>
+			</para>
+			<para>P6spyNativeJdbcExtractor to avoid exception should be additionally applied. </para>
+			<para>
+				configuration
+				<programlisting language="xml"><![CDATA[<!-- NativeJdbcExtractor for P6Spy -->
+<bean id="nativeJdbcExtractor"
+    class="org.anyframe.jdbc.support.p6spy.P6spyNativeJdbcExtractor"
+    lazy-init="true">
+    <!-- original nativeJdbcExtractor -->
+    <property name="nextNativeJdbcExtractor" ref="commonsDbcpNativeJdbcExtractor" />
+</bean>
+
+<bean id="commonsDbcpNativeJdbcExtractor"
+	class="org.springframework.jdbc.support.nativejdbc.CommonsDbcpNativeJdbcExtractor"
+	lazy-init="true" />
+
+<bean id="lobHandler" class="org.springframework.jdbc.support.lob.OracleLobHandler"
+	lazy-init="true">
+	<property name="nativeJdbcExtractor" ref="nativeJdbcExtractor" />
+</bean>]]></programlisting>
+			</para>
+		</section>
+
+
+
+		<section id="jdbcsupport_injectionandlogging_caution_usage">
+        	<title>Domain to be applied </title>
+
+        	<para>
+        		DataSource based persistence process technologies such as jdbcTemplate, Anyframe queryService, iBATIS, Hibernate can be 
+        		applied across the board. 
+        		(In the case of ORM, internal sql statement implemented via jdbc can be in fact possible to check. )
+        	</para>
+      	</section>
+      	
+		<section id="jdbcsupport_injectionandlogging_caution_caution">
+        	<title>Precautions </title>
+
+        	<para>
+        		Given that it is the duplicated domain function-wise with SQL Logging utilizing log4jdbc, if resultSet logging is not used, 
+        		there is no need to apply log4jdbc twice. 
+        	</para>
+        	
+        	<para>
+        		There is conflict concern of library dependency of p6spy. As of now, p6spy-1.3.jar was defined as pom dependency. 
+        		
+        		cf.) It is not recommendable to use infrared-agent-servlet-all-xxx.jar, agent of Anyframe Monitoring Tool along with p6spy module. 
+        		Infrared-agent copies and includes p6spy related module as a whole (Some implementation is modified.) 
+        	</para>
+        	
+        	<para>
+        		In the case of Oracle vendor-specific functionalities such as OracleLobHandler and P6spyNativeJdbcExtractor, 
+        		required is basic dependency library regarding commons-dbcp.
+        	</para>
+      	</section>
+</chapter>

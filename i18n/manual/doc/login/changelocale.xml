@@ -1,0 +1,51 @@
+<chapter id="login_login_changelocale">
+	<title>사용자 Locale 변경</title>
+
+	<section id="login_change_locale">
+       	<title>ChangeLocaleController</title>
+          	<para>
+       			Spring Message 테그는 code(message key)값을 이용해 MessageSource에 있는 해당 문자를 사용자에게 보여준다.
+       			이 때 LocaleResolver를 이용해 다국어 처리도 가능하다.
+       			ChangeLocaleController는 사용자가 다른 언어로 보고 싶을 때 SessionLocaleResolver의 언어를 바꿈으로써
+       			다국어 처리를 지원한다.
+			</para>
+			<mediaobject>
+       			<imageobject>
+         			<imagedata align="center"
+                   			fileref="../image/login/login_changelocale.png" />
+       			</imageobject>
+       		</mediaobject>
+			<para>
+				위 화면에서 보고 싶은 언어를 클릭하면 ChangeLocaleController의 changeLoacle메소드가 호출되어 LocaleResolver의 
+				로케일을 변경한다.
+			</para>
+			<para>
+				아래는 ChangeLocaleController의 소스코드이다.
+			</para>
+			<programlisting language="java"><![CDATA[@Controller("loginChangeLocaleController")
+public class ChangeLocaleController {
+
+    @Inject 
+    private LocaleResolver localeResolver;
+	
+    @RequestMapping("/loginChangeLocale.do")
+    public String changeLoacle(@RequestParam(value = "locale", defaultValue = "en")  String newLocale,
+			Model model,
+			HttpSession session, HttpServletRequest request,  HttpServletResponse response) throws Exception {
+		
+        LocaleEditor localeEditor = new LocaleEditor();
+        localeEditor.setAsText(newLocale);
+        localeResolver.setLocale(request, response, (Locale) localeEditor.getValue());
+		
+        return "forward:/loginMovieFinder.do?method=list";
+    }
+}]]></programlisting>
+		<para>LocaleResolver의 값이 변경되면 화면에서 다음과 같이 다른 언어로 변경된 것을 확인 할 수 있다.</para>
+		<mediaobject>
+       			<imageobject>
+         			<imagedata align="center"
+                   			fileref="../image/login/login_locale.png" />
+       			</imageobject>
+       		</mediaobject>
+	</section>
+</chapter>

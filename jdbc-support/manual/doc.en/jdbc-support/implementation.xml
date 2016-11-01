@@ -1,0 +1,142 @@
+<chapter id="jdbcsupport_injectionandlogging_implementation">
+		<title>Default implementation and proposal for user extension</title>
+
+
+		<section id="jdbcsupport_injectionandlogging_implementation_defaultinjectionpostprocessor">
+        	<title>DefaultInjectionPatternPostProcessor</title>
+
+        	<itemizedlist>
+          		<listitem>
+            		<para>warningPattern</para>
+
+            		<para>
+            			Warning process implementation logic leaving WARN level logging is as below. First, SQL Injection pattern is defined as regex. 
+            			(Users can define site-specific patterns at their will as waringPatterns at Spring setup file.) If p6spy is used, 
+            			implementation is transferred. After that, the transferred SQL statement is compared with defined pattern consecutively. 
+            			If matched, it is determined as detect, leaving WARN Level log based on org.anyframe.jdbc.support.
+            			InjectionPatternPostProcessor Logger. 
+            		</para>
+          		</listitem>
+
+          		<listitem>
+            		<para>replacePattern</para>
+
+            		<para>
+            		 	Default implementation changes regex and replacement patterns defined as replacePatterns at Spring setup file against
+            		 	the final SQL into String.replaceALL consecutively. 
+            		</para>
+          		</listitem>
+
+        	</itemizedlist>
+        	
+			<note>
+      			<title>Precaution when replacePattern is applied</title>
+      			<para>
+            		Given that the <emphasis role="bold">final query is universally</emphasis> changed simultaneously, 
+            		in the case of wrong pattern setup, SQL Syntax Error can be caused. 
+				</para>
+				<para>
+					cf.) Given that it is registered as Spring Bean, injectionPatternPostProcessor is possible to utilize with DI in any domains of Application. 
+		        	<itemizedlist>
+		          		<listitem>
+		            		<para>
+		            			ex1. ServletFilter makes it possible to universally apply warning/replace of InjectionPatternPostProcessor 
+		            			against all request parameters. 
+		            		</para>
+		          		</listitem>
+		          		<listitem>
+		            		<para>
+		            			In a DAO module, some query parameters which are difficult to handle with preparedstatement's bind arguments, 
+		            			InjectionPatternPostProcessor's replacement can be applied selectively.
+		            		</para>
+		          		</listitem>
+		        	</itemizedlist>
+				</para>		        
+			</note>
+		</section>
+		
+		
+		<section id="jdbcsupport_injectionandlogging_implementation_defaultcompletequerypostprocessor">
+        	<title>DefaultCompleteQueryPostProcessor</title>
+        	
+     		<para>
+           		Default implementation is logged with org.anyframe.jdbc.support.CompleteQueryPostProcessor logger set in INFO Level 
+           		when it comes to CompleteQuery.
+			</para>
+			<para>
+				If logger’s appender is set separately, pattern layout or target such as file and DB can be easy to manipulate. 
+			</para>		        
+
+		</section>
+		
+		<section id="jdbcsupport_injectionandlogging_implementation_extension">
+        	<title>Extension Implementation Sample - ThreadLocalCompleteQueryPostProcessor</title>
+        	
+     		<para>
+           		Before (flag setup) and after (executeQuery extraction and ThreadLocal clear) jdbc execution, 
+           		ThreadLocal handling should be paid attention. 
+			</para>
+			<para>
+				In the case where the purpose is not Jdbc execution but Query extraction, needed is throwing exception. 
+				(cf. in the case of using queryService, remains the issue that stackTrace lingers.)
+				--> It is recommended to commonly apply logic to return relevant Query to user UI in domain to handle Exception as universal AOP 
+				by separating defining QueryLogException.  
+			</para>
+			
+			<para>
+				Sample Source
+				<programlisting language="java"><![CDATA[public class ThreadLocalCompleteQueryPostProcessor extends DefaultCompleteQueryPostProcessor {
+
+    @Override
+    public void processCompleteQuery(String sql) {
+        super.processCompleteQuery(sql);
+
+        if ("Q".equals(SharedInfoHolder.getJobType())) {
+            SharedInfoHolder.setExecutedQuery(sql);
+            // throw new QueryLogException(sql);
+        }
+    }
+
+}]]></programlisting>
+
+				<programlisting language="java"><![CDATA[@Test
+public void testCompleteQueryPostProcessor() {
+    NamedParameterJdbcTemplate jdbcTemplate = new NamedParameterJdbcTemplate(dataSource);
+    
+    StringBuffer testSql = new StringBuffer();
+    testSql.append("SELECT LOGON_ID, NAME, PASSWORD FROM TB_USER \n");
+    testSql.append("WHERE LOGON_ID = :logonId AND PASSWORD = :password \n");
+
+    Map<String, Object> paramMap = new HashMap<String, Object>();
+    paramMap.put("logonId", "admin");
+    paramMap.put("password", "adminpw");
+
+    // if ThreadLocal flag set - jobType = "Q"
+    SharedInfoHolder.setJobType("Q");
+
+    // execute jdbc - cf.) in ThreadLocalCompleteQueryPostProcessor,
+    // executes query actually cause it does not throw Exception
+    Map<String, Object> resultMap = jdbcTemplate.queryForMap(testSql.toString(), paramMap);
+    assertEquals("admin", resultMap.get("logon_id"));
+    assertEquals("adminpw", resultMap.get("password"));
+
+    // check the last executed query (CompleteQuery) in ThreadLocal
+    assertEquals(
+        "SELECT LOGON_ID, NAME, PASSWORD FROM TB_USER \nWHERE LOGON_ID = 'admin' AND PASSWORD = 'adminpw' \n",
+        SharedInfoHolder.getExecutedQuery());
+
+    // ThreadLocal must be cleared!
+    SharedInfoHolder.clearSharedInfo();
+}]]></programlisting>
+			</para>
+			
+			<para>
+				configuration
+				<programlisting language="xml"><![CDATA[<!-- some ThreadLocal processing added sample -->
+<bean id="completeQueryPostProcessor"
+    class="org.anyframe.jdbc.support.ext.ThreadLocalCompleteQueryPostProcessor" />]]></programlisting>
+			</para> 
+
+		</section>
+
+</chapter>

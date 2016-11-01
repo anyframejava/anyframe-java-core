@@ -1,0 +1,48 @@
+<chapter id="login_login_loginview">
+		<title>Authentication</title>
+
+
+		<section id="login_login_loginview_authentication">
+        	<title>Id, Password Authentication</title>
+           		<para>
+           			보통은 Web Application의 사용자 인증은 Id, Password 방식을 많이 사용한다.  
+           			아래는 Login Plugin의 로그인화면이다. 사용자 Locale에 따라 두 명의 사용자가 등록되어 있다.
+					<mediaobject>
+                 			<imageobject>
+                   			<imagedata align="center"
+                             			fileref="../image/login/login_id_password.png" />
+                 			</imageobject>
+                 		</mediaobject>
+				</para>
+
+           		<para>
+           			로그인 화면에서 아이디, 패스워드를 입력한 후 Login 버튼을 클릭하면 AuthenticationController에서
+           			사용자 입력값(id, password)을 이용해 사용자인증 절차를 거친다. Login Plugin에서는 AuthenticationService에서
+           			사용자 인증을 한다. 
+           			만약 인증에 실패 했을 경우에는 아래와 같이 화면에 인증실패 메세지를 보여준다.
+           		</para>
+				<mediaobject>
+           			<imageobject>
+             				<imagedata align="center"
+                       			fileref="../image/login/login_login_fail.png" />
+           			</imageobject>
+           		</mediaobject>
+		</section>
+		
+		<section id="login_login_loginview_userinfo">
+        	<title>사용자 정보 조회</title>
+				<para>
+					인증에 성공하게 되면 Application에서 필요한 사용자 정보를 조회한다. 사용자 이름, 사용자 로케일 정보를 조회한다.
+					Login Plugin 에서는 UserService를 이용해 사용자 정보를 조회한다.
+					아래는 인증에 성공한 후 UserService의 API를 호출해 사용자 정보를 조회하는 샘플소스이다.
+				</para>
+				<programlisting language="java"><![CDATA[boolean certification =  authenticationService.authenticate(loginInfo);
+		
+if(certification){
+    UserInfo userInfo = userService.getUserInfo(id);
+    ..중략
+}else{
+    ..중략
+}]]></programlisting>
+		</section>
+</chapter>

@@ -1,0 +1,204 @@
+<chapter id="springrest_restsupport_oxm">
+	<title>OXM (Object/XML Mapping)</title>
+	
+	<para>
+		OXM은 Spring에서 Object와 XML간의 변환을 위해서 JAXB, Castor, JiBX 같은 XML Marshalling 기술을 추상화한 기능으로 
+		원래는 Spring Web Service 프로젝트에 포함되어 있던 모듈이 분리되어 Spring 3에서 Core 영역에 포함되었다.
+		REST Feature 범위는 아니지만 MarshallingView 및 MarshallingHttpMessageConverter와 연관지어 이 장에서 설명하도록 하겠다.
+	</para>
+	<para>
+		Spring OXM은 다음과 같은 특징을 가진다.
+		<itemizedlist>
+			<listitem>
+				<para>간편한 설정</para>
+				<para>
+					Marshaller를 일반 빈과 동일하게 정의한다. 또한 'oxm' 네임스페이스를 제공하여 JAXB2, XmlBeans, JiBX 등을 사용한 Marshaller를 손쉽게 정의할 수 있게 해준다. 
+				</para>
+			</listitem>
+			
+			<listitem>
+				<para>일관된 인터페이스</para>
+				<para>
+					Marshaller/Unmarshaller라는 두가지 인터페이스로 동작하기 때문에 OX Mapping Framework를 설정만으로 쉽게 변경할 수 있다. 
+   					또한 OX Mapping Framework을 섞어서(mix and match) 사용할 수도 있다. 
+				</para>
+			</listitem>
+			
+			<listitem>
+				<para>일관된 예외 계층</para>
+				<para>
+					Mapping(Serialization)하다 발생한 Exception 처리를 위해서 XmlMappingException이라는 Root Exception을 제공한다.
+				</para>
+			</listitem>
+		</itemizedlist>
+		Spring OXM에서 Marshaller와 Unmarshaller 인터페이스는 구분되어 있지만 Spring에서 제공하고 있는 실제 구현체들은 하나의 클래스에서 두 개의 인터페이스 모두를 구현해서 제공하고 있다.
+		그래서 구현클래스 하나만 Bean으로 등록하면 Marshaller로 사용할 수도 있고 Unmarshaller로 사용할 수도 있다.
+	</para>
+	
+	<section id="springrest_restsupport_oxm_programmatic">
+		<title>Programmatic Using</title>
+		<para>
+			XML 변환을 위한 Marshaller는 아래와 같이 Bean으로 정의한 다음 클래스에서 Injection 받아서 사용할 수 있다.
+			예제에서는 Castor를 사용하고 있지만, JAXB, XMLBeans, JiBX, XStream 등도 Marshaller로 사용할 수 있다.
+			앞서 언급했듯이 CastorMarshaller는 Marshaller와 Unmarshaller 인터페이스를 모두 구현하였기 때문에 두 가지 용도로 참조할 수 있다.
+		</para>
+		<programlisting language="xml"><![CDATA[<beans>
+    <bean id="sample" class="SampleClass">]]><emphasis role="bold"><![CDATA[
+        <property name="marshaller" ref="castorMarshaller" />
+        <property name="unmarshaller" ref="castorMarshaller" />]]></emphasis><![CDATA[
+    </bean>
+    
+    ]]><emphasis role="bold"><![CDATA[<bean id="castorMarshaller" class="org.springframework.oxm.castor.CastorMarshaller"/>]]></emphasis>
+<![CDATA[</beans>]]></programlisting>
+
+		<para>다음은 클래스에서 Marshaller를 사용하는 예제이다.
+			<programlisting language="java"><![CDATA[public class SampleClass {
+    @Inject
+    private Marshaller marshaller;
+    @Inject
+    private Unmarshaller unmarshaller;
+    
+    // 중략
+    public void save() throws IOException {
+        FileOutputStream os = null;
+        try {
+            os = new FileOutputStream(FILE_NAME);
+            ]]><emphasis role="bold">this.marshaller.marshal(movies, new StreamResult(os));</emphasis><![CDATA[
+        } finally {
+            if (os != null) {
+                os.close();
+            }
+        }
+    }
+    // 중략
+}]]></programlisting>
+		</para>
+	</section>
+	
+	<section id="springrest_restsupport_oxm_declarative">
+		<title>Declarative Using</title>
+		<para>Spring에서 제공하는 'oxm' namespace를 이용하면 Marshaller 설정을 간편하게 추가할 수 있다.이를 위해서는 XML 상단에 아래의 스키마 정의를 추가해야 한다.</para>
+		<programlisting language="xml"><![CDATA[<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+    xmlns:oxm="http://www.springframework.org/schema/oxm"
+    xsi:schemaLocation="http://www.springframework.org/schema/beans
+    http://www.springframework.org/schema/beans/spring-beans-3.1.xsd
+    http://www.springframework.org/schema/oxm
+    http://www.springframework.org/schema/oxm/spring-oxm-3.1.xsd">]]></programlisting>
+   		<para>
+   			현재 제공하고 있는 태그들은 다음과 같다.
+   			<itemizedlist>
+   				<listitem>
+   					<para><link linkend="springrest_restsupport_oxm_jaxb">jaxb2-marshaller</link></para>
+   				</listitem>
+   				
+   				<listitem>
+   					<para><link linkend="springrest_restsupport_oxm_xmlbeans">xmlbeans-marshaller</link></para>
+   				</listitem>
+   				
+   				<listitem>
+   					<para><link linkend="springrest_restsupport_oxm_jibx">jibx-marshaller</link></para>
+   				</listitem>
+   			</itemizedlist>
+   		</para>
+   		<para>상세한 설정 방법은 각각의 Marshaller 설명에서 더 자세히 살펴보도록 하겠다.</para>
+	</section>
+	
+	<section id="springrest_restsupport_oxm_jaxb">
+		<title>JAXB</title>
+		<para>
+			JAXB는 W3C XML 스키마를 지원하는 Object/XML 매핑 프레임워크로 Spring에서는 JAXB 2.0 API를 사용한 Jaxb2Marshaller를 제공하고 있다.
+		</para>
+		
+		<para>
+			Jaxb2Marshaller를 사용하기 위한 설정은 다음과 같다.
+			<programlisting language="xml"><![CDATA[<beans>
+    <bean id="jaxb2Marshaller" class="org.springframework.oxm.jaxb.Jaxb2Marshaller">
+        <property name="classesToBeBound">
+            <list>
+                <value>myapp.springrest.domain.Movie</value>                
+            </list>
+        </property>
+    </bean>
+</beans>]]></programlisting>
+			스키마 Validation이 필요한 경우 'schema' 속성을 추가하여 스키마 파일을 지정해 줄 수 있다.
+		</para>
+		
+		<para>
+			'oxm' namespace를 이용해서 아래와 같이 간편하게 설정할 수도 있다.
+			<programlisting language="xml"><emphasis role="bold"><![CDATA[<oxm:jaxb2-marshaller id="marshaller" contextPath="myapp.springrest.domain"/>]]></emphasis></programlisting>
+			다음은 springrest plugin의 src/test/resources/context-restclient.xml파일의 일부이다. <![CDATA[<oxm:class-to-be-bound>]]>를 이용하여 변환할 클래스 목록을 정의하였다.
+			<programlisting language="xml"><emphasis role="bold"><![CDATA[<oxm:jaxb2-marshaller id="marshaller">
+    <oxm:class-to-be-bound name="myapp.springrest.domain.Movie"/>
+</oxm:jaxb2-marshaller>
+]]></emphasis></programlisting>
+		</para>
+	</section>
+		
+	<section id="springrest_restsupport_oxm_castor">
+		<title>Castor</title>
+		<para>
+			Castor는 오픈 소스 XML 바인딩 프레임워크로, Java 객체와 XML간의 변환에 대해서 Castor에서 사용하는 디폴트 규칙을 그대로 따른다면 
+			Spring에서는 제공하는 CastorMarshaller를 추가 설정 없이 간단하게 Bean으로 정의할 수 있다.
+		</para>
+		
+		<para>
+			CastorMarshaller를 사용하기 위한 설정은 다음과 같다.
+			<programlisting language="xml"><![CDATA[<beans>
+    <bean id="castorMarshaller" class="org.springframework.oxm.castor.CastorMarshaller" />
+</beans>]]></programlisting>
+			Castor의 디폴트 변환 양식을 변경하고자 하는 경우 Castor 매핑 파일을 작성하여 아래 예와 같이 mappingLocation 속성으로 정의해준다.
+			Castor 매핑 파일을 작성방법에 대해서는 <ulink url="http://castor.org/xml-mapping.html">Castor XML Mapping</ulink>을 참조한다.
+			<programlisting language="xml"><![CDATA[<beans>
+    <bean id="castorMarshaller" class="org.springframework.oxm.castor.CastorMarshaller">
+        <property name="mappingLocation" value="classpath:mapping.xml" />
+    </bean>
+</beans>]]></programlisting>
+		</para>
+	</section>
+	
+	<section id="springrest_restsupport_oxm_xmlbeans">
+		<title>XMLBeans</title>
+		<para>
+			XMLBeans는 Full XML 스키마를 지원하는 XML 바인딩 프레임워크로, 자세한 내용은 <ulink url="http://xmlbeans.apache.org/">XMLBeans 웹사이트</ulink>를 참조하기 바란다.
+			Spring에서 제공하는 Marshaller/Unmarshaller 구현체는 XmlBeansMarshaller이다.
+		</para>
+		
+		<para>
+			XmlBeansMarshaller를 사용하기 위한 설정은 다음과 같다.
+			<programlisting language="xml"><![CDATA[<beans>
+    <bean id="xmlBeansMarshaller" class="org.springframework.oxm.xmlbeans.XmlBeansMarshaller" />
+</beans>]]></programlisting>
+			단, XmlBeansMarshaller는 모든 java.lang.Object가 아닌 XmlObject 타입의 객체만 변환할 수 있다는 것을 주의해야한다. 
+		</para>
+		
+		<para>
+			'oxm' namespace를 이용해서 아래와 같이 간편하게 설정할 수도 있다.
+			<programlisting language="xml"><emphasis role="bold"><![CDATA[<oxm:xmlbeans-marshaller id="marshaller"/>]]></emphasis></programlisting>
+		</para>
+	</section>
+	
+	<section id="springrest_restsupport_oxm_jibx">
+		<title>JiBX</title>
+		<para>
+			JiBX는 XML 데이터를 Java 오브젝트에 바인딩하는 데 사용되는 도구로, 자세한 내용은 <ulink url="http://jibx.sourceforge.net/">JiBX 웹사이트</ulink>를 참조하기 바란다.
+			Spring에서 제공하는 Marshaller/Unmarshaller 구현체는 JibxMarshaller이다.
+		</para>
+		
+		<para>
+			JibxMarshaller를 사용하기 위한 설정은 다음과 같다.
+			<programlisting language="xml"><![CDATA[<beans>
+    <bean id="jibxFlightsMarshaller" class="org.springframework.oxm.jibx.JibxMarshaller">
+        <property name="targetClass">anyframe.sample.domain.Movie</property>
+    </bean>
+</beans>]]></programlisting>
+			위의 예에서는 하나의 JibxMarshaller만 정의하였지만, 여러 클래스를 변환하는 경우 targetClass 속성을 다르게 정의한 여러 개의 JibxMarshaller가 정의되어야 한다. 
+		</para>
+		
+		<para>
+			'oxm' namespace를 이용해서 아래와 같이 간편하게 설정할 수도 있다.
+			<programlisting language="xml"><emphasis role="bold"><![CDATA[<oxm:jibx-marshaller id="marshaller" target-class="anyframe.sample.domain.Movie"/>]]></emphasis></programlisting>
+		</para>
+	</section>
+</chapter>
