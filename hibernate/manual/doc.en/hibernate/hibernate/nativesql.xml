@@ -1,0 +1,275 @@
+<chapter id="hibernate_hibernate_nativesql">
+	<title>Native SQL</title>
+
+	<para>
+		When performing CRUD operation, Hibernate usually uses Hibernate API
+			or Criteria. However, to be able to use function provided by specific
+			DBMS, Hibernate supports Native SQL.	
+    </para>
+
+	<section id="hibernate_hibernate_nativesql_instruction">
+		<title>How to use</title>
+
+		<para>
+				By using session.createSQLQuery() method, native SQL can be executed.
+			
+		</para>
+
+		<section id="hibernate_hibernate_nativesql_instruction_basic">
+			<title>Case 1. Basic</title>
+
+			<para>
+				Search using native SQL can be performed targeting one table.
+		
+                <programlisting language="java"><![CDATA[hqlBuf = new StringBuilder();
+hqlBuf.append("SELECT * ");
+hqlBuf.append("FROM COUNTRY ");
+hqlBuf.append("WHERE COUNTRY_NAME like :condition ");
+hqlBuf.append("ORDER BY COUNTRY_NAME");
+
+SQLQuery query = session.createSQLQuery(hqlBuf.toString());]]>
+<emphasis role="bold"><![CDATA[query.addEntity(Country.class);]]></emphasis>
+<![CDATA[query.setParameter("condition", "%%");
+List countryList = query.list();]]></programlisting>
+			</para>
+
+    		<para>
+        		By using session.createSQLQuery(), execute defined SQL
+					statement. Also, if you want to receive the search result as a
+					specific persistence object,
+					define a specific object type through
+					SQLQuery.addEntity().        	
+   			</para>
+		</section>
+
+		<section id="hibernate_hibernate_nativesql_instruction_join">
+        	<title>Case 2. Join</title>
+
+        	<para>
+        		Search can be performed using native SQL(Inner Join) targeting
+					two related tables.					 
+                <programlisting language="java"><![CDATA[hqlBuf.append("SELECT movie.* ");
+hqlBuf.append("FROM MOVIE movie ");
+hqlBuf.append("]]><emphasis role="bold">join</emphasis><![CDATA[ MOVIE_CATEGORY moviecategory on movie.MOVIE_ID 
+        = moviecategory.MOVIE_ID ");
+hqlBuf.append("]]><emphasis role="bold">join</emphasis><![CDATA[ CATEGORY category on moviecategory.CATEGORY_ID 
+        = category.CATEGORY_ID ");
+hqlBuf.append("WHERE category.CATEGORY_NAME = ?");
+SQLQuery query = session.createSQLQuery(hqlBuf.toString());]]>
+<emphasis role="bold"><![CDATA[query.addEntity(Movie.class);]]></emphasis>
+<![CDATA[query.setParameter(0, "Romantic");
+List movieList = query.list(); ]]></programlisting>
+			</para>
+
+        	<para>
+        		Like the code above, Inner Join can be performed using join.        		
+       	 	</para>
+
+        	<para>
+        		In addition, search can be performed using native SQL(Right Outer
+					Join) targeting two related tables. How to develop is as follows.					
+                <programlisting language="java"><![CDATA[hqlBuf.append("SELECT distinct category.* ");
+hqlBuf.append("FROM MOVIE movie ");
+hqlBuf.append("]]><emphasis role="bold">right join</emphasis> <![CDATA[MOVIE_CATEGORY moviecategory on 
+        movie.MOVIE_ID=moviecategory.MOVIE_ID ");
+hqlBuf.append("]]><emphasis role="bold">right join</emphasis> <![CDATA[CATEGORY category on 
+        moviecategory.CATEGORY_ID=category.CATEGORY_ID ");
+hqlBuf.append("ORDER BY category.CATEGORY_NAME ASC ");
+SQLQuery query = session.createSQLQuery(hqlBuf.toString());]]>
+<emphasis role="bold">query.addEntity(Category.class);</emphasis> 
+List categoryList = query.list();        </programlisting>
+			</para>
+
+        	<para>
+        			In addition, to get each joined object from joined result, use
+					addJoin method.				
+                <programlisting language="java"><![CDATA[hqlBuf.append("SELECT distinct ]]><emphasis
+              role="bold"><![CDATA[movie.*, country.*]]></emphasis> ");
+<![CDATA[hqlBuf.append("FROM MOVIE movie, COUNTRY country ");
+hqlBuf.append("WHERE movie.COUNTRY_CODE = country.COUNTRY_CODE ");
+hqlBuf.append("AND country.COUNTRY_ID = :condition1 ");
+hqlBuf.append("AND movie.TITLE like :condition2 ");
+
+SQLQuery query = session.createSQLQuery(hqlBuf.toString());]]>
+<emphasis role="bold"><![CDATA[query.addEntity("movie", Movie.class);]]></emphasis>
+<emphasis role="bold"><![CDATA[query.addJoin("country", "movie.country");]]></emphasis>
+<![CDATA[query.setParameter("condition1", "KR");
+query.setParameter("condition2", "%%");
+List movieList = query.list(); ]]></programlisting>
+			</para>
+
+        	<para>
+        		To search Movie and Country information at once, use 'movie' which equals
+					to alias of movie object in SELECT clause and define the movie class as
+					input parameter of addEntity(). And then, country-to-join must be
+					defined in addJoin() method.
+					In the above code,'country', alias of country object,
+					and movie.country, the value of this object, have been assigned as
+					input parameter. (Movie of movie.country is the key of the entity
+					defined through addEntiry() method.)
+					In this case, the returned list is Object[], and movie and country are saved one by one
+					in the Object[] as below.			
+                <programlisting language="java"><![CDATA[language="java">Object[] results1 = (Object[]) movieList.get(0);
+Movie movie1 = (Movie)results1[0];
+Country country1 = (Country)results1[1];]]></programlisting>
+			</para>
+		</section>
+
+		<section id="hibernate_hibernate_nativesql_instruction_condition">
+			<title>Case 3. Specifying search condition</title>
+
+        	<para>
+        		Search can be performed by using native SQL which separately specifies
+					search condition targeting two related tables.					
+                <programlisting language="java"><![CDATA[hqlBuf.append("SELECT distinct movie.* ");
+hqlBuf.append("FROM MOVIE movie, COUNTRY country ");
+hqlBuf.append("WHERE movie.COUNTRY_CODE = country.COUNTRY_CODE ");
+hqlBuf.append("AND]]> <emphasis role="bold"><![CDATA[country.COUNTRY_ID = :condition1]]></emphasis> ");
+<![CDATA[hqlBuf.append("AND]]> <emphasis role="bold"><![CDATA[movie.TITLE like :condition2]]></emphasis> ");
+
+<![CDATA[SQLQuery query = session.createSQLQuery(hqlBuf.toString());]]>
+<emphasis role="bold"><![CDATA[query.addEntity(Movie.class); ]]></emphasis>
+<emphasis role="bold"><![CDATA[query.setParameter("condition1", "KR");]]></emphasis>
+<emphasis role="bold"><![CDATA[query.setParameter("condition2", "%%");]]></emphasis>
+<![CDATA[List movieList = query.list();]]></programlisting>
+			</para>
+
+        	<para>
+        		Search condition can be specified in ":"(Named Parameter
+					type) and the value of the condition can be set through setParameter().
+					The native SQL code explained above can be checked in
+					HibernateNativeSQL.java.        		
+        		
+        	</para>
+		</section>
+	</section>
+
+    <section id="hibernate_hibernate_nativesql_xml">
+		<title>Defining native SQL in XML</title>
+
+      	<para>
+      		Native SQL can be defined in a Hibernate mapping xml file and
+				executed using name of that statement. By doing so, when native SQL
+				is updated, recompiling becomes not
+				necessary by updating Native SQL defined in XML without changing source code.
+				Also Native SQL statement can be managed separately.
+				By using getNamedQuery() method in org.hibernate.Session, execute Native SQL
+				defined as name in XML.      	
+            <programlisting language="java">Query query = <emphasis role="bold"><![CDATA[session.getNamedQuery("nativeFindCountryList");]]></emphasis>
+<emphasis role="bold"><![CDATA[query.setParameter("condition", "%%");]]></emphasis>
+<![CDATA[List countryList = query.list();]]></programlisting></para>
+
+      	<para>
+      			The following is a part of Country.hbm.xml where native SQL is defined.      		
+            <programlisting language="xml"> <emphasis role="bold"><![CDATA[<]]><![CDATA[sql-query name="nativeFindCountryList"]]></emphasis><![CDATA[>
+    <return alias="country" class="org.anyframe.sample.model.bidirection.Country"/>]]>
+    <![CDATA[SELECT * 
+    FROM COUNTRY country
+    WHERE country.COUNTRY_NAME like :condition 
+    ORDER BY country.COUNTRY_NAME
+
+</sql-query>]]></programlisting>
+		</para>
+
+      	<para> 
+      		To define native SQL, use <![CDATA[<sql-query>]]>
+				tag in the XML. For above-mentioned test code, see HibernateNamedNativeSQL.java. 
+      	
+      	</para>
+	</section>
+
+    <section id="hibernate_hibernate_nativesql_pagination">
+		<title>Pagination</title>
+
+      	<para>
+      		The purpose of pagination is to reduce memory load of DB or
+				application by limiting the search list shown in one page.
+				Let's take a look at how to get the paginated result when executing
+				native SQL. Perform search using native SQL targeting a
+				specific table (MOVIE table in the example). In this case, pagination
+				is possible by defining the number of row(FirstResult) which has to
+				start search and the number of search items(MaxResult).      	
+            <programlisting language="java"><![CDATA[hqlBuf.append("SELECT * ");
+hqlBuf.append("FROM MOVIE ");
+SQLQuery query = session.createSQLQuery(hqlBuf.toString());
+query.addEntity(Movie.class);]]>
+<emphasis role="bold"><![CDATA[query.setFirstResult(1);]]></emphasis>
+<emphasis role="bold"><![CDATA[query.setMaxResults(2);]]></emphasis>
+<![CDATA[List movieList = query.list();]]></programlisting>
+		</para>
+
+      	<para>
+      		If defined as above, Adjusted SQL is performed according to each DB
+				of hibernate.dialect defined in hibernate configuration file.
+				In other words, instead of data number being returned as a result
+				value after reading all the data the relevant page belongs to,
+				only the number of data to search (the number of the page the data belongs to) is returned.
+				The following is a SQL statement performed after pagination
+				when hibernate.dialect was defined as HSQL DB.      	
+            <programlisting>SELECT <emphasis role="bold">limit 1 2</emphasis><![CDATA[ * FROM MOVIE]]></programlisting>
+		</para>
+
+      	<para>
+      		Is defined in the code above, as the number of item to search
+				first is defined as 1
+				and the total number of search items as 2,
+				Hibernate executed SQL which was added with 'limit 1 2'
+				according to the characteristic of HSQL DB and performed pagination.
+				For the code above, see HibernateNativeSQLPaging.java.
+      	
+      	</para>
+	</section>
+
+    <section id="hibernate_hibernate_nativesql_callable">
+		<title>Callable Statement</title>
+
+      	<para>
+      		Procedure or function registered in DB can be executed using Hibernate.     
+      	</para>
+
+		<section id="hibernate_hibernate_nativesql_callable_procedure">
+        	<title>Case 1. Calling procedure defined in XML</title>
+
+        	<para>
+        		Checking result is possible by calling procedure defined in	mapping XML file.        
+                <programlisting language="java">Query query = <emphasis role="bold"><![CDATA[session.getNamedQuery("callFindCategoryList"]]></emphasis>);
+<![CDATA[query.setParameter("condition", "%%");
+List categoryList = query.list();]]></programlisting>
+			</para>
+
+        	<para>
+        		The code above calls session.getNameQuery() and search query named
+					'callFindCategoryList' defined in mapping XML.
+					The following is a part of Category.hbm.xml defined with 'callFindCategoryList'.        		
+                <programlisting language="xml"><![CDATA[<sql-query name="callFindCategoryList" callable="true">
+    <return alias="category" class="org.anyframe.sample.model.bidirection.Category"/>	
+        {]]> <emphasis role="bold"><![CDATA[call FIND_CATEGORY_LIST (?, :condition)]]></emphasis> }
+<![CDATA[</sql-query>]]></programlisting>
+			</para>
+
+        	<para>
+        		In the above code, procedure of FIND_CATEGORY_LIST is executed which is defined in the DB.					
+        	</para>
+		</section>
+
+      	<section id="hibernate_hibernate_nativesql_callable_function">
+        	<title>Case 2. HQL execution using Function</title>
+
+        	<para>
+        		Execute HQL and the result can be checked by using function	created in the DB.
+	
+                <programlisting language="java"><![CDATA[hqlBuf.append("FROM Movie movie ");
+hqlBuf.append("WHERE movie.releaseDate >]]> <emphasis role="bold"><![CDATA[FIND_MOVIE(:condition)]]></emphasis>");
+<![CDATA[Query query = session.createQuery(hqlBuf.toString());
+query.setParameter("condition", "MV-00002");
+List movieList = query.list();]]></programlisting>
+			</para>
+
+        	<para>
+        		The code above is performing HQL using result of 'FIND_MOVIE'
+					function. For more detailed code, see HibernateProcedure.java.					
+        	</para>
+		</section>
+	</section>
+</chapter>
+	

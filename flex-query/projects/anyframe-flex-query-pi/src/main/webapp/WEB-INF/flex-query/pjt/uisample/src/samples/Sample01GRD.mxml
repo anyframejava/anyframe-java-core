@@ -1,0 +1,202 @@
+<?xml version="1.0" encoding="utf-8"?>
+<mx:Module xmlns:fx="http://ns.adobe.com/mxml/2009" 
+		   xmlns:s="library://ns.adobe.com/flex/spark" 
+		   xmlns:mx="library://ns.adobe.com/flex/mx"
+		   xmlns:local="anyframe.common.*" 
+		   xmlns:paging="samples.paging.*"
+		   layout="vertical" 
+		   width="100%" height="100%" 
+		   initialize="init()"
+		   verticalScrollPolicy="off" 
+		   horizontalScrollPolicy="off">
+	
+	<fx:Script>
+		<![CDATA[
+			import samples.renderer.ResultHandler;
+			import mx.rpc.events.FaultEvent;
+			import samples.util.Util;
+			import samples.domain.Category;
+			import samples.renderer.Calender;
+			import mx.controls.Alert;
+			import samples.domain.SearchVO;
+			import mx.rpc.events.ResultEvent;
+			import org.anyframe.pagination.Page;
+			import samples.paging.PagingLinkBar;
+			import samples.paging.PagingEvent;
+			import mx.formatters.DateFormatter;
+			import mx.events.ListEvent;
+			import mx.events.DataGridEvent; 
+			import mx.controls.DataGrid;
+			import mx.controls.DateChooser;
+			import mx.managers.PopUpManager;  
+			import samples.renderer.Calender;	
+			import mx.events.DataGridEventReason;
+			
+			private var currentSelectColumnName:String;
+			private var preUpdateCellValue:String;
+			private var keyword:String = "";
+			private var condition:String = "";
+			
+			[Bindable]
+			private var page:Page;
+			
+			[Bindable] 
+			private var categoryList:ArrayCollection;
+			
+			private var deleteCategoryList:ArrayCollection = new ArrayCollection();
+			
+			private function init():void{
+				getCategoryList(1);
+			}
+			private function getCategoryList(currentPage:int, pageClick:Boolean = false ):void{
+				var searchVO:SearchVO = new SearchVO();
+				if ( pageClick ){
+					searchVO.searchCondition = condition;
+					searchVO.searchKeyword = keyword;
+				}else{
+					keyword = searchKeyword.text;
+					condition = searchCondition.selectedItem.data;
+					searchVO.searchKeyword = keyword;
+					searchVO.searchCondition = condition;
+				}
+				searchVO.tableName = "Category";
+				searchVO.pageIndex = currentPage;
+				categoryService.getPagingList(searchVO);
+			}
+			
+			private function getPagingListResultHandler(event:ResultEvent):void {
+				page = event.result as Page;
+				plb.totalCount = page.totalCount;
+				plb.fetchSize = page.pagesize;
+				plb.numPages = page.pageunit;
+				plb.currentPage = page.currentPage;
+				
+				categoryList = page.objects as ArrayCollection;
+				
+				setPageStatus(page);
+			}
+			
+			private function setPageStatus(page:Page):void{
+				pageStatus.text = "Page : " + page.currentPage +"/" + page.maxPage;
+			} 
+			
+			 private function pageClickHandler(event:PagingEvent) : void
+            {
+                var pageClick:Boolean = true;
+                getCategoryList(event.newPage, pageClick);
+            }
+            
+           	private function addCategory():void{
+				var addCategory:Category = new Category();
+				addCategory.status = 1;
+				addCategory.regDate = Util.getToday();
+				grdCategory.dataProvider.addItem(addCategory);
+			}
+			
+			private function updateCategory(event:DataGridEvent):void{
+				
+				if (event.reason == DataGridEventReason.CANCELLED){
+					return;
+                }
+                
+				var updateCategory:Category = grdCategory.itemEditorInstance.data as Category;
+				
+				var rowStatus:Number = updateCategory.status;
+				
+				if( rowStatus == 0 ){
+					updateCategory.status = 2;
+				}
+			}
+			
+			private function deleteCategory():void{
+				if(grdCategory.selectedIndex != -1){
+					var deleteCategory:Category = grdCategory.selectedItem as Category;
+					var rowStatus:int = deleteCategory.status;
+					
+					if (rowStatus != 1){
+						deleteCategory.status = 3;
+						deleteCategoryList.addItem(deleteCategory)
+					}
+					grdCategory.dataProvider.removeItemAt(grdCategory.selectedIndex);
+				}else{
+					Alert.show("삭제할 Row를 선택해 주세요");
+				}
+		    }
+		    
+		    private function saveCategory():void{
+		    	var saveCategoryList:ArrayCollection = new ArrayCollection();
+		    	for ( var j:int = 0 ; j < deleteCategoryList.length ; j ++ ){
+		    		saveCategoryList.addItem(deleteCategoryList.getItemAt(j));
+		    	}
+		    	for ( var i:int = 0 ; i < categoryList.length ; i ++ ){
+		    		var category:Category = categoryList.getItemAt(i) as Category;
+		    		if(category.status != 0){
+		    			if ( category.categoryName == null || category.categoryName.length == 0 ){
+		    				Alert.show("카테고리 이름은 필수 항목입니다.\n 확인하고 다시 저장하세요");
+		    				return;
+		    			}
+		    			saveCategoryList.addItem(category);
+		    		}
+		    	}
+		    	if ( saveCategoryList.length == 0 ){
+		    		Alert.show("저장할 데이터가 없습니다.");
+		    	}else{
+		    		categoryService.saveAll(saveCategoryList);
+		    	}
+		    }
+		    
+		    private function saveAllResultHandler(event:ResultEvent):void{
+		    	mx.controls.Alert.show(ResultHandler.saveAllResultMessage(event));
+		    	deleteCategoryList.removeAll();
+		    	getCategoryList(1);
+		    }
+		]]>
+	</fx:Script>
+	
+	<fx:Declarations>
+		<!-- Place non-visual elements (e.g., services, value objects) here -->
+		<mx:ArrayCollection id="searchConditionValue">
+			<fx:Object label="카테고리 설명" data="categoryDesc"/>
+			<fx:Object label="카테고리 이름" data="categoryName"/>
+		</mx:ArrayCollection> 
+		
+		<fx:Array id="columnsInfo">
+			<mx:DataGridColumn dataField="categoryName" headerStyleName="dataGridHeaderAlign" headerText="카테고리 이름" editable="true"/>
+			<mx:DataGridColumn dataField="categoryDesc" headerStyleName="dataGridHeaderAlign" headerText="카테고리 설명" editable="true"/>	
+			<mx:DataGridColumn dataField="regDate" headerStyleName="dataGridHeaderAlign" headerText="등록일" editable="true" itemEditor="samples.renderer.DateEditor">
+			</mx:DataGridColumn>
+		</fx:Array>
+		
+		<mx:RemoteObject id="categoryService" destination="categoryService" showBusyCursor="true">
+			<mx:method name="getPagingList" result="getPagingListResultHandler(event)" fault="ResultHandler.faultMessage(event)"/>
+			<mx:method name="saveAll" result="saveAllResultHandler(event)" fault="ResultHandler.faultMessage(event)"/>
+		</mx:RemoteObject>
+	</fx:Declarations>
+	 
+	<mx:Panel title="카테고리 목록" width="100%" height="100%" layout="vertical" verticalScrollPolicy="off" horizontalScrollPolicy="off"
+			  titleBackgroundSkin="@Embed('../assets/images/bg_title.png')" color="#FFFFFF" 
+			  paddingLeft="5" paddingRight="5" paddingBottom="5" verticalGap="5">
+		<mx:HBox width="100%" horizontalGap="0" paddingBottom="5" paddingLeft="0" paddingRight="0"
+				 color="#000000" paddingTop="5" verticalAlign="middle">
+			<mx:HBox width="70%" horizontalAlign="left" verticalAlign="middle">
+				<mx:ComboBox id="searchCondition" width="125" dataProvider="{searchConditionValue}" textAlign="center"/>
+				<mx:TextInput id="searchKeyword" enter="getCategoryList(1)" imeMode="KOREAN" width="179" height="19"/>
+				<mx:Button label="검색" click="getCategoryList(1)"/>
+			</mx:HBox>
+			<mx:HBox width="30%" horizontalAlign="right">
+				<mx:Button label="추가" icon="@Embed(source='../assets/images/icon_plus.png')" textAlign="left" click="addCategory()"/>
+				<mx:Button label="삭제" icon="@Embed(source='../assets/images/icon_delete.png')" textAlign="left" click="deleteCategory()"/>
+				<mx:Button label="저장" icon="@Embed(source='../assets/images/icon_save.png')" textAlign="left" click="saveCategory()"/>
+			</mx:HBox>
+		</mx:HBox>
+		<mx:HBox width="100%" horizontalAlign="right" horizontalGap="0" verticalAlign="middle" color="#000000">
+			<mx:Label id="pageStatus" width="69"/>	
+		</mx:HBox>
+		<mx:DataGrid id="grdCategory" width="100%" height="340" columns="{columnsInfo}"
+					 dataProvider="{categoryList}" editable="true" horizontalScrollPolicy="off"
+					 itemEditEnd="updateCategory(event)" rowCount="8" rowHeight="21"
+					 verticalScrollPolicy="off">
+		</mx:DataGrid>
+		<paging:PagingLinkBar color="#000000" id="plb" pageClick="pageClickHandler(event);" width="100%" horizontalAlign="center"/>  
+	</mx:Panel>	
+</mx:Module>

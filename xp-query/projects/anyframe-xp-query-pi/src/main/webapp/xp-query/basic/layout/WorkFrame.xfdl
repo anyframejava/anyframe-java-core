@@ -1,0 +1,52 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<FDL version="1.4">
+  <TypeDefinition url="..\default_typedef.xml"/>
+  <Form id="WorkFrame" classname="WorkFrame" inheritanceid="" position="absolute 0 0 805 580" titletext="Work Frame" scrollbars="none" oninit="WorkFrame_oninit" style="background:#f2f2efff;" onclose="WorkFrame_onclose" onsetfocus="WorkFrame_onsetfocus">
+    <Layouts>
+      <Layout>
+        <Div id="div_work" taborder="1" position="absolute 20 30 800 575" anchor="all"/>
+      </Layout>
+    </Layouts>
+    <Script type="xscript4.0"><![CDATA[include "lib::commonScript.xjs";
+
+var pv_winId;
+var pv_menuId;
+var pv_menuUrl;
+var pv_menuTitle;
+
+// Form 초기화
+function WorkFrame_oninit(obj:Form, e:InitEventInfo)
+{
+	//메뉴정보 수신
+	pv_winId		= getOwnerFrame().arguments["winId"];		//윈도우 Id(화면 Id)
+	pv_menuId 		= getOwnerFrame().arguments["menuId"];		//메뉴 Id
+	pv_menuUrl		= getOwnerFrame().arguments["menuURL"];		//메뉴 Url
+	pv_menuTitle	= getOwnerFrame().arguments["menuTitle"];	//메뉴 Title
+	
+	this.titletext = pv_menuTitle;
+	this.div_work.url = pv_menuUrl;
+}
+
+// Form 종료 이벤트 처리
+function f_close(){
+	// 화면 종료시 안전한 종료를 위해 DivWork url 초기화.
+	if(gfnIsNull(div_work.url+"")) close();
+	div_work.url = "";
+	if(gfnIsNull(div_work.url)) close();
+}
+
+// Frame 종료 이벤트 처리
+function WorkFrame_onclose(obj:Form, e:CloseEventInfo)
+{
+	div_work.url = "";
+	gfnFrameOnClose(pv_winId);
+}
+
+function WorkFrame_onsetfocus(obj:Form, e:SetFocusEventInfo)
+{
+	this.components[0].setFocus();
+	AM.MDI.form.fnMovePage(pv_winId);
+}
+]]></Script>
+  </Form>
+</FDL>

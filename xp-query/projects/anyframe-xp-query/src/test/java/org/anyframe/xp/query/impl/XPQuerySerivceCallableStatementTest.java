@@ -232,7 +232,7 @@ public class XPQuerySerivceCallableStatementTest {
 		inDs.set(0, "inVal", new BigDecimal(1));
 
 		DataSetList outDl = xpQueryService.execute("callFunction", inDs);
-		DataSet outDs = outDl.get("outVal0");
+		DataSet outDs = outDl.get("callFunction0");
 
 		// 3 assert
 		Assert
@@ -264,7 +264,7 @@ public class XPQuerySerivceCallableStatementTest {
 
 		// 2. execute query
 		DataSetList outDl = xpQueryService.execute("callProcedure", inDs);
-		DataSet outDs = outDl.get("outVal0");
+		DataSet outDs = outDl.get("callProcedure0");
 
 		// 3. assert
 		Assert
@@ -299,8 +299,8 @@ public class XPQuerySerivceCallableStatementTest {
 
 		// 2. execute query
 		DataSetList outDl = xpQueryService.execute("callPackage", inDs);
-		DataSet outDs1 = outDl.get("outVal0");
-		DataSet outDs2 = outDl.get("outVal1");
+		DataSet outDs1 = outDl.get("callPackage0");
+		DataSet outDs2 = outDl.get("callPackage1");
 
 		// 3. assert
 		Assert.assertEquals("Fail to compare result size.", 3, outDs1
@@ -348,7 +348,7 @@ public class XPQuerySerivceCallableStatementTest {
 	public void testPackageWithNullValue() {
 
 		DataSetList outDl = xpQueryService.execute("callPackageWithNullValue");
-		DataSet outDs1 = outDl.get("outVal0");
+		DataSet outDs1 = outDl.get("callPackageWithNullValue0");
 		
 		Assert.assertEquals("Fail to compare result size.", 1, outDs1
 				.getRowCount());

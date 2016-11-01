@@ -1,0 +1,72 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<FDL version="1.4">
+  <TypeDefinition url="..\default_typedef.xml"/>
+  <Form id="TabFrame" classname="TabFrame" inheritanceid="" position="absolute 0 0 825 29" titletext="TabFrame" scrollbars="none" style="background:@gradation;border:0 none #808080ff,0 none #808080ff,1 solid #a8a8a2ff,0 none #808080ff;gradation:linear 0,0 #c0c0bcff 0,100 #efefefff [10% #efefefff];" onload="TabFrame_onload">
+    <Layouts>
+      <Layout>
+        <Tab id="tab_WF_MDI" taborder="0" tabindex="0" showextrabutton="true" scrollbars="autoboth" class="tab_WF_MDI" position="absolute 8 8 800 30" onextrabuttonclick="tab_WF_MDI_onextrabuttonclick" onchanged="tab_WF_MDI_onchanged" anchor="left top right">
+          <Tabpages/>
+        </Tab>
+      </Layout>
+    </Layouts>
+    <Script type="xscript4.0"><![CDATA[include "lib::commonScript.xjs";
+
+function TabFrame_onload(obj:Form, e:LoadEventInfo)
+{
+	gfnOpenMenu("01001001");
+}
+
+function fnMovePage(winId){
+	var nRow = gdsOpenMenu.findRow("winId", winId);
+	tab_WF_MDI.tabindex = nRow;
+}
+
+// Left 메뉴 클릭시 Tab Page 추가
+function fnSetNaviAdd(naviCD, naviNM){
+	var nTabCount = gdsOpenMenu.rowcount;
+	var nIndex = tab_WF_MDI.insertTabpage(naviCD, nTabCount, "", naviNM);
+	
+	tab_WF_MDI.setFocus();
+}
+
+// 이미 Frame이 생성되어 있는 경우 해당 Frame과 연동된 Tab Page로 Focus 이동
+function fnActiveTabPage(naviCD){
+	var i;
+	var winId;
+	var nRow;
+	var nBtnMoveCount;	
+	
+	nRow = gdsOpenMenu.findRow("winId", naviCD);
+	
+	gdsOpenMenu.rowposition = nRow;
+	gfnActiveFrame(naviCD);
+}
+
+// Frame이 닫힌 경우 Tabpage 제거
+function fnDeleteTabPage(naviCD){
+	var nRow = gdsOpenMenu.findRow("winId", naviCD);
+	tab_WF_MDI.removeTabpage(nRow);
+}
+
+// Tab Page 제거 버튼 클릭 이벤트
+// 탭 닫기 버튼 클릭 -> 연결된 Form을 찾아서 제거 -> 해당 winId를 가지는 gdsOpenMenu Row 제거
+// -> 해당 winId를 가지는 tabPage 제거 순으로 진행됨
+function tab_WF_MDI_onextrabuttonclick(obj:Tab, e:TabMouseEventInfo)
+{
+	var winId = gdsOpenMenu.getColumn(e.index, "winId");
+	gfnTabOnClose(winId);
+}
+
+// Tab Focus 이동시 Frame Focus 이동
+function tab_WF_MDI_onchanged(obj:Tab, e:TabIndexChangeEventInfo)
+{
+	var menuId = gdsOpenMenu.getColumn(e.postindex, "menuId");
+	var winId = gdsOpenMenu.getColumn(e.postindex, "winId");
+	var objDs = AM.LEFT.form.objects["dsLeftMenu"];
+	var nRow = objDs.findRow("menuId", menuId);
+	objDs.rowposition = nRow;
+	fnActiveTabPage(winId);
+}
+]]></Script>
+  </Form>
+</FDL>

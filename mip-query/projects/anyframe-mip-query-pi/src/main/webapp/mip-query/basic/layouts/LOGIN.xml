@@ -1,0 +1,89 @@
+<?xml version="1.0" encoding="utf-8"?>
+<Window>
+	<Form DomainID="title.login" EditColor="white" Height="117" Id="frmLOGIN" Left="8" OnLoadCompleted="frmLOGIN_OnLoadCompleted" PidAttrib="7" Top="8" Ver="1.0" Width="328" WorkArea="true">
+		<Datasets>
+			<Dataset DataSetType="Dataset" Id="dsService">
+				<Contents>
+					<colinfo id="SVC_ID" size="100" summ="default" type="STRING"/>
+					<colinfo id="QUERY_LIST" size="256" summ="default" type="STRING"/>
+					<colinfo id="SERVICE" size="100" summ="default" type="STRING"/>
+					<colinfo id="IN_DATASET_LIST" size="256" summ="default" type="STRING"/>
+					<colinfo id="OUT_DATASET_LIST" size="256" summ="default" type="STRING"/>
+					<colinfo id="CONTROLLER" size="256" summ="default" type="STRING"/>
+					<colinfo id="CALLBACK" size="100" summ="default" type="STRING"/>
+					<colinfo id="SYNC_YN" size="1" summ="default" type="STRING"/>
+					<record>
+						<CALLBACK></CALLBACK>
+						<CONTROLLER>mipQueryLogin.do</CONTROLLER>
+						<IN_DATASET_LIST>inDataset=dsLogin</IN_DATASET_LIST>
+						<OUT_DATASET_LIST>gdsUser=gdsUser</OUT_DATASET_LIST>
+						<QUERY_LIST></QUERY_LIST>
+						<SERVICE></SERVICE>
+						<SVC_ID>login</SVC_ID>
+						<SYNC_YN></SYNC_YN>
+					</record>
+				</Contents>
+			</Dataset>
+			<Dataset DataSetType="Dataset" Id="dsLogin">
+				<Contents>
+					<colinfo id="USER_ID" size="256" summ="default" type="STRING"/>
+					<colinfo id="PASSWORD" size="256" summ="default" type="STRING"/>
+				</Contents>
+			</Dataset>
+		</Datasets>
+		<Image Height="117" Id="Image0" ImageID="bg_login2" LeftMargin="0" TabOrder="5" Width="328"></Image>
+		<Button BKColor="white" ButtonStyle="TRUE" Cursor="HAND" DkshadowColor="white" DomainID="button.confirm" Height="19" Id="btnOk" ImageID="btn_ok" Left="216" LeftMargin="13" OnClick="btnOk_OnClick" OnDragEnter="btnOk_OnDragEnter" ShadowColor="white" Style="stlBtn" TabOrder="1" Text="&#32;&#32;&#32;&#32;&#32;&#32;&#32;&#32;&#32;&#32;&#32;&#32;&#32;확인" Top="49" Width="56"></Button>
+		<Edit BKColor="user8" Border="Flat" BorderColor="user1" Height="20" Id="edtId" Left="88" LeftMargin="2" TabOrder="2" Text="test" Top="48" Width="124"></Edit>
+		<Edit BKColor="user8" Border="Flat" BorderColor="user1" Height="20" Id="edtPass" Left="88" LeftMargin="2" OnKeyDown="edtPass_OnKeyDown" Password="TRUE" TabOrder="3" Text="test123" Top="73" Width="124"></Edit>
+		<Button ButtonStyle="TRUE" Cursor="HAND" DkshadowColor="white" DomainID="button.cancel" Height="19" Id="btnCancel" ImageID="btn_cancel" Left="216" LeftMargin="13" OnClick="btnCancel_OnClick" Style="stlBtn" TabOrder="4" Text="&#32;취소" Top="74" Width="56"></Button>
+	</Form>
+	<Script><![CDATA[#include "javascript::common.js";
+
+function frmLOGIN_OnLoadCompleted(obj){
+	initSession(false);
+	edtid.SetFocus();
+}
+// 확인 Button Click처리
+function btnOk_OnClick(obj) {
+	dsLogin.AddRow();
+	dsLogin.SetColumn(0, "USER_ID" , edtId.Text);
+	dsLogin.SetColumn(0, "PASSWORD" , edtPass.Text);
+	gfnService("login");
+}
+
+// 취소 Button Click처리
+function btnCancel_OnClick(obj) {
+	// Session해제
+	initSession(false);
+	 
+	// Browser종료
+	//userNotify(1, "exit");
+	exit();
+}
+
+//callback method (dsService.CALLBACK 미지정시 gfnCallback에서 호출함)
+function fnCallback(strServiceId, strErrorCode, strErrorMsg) {
+    if (strErrorCode == -1) {
+		alert(strErrorMsg);
+		edtId.setFocus();
+		
+    } else {
+		// 세션 연결
+		initSession(true);
+		//Locale정보를 이용한 Language 세팅
+		gvLanguage = toUpper(gdsUser.GetConstColumn("Language")); 
+		// Locale에 맞게 Domain 파일 로딩
+		Global.loadDomain("domains::domain_" + gvLanguage + ".xml"); 
+		// 창닫기
+		close(); 
+	}
+}
+
+function edtPass_OnKeyDown(obj,nChar,bShift,bCtrl, bAlt,LLParam,HLParam)
+{
+	if(nChar == 13){
+		btnOk.Click();
+	}
+}
+]]></Script>
+</Window>

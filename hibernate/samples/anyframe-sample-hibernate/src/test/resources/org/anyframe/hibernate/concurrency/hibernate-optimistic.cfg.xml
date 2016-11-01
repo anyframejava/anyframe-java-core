@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE hibernate-configuration PUBLIC
+		"-//Hibernate/Hibernate Configuration DTD 3.0//EN"
+		"http://hibernate.sourceforge.net/hibernate-configuration-3.0.dtd">
+		
+<hibernate-configuration>
+
+    <session-factory>
+        <property name="hibernate.connection.driver_class">net.sf.log4jdbc.DriverSpy</property>
+        <property name="hibernate.connection.url">jdbc:log4jdbc:oracle:thin:@server.ip:1521:xe</property>
+        <property name="hibernate.connection.username">athena</property>
+        <property name="hibernate.connection.password">athena</property>
+        <property name="hibernate.default_schema">ATHENA</property>
+        <property name="hibernate.dialect">org.hibernate.dialect.Oracle10gDialect</property>
+        <property name="hibernate.show_sql">true</property>
+        <property name="hibernate.format_sql">true</property>
+        <property name="hbm2ddl.auto">create</property>
+
+        <!-- Enable Hibernate's automatic session context management -->
+        <property name="current_session_context_class">thread</property>
+        <mapping resource="org/anyframe/sample/hibernate/model/bidirection/concurrency/optimistic/Country.hbm.xml"/>
+        <mapping resource="org/anyframe/sample/hibernate/model/bidirection/concurrency/optimistic/Movie.hbm.xml"/>
+    </session-factory>
+</hibernate-configuration>

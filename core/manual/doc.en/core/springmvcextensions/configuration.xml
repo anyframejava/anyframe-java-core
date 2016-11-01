@@ -1,0 +1,42 @@
+<chapter id="core_springmvcextensions_configuration">
+	<title>Configuration Simplification</title>
+	
+	<para>
+		Spring 3 provides <ulink url="http://static.springsource.org/schema/mvc/spring-mvc.xsd">mvc</ulink> namespace 
+		so that Spring MVC configuration such as AnnotationMethodHandlerAdapter registration needed for handling Annotation-based Controller 
+		can be defined easily. Various tags are supported through mvc namespace, 
+		and among them, <![CDATA[<mvc:annotation-driven>]]> registers DefaultAnnotationHandlerMapping and AnnotationMethodHandlerAdapter, 
+		that transfer HTTP request to Controller implemented based on Annotation, with default configuration. 
+	</para>
+	<para>
+		However, when using <![CDATA[<mvc:annotation-driven>]]> to define Spring MVC configuration, 
+		synchronizedOnSession value which is a property of AnnotationMethodHandlerAdapter is set as 'false', 
+		so you cannot prevent Double Form Submit.
+	</para>
+	<para>
+		Therefore, Anyframe provides <![CDATA[<anyframe:annotation-driven>]]> to define synchronizedOnSession value 
+		that is a property of AnnotationMethodHandlerAdapter to prevent Double Form Submit 
+		while executing the same function as <![CDATA[<mvc:annotation-driven>]]>. 
+		The following is a part of src/main/resources/moviefinder-servlet.xml file under the sample project created by Foundation Plugin installation, 
+		which defines property using <![CDATA[<anyframe:annotation-driven>]]>.
+	</para>
+	<programlisting language="xml"><![CDATA[<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" 
+    xmlns:context="http://www.springframework.org/schema/context"
+    xmlns:mvc="http://www.springframework.org/schema/mvc" 
+    ]]><emphasis role="bold">xmlns:anyframe="http://www.anyframejava.org/schema/mvc"</emphasis><![CDATA[
+    xsi:schemaLocation=
+        "http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-3.1.xsd
+        http://www.springframework.org/schema/context http://www.springframework.org/schema/context/spring-context-3.1.xsd
+        http://www.springframework.org/schema/mvc http://www.springframework.org/schema/mvc/spring-mvc-3.1.xsd
+        ]]><emphasis role="bold">http://www.anyframejava.org/schema/mvc http://www.anyframejava.org/schema/mvc/anyframe-spring-mvc-4.5.xsd"</emphasis><![CDATA[>
+
+    <]]><emphasis role="bold">anyframe:annotation-driven synchronizeOnSession="true"</emphasis><![CDATA[/>
+	
+    <!-- ... -->
+</beans>]]></programlisting>
+	<para>
+		anyframe namespace definition should be added in <![CDATA[<beans>]]> to define <![CDATA[<anyframe:annotation-driven>]]> like the above XML.
+	</para>
+</chapter>

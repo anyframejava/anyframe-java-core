@@ -26,16 +26,17 @@ import com.tobesoft.xplatform.data.VariableList;
  * @author JongHoon Kim
  */
 public class XPVariantSqlParameterSource extends
-		DefaultDynamicSqlParameterSource { 
+		DefaultDynamicSqlParameterSource {
 
-	private final VariableList variant;
+	private VariableList variant;
 
 	public XPVariantSqlParameterSource(VariableList variant) {
 		this.variant = variant;
 	}
 
 	public Object getValue(String arg0) {
-		return variant.getObject(arg0);
+		Object value = variant.getObject(arg0);
+		return value;
 	}
 
 	public boolean hasValue(String arg0) {

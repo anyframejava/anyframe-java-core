@@ -17,147 +17,63 @@ package org.anyframe.xp.query.web;
 
 import java.lang.reflect.Method;
 
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
-
 import org.anyframe.exception.MethodInvocationException;
-import org.anyframe.xp.query.web.converter.HttpXPMessageConverter;
-import org.anyframe.xp.query.web.handler.XPRequestHandler;
-import org.anyframe.xp.query.web.handler.XPResponseHandler;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-import org.springframework.http.HttpInputMessage;
-import org.springframework.http.HttpOutputMessage;
-import org.springframework.http.MediaType;
-import org.springframework.http.server.ServletServerHttpRequest;
-import org.springframework.http.server.ServletServerHttpResponse;
-import org.springframework.web.servlet.ModelAndView;
-import org.springframework.web.servlet.mvc.AbstractController;
+import org.anyframe.xp.query.web.controller.AbstractXPController;
 
 import com.tobesoft.xplatform.data.DataSetList;
-import com.tobesoft.xplatform.data.Debugger;
 import com.tobesoft.xplatform.data.VariableList;
+import com.tobesoft.xplatform.tx.HttpPlatformRequest;
 
 /**
- * Common Controller class to invoke business service from the given ServiceName
- * and Method Name for XPLATFORM UI
+ * Controller class for operate given HttpPlatformRequest & HttpPlatformResponse
  * 
  * @author Youngmin Jo
  */
-public class XPController extends AbstractController {
-	private final String SERVICE_NAME = "service";
-	private final String METHOD_NAME = "method";
-	private final String IS_FIRSTROW = "isFR";
-	private final String IS_COMP = "isComp";
-	private final String NEXT_DATA_SIZE = "nextDataSize";
-
-	Logger logger = LoggerFactory.getLogger(XPController.class);
-
-	HttpXPMessageConverter messageConverter;
-
+public class XPController extends AbstractXPController {
+	
 	/**
-	 * This method invokes business service from the given ServiceName and MethodName.
-	 *  
-	 * @param request
-	 * 		HttpServletRequest
-	 * @param response
-	 * 		HttpServletResponse
-	 * @return
-	 * 		ModelAndView
+	 * This method is implementation in AbstractXPController. 
+	 * this method lookup spring framework bean and invoke bean's method
+	 * @param platformRequest
+	 * 		PlatformRequest which HttpServletRequest changed is including
+	 * 		information of MiPlatform UI.
+	 * @param inVl
+	 * 		VariableList including the query id or query condition etc.
+	 * @param inDl
+	 * 		The Dataset list including query conditions
+	 * @param outVl
+	 * 		Output VaiableList including return values. 
+	 * @param outDl
+	 * 		Output DatasetList including return values.
 	 * @throws Exception
-	 * 		Fail to invoke business service.
+	 *		if there is any problem executing.
 	 */
-	public ModelAndView handleRequestInternal(HttpServletRequest request, HttpServletResponse response)
+	public void operate(HttpPlatformRequest request, VariableList inVl,
+			DataSetList inDl, VariableList outVl, DataSetList outDl)
 			throws Exception {
-		HttpInputMessage inputMessage = new ServletServerHttpRequest(request);
-		HttpOutputMessage outputMessage = new ServletServerHttpResponse(response);
-
-		XPRequestHandler requestHandler = (XPRequestHandler) messageConverter
-				.read(XPRequestHandler.class, inputMessage);
-		XPResponseHandler responseHandler = null;
-
-		VariableList inputVariableList = requestHandler.getInputVariableList();
-		DataSetList inputDataSetList = requestHandler.getInputDataSetList();
-
-		logger.debug("{}.operate() started", new Object[] { this.getClass().getName() });
-		Debugger debugger = new Debugger();
-		logger.debug("Input VariableList");
-		logger.debug(debugger.detail(inputVariableList));
-
-		logger.debug("Input DataSetList");
-		logger.debug(debugger.detail(inputDataSetList));
-
-		String serviceName = inputVariableList.getString(SERVICE_NAME);
-		Object bean = getApplicationContext().getBean(serviceName);
-		Method method = getMethod(bean, inputVariableList.getString(METHOD_NAME));
-
-		DataSetList outputDataSetList = new DataSetList();
-		VariableList outputVariableList = new VariableList();
-		try {
-			method.invoke(bean,
-					new Object[] { requestHandler.getInputVariableList(), requestHandler.getInputDataSetList(),
-							outputVariableList, outputDataSetList });
-
-			String isFirstrow = inputVariableList.getString(IS_FIRSTROW);
-
-			logger.debug("{}.operate() ended", new Object[] { this.getClass().getName() });
-			logger.debug("Output VariableList");
-			logger.debug(debugger.detail(outputVariableList));
-
-			logger.debug("Output DataSetList");
-			logger.debug(debugger.detail(outputDataSetList));
-
-			logger.debug("{}.operate() finished", new Object[] { this.getClass().getName() });
-
-			if ("y".equalsIgnoreCase(isFirstrow)) {
-				// in case of Firstrow
-				String isComp = inputVariableList.getString(IS_COMP);
-				int nextDataSize = inputVariableList.getInt(NEXT_DATA_SIZE);
-
-				if ("y".equalsIgnoreCase(isComp)) {
-					// use DeflaterOutputStream to compressed response
-					responseHandler = new XPResponseHandler(outputDataSetList, outputVariableList, true, true,
-							nextDataSize);
-				} else {
-					responseHandler = new XPResponseHandler(outputDataSetList, outputVariableList, true, false,
-							nextDataSize);
-				}
-			} else {
-				// in case of using general PlatformResponse
-				responseHandler = new XPResponseHandler(outputDataSetList, outputVariableList);
-				responseHandler.setResultMessage(0, "Success");
-			}
-		} catch (Exception e) {
-			logger.error("Can not invoke a dispatch method name", e);
-			
-			String msg = null;
-			Throwable cause = e.getCause();
-			if(cause != null) {
-				msg=cause.getMessage();
-			}
-
-			if (msg == null)
-				msg = "Fail to process client request.";
-
-			responseHandler = new XPResponseHandler(outputDataSetList, outputVariableList);
-			responseHandler.setResultMessage(-1, msg);
+		String serviceName = inVl.getString("service");
+		
+		Object bean = getWebApplicationContext().getBean(serviceName);
+		
+		Method method = getMethod(bean, inVl.getString("method"));
+		
+		try{
+			method.invoke(bean, new Object[] {inVl, inDl, outVl, outDl });
+		} catch (Exception e){
+			Throwable te = e.getCause();
+			logger.error("Can not invoke a dispatch method name", te);
+			throw new Exception("Fail to process client request.", te);
 		}
-		messageConverter.write(responseHandler, MediaType.APPLICATION_XML, outputMessage);
-		return null;
 	}
-
-	private Method getMethod(Object bean, String methodName) {
+	
+	private Method getMethod(Object bean, String methodName) {		
 		Method[] methods = bean.getClass().getMethods();
-
-		for (int i = 0; i < methods.length; i++) {
-			if (methods[i].getName().equals(methodName)) {
+		
+		for(int i = 0 ; i < methods.length ; i++) {
+			if( methods[i].getName().equals(methodName)) {
 				return methods[i];
 			}
 		}
 		throw new MethodInvocationException("Cann't find " + methodName + ".");
-	}
-
-	public void setMessageConverter(HttpXPMessageConverter messageConverter) {
-		this.messageConverter = messageConverter;
 	}
 }

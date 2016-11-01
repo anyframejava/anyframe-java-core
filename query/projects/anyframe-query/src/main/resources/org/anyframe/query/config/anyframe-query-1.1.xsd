@@ -1,0 +1,87 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<xsd:schema xmlns="http://www.anyframejava.org/schema/query"
+		xmlns:xsd="http://www.w3.org/2001/XMLSchema"
+		xmlns:tool="http://www.springframework.org/schema/tool"
+		targetNamespace="http://www.anyframejava.org/schema/query">
+		
+	<xsd:import namespace="http://www.springframework.org/schema/tool" schemaLocation="http://www.springframework.org/schema/tool/spring-tool-3.0.xsd" />		
+
+	<xsd:element name="auto-config">
+		<xsd:annotation>
+			<xsd:documentation>
+			Tag for simplifying configuration of QueryService.
+			</xsd:documentation>
+		</xsd:annotation>
+		<xsd:complexType>
+			<xsd:attribute name="id" type="xsd:ID">
+				<xsd:annotation>
+					<xsd:documentation>
+					The bean name of the QueryService if specified.
+					</xsd:documentation>
+				</xsd:annotation>
+			</xsd:attribute>		
+			<xsd:attribute name="dbType" use="required">
+				<xsd:annotation>
+					<xsd:documentation>
+					The DBMS type to connect.
+					</xsd:documentation>
+				</xsd:annotation>
+				<xsd:simpleType>
+					<xsd:union>
+						<xsd:simpleType>
+							<xsd:restriction base="xsd:NMTOKEN">
+								<xsd:enumeration value="altibase"/>
+								<xsd:enumeration value="db2"/>
+								<xsd:enumeration value="hsqldb"/>
+								<xsd:enumeration value="mssql"/>
+								<xsd:enumeration value="mysql"/>
+								<xsd:enumeration value="oracle"/>
+								<xsd:enumeration value="default"/>
+							</xsd:restriction>						
+						</xsd:simpleType>
+						<xsd:simpleType>
+							<xsd:restriction base="xsd:string"/>
+						</xsd:simpleType>
+					</xsd:union>
+				</xsd:simpleType>			
+			</xsd:attribute>
+			<xsd:attribute name="dataSource-ref" type="xsd:string">
+				<xsd:annotation>
+					<xsd:documentation>
+					The bean name of the DataSource if specified.
+					</xsd:documentation>
+					<xsd:appinfo>
+						<tool:annotation kind="ref">
+							<tool:expected-type type="java:javax.sql.DataSource" />
+						</tool:annotation>
+					</xsd:appinfo>					
+				</xsd:annotation>		
+			</xsd:attribute>
+			<xsd:attribute name="jdbcTemplate-ref" type="xsd:string">
+				<xsd:annotation>
+					<xsd:documentation>
+					The bean name of the JdbcTemplate if specified.
+					</xsd:documentation>
+					<xsd:appinfo>
+						<tool:annotation kind="ref">
+							<tool:expected-type type="java:org.springframework.jdbc.core.JdbcTemplate" />
+						</tool:annotation>
+					</xsd:appinfo>					
+				</xsd:annotation>		
+			</xsd:attribute>			
+			<xsd:attribute name="sqlLoader-ref" type="xsd:string">
+				<xsd:annotation>
+					<xsd:documentation>
+					The bean name of the SQLLoader if specified.
+					</xsd:documentation>
+					<xsd:appinfo>
+						<tool:annotation kind="ref">
+							<tool:expected-type type="java:org.anyframe.query.impl.config.loader.SQLLoader" />
+						</tool:annotation>
+					</xsd:appinfo>	
+				</xsd:annotation>			
+			</xsd:attribute>				
+		</xsd:complexType>
+	</xsd:element>
+			
+</xsd:schema>		

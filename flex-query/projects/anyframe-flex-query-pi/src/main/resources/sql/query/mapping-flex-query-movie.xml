@@ -1,0 +1,65 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<queryservice xmlns="http://www.anyframejava.org/schema/query/mapping" 
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" 
+	xsi:schemaLocation="http://www.anyframejava.org/schema/query/mapping http://www.anyframejava.org/schema/query/mapping/anyframe-query-mapping-1.0.xsd ">
+	<queries>
+		<query id="createFlexQueryMovie">
+			<statement>
+				INSERT INTO FLEX_MOVIE (movie_id, title, director, genre_id, actors, runtime, release_date, ticket_price, now_playing, poster_file, file_ref_id)
+				VALUES (:vo.movieId, :vo.title, :vo.director, :vo.genreId, :vo.actors, :vo.runtime, :vo.releaseDate, :vo.ticketPrice, :vo.nowPlaying, :vo.posterFile, :vo.fileRefId)
+			</statement>
+		</query>
+
+		<query id="updateFlexQueryMovie">
+			<statement>
+				UPDATE FLEX_MOVIE 
+				SET title = :vo.title,
+				    director = :vo.director,
+				    genre_id = :vo.genreId,
+				    actors = :vo.actors, 
+				    runtime = :vo.runtime,
+				    ticket_price = :vo.ticketPrice,
+				    now_playing = :vo.nowPlaying,
+				    file_ref_id = :vo.fileRefId
+				WHERE movie_id = :vo.movieId
+			</statement>
+		</query>
+
+		<query id="removeFlexQueryMovie">
+			<statement>
+				DELETE FROM FLEX_MOVIE 
+				WHERE movie_id = :vo.movieId
+			</statement>
+		</query>
+		
+		<query id="findFlexQueryMovieByPk">
+			<statement>
+				SELECT movie.movie_id, movie.title, movie.director, genre.genre_id as genre_id, genre.name as genre_name, movie.actors, movie.release_date, movie.now_playing, movie.runtime, movie.ticket_price, movie.file_ref_id
+				FROM FLEX_MOVIE movie, FLEX_GENRE genre
+				WHERE movie.genre_id = genre.genre_id
+				  AND movie.movie_id = :vo.movieId 
+			</statement>
+			<result class="org.anyframe.plugin.flex.query.domain.Movie"/>
+		</query>
+
+		<query id="findFlexQueryMovieList">
+			<statement>
+				<!--flex-query-findFlexQueryMovieList-START-->
+				SELECT movie.movie_id, movie.title, movie.director, genre.genre_id as genre_id, genre.name as genre_name, movie.actors, movie.release_date, movie.now_playing, movie.runtime, movie.ticket_price, movie.file_ref_id
+				FROM FLEX_MOVIE movie, FLEX_GENRE genre
+				WHERE movie.genre_id = genre.genre_id 
+				<!--Velocity-Support-dynamicFindFlexQueryMovieList-START-->
+				#if ($vo.title)
+					AND title like '%' || :vo.title || '%'	
+				#end
+				#if ($vo.nowPlaying)
+					and now_playing like :vo.nowPlaying		
+				#end
+				<!--Velocity-Support-dynamicFindFlexQueryMovieList-END-->
+				<!--flex-query-findFlexQueryMovieList-END-->
+			</statement>
+			<result class="org.anyframe.plugin.flex.query.domain.Movie"/>
+		</query>		
+	</queries>
+</queryservice>
+

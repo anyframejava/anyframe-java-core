@@ -1,0 +1,20 @@
+<?xml version="1.0"?>
+<!DOCTYPE hibernate-mapping PUBLIC "-//Hibernate/Hibernate Mapping DTD 3.0//EN"
+"http://hibernate.sourceforge.net/hibernate-mapping-3.0.dtd">
+<!-- Generated 2008. 9. 1 ???? 1:00:43 by Hibernate Tools 3.2.1.GA -->
+<hibernate-mapping>
+	<class
+		name="org.anyframe.sample.hibernate.model.unidirection.generator.CountryWithIncrement"
+		table="COUNTRY_INCREMENT" lazy="true" schema="PUBLIC">
+		<id name="countryCode" type="int">
+			<column name="COUNTRY_CODE" length="12" />
+			<generator class="increment" />
+		</id>
+		<property name="countryId" type="string">
+			<column name="COUNTRY_ID" length="2" not-null="true" />
+		</property>
+		<property name="countryName" type="string">
+			<column name="COUNTRY_NAME" length="50" not-null="true" />
+		</property>
+	</class>
+</hibernate-mapping>

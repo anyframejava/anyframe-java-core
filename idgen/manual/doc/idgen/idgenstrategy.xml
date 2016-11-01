@@ -1,0 +1,85 @@
+<chapter id="idgen_idgenstrategy">
+	<title>How to use a Generation Strategy</title>
+
+		<para>
+			TableIdGenService를 사용할 때, 유일한 id 생성 시 generation strategy를 적용할 수 있으며, 정의된 Prefix를 순번과 조합하는 <link linkend="idgen_idgenstrategy_mixprefix">MixPrefixStrategy</link>와 
+			정의된 포맷의 현재 시간과 순번을 조합하는 <link linkend="idgen_idgenstrategy_timestamp">TimestampStrategy</link>를 제공하고 있다. (1.0.1 이후)
+			generation strategy는 아래와 같이 TableIdGenService를 통해 참조될 수 있도록 정의해 주어야 한다.
+    	</para>
+
+	    <itemizedlist>
+    		<listitem>
+        		<para>
+        			<emphasis role="bold">dependency injection을 사용한 strategy 참조</emphasis>
+        			<programlisting language="xml"><![CDATA[<bean name="TableIdGenWithStrategyService" class="org.anyframe.idgen.impl.TableIdGenServiceImpl"
+	destroy-method="destroy">
+    <property name="dataSource" ref="dataSource" />
+    <property name="strategy" ref="tableIdMixPrefix" />
+    <property name="blockSize" value="1"/>
+    <property name="table" value="IDS"/>
+    <property name="key" value="IDGEN_MOVIE"/>
+</bean>
+
+<bean name="tableIdMixPrefix" class="org.anyframe.idgen.impl.strategy.MixPrefixStrategy">
+    <property name="prefix" value="MV-" />
+    <property name="cipers" value="5" />
+    <property name="fillChar" value="*" />
+</bean>]]></programlisting>
+				</para>
+      		</listitem>
+    	</itemizedlist>
+
+		<section id="idgen_idgenstrategy_mixprefix">
+			<title>MixPrefixStrategy</title>
+
+			<para>
+				Anyframe의 TableIdGenService에서는 org.anyframe.idgen.impl.strategy.MixPrefixStrategy라는 generation strategy를 제공한다. 
+				MixPrefixStrategy는 id generation strategy의 한 종류로, id 생성시 TableIdGenService 실행을 통해 추출된 순번과 prefix를 조합한다. 
+				예를 들어 prefix가 'TEST-', TableIdGenService를 통해 전달된 순번이 '12', fillChar가 '0', cipers가 5일 경우 
+				전달된 id의 값은 prexfix와 순번을 조합하여 'TEST-00012'가 된다. 이 때, 자릿수(cipers)가 5, 순번이 '12'이면 순번은 5자리로 구성하되 빈 부분은 
+				fillChar로 정의된 문자열로 채우기 때문에 '00012'와 같은 형태가 된다.
+      			<programlisting language="xml"><![CDATA[<bean ]]><emphasis
+      		role="bold">name="mixPrefix" class="org.anyframe.idgen.impl.strategy.MixPrefixStrategy"</emphasis><![CDATA[>
+    <property name="prefix" value="TEST-"/>
+    <property name="cipers" value="5"/>
+    <property name="fillChar" value="0"/>
+</bean>]]></programlisting>
+			</para>
+    	</section>
+    	
+    	<section id="idgen_idgenstrategy_timestamp">
+    		<title>TimestampStrategy (1.0.1 이후)</title>
+    		<para>
+				Anyframe의 TableIdGenService에서는 org.anyframe.idgen.impl.strategy.TimestampStrategy라는 generation strategy를 제공한다. 
+				TimestampStrategy는 id generation strategy의 한 종류로, id 생성시 TableIdGenService 실행을 통해 추출된 순번과 javax.text.SimpleDateFormat pattern으로
+				생성된 현재 시간을 조합한다. 
+				예를 들어 pattern이 'yyyy-MM-dd', TableIdGenService를 통해 전달된 순번이 '12', separator가 '-', fillChar가 '0', cipers가 5일 경우 
+				전달된 id의 값은 현재 시간과 순번을 조합하여 '2011-05-24-00012'와 같은 형태가 된다. 이 때, 자릿수(cipers)가 5, 순번이 '12'이면 순번은 5자리로 구성하되 빈 부분은 
+				fillChar로 정의된 문자열로 채우기 때문에 '00012'와 같은 형태가 된다.     		
+				또한 separator는 현재 시간과 순번을 구분하기 위한 구분자 역할을 한다.
+				pattern과 separator가 입력되지 않았을 경우 기본적으로 'yyyyMMdd', ''과 같은 값이 적용되어 신규 id가 조합됨을 알아 두도록 한다.
+      			<programlisting language="xml"><![CDATA[<bean ]]><emphasis
+      		role="bold">name="mixPrefix" class="org.anyframe.idgen.impl.strategy.TimestampStrategy"</emphasis><![CDATA[>
+    <property name="pattern" value="yyyy-MM-dd"/>
+    <property name="separator" value="-"/>  		
+    <property name="cipers" value="5"/>
+    <property name="fillChar" value="0"/>
+</bean>]]></programlisting>				
+    		</para>
+    	</section>
+
+    <section id="idgen_idgenstrategy_implement">
+	<title>Id Generation Strategy를 implements하는 방법</title>
+		<para> 
+			strategy를 개발하기 위해서는 org.anyframe.idgen.IdGenStrategy를
+			implemensts 해야한다. 또한 makeId(String originalId) 메소드를 통해 특정 Strategy가 적용된
+      		id를 return하도록 한다. MixPrefixStrategy안의 makeId의 구현 예는 다음과 같다.
+      		<programlisting language="java">public class MixPrefixStrategy <emphasis
+            role="bold">implements IdGenStrategy</emphasis>{
+    <emphasis role="bold">public String makeId(String originalId) {</emphasis>
+        return prefix + StringUtil.fillString(originalId, fillChar, cipers);
+    }
+}</programlisting>
+		</para>
+    </section>
+</chapter>

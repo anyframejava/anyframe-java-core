@@ -18,7 +18,6 @@ package org.anyframe.xp.query.service.impl;
 import java.util.HashMap;
 import java.util.Map;
 
-import org.anyframe.query.exception.QueryException;
 import org.anyframe.xp.query.impl.XPQueryServiceImpl;
 import org.anyframe.xp.query.service.XPService;
 
@@ -33,7 +32,7 @@ import com.tobesoft.xplatform.data.VariableList;
  */
 public class XPServiceImpl implements XPService {
 
-	protected XPDao xpDao; 
+	protected XPDao xpDao;
 
 	public XPServiceImpl() {
 	}
@@ -182,13 +181,13 @@ public class XPServiceImpl implements XPService {
 		}
 	}
 
-	private Map<String, String> makeQueryMap(String queryId) throws QueryException {
+	private Map<String, String> makeQueryMap(String queryId) throws Exception {
 		Map<String, String> queryMap = new HashMap<String, String>();
 
 		String[] arrQuery = queryId.split(",");
 
 		if (arrQuery.length != 3)
-			throw new QueryException(
+			throw new Exception(
 					"XPService : saveAll method needs three query Ids for inserting, updating, deleting.");
 
 		queryMap.put(XPQueryServiceImpl.QUERY_INSERT, arrQuery[0]);

@@ -1,0 +1,337 @@
+<?xml version="1.0" encoding="utf-8"?>
+<Window>
+	<Form BKColor="white" DomainID="title.week_schedule" Height="640" Id="frm12CALWKLY" Left="8" OnLoadCompleted="frm12CALWKLY_OnLoadCompleted" PidAttrib="7" Style="stlFrm" Top="8" Ver="1.0" Width="834" WorkArea="true">
+		<Datasets>
+			<Dataset DataSetType="Dataset" Id="dsBaseInfo">
+				<Contents>
+					<colinfo id="DATE" size="256" type="STRING"/>
+					<colinfo id="INFO" size="256" type="STRING"/>
+				</Contents>
+			</Dataset>
+			<Dataset DataSetType="Dataset" Id="dsSchd">
+				<Contents>
+					<colinfo id="SCHD_ID" size="256" summ="default" type="STRING"/>
+					<colinfo id="SCHD_STARTDATE" size="256" summ="default" type="STRING"/>
+					<colinfo id="SCHD_ENDDATE" size="256" summ="default" type="STRING"/>
+					<colinfo id="SCHD_TITLE" size="256" summ="default" type="STRING"/>
+					<colinfo id="SCHD_CONTENTS" size="256" summ="default" type="STRING"/>
+					<colinfo id="SCHD_PLACE" size="256" summ="default" type="STRING"/>
+				</Contents>
+			</Dataset>
+			<Dataset DataSetType="Dataset" Id="dsGrdCalendar">
+				<Contents>
+					<colinfo id="DAY" size="256" type="STRING"/>
+					<colinfo id="INFO" size="256" type="STRING"/>
+					<colinfo id="BASE_INFO" size="256" type="STRING"/>
+					<colinfo id="HOL" size="256" type="STRING"/>
+					<colinfo id="IMPL" size="256" type="STRING"/>
+					<colinfo id="SCHD_ID" size="256" type="STRING"/>
+				</Contents>
+			</Dataset>
+			<Dataset DataSetType="Dataset" Id="dsSearch">
+				<Contents>
+					<colinfo id="SEARCH_CONDITION" size="100" type="STRING"/>
+					<colinfo id="SEARCH_KEYWORD" size="100" type="STRING"/>
+					<record>
+						<SEARCH_CONDITION></SEARCH_CONDITION>
+						<SEARCH_KEYWORD></SEARCH_KEYWORD>
+					</record>
+				</Contents>
+			</Dataset>
+			<Dataset DataSetType="Dataset" Id="dsService">
+				<Contents>
+					<colinfo id="SVC_ID" size="100" summ="default" type="STRING"/>
+					<colinfo id="QUERY_LIST" size="256" summ="default" type="STRING"/>
+					<colinfo id="SERVICE" size="100" summ="default" type="STRING"/>
+					<colinfo id="IN_DATASET_LIST" size="256" summ="default" type="STRING"/>
+					<colinfo id="OUT_DATASET_LIST" size="256" summ="default" type="STRING"/>
+					<colinfo id="CONTROLLER" size="512" summ="default" type="STRING"/>
+					<colinfo id="CALLBACK" size="100" summ="default" type="STRING"/>
+					<colinfo id="SYNC_YN" size="1" summ="default" type="STRING"/>
+					<record>
+						<CALLBACK></CALLBACK>
+						<CONTROLLER></CONTROLLER>
+						<IN_DATASET_LIST>querySet1=dsSearch</IN_DATASET_LIST>
+						<OUT_DATASET_LIST>dsSchd=querySet1</OUT_DATASET_LIST>
+						<QUERY_LIST>querySet1=findScheduleList</QUERY_LIST>
+						<SERVICE></SERVICE>
+						<SVC_ID>getListSchedule</SVC_ID>
+						<SYNC_YN></SYNC_YN>
+					</record>
+				</Contents>
+			</Dataset>
+		</Datasets>
+		<Div BKColor="user39" Border="Flat" BorderColor="user12" Height="43" Id="divSearch" Left="14" Style="stlDivSearch" TabOrder="3" Text="Div0" Top="48" UserData="RESIZE=TWH" Width="814">
+			<Contents>
+				<Image Align="Left" Color="user0" DomainID="biz.week_schedule.select_date" Font="돋움체,9,Bold" Height="10" Id="imgSearchDate" ImageID="icon_arrow1" Left="555" LeftMargin="10" OnClick="Div0_Image0_OnClick" Style="stlImg" TabOrder="1" TabStop="FALSE" Text="날짜선택" Top="18" Width="65"></Image>
+				<Image Cursor="HAND" Height="20" Id="imgRight" ImageID="btn_s_arrow1a" Left="209" OnClick="divSearch_imgRight_OnClick" Static="FALSE" TabOrder="4" Top="12" Width="20"></Image>
+				<Image Cursor="HAND" Height="20" Id="imgLeft" ImageID="btn_s_arrow2a" Left="15" OnClick="divSearch_imgLeft_OnClick" Static="FALSE" TabOrder="3" Top="12" Width="20"></Image>
+				<Calendar BKColor="white" Border="Flat" Height="20" Id="calSearchDate" Left="624" LeftMargin="2" SaturdayTextColor="blue" Style="stlCal" SundayTextColor="red" TabOrder="6" Top="12" Width="94"></Calendar>
+				<Button ButtonStyle="TRUE" Cursor="HAND" Height="22" Id="btnSearch" ImageID="btn_b4" Left="724" OnClick="divSearch_btnSearch_OnClick" Style="stlBtn" TabOrder="2" Text="날짜이동" Top="13" UserData="TYPE=S" Width="78"></Button>
+				<Static Align="Center" Color="user31" Font="돋움체,9,Bold" Height="20" Id="stWeek" Left="44" Style="stlLbl" TabOrder="5" Top="11" VAlign="Middle" Width="157"></Static>
+				<Static Color="user12" Height="20" Id="Static4" Left="34" Style="stlLineVertic" TabOrder="7" Text="|" Top="12" VAlign="Middle" Width="18"></Static>
+				<Static Color="user12" Height="20" Id="Static2" Left="199" Style="stlLineVertic" TabOrder="8" Text="|" Top="12" VAlign="Middle" Width="18"></Static>
+			</Contents>
+		</Div>
+		<Grid AutoFit="TRUE" AutoScrollBar="None" BindDataset="dsGrdCalendar" BkColor2="default" BoldHead="true" Border="Flat" BorderColor="user12" Bottom="628" ColSizing="TRUE" Editable="TRUE" Enable="true" EndLineColor="default" Font="돋움,9" HeadBorder="Flat" HeadHeight="23" Height="532" Id="grdCalendar" InputPanel="FALSE" Left="14" LineColor="default" LineType="OnlyHORZ" MinWidth="100" OnCellDBLClick="grdCalendar_OnCellDblClick" Right="828" RowHeight="38" Style="stlGrd" TabOrder="1" TabStop="true" Top="96" UseDBuff="true" UsePopupMenu="true" UseSelColor="FALSE" Visible="true" VLineColor="default" WheelScrollRow="1" Width="814">
+			<contents>
+				<format id="Default">
+					<columns>
+						<col width="72"/>
+						<col width="91"/>
+						<col width="48"/>
+						<col width="365"/>
+					</columns>
+					<body>
+						<cell align="center" bkcolor="expr:fnGridTodayCellBkExpr(DAY)" col="0" colid="DAY" color="expr:fnGridColorExpr(HOL,&#32;DAY)" colspan="2" display="normal" expr='substr(DAY,&#32;4,&#32;2)+&quot;월&#32;&quot;+substr(DAY,&#32;6,&#32;2)+&quot;일&quot;&#32;+&#32;&quot;&#32;(&quot;+&#32;decode(getDay(DAY),&#32;0,&#32;&quot;일요일&quot;,&#32;1,&#32;&quot;월요일&quot;,&#32;2,&#32;&quot;화요일&quot;,&#32;3,&#32;&quot;수요일&quot;,&#32;4,&#32;&quot;목요일&quot;,&#32;5,&#32;&quot;금요일&quot;,&#32;6,&#32;&quot;토요일&quot;)+&quot;)&#32;&quot;' font="굴림,9,Bold" rowspan="2"/>
+						<cell align="right" bkcolor="expr:fnGridSecondCellBkExpr(DAY)" col="2" colid="BASE_INFO" display="text" rowspan="2"/>
+						<cell align="left" bkcolor="expr:fnGridSecondCellBkExpr(DAY)" col="3" colid="INFO" display="text" rowspan="2" text="일정&#32;1(10:00&#32;AM&#32;~&#32;02:27&#32;PM)"/>
+					</body>
+				</format>
+			</contents>
+		</Grid>
+		<Image Align="Left" DomainID="title.week_schedule" Height="16" Id="imgTitle" ImageID="b_title_icon1" Left="14" LeftMargin="12" Style="stlTitle" TabOrder="2" Text="주간&#32;일정&#32;조회" Top="24" VAlign="Top" Width="400"></Image>
+	</Form>
+	<Script><![CDATA[#include "javascript::common.js"
+
+//현재 날짜 셋팅
+var strDateOfToday = today();
+
+//화면 로딩시 주간 일정 출력
+function frm12CALWKLY_OnLoadCompleted(obj) {
+	gfnService("getListSchedule");
+}
+
+//이전 주로 이동
+function divSearch_imgLeft_OnClick(obj, nX, nY) {
+	strDateOfToday = addDate(strDateOfToday, -7);
+	fnDrawCalendarWeekly(dsGrdCalendar, grdCalendar, dsBaseInfo, dsSchd);
+}
+
+// 다음 주로 이동 
+function divSearch_imgRight_OnClick(obj, nX, nY) {
+	strDateOfToday = addDate(strDateOfToday, 7);
+	fnDrawCalendarWeekly(dsGrdCalendar, grdCalendar, dsBaseInfo, dsSchd);
+}
+
+//일정 상세 정보 보기
+function grdCalendar_OnCellDblClick(obj, nRow, nCell, nX, nY, nPivotIndex) {
+	if(nCell == 2) {
+		var strArg;
+		var strOpenStyle = "AutoSize=false CloseFlag=false";
+		var nWidth = 500;
+		var nHeight = 240;
+		var strSelectDate = dsGrdCalendar.getColumn(nRow, "DAY");
+		var strScheduleId = dsGrdCalendar.getColumn(nRow, "SCHD_ID");
+		
+		// 일정이 존재하지 않으면 새 일정 추가
+		if(gfnIsNull(strScheduleId)){
+			strArg = "paramMode=C";
+			strArg += " paramDate=" + strSelectDate;
+		// 일정이 존재하면 상세조회
+		} else {
+			strArg = "paramMode=U";
+			dsSchd.row = dsSchd.findRow("SCHD_ID", strScheduleId);
+		}
+		
+		var strReturnValue = gfnOpenDialog("samples::12CALWKLY_P.xml", strArg, nWidth, nHeight, strOpenStyle);
+		
+		if(strReturnValue == "Y"){
+			frm12CALWKLY_OnLoadCompleted();
+		}
+	}
+}
+
+//특정 날짜가 있는 주로 이동
+function divSearch_btnSearch_OnClick(obj) {
+	if(gfnIsNull(divSearch.calSearchDate.value)) {
+		gfnMsg("MSG_INVALID_DATE", "WARN");
+		return;
+	} else {
+		strDateOfToday = divSearch.calSearchDate.value;
+		fnDrawCalendarWeekly(dsGrdCalendar, grdCalendar, dsBaseInfo, dsSchd);
+	}
+}
+
+//callback 메소드 정의
+function fnCallback(strServiceId, strErrorCode, strErrorMsg) {
+	if ( strErrorCode == -1 ) {
+		gfnMsg(strErrorMsg, "ERR");
+		
+	} else {
+		if(strServiceId == "getListSchedule"){
+			fnDrawCalendarWeekly(dsGrdCalendar, grdCalendar, dsBaseInfo, dsSchd);
+		} else {
+			frm11CALMTLY_OnLoadCompleted();
+		}
+	}
+}
+
+//공휴일, 토요일 글씨 색상 지정
+function fnGridColorExpr(strHol, strDate) {
+	if (strHol == 1) {
+		return "#F04B82";
+	} else if(getDay(strDate) == 6) {
+		return "#2D68B7";
+	} else {
+		return "default";
+	}
+}
+
+//날짜 배경 색상 지정, Grid의 Cell Property BKColor에서 호출되는 함수
+function fnGridTodayCellBkExpr(strDate) {
+	if (substr(strDate, 4, 4) == substr(today(), 4, 4)) {
+		return "#D3DAF4";
+		
+	} else if(getDay(strDate) == 0) {
+		return "#FFE6E9";
+		
+	} else if(getDay(strDate) == 6) {
+		return "user2";
+		
+	} else {
+		return "#EBEBEB";
+	}
+}
+
+//그리드 두번째, 세번째 셀 배경 지정 
+function fnGridSecondCellBkExpr(strDate) {
+	if(getDay(strDate) == 0) {
+		return "#F6F2F1";
+		
+	} else if(getDay(strDate) == 6) {
+		return "#F3F4F6";
+		
+	} else {
+		return "default";
+	}
+}
+///////////////////Calendar Drawing Function////////////////////////////////////
+// 이번주 달력 그리기
+function fnDrawCalendarWeekly(objGridDataset, objGrid, objBaseInfoDataset, objScheduleDataset) {
+
+	var strDateOfToday = iif(gfnIsNull(strDateOfToday), today(), strDateOfToday);
+	
+	var strDate, nNewRow;
+	var nDayOfToday;
+
+	fnMakeBaseInfo(dsBaseInfo, strDateOfToday);
+	
+	// Dataset 만들기
+	objGrid.bindDataset = "";
+	objGridDataset.clearData();
+	
+	nDayOfToday = getDay(strDateOfToday);
+	strDate = addDate(strDateOfToday, -nDayOfToday);
+	
+	objGrid.userData = strDate;
+	
+	//주간 달력 생성
+	//for( var i = strDate, day=0; day <= 6; day++ ) {
+	for( var i = 0 ; i <= 6 ; i++ ){
+		// row 생성
+		nNewRow = objGridDataset.addRow();
+		
+		//dsGalendar의 day 칼럼 셋팅 (ex>07월 21일 (수요일) 형식으로 출력하도록 Cell의 Display, Edit, Mask 속성 설정)
+		objGridDataset.setColumn(nNewRow, "DAY", strDate);
+
+		// 휴일 처리
+		if( gfnIsHoliday(strDate) != "" ){
+			objGridDataset.setColumn(nNewRow, "HOL", "1");
+		}
+		
+		// dsBaseInfo --> 달력 Data
+		var nBaseInfoRow = objBaseInfoDataset.findRow("DATE", strDate);
+		
+		if( nBaseInfoRow >= 0 ) {
+			objGridDataset.setColumn(nNewRow, "BASE_INFO", objBaseInfoDataset.getColumn(nBaseInfoRow, "INFO"));
+		}
+		strDate = addDate(strDate);
+	}
+	
+	// objScheduleDataset --> 달력 Data
+	var nScheduleRow, nCalendarRow;
+	var strScheduleStartDate, strScheduleEndDate, strScheduledDate;
+	
+	for( nScheduleRow = 0 ; nScheduleRow < objScheduleDataset.rowCount() ; nScheduleRow++ ) {
+		strScheduleStartDate = objScheduleDataset.getColumn(nScheduleRow, "SCHD_STARTDATE");
+		strScheduleEndDate = objScheduleDataset.getColumn(nScheduleRow, "SCHD_ENDDATE");
+		
+		// Schedule이 이번 주에 속한 Schedule인지 확인
+		if((strScheduleStartDate >= objGrid.userData && strScheduleStartDate <= addDate(objGrid.userData, 6)) || 
+				(strScheduleEndDate >= objGrid.userData && strScheduleEndDate <= addDate(objGrid.userData, 6))){
+				
+			strScheduledDate = strScheduleStartDate;
+			
+			for( i = 0 ; i < gfnCalcDay(strScheduleStartDate, strScheduleEndDate) ; i++ ){
+				nCalendarRow = objGridDataset.findRow("DAY", strScheduledDate);
+				
+				if( nCalendarRow >= 0 ) {
+					// note값 --> 달력 Data
+					objGridDataset.setColumn(nCalendarRow, "INFO", objScheduleDataset.getColumn(nScheduleRow, "SCHD_TITLE"));
+					// schedule ID --> 달력 Data
+					objGridDataset.setColumn(nCalendarRow, "SCHD_ID", objScheduleDataset.getColumn(nScheduleRow, "SCHD_ID"));
+				}
+				strScheduledDate = addDate(strScheduledDate);
+			}
+		}
+	}	
+	
+	//static text 셋팅
+	var nOrderOfWeek, week_char;
+	strDate = addDate(objGrid.userData, 6);
+	nOrderOfWeek = parseInt(substr(strDate, 6, 2)) / 7;
+
+	//주를 나타내는 문자열 셋팅 ex>2009년 7월 셋째주
+	if(nOrderOfWeek <=1)
+		week_char = "첫";
+	else if(1 < nOrderOfWeek && nOrderOfWeek <=2)
+		week_char = "둘";
+	else if(2 < nOrderOfWeek && nOrderOfWeek <=3)
+		week_char = "셋";
+	else if(3 < nOrderOfWeek && nOrderOfWeek <=4)
+		week_char = "넷";
+	else if(4 < nOrderOfWeek && nOrderOfWeek <=5)
+		week_char = "다섯";
+
+	divSearch.stWeek.text = substr(strDate, 0, 4)+ "년 "+substr(strDate, 4, 2)+"월 " + week_char +"째주";
+	divSearch.stWeek.value = substr(strDate, 0, 4)+ "년 "+substr(strDate, 4, 2)+"월 " + week_char +"째주";
+	
+	
+	objGrid.bindDataset = objGridDataset.id;
+}
+
+// 매주 마다 정보 갱신
+// 달력에 쓰일 기본정보 처리 내용
+function fnMakeBaseInfo(objBaseInfoDataset, strDateOfToday) {
+	var strHolidayName, strLunar, nMonthOfLunar, nDayOfLunar;
+	var nNewRow;
+	var strDate;
+	var nDayOfToday = getDay(strDateOfToday);
+	
+	objBaseInfoDataset.clearData();
+	strDate = addDate(strDateOfToday, -nDayOfToday);
+	
+	// 공휴일 지정
+	for( var i =0 ; i <= 6 ; i++ ) {
+		strHolidayName = gfnIsHoliday(strDate);
+		
+		if( strHolidayName != "" && strHolidayName != gfnGetMessage("MSG_SUNDAY") ) {
+			nNewRow = objBaseInfoDataset.addRow();
+			objBaseInfoDataset.setColumn(nNewRow, "DATE", strDate);
+			objBaseInfoDataset.setColumn(nNewRow, "INFO", strHolidayName);
+		}
+		
+		// 음력표기
+		if( i % 5 == 1 ) {
+			strLunar = solar2lunar(strDate);
+			nMonthOfLunar = toInteger(substr(strLunar, 4, 2));
+			nDayOfLunar = toInteger(substr(strLunar, 6, 2));
+			nNewRow = objBaseInfoDataset.addRow();
+			objBaseInfoDataset.setColumn(nNewRow, "DATE", strDate);
+			objBaseInfoDataset.setColumn(nNewRow, "INFO", "(" + nMonthOfLunar + "." + nDayOfLunar + ")");
+		}
+		strDate = addDate(strDate);
+	}
+}]]></Script>
+</Window>

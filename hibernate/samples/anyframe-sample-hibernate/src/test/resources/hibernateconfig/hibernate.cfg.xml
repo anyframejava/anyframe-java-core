@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE hibernate-configuration PUBLIC
+		"-//Hibernate/Hibernate Configuration DTD 3.0//EN"
+		"http://hibernate.sourceforge.net/hibernate-configuration-3.0.dtd">
+		
+<hibernate-configuration> 
+
+    <session-factory>
+    	
+        <property name="hibernate.connection.driver_class">net.sf.log4jdbc.DriverSpy</property>
+        <property name="hibernate.connection.url">jdbc:log4jdbc:hsqldb:mem:testdb</property>
+        <property name="hibernate.connection.username">sa</property>
+        <property name="hibernate.dialect">org.hibernate.dialect.HSQLDialect</property>
+        <property name="hibernate.show_sql">true</property>
+        <property name="hibernate.format_sql">true</property>
+        <property name="hbm2ddl.auto">create</property>
+		<!-- hibernate container that every 10 rows to be inserted as batch -->
+		<!-- jdbc.batch_size will direct hibernate to use jdbc2 API for batch updates -->
+		<!-- One of the more advanced features of JDBC 2.0 is the ability to submit multiple update statements to the database for processing as a single unit -->        
+        <property name="hibernate.jdbc.batch_size">10</property>  
+
+        <!-- Enable Hibernate's automatic session context management -->
+        <property name="current_session_context_class">thread</property>  
+        <mapping resource="org/anyframe/sample/hibernate/model/bidirection/Category.hbm.xml"/>
+        <mapping resource="org/anyframe/sample/hibernate/model/bidirection/Country.hbm.xml"/>
+        <mapping resource="org/anyframe/sample/hibernate/model/bidirection/Movie.hbm.xml"/>
+    </session-factory>
+</hibernate-configuration>

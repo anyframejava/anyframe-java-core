@@ -342,7 +342,7 @@ public interface XPQueryService {
 	 * 
 	 * @param queryId
 	 *            identifier of query statement to execute
-	 * @param dataSet
+	 * @param dataset
 	 *            the DataSet including the query conditions
 	 * @return DataSet of extracted out parameters
 	 * @throws QueryException

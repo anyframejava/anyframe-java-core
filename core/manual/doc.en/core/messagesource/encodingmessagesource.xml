@@ -1,0 +1,35 @@
+<chapter id="core_encoding_messagesource">
+	<title>EncodingResourceBundleMessageSource</title>
+	<para>
+		If Message Resources have been converted to ASCII text file using native2ascii tool, 
+		use the org.springframework.context.support.ResourceBundleMessageSource class of Spring, 
+		and if it is stored as a text file in the non-ASCII encoding type, 
+		use the org.anyframe.spring.message.EncodingResourceBundleMessageSource class provided by Anyframe. 
+		(Note: When the text file in the non-ASCII encoding type is converted to ASCII text file using native2ascii tool, 
+		all non-ASCII characters are stored in \udddd type, and the 'dddd' is the unicode value of non-ASCII characters.)
+	</para>
+	<para>
+		When the Message Resources are in the text file in the non-ASCII encoding type, 
+		they should be encoded every time to leave the different messages for each language in the Service layer as log or to leave them as messages on the screen.  
+		Thus, Anyframe provides EncodingResourceBundleMessageSource and supports retrieving messages in the encoding type designated by the user.  
+	<para>
+		The following is part of DatabaseMessageSource file added by installing Core Plugin, which is the definition of 'messageSource' Bean.</para>
+	</para>		
+	<programlisting language="xml"><![CDATA[<bean id="messageSource" 
+    class="]]><emphasis role="bold"><![CDATA[org.anyframe.spring.message.EncodingResourceBundleMessageSource]]></emphasis><![CDATA[">
+    <property name="basenames">
+        <list>
+            <value>message/message-generation</value>        
+            <value>message/message-moviefinder</value>
+            <value>message/message-converter</value>
+        </list>
+    </property>
+    ]]><emphasis role="bold"><![CDATA[<property name="defaultEncoding">
+        <value>UTF-8</value>
+    </property>]]></emphasis><![CDATA[
+</bean>]]></programlisting>
+	<para>
+		MessageSource bean is defined as above by defining Encoding using the defaultEncoding property of EncodingResourceBundleMessageSource.
+		When defaultEncoding is not defined, "UTF-8" is set as the default. 
+	</para>
+</chapter>

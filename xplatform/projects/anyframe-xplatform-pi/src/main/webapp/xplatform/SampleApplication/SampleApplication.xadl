@@ -1,0 +1,98 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<ADL version="1.0">
+  <TypeDefinition url="default_typedef.xml"/>
+  <GlobalVariables url="globalvars.xml"/>
+  <Application id="xpquery" codepage="utf-8" language="Korean" loginformurl="" loginformstyle="" windowopeneffect="" windowcloseeffect="" version="" tracemode="" themeid="VioletTheme.xtheme" licenseurl="./XPLATFORM_Client_License.xml" onload="application_onload" filesecurelevel="all">
+    <Layout>
+      <MainFrame id="mainframe" title="maintitle" defaultfont="" resizable="true" showtitlebar="true" showstatusbar="false" position="absolute 0 0 1024 738" titletext="Sample Application" showcascadetitletext="false" visible="false" style="showzoomcombo:false;">
+        <VFrameSet id="VFrameSet0" separatesize="37,*">
+          <Frames>
+            <ChildFrame id="topFrame" showcascadestatustext="false" formurl="layout::TopFrame.xfdl" showcascadetitletext="false" showtitlebar="false" dragmovetype="none" style="border:0 none #808080ff ;bordertype:normal 0 0 ;"/>
+            <HFrameSet id="HFrameSet0" separatesize="195,*">
+              <Frames>
+                <ChildFrame id="leftFrame" showcascadestatustext="false" formurl="layout::LeftFrame.xfdl" showcascadetitletext="false" showtitlebar="false" dragmovetype="none" style="border:0 none #808080ff ;bordertype:normal 0 0 ;"/>
+                <VFrameSet id="workFrame" separatesize="29,*" style="background:#f2f2efff;">
+                  <Frames>
+                    <ChildFrame id="tabFrame" showtitlebar="false" showcascadestatustext="false" showcascadetitletext="false" formurl="layout::TabFrame.xfdl" dragmovetype="none" style="border:0 none #808080ff ;bordertype:normal 0 0 ;"/>
+                    <FrameSet id="centerFrame">
+                      <Frames>
+                      </Frames>
+                    </FrameSet>
+                  </Frames>
+                </VFrameSet>
+              </Frames>
+            </HFrameSet>
+          </Frames>
+        </VFrameSet>
+      </MainFrame>
+    </Layout>
+  </Application>
+  <Script type="xscript4.0"><![CDATA[
+var Appl = {};
+Appl.Member = (function(){
+
+	// Private Member.
+	var initWidth 	= 1100;
+	var initHeight 	= 760;
+	var TOP;
+	var LEFT;
+	var WORK;
+	var MDI;
+	
+	return {
+		// Public Member.
+		
+		initMember : function()
+		{
+			initWidth 	= 1100;
+			initHeight 	= 760;
+			TOP			= application.mainframe.VFrameSet0.topFrame;
+			LEFT		= application.mainframe.VFrameSet0.HFrameSet0.leftFrame;
+			WORK		= application.mainframe.VFrameSet0.HFrameSet0.workFrame.centerFrame;
+			MDI			= application.mainframe.VFrameSet0.HFrameSet0.workFrame.tabFrame;
+		},
+		
+		getInitWidth : function()
+		{
+			return initWidth;
+		},
+		
+		getInitHeight : function()
+		{
+			return initHeight;
+		},
+		
+		loginProcess : function()
+		{
+				var popupResult;
+	
+				// Create Object  
+				var objChildFrame = new ChildFrame(); 
+
+				objChildFrame.init("Login", 0, 0, 525, 300, "layout::Login.xfdl");
+					
+				objChildFrame.titletext 	= "Login";
+				objChildFrame.showcascadetitletext = false;
+				objChildFrame.layered		= "true";
+				objChildFrame.style		= "background:#ffffff60;";
+				objChildFrame.openalign 	= "center middle";
+				
+				// Show Object  
+				popupResult = objChildFrame.showModal(this, {});
+				
+				return popupResult;
+		}		
+	};
+})();
+
+function application_onload(obj:Object, e:LoadEventInfo)
+{
+	AM = Appl.Member;
+	var rtn = "Y";
+	
+	AM.initMember();
+
+	application.mainframe.visible = true;
+}
+]]></Script>
+</ADL>

@@ -27,9 +27,9 @@ import com.tobesoft.xplatform.data.DataSet;
 public class XPDataSetSQLParameterSource extends
 		DefaultDynamicSqlParameterSource {
 
-	private final DataSet dataset;
-	private final int rowNum;
-	private final ColumnValueExtractor columnValueExtractor; 
+	private DataSet dataset;
+	private int rowNum;
+	private ColumnValueExtractor columnValueExtractor;
 
 	public XPDataSetSQLParameterSource(DataSet dataset, int rowNum,
 			ColumnValueExtractor columnValueExtractor) {

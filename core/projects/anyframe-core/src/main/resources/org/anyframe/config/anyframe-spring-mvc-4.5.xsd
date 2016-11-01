@@ -1,0 +1,58 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<xsd:schema xmlns="http://www.anyframejava.org/schema/mvc"
+	xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:beans="http://www.springframework.org/schema/beans"
+	xmlns:tool="http://www.springframework.org/schema/tool"
+	targetNamespace="http://www.anyframejava.org/schema/mvc"
+	elementFormDefault="qualified" attributeFormDefault="unqualified">
+
+	<xsd:import namespace="http://www.springframework.org/schema/beans" schemaLocation="http://www.springframework.org/schema/beans/spring-beans-3.0.xsd" />
+	<xsd:import namespace="http://www.springframework.org/schema/tool" schemaLocation="http://www.springframework.org/schema/tool/spring-tool-3.0.xsd" />
+
+	<xsd:element name="annotation-driven">
+		<xsd:annotation>
+			<xsd:documentation source="java:org.springframework.web.servlet.mvc.annotation.AnnotationMethodHandlerAdapter"><![CDATA[
+	Configures the annotation-driven Spring MVC Controller programming model.
+	Note that, with Spring 3.0, this tag works in Servlet MVC only!
+			]]></xsd:documentation>
+		</xsd:annotation>
+		<xsd:complexType>
+			<xsd:attribute name="conversion-service" type="xsd:string">
+				<xsd:annotation>
+					<xsd:documentation source="java:org.springframework.core.convert.ConversionService"><![CDATA[
+	The bean name of the ConversionService that is to be used for type conversion during field binding.
+	This attribute is not required, and only needs to be specified explicitly if custom converters need to be configured.
+	If not specified, a default FormattingConversionService is registered that contains converters to/from standard JDK types.
+	In addition, full support for date/time formatting will be installed if the Joda Time library is present on the classpath.
+					]]></xsd:documentation>
+					<xsd:appinfo>
+						<tool:annotation kind="ref">
+							<tool:expected-type type="java:org.springframework.core.convert.ConversionService" />
+						</tool:annotation>
+					</xsd:appinfo>
+				</xsd:annotation>
+			</xsd:attribute>
+			<xsd:attribute name="validator" type="xsd:string">
+				<xsd:annotation>
+					<xsd:documentation source="java:org.springframework.validation.Validator"><![CDATA[
+	The bean name of the Validator that is to be used to validate Controller model objects.
+	This attribute is not required, and only needs to be specified explicitly if a custom Validator needs to be configured.
+	If not specified, JSR-303 validation will be installed if a JSR-303 provider is present on the classpath.
+					]]></xsd:documentation>
+					<xsd:appinfo>
+						<tool:annotation kind="ref">
+							<tool:expected-type type="java:org.springframework.validation.Validator" />
+						</tool:annotation>
+					</xsd:appinfo>
+				</xsd:annotation>
+			</xsd:attribute>
+			<xsd:attribute name="synchronizeOnSession" type="xsd:boolean" default="false">
+				<xsd:annotation>
+					<xsd:documentation><![CDATA[
+	The synchronizeOnSession property of AnnotationMethodHandlerAdapter. By default, the value of synchronizeOnSession is false.
+					]]></xsd:documentation>
+				</xsd:annotation>
+			</xsd:attribute>			
+		</xsd:complexType>
+	</xsd:element>
+
+</xsd:schema>

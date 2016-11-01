@@ -1,0 +1,260 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Script type="xscript4.0"><![CDATA[include "lib::lib_Util.xjs";
+
+/********************************************************************************
+ * Function Name	: gfnShowModal												*
+ * Desc				: 주어진 URL의 Form 객체를 팝업으로 생성하는 함수		*
+ * Parameter		: sUrl = 팝업을 생성시킬 xfdl 파일의 위치				*
+ *					  objSender = 팝업창으로 전송할 파라미터 객체			*
+ *					  sTitlebar	= 팝업창 타이틀								*
+ *					  nWidth = 팝업창 폭										*
+ *					  nHeight = 팝업창 높이									*
+ * Return 			: 팝업창의 close() 메소드의 파라미터값					*
+ ********************************************************************************/
+function gfnShowModal(sUrl, objSender, sTitlebar, nWidth, nHeigth)
+{
+	var popupResult;
+	
+	// Create Object  
+	var objChildFrame = new ChildFrame(); 
+	var bShowTitle = true;
+	var crectwindow = this.canvas.getClientRect(Canvas.COORD_SCREEN);
+
+	objChildFrame.init(sTitlebar, crectwindow.left, crectwindow.top, crectwindow.right, crectwindow.bottom, sUrl );
+	
+	if( gfnIsNull(sTitlebar) ) 
+		bShowTitle = false;
+	else{
+		if(sTitlebar == "WARN"){
+			sTitlebar = gfnGetMessage("global.domain.popupmsg.warn");
+		} else if (sTitlebar == "ERR"){
+			sTitlebar = gfnGetMessage("global.domain.popupmsg.err");
+		} else if (sTitlebar == "INFO"){
+			sTitlebar = gfnGetMessage("global.domain.popupmsg.info");
+		}
+	}
+		
+	sTitlebar = gfnGetMessage(sTitlebar);
+	
+	objChildFrame.showtitlebar = bShowTitle;
+	objChildFrame.titletext = sTitlebar;
+	objChildFrame.showcascadetitletext = false;
+	objChildFrame.layered = "true";
+	objChildFrame.style = "background:#ffffff60;";
+	objChildFrame.openalign	= "center middle";
+	
+	// Show Object  
+	popupResult = objChildFrame.showModal(this.getOwnerFrame(), objSender);
+	
+	// Destroy Object
+	this.removeChild(objChildFrame.name);
+	objChildFrame.destroy();
+	objChildFrame = null;
+	
+	return popupResult;
+}
+
+/********************************************************************************
+ * Function Name	: gfnSetTitle												*
+ * Desc				: Form에 속한 모든 컴포넌트의 title을 공통 영역에 	 	*
+ *					  정의한 MsgId를 바탕으로 변경시키는 함수				*
+ * Parameter		: 															*
+ * Return 			:															*
+ ********************************************************************************/
+function gfnSetTitle()
+{
+	var components = this.components;
+	
+	for(var i = 0 ; i < components.length ; i++){
+		if(
+			components[i] instanceof CheckBox || 
+			components[i] instanceof Calendar || components[i] instanceof GroupBox ||
+			components[i] instanceof Static   || components[i] instanceof Button
+		)
+		{
+			var name = components[i].text;
+			components[i].text = gfnGetMessage(name);
+		} else if(components[i] instanceof Div){
+			gfnSetTitleChild(components[i]);
+		} else if(components[i] instanceof Grid){
+			gfnGridSetHeadText(components[i]);
+		} else if(components[i] instanceof Tab){
+			gfnSetTitleTab(components[i]);
+		}
+	}
+}
+
+/********************************************************************************
+ * Function Name	: gfnSetTitleChild											*
+ * Desc				: gfnSetTitle 함수에서 Div 객체의 하위 컴포넌트에 접근	*
+ *					  하기위해 내부적으로 사용하는 private function			*
+ * Parameter		: obj(Div)													*
+ * Return 			:															*
+ ********************************************************************************/
+function gfnSetTitleChild(obj){
+	var components = obj.components;
+	for(var i = 0 ; i < components.length ; i++){
+		if(
+			components[i] instanceof CheckBox || 
+			components[i] instanceof GroupBox || components[i] instanceof Static   || 
+			components[i] instanceof Button
+		){
+			var name = components[i].text;
+			components[i].text = gfnGetMessage(name);
+		} else if(components[i] instanceof Div){
+			gfnSetTitleChild(components[i]);
+		} else if(components[i] instanceof Grid){
+			gfnGridSetHeadText(components[i]);
+		} else if(components[i] instanceof Tab){
+			gfnSetTitleTab(components[i]);
+		}
+	}
+}
+
+/********************************************************************************
+ * Function Name	: gfnSetTitleTab											*
+ * Desc				: gfnSetTitle 함수에서 Tab 객체의 하위 컴포넌트에 접근	*
+ *					  하기위해 내부적으로 사용하는 private function			*
+ * Parameter		: obj(Tab)													*
+ * Return 			:															*
+ ********************************************************************************/
+function gfnSetTitleTab(obj){
+	var pages = obj.tabpages;
+	for(var i = 0 ; i < pages.length ; i++){
+		var name = pages[i].text;
+		pages[i].text = gfnGetMessage(name);
+		gfnSetTitleChild(pages[i]);
+	}
+}
+
+/********************************************************************************
+ * Function Name	: gfnActiveFrame											*
+ * Desc				: 지정한 MDI 창에 포커스를 주는 함수					*
+ * Parameter		: strWinKey													*
+ * Return 			:															*
+ ********************************************************************************/
+function gfnActiveFrame(strWinKey){
+	var fs_main_info = AM.WORK.frames;
+	if(fs_main_info[strWinKey]){
+		fs_main_info[strWinKey].setFocus();
+		
+		return true;
+	}
+	
+	return false;
+}
+
+/********************************************************************************
+ * Function Name	: gfnOpenMenu												*
+ * Desc				: 입력 받은 MenuId를 바탕으로 MDI 화면을 생성함			*
+ *					  이미 생성 되어 있는 경우, 포커스를 이동시킴			*
+ * Parameter		: strMenuId - 생성 시킬 메뉴ID							*
+ * Return 			:															*
+ ********************************************************************************/
+function gfnOpenMenu(strMenuId){
+	gdsMenu.filter("");
+	var nRow = gdsMenu.findRow("menuId", strMenuId);
+	
+	if(gfnIsNull(gdsMenu.getColumn(nRow, "menuURL"))){
+		return;
+	}
+	
+	var winId = gdsOpenMenu.lookup("menuId", strMenuId, "winId");
+	
+	if(!gfnIsNull(winId)){
+		if(gfnActiveFrame(winId)){
+			AM.MDI.form.fnMovePage(winId);
+			AM.MDI.form.fnActiveTabPage(winId);
+			return;
+		}
+	}
+	
+	if(gdsOpenMenu.rowcount >= 10){
+		alert("10개 이상의 메뉴를 열 수 없습니다.");
+		return;
+	}
+	
+	if(gfnIsNull(gdsMenu.getColumn(nRow, "menuId")))
+		return;
+		
+	winId = strMenuId + "_" + gdsOpenMenu.getRowCount() + "_" + parseInt(Math.random() * 100);
+	
+	var objNewWin = new ChildFrame;
+	objNewWin.init(winId, 10, 10, 805, 580);
+	
+	objNewWin.formurl = "layout::WorkFrame.xfdl";
+	objNewWin.arguments = [];
+	
+	objNewWin.arguments["winId"] = winId;
+	objNewWin.arguments["menuId"] = gdsMenu.getColumn(nRow, "menuId");
+	objNewWin.arguments["menuURL"] = gdsMenu.getColumn(nRow, "menuURL");
+	objNewWin.arguments["menuTitle"] = gdsMenu.getColumn(nRow, "menuTitle");
+	
+	objNewWin.openstatus = "maximize";
+
+	AM.WORK.addChild(winId, objNewWin);
+	
+	gfsAddGDsMenu(winId, nRow);
+	objNewWin.dragmovetype = "normal";
+	objNewWin.resizable = true;
+	objNewWin.style.bordertype = "round 6 6";
+	objNewWin.style.border = "1 solid #000000";
+	objNewWin.titlebarheight = 24;
+	objNewWin.show();
+	
+	var objTitlebar = objNewWin.titlebar;
+
+	AM.MDI.form.fnSetNaviAdd(winId, gdsMenu.getColumn(nRow, "menuTitle"), strMenuId);
+	AM.MDI.form.fnActiveTabPage(winId);
+	gvActiveWinId = winId;
+	
+}
+
+/********************************************************************************
+ * Function Name	: gfsAddGDsMenu												*
+ * Desc				: 신규 생성된 윈도우 화면을 gdsOpenMenu DataSet에 등록	*
+ * Parameter		: strId - 윈도우 생성키									*
+ *					  nRow - gdsMenu 에서의 rowposition						*
+ * Return 			:															*
+ ********************************************************************************/
+function gfsAddGDsMenu(strId, nRow){
+	gdsMenu.filter("");
+	var curRow = gdsOpenMenu.addRow();
+
+	gdsOpenMenu.setColumn(curRow, "winId", strId);
+	gdsOpenMenu.setColumn(curRow, "menuId", gdsMenu.getColumn(nRow, "menuId"));
+	gdsOpenMenu.setColumn(curRow, "menuTitle", gdsMenu.getColumn(nRow, "menuTitle"));
+}
+
+/********************************************************************************
+ * Function Name	: gfnDelGDsMenu												*
+ * Desc				: 생성된 윈도우 화면 정보를 담고있는 gdsOpenMenu에서 	*
+ *					  특정 Row를 삭제하는 함수								*
+ * Parameter		: strId - 윈도우 생성키									*
+ * Return 			:															*
+ ********************************************************************************/
+function gfnDelGDsMenu(strId) {
+	var nRow = gdsOpenMenu.findRow("winId", strId);
+	gdsOpenMenu.deleteRow(nRow);
+}
+
+/********************************************************************************
+ * Function Name	: gfnFrameOnClose											*
+ * Desc				: 특정 Frame을 닫을 때 Frame과 함께 Tab Page를 닫는 함수*
+ * Parameter		: winId - 윈도우 생성키									*
+ * Return 			:															*
+ ********************************************************************************/
+function gfnFrameOnClose(winId){
+	AM.MDI.form.fnDeleteTabPage(winId);
+	gfnDelGDsMenu(winId);
+}
+
+/********************************************************************************
+ * Function Name	: gfnTabOnClose												*
+ * Desc				: 특정 Tab을 닫을 때 Tab과 함께 Frame을 닫는 함수		*
+ * Parameter		: winId - 윈도우 생성키									*
+ * Return 			:															*
+ ********************************************************************************/
+function gfnTabOnClose(winKey){
+	AM.WORK.frames[winKey].form.f_close();
+}]]></Script>

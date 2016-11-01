@@ -51,7 +51,6 @@ import com.tobesoft.xplatform.tx.PlatformType;
  * 
  * @author Jonghoon Kim
  * @author Youngmin Jo
- * @deprecated
  */
 public abstract class AbstractXPController extends AbstractController {
 	/**

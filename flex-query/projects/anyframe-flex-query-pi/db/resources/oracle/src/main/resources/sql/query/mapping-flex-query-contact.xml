@@ -1,0 +1,28 @@
+				<!--flex-query-findFlexQueryContactList-START-->
+				SELECT * FROM FLEX_CONTACT 
+				<!--Velocity-Support-dynamicFindFlexQueryContactList-START-->
+				#if($firstName)
+				WHERE
+				first_name like '%'|| :firstName ||'%'	
+				#end
+				<!--Velocity-Support-dynamicFindFlexQueryContactList-END-->
+				ORDER BY first_name
+				<!--flex-query-findFlexQueryContactList-END-->
+				<!--flex-query-findFlexQueryContractListResultClass-START-->
+				SELECT * FROM FLEX_CONTACT 
+				<!--Velocity-Support-dynamicFindFlexQueryContractListResultClass-START-->
+				#if($first_name)
+				WHERE
+				first_name like '%'|| :firstName ||'%'	
+				#end
+				<!--Velocity-Support-dynamicFindFlexQueryContractListResultClass-END-->
+				ORDER BY first_name
+				<!--flex-query-findFlexQueryContractListResultClass-END-->
+				<!--flex-query-createFlexQueryContact-START-->
+				INSERT 
+				INTO 
+				FLEX_CONTACT
+				(CONTACT_ID, FIRST_NAME, LAST_NAME, ADDRESS, CITY, STATE, ZIP, PHONE, EMAIL) 
+				VALUES
+				('CONTACT-'|| FLEX_CONTACT_ID_SEQ.NEXTVAL , :firstName, :lastName, :address, :city, :state, :zip, :phone, :email)
+				<!--flex-query-createFlexQueryContact-END-->

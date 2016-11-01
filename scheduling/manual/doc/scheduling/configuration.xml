@@ -1,0 +1,219 @@
+<chapter id="scheduling_configuration">
+	<title>Configuation</title>
+
+	<para>
+		Scheduling 서비스를 활용하기 위해서는 다음과 같은 속성들이 정의되어 있어야 한다. 다음에서 각 속성이 가지는
+		의미에 대해 알아보기로 하자.
+	</para>
+
+	<informaltable>
+		<tgroup cols="4">
+			<colspec colname="col1" colnum="1" colwidth="2.5*" />
+			<colspec colname="col2" colnum="2" colwidth="6*" />
+			<colspec colname="col3" colnum="3" colwidth="1*" />
+			<colspec colname="col4" colnum="4" colwidth="1*" />
+
+			<thead>
+				<row>
+					<entry align="center">Property</entry>
+					<entry align="center">Description</entry>
+					<entry align="center">Required</entry>
+					<entry align="center">Default Value</entry>
+				</row>
+			</thead>
+
+			<tbody>
+				<row>
+					<entry>
+						<link linkend="scheduling_configuration_scheduler">
+							<emphasis role="bold">scheduler</emphasis>
+						</link>
+					</entry>
+					<entry>
+						어플리케이션에서 Job을 관리할 대상이 되는 Scheduler를 정의한다.
+						이미 Bean으로 등록하여 사용하고 있을 경우 해당 Bean을 참조하며, 그렇지 않을 경우 새로운 Scheduler를
+						생성하여 Job을 관리한다.
+				</entry>
+					<entry align="center">N</entry>
+					<entry align="center">신규 Scheduler 생성.</entry>
+				</row>
+				<row>
+					<entry>
+						<link linkend="scheduling_configuration_jobresultcollector">
+							<emphasis role="bold">jobResultCollector</emphasis>
+						</link>
+					</entry>
+					<entry>
+						Job 수행 결과를 수집 및 저장하기 위한 역할을 수행하는 SchedulingJobListener를 Bean으로 등록한다.
+						선언하지 않을 경우에는 Job의 수행결과를 수집하지 않는다.
+				</entry>
+					<entry align="center">N</entry>
+					<entry align="center">결과 수집하지 않음.</entry>
+				</row>
+				<row>
+					<entry>
+						<link linkend="scheduling_configuration_jobdbmanager">
+							<emphasis role="bold">jobRepository</emphasis>
+						</link>
+					</entry>
+					<entry>
+						Quartz Scheduler에서 관리하는 Job을 추가, 수정, 삭제 후 해당 결과를 반영하기 위한 저장소를 정의한다.
+						저장소의 경우 파일(file)과 데이터베이스(database)를 이용하여 선언할 수 있다.
+				</entry>
+					<entry align="center">N</entry>
+					<entry align="center">file</entry>
+				</row>
+				<row>
+					<entry>
+						<link linkend="scheduling_configuration_jobresultpath">
+							<emphasis role="bold">jobResultPath</emphasis>
+						</link>
+					</entry>
+					<entry>
+						관리 대상이 되는 Job이 수행된 후 정상적으로 수행이 완료되었는지에 대한 결과를 파일로 남기게 되는데, 그 파일의 경로를
+						변경하고자 할 때 정의한다.
+						정의하지 않을 경우에는 Default 경로에 지정된 결과 파일이 생성된다.
+				</entry>
+					<entry align="center">N</entry>
+					<entry align="center">C:/Anyframe/SchedulingResultFiles</entry>
+				</row>
+			</tbody>
+		</tgroup>
+	</informaltable>
+
+	<para>
+		위에서 언급한 Scheduling 서비스가 필요로 하는 설정 정보에 대해 좀 더 자세히 짚어보기로 하자.
+	</para>
+
+	<section id="scheduling_configuration_scheduler">
+		<title>scheduler</title>
+		<para>
+			Scheduling 서비스에서는 Quartz의 Scheduler를 시용하여 해당 Job을 추가, 수정, 삭제, 수행 등의 기능을 수행한다.
+			Scheduler는 SchedulerFactory에 의해 생성되는데, 각각의 Job과 Trigger를 관리하며 해당
+			Trigger에 연관된 Job을 수행시키는 서비스의 핵심 역할을 담당한다.
+			Spring에서 제공하는 SchedulerFactoryBean을 이미 사용하고 있는 경우, 해당 Scheduler를 겸하여 사용할 수
+			있도록 scheduler property를 제공하고 있다.
+	    </para>
+	</section>
+
+	<section id="scheduling_configuration_jobresultcollector">
+		<title>jobResultCollector</title>
+		<para>
+			Scheduling 서비스는 Job을 등록할 때 각각의 Job마다 jobResultCollector를 통해 선언된
+			Listener를 추가해주고 있다.
+			Job의 수행 결과를 수집 및 저장하기 위한 역할을 수행하기 위한 SchedulingJobListener를 제공하고 있다.
+			이를위해
+			해당 Listener를 Bean으로 등록한 후, jobResultcollector에 선언해주면 Scheduling 서비스에서
+			제공하는 결과 저장 기능을 사용할 수 있다.
+			단, 결과를 수집하지 않기를 원할 경우 해당 Property 및 Bean은 선언하지 않아도 된다.
+	    </para>
+	</section>
+
+	<section id="scheduling_configuration_jobdbmanager">
+		<title>jobRepository</title>
+		<para>
+			Scheduling 서비스는 Job 정보를 저장할 수 있는 저장소로 파일(file), 데이터베이스(database) 두 곳을
+			지원한다.
+			<itemizedlist>
+				<listitem>
+					<para>
+						file : src/main/resources/context-scheduling.xml 파일에 한해 추가,
+						수정, 삭제가 가능하다. 
+					</para>
+				</listitem>
+				<listitem>
+					<para>
+						database : Scheduling 서비스에서 제공하는 JobDBManager를 통해 각 Job을 추가,
+						수정, 삭제할 수 있으며 해당 Query는 사용자 임의 변경이 가능하다.
+					</para>
+				</listitem>
+			</itemizedlist>
+		</para>
+		<para>
+			만일 database 타입으로 Job을 저장하게 된다면 jobDBManager라는 ID를 가진 JobDBManager
+			Bean을 등록해야 정상적으로 사용이 가능하다. 또한 다음과 같은 Property를 선언해주어야 한다.
+
+			<informaltable>
+				<tgroup cols="4">
+					<colspec colname="col1" colnum="1" colwidth="2.5*" />
+					<colspec colname="col2" colnum="2" colwidth="6*" />
+					<colspec colname="col3" colnum="3" colwidth="1*" />
+					<colspec colname="col4" colnum="4" colwidth="1*" />
+
+					<thead>
+						<row>
+							<entry align="center">Property</entry>
+							<entry align="center">Description</entry>
+							<entry align="center">Required</entry>
+							<entry align="center">Default Value</entry>
+						</row>
+					</thead>
+
+					<tbody>
+						<row>
+							<entry>jdbcDaoDataSource</entry>
+							<entry>참조할 dataSource의 Bean Id를 정의한다.</entry>
+							<entry align="center">Y</entry>
+							<entry align="center">N/A</entry>
+						</row>
+					</tbody>
+				</tgroup>
+			</informaltable>
+
+		</para>
+		
+		<para>
+			내부적으로 정의한 Table의 구조는 다음과 같은 스키마의 구조로 구성되어 있다.(HSQLDB 기준)
+		</para>
+			<programlisting language="xml"><![CDATA[CREATE TABLE SCHEDULING_JOB(
+	JOB_NAME VARCHAR(100) NOT NULL, 
+	GROUP_NAME VARCHAR(100) NOT NULL, 
+	TARGET_CLASS VARCHAR(200) NOT NULL, 
+	TARGET_METHOD VARCHAR(100), 
+	SCHEDULE VARCHAR(30) NOT NULL, 
+	SCHEDULE_TYPE VARCHAR(10) NOT NULL, 
+	START_DATE VARCHAR(30) NOT NULL, 
+	END_DATE VARCHAR(30), 
+	DESCRIPTION VARCHAR(4000), 
+	CONSTRAINT PK_SCHEDULING_JOB PRIMARY KEY(JOB_NAME, GROUP_NAME)
+);]]></programlisting>
+		<para>
+			Scheduling Service 내부에서 해당 스키마를 기준으로 쿼리문을 작성하여 Job을 조회, 추가, 수정, 삭제 등을 수행하고 있다. 
+			사용하고자 하는 DataSource에 테이블이 정의되어 있어야 하며, 테이블 스키마는 변경 가능하며, 
+			테이블에 맞는 쿼리문은 사용자가 <link linkend="scheduling_configuration_jobdbmanager">JobDBManager클래스</link>를 재정의하여 수정된 쿼리문으로 사용할 수 있다. 
+		</para>
+		
+	</section>
+	
+	<section id="scheduling_configuration_jobresultpath">
+		<title>jobResultPath</title>
+		<para>
+			<link linkend="scheduling_configuration_jobresultcollector">jobResultCollector</link>
+			를 통해 결과를 저장하고자 선언하였으나 해당 결과를 사용자 임의로 특정 폴더에 남기고 싶은 경우 해당 속성을 통해 변경할 수
+			있다.
+		</para>
+	</section>
+	
+	<section id="scheduling_configuration_samples">
+		<title>Samples</title>
+		<para>
+			다음은 위에서 언급한 Scheduling 서비스 속성 정의 중 저장소를 database로 설정하였을 경우 구현해야 할 context-scheduling.xml의 일부이다. 
+		</para>
+      		
+		<programlisting language="xml"><![CDATA[<bean id="schedulingService" class="org.anyframe.scheduling.impl.SchedulingServiceImpl" init-method="init" destroy-method="destroy">
+	<property name="scheduler" ref="schedulerFactoryBean"/>
+	<property name="jobResultCollector" ref="schedulingJobListener"/>
+	<property name="jobRepository" value="database"/><!-- database / file -->
+	<property name="jobResultPath" value="C:/Anyframe/scheduling/resultFiles"/>
+</bean>
+
+<bean id="schedulingJobListener" class="org.anyframe.scheduling.impl.listener.SchedulingJobListener"/>
+
+<bean id="jobDBManager" class="org.anyframe.scheduling.impl.JobDBManager">
+	<property name="jdbcDaoDataSource" ref="dataSource"/>
+</bean>
+
+<bean id="schedulerFactoryBean" class="org.springframework.scheduling.quartz.SchedulerFactoryBean"/>]]></programlisting>
+
+	</section>
+</chapter>
