@@ -38,7 +38,7 @@ public class MovieFinderImpl implements MovieFinder {
 	private MovieDao movieDao;
 
 	public Page getPagingList(Movie movie, int pageIndex) throws Exception {
-		return this.movieDao.getPagingList(movie, pageIndex);
+		return movieDao.getPagingList(movie, pageIndex);
 	}
 
 }

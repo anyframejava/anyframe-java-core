@@ -2,46 +2,30 @@
 <plugin name="ibatis2" description="iBatis2 Plugin consists of sample code that provides basic guidelines on how to use iBatis2 which is a Data Mapper framework for persistence layer development and reference libraries needed to use these open sources.">
 	<groupId>org.anyframe.plugin</groupId>
 	<artifactId>anyframe-ibatis2-pi</artifactId>
-	<version>0.0.5</version>
+	<version>0.0.6</version>
 	<dependent-plugins>
-		<dependent-plugin name="core" version="2.0.0&gt;*" />
+		<dependent-plugin name="core" version="2.0.0&gt;*&gt;1.4.0" />
 	</dependent-plugins>
 	<resources>
 		<resource dir="src/main/java" filtered="true" packaged="true">
-			<include name="**/*.java" />
+			<include name="**/ibatis2/**/*.java" />
 		</resource>
 		<resource dir="src/main/resources" filtered="true" packaged="false">
-			<include name="**/*.xml" />
+			<include name="**/*ibatis2*.xml" />
+			<include name="**/sql/ibatis2/*.xml" />
 		</resource>
 		<resource dir="src/test/java" filtered="true" packaged="true">
-			<include name="**/*.java" />
+			<include name="**/ibatis2/**/*.java" />
 		</resource>
 		<resource dir="src/test/resources" filtered="true" packaged="false">
 			<include name="**/*.xml" />
 		</resource>
-		<resource dir="src/main/webapp/WEB-INF/jsp" filtered="false"
+		<resource dir="src/main/webapp" filtered="false"
 			packaged="false">
-			<include name="**/*.jsp" />
+			<include name="**/ibatis2/**/*.*" />
+			<exclude name="**/anyframe.jsp" merged="true"/>
 		</resource>
 	</resources>
-	<build>
-		<filesets>
-			<fileset dir="src/main/java" filtered="true" packaged="true">
-				<include name="**/org/anyframe/plugin/ibatis2/**/*.java" />
-			</fileset>
-			<fileset dir="src/main/resources" filtered="true" packaged="false">
-				<include name="**/*ibatis2*.xml" />
-				<include name="**/sql/ibatis2/*.xml" />
-			</fileset>
-			<fileset dir="src/test/java" filtered="true" packaged="true">
-				<include name="**/org/anyframe/plugin/ibatis2/**/*.java" />
-			</fileset>
-			<fileset dir="src/main/webapp" filtered="false" packaged="false">
-				<include name="**/ibatis2/**/*.*" />
-				<include name="**/anyframe.jsp" />
-			</fileset>
-		</filesets>
-	</build>
 	<samples>true</samples>
 	<interceptor>
 		<class>org.anyframe.plugin.interceptor.IBatis2PluginInterceptor</class>
@@ -49,7 +33,7 @@
 			<dependency>
 				<groupId>org.anyframe</groupId>
 				<artifactId>anyframe-ide-command-common</artifactId>
-				<version>2.2.0</version>
+				<version>2.2.1</version>
 				<scope>interceptor</scope>
 			</dependency>
 			<dependency>
