@@ -1,6 +1,6 @@
 <%@ page language="java" errorPage="/sample/common/error.jsp" pageEncoding="UTF-8" contentType="text/html;charset=utf-8" %>
 <%@ include file="/sample/common/top.jsp"%>
-		<div class="location"><a href="<c:url value='/anyframe.jsp'/>">Home</a> &gt; <a href="<c:url value='/asyncSupportMovieFinderDeferredResult.do?method=list'/>">Async Support 1.1.1-SNAPSHOT</a></div>
+		<div class="location"><a href="<c:url value='/anyframe.jsp'/>">Home</a> &gt; <a href="<c:url value='/asyncSupportMovieFinderDeferredResult.do?method=list'/>">Async Support 1.0.1-SNAPSHOT</a></div>
     </div>
     <hr />
 <script type="text/javascript" src="<c:url value='/sample/javascript/InputCalendar.js'/>"></script>
@@ -73,7 +73,7 @@
                     	<th><label for="runtime"><spring:message code="movie.runtime" /></label></th>
                         <td><form:input path="runtime" cssClass="w_time" />min.<form:errors path="runtime" cssClass="errors" /></td>
                     </tr>
-                    <%-- <tr>
+          <%--           <tr>
                     	<th><label for="releaseDate"><spring:message code="movie.releaseDate" /></label></th>
                         <td>
                         <form:input path="releaseDate" cssClass="w_date"  maxlength="10" />

@@ -13,7 +13,7 @@ public class FileUploadConfig implements Serializable {
 	
 	private static final long serialVersionUID = 1L;
 	private Logger Log = Logger.getLogger(this.getClass());
-	private String CONFIG_FILE_PATH = "fileupload";		//fileupload.properties
+	private String CONFIG_FILE_PATH = "/fileupload";		//fileupload.properties
 	
 	public static String COMMON_TEMP_PATH = "common.temp.path";
 	public static String COMMON_FILE_MAXSIZE = "common.file.maxsize"; 

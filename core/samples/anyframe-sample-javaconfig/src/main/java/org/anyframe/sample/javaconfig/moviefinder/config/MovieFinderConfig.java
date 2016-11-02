@@ -21,7 +21,6 @@ import org.anyframe.sample.javaconfig.moviefinder.service.impl.MovieFinderImpl;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.context.annotation.Description;
 import org.springframework.context.annotation.Import;
 import org.springframework.context.annotation.Lazy;
 
@@ -38,7 +37,6 @@ public class MovieFinderConfig {
 
 	@Bean(initMethod = "initialize", destroyMethod = "destroy")
 	@Lazy(value = false)
-	@Description("Provides a MovieFinder bean")
 	public MovieFinder movieFinder() {
 		return new MovieFinderImpl(movieFinderDao);
 	}

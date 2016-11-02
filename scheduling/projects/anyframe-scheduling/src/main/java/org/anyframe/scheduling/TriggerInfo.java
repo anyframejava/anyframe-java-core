@@ -16,9 +16,9 @@
 package org.anyframe.scheduling;
 
 /**
- * This TriggerInfo class contains attributes for spring scheduling trigger bean
- * information and getter, setter methods of them. And it contains toString
- * method for logging.
+ * This TriggerInfo class contains attributes for spring scheduling trigger bean information
+ * and getter, setter methods of them. And it contains toString method for
+ * logging.
  * 
  * @author Sujeong Lee
  */
@@ -41,8 +41,7 @@ public class TriggerInfo {
 	/**
 	 * Set a trigger id value.
 	 * 
-	 * @param id
-	 *            The value of trigger id
+	 * @param id The value of trigger id
 	 */
 	public void setId(String id) {
 		this.id = id;
@@ -60,8 +59,7 @@ public class TriggerInfo {
 	/**
 	 * Set a trigger class value.
 	 * 
-	 * @param triggerClass
-	 *            The value of trigger class
+	 * @param triggerClass The value of trigger class
 	 */
 	public void setTriggerClass(Class<?> triggerClass) {
 		this.triggerClass = triggerClass;
@@ -79,8 +77,7 @@ public class TriggerInfo {
 	/**
 	 * Set a trigger type value.
 	 * 
-	 * @param type
-	 *            The value of trigger type
+	 * @param type The value of trigger type
 	 */
 	public void setType(String type) {
 		this.type = type;
@@ -98,8 +95,7 @@ public class TriggerInfo {
 	/**
 	 * Set a trigger schedule value.
 	 * 
-	 * @param schedule
-	 *            The value of trigger schedule
+	 * @param schedule The value of trigger schedule
 	 */
 	public void setSchedule(String schedule) {
 		this.schedule = schedule;
@@ -108,8 +104,7 @@ public class TriggerInfo {
 	/**
 	 * Set a trigger id value.
 	 * 
-	 * @param jobDetail
-	 *            The value of trigger jobDetail
+	 * @param jobDetail The value of trigger jobDetail
 	 */
 	public void setJobDetail(String jobDetail) {
 		this.jobDetail = jobDetail;
@@ -126,7 +121,9 @@ public class TriggerInfo {
 
 	@Override
 	public String toString() {
-		return "[id=" + id + ", triggerClass=" + triggerClass + ", jobDetail="
-				+ jobDetail + ", type=" + type + ", schedule=" + schedule + "]";
+		return "[id=" + id + ", triggerClass=" + triggerClass
+				+ ", jobDetail=" + jobDetail + ", type=" + type + ", schedule="
+				+ schedule + "]";
 	}
+
 }

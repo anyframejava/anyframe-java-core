@@ -12,7 +12,7 @@
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
  * See the License for the specific language governing permissions and
  * limitations under the License.
- */
+*/
 package org.anyframe.sample.scheduling.task.async;
 
 import java.util.Date;
@@ -26,21 +26,21 @@ import org.springframework.stereotype.Component;
 public class AsyncPrintTask {
 
 	@Async
-	public void printWithAsync() throws InterruptedException {
+	public void printWithAsync() throws Exception {
 		System.out.println("execute printWithAsync() of AsyncPrintTask at "
 				+ new Date());
 		Thread.sleep(5000);
 	}
 
 	@Async
-	public void printWithArg(int i) throws InterruptedException {
+	public void printWithArg(int i) throws Exception {
 		System.out.println("execute printWithArg(" + i
 				+ ") of AsyncPrintTask at " + new Date());
 		Thread.sleep(5000);
 	}
 
 	@Async
-	public Future<String> returnVal(int i) throws InterruptedException {
+	public Future<String> returnVal(int i) throws Exception {
 		System.out.println("execute returnVal() of AsyncPrintTask");
 		Date current = new Date();
 		Thread.sleep(5000);

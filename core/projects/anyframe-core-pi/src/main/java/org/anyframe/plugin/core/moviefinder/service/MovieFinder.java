@@ -15,20 +15,16 @@
  */
 package org.anyframe.plugin.core.moviefinder.service;
 
-import org.anyframe.pagination.Page;
 import org.anyframe.plugin.core.domain.Movie;
+
+import org.anyframe.pagination.Page;
 
 /**
  * This MovieFinder class is an Interface class to provide movie list
  * functionality.
  * 
- * @author Joonbo Jang
  * @author Sooyeon Park
  */
 public interface MovieFinder {
-
 	Page getPagingList(Movie movie, int pageIndex) throws Exception;
-
-	void showMyDaos();
-
 }

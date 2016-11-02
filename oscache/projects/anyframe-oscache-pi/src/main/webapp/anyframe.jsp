@@ -5,7 +5,7 @@
   	<div id="container">
     	<div class="main_greeting">
         	<dl>
-                <dt>Welcome to Anyframe 5.5.2-SNAPSHOT</dt>
+                <dt>Welcome to Anyframe 5.5.1</dt>
                 <dd>Congratulations! Anyframe application has been successfully installed. Anyframe is an open source project and application framework that provides basic architecture, common technical services, templates to help you develop web applications on the Java platform quickly and efficiently.</dd>
             </dl>
         </div>
@@ -23,7 +23,7 @@
                     <td>
                     	<ul>
                     	 <!--oscache-configuration-START-->
-                            <li><a href="<c:url value='/oscacheGenre.do?method=list'/>">OSCache 1.5.2-SNAPSHOT</a></li>
+                            <li><a href="<c:url value='/oscacheGenre.do?method=list'/>">OSCache 1.5.1</a></li>
                          <!--oscache-configuration-END-->
                         <!--Add new configuration here-->
                         </ul>

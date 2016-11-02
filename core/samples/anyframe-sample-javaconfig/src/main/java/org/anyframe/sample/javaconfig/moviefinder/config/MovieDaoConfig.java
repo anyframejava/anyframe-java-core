@@ -18,7 +18,6 @@ package org.anyframe.sample.javaconfig.moviefinder.config;
 import org.anyframe.sample.javaconfig.moviefinder.service.impl.MovieFinderDao;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.context.annotation.Description;
 
 /**
  * Java based spring configuration for bean class
@@ -29,7 +28,6 @@ import org.springframework.context.annotation.Description;
 public class MovieDaoConfig {
 
 	@Bean
-	@Description("Provides a MovieFinderDao bean")
 	public MovieFinderDao movieFinderDao() {
 		MovieFinderDao movieFinderDao = new MovieFinderDao();
 		return movieFinderDao;

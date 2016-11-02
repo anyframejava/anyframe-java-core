@@ -18,10 +18,12 @@ package org.anyframe.scheduling;
 import java.io.Serializable;
 import java.util.Date;
 
+import org.springframework.format.annotation.DateTimeFormat;
+
 /**
- * This JobResultInfo class contains attributes for quartz job result
- * information and getter, setter methods of them. And it contains toString
- * method for logging.
+ * This JobResultInfo class contains attributes for quartz job result information
+ * and getter, setter methods of them. And it contains toString method for
+ * logging.
  * 
  * @author Sujeong Lee
  */
@@ -29,15 +31,20 @@ public class JobResultInfo implements Serializable {
 
 	private static final long serialVersionUID = 1L;
 
+	private static final String DATEFORMAT = "yyyy-MM-dd HH:mm:ss.SSS";
+
 	private String jobName;
 	private String jobGroup;
 
-	private boolean isSuccess;
+	private boolean isSuccess; 
 
+	@DateTimeFormat(pattern = DATEFORMAT)
 	private Date startDate = new Date();
 
+	@DateTimeFormat(pattern = DATEFORMAT)
 	private Date endDate = new Date();
 	private String exception;
+
 
 	/**
 	 * Get a job name value.
@@ -51,8 +58,7 @@ public class JobResultInfo implements Serializable {
 	/**
 	 * Set a job name value.
 	 * 
-	 * @param jobName
-	 *            The value of job name
+	 * @param jobName The value of job name
 	 */
 	public void setJobName(String jobName) {
 		this.jobName = jobName;
@@ -70,8 +76,7 @@ public class JobResultInfo implements Serializable {
 	/**
 	 * Set a job group value.
 	 * 
-	 * @param jobGroup
-	 *            The value of job group
+	 * @param jobGroup The value of job group
 	 */
 	public void setJobGroup(String jobGroup) {
 		this.jobGroup = jobGroup;
@@ -89,8 +94,7 @@ public class JobResultInfo implements Serializable {
 	/**
 	 * Set a boolean value of job is success or fail.
 	 * 
-	 * @param isSuccess
-	 *            TThe boolean value of is success or fail
+	 * @param isSuccess TThe boolean value of is success or fail
 	 */
 	public void setIsSuccess(boolean isSuccess) {
 		this.isSuccess = isSuccess;
@@ -108,8 +112,7 @@ public class JobResultInfo implements Serializable {
 	/**
 	 * Set a job start date value.
 	 * 
-	 * @param startDate
-	 *            The value of job start date
+	 * @param startDate The value of job start date
 	 */
 	public void setStartDate(Date startDate) {
 		this.startDate = startDate;
@@ -127,8 +130,7 @@ public class JobResultInfo implements Serializable {
 	/**
 	 * Set a job end date value.
 	 * 
-	 * @param endDate
-	 *            The value of job end date
+	 * @param endDate The value of job end date
 	 */
 	public void setEndDate(Date endDate) {
 		this.endDate = endDate;
@@ -146,8 +148,7 @@ public class JobResultInfo implements Serializable {
 	/**
 	 * Set a job result exception value.
 	 * 
-	 * @param jobName
-	 *            The value of job result exception
+	 * @param jobName The value of job result exception
 	 */
 	public void setException(String exception) {
 		this.exception = exception;
@@ -155,8 +156,11 @@ public class JobResultInfo implements Serializable {
 
 	@Override
 	public String toString() {
-		return "[jobName=" + jobName + ", jobGroup=" + jobGroup
-				+ ", isSuccess=" + isSuccess + ", startDate=" + startDate
-				+ ", endDate=" + endDate + ", exception=" + exception + "]";
+		return "[jobName=" + jobName + ", jobGroup="
+				+ jobGroup + ", isSuccess=" + isSuccess + ", startDate="
+				+ startDate + ", endDate=" + endDate + ", exception="
+				+ exception + "]";
 	}
+
+
 }

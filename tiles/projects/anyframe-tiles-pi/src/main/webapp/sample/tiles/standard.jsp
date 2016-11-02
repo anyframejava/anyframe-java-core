@@ -1,5 +1,5 @@
 <%@ include file="/sample/common/top.jsp"%>
-<div class="location"><a href="<c:url value='anyframe.jsp'/>">Home</a> &gt; <a href="<c:url value='tilesMovieFinder.do?method=list'/>">Tiles 1.0.5-SNAPSHOT</a></div>
+<div class="location"><a href="<c:url value='anyframe.jsp'/>">Home</a> &gt; <a href="<c:url value='tilesMovieFinder.do?method=list'/>">Tiles 1.0.4</a></div>
     </div>
     <hr />
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>

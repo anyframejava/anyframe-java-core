@@ -5,7 +5,7 @@
   	<div id="container">
     	<div class="main_greeting">
         	<dl>
-                <dt>Welcome to Anyframe 5.6.1-SNAPSHOT</dt>
+                <dt>Welcome to Anyframe 5.5.1</dt>
                 <dd>Congratulations! Anyframe application has been successfully installed. Anyframe is an open source project and application framework that provides basic architecture, common technical services, templates to help you develop web applications on the Java platform quickly and efficiently.</dd>
             </dl>
         </div>
@@ -24,7 +24,7 @@
                     	<ul>
                         <!--Add new configuration here-->
                     		<!--idgen-configuration-START-->
-							<li>Idgen 1.6.1-SNAPSHOT</li>
+							<li>Idgen 1.5.1</li>
 							<!--idgen-configuration-END-->
                         </ul>
                     </td>

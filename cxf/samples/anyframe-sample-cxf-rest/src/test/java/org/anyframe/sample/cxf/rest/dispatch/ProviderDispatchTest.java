@@ -44,8 +44,8 @@ import org.anyframe.sample.cxf.rest.moviefinder.dispatch.Movies;
 import org.apache.commons.httpclient.HttpClient;
 import org.apache.commons.httpclient.methods.GetMethod;
 import org.apache.cxf.helpers.IOUtils;
+import org.apache.cxf.helpers.XMLUtils;
 import org.apache.cxf.io.CachedOutputStream;
-import org.apache.cxf.staxutils.StaxUtils;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
@@ -220,7 +220,7 @@ public class ProviderDispatchTest extends ServerRunner {
 		InputStream is = getClass().getClassLoader().getResourceAsStream(
 				"dispatch/client/Movie-movieId=002Req.xml");
 
-		Document doc = StaxUtils.read(is);
+		Document doc = XMLUtils.parse(is);
 		DOMSource reqMsg = new DOMSource(doc);
 
 		requestContext.put(MessageContext.HTTP_REQUEST_METHOD, "POST");

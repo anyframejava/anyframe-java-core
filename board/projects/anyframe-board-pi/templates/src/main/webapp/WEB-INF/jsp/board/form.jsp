@@ -52,6 +52,8 @@
 		vf.push(jobjVF);
 		jobjVF.appendTo('#fileuploader');
 
+		//jobjVF.css({left:-1000, top:-1000});
+
 		var abspos = $(".browse-btn").offset();
 
 		jobjVF.children("input[type='file']").css(abspos).on('change', function(evt) {

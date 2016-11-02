@@ -44,7 +44,7 @@ public class MovieFinderClient {
 	private RestTemplate restTemplate;
 
 	public Page findMovieList() {
-		String movieSearchUrl = "http://localhost:8080/anyframe-sample-springrest/springrest/movies";
+		String movieSearchUrl = "http://localhost:8080/anyframe-springrest-example/springrest/movies";
 
 		Page page = restTemplate.getForObject(movieSearchUrl,
 				Page.class);
@@ -52,7 +52,7 @@ public class MovieFinderClient {
 	}
 
 	public String createMovie(Movie movie) throws Exception {
-		String movieCreateUrl = "http://localhost:8080/anyframe-sample-springrest/springrest/movies";
+		String movieCreateUrl = "http://localhost:8080/anyframe-springrest-example/springrest/movies";
 
 		HttpHeaders headers = new HttpHeaders();
 		headers.setContentType(MediaType.APPLICATION_ATOM_XML);
@@ -68,7 +68,7 @@ public class MovieFinderClient {
 	}
 
 	public Movie findMovie(String movieId) {
-		String movieSearchUrl = "http://localhost:8080/anyframe-sample-springrest/springrest/movies/get/{movieId}";
+		String movieSearchUrl = "http://localhost:8080/anyframe-springrest-example/springrest/movies/{movieId}";
 
 		Movie movie = restTemplate.getForObject(movieSearchUrl, Movie.class,
 				movieId);
@@ -77,7 +77,7 @@ public class MovieFinderClient {
 	}
 
 	public String updateMovie(Movie movie) {
-		String movieSearchUrl = "http://localhost:8080/anyframe-sample-springrest/springrest/movies/{movieId}";
+		String movieSearchUrl = "http://localhost:8080/anyframe-springrest-example/springrest/movies/{movieId}";
 
 		restTemplate.put(movieSearchUrl, movie, movie.getMovieId());
 
@@ -85,7 +85,7 @@ public class MovieFinderClient {
 	}
 
 	public void removeMovie(String movieId) throws URISyntaxException {
-		String movieSearchUrl = "http://localhost:8080/anyframe-sample-springrest/springrest/movies/{movieId}";
+		String movieSearchUrl = "http://localhost:8080/anyframe-springrest-example/springrest/movies/{movieId}";
 
 		UriTemplate template = new UriTemplate(movieSearchUrl);
 

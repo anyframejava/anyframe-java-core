@@ -21,7 +21,6 @@ import java.io.File;
 import java.io.FileReader;
 import java.io.FileWriter;
 import java.io.FilenameFilter;
-import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashMap;
@@ -30,7 +29,6 @@ import java.util.Map;
 
 import org.anyframe.scheduling.JobResultInfo;
 import org.anyframe.scheduling.SchedulingService;
-import org.anyframe.scheduling.exception.SchedulingException;
 import org.anyframe.util.DateUtil;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -43,77 +41,64 @@ import org.slf4j.LoggerFactory;
 public class JobResultWriter {
 
 	// default path
-	private String resultPath = "C:/Anyframe/SchedulingResultFiles"; 
+	private String resultPath = "C:/Anyframe/SchedulingResultFiles";
 	private String resultJobRootPath = resultPath + "/jobs";
 
-	private static final String PATH_SEPARATOR = System.getProperty("file.separator");
-	private static final String FILE_SEPARATOR_START = "[";
-	private static final String FILE_SEPARATOR_END = "]";
-	private static final String FILE_EXTENTION = ".log";
-	private static final String JOB_SUCCESS = "S";
-	private static final String JOB_FAIL = "F";
-
-	private static final String KEY_SF = "key_sf";
-	private static final String KEY_START_DATE = "key_start";
-	private static final String KEY_END_DATE = "key_end";
-
-	private static final String FULL_DATE_DIR_PATTERN = "yyyy-MM-dd_HH-mm-ss-SSS";
-	private static final String DATE_DIR_PATTERN = "yyyy-MM-dd";
-
+	private static String PATH_SEPARATOR = System.getProperty("file.separator");
+	private static String FILE_SEPARATOR_START = "[";
+	private static String FILE_SEPARATOR_END = "]";
+	private static String FILE_EXTENTION = ".log";
+	private static String JOB_SUCCESS = "S";
+	private static String JOB_FAIL = "F";
+	
+	private static String KEY_SF = "key_sf";
+	private static String KEY_START_DATE = "key_start";
+	private static String KEY_END_DATE = "key_end";
+	
+	private static String FULL_DATE_DIR_PATTERN = "yyyy-MM-dd_HH-mm-ss-SSS";
+	private static String DATE_DIR_PATTERN = "yyyy-MM-dd";
+	
 	Logger logger = LoggerFactory.getLogger(SchedulingService.class);
-
+	
 	/**
-	 * @param resultPath
+	 * @param resultPath 
 	 */
 	public void setResultPath(String resultPath) {
 		this.resultPath = resultPath;
 		this.resultJobRootPath = resultPath + "/jobs";
 	}
-
+	
 	/**
 	 * Execute to make a result file with jobResultInfo.
 	 * 
-	 * @param jobResultInfo
-	 *            Object including the inforamtion about make a result file.
-	 * @throws SchedulingException
+	 * @param jobResultInfo Object including the inforamtion about make a result file.
+	 * @throws Exception
 	 */
-	public void create(JobResultInfo jobResultInfo) {
-		try {
-			makeFile(jobResultInfo);
-		} catch (IOException ex) {
-			throw new SchedulingException(
-					"Scheduling Service : Fail to make a result file with jobResultInfo",
-					ex);
-		}
+	public void create(JobResultInfo jobResultInfo) throws Exception {
+		makeFile(jobResultInfo);
 	}
 
 	/**
 	 * Execute to get result list with jobResultInfo.
 	 * 
-	 * @param jobResultInfo
-	 *            Object with job result info
+	 * @param jobResultInfo Object with job result info
 	 * @return Array including the object about job results
-	 * @throws SchedulingException
+	 * @throws Exception
 	 */
-	public List<JobResultInfo> getList(JobResultInfo jobResultInfo) {
-		try {
-			return getFileList(jobResultInfo);
-		} catch (IOException ex) {
-			throw new SchedulingException(
-					"Scheduling Service : Fail to get result list with jobResultInfo",
-					ex);
-		}
+	public List<JobResultInfo> getList(
+			JobResultInfo jobResultInfo) throws Exception {
+		return getFileList(jobResultInfo);
 	}
 
 	/**
-	 * Execute to get result with jobResultInfo
+	 * Execute to get result with jobResultInfo 
 	 * 
-	 * @param jobResultInfo
-	 *            Object with job result info
+	 * @param jobResultInfo Object with job result info
 	 * @return JobResultInfo object containing the job result information
-	 * @throws SchedulingException
+	 * @throws Exception
 	 */
-	public JobResultInfo get(JobResultInfo jobResultInfo) {
+	public JobResultInfo get(JobResultInfo jobResultInfo)
+			throws Exception {
 		logger.debug("Get job information with job name is "
 				+ jobResultInfo.getJobName() + "and job group name is "
 				+ jobResultInfo.getJobGroup() + ".");
@@ -132,11 +117,9 @@ public class JobResultWriter {
 		for (int n = 0; n < resultFileList.length; n++) {
 			String fileName = resultFileList[n];
 			Map<String, String> fileInfo = fileNameSplit(fileName);
-
-			if (DateUtil.stringToDate(fileInfo.get(KEY_START_DATE),
-					FULL_DATE_DIR_PATTERN).equals(jobResultInfo.getStartDate())) {
-				resultInfo.setEndDate(DateUtil.stringToDate(fileInfo
-						.get(KEY_END_DATE), FULL_DATE_DIR_PATTERN));
+			
+			if (DateUtil.string2Date(fileInfo.get(KEY_START_DATE), FULL_DATE_DIR_PATTERN).equals(jobResultInfo.getStartDate())) {
+				resultInfo.setEndDate(DateUtil.string2Date(fileInfo.get(KEY_END_DATE), FULL_DATE_DIR_PATTERN));
 				resultInfo.setIsSuccess(convertStringToBoolean(fileInfo
 						.get(KEY_SF)));
 
@@ -146,16 +129,9 @@ public class JobResultWriter {
 				if (resultFile.length() > 0 && !resultInfo.getIsSuccess()) {
 					char[] exceptionContents = new char[(int) resultFile
 							.length()];
-					try {
-						BufferedReader reader = new BufferedReader(
-								new FileReader(resultFile));
-						reader.read(exceptionContents);
-					} catch (IOException ex) {
-						throw new SchedulingException(
-								"Scheduling Service : Fail to read the result file",
-								ex);
-					}
-
+					BufferedReader reader = new BufferedReader(new FileReader(
+							resultFile));
+					reader.read(exceptionContents);
 					String exceptionStackTrace = String
 							.valueOf(exceptionContents);
 					resultInfo.setException(exceptionStackTrace);
@@ -168,7 +144,8 @@ public class JobResultWriter {
 		return resultInfo;
 	}
 
-	private void makeFile(JobResultInfo jobResultInfo) throws IOException {
+	private void makeFile(JobResultInfo jobResultInfo)
+			throws Exception {
 		boolean isSuccess = jobResultInfo.getIsSuccess();
 
 		String resultFullPath = getFilePath(jobResultInfo);
@@ -177,10 +154,8 @@ public class JobResultWriter {
 		File checkFolder = new File(resultFullPath);
 		File file = new File(resultFullPath, resultFileName);
 
-		logger
-				.debug("Job result file is made with name like "
-						+ resultFileName);
-
+		logger.debug("Job result file is made with name like " + resultFileName);
+		
 		if (!checkFolder.exists()) {
 			checkFolder.mkdirs();
 		}
@@ -194,14 +169,14 @@ public class JobResultWriter {
 		}
 	}
 
-	private List<JobResultInfo> getFileList(JobResultInfo jobResultInfo)
-			throws IOException {
-		List<JobResultInfo> resultList = new ArrayList<JobResultInfo>();
+	private List<JobResultInfo> getFileList(
+			JobResultInfo jobResultInfo) throws Exception {
+		ArrayList<JobResultInfo> resultList = new ArrayList<JobResultInfo>();
 		String jobGroup = jobResultInfo.getJobGroup();
 		String jobName = jobResultInfo.getJobName();
 
-		String resultJobPath = resultJobRootPath + PATH_SEPARATOR + jobGroup
-				+ PATH_SEPARATOR + jobName;
+		String resultJobPath = resultJobRootPath + PATH_SEPARATOR
+				+ jobGroup + PATH_SEPARATOR + jobName;
 
 		File jobDir = new File(resultJobPath);
 		File[] dateList = jobDir.listFiles();
@@ -226,12 +201,15 @@ public class JobResultWriter {
 				resultInfo.setJobName(jobResultInfo.getJobName());
 				resultInfo.setIsSuccess(convertStringToBoolean(fileInfo
 						.get(KEY_SF)));
-				resultInfo.setStartDate(DateUtil.stringToDate(fileInfo
-						.get(KEY_START_DATE), FULL_DATE_DIR_PATTERN));
-				if (fileInfo.get(KEY_END_DATE) != null) {
-					resultInfo.setEndDate(DateUtil.stringToDate(fileInfo
-							.get(KEY_END_DATE), FULL_DATE_DIR_PATTERN));
+				resultInfo.setStartDate(DateUtil
+						.string2Date(fileInfo
+								.get(KEY_START_DATE), FULL_DATE_DIR_PATTERN));
+				if(fileInfo.get(KEY_END_DATE) != null){
+					resultInfo.setEndDate(DateUtil
+							.string2Date(fileInfo
+									.get(KEY_END_DATE), FULL_DATE_DIR_PATTERN));
 				}
+				
 
 				File resultFile = new File(resultJobDatePath + PATH_SEPARATOR
 						+ fileName);
@@ -253,17 +231,19 @@ public class JobResultWriter {
 		return resultList;
 	}
 
-	private String getFilePath(JobResultInfo jobResultInfo) {
+	private String getFilePath(JobResultInfo jobResultInfo)
+			throws Exception {
 		Date startDate = jobResultInfo.getStartDate();
 
 		String jobGroup = jobResultInfo.getJobGroup();
 		String jobName = jobResultInfo.getJobName();
-		String runDate = DateUtil.dateToString(startDate, DATE_DIR_PATTERN);
+		String runDate = DateUtil.date2String(startDate, DATE_DIR_PATTERN);
 		return resultJobRootPath + PATH_SEPARATOR + jobGroup + PATH_SEPARATOR
 				+ jobName + PATH_SEPARATOR + runDate;
 	}
 
-	private String getFileName(JobResultInfo jobResultInfo) {
+	private String getFileName(JobResultInfo jobResultInfo)
+			throws Exception {
 		Date startDate = jobResultInfo.getStartDate();
 		Date endDate = jobResultInfo.getEndDate();
 
@@ -274,17 +254,18 @@ public class JobResultWriter {
 		}
 
 		return wrapFileSeparator(strIsSuccess)
-				+ wrapFileSeparator(DateUtil.dateToString(startDate,
-						FULL_DATE_DIR_PATTERN))
-				+ wrapFileSeparator(DateUtil.dateToString(endDate,
-						FULL_DATE_DIR_PATTERN)) + FILE_EXTENTION;
+				+ wrapFileSeparator(DateUtil
+						.date2String(startDate, FULL_DATE_DIR_PATTERN))
+				+ wrapFileSeparator(DateUtil
+						.date2String(endDate, FULL_DATE_DIR_PATTERN))
+				+ FILE_EXTENTION;
 	}
 
-	private String wrapFileSeparator(String param) {
+	private String wrapFileSeparator(String param) throws Exception {
 		return FILE_SEPARATOR_START + param + FILE_SEPARATOR_END;
 	}
 
-	private boolean convertStringToBoolean(String param) {
+	private boolean convertStringToBoolean(String param) throws Exception {
 		if (param.equals(JOB_SUCCESS)) {
 			return true;
 		} else {

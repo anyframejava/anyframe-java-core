@@ -24,27 +24,23 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Set;
 
-import org.anyframe.exception.InitializationException;
-import org.anyframe.exception.InvalidPropertyException;
 import org.anyframe.scheduling.JobInfo;
 import org.anyframe.scheduling.JobResultInfo;
 import org.anyframe.scheduling.SchedulingService;
-import org.anyframe.scheduling.exception.SchedulingException;
 import org.anyframe.scheduling.impl.listener.SchedulingJobListener;
 import org.anyframe.scheduling.impl.result.JobResultWriter;
-import org.anyframe.util.StringUtil;
 import org.quartz.CronTrigger;
 import org.quartz.Job;
 import org.quartz.JobDetail;
 import org.quartz.JobKey;
 import org.quartz.Scheduler;
-import org.quartz.SchedulerException;
 import org.quartz.SimpleTrigger;
 import org.quartz.Trigger;
 import org.quartz.impl.JobDetailImpl;
 import org.quartz.impl.StdSchedulerFactory;
 import org.quartz.impl.matchers.GroupMatcher;
 import org.quartz.impl.matchers.KeyMatcher;
+import org.springframework.beans.BeansException;
 import org.springframework.beans.factory.NoSuchBeanDefinitionException;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.ApplicationContextAware;
@@ -78,7 +74,8 @@ public class SchedulingServiceImpl implements SchedulingService,
 	private String jobResultPath;
 	private String jobRepository;
 
-	public void setApplicationContext(ApplicationContext applicationContext) {
+	public void setApplicationContext(ApplicationContext applicationContext)
+			throws BeansException {
 		this.applicationContext = applicationContext;
 	}
 
@@ -98,66 +95,71 @@ public class SchedulingServiceImpl implements SchedulingService,
 		this.jobResultPath = jobResultPath;
 	}
 
-	@SuppressWarnings("unused")
-	private void init() {
-		this.jobResultWriter = new JobResultWriter();
+	private void init() throws Exception {
 
+		this.jobResultWriter = new JobResultWriter();
 		if (jobResultPath != null) {
 			jobResultWriter.setResultPath(jobResultPath);
 			schedulingJobListener.setJobResultWriter(jobResultWriter);
 		}
 
-		if ("database".equals(jobRepository)) {
+		if (jobRepository.equals("database")) {
 			this.jobDBManager = (JobDBManager) applicationContext
 					.getBean("jobDBManager");
 		} else {
-			LOGGER.debug("'jobRepository' values can be 'database' or 'file'.");
+			logger.debug("'jobRepository' values can be 'database' or 'file'.");
 		}
 
-		// 1. check scheduler is exist in context-scheduling.xml => make new
-		// scheduler
+		// 1. check scheduler is exist in context-scheduling.xml => make new scheduler
 		try {
 			if (scheduler == null) {
 				scheduler = new StdSchedulerFactory().getScheduler();
 			}
 			scheduler.pauseAll();
 			addListenerToXMLJobs();
-		} catch (SchedulerException ex) {
-			LOGGER.error("Fail to init scheduler. Cause : " + ex.getCause());
-			throw new InitializationException("Fail to init scheduler.", ex);
+		} catch (Exception exception) {
+			logger.error("Fail to init scheduler. Cause : "
+					+ exception.getCause());
+			throw new Exception("Fail to init scheduler.", exception);
 		}
 
 		// 2. check db is exist => add jobs to scheduler
 		if (jobDBManager != null) {
-			LOGGER.debug("Job information is included in the DB. "
+			logger.debug("Job information is included in the DB. "
 					+ jobDBManager);
 			List<JobInfo> dbJobList = jobDBManager.getList();
 			Iterator<JobInfo> itrJob = dbJobList.iterator();
 			while (itrJob.hasNext()) {
-				JobInfo jobInfo = itrJob.next();
+				JobInfo jobInfo = (JobInfo) itrJob.next();
 				create(jobInfo);
 			}
 		}
 
 		try {
 			scheduler.resumeAll();
-		} catch (SchedulerException ex) {
-			LOGGER.error("Fail to resume all jobs.");
-			throw new InitializationException("Fail to resume all jobs.", ex);
+		} catch (Exception exception) {
+			logger.error("Fail to resume all jobs.");
+			throw new Exception("Fail to resume all jobs.", exception);
 		}
+
 	}
 
-	@SuppressWarnings("unused")
-	private void destroy() {
-		List<JobInfo> jobList = getList();
-
+	private void destroy() throws Exception {
+		ArrayList<JobInfo> jobList = getList();
 		// 1. xml
-		// return job list to JobFilManager for compare, write
-		JobFileManager jobFileManagaer = new JobFileManager(jobList);
-		// refrect to XML Builder, remained Job List(reflect to DB) return
-		jobList = jobFileManagaer.reflectChanges();
-		LOGGER.debug("Job List to be saved in the DB size is " + jobList.size()
-				+ ".");
+		try {
+			// return job list to JobFilManager for compare, write
+			JobFileManager jobFileManagaer = new JobFileManager(jobList,
+					jobDBManager);
+			// refrect to XML Builder, remained Job List(reflect to DB) return
+			jobList = jobFileManagaer.reflectChanges();
+			logger.debug("Job List to be saved in the DB size is "
+					+ jobList.size() + ".");
+		} catch (Exception exception) {
+			logger.error("Fail to build a context file. Cause : "
+					+ exception.getCause());
+			throw new Exception("Fail to build a context file.", exception);
+		}
 
 		// 2. db
 		if (jobDBManager != null) {
@@ -168,10 +170,10 @@ public class SchedulingServiceImpl implements SchedulingService,
 		try {
 			scheduler.shutdown(true);
 			Thread.sleep(1000);
-		} catch (Exception ex) {
-			LOGGER.error("Fail to init scheduler. Cause : " + ex.getCause());
-			throw new SchedulingException("Fail to shutdown quartz scheduler.",
-					ex);
+		} catch (Exception exception) {
+			logger.error("Fail to init scheduler. Cause : "
+					+ exception.getCause());
+			throw new Exception("Fail to shutdown quartz scheduler.", exception);
 		}
 	}
 
@@ -180,20 +182,15 @@ public class SchedulingServiceImpl implements SchedulingService,
 	 * 
 	 * @param jobInfo
 	 *            Object including the information about add to quartz as a job
-	 * @throws SchedulingException
+	 * @throws Exception
 	 */
-	public void create(JobInfo jobInfo) {
+	public void create(JobInfo jobInfo) throws Exception {
 		String validateMessage = validateJobInfo(jobInfo);
 
-		if ("valid".equals(validateMessage)) {
-			try {
-				addJob(jobInfo);
-			} catch (Exception ex) {
-				throw processException("Fail to create job : "
-						+ validateMessage, new Exception());
-			}
+		if (validateMessage.equals("valid")) {
+			addJob(jobInfo);
 		} else {
-			throw processException("Fail to create job : " + validateMessage,
+			throw processException("Fail to generate job : " + validateMessage,
 					new Exception());
 		}
 
@@ -203,21 +200,20 @@ public class SchedulingServiceImpl implements SchedulingService,
 	 * Execute to get list jobs in quartz scheduler.
 	 * 
 	 * @return Array including the object about jobs
-	 * @throws SchedulingException
+	 * @throws Exception
 	 */
-	public List<JobInfo> getList() {
-		List<JobInfo> resultList = new ArrayList<JobInfo>();
+	public ArrayList<JobInfo> getList() throws Exception {
+		ArrayList<JobInfo> resultList = new ArrayList<JobInfo>();
 
 		// 1. added job list
 		try {
 			List<String> jobGroups = scheduler.getJobGroupNames();
-
 			for (int i = 0; i < jobGroups.size(); i++) {
-				String jobGroupName = jobGroups.get(i);
+				String jobGroupName = (String) jobGroups.get(i);
 				resultList.addAll(getList(jobGroupName));
 			}
-		} catch (Exception ex) {
-			throw processException("Fail to get list job", ex);
+		} catch (Exception exception) {
+			throw processException("Fail to get list job", exception);
 		}
 
 		return resultList;
@@ -230,10 +226,10 @@ public class SchedulingServiceImpl implements SchedulingService,
 	 * @param jobGroupName
 	 *            quartz job group name
 	 * @return List including the object about jobs
-	 * @throws SchedulingException
+	 * @throws Exception
 	 */
-	public List<JobInfo> getList(String jobGroupName) {
-		List<JobInfo> resultList = new ArrayList<JobInfo>();
+	public ArrayList<JobInfo> getList(String jobGroupName) throws Exception {
+		ArrayList<JobInfo> resultList = new ArrayList<JobInfo>();
 
 		try {
 			if (isEmpty(jobGroupName)) {
@@ -241,17 +237,18 @@ public class SchedulingServiceImpl implements SchedulingService,
 				resultList = getList();
 			} else {
 				// get all job list with job group
-				Set<JobKey> jobKeys = scheduler.getJobKeys(GroupMatcher
+				Set<?> jobKeys = scheduler.getJobKeys(GroupMatcher
 						.<JobKey> groupEquals(jobGroupName));
-				Iterator<JobKey> itr = jobKeys.iterator();
+				Iterator<?> itr = jobKeys.iterator();
 				while (itr.hasNext()) {
-					JobDetail jobDetail = scheduler.getJobDetail(itr.next());
+					JobDetail jobDetail = scheduler.getJobDetail((JobKey) itr
+							.next());
 					JobInfo jobInfo = getJob(jobDetail);
 					resultList.add(jobInfo);
 				}
 			}
-		} catch (SchedulerException ex) {
-			throw processException("Fail to get list job", ex);
+		} catch (Exception exception) {
+			throw processException("Fail to get list job", exception);
 		}
 
 		return resultList;
@@ -263,15 +260,15 @@ public class SchedulingServiceImpl implements SchedulingService,
 	 * @param jobKey
 	 *            job key
 	 * @return the JobInfo object containing the quartz job information
-	 * @throws SchedulingException
+	 * @throws Exception
 	 */
-	public JobInfo get(JobKey jobKey) {
+	public JobInfo get(JobKey jobKey) throws Exception {
 		JobInfo jobInfo = new JobInfo();
 		try {
 			JobDetail jobDetail = scheduler.getJobDetail(jobKey);
 			jobInfo = getJob(jobDetail);
-		} catch (SchedulerException ex) {
-			throw processException("Fail to get job", ex);
+		} catch (Exception exception) {
+			throw processException("Fail to get job", exception);
 		}
 		return jobInfo;
 	}
@@ -282,13 +279,13 @@ public class SchedulingServiceImpl implements SchedulingService,
 	 * 
 	 * @param jobKey
 	 *            job key
-	 * @throws SchedulingException
+	 * @throws Exception
 	 */
-	public void delete(JobKey jobKey) {
+	public void delete(JobKey jobKey) throws Exception {
 		try {
 			scheduler.deleteJob(jobKey);
-		} catch (SchedulerException ex) {
-			throw processException("Fail to delete job", ex);
+		} catch (Exception exception) {
+			throw processException("Fail to delete job", exception);
 		}
 	}
 
@@ -298,13 +295,13 @@ public class SchedulingServiceImpl implements SchedulingService,
 	 * 
 	 * @param jobKeys
 	 *            array including the
-	 * @throws SchedulingException
+	 * @throws Exception
 	 */
-	public void deleteAll(List<JobKey> jobKeys) {
+	public void deleteAll(ArrayList<JobKey> jobKeys) throws Exception {
 		try {
 			scheduler.deleteJobs(jobKeys);
-		} catch (SchedulerException ex) {
-			throw processException("Fail to delete job", ex);
+		} catch (Exception exception) {
+			throw processException("Fail to delete job", exception);
 		}
 	}
 
@@ -315,16 +312,16 @@ public class SchedulingServiceImpl implements SchedulingService,
 	 * @param jobInfo
 	 *            Object including the information about update to quartz as a
 	 *            job
-	 * @throws SchedulingException
+	 * @throws Exception
 	 */
-	public void update(JobInfo jobInfo) {
+	public void update(JobInfo jobInfo) throws Exception {
 		try {
 			scheduler.pauseAll();
 			delete(new JobKey(jobInfo.getJobName(), jobInfo.getJobGroup()));
 			addJob(jobInfo);
 			scheduler.resumeAll();
-		} catch (Exception ex) {
-			throw processException("Fail to update job", ex);
+		} catch (Exception exception) {
+			throw processException("Fail to update job", exception);
 		}
 	}
 
@@ -334,13 +331,13 @@ public class SchedulingServiceImpl implements SchedulingService,
 	 * 
 	 * @param jobKey
 	 *            job key
-	 * @throws SchedulingException
+	 * @throws Exception
 	 */
-	public void run(JobKey jobKey) {
+	public void run(JobKey jobKey) throws Exception {
 		try {
 			scheduler.triggerJob(jobKey);
-		} catch (SchedulerException ex) {
-			throw processException("Fail to run job", ex);
+		} catch (Exception exception) {
+			throw processException("Fail to run job", exception);
 		}
 	}
 
@@ -350,13 +347,13 @@ public class SchedulingServiceImpl implements SchedulingService,
 	 * 
 	 * @param jobKey
 	 *            job key
-	 * @throws SchedulingException
+	 * @throws Exception
 	 */
-	public void stop(JobKey jobKey) {
+	public void stop(JobKey jobKey) throws Exception {
 		try {
 			scheduler.pauseJob(jobKey);
-		} catch (SchedulerException ex) {
-			throw processException("Fail to stop job", ex);
+		} catch (Exception exception) {
+			throw processException("Fail to stop job", exception);
 		}
 	}
 
@@ -367,9 +364,10 @@ public class SchedulingServiceImpl implements SchedulingService,
 	 * @param jobResultInfo
 	 *            Object including the information about get result list
 	 * @return List including the object about job results
-	 * @throws SchedulingException
+	 * @throws Exception
 	 */
-	public List<JobResultInfo> getResultList(JobResultInfo jobResultInfo) {
+	public List<JobResultInfo> getResultList(JobResultInfo jobResultInfo)
+			throws Exception {
 		return jobResultWriter.getList(jobResultInfo);
 	}
 
@@ -380,29 +378,33 @@ public class SchedulingServiceImpl implements SchedulingService,
 	 * @param jobResultInfo
 	 *            Object including the information about get result
 	 * @return the JobResultInfo object containing the job result information
-	 * @throws SchedulingException
+	 * @throws Exception
 	 */
-	public JobResultInfo getResult(JobResultInfo jobResultInfo) {
+	public JobResultInfo getResult(JobResultInfo jobResultInfo)
+			throws Exception {
 		return jobResultWriter.get(jobResultInfo);
 	}
 
-	private void addListenerToXMLJobs() throws SchedulerException {
-		List<String> jobGroups = scheduler.getJobGroupNames();
-
-		for (int i = 0; i < jobGroups.size(); i++) {
-			String jobGroupName = jobGroups.get(i);
-			Set<JobKey> jobKeys = scheduler.getJobKeys(GroupMatcher
-					.<JobKey> groupEquals(jobGroupName));
-			Iterator<JobKey> itr = jobKeys.iterator();
-			while (itr.hasNext()) {
-				scheduler.getListenerManager()
-						.addJobListener(schedulingJobListener,
-								KeyMatcher.keyEquals(itr.next()));
+	private void addListenerToXMLJobs() throws Exception {
+		try {
+			List<String> jobGroups = scheduler.getJobGroupNames();
+			for (int i = 0; i < jobGroups.size(); i++) {
+				String jobGroupName = (String) jobGroups.get(i);
+				Set<JobKey> jobKeys = scheduler.getJobKeys(GroupMatcher
+						.<JobKey> groupEquals(jobGroupName));
+				Iterator<JobKey> itr = jobKeys.iterator();
+				while (itr.hasNext()) {
+					scheduler.getListenerManager().addJobListener(
+							schedulingJobListener,
+							KeyMatcher.keyEquals(itr.next()));
+				}
 			}
+		} catch (Exception exception) {
+			throw processException("Fail to get xml job keys", exception);
 		}
 	}
 
-	private JobInfo getJob(JobDetail jobDetail) throws SchedulerException {
+	private JobInfo getJob(JobDetail jobDetail) throws Exception {
 		JobInfo jobInfo = new JobInfo();
 
 		jobInfo.setJobName(jobDetail.getKey().getName());
@@ -410,7 +412,6 @@ public class SchedulingServiceImpl implements SchedulingService,
 		jobInfo.setDescription(jobDetail.getDescription());
 
 		List<?> list = scheduler.getTriggersOfJob(jobDetail.getKey());
-
 		for (int i = 0; i < list.size(); i++) {
 			Trigger trigger = (Trigger) list.get(i);
 			jobInfo.setTriggerName(trigger.getKey().getName());
@@ -425,14 +426,12 @@ public class SchedulingServiceImpl implements SchedulingService,
 				jobInfo.setJobSchedule(cronTrigger.getCronExpression());
 				jobInfo.setFlagScheduleType("cron");
 			}
-
 			jobInfo.setStartDate(trigger.getStartTime());
 			jobInfo.setEndDate(trigger.getEndTime());
 			jobInfo.setInXml(false);
 		}
 
 		Package jobPackage = jobDetail.getJobClass().getPackage();
-
 		try {
 			// XML
 			jobInfo.setInXml(true);
@@ -447,73 +446,78 @@ public class SchedulingServiceImpl implements SchedulingService,
 
 				jobInfo.setJobTarget(methodInvokerClass.getTargetClass()
 						.getName());
-				jobInfo
-						.setJobTargetMethod(methodInvokerClass
-								.getTargetMethod());
+				jobInfo.setJobTargetMethod(methodInvokerClass.getTargetMethod());
 			}
 		} catch (NoSuchBeanDefinitionException e) {
 			// DB
 			jobInfo.setJobTarget(jobDetail.getJobClass().getName());
+		} catch (Exception exception) {
+			throw processException("Fail to add job to schedule", exception);
 		}
 
 		return jobInfo;
 	}
 
 	@SuppressWarnings("unchecked")
-	private void addJob(JobInfo jobInfo) throws ClassNotFoundException,
-			SchedulerException {
+	private void addJob(JobInfo jobInfo) throws Exception {
 		String jobName = jobInfo.getJobName();
 		String jobGroup = jobInfo.getJobGroup();
 
 		JobDetailImpl jobDetail = null;
 
-		if (scheduler.checkExists(new JobKey(jobName, jobGroup))) {
-			throw new SchedulerException("Job name is already exist.");
-		} else {
-			jobDetail = new JobDetailImpl();
-			jobDetail.setName(jobName);
-			jobInfo.setJobGroup(jobGroup);
-			jobDetail.setGroup(jobGroup);
-			jobDetail.setDescription(jobInfo.getDescription());
+		try {
+			if (scheduler.checkExists(new JobKey(jobName, jobGroup))) {
+				throw new Exception("Job name is already exist.");
+			} else {
+				jobDetail = new JobDetailImpl();
+				jobDetail.setName(jobName);
+				jobInfo.setJobGroup(jobGroup);
+				jobDetail.setGroup(jobGroup);
+				jobDetail.setDescription(jobInfo.getDescription());
 
-			jobDetail.setJobClass((Class<? extends Job>) Class.forName(jobInfo
-					.getJobTarget()));
+				jobDetail.setJobClass((Class<? extends Job>) Class
+						.forName(jobInfo.getJobTarget()));
 
-			Trigger trigger = generateTrigger(jobInfo);
+				Trigger trigger = generateTrigger(jobInfo);
 
-			scheduler.getListenerManager().addJobListener(schedulingJobListener);
-			scheduler.addJob(jobDetail, true);
-			scheduler.scheduleJob(trigger);
-			scheduler.resumeJob(new JobKey(jobName, jobGroup));
+				scheduler.getListenerManager().addJobListener(
+						schedulingJobListener);
+				scheduler.addJob(jobDetail, true);
+				scheduler.scheduleJob(trigger);
+				scheduler.resumeJob(new JobKey(jobName, jobGroup));
+			}
+		} catch (Exception exception) {
+			throw processException("Fail to add job to schedule", exception);
 		}
 	}
 
-	private Trigger generateTrigger(JobInfo jobInfo) {
+	private Trigger generateTrigger(JobInfo jobInfo) throws Exception {
 		if (jobInfo.getFlagScheduleType().equals("simple")) {
-			SimpleTrigger trigger = (SimpleTrigger) newTrigger().withIdentity(
-					"TRIGGER-" + jobInfo.getJobName(),
-					"TRIGGER-" + jobInfo.getJobGroup()).startAt(
-					jobInfo.getStartDate()).endAt(jobInfo.getEndDate())
+			SimpleTrigger trigger = (SimpleTrigger) newTrigger()
+					.withIdentity("TRIGGER-" + jobInfo.getJobName(),
+							"TRIGGER-" + jobInfo.getJobGroup())
+					.startAt(jobInfo.getStartDate())
+					.endAt(jobInfo.getEndDate())
 					.withSchedule(
 							simpleSchedule().withIntervalInMilliseconds(
 									Integer.parseInt(jobInfo.getJobSchedule()))
-									.repeatForever()).forJob(
-							jobInfo.getJobName(), jobInfo.getJobGroup())
+									.repeatForever())
+					.forJob(jobInfo.getJobName(), jobInfo.getJobGroup())
 					.build();
 			return trigger;
-		} else if ("cron".equals(jobInfo.getFlagScheduleType())) {
-			CronTrigger trigger = newTrigger().withIdentity(
-					"TRIGGER-" + jobInfo.getJobName(),
-					"TRIGGER-" + jobInfo.getJobGroup()).startAt(
-					jobInfo.getStartDate()).endAt(jobInfo.getEndDate())
+		} else if (jobInfo.getFlagScheduleType().equals("cron")) {
+			CronTrigger trigger = newTrigger()
+					.withIdentity("TRIGGER-" + jobInfo.getJobName(),
+							"TRIGGER-" + jobInfo.getJobGroup())
+					.startAt(jobInfo.getStartDate())
+					.endAt(jobInfo.getEndDate())
 					.withSchedule(cronSchedule(jobInfo.getJobSchedule()))
 					.forJob(jobInfo.getJobName(), jobInfo.getJobGroup())
 					.build();
 			return trigger;
 		} else {
-			LOGGER
-					.error("Fail to generate Trigger. Cause : Input schedule type is not invalid. Only \"cron\" or \"simple\".");
-			throw new InvalidPropertyException(
+			logger.error("Fail to generate Trigger. Cause : Input schedule type is not invalid. Only \"cron\" or \"simple\".");
+			throw new Exception(
 					"Fail to generate Trigger. Cause : Input schedule type is not invalid. Only \"cron\" or \"simple\".");
 		}
 	}
@@ -521,7 +525,6 @@ public class SchedulingServiceImpl implements SchedulingService,
 	private String validateJobInfo(JobInfo jobInfo) {
 		String result = "";
 		boolean valid = true;
-
 		if (isEmpty(jobInfo.getJobName())) {
 			result += "'job name' ";
 			valid = false;
@@ -547,17 +550,18 @@ public class SchedulingServiceImpl implements SchedulingService,
 	}
 
 	private boolean isEmpty(String parameter) {
-		if (StringUtil.isEmpty(parameter)) {
+		if (parameter == null || parameter.equals("")) {
 			return true;
 		} else {
 			return false;
 		}
 	}
 
-	private SchedulingException processException(String actionName, Exception ex) {
-		LOGGER.error("Scheduling Service : " + actionName + " Reason : "
-				+ ex.getMessage());
-		return new SchedulingException("Scheduling Service : " + actionName
-				+ ".\n Reason = " + ex.getMessage(), ex);
+	private Exception processException(String actionName, Exception exception) {
+		logger.error("Scheduling Service : " + actionName + " Reason : "
+				+ exception.getMessage());
+		return new Exception("Scheduling Service : " + actionName
+				+ ".\n Reason = " + exception.getMessage(), exception);
 	}
+
 }

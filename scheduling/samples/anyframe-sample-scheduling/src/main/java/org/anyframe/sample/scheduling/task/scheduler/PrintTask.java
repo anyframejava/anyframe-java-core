@@ -12,23 +12,23 @@
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
  * See the License for the specific language governing permissions and
  * limitations under the License.
- */
+*/
 package org.anyframe.sample.scheduling.task.scheduler;
 
 import java.util.Date;
 
 public class PrintTask {
-	public void printWithFixedDelay() {
+	public void printWithFixedDelay() throws Exception {
 		System.out.println("execute printWithFixedDelay() of PrintTask at "
 				+ new Date() + " with TaskScheduler");
 	}
 
-	public void printWithFixedRate() {
+	public void printWithFixedRate() throws Exception {
 		System.out.println("execute printWithFixedRate() of PrintTask at "
 				+ new Date() + " with TaskScheduler");
 	}
 
-	public void printWithCron() {
+	public void printWithCron() throws Exception {
 		System.out.println("execute printWithCron() of PrintTask at "
 				+ new Date() + " with TaskScheduler");
 	}

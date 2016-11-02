@@ -1,20 +1,18 @@
 <%@ page language="java" errorPage="/sample/common/error.jsp" pageEncoding="UTF-8" contentType="text/html;charset=utf-8" %>
 <%@ include file="/sample/common/top.jsp"%>
-		<div class="location"><a href="<c:url value='/anyframe.jsp'/>">Home</a> &gt; <a href="<c:url value='/asyncSupportMovieFinderDeferredResult.do?method=list'/>">Async Support 1.1.1-SNAPSHOT</a></div>
+		<div class="location"><a href="<c:url value='/anyframe.jsp'/>">Home</a> &gt; <a href="<c:url value='/asyncSupportMovieFinderCallable.do?method=list'/>">Async Support 1.0.1-SNAPSHOT</a></div>
     </div>
     <hr />
 <script type="text/javascript" src="<c:url value='/sample/javascript/CommonScript.js'/>"></script>
-<script type="text/javascript" src="<c:url value='/async-support/javascript/jquery-1.8.3.min.js'/>"></script>
-
 <script type="text/javascript">
+
 	function fncCreateMovieView() {
-		document.location.href="<c:url value='/asyncSupportMovieDeferredResult.do?method=createView'/>";
+		document.location.href="<c:url value='/asyncSupportMovieCallable.do?method=createView'/>";
 	}	
 	function fncSearchMovie() {
-	   	document.searchForm.action="<c:url value='/asyncSupportMovieFinderDeferredResult.do?method=list'/>";
+	   	document.searchForm.action="<c:url value='/asyncSupportMovieFinderCallable.do?method=list'/>";
 	   	document.searchForm.submit();						
 	}		
- 
 </script>
 
 
@@ -65,7 +63,7 @@
                 	<c:forEach var="movie" items="${movies}">
 	                	<tr>
 	                    	<td>${movie.genre.name}</td>
-	                        <td><a class="linkClass" href="${ctx}/asyncSupportMovieDeferredResult.do?method=get&amp;movieId=${movie.movieId}">${movie.title}</a></td>
+	                        <td><a class="linkClass" href="${ctx}/asyncSupportMovieCallable.do?method=get&amp;movieId=${movie.movieId}">${movie.title}</a></td>
 	                        <td>${movie.director}</td>
 	                        <td>${movie.actors}</td>
 	                        <td class="align_center">${movie.ticketPrice}</td>

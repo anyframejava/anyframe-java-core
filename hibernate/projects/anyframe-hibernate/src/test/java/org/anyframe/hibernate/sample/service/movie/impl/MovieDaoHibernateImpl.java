@@ -15,7 +15,6 @@
  */
 package org.anyframe.hibernate.sample.service.movie.impl;
 
-import java.util.ArrayList;
 import java.util.List;
 
 import org.anyframe.hibernate.impl.DynamicHibernateServiceImpl;
@@ -24,11 +23,13 @@ import org.anyframe.hibernate.sample.model.bidirection.Country;
 import org.anyframe.hibernate.sample.model.bidirection.Movie;
 import org.springframework.orm.hibernate3.support.HibernateDaoSupport;
 
-public class MovieDaoHibernateImpl extends HibernateDaoSupport implements MovieDao {
+public class MovieDaoHibernateImpl extends HibernateDaoSupport implements
+		MovieDao {
 
 	private DynamicHibernateServiceImpl dynamicHibernateService;
 
-	public void setDynamicHibernateService(DynamicHibernateServiceImpl dynamicHibernateService) {
+	public void setDynamicHibernateService(
+			DynamicHibernateServiceImpl dynamicHibernateService) {
 		this.dynamicHibernateService = dynamicHibernateService;
 	}
 
@@ -41,7 +42,8 @@ public class MovieDaoHibernateImpl extends HibernateDaoSupport implements MovieD
 			Movie movie = movieList.get(i);
 			this.createMovie(movie);
 			if (i == 1) {
-				throw new org.anyframe.exception.PersistenceException("test exception for transaction management in definitive way.");
+				throw new org.anyframe.exception.PersistenceException(
+						"test exception for transaction management in definitive way.");
 			}
 		}
 	}
@@ -51,18 +53,24 @@ public class MovieDaoHibernateImpl extends HibernateDaoSupport implements MovieD
 	}
 
 	public List<Movie> findMovieList(int conditionType, String condition) {
-		return dynamicHibernateService.findList("dynamicFindMovieListAll", makeArguments(conditionType, condition));
+		return dynamicHibernateService.findList("dynamicFindMovieListAll",
+				makeArguments(conditionType, condition));
 	}
 
 	public List<Movie> findMovieListWithSQL(int conditionType, String condition) {
-		return dynamicHibernateService.findList("dynamicFindMovieListWithSQL", makeArguments(conditionType, condition));
+		return dynamicHibernateService.findList("dynamicFindMovieListWithSQL",
+				makeArguments(conditionType, condition));
 	}
 
-	public List<Object[]> findMovieListWithoutReturn(int conditionType, String condition) {
-		return dynamicHibernateService.findList("dynamicFindMovieListWithoutReturn", makeArguments(conditionType, condition));
+	public List<Object[]> findMovieListWithoutReturn(int conditionType,
+			String condition) {
+		return dynamicHibernateService.findList(
+				"dynamicFindMovieListWithoutReturn", makeArguments(
+						conditionType, condition));
 	}
 
-	public List<Object[]> findMovieListWithScalar(int conditionType, String condition) {
+	public List<Object[]> findMovieListWithScalar(int conditionType,
+			String condition) {
 		Object[] args = new Object[3];
 		if (conditionType == 0) {
 			args[0] = "director=%" + condition + "%";
@@ -73,7 +81,8 @@ public class MovieDaoHibernateImpl extends HibernateDaoSupport implements MovieD
 		}
 		args[2] = "sortDirection=ASC";
 
-		return dynamicHibernateService.findList("dynamicFindMovieListWithScalar", args);
+		return dynamicHibernateService.findList(
+				"dynamicFindMovieListWithScalar", args);
 	}
 
 	public List<Object[]> findMovieListByCountry(String countryCode) {
@@ -82,17 +91,14 @@ public class MovieDaoHibernateImpl extends HibernateDaoSupport implements MovieD
 		args[1] = "sortColumn=movie.director";
 		args[2] = "sortDirection=ASC";
 
-		return dynamicHibernateService.findList("dynamicFindMovieListByCountry", args);
+		return dynamicHibernateService.findList(
+				"dynamicFindMovieListByCountry", args);
 	}
 
 	@SuppressWarnings("unchecked")
 	public List<Movie> findMovieListAll() {
-		List<Object> tempResult = super.getHibernateTemplate().find("FROM Movie movie ORDER BY movie.title");
-		List<Movie> finalResult = new ArrayList();
-		for (Object entity : tempResult) {
-			finalResult.add((Movie) entity);
-		}
-		return finalResult;
+		return super.getHibernateTemplate().find(
+				"FROM Movie movie ORDER BY movie.title");
 	}
 
 	public void removeMovie(Movie movie) {
@@ -109,7 +115,8 @@ public class MovieDaoHibernateImpl extends HibernateDaoSupport implements MovieD
 		hqlBuf.append("SET movie.director = ? ");
 		hqlBuf.append("WHERE movie.movieId = ? ");
 
-		super.getHibernateTemplate().bulkUpdate(hqlBuf.toString(), new Object[] { movie.getDirector(), movie.getMovieId() });
+		super.getHibernateTemplate().bulkUpdate(hqlBuf.toString(),
+				new Object[] { movie.getDirector(), movie.getMovieId() });
 	}
 
 	public void createCategory(Category category) {

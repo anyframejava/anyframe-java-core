@@ -15,15 +15,22 @@
 						위의 introduction에서와 같이 플러그인을 설치한 후, 추가적인 기본사항을 설정하고 확인하기 위해서 다음의 과정이 필요하다.
 				</para>
 				<section id="fileupload_intro_setting_coreservlet">
-						<title>Spring anyframe:annotation-driven 설정</title>
+						<title>Spring mvc: annotation-driven 설정</title>
 						<para>
 								: 내부적으로 form 전송을 동적으로 비동기 호출한다. 이 때, 연속적으로 호출되어야 하는  form 전송 및 ajax 호출이 수행되지 않는 문제가 있다.
 								따라서, core-servlet.xml 파일에서 다음과 같은 설정으로 수정해주어야 한다.
 								(파일 경로 :  /anyframe-fileupload-pi/src/main/resources/spring/core-servlet.xml )
 								<programlisting language="xml"><![CDATA[
-<anyframe:annotation-driven synchronizeOnSession="false" />]]>
+<!-- 주석처리 부분 -->
+<!--
+<anyframe:annotation-driven	synchronizeOnSession="true" >	
+</anyframe:annotation-driven>
+-->
+
+<!-- 추가 작성 부분 -->
+<mvc:annotation-driven />]]>
 								</programlisting>
-								이와같이 anyframe annotation 설정부분을 synchronizeOnSession 값을 false로 바꾸어주면 form 전송 및 ajax 호출이 정상적으로 수행될 것이다.
+								이와같이 anyframe annotation 설정부분을 주석처리하고, mvc annotation 설정부분을 추가하면 연속적인 form 전송 및 ajax 호출이 정상적으로 수행될 것이다.
 						</para>
 				</section>
 
@@ -64,9 +71,7 @@ disk.path=C:/Temp]]>
 												따라서, 다음의 경로에 선언되어 있는 multipartResolver를 지워줘야만 정상적으로 파일첨부 기능을 사용할 수 있다.
 										</para>
 										<para>
-												: src/main/resources/spring/jquery-servlet.xml 
-												or 
-												  src/main/resources/spring/xp-query-servlet.xml
+												: src/main/resources/spring/jquery-servlet.xml
 										</para>
 										<para>
 												삭제 혹은 주석처리해야할 부분의 코드는 아래와 같다.

@@ -25,16 +25,17 @@ import javax.sql.DataSource;
 
 import org.anyframe.scheduling.JobInfo;
 import org.anyframe.util.DateUtil;
+import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.jdbc.core.RowMapper;
 import org.springframework.jdbc.core.support.JdbcDaoSupport;
 
 /**
- * This is a DAO class to use database for handled quartz job data. It can
- * override query statement with setter methods.
+ * This is a DAO class to use database for handled quartz job data.
+ * It can override query statement with setter methods.
  * 
  * @author Sujeong Lee
  */
-public class JobDBManager extends JdbcDaoSupport { 
+public class JobDBManager extends JdbcDaoSupport {
 
 	private static final String JOB_INFO_INSERT_QUERY = "INSERT INTO SCHEDULING_JOB      "
 			+ "VALUES(?, ?, ?, ?, ?, ?, ?, ?, ?)";
@@ -55,8 +56,8 @@ public class JobDBManager extends JdbcDaoSupport {
 			+ "schedule, schedule_type, start_date, end_date, description     "
 			+ "FROM SCHEDULING_JOB      ";
 
-	private String datePattern = DateUtil.TIMESTAMP_PATTERN;
-
+	private static String FULL_DATE_PATTERN = "yyyy-MM-dd HH:mm:ss.SSS";
+	
 	private String sqlJobInsert;
 	private String sqlJobUpdate;
 	private String sqlJobRemove;
@@ -75,27 +76,11 @@ public class JobDBManager extends JdbcDaoSupport {
 	 * Set the jdbcDaoDataSource to use dataSource with JdbcDaoSupport.
 	 * 
 	 * @param jdbcDaoDataSource
+	 * @throws Exception
 	 */
-	public void setJdbcDaoDataSource(DataSource jdbcDaoDataSource) {
+	public void setJdbcDaoDataSource(DataSource jdbcDaoDataSource)
+			throws Exception {
 		super.setDataSource(jdbcDaoDataSource);
-	}
-
-	/**
-	 * Set the datePattern used in inserting JobInfo data to its database.
-	 * 
-	 * @param pattern
-	 */
-	public void setDatePattern(String datePattern) {
-		this.datePattern = datePattern;
-	}
-
-	/**
-	 * Get datePattern currently used in its database.
-	 * 
-	 * @return
-	 */
-	public String getDatePattern() {
-		return this.datePattern;
 	}
 
 	/**
@@ -200,50 +185,53 @@ public class JobDBManager extends JdbcDaoSupport {
 	 * @param jobList
 	 *            an array of job info
 	 */
-	public void reflectChanges(List<JobInfo> jobList) {
-		List<JobInfo> dbJobList = getList();
+	public void reflectChanges(ArrayList<JobInfo> jobList) {
+		ArrayList<JobInfo> dbJobList = (ArrayList<JobInfo>) getList();
 
-		List<JobInfo> insertList = new ArrayList<JobInfo>();
-		List<JobInfo> updateList = new ArrayList<JobInfo>();
-		List<JobInfo> removeList = dbJobList;
+		ArrayList<JobInfo> insertList = new ArrayList<JobInfo>();
+		ArrayList<JobInfo> updateList = new ArrayList<JobInfo>();
+		ArrayList<JobInfo> removeList = dbJobList;
 
-		if (jobList != null && jobList.size() > 0) {
-			for (JobInfo memJobInfo : jobList) {
-				boolean isInMemoryExist = false;
+		Iterator<JobInfo> dbItr = dbJobList.iterator();
+		Iterator<JobInfo> memoryItr = jobList.iterator();
 
-				if (dbJobList != null && dbJobList.size() > 0) {
-					for (JobInfo dbJobInfo : dbJobList) {
-						if (isSameJob(dbJobInfo, memJobInfo)) {
-							// update
-							updateList.add(memJobInfo);
-							removeList.remove(dbJobInfo);
-							isInMemoryExist = true;
-							break;
-						}
-					}
-				}
-				if (!isInMemoryExist) {
-					insertList.add(memJobInfo);
-					removeList.remove(memJobInfo);
+		while (memoryItr.hasNext()) {
+			boolean isInMemoryExist = false;
+			JobInfo memJobInfo = (JobInfo) memoryItr.next();
+
+			while (dbItr.hasNext()) {
+				JobInfo dbJobInfo = (JobInfo) dbItr.next();
+				if (isSameJob(dbJobInfo, memJobInfo)) {
+					// update
+					updateList.add(memJobInfo);
+					removeList.remove(dbJobInfo);
+					isInMemoryExist = true;
+					break;
 				}
 			}
+			if (!isInMemoryExist) {
+				insertList.add(memJobInfo);
+				removeList.remove(memJobInfo);
+			}
+
 		}
 
 		Iterator<JobInfo> insertItr = insertList.iterator();
 		while (insertItr.hasNext()) {
-			JobInfo info = insertItr.next();
+			JobInfo info = (JobInfo) insertItr.next();
 			insert(info);
 		}
 		Iterator<JobInfo> updateItr = updateList.iterator();
 		while (updateItr.hasNext()) {
-			JobInfo info = updateItr.next();
+			JobInfo info = (JobInfo) updateItr.next();
 			update(info);
 		}
 		Iterator<JobInfo> removeItr = removeList.iterator();
 		while (removeItr.hasNext()) {
-			JobInfo info = removeItr.next();
+			JobInfo info = (JobInfo) removeItr.next();
 			remove(info);
 		}
+
 	}
 
 	/**
@@ -253,21 +241,13 @@ public class JobDBManager extends JdbcDaoSupport {
 	 *            data of job info to insert
 	 */
 	public void insert(JobInfo jobInfo) {
-		this.getJdbcTemplate()
-				.update(getSqlJobInsert(),
-						new Object[] {
-								jobInfo.getJobName(),
-								jobInfo.getJobGroup(),
-								jobInfo.getJobTarget(),
-								jobInfo.getJobTargetMethod(),
-								jobInfo.getJobSchedule(),
-								jobInfo.getFlagScheduleType(),
-								DateUtil.dateToString(jobInfo.getStartDate(),
-										datePattern),
-								jobInfo.getEndDate() != null ? DateUtil
-										.dateToString(jobInfo.getEndDate(),
-												datePattern) : null,
-								jobInfo.getDescription() });
+		this.getJdbcTemplate().update(
+				getSqlJobInsert(),
+				new Object[] { jobInfo.getJobName(), jobInfo.getJobGroup(),
+						jobInfo.getJobTarget(), jobInfo.getJobTargetMethod(),
+						jobInfo.getJobSchedule(),
+						jobInfo.getFlagScheduleType(), jobInfo.getStartDate(),
+						jobInfo.getEndDate(), jobInfo.getDescription() });
 	}
 
 	/**
@@ -279,16 +259,13 @@ public class JobDBManager extends JdbcDaoSupport {
 	public void update(JobInfo jobInfo) {
 		this.getJdbcTemplate()
 				.update(getSqlJobUpdate(),
-						new Object[] {
-								jobInfo.getJobSchedule(),
-								jobInfo.getFlagScheduleType(),
-								DateUtil.dateToString(jobInfo.getStartDate(),
-										datePattern),
-								jobInfo.getEndDate() != null ? DateUtil
-										.dateToString(jobInfo.getEndDate(),
-												datePattern) : null,
-								jobInfo.getDescription(), jobInfo.getJobName(),
-								jobInfo.getJobGroup() });
+						new Object[] { jobInfo.getJobSchedule(),
+					jobInfo.getFlagScheduleType(),
+					jobInfo.getStartDate(),
+					jobInfo.getEndDate(),
+					jobInfo.getDescription(),
+					jobInfo.getJobName(),
+					jobInfo.getJobGroup() });
 	}
 
 	/**
@@ -298,8 +275,10 @@ public class JobDBManager extends JdbcDaoSupport {
 	 *            data of job info to remove
 	 */
 	public void remove(JobInfo jobInfo) {
-		this.getJdbcTemplate().update(getSqlJobRemove(),
-				new Object[] { jobInfo.getJobName(), jobInfo.getJobGroup() });
+		this.getJdbcTemplate().update(
+				getSqlJobRemove(),
+				new Object[] { jobInfo.getJobName(),
+					jobInfo.getJobGroup() });
 	}
 
 	/**
@@ -310,39 +289,46 @@ public class JobDBManager extends JdbcDaoSupport {
 	public List<JobInfo> getList() {
 		List<JobInfo> result = new ArrayList<JobInfo>();
 
-		result = this.getJdbcTemplate().query(getSqlJobGetList(),
-				new Object[] {}, new RowMapper<JobInfo>() {
-					public JobInfo mapRow(ResultSet rs, int rowNum)
-							throws SQLException {
-						JobInfo jobInfo = new JobInfo();
-						try {
-							jobInfo.setJobName(rs.getString("job_name"));
-							jobInfo.setJobGroup(rs.getString("group_name"));
-							jobInfo.setJobTarget(rs.getString("target_class"));
-							jobInfo.setJobTargetMethod(rs
-									.getString("target_method"));
-							jobInfo.setJobSchedule(rs.getString("schedule"));
-							jobInfo.setFlagScheduleType(rs
-									.getString("schedule_type"));
-
-							jobInfo.setStartDate(DateUtil.stringToDate(
-									rs.getString("start_date"),
-									datePattern));
-							if (rs.getString("end_date") != null) {
-								jobInfo.setEndDate(DateUtil.stringToDate(
-										rs.getString("end_date"),
-										datePattern));
+		try {
+			result = this.getJdbcTemplate().query(getSqlJobGetList(),
+					new Object[] {}, new RowMapper<JobInfo>() {
+						public JobInfo mapRow(ResultSet rs, int rowNum)
+								throws SQLException {
+							JobInfo jobInfo = new JobInfo();
+							try {
+								jobInfo.setJobName(rs
+										.getString("job_name"));
+								jobInfo.setJobGroup(rs
+										.getString("group_name"));
+								jobInfo.setJobTarget(rs
+										.getString("target_class"));
+								jobInfo.setJobTargetMethod(rs
+										.getString("target_method"));
+								jobInfo.setJobSchedule(rs
+										.getString("schedule"));
+								jobInfo.setFlagScheduleType(rs
+										.getString("schedule_type"));
+								jobInfo.setStartDate(DateUtil
+										.string2Date(rs
+												.getString("start_date"), FULL_DATE_PATTERN));
+								if(rs.getString("end_date") != null){
+									jobInfo.setEndDate(DateUtil
+											.string2Date(rs
+													.getString("end_date"), FULL_DATE_PATTERN));
+								}
+								jobInfo.setDescription(rs
+										.getString("description"));
+							} catch (Exception e) {
+								logger.error(
+										"Fail to parsing date with DateUtil.class",
+										e);
 							}
-
-							jobInfo.setDescription(rs.getString("description"));
-						} catch (SQLException ex) {
-							logger.error(
-									"Fail to parsing date with DateUtil.class",
-									ex);
+							return jobInfo;
 						}
-						return jobInfo;
-					}
-				});
+					});
+		} catch (EmptyResultDataAccessException e) {
+			// empty result
+		}
 
 		return result;
 	}
@@ -355,4 +341,5 @@ public class JobDBManager extends JdbcDaoSupport {
 			return false;
 		}
 	}
+
 }

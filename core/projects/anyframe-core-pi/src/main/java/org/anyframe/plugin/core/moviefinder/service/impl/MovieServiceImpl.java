@@ -15,9 +15,11 @@
  */
 package org.anyframe.plugin.core.moviefinder.service.impl;
 
-import org.anyframe.plugin.core.domain.Movie;
+import javax.inject.Inject;
+import javax.inject.Named;
+
 import org.anyframe.plugin.core.moviefinder.service.MovieService;
-import org.springframework.beans.factory.annotation.Autowired;
+import org.anyframe.plugin.core.domain.Movie;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
@@ -26,17 +28,15 @@ import org.springframework.transaction.annotation.Transactional;
  * This MovieServiceImpl class is an Implementation class to provide movie crud
  * functionality.
  * 
- * @author Joonbo Jang
  * @author Sooyeon Park
  */
 @Service("coreMovieService")
 @Transactional(rollbackFor = { Exception.class }, propagation = Propagation.REQUIRED)
 public class MovieServiceImpl implements MovieService {
 
-//	@Inject
-//	@Named("coreMovieDao")
-	@Autowired
-	private GenericDao<Movie> movieDao;
+	@Inject
+	@Named("coreMovieDao")
+	private MovieDao movieDao;
 
 	public void create(Movie movie) throws Exception {
 		movieDao.create(movie);
@@ -53,5 +53,4 @@ public class MovieServiceImpl implements MovieService {
 	public Movie get(String movieId) throws Exception {
 		return movieDao.get(movieId);
 	}
-
 }

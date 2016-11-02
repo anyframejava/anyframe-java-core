@@ -3,7 +3,7 @@
 
 	<div class="location">
 			<a href="<c:url value='/anyframe.jsp'/>">Home</a> &gt; 
-			<a href="<c:url value='/fileuploadJFileUpload.do?method=view'/>">FileUpload 1.2.1-SNAPSHOT</a>
+			<a href="<c:url value='/fileuploadJFileUpload.do?method=view'/>">FileUpload 1.1.1</a>
 	</div>
 </div>
  <hr />

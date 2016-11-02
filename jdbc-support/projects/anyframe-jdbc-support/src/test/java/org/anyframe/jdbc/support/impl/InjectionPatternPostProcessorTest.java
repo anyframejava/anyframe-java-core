@@ -31,25 +31,32 @@ public class InjectionPatternPostProcessorTest {
 	public void testInjectionPatternPostProcessor() {
 		StringBuffer testSql = new StringBuffer();
 		testSql.append("SELECT LOGON_ID, NAME, PASSWORD FROM TB_USER \n");
-		testSql.append("WHERE LOGON_ID = 'admin' AND PASSWORD = '1' or '1' = '1' -- \n");
+		testSql
+				.append("WHERE LOGON_ID = 'admin' AND PASSWORD = '1' or '1' = '1' -- \n");
 
 		injectionPatternPostProcessor.warningPattern(testSql.toString());
 
-		String changedSql = injectionPatternPostProcessor.replacePattern(testSql.toString());
-		assertTrue(!changedSql.contains("--") && !changedSql.contains("'1'='1'"));
-		assertEquals("SELECT LOGON_ID, NAME, PASSWORD FROM TB_USER \nWHERE LOGON_ID = 'admin' AND PASSWORD = '1'  - \n", changedSql);
+		String changedSql = injectionPatternPostProcessor
+				.replacePattern(testSql.toString());
+		assertTrue(!changedSql.contains("--")
+				&& !changedSql.contains("'1'='1'"));
+		assertEquals(
+				"SELECT LOGON_ID, NAME, PASSWORD FROM TB_USER \nWHERE LOGON_ID = 'admin' AND PASSWORD = '1'  - \n",
+				changedSql);
 	}
 
 	@Test(expected = BadSqlGrammarException.class)
 	public void testInjectionPatternPostProcessorWithJdbc() {
 		// initialize data
-		JdbcTestUtils.executeSqlScript(new JdbcTemplate(dataSource), new ClassPathResource("testdata.sql"), true);
+		JdbcTestUtils.executeSqlScript(new JdbcTemplate(dataSource),
+				new ClassPathResource("testdata.sql"), true);
 
 		JdbcTemplate jdbcTemplate = new JdbcTemplate(dataSource);
 
 		StringBuffer testSql = new StringBuffer();
 		testSql.append("SELECT LOGON_ID, NAME, PASSWORD FROM TB_USER \n");
-		testSql.append("WHERE LOGON_ID = 'admin' AND PASSWORD = '1' or '1' = '1' -- \n");
+		testSql
+				.append("WHERE LOGON_ID = 'admin' AND PASSWORD = '1' or '1' = '1' -- \n");
 
 		jdbcTemplate.queryForMap(testSql.toString());
 		fail("Changed sql by replacePatterns should be SQL Syntax Error");

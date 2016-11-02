@@ -42,29 +42,7 @@
 	          		</listitem>
 	        	</itemizedlist>
 			</para>
-      	</section>
-      	<section id="Samples">
-      		<title>예제 테스트를 위한 설정</title>
-      		<para>플러그인 설치 후 예제 코드를 실행하기 위해서는 다음 설정이 추가로 필요하다(context-routingdatasource.xml).
-      			<programlisting language="xml"><![CDATA[<bean id="parentDataSource" class="org.apache.commons.dbcp.BasicDataSource" abstract="true">
-  		<property name="driverClassName" value="#{contextProperties.driver}" />
-  		<property name="username" value="#{contextProperties.username}" />
-  		<property name="password" value="#{contextProperties.password}"/>
-  	</bean>
-  	
-  	<bean id="ABCCinema" parent="parentDataSource">
-  		<property name="url" value="#{contextProperties.url}" />
-  	</bean>
-  	
-  	<bean id="GoodMovieCinema" parent="parentDataSource">
-  		<property name="url" value="]]><emphasis role="bold">jdbc:hsqldb:hsql://localhost:9002/sampledb2nd</emphasis><![CDATA[" />
-  	</bean>
-  	
-  	<bean id="MovieHouseCinema" parent="parentDataSource">
-  		<property name="url" value="]]><emphasis role="bold">jdbc:hsqldb:hsql://localhost:9003/sampledb3rd</emphasis><![CDATA[" />
-  	</bean>]]></programlisting>
-      		</para>
-      		<para>위의 설정에서 보듯이 GoodMovieCinema와 MovieHouseCinema를 위한 ABCCinema와 동일한 DB Schema를 가지고 있는 DB를 설정해주어야 한다.</para>
-      		<para>그렇지 않으면 DB연결이 되지 않아 "영화 목록을 조회 할 수 없습니다."라는 메시지를 보게 될 것이다.</para>
+
+
       	</section>
 </chapter>

@@ -1,15 +1,17 @@
 package org.anyframe.scheduling;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.*;
 
+import java.sql.Connection;
+import java.sql.SQLException;
+import java.sql.Statement;
 import java.util.List;
 
 import javax.inject.Inject;
 import javax.inject.Named;
 import javax.sql.DataSource;
 
-import org.anyframe.util.DateUtil;
+import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.quartz.JobKey;
@@ -27,17 +29,15 @@ public class SchedulingServiceDatabaseTest {
 	@Named("schedulingService")
 	SchedulingService schedulingService;
 
-	private static final String DATE_PATTERN = "yyyy-MM-dd HH:mm";
-
 	/**
 	 * [Flow #-1] Positive Case : try to create job to schedule in memory.
 	 * Running that job for a while, and get a job info.
 	 * 
-	 * @throws InterruptedException
+	 * @throws Exception
 	 *             fail to test
 	 */
 	@Test
-	public void testManageJobInfo() throws InterruptedException {
+	public void testManageJobInfo() throws Exception {
 		JobInfo info = createJobInfo();
 
 		// 1. create job with schedulingService
@@ -56,9 +56,12 @@ public class SchedulingServiceDatabaseTest {
 	/**
 	 * [Flow #-2] Positive Case : try to get list of result. In this case,
 	 * returned a list of all results.
+	 * 
+	 * @throws Exception
+	 *             fail to test
 	 */
 	@Test
-	public void testManageJobResultInfo() {
+	public void testManageJobResultInfo() throws Exception {
 		JobResultInfo info = createJobResultInfo();
 
 		List<JobResultInfo> resultList = schedulingService.getResultList(info);
@@ -73,8 +76,6 @@ public class SchedulingServiceDatabaseTest {
 		info.setJobTarget("org.anyframe.scheduling.job.OccurExceptionJob");
 		info.setJobSchedule("*/1 * * * * ?");
 		info.setFlagScheduleType("cron");
-		info.setStartDate(DateUtil.stringToDate(DateUtil.getCurrentDate(DATE_PATTERN),DATE_PATTERN));
-
 		return info;
 	}
 

@@ -1,6 +1,6 @@
 <%@ page language="java" errorPage="/sample/common/error.jsp" pageEncoding="UTF-8" contentType="text/html;charset=utf-8" %>
 <%@ include file="/sample/common/top.jsp"%>
-		<div class="location"><a href="<c:url value='/anyframe.jsp'/>">Home</a> &gt; <a href="<c:url value='/scheduling.do?method=list'/>">Scheduling 1.5.2-SNAPSHOT</a></div>
+		<div class="location"><a href="<c:url value='/anyframe.jsp'/>">Home</a> &gt; <a href="<c:url value='/scheduling.do?method=list'/>">Scheduling 1.0.4</a></div>
     </div>
     <hr />
 <script type="text/javascript" src="<c:url value='/sample/javascript/CommonScript.js'/>"></script>    
@@ -60,7 +60,7 @@
             <div class="list_paging">
             </div>
             <div class="list_underbtn_right">
-            	<c:if test="${empty schedules}">
+				<c:if test="${empty schedules}">
 	            	<a href="javascript:fncInsertInitData();">
 				    <span class="button default">
 				        <span></span>
@@ -73,7 +73,7 @@
                     <span class="add">&nbsp;</span>
                     <span class="none_a txt_num3"><spring:message code="scheduling.button.add" /></span>
                 </span>
-                </a>    
+                </a>                
             </div>
         </div>
         </form:form>

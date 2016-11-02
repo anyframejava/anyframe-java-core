@@ -16,7 +16,7 @@
 /**
  * Provides classes to manage inforamtion about the results of job.
  * 
- * @since 1.0.4
+ * @since 1.0.4-SNAPSHOT
  */
 package org.anyframe.scheduling.impl.result;
 

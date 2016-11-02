@@ -1,24 +1,24 @@
 <%@ page language="java" errorPage="/sample/common/error.jsp" pageEncoding="UTF-8" contentType="text/html;charset=utf-8" %>
 <%@ include file="/sample/common/top.jsp"%>
-		<div class="location"><a href="<c:url value='/anyframe.jsp'/>">Home</a> &gt; <a href="<c:url value='/asyncSupportMovieFinderDeferredResult.do?method=list'/>">Async Support 1.1.1-SNAPSHOT</a></div>
+		<div class="location"><a href="<c:url value='/anyframe.jsp'/>">Home</a> &gt; <a href="<c:url value='/asyncSupportMovieFinderCallable.do?method=list'/>">Async Support 1.0.1-SNAPSHOT</a></div>
     </div>
     <hr />
 <script type="text/javascript" src="<c:url value='/sample/javascript/InputCalendar.js'/>"></script>
-<script type="text/javascript" src="<c:url value='/sample/javascript/CommonScript.js'/>"></script>   
+<script type="text/javascript" src="<c:url value='/sample/javascript/CommonScript.js'/>"></script>
 <script type="text/javascript">
 	function fncCreateMovie() {
-	    document.movieForm.action="<c:url value='/asyncSupportMovieDeferredResult.do?method=create'/>";
+	    document.movieForm.action="<c:url value='/asyncSupportMovieCallable.do?method=create'/>";
 	    document.movieForm.submit();
 	}
 	
 	function fncUpdateMovie() {
-	    document.movieForm.action="<c:url value='/asyncSupportMovieDeferredResult.do?method=update'/>";
+	    document.movieForm.action="<c:url value='/asyncSupportMovieCallable.do?method=update'/>";
 	    document.movieForm.submit();
 	}
 	
 	function fncRemoveMovie(){	
 		if(confirmDelete('movie')) {
-		    document.movieForm.action="<c:url value='/asyncSupportMovieDeferredResult.do?method=remove'/>";
+		    document.movieForm.action="<c:url value='/asyncSupportMovieCallable.do?method=remove'/>";
 		    document.movieForm.submit();
 		}	    
 	}	
@@ -97,7 +97,7 @@
             </form:form>
         </div>
         <div class="btncontainer_center">
-		    <a href="<c:url value='/asyncSupportMovieFinderDeferredResult.do?method=list'/>">
+		    <a href="<c:url value='/asyncSupportMovieFinderCallable.do?method=list'/>">
 		    <span class="button default icon">
 		        <span class="list">&nbsp;</span>
 		        <span class="none_a txt_num4"><spring:message code="movie.button.list" /></span>

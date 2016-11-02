@@ -17,28 +17,27 @@ package org.anyframe.plugin.core.moviefinder.service.impl;
 
 import java.util.List;
 
-import org.anyframe.plugin.core.domain.Genre;
+import javax.inject.Inject;
+import javax.inject.Named;
+
 import org.anyframe.plugin.core.moviefinder.service.GenreService;
-import org.springframework.beans.factory.annotation.Autowired;
+import org.anyframe.plugin.core.domain.Genre;
 import org.springframework.stereotype.Service;
 
 /**
  * This GenreServiceImpl class is an Implementation class to provide genre list
  * functionality.
  * 
- * @author Joonbo Jang
  * @author Sooyeon Park
  */
 @Service("coreGenreService")
 public class GenreServiceImpl implements GenreService {
 
-//	@Inject
-//	@Named("coreGenreDao")
-	@Autowired
-	private GenericDao<Genre> genreDao;
+	@Inject
+	@Named("coreGenreDao")
+	private GenreDao genreDao;
 
 	public List<Genre> getList() throws Exception {
 		return genreDao.getList();
 	}
-
 }

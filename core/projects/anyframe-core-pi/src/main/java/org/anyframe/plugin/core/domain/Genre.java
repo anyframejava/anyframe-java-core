@@ -29,6 +29,7 @@ public class Genre implements Serializable {
 	private static final long serialVersionUID = 1L;
 	private String genreId;
 	private String name;
+	private Set<Movie> movies = new HashSet<Movie>(0);
 
 	public Genre() {
 	}
@@ -52,6 +53,14 @@ public class Genre implements Serializable {
 
 	public void setName(String name) {
 		this.name = name;
+	}
+
+	public Set<Movie> getMovies() {
+		return this.movies;
+	}
+
+	public void setMovies(Set<Movie> movies) {
+		this.movies = movies;
 	}
 
 	@Override

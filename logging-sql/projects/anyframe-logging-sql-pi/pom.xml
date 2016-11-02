@@ -4,7 +4,7 @@
     <groupId>org.anyframe.plugin</groupId>
     <artifactId>anyframe-logging-sql-pi</artifactId>
     <packaging>war</packaging>
-    <version>1.1.1-SNAPSHOT</version>
+    <version>1.0.4</version>
     <name>logging-sql</name>
     <dependencies>
     	<!-- logging-sql plugin dependencies START-->
@@ -17,17 +17,12 @@
 		<dependency>
 			<groupId>org.anyframe</groupId>
 			<artifactId>anyframe-core</artifactId>
-			<version>1.6.1-SNAPSHOT</version>
+			<version>1.5.1</version>
 		</dependency>		
 		<dependency>
 			<groupId>org.hibernate</groupId>
 			<artifactId>hibernate-validator</artifactId>
-			<version>4.3.0.Final</version>
-		</dependency>
-		<dependency>
-			<groupId>org.jboss.logging</groupId>
-			<artifactId>jboss-logging</artifactId>
-			<version>3.1.0.CR2</version>
+			<version>4.1.0.Final</version>
 		</dependency>
 		<dependency>
 			<groupId>org.aspectj</groupId>
@@ -83,7 +78,7 @@
 		<dependency>
 			<groupId>joda-time</groupId>
 			<artifactId>joda-time</artifactId>
-			<version>2.3</version>
+			<version>1.6.2</version>
 		</dependency>
 		<dependency>
 			<groupId>javax.validation</groupId>
@@ -117,11 +112,11 @@
 			<artifactId>jaxb-api</artifactId>
 			<version>2.2</version>
 		</dependency>		
-        <dependency>
-            <groupId>jstl</groupId>
-            <artifactId>jstl</artifactId>
-            <version>1.1.2</version>
-        </dependency>
+		<dependency>
+			<groupId>jstl</groupId>
+			<artifactId>jstl</artifactId>
+			<version>1.1.2</version>
+		</dependency>
 		<dependency>
             <groupId>taglibs</groupId>
             <artifactId>standard</artifactId>
@@ -211,40 +206,41 @@
     </dependencies>
     <properties>
         <inspection.dir>/Users/aromy/.anyframe/inspection</inspection.dir>
-        <targetJdk>1.6</targetJdk>
+        <targetJdk>1.5</targetJdk>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-        <spring.version>4.0.0.RELEASE</spring.version>
+        <spring.version>3.2.2.RELEASE</spring.version>
     </properties>
     <build>
+	  <extensions>
+		<extension>
+			<groupId>org.apache.maven.wagon</groupId>
+			<artifactId>wagon-webdav</artifactId>
+			<version>1.0-beta-2</version>
+		</extension>
+ 	  </extensions>	    
         <plugins>
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-compiler-plugin</artifactId>
                 <version>2.0.2</version>
                 <configuration>
-                    <source>1.6</source>
-                    <target>1.6</target>
+                    <source>1.5</source>
+                    <target>1.5</target>
                     <fork>true</fork>
                     <meminitial>512m</meminitial>
                     <maxmem>1024m</maxmem>
                     <encoding>UTF-8</encoding>
-					<executable>${env.JAVA_HOME}/bin/javac</executable>
                 </configuration>
             </plugin>
             <plugin>
-                <groupId>org.eclipse.jetty</groupId>
-                <artifactId>jetty-maven-plugin</artifactId>
-                <version>8.1.14.v20131031</version>
-                <configuration>
-                 <webApp>
-                  <contextPath>/${project.artifactId}</contextPath>
-                 </webApp>
-                </configuration>
+                <groupId>org.mortbay.jetty</groupId>
+                <artifactId>maven-jetty-plugin</artifactId>
+                <version>6.1.26</version>
             </plugin>
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-war-plugin</artifactId>
-                <version>2.2</version>
+                <version>2.0</version>
             </plugin>
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
@@ -257,7 +253,7 @@
             <plugin>
                 <groupId>org.codehaus.mojo</groupId>
                 <artifactId>anyframe-maven-plugin</artifactId>
-                <version>2.3.1-SNAPSHOT</version>
+                <version>2.2.2</version>
                 <dependencies>
                     <dependency>
                         <groupId>hsqldb</groupId>
@@ -274,24 +270,6 @@
                     <outputEncoding>UTF-8</outputEncoding>
                 </configuration>
             </plugin>
-            <plugin>
-				<groupId>org.apache.maven.plugins</groupId>
-				<artifactId>maven-deploy-plugin</artifactId>
-				<version>2.7</version>
-				<!-- Required by Maven 3+ to deploy artifacts in webdav -->
-				<dependencies>
-				  <dependency>
-					<groupId>org.apache.maven.wagon</groupId>
-					<artifactId>wagon-webdav-jackrabbit</artifactId>
-					<version>1.0-beta-7</version>
-				  </dependency>
-				  <dependency>
-					<groupId>commons-codec</groupId>
-					<artifactId>commons-codec</artifactId>
-					<version>1.6</version>
-				  </dependency>
-				</dependencies>
-			</plugin>
         </plugins>
     </build>
     <reporting>

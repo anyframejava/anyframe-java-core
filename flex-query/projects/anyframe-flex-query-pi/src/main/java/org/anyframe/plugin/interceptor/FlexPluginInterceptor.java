@@ -16,18 +16,13 @@
 package org.anyframe.plugin.interceptor;
 
 import java.io.File;
-//import java.io.FileInputStream;
-//import org.apache.commons.collections.ExtendedProperties;
+import java.io.FileInputStream;
 
-import javax.xml.parsers.DocumentBuilderFactory;
-import javax.xml.parsers.DocumentBuilder;
-
+import org.apache.commons.collections.ExtendedProperties;
 import org.apache.tools.ant.Project;
 import org.apache.tools.ant.Target;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.w3c.dom.Document;
-import org.w3c.dom.NodeList;
 
 import flex.ant.MxmlcTask;
 
@@ -41,23 +36,14 @@ public class FlexPluginInterceptor {
 		String contextRoot = "";
 		
 		try {
-			/* project.mf 파일 읽음 - 이전방식
 			File metadataFile = new File(new File(baseDir)
-			+System.getProperty("file.separator") + "META-INF",
-			"project.mf");
-	
+					+System.getProperty("file.separator") + "META-INF",
+					"project.mf");
+			
 			ExtendedProperties anyframeProperty = new ExtendedProperties();
 			anyframeProperty.load(new FileInputStream(metadataFile));
-			contextRoot  = (String)anyframeProperty.getProperty("project.name");
-			*/
 			
-			// org.anyframe.ide.common.config.xml 에서 읽음
-			DocumentBuilderFactory factory = DocumentBuilderFactory.newInstance();
-			DocumentBuilder builder = factory.newDocumentBuilder();			
-			Document doc = builder.parse(new File(new File(baseDir)
-			+System.getProperty("file.separator") + ".settings"+ System.getProperty("file.separator") +"anyframe","org.anyframe.ide.common.config.xml"));			
-			NodeList list = doc.getElementsByTagName("pjtname");			
-			contextRoot = list.item(0).getTextContent();
+			contextRoot  = (String)anyframeProperty.getProperty("project.name");
 			
 			String appRoot = baseDir + "/src/main/webapp";
 			String fdkHome = appRoot + "/WEB-INF/flex-query/fdk";

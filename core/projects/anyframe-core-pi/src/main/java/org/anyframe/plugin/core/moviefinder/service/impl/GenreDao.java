@@ -20,10 +20,7 @@ import java.util.List;
 import javax.inject.Inject;
 import javax.sql.DataSource;
 
-import org.anyframe.pagination.Page;
 import org.anyframe.plugin.core.domain.Genre;
-import org.anyframe.plugin.core.domain.Movie;
-import org.springframework.core.annotation.Order;
 import org.springframework.jdbc.core.BeanPropertyRowMapper;
 import org.springframework.jdbc.core.support.JdbcDaoSupport;
 import org.springframework.stereotype.Repository;
@@ -31,12 +28,10 @@ import org.springframework.stereotype.Repository;
 /**
  * This GenreDao class is a DAO class to provide genre list functionality.
  * 
- * @author Joonbo Jang
  * @author Sooyeon Park
  */
 @Repository("coreGenreDao")
-@Order(value = 1)
-public class GenreDao extends JdbcDaoSupport implements GenericDao<Genre> {
+public class GenreDao extends JdbcDaoSupport {
 
 	@Inject
 	public void setJdbcDaoDataSource(DataSource dataSource) {
@@ -45,41 +40,8 @@ public class GenreDao extends JdbcDaoSupport implements GenericDao<Genre> {
 
 	public List<Genre> getList() {
 		String sql = "SELECT GENRE_ID, NAME FROM GENRE ORDER BY NAME";
-		return super.getJdbcTemplate().query(sql, new BeanPropertyRowMapper<Genre>(Genre.class));
-	}
-
-	@Override
-	public Page getPagingList(Genre t, int pageIndex) {
-		// TODO Auto-generated method stub
-		return null;
-	}
-
-	@Override
-	public void create(Genre t) {
-		// TODO Auto-generated method stub
-
-	}
-
-	@Override
-	public void remove(String id) {
-		// TODO Auto-generated method stub
-
-	}
-
-	@Override
-	public void update(Genre t) {
-		// TODO Auto-generated method stub
-
-	}
-
-	@Override
-	public Movie get(String id) {
-		// TODO Auto-generated method stub
-		return null;
-	}
-
-	public String getDaoName() {
-		return getClass().getName();
+		return super.getJdbcTemplate().query(sql,
+				new BeanPropertyRowMapper<Genre>(Genre.class));
 	}
 
 }

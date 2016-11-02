@@ -153,12 +153,12 @@ public class TableIdGenServiceImpl extends AbstractDataSourceBlockIdGenService {
 		try {
 			// 2009.10.08 - without handling connection directly
 			Connection conn = DataSourceUtils.getConnection(getDataSource());
-			Statement stmt = null;
+
 			try {
 				// 2009.10.08 - without handling connection directly
 				// boolean autoCommit = conn.getAutoCommit();
 
-				stmt = conn.createStatement();
+				Statement stmt = conn.createStatement();
 
 				ResultSet rs = null;
 				try {
@@ -300,20 +300,17 @@ public class TableIdGenServiceImpl extends AbstractDataSourceBlockIdGenService {
 									"[IDGeneration Service] Although too many retries, unable to allocate a block of Ids.");
 					return null;
 				} finally {
-					if (rs != null) {
+					if (rs != null)
 						// 2009.10.08 - without handling connection directly
 						JdbcUtils.closeResultSet(rs);
-					}
-					if (stmt != null) {
+					if (stmt != null)
 						// 2009.10.08 - without handling connection directly
 						JdbcUtils.closeStatement(stmt);
-					}
 				}
 			} finally {
-				if (conn != null) {
+				if (conn != null)
 					// 2009.10.08 - without handling connection directly
 					DataSourceUtils.releaseConnection(conn, getDataSource());
-				}
 			}
 			// 2009.10.08 - without handling connection directly
 		} catch (Exception e) {

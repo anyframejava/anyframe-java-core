@@ -127,7 +127,7 @@ public class MovieController {
 
 		HttpHeaders responseHeaders = new HttpHeaders();
 		responseHeaders.set("Location",
-				"http://localhost:8080/anyframe-sample-springrest/springrest/movies/"
+				"http://localhost:8080/myapp/springrest/movies/"
 						+ movie.getMovieId());
 
 		// 201 CREATED, Location header
@@ -182,7 +182,7 @@ public class MovieController {
 
 		return "springrest/moviefinder/movie/form";
 	}
-	
+
 	/**
 	 * Rendering view using ContentNegotiatingViewResolver
 	 * 
