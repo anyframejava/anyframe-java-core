@@ -1,0 +1,1052 @@
+<chapter id="core_spring_transaction">
+	<title>Transaction Management</title>
+		<para>Transaction 관리에 대하여 일관성 있는 추상화된 방법을 제공하는 서비스로 다음과 같은 장점을 제공한다.</para>
+  		<itemizedlist>
+		    <listitem>
+				<para>JTA, JDBC와 같은 서로 다른 Transaction API에 대해 일관성 있는 프로그래밍 모델을 제공한다.</para>
+    		</listitem>
+ 		   	<listitem>
+				<para>프로그램적인 Transaction 관리에 대한 사용하기 쉬운 API를 제공한다.</para>
+    		</listitem>
+    		<listitem>
+      			<para>선언적인 Transaction 관리를 지원한다.</para>
+    		</listitem>
+    		<listitem>
+      			<para>Hibernate와 통합이 용이하다.</para>
+   			</listitem>
+  		</itemizedlist>
+		<para>다음 목록에 제시된 Transaction 서비스 중, 적합한 서비스를 선택하여 Transaction을 관리할 수  있다.</para>
+  		<para><emphasis role="bold">DataSource Transaction Service</emphasis></para>
+  		<para>DataSource Transaction 서비스는 DataSource를 사용하여 Local Transaction을 관리한다.</para>
+  		<itemizedlist>
+    		<listitem>
+      			<para><emphasis role="bold">Samples</emphasis></para>
+			    <para>다음은 DataSource Transaction 서비스의 속성 설정 및 테스트 코드에 대한 예제이다.</para>
+	    	<itemizedlist>
+        		<listitem>
+				<para><emphasis role="bold">Configuration</emphasis></para>
+		        <para>
+		        	다음은 DataSourceTransactionManager의 속성 정의 파일인 context-transaction-datasource.xml 의 일부이다.
+		        	여기에서는 dataSource property를 정의해 주어야 한다.
+		        	<programlisting language="xml"><![CDATA[<bean id="transactionManagerDataSource" 
+    class=]]><emphasis role="bold"><![CDATA["org.springframework.jdbc.datasource.DataSourceTransactionManager"]]></emphasis><![CDATA[>
+    <property name="dataSource"><ref bean="common_datasource"/></property>
+</bean>]]></programlisting>
+				</para>
+		        <para>
+		        	위에서 제시한 common_datasource Bean은 DataSource 서비스의 속성을 정의한 context-datasource-common.xml
+		        	 파일에 다음과 같이 정의되어 있다.
+          			<programlisting language="xml"><![CDATA[<bean id=]]><emphasis role="bold">"common_datasource"</emphasis>
+     <![CDATA[class="org.apache.commons.dbcp.BasicDataSource" destroy-method="close">
+    <property name="driverClassName" value="org.hsqldb.jdbcDriver"/>
+    <property name="url" value="jdbc:hsqldb:file:/./db/sampledb"/>
+    <property name="username" value="sa"/>
+</bean>]]></programlisting>
+				</para>
+        		</listitem>	
+        		<listitem>
+          		<para><emphasis role="bold">TestCase</emphasis></para>
+				<para>
+					다음은 앞서 정의한 속성 설정을 기반으로 하여 DataSource Transaction 서비스를 이용하여
+					Transaction 처리 기능을 테스트 하는 TransactionServiceTestDataSource.java 코드의 일부이다.
+					실제 테스트 메소드는 AbstractTransactionServiceTest.java 에 공통으로 작성되어 있다. 
+					DataSource Transaction 서비스를 테스트하기 위해서는 setUp() 메소드를 다음과 같이 작성해준다.
+          			<programlisting
+          			language="xml">public class TransactionServiceTestDataSource extends AbstractTransactionServiceTest {
+    중략...
+    protected void setup() {
+        super.setup();
+        this.service = (TransactionTestSampleService)context
+                .getBean(<emphasis role="bold">"transactionSampleDataSource"</emphasis>);
+        this.transactionManager = (PlatformTransactionManager)context
+                .getBean(<emphasis role="bold">"transactionManagerDataSource"</emphasis>);
+   }
+}</programlisting>
+				</para>
+        		</listitem>
+      		</itemizedlist>
+    		</listitem>
+		</itemizedlist>
+
+		<para><emphasis role="bold">Hibernate Transaction Service</emphasis></para>
+  		<para>
+  			Hibernate Transaction 서비스는 DataSource를 사용하여 Local Transaction과 Hibernate Session을 관리한다.
+  			HibernateTransactionManager는 SessionFactoryBean에 의존성을 가지고 있으므로 반드시 SessionFactoryBean
+  			설정과 함께 정의되어야 한다.
+  		</para>
+	 	<itemizedlist>
+    		<listitem>
+      			<para><emphasis role="bold">Samples</emphasis></para>
+			    <para>다음은 Hibernate Transaction 서비스의 속성 설정 및 테스트 코드에 대한 예제이다.</para>
+      		<itemizedlist>
+        		<listitem>
+          			<para><emphasis role="bold">Configuration</emphasis></para>
+			        <para>
+			        	다음은 HibernateTransactionManager의 속성 정의 파일인 context-transaction-hibernate.xml 의 일부이다.
+			        	 여기에서 sessionFactory property를 정의해 주는데, sessionFactory 설정은 sessionFactory
+          				Bean을 참조하고 있음을 알 수 있다. Hibernate의 sessionFactory Bean 설정 방법은 <ulink
+          				url="http://dev.anyframejava.org/docs/anyframe/plugin/optional/hibernate/1.6.1-SNAPSHOT/reference/htmlsingle/hibernate.html#hibernate_hibernate_springintegration_property">Hibernate</ulink> 서비스 매뉴얼 내용을
+          				참고한다.
+          				<programlisting language="xml"><![CDATA[<bean id="transactionManagerHibernate"
+    class=]]><emphasis role="bold">"org.springframework.orm.hibernate3.HibernateTransactionManager"</emphasis><![CDATA[>
+    <property name="sessionFactory" ref="sessionFactory" />
+</bean>]]></programlisting>
+					</para>
+
+					<para>
+						위에서 sessionFactory Bean은 Hibernate 서비스 속성을 정의한 context-hibernate.xml 파일에
+					 	다음과 같이 정의되어 있다.
+					 	<programlisting language="xml"><![CDATA[<bean id=]]><emphasis
+					 	role="bold">"sessionFactory"</emphasis> class=<emphasis
+              			role="bold">"org.springframework.orm.hibernate3.LocalSessionFactoryBean"</emphasis><![CDATA[>
+    <property name="dataSource" ref="common_datasource" />
+    <property name="mappingDirectoryLocations">
+        <value>classpath:/spring/services/hibernate</value>
+    </property>
+    <property name="hibernateProperties">
+        <props>
+            <prop key="hibernate.dialect">org.hibernate.dialect.HSQLDialect</prop>
+            <prop key="hibernate.show_sql">true</prop>
+            <prop key=
+            "hibernate.cache.provider_class">org.hibernate.cache.EhCacheProvider</prop> 
+            <prop key="hibernate.cache.use_second_level_cache">true</prop>         
+        </props>
+    </property>
+</bean>]]></programlisting>
+					</para>
+        		</listitem>
+        		<listitem>
+          			<para><emphasis role="bold">TestCase</emphasis></para>
+          			<para>
+          				다음은 앞서 정의한 속성 설정을 기반으로 하여 Hibernate Transaction 서비스를 이용하여 Transaction
+          				처리 기능을 테스트 하는 TransactionServiceTestHibernate.java 코드의 일부이다. 실제 테스트 메소드는
+          				AbstractTransactionServiceTest.java 에 공통으로 작성되어 있다. Hibernate Transaction 서비스를
+          				테스트하기 위해서는 setUp() 메소드를 다음과 같이 작성해준다.
+          				<programlisting
+          				language="xml">public class TransactionServiceTestHibernate extends AbstractTransactionServiceTest {    
+    중략...
+    protected void setup() {
+    super.setup();
+    this.service =
+        (TransactionTestSampleService)context.getBean("transactionSampleHibernate");
+    this.transactionManager =
+        (PlatformTransactionManager)context.getBean("transactionManagerHibernate");
+    }
+}</programlisting>
+					</para>
+        		</listitem>
+      		</itemizedlist>
+    		</listitem>
+  		</itemizedlist>
+
+  		<para><emphasis role="bold">JTA Transaction Service</emphasis></para>
+		<para>
+			JTA Transaction 서비스는 JTA를 사용하여 Global Transaction 관리 부분을 추상화하고, 해당 서비스로 인해 JTA,JNDI 등에
+			종속되지 않게 구현할 수 있도록 도와준다. 또한 이때 DataSource 서비스는 <link
+			linkend="core_spring_datasource_JNDIDataSource">
+			JNDI DataSource 서비스</link> 로 설정해줘야 한다.
+		</para>
+
+  		<itemizedlist>
+    		<listitem>
+      			<para><emphasis role="bold">Samples</emphasis></para>
+      			<para>다음은 JTA Transaction 서비스의 속성 설정 및 테스트 코드에 대한 예제이다.</para>
+      			<itemizedlist>
+        			<listitem>
+          			<para><emphasis role="bold">Configuration</emphasis></para>
+          			<para>
+          				다음은 JTATransactionManager의 속성 정의 파일인 context-transaction-weblogic.xml의 일부이다.
+          				여기에서 transactionManagerName property와 jnditemplate property를 정의해 주도록 한다.
+          				transactionManagerName property는 해당 WAS에 등록된 TransactionManager의 JNDI명을 정의해주어야 하는데,
+          				이것은 WAS 벤더 별로 다를 수 있음에 유의하도록 한다. 또한 jnditemplate property에는 해당하는 WAS의
+          				provider url과 initial context factory 클래스명을 정의해주면 된다. 
+          			</para>
+          			
+          			<programlisting language="xml"><![CDATA[<bean id="transactionManagerWebLogic"
+   class="org.springframework.transaction.jta.WebLogicJtaTransactionManager">
+   <property name="transactionManagerName" value="javax.transaction.TransactionManager" />
+   <property name="jndiTemplate" ref="jnditemplate"></property>
+</bean>
+
+<bean id="jnditemplate" class="org.springframework.jndi.JndiTemplate" >
+   <property name="environment">
+      <props>
+         <prop key=
+             "java.naming.factory.initial">weblogic.jndi.WLInitialContextFactory</prop>
+         <prop key="java.naming.provider.url">t3://server.ip:7001</prop>
+      </props>
+   </property>
+</bean>]]></programlisting>
+
+	      			<para>
+	      				또한, JEUS Server를 통해 Transaction을 관리하고자 하는 경우에는 다음과 같이 TransactionManager를
+	      			 	설정할 수 있다.
+	      			</para>
+	      			
+	      			<programlisting language="xml"><![CDATA[<bean id="transactionManagerJEUS"
+   class="org.springframework.transaction.jta.JtaTransactionManager">
+   <property name="transactionManagerName"	value="java:/TransactionManager" />
+   <property name="jndiTemplate" ref="jnditemplate"></property>
+</bean>
+
+<bean id="jnditemplate" class="org.springframework.jndi.JndiTemplate" >
+   <property name="environment">
+      <props>
+         <prop key="java.naming.factory.initial">jeus.jndi.JNSContextFactory</prop>
+         <prop key="java.naming.provider.url">server.ip:9736</prop>
+      </props>
+   </property>
+</bean>]]></programlisting>
+
+		  			<para>
+		  				JEUS Server는 추가 설정없이도 기본적으로 TransactionManager를 가지고 있으며 해당 TransactionManager의
+		  				JNDI명은 java:/TransactionManager 이다. JNDI 명이 java:/TransactionManager인 TransactionManager를
+		  				찾지 못해 javax.naming.NameNotFoundException이 발생하였다면 해당 프로젝트의 클래스패스 내에 j2ee-x.x.jar
+		  				 파일이 추가되어 있지 않은지 확인하여 삭제하도록 한다. 이는 JEUS Server를 위한 기본 라이브러리 내에 존재하는
+		  				Transaction 처리 관련 클래스와의 충돌로  인해 발생하는 문제이기 때문이다.
+		  			</para>
+
+          			<para>
+          				Spring 2.5 에서 새롭게 추가된 tx:jta-transaction-manager 설정 요소를 사용하면  JTA 기반 트랜잭션 플랫폼을
+          				자동 탐지하여 적절한 PlatformTransactionManager를 등록해 주게 된다. 이때 transaction manager bean id 는
+          				"transactionManager"로 자동 설정됨에 유의한다. 다음은 JTATransactionManager의 속성 정의 파일인
+         				context-transaction-jta.xml의 일부이다. 여기에서 JTATransactionManager는 JNDIDataSource와 함께 사용되므로
+         				아래에서 같은 설정 파일내에 표시하였으나, 다른 설정 파일(context-datasource.xml)에 설정하는 경우가 대부분이다. 
+         			</para>
+         			
+          			<programlisting language="xml"><![CDATA[<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" 
+    xmlns:jee="http://www.springframework.org/schema/jee"
+    ]]><emphasis role="bold">xmlns:tx="http://www.springframework.org/schema/tx"</emphasis><![CDATA[
+    xsi:schemaLocation="http://www.springframework.org/schema/beans 
+    http://www.springframework.org/schema/beans/spring-beans-4.0.xsd
+    http://www.springframework.org/schema/jee 
+    http://www.springframework.org/schema/jee/spring-jee-4.0.xsd
+    ]]><emphasis role="bold">http://www.springframework.org/schema/tx
+    http://www.springframework.org/schema/tx/spring-tx-4.0.xsd</emphasis><![CDATA[">
+
+    ]]><emphasis role="bold"><![CDATA[<tx:jta-transaction-manager/>]]></emphasis><![CDATA[
+    
+    <jee:jndi-lookup id="dataSource" jndi-name="AnyframeDS" resource-ref="true">
+        <jee:environment>
+          java.naming.factory.initial=weblogic.jndi.WLInitialContextFactory
+          java.naming.provider.url=t3://server.ip:7001
+        </jee:environment>
+    </jee:jndi-lookup>
+
+</beans>]]></programlisting>
+          
+          			<para>
+          				IBM WebSphere, BEA Weblogic, Oracle OC4J 에 대해서는 벤더 Specific한(버전 유의) 어뎁터 클래스를
+          				 사용할 수도 있다. 
+          			</para>
+      				</listitem>
+
+        			<listitem>
+          			<para><emphasis role="bold">TestCase</emphasis></para>
+
+          			<para>
+          				다음은 앞서 정의한 속성 설정을 기반으로 하여 JTA Transaction 서비스를 이용하여 Transaction
+          				처리 기능을  테스트 하는 TransactionServiceTestJTA.java 코드의 일부이다. 실제 테스트 메소드는 
+          				AbstractTransactionServiceTest.java에 공통으로 작성되어 있다. DataSource Transaction 서비스를
+          				테스트하기 위해서는 setUp() 메소드를 다음과 같이 작성해준다.
+          				<programlisting
+          				language="xml">public class TransactionServiceTestHibernate extends AbstractTransactionServiceTest {
+   중략...
+    protected void setup() {
+        super.setup();
+        this.service = (TransactionTestSampleService)context
+                .getBean(<emphasis role="bold">"transactionManager"</emphasis>);
+        this.transactionManager = (PlatformTransactionManager)context
+                                .getBean(<emphasis role="bold">"transactionManager"</emphasis>);
+   }
+}</programlisting>
+					</para>
+
+        			<para>
+        				예제 테스트 코드는 런타임시 WebLogic 라이브러리를 참조하므로 [WebLogic Home]/server/lib/ 폴더의
+        				weblogic-9.2.jar, xbean-9.2.jar 파일을 참조 라이브러리로 적절히 설정해야 한다. 위 작업이 완료된 후,
+        				WebLogic Server가 성공적으로 시작된 상태에서 예제 테스트 코드를 실행하도록 한다.
+        			</para>
+        </listitem>
+      </itemizedlist>
+    </listitem>
+  </itemizedlist>
+  
+	<section id="core_spring_transaction_declarative">
+    <title>Declarative Transaction Management</title>
+
+    	<para>
+    		본 문서에서는 코드에서 직접적으로 Transaction 처리하지 않고, 선언적으로 Transaction을 관리할 수 있는
+    		방법에 대해 살펴보기로 하자. Spring에서는 선언적인 Transaction 관리를 위해 다양한 방법을 제공한다.</para>
+    
+    	<section id="core_spring_transaction_declarative_annotation">
+      	<title>Annotation을 이용한 Transaction 관리</title>
+    		
+    		<section id="core_spring_transaction_declarative_annotation_configuration">
+       		<title>Configuration</title>
+
+        		<para>
+        			본 매뉴얼 >> Spring >> <link linkend="core_spring_transaction"> Transaction Management</link>을 참고하여 
+        			Transaction 서비스의 속성을 정의한다.
+        		 	다음은 Transaction 서비스의 속성을 정의한 XML(context-tx.xml) 파일로,
+        		 	Transaction을 관리하는 실질적 역할을 수행하는 TransactionManager가 정의되어 있다.
+        			<programlisting language="xml"><![CDATA[<bean id="transactionManager" class="org.springframework.jdbc.datasource.DataSourceTransactionManager">
+    <property name="dataSource">
+    <ref bean="dataSource"/></property>
+</bean>]]></programlisting>
+				</para>
+
+		        <para>
+		        	또한, @Transactional이 적용된 클래스들을 런타임시에 Proxy 클래스로 대체시켜, Transaction
+        			관리 대상인 메소드가 호출되면 Proxy에서 Transaction 서비스를 통해 Transaction이 시작된 후 해당
+        			메소드가 호출될 수 있게 하기 위해 Spring 속성 정의 XML 파일에 다음과 같이 추가해주어야 한다.
+        			<programlisting
+        			 language="xml"><![CDATA[<tx:annotation-driven transaction-manager="transactionManager"/>]]></programlisting>
+        	 	</para>
+     		</section>
+      
+			<section id="core_spring_transaction_declarative_annotation_managementtaget">
+			<title>Transaction 관리 대상 정의</title>
+
+        		<para>
+		        	Spring에서 제공하는 @Transactional Annotation을 이용하여 Transaction 관리 대상 클래스 또는 메소드를 식별한다.
+		        	다음은 MovieServiceImplWithAnnotation 의 일부로 전체 클래스에 대해 Transaction 관리 여부를 정의하고 있음을 알 수 있다.
+		        	또한 @Transactional Annotation은 메서드위에 나타낼 수도 있으며 상세 속성을 지시할 수도 있다.
+		        	단, 다수의 Transaction Manager가 정의되어 있고 Annotation 기반에서 Transaction을 관리하고자 하는 경우
+		        	특정 클래스에 대해 Transaction Manager를 지정하여 활용할 수 없음에 유의해야 한다. (Spring 2.5 이하)
+		        	<programlisting language="xml"><![CDATA[@Service("annotationMovieService")
+]]><emphasis role="bold">@Transactional</emphasis><![CDATA[
+public class MovieServiceImplWithAnnotation implements MovieService {
+
+    .. 중략
+    
+    ]]><emphasis role="bold">@Transactional(noRollbackFor = { MovieException.class }, propagation = Propagation.REQUIRED)</emphasis><![CDATA[
+    public void updateMovieList(Movie newMovie, Movie updateMovie)
+            throws MovieException {
+        String movieName = "";
+        try {
+            movieName = newMovie.getTitle();
+            create(newMovie);
+
+            movieName = updateMovie.getTitle();
+            int result = update(updateMovie);
+            if (result <= 0) {
+                throw new MovieException("fail to update with wrong movieid.");
+            }
+
+        } catch (Exception e) {
+            throw new MovieException("'" + movieName
+                    + "' - Failed to update movie data");
+        }
+    }
+}]]></programlisting>
+				</para>
+	
+		        <para>
+		        	위 샘플 코드에 정의된 바와 같이 Transaction 관리를 위해 @Transactional
+		        	Annotation에는 다음과 같은 상세 속성 정보를 부여할 수 있다.
+		        </para>
+		
+		        <informaltable>
+		        	<caption>@Transactional 속성 목록</caption>
+		        	<tgroup cols="2">
+		                <colspec colnum="1" colname="col1" colwidth="3*"/>
+		                <colspec colnum="2" colname="col2" colwidth="7*"/>
+		            <thead>
+		              <row>
+		                <entry align="center">속성</entry>
+		                <entry align="center">설명</entry>
+		              </row>
+		            </thead>
+		
+		            <tbody>
+		              <row>
+		                <entry>
+		                  <emphasis role="bold">isolation</emphasis>
+		                </entry>
+		
+		                <entry>
+		                	Transaction의 isolation Level 정의하는 요소. 별도로
+		                	 정의하지 않으면 DB의 Isolation Level을 따름.
+		                	Isolation.DEFAULT, Isolation.READ_COMMITTED, Isolation.READ_UNCOMMITTED,
+		                	Isolation.REPEATABLE_READ, Isolation.SERIALIZABLE 중 선택하여 정의할 수 있다.
+		                	(Default = Isolation.DEFAULT) 각 Isolation Level에 대한 자세한 내용은 본 페이지의
+		                	<link linkend="core_spring_transaction_declarative_reference"> [참고]
+		                	Propagation Behavior, Isolation Level</link> 를 참고하도록 한다.
+		                </entry>
+		              </row>
+		
+		              <row>
+		                <entry>
+		                  <emphasis role="bold">noRollbackFor</emphasis>
+		                </entry>
+		                <entry>정의된 Exception 목록에 대해서는 rollback을 수행하지 않음.</entry>
+		              </row>
+		
+		              <row>
+		                <entry>
+		                  <emphasis role="bold">noRollbackForClassname</emphasis>
+		                </entry>
+		                <entry>Class 객체가 아닌 문자열을 이용하여 rollback을 수행하지 않아야 할 Exception 목록 정의</entry>
+		              </row>
+		              <row>
+		                <entry>
+		                  <emphasis role="bold">propagation</emphasis>
+		                </entry>
+		                <entry>
+		                	Transaction의 propagation 유형을 정의하기 위한 요소. Propagation.MANDATORY,
+		                	Propagation.NESTED, Propagation.NEVER, Propagation.NOT_SUPPORTED,
+		                	Propagation.REQUIRED, Propagation.REQUIRES_NEW,	Propagation.SUPPORTS
+		                	중 선택하여 정의할 수 있다. (Default = Propagation.REQUIRED)
+		                	각 Propagation 유형에 대한 자세한 내용은 본 페이지의 <link
+		                	linkend="core_spring_transaction_declarative_reference">[참고]
+		                	Propagation Behavior, Isolation Level</link> 를 참고하도록 한다.
+		             	</entry>
+		              </row>
+		              <row>
+		                <entry>
+		                  <emphasis role="bold">readOnly</emphasis>
+		                </entry>
+		                <entry>해당 Transaction을 읽기 전용 모드로 처리 (Default = false)</entry>
+		              </row>
+		              <row>
+		                <entry>
+		                  <emphasis role="bold">rollbackFor</emphasis>
+		                </entry>
+		                <entry>정의된 Exception 목록에 대해서는 rollback 수행</entry>
+		              </row>
+		              <row>
+		                <entry>
+		                  <emphasis role="bold">rollbackForClassName</emphasis>
+		                </entry>
+		                <entry>Class 객체가 아닌 문자열을 이용하여 rollback을 수행해야 할 Exception 목록 정의</entry>
+		              </row>
+		              <row>
+		                <entry>
+		                  <emphasis role="bold">timeout</emphasis>
+		                </entry>
+		                <entry>지정한 시간 내에 해당 메소드 수행이 완료되지 않은 경우 rollback 수행. -1일 경우 no
+		                timeout (Default = -1)</entry>
+		              </row>
+		            </tbody>
+				</tgroup>
+		      </informaltable>
+		    </section>
+		    
+		    <section id="foundaiton_spring_transaction_declarative_annotation_testclass">
+	        <title>테스트 클래스 실행</title>
+	
+	        	<para>
+					MovieServiceImplWithAnnotation 클래스 레벨에 정의된 Annotation을 이용한 Transaction 관리 방법에 대한 테스트는
+					 기본 샘플 실행 코드인 org.anyframe.sample.transaction.Main.java 를 참조하도록 한다.
+				</para>
+	      	</section>
+	    </section>
+	    
+	    <section id="core_spring_transaction_declarative_xml">
+      	<title>XML 정의를 이용한 Transaction 관리</title>
+      	
+	      	<section id="core_spring_transaction_declarative_xml_configuration">
+	        <title>Configuration</title>
+
+				<para>
+      		  		본 매뉴얼 >> Spring >> <link linkend="core_spring_transaction">Transaction Management</link> 을 참고하여 
+      		  		Transaction 서비스의 속성을 정의한다.
+      		   		다음은 Transaction 서비스의 속성을 정의한 XML(context-tx.xml) 파일로,
+      		   		Transaction을 관리하는 실질적 역할을 수행하는 TransactionManager가 정의되어 있다.
+        			<programlisting language="xml"><![CDATA[<bean id="transactionManager" class="org.springframework.jdbc.datasource.DataSourceTransactionManager">
+    <property name="dataSource">
+    <ref bean="dataSource"/></property>
+</bean>]]></programlisting>
+				</para>
+      		</section>
+	
+			<section id="core_spring_transaction_declarative_xml_managementtaget">
+        	<title>Transaction 관리 대상 정의</title>
+
+				<para>
+		        	<![CDATA[다음 Spring 속성 정의 XML( context-movie-xml.xml )과 같이  <tx:advice>와 <aop:config>를
+		        	이용하여 Advice와 Pointcut을 정의한다. (단, <tx:advice>와 <aop:config>를 이용하기 위해서는 tx, aop
+		      		namespace에 대한 정의가 필요하다.) ]]>
+	        		<programlisting language="xml"><![CDATA[<beans xmlns="http://www.springframework.org/schema/beans"
+    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"]]>
+    <emphasis role="bold">xmlns:aop="http://www.springframework.org/schema/aop"</emphasis>
+    <emphasis role="bold">xmlns:tx="http://www.springframework.org/schema/tx"</emphasis>
+    xsi:schemaLocation="http://www.springframework.org/schema/beans 
+    http://www.springframework.org/schema/beans/spring-beans-4.0.xsd
+    <emphasis role="bold">http://www.springframework.org/schema/aop </emphasis>
+    <emphasis role="bold">http://www.springframework.org/schema/aop/spring-aop-4.0.xsd</emphasis>
+    <emphasis role="bold">http://www.springframework.org/schema/tx</emphasis> 
+    <emphasis role="bold">http://www.springframework.org/schema/tx/spring-tx-4.0.xsd"</emphasis><![CDATA[>
+
+<tx:advice id="txAdvice" ]]><emphasis role="bold">transaction-manager="transactionManager"</emphasis><![CDATA[>
+    <tx:attributes>
+        <!-- 메소드 실행중 MovieException이 발생한 경우 rollback을 수행하지 않음 -->
+        <]]><emphasis role="bold">tx:method name="*" no-rollback-for="org.anyframe.sample.exception.MovieException"/</emphasis><![CDATA[>
+    </tx:attributes>
+</tx:advice>
+
+<aop:config>
+    <!-- pointcut 정의 : UserServiceImplWithXML 클래스의 모든 메소드 호출시 -->
+    <aop:pointcut id="movieServiceOperations" 
+        expression=
+            "execution(* org.anyframe.sample.transaction.moviefinder.service.impl.MovieServiceImpl.*(..)))"/>
+    <!-- advice 정의 : 위 tx 태그를 이용하여 정의한 advice 참조 -->
+    <aop:advisor advice-ref=]]><emphasis role="bold">"txAdvice"</emphasis> pointcut-ref=<emphasis
+            role="bold">"movieServiceOperations"</emphasis><![CDATA[/>
+</aop:config>]]></programlisting>
+				</para>
+
+       			<para>
+	       			<![CDATA[위 샘플 XML에서와 같이 Transaction 관리를 위해 <tx:advice> 하위 태그인
+			        <tx:method>에는 다음과 같은 상세 속성 정보를 부여할 수 있다. ]]>
+			        <informaltable>
+			        	<caption><![CDATA[<tx:method>]]> 속성 목록</caption>
+			            <tgroup cols="2">
+			                <colspec colnum="1" colname="col1" colwidth="3*"/>
+			                <colspec colnum="2" colname="col2" colwidth="7*"/>
+			              <thead>
+			                <row>
+			                  <entry align="center">속성</entry>
+			
+			                  <entry align="center">설명</entry>
+			                </row>
+			              </thead>
+			
+			              <tbody>
+			                <row>
+			                  <entry>name</entry>
+			                  <entry>메소드명. 와일드카드 사용 가능</entry>
+			                </row>
+			                <row>
+			                  <entry>
+			                    <emphasis role="bold">isolation</emphasis>
+			                  </entry>
+			                  <entry>
+			                  	Transaction의 isolation Level을 정의하는 요소. 별도로 정의하지 않으면
+			                  	DB의 Isolation 레벨을 따름. DEFAULT, READ_COMMITTED, READ_UNCOMMITTED,
+			                  	REPEATABLE_READ, SERIALIZABLE 중 선택하여 정의할 수  있다. (Default = DEFAULT)
+			                  	 각 Isolation Level에 대한 자세한 내용은 본 페이지의
+			                  	<link url="core_spring_transaction_declarative_reference">[참고] Propagation
+			                  	Behavior, Isolation Level</link> 를 참고하도록 한다.
+			                  </entry>
+			                </row>
+			                <row>
+			                  <entry>
+			                    <emphasis role="bold">no-rollback-for</emphasis>
+			                  </entry>
+			                  <entry>정의된 Exception 목록에 대해서는 rollback을 수행하지 않음.</entry>
+			                </row>
+			                <row>
+			                  <entry>
+			                    <emphasis role="bold">propagation</emphasis>
+			                  </entry>
+			                  <entry>
+			                  	Transaction의 propagation 유형을 정의하기 위한 요소. MANDATORY,
+			                  	NESTED, NEVER, NOT_SUPPORTED, REQUIRED, REQUIRES_NEW,
+			                  	SUPPORTS 중 선택하여 정의할 수 있다. (Default = REQUIRED) 각 Propagation
+			                  	유형에 대한 자세한 내용은 본 페이지의 <link
+			                  	url="core_spring_transaction_declarative_reference">[참고] Propagation Behavior,
+			                  	Isolation Level</link> 를 참고하도록 한다.
+			                 </entry>
+			                </row>
+			                <row>
+			                  <entry>
+			                    <emphasis role="bold">read-only</emphasis>
+			                  </entry>
+			                  <entry>해당 Transaction을 읽기 전용 모드로 처리. (Default = false)</entry>
+			                </row>
+			                <row>
+			                  <entry>
+			                    <emphasis role="bold">rollback-for</emphasis>
+			                  </entry>
+			                  <entry>정의된 Exception 목록에 대해서는 rollback 수행</entry>
+			                </row>
+			                <row>
+			                  <entry>
+			                    <emphasis role="bold">timeout</emphasis>
+			                  </entry>
+			                  <entry>
+			                  	지정한 시간 내에 해당 메소드 수행이 완료되지 않은 경우 rollback 수행. -1일 경우
+			                  	no timeout. (Default = -1)
+			                  </entry>
+			                </row>
+			              </tbody>
+			            </tgroup>
+					</informaltable>
+	          	</para>
+			</section>
+		<section id="core_spring_transaction_declarative_xml_testclass">
+	        <title>테스트 클래스 실행</title>
+	
+		        <para>
+		        	XML 정의를 이용한 Transaction 관리 방법에 대한 테스트는
+		        	context-movie-xml.xml 의 updateMovieList 메소드에 정의된 트랜잭션 관리 속성
+		        	정보를 기반으로 한다. 테스트 클래스 구성은 본 페이지 내의 <link linkend="core_spring_transaction_declarative_testcase">테스트 케이스 상세</link>
+		        	를 참조하며, 보다 자세한 코드는 DeclarativeTransactionManagementWithXMLTest 를 참조하도록 한다.
+		        </para>
+	      	</section></section>
+		
+			 	
+     	<section id="core_spring_transaction_declarative_reference">
+      	<title>[참고] Propagation Behavior, Isolation Level</title>
+
+      		<para>
+      			다음에서는 Transaction 속성값으로 정의할 수 있는 Propagation Behavior와 Isolation
+      			Level에 보다 자세히 알아보기로 하자.
+      		</para>
+			
+			<section id="core_spring_transaction_declarative_reference_propagation">
+        	<title>Propagation Behavior</title>
+
+        		<para>
+        			Propagation Behavior(전달 행위)는 Transaction 전파 규칙을 정의하기 위해 사용된다.</para>
+		        <informaltable>
+		        	<caption>Propagation Behavior 목록</caption>
+		          <tgroup cols="2">
+		                <colspec colnum="1" colname="col1" colwidth="4*" />
+		                <colspec colnum="2" colname="col2" colwidth="6*" />
+		            <thead>
+		              <row>
+		                <entry align="center">Attribute Name</entry>
+		                <entry align="center">Description</entry>
+		              </row>
+		            </thead>
+		            <tbody>
+		              <row>
+		                <entry>PROPAGATION_MADATORY</entry>
+		                <entry>
+					                반드시 Transaction 내에서 메소드가 실행되야 하고,Transaction이 없는 경우에는
+					                예외를 발생시킨다.
+					    </entry>
+		              </row>
+		              <row>
+		                <entry>PROPAGATION_NESTED</entry>
+		                <entry>
+			                Transaction에 있는 경우, 기존 Transaction 내의 nested transaction 형태로 메소드를
+			      			 실행하고, nested transaction 자체적으로 commit, rollback이 가능하다.
+			      			Transaction이 없는 경우, PROPAGATION_REQUIRED 속성으로 행동한다.
+			      		</entry>
+		              </row>
+		              <row>
+		                <entry>PROPAGATION_NEVER</entry>
+		                <entry>
+		                	Transaction 컨텍스트 없이 실행되어야 하며 Transaction이 있으면 예외를
+		                	발생시킨다.
+		                </entry>
+		              </row>
+		              <row>
+		                <entry>PROPAGATION_NOT_SUPPORTED</entry>
+		                <entry>
+		                	Transaction 없이 메소드를 실행하며,기존의 Transaction이 있는 경우에는 이
+		                	Transaction을 호출된 메소드가 끝날 때까지 잠시 보류한다.
+		                </entry>
+		              </row>
+		              <row>
+		                <entry>PROPAGATION_REQUIRED</entry>
+		                <entry>
+		                	Transaction 컨텍스트 내에서 메소드가 실행되어야 한다. 기존 Transaction이 있는
+		                	경우에는 기존 Transaction 내에서 실행하고, 기존 Transaction이 없는 경우에는 새로운
+		                	Transaction을 생성한다.
+		                </entry>
+		              </row>
+		              <row>
+		                <entry>PROPAGATION_REQUIRED_NEW</entry>
+		                <entry>
+		                	호출되는 메소드는 자신 만의 Transaction을 가지고 실행하고, 기존의
+		                	Transaction들은 보류된다.
+		                </entry>
+		              </row>
+		              <row>
+		                <entry>PROPAGATION_SUPPORTS</entry>
+		                <entry>
+		                	새로운 Transaction을 필요로 하지는 않지만, 기존의 Transaction이 있는 경우에는
+		                	Transaction 내에서 메소드를 실행한다.
+		                </entry>
+		              </row>
+		            </tbody>
+		          </tgroup>
+		        </informaltable>
+      		</section>
+      		
+      		<section id="core_spring_transaction_declarative_reference_isoation">
+        	<title>Isolation Level</title>
+
+        		<para>
+        			Isolation Level(격리수준)은 Transaction에서 일관성이 없는 데이터를 허용하도록 하는 수준이며,
+        			여러 Transaction들이 다른 Transaction의 방해로부터 보호되는 정도를 나타낸다. 예를 들어, 한 사용자가
+        			어떠한 데이터를 수정하고 있는 경우 다른 사용자들이 그 데이터에 접근하는 것을 차단함으로써 완전한 데이터만을
+        			사용자들에게 제공하게 된다. 또한, 많은 사용자들의 수정 작업으로 인하여 통계 자료를 작성할 수 없는 사용자를
+        			위하여 읽기 작업을 수행할 수 있도록 Isolation Level을 변경할 수 있다.
+        			<informaltable>
+        				<caption>Isolation Level 목록</caption>
+						<tgroup cols="2">
+			            	<colspec colnum="1" colname="col1" colwidth="4*" />
+			                <colspec colnum="2" colname="col2" colwidth="6*" />
+			              <thead>
+			                <row>
+			                  <entry align="center">Attribute Name</entry>
+			                  <entry align="center">Description</entry>
+			                </row>
+			              </thead>
+			              <tbody>
+			                <row>
+			                  <entry>ISOLATION_DEFAULT</entry>
+			                  <entry>개별적인 PlatformTransactionManager를 위한 디폴트 격리 레벨</entry>
+			                </row>
+			                <row>
+			                  <entry>ISOLATION_READ_COMMITTED</entry>
+			                  <entry>
+								이 격리수준을 사용하는 메소드는 commit 되지 않은 데이터를 읽을 수 없다. 쓰기 락은 다른
+			                  	Transaction에 의해 이미 변경된 데이터는 얻을수 없다. 따라서 조회 중인 commit 되지 않은
+			                  	데이터는 불가능하다. 대개의 데이터베이스에서의 디폴트로 지원하는 격리 수준이다.
+			                  </entry>
+			                </row>
+			                <row>
+			                  <entry>ISOLATION_READ_UNCOMMITTED</entry>
+			                  <entry>
+			                  	가장 낮은 Transaction 수준이다. 이 격리수준을 사용하는 메소드는 commit 되지
+			                  	않은 데이터를 읽을 수 있다. 그러나 이 격리수준은 새로운 레코드가 추가되었는지 알수 없다.
+			                  </entry>
+			                </row>
+			                <row>
+			                  <entry>ISOLATION_REPEATABLE_READ</entry>
+			                  <entry>
+			                  	ISOLATION_READ_COMMITED 보다는 다소 조금 더 엄격한 격리 수준이다. 이 격리 수준은 다른
+			                  	Transaction이 새로운 데이터를 입력했다면, 새롭게 입력된 데이터를 조회할 수 있다는
+			                  	것을 의미한다.
+			                  </entry>
+			                </row>
+			                <row>
+			                  <entry>ISOLATION_SERIALIZABLE</entry>
+			                  <entry>
+			                  	가장 높은 격리수준이다. 모든 Transaction(조회를 포함하여)은 각 라인이 실행될 때마다
+			                  	기다려야 하기 때문에 매우 느리다. 이 격리수준을 사용하는 메소드는 데이터 상에 배타적 쓰기 락을
+			                  	얻음으로써 Transaction이 종료될 때까지 조회, 수정, 입력 데이터로부터 다른 Transaction의
+			                  	처리를 막는다. 가장 많은 비용이 들지만 신뢰할만한 격리 수준을 제공하는 것이 가능하다.
+			                  </entry>
+			                </row>
+			              </tbody>
+						</tgroup>
+					</informaltable>
+				</para>
+  	    	</section>
+		</section><section id="core_spring_transaction_declarative_testcase">
+    	<title>테스트 케이스 상세</title>
+
+      	<para>
+      		다음은 앞서 언급한<link linkend="core_spring_transaction_declarative_annotation"> Annotation을 이용한
+      		Transaction 관리</link> , <link linkend="core_spring_transaction_declarative_xml">XML 정의를
+      		이용한 Transaction 관리</link> 방법을 테스트해 보기 위해 동일한 로직으로 구성된 테스트 클래스의 일부이다. 각 테스트
+      		클래스의 testUpdateMovieWithNotExistMovie() 메소드에서는 MovieService의 updateMovieList
+      		메소드를 호출한다. updateMovieList 메소드의 첫번째 입력 인자는 신규 무비로 두번째 입력 인자는 수정할 무비로
+      		인식된다. 따라서 첫번째 입력 인자를 신규 무비 정보로 하고 두번째 입력 인자를 존재하지 않는 무비ID를 가진 무비 정보로
+      		전달하였을 경우 신규 무비를 성공적으로 등록하고 두번째 특정 무비 정보를 수정하려고 했을 때 해당 ID의무비가
+      		존재하지 않아 수정에 실패하게 된다. MovieService의 updateMovieList 메소드에 대해 정의된 Transaction
+      		속성에 의해 신규로 등록한 무비 정보가 rollback되지 않고 commit되어야 한다. <programlisting language="java">public void testUpdateMovieWithNotExistMovie() throws Exception {
+    Movie newMovie = getMovie();
+    String newMovieID = newMovie.getMovieId();
+    Movie updateMovie = movieService.get("MV-00003");
+    // 존재하지 않는 무비 ID로 변경
+    updateMovie.setMovieId("MV-11111");
+    updateMovie.setTitle("TEST Movie");
+    
+    try {
+        // 신규 무비 정보와 수정 대상 무비 정보를 인자로 셋팅
+        <emphasis role="bold">movieService.updateMovieList(newMovie, updateMovie);</emphasis>
+        // 해당 메소드 수행시 에러가 발생하지 않으면 fail
+        fail("fail to get user.");
+    } catch (Exception e) {
+        try {
+            // 신규 무비의 ID로 무비 정보 조회
+            <emphasis role="bold">Movie movie =  movieService.get(newMovieID);</emphasis>
+            assertNotNull("fail to commit.", movie);
+        } catch (Exception ie) {
+            // 무비 정보 수정에 실패하였으나 Annotation 정의에 따라 
+            // 신규 등록된 무비 정보는 commit되었어야 함.		
+            fail("fail to trnasaction management.");
+        }
+    }
+}</programlisting></para>
+	</section></section>
+     
+     	
+		
+		
+	
+	<section id="core_spring_transaction_programmatic">
+    <title>Programmatic Transaction Management</title>
+
+    	<para>
+    		본 문서에서는 세밀한 Transaction 제어가 필요한 경우 코드 내에서 직접적으로 Transaction을 처리하는
+    		방법에 대해 살펴보기로 하자. Spring에서는 프로그램적 Transaction 관리를 위해 다음과 같이 2가지 방법을
+    		제공한다.
+    	</para>
+    	
+    	<section id="core_spring_transaction_programmatic_template">
+      	<title>TransactionTemplate을 이용한 Transaction 관리</title>
+      	
+      		<section id="core_spring_transaction_programmatic_template_configuration">
+        	<title>Configuration</title>
+
+        		<para>
+        			TransactionTemplate을 이용하여 Transaction을 관리하기 위해서는 Transaction
+        			서비스와 TransactionTemplate에 대한 속성 정의가 필요하다. 다음은 TransactionTemplate에 대한
+        			속성 정의 파일(context-transaction.xml)의 일부로
+        			transactionManager property에 대한 정의를 필요로 한다. 
+					<programlisting language="xml"><![CDATA[<bean id="transactionTemplate" class="org.springframework.transaction.support.TransactionTemplate">
+    <property name="transactionManager" ref="transactionManager"/>
+</bean>]]></programlisting>
+				</para>
+
+		        <para>
+		        	다음은 Transaction 서비스의 속성을 정의한 XML(context-transaction.xml) 파일로,
+        			Transaction을 관리하는 실질적 역할을 수행하는 TransactionManager가 정의되어 있다.
+        			<programlisting language="xml"><![CDATA[<bean id="transactionManager" class="org.springframework.jdbc.datasource.DataSourceTransactionManager">
+    <property name="dataSource">
+    <ref bean="dataSource"/></property>
+</bean>]]></programlisting>
+				</para>
+
+       			<para>
+       				Transaction 서비스의 속성 정의시 본 매뉴얼 >> Spring >> <link linkend="core_spring_transaction">Transaction Management</link>
+     			   	 을 참고하도록 한다.
+     			</para>
+			</section>
+			
+			<section id="core_spring_transaction_programmatic_template_management">
+        	<title>Transaction 관리</title>
+
+        		<para>
+        			TransactionTemplate을 이용하여 프로그램적인 방법으로 Transaction을 관리하고자 하는 경우,
+        			Transaction Context에 의해 호출될 callback 메소드를 정의하고 이 메소드 내에 비즈니스 로직을
+        			구현해주면 된다. <programlisting language="xml"><emphasis
+        			role="bold">this.transactionTemplate.execute(new TransactionCallbackWithoutResult()</emphasis> {                
+  <emphasis role="bold">public void doInTransactionWithoutResult(TransactionStatus status)</emphasis> {                    
+  //... biz. logic ...       
+}});
+
+<emphasis role="bold">this.transactionTemplate.execute(new TransactionCallback()</emphasis> {                
+  <emphasis role="bold">public Object doInTransaction(TransactionStatus status)</emphasis> {                    
+  //... biz. logic ...       
+}});
+</programlisting>
+				</para>
+
+        		<para>
+        			callback 메소드 doInTransactionWithoutResult()는 전달할 값이 없는 경우에 정의
+        			가능하며, 전달해야 하는 값이 존재하는 경우에는 doInTransaction()으로 정의하도록 한다. 또한, callback
+        			메소드 내에서 입력 인자인 TransactionStatus 객체의 setRollbackOnly() 메소드를 호출함으로써 해당
+        			Transaction을 rollback할 수 있다.
+        		</para>
+      		</section>
+      		
+      		<section id="core_spring_transaction_programmatic_template_testclass">
+      		<title>테스트 클래스 실행</title>
+
+        	<para>
+        		테스트 클래스 MovieServiceWithProgrammaticTest 는 동일한 Movie 정보를 이용하여,
+        		MovieService의 createMovie를 두번 호출한다. 두번째 호출시에 이미 등록된 Movie 정보이므로
+        		MovieException이 발생하게 된다. 따라서 catch 블럭의 TransactionStatus를 이용하여 현재
+        		Transaction에서 발생한 변경 사항이 rollback 처리 된다. 다음은 테스트 클래스
+        		ProgrammaticTransactionManagementTest의 testAddMovieUsingTransactionTemplate
+        		메소드의 로직이다. <programlisting
+        		language="xml">public void testAddMovieUsingTransactionTemplate() throws Exception {
+    @Inject
+    private TransactionTemplate transactionTemplate;
+	
+    @Inject
+    private PlatformTransactionManager transactionService;
+
+    <emphasis role="bold">transactionTemplate.execute(new TransactionCallbackWithoutResult()</emphasis> {
+        <emphasis role="bold">public void doInTransactionWithoutResult(TransactionStatus status)</emphasis> {
+
+        try {
+            //1. Set Movie
+            Movie newMovie = getMovie();
+            newMovieID = newMovie.getMovieId();
+	
+            //2. 무비 등록 요청
+            movieService.create(newMovie);
+            
+            //3. 동일한 무비 등록 요청
+            movieService.create(newMovie);
+        } catch (Exception e) {
+            // 4. 현재 Transaction에서 발생한 변경 사항 rollback 처리
+            <emphasis role="bold">status.setRollbackOnly();</emphasis> 
+        }
+    }
+
+    try {
+        // 5. 무비 등록 처리 rollback 여부 확인
+        movieService.get(newMovieID);
+        
+        // 6. rollback이 성공적으로 이루어진 경우 해당 무비는 미등록 상태임
+        fail("fail to transaction management.");
+    } catch (Exception e) {
+        assertTrue("fail to rollback.", e instanceof Exception);
+    }
+}
+</programlisting>
+</para>
+      		</section>
+		</section>
+		
+		<section id="core_spring_transaction_programmatic_transactionmanager">
+     	<title>TransactionManager를 직접 이용한 Transaction 관리</title>
+
+      		<section id="core_spring_transaction_programmatic_transactionmanager_configuration">
+        	<title>Configuration</title>
+
+        		<para>
+	        		다음은 Transaction 서비스의 속성을 정의한 XML(context-transaction.xml) 파일로,
+	        		Transaction을 관리하는 실질적 역할을 수행하는 TransactionManager가 정의되어 있다.
+	        		<programlisting language="xml"><![CDATA[<bean id="transactionManager" class="org.springframework.jdbc.datasource.DataSourceTransactionManager">
+    <property name="dataSource">
+    <ref bean="dataSource"/></property>
+</bean>]]></programlisting>
+				</para>
+
+				<para>
+					Transaction 서비스의 속성 정의시 본 매뉴얼 >> Spring >> <link linkend="core_spring_transaction">Transaction Management</link>
+     			   	 을 참고하도록 한다.
+        		</para>
+      		</section>
+
+      		<section id="core_spring_transaction_programmatic_transactionmanager_management">
+			<title>Transaction 관리</title>
+
+		        <para>
+		        	Transaction 서비스를 직접 얻어온 후에 다음과 같이 try~catch 구문 내에서 Transaction
+	        		서비스를 이용하여, 적절히 begin, commit, rollback을 수행한다. 이 때, TransactionDefinition와
+	        		TransactionStatus 객체를 적절히 이용하면 된다.
+					<programlisting language="java">...
+DefaultTransactionDefinition def = new DefaultTransactionDefinition();
+def.setPropagationBehavior(TransactionDefinition.PROPAGATION_REQUIRED);
+TransactionStatus status = transactionService.getTransaction(def);
+    try {
+    // ... biz logic ...
+    <emphasis role="bold">transactionService.commit(status);</emphasis>
+    }
+    catch (Exception ex) {
+    <emphasis role="bold">transactionService.rollback(status);</emphasis>
+    throw ex;
+    }
+...</programlisting>
+				</para>
+      		</section>
+
+     		<section id="core_spring_transaction_programmatic_transactionmanager_testclass">
+     		<title>테스트 클래스 실행</title>
+
+			<para>
+				테스트 클래스 ProgrammaticTransactionManagementTest 는 동일한 Movie 정보를 이용하여,
+		        MovieService의 create를 두번 호출한다. 두번째 호출시에 이미 등록된 Movie 정보이므로
+		        MovieException이 발생하게 된다. 따라서 catch 블럭의 TransactionStatus를 이용하여 현재
+		        Transaction에서 발생한 변경 사항이 rollback 처리 된다. 다음은 테스트 클래스
+		        ProgrammaticTransactionManagementTest의 testAddMovieUsingTransactionManager 메소드의 로직이다. 
+		       	<programlisting language="java">public void testAddMovieUsingTransactionManager() throws Exception {
+    DefaultTransactionDefinition txDefinition = new DefaultTransactionDefinition();
+    // 해당 Transaction을 위한 Propagation Behavior, Isolation Level 등 정의
+    txDefinition
+                .setPropagationBehavior(TransactionDefinition.PROPAGATION_REQUIRED);
+    TransactionStatus status = transactionService
+                .getTransaction(txDefinition);
+    String newMovidId = "";
+
+    try {
+        //1. Set Movie
+        Movie newMovie = getMovie();
+        newMovidId = newMovie.getMovieId();
+
+        //2. 무비 등록 요청
+        movieService.create(newMovie);
+        
+        //3. 동일한 무비 등록 요청
+        movieService.create(newMovie);
+
+        //4. 정상적으로 처리된 경우 현재 Transaction에서 발생한 변경 사항 commit 처리
+        <emphasis role="bold">transactionService.commit(status);</emphasis>
+    } catch (Exception e) {
+        transactionService.rollback(status);
+    }
+
+    try {
+        // 6. 사용자 등록 처리 rollback 여부 확인
+        movieService.get(newMovidId);
+    	
+        // 7. rollback이 성공적으로 이루어진 경우 해당 사용자는 미등록 상태임
+       fail("fail to transaction management.");
+    } catch (Exception e) {
+        assertTrue("fail to rollback.", e instanceof Exception);
+    }
+}</programlisting>
+				</para>
+			</section>
+		</section>
+	</section>
+	
+	<section id="core_spring_transaction_resources">
+	<title>Resources</title>
+		<para>
+			<itemizedlist>
+				<listitem><para>다운로드</para>
+					<para>
+						다음에서 테스트 DB를 포함하고 있는 hsqldb.zip과 sample 코드를 포함하고 있는 anyframe-sample-transaction.zip 
+						파일을 다운받은 후, 압축을 해제한다. 그리고 hsqldb 폴더 내의 start.cmd (or start.sh) 파일을 실행시켜 테스트 
+						DB를 시작시켜 놓는다.
+						<itemizedlist>
+							<listitem>
+								<para>Maven 기반 실행</para>
+								<para>
+									Command 창에서 압축 해제 폴더로 이동한 후, mvn compile exec:java -Dexec.mainClass=...이라는 명령어를 실행시켜 결과를 확인한다.
+									각 Eclipse 프로젝트 내에 포함된 Main 클래스의 JavaDoc을 참고하도록 한다.
+								</para>
+							</listitem>
+							<listitem>
+								<para>Eclipse 기반 실행</para>
+								<para>
+									Eclipse에서 압축 해제 프로젝트를 import한 후, src/main/java 폴더의 anyframe/sample/transaction 
+									하위의 Main.java를 선택하고 마우스 오른쪽 버튼 클릭하여 컨텍스트 메뉴에서 Run As > Java Application을 클릭한다. 
+									그리고 실행 결과를 확인한다.
+								</para>
+							</listitem>									
+						</itemizedlist>
+					</para>
+					<informaltable>
+						<caption>Download List</caption>
+							<tgroup cols="2">
+								<colspec colnum="1" colname="col1" colwidth="4*"/>
+								<colspec colnum="2" colname="col2" colwidth="6*"/>
+								<thead>
+									<row>
+										<entry align="center">Name</entry>
+										<entry align="center">Download</entry>
+									</row>
+								</thead>
+								<tbody>
+									<row>
+										<entry align="center">hsqldb.zip</entry>
+										<entry align="center"><ulink url="http://dev.anyframejava.org/docs/anyframe/plugin/essential/core/1.6.1-SNAPSHOT/reference/sample/hsqldb.zip">Download</ulink></entry>
+									</row>										
+									<row>
+										<entry align="center">anyframe-sample-transaction.zip</entry>
+										<entry align="center"><ulink url="http://dev.anyframejava.org/docs/anyframe/plugin/essential/core/1.6.1-SNAPSHOT/reference/sample/anyframe-sample-transaction.zip">Download</ulink></entry>
+									</row>
+								</tbody>
+							</tgroup>
+						</informaltable> 
+				</listitem>
+				<listitem>
+					<para>참고자료</para>
+					<itemizedlist>
+						<listitem><para><ulink url="http://static.springsource.org/spring/docs/4.0.x/spring-framework-reference/html/transaction.html">Transaction management manual</ulink></para></listitem>
+						<listitem><para><ulink url="http://www.oracle.com/technology/tech/java/spring/jta_spring_article.pdf">Bringing Advanced Transaction Management Capabilities to Spring Applications</ulink></para></listitem>
+					</itemizedlist>
+				</listitem>
+			</itemizedlist>
+		</para>
+	</section>
+</chapter>

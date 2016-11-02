@@ -1,0 +1,31 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:mongo="http://www.springframework.org/schema/data/mongo"
+	xmlns:context="http://www.springframework.org/schema/context"
+	xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-4.0.xsd
+						http://www.springframework.org/schema/context http://www.springframework.org/schema/context/spring-context-4.0.xsd
+						http://www.springframework.org/schema/data/mongo http://www.springframework.org/schema/data/mongo/spring-mongo-1.0.xsd">
+						
+	<!-- TODO : <util:properties>와 다름. util:properties는 정상 동작하지 않는 것으로 보임 -->
+	<context:property-placeholder location="classpath:context.properties"/>
+	
+  	<!-- 
+  	Default Bean Name : mongo
+  	MongoDB Connection 정보를 포함. Connection Timeout 등의 다른 옵션들을 <mongo:options>를 통해 정의 가능
+  	-->
+  	<mongo:mongo host="${mongo.host}" port="${mongo.port}"/>
+
+	<!-- 
+	Default Bean Name : mongoDbFactory
+	DB Name 추가 정의
+	 -->
+  	<mongo:db-factory dbname="database" mongo-ref="mongo" />
+
+	<!-- 
+	JDBC Template과 유사한 정의???? 
+	 -->
+	<bean id="mongoTemplate" class="org.springframework.data.mongodb.core.MongoTemplate">
+		<constructor-arg name="mongoDbFactory" ref="mongoDbFactory" />
+	</bean>
+  	
+</beans>

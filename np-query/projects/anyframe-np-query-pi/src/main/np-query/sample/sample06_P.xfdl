@@ -1,0 +1,148 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<FDL version="1.5">
+  <TypeDefinition url="..\default_typedef.xml"/>
+  <Form id="sample007" classname="sample007" left="0" top="0" width="500" height="500" titletext="Popup" onload="form_onload">
+    <Layouts>
+      <Layout>
+        <Div id="div_search" taborder="0" text="Div00" left="5" top="5" height="76" right="5">
+          <Layouts>
+            <Layout>
+              <Edit id="Edit00" taborder="0" left="14" top="24" width="140" height="36"/>
+            </Layout>
+          </Layouts>
+        </Div>
+        <Grid id="Grid00" taborder="1" useinputpanel="false" left="5" top="98" right="5" bottom="44" binddataset="ds_list">
+          <Formats>
+            <Format id="default">
+              <Columns>
+                <Col size="80"/>
+                <Col size="80"/>
+                <Col size="80"/>
+                <Col size="80"/>
+              </Columns>
+              <Rows>
+                <Row band="head" size="24"/>
+                <Row band="body" size="24"/>
+              </Rows>
+              <Band id="head">
+                <Cell col="0" disptype="normal" text="Column0"/>
+                <Cell col="1" disptype="normal" text="Column1"/>
+                <Cell col="2" disptype="normal" text="Column2"/>
+                <Cell col="3" disptype="normal" text="Column3"/>
+              </Band>
+              <Band id="body">
+                <Cell col="0" disptype="normal" text="bind:Column0"/>
+                <Cell col="1" disptype="normal" text="bind:Column1"/>
+                <Cell col="2" disptype="normal" text="bind:Column2"/>
+                <Cell col="3" disptype="normal" text="bind:Column3"/>
+              </Band>
+            </Format>
+          </Formats>
+        </Grid>
+        <Button id="Button00" taborder="2" text="확인" left="191" width="120" height="26" onclick="Button00_onclick" bottom="5"/>
+      </Layout>
+    </Layouts>
+    <Objects>
+      <Dataset id="ds_list" firefirstcount="0" firenextcount="0" useclientlayout="false" updatecontrol="true" enableevent="true" loadkeymode="keep" loadfiltermode="keep" reversesubsum="false">
+        <ColumnInfo>
+          <Column id="Column0" type="STRING" size="256"/>
+          <Column id="Column1" type="STRING" size="256"/>
+          <Column id="Column2" type="STRING" size="256"/>
+          <Column id="Column3" type="STRING" size="256"/>
+        </ColumnInfo>
+        <Rows>
+          <Row>
+            <Col id="Column0">AAA</Col>
+            <Col id="Column1">AAA</Col>
+            <Col id="Column2">AAA</Col>
+            <Col id="Column3">AAA</Col>
+          </Row>
+          <Row>
+            <Col id="Column0">bbb</Col>
+            <Col id="Column1">bbb</Col>
+            <Col id="Column2">bbb</Col>
+            <Col id="Column3">bbb</Col>
+          </Row>
+          <Row>
+            <Col id="Column0">cccc</Col>
+            <Col id="Column1">cccc</Col>
+            <Col id="Column2">cccc</Col>
+            <Col id="Column3">cccc</Col>
+          </Row>
+        </Rows>
+      </Dataset>
+    </Objects>
+    <Script type="xscript5.0"><![CDATA[/**************************************************************************************************
+ * 01. 업무구분				: 
+ * 02. 화 면 명				: 
+ * 03. 화면설명				:  
+ * 04. 관련 화면 및 서비스	: 
+ * 05. 관련 테이블명			: 
+ * 06. 작 성 자				: 
+ * 07. 작 성 일				: 
+ * 08. 수정이력
+ **************************************************************************************************
+ *    수정일            이름        사유
+ **************************************************************************************************
+ *    
+ *************************************************************************************************/
+
+//-------------------------------------------------------------------------------------------------
+// 1. 공통함수 include
+//-------------------------------------------------------------------------------------------------
+include "lib::comForm.xjs";
+
+//-------------------------------------------------------------------------------------------------
+// Form 전역변수 선언
+//-------------------------------------------------------------------------------------------------
+
+
+//-------------------------------------------------------------------------------------------------
+// 2. Form 함수 정의
+//-------------------------------------------------------------------------------------------------
+this.form_onload = function(obj:Form, e:nexacro.LoadEventInfo)
+{
+	// Form Load 시 필수로 호출
+	this.gfn_formOnLoad(obj);
+	
+	var pString = this.parent.pString;
+	var pArray = this.parent.pArray;
+	var pDataset = this.parent.pDataset;
+	
+	trace("******Popup Parameter");
+	trace("string parameter => " + pString);
+	trace("array parameter => " + pArray);
+	trace("dataset parameter => " + pDataset.saveXML());
+}
+
+
+//화면종료 시 공통호출함수
+this.fn_close = function()
+{	
+	var oRtn = {};
+	oRtn.String = "AAAA";
+	oRtn.Array = ["array00", "array01"];
+	oRtn.Dataset = this.ds_list;
+	
+	//파라미터전달
+	this.gfn_closePopup(this, oRtn);	
+}
+
+//-------------------------------------------------------------------------------------------------
+// 3. Transaction 함수 정의
+//-------------------------------------------------------------------------------------------------
+
+//-------------------------------------------------------------------------------------------------
+// 4. User 함수 정의
+//-------------------------------------------------------------------------------------------------
+
+//-------------------------------------------------------------------------------------------------
+// 5. Event 함수 정의
+//------------------------------------------------------------------------------------------------
+this.Button00_onclick = function(obj:Button,  e:nexacro.ClickEventInfo)
+{
+	this.fn_close();
+}
+]]></Script>
+  </Form>
+</FDL>

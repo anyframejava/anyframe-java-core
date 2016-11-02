@@ -1,0 +1,239 @@
+<chapter id="struts_extensions_authandauthorization">
+	<title>Authentication and Authorization</title>
+
+  	<para>
+  		Authentication which checks whether the client who sent a request is registered before log-in
+        and Authorization which performs access control based on the related information between users and application
+        are to be considered whenever developing application.
+        To add Authentication and Authorization, there are a few things to be considered.
+  	</para>
+	<itemizedlist>
+    	<listitem>
+      		<para>How to manage user information (DB, LDAP, FILE, NT … )</para>
+    	</listitem>
+	    <listitem>
+    		<para>How to save user information (Session, Cookie… )</para>
+    	</listitem>
+	    <listitem>
+    		<para>How to authorize and what are the resources to deny access to.</para>
+    	</listitem>
+  	</itemizedlist>
+
+  	<para>
+  		It is most desirable to handle authentication through other system 
+        without correcting application code when developing Login Module
+        by abstracting Login Context through applying JAAS-based authentication, 
+        and the process must meet the requirements for Authentication process by project 
+       (e.g., applying external authentication solution).
+        Authentication and Authorization cannot be used in all applications 
+        because each application can have different a policy, so customizing is needed.
+        Here, let's take a look at Authentication and Authorization when developing
+        Struts of Anyframe.
+  	</para>
+
+	<section id="struts_extensions_authandauthorization_authentication">
+    	<title>Authentication</title>
+
+	    <para>
+	    	In this section, based on DB-based user information which is a commonly used for authentication,
+            we will have a look at an example of authentication.
+    	</para>
+	    <orderedlist>
+      		<listitem>
+        		<para>
+        			Develop service for Anyframe-based authentication.
+                    In this case, return javax.security.auth.Subject object which contains authenticated user information 
+                    in the service.
+        		</para>
+	      	</listitem>
+		    <listitem>
+        		<para>In the action code for performing login, call service based on user id and password to check validation.</para>
+      		</listitem>
+			<listitem>
+        		<para>Save the information of the group of the user belongs to (Role) 
+                      in the form of TypedPrincipal inside the Subject object containing authenticated user information.</para>
+      		</listitem>
+			<listitem>
+        		<para>Save Subject object as key value of 'subject' in Session</para>
+      		</listitem>
+		    <listitem>
+        		<para>After then, perform access control by using the Subject object saved in Session.</para>
+      		</listitem>
+    	</orderedlist>
+
+			<section id="struts_extensions_authandauthorization_authentication_samples">
+	      		<title>Samples</title>
+
+    			<para>
+    				The following is a part of DBAuthenticationServiceImpl.java which is a service 
+                    performing DB-based user authentication.
+      				<programlisting
+      				language="java">public class DBAuthenticationServiceImpl implements AuthenticationService {
+
+    // ...
+     
+    public Subject authenticate(org.anyframe.sample.struts.services.UserVO userVO)
+            throws Exception {
+
+        Subject subject = null;
+        ResultSet rsu = null;
+        PreparedStatement pstmt = null;
+        Connection conn = null;
+
+        String userId = userVO.getUserId();
+        String password = userVO.getPassword();
+
+        try {
+            conn = dataSource.getConnection();
+
+            pstmt = conn.prepareStatement(sqlQuery);
+
+            pstmt.setString(1, userId);
+            pstmt.setString(2, password);
+
+           <emphasis role="bold"><emphasis
+           role="bold"> // Search registered user information based on entered user information.</emphasis></emphasis>
+            rsu = pstmt.executeQuery();
+
+            if (rsu.next()) {
+
+                userId = rsu.getString(1);
+                String userName = rsu.getString(2);
+                rsu.getString(3);
+                String grade = rsu.getString(5);
+
+                Set principals = new HashSet();
+                Set credentials = new HashSet();
+
+                principals
+                    .add(new TypedPrincipal(userName, TypedPrincipal.USER));
+
+                StringTokenizer tokens = new StringTokenizer(grade, ",");
+                while (tokens.hasMoreTokens()) {
+                    principals.add(new TypedPrincipal(tokens.nextToken(),
+                            TypedPrincipal.GROUP));
+                }
+
+               <emphasis role="bold"> // Save user information in Subject object</emphasis>
+                subject = new Subject(false, principals, credentials,
+                        credentials);
+            } else {
+                throw new FailedLoginException();
+            }
+        }catch (Exception e) {
+            //  ...
+        } finally {
+            //  ...
+        }
+        return subject;
+    }
+}</programlisting>
+				</para>
+
+      			<para>
+      				The following is a part of context-authentication.xml,
+                    a configuration file of DBAuthenticationServiceImpl class implemented above.
+                    We can see that by using USER-ID and PASSWORD,
+                    SQL statement inquiring user information and group (Role) information is defined as property value.
+                    The relevant service will use this SQL statement.
+      				 <programlisting language="xml"><![CDATA[<bean id="authenticationService"
+    class="org.anyframe.sample.struts.services.impl.DBAuthenticationServiceImpl">
+    <property name="dataSource" ref="dataSource" />
+    <property name="sqlQuery"
+        value="SELECT u.USER_ID,u.USER_NAME,u.PASSWORD,u.ENABLED,a.AUTHORITY 
+        FROM USERS u, AUTHORITIES a 
+        WHERE u.USER_ID=? and u.PASSWORD=? and a.USER_ID = u.USER_ID" />
+</bean>]]>
+</programlisting>
+				</para>
+
+      			<para>
+      				The following is  LoginAction.java, which checks user validation using the above-defined service
+                    and saves valid user information in Session. 
+      				<programlisting
+      				language="xml">public ActionForward process(ActionMapping mapping, ActionForm form,
+        HttpServletRequest request, HttpServletResponse response) 
+        throws Exception {
+	
+    AuthenticationService authenticationService = 
+            (AuthenticationService) getService("authenticationService");
+
+    UserForm userForm = (UserForm) form;
+    UserVO userVO = new UserVO();
+    BeanUtils.copyProperties(userVO, userForm);
+
+    Subject subject = authenticationService.authenticate(userVO);
+
+    HttpSession session = request.getSession();
+
+    session.setAttribute("subject", subject);
+		
+    return (mapping.findForward("success"));
+}</programlisting>
+				</para>
+			</section>
+	</section>
+
+	<section id="struts_extensions_authandauthorization_authorization">
+	    <title>Authorization</title>
+
+   		<para>Access control is available by Action.</para>
+   		<section id="struts_extensions_authandauthorization_authorization_controlprocess">
+   			<title>Access Authorization Control Process</title>
+
+   			<para>
+  				Let's take a look at how access control is done in a specific URL
+                based on user information shown in the following figure.
+   			</para>
+
+		    <mediaobject>
+		    	<imageobject>
+		        	<imagedata align="center" fileref="../image/struts/extensions/user_table.jpg" />
+		        </imageobject>
+		    </mediaobject>
+
+   			<orderedlist>
+       			<listitem>
+       				<para>In Action mapping in Struts configuration file, set roles property value.</para>
+       			</listitem>
+		        <listitem>
+       				<para>
+       					In the processRoles method of DefaultRequestProcessor extended from Anyframe,
+                        decide whether or not to perform the Action after comparing Subject object value saved in Session
+                        and roles information.
+       				</para>
+
+		         	<mediaobject>
+		            	<imageobject>
+		              		<imagedata align="center" fileref="../image/struts/extensions/authorization.jpg" />
+		            	</imageobject>
+		          	</mediaobject>
+       			</listitem>
+   			</orderedlist>
+   		</section>
+
+		<section id="struts_extensions_authandauthorization_authorization_samples">
+   			<title>Samples</title>
+
+   			<para>
+   				The following is action mapping information of struts-config-authorization.xml
+                which defines user group (Role) given access to a specific URL.
+   			</para>
+
+		    <para>
+		    	<programlisting language="xml"><![CDATA[<action path="/authorization"
+    type="org.anyframe.struts.action.DefaultForwardAction"]]>
+    <emphasis role="bold">roles="admin"</emphasis><![CDATA[
+    scope="request"
+    parameter="/extensions/accessSuccess.jsp">
+</action>]]></programlisting>
+			</para>
+
+      		<para>
+      			In the example above, as a user with 'tester' USER_ID belongs to admin group,
+                authorization.do request can be performed.
+                Action with no roles property value means all users can access.
+      		</para>
+		</section>
+	</section>
+</chapter>

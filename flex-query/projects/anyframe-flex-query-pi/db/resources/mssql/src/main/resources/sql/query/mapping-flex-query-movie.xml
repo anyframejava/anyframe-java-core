@@ -1,0 +1,13 @@
+				<!--flex-query-findFlexQueryMovieList-START-->
+				SELECT movie.movie_id, movie.title, movie.director, genre.genre_id as genre_id, genre.name as genre_name, movie.actors, movie.release_date, movie.now_playing, movie.runtime, movie.ticket_price, movie.file_ref_id
+				FROM FLEX_MOVIE movie, FLEX_GENRE genre
+				WHERE movie.genre_id = genre.genre_id 
+				<!--Velocity-Support-dynamicFindFlexQueryMovieList-START-->
+				#if ($vo.title)
+					AND title like '%' + :vo.title + '%'	
+				#end
+				#if ($vo.nowPlaying)
+					and now_playing like :vo.nowPlaying		
+				#end
+				<!--Velocity-Support-dynamicFindFlexQueryMovieList-END-->
+				<!--flex-query-findFlexQueryMovieList-END-->

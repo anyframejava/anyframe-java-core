@@ -1,0 +1,345 @@
+<chapter id="hibernate_hibernate_springintegration">
+	<title>Spring Integration</title>
+
+    <para>
+    	Spring provides HibernateTemplate function to easily implement
+			DAO class based on Hibernate.
+			(※ From Spring 2.5 onwards, Hibernate version 3 is supported.)
+			In addition, to perform Dynamic HQL, Dynamic Native SQL query by using
+			Veloticy grammar,
+			Anyframe provides DynamicHibernateService.
+			When performing data access management using Hibernate, the main components of one business service are generally as the following.    	
+    </para>
+
+    <mediaobject>
+		<imageobject>
+        	<imagedata align="center" fileref="../image/hibernate/diagram.png" />
+      	</imageobject>
+    </mediaobject>
+
+    <para>
+    	To perform data access management through Hibernate based on Spring,
+			business service can be developed according to the following process.    	
+    </para>
+
+    <section id="hibernate_hibernate_springintegration_property">
+		<title>Hibernate configuration file</title>
+
+      	<para>
+      		To integrate Hibernate with Spring, SessionFactory configuration is needed.
+				In addition, to execute Dynamic HQL, Dynamic Native SQL,
+				DynamicHibernateService configuration provided by Anyframe is also needed.      		
+      	</para>
+
+		<section id="hibernate_hibernate_springintegration_springintegration_sessionfactory">
+        	<title>Session Factory property definition</title>
+
+        	<para>
+        		HibernateDaoSupport provided in Spring creates HibernateTemplate
+					to integrate with Hibernate internally, and this class needs SessionFactory.
+					To this end, classes inheriting HibernateDaoSupport need SessionFactory,
+					which can have the following properties information.
+					The following is a part of context-hibernate.xml file, configuration file of SessionFactory.        		
+                <programlisting language="xml"><![CDATA[<bean id="sessionFactory" class="]]><emphasis role="bold"><![CDATA[org.springframework.orm.hibernate3.LocalSessionFactoryBean]]></emphasis>">
+    <![CDATA[<]]><emphasis role="bold">!-- Defining dataSource to use in SessionFactory --</emphasis>>
+    <![CDATA[<property name="]]><emphasis role="bold">dataSource</emphasis><![CDATA[" ref="dataSource" />
+    <]]><emphasis role="bold">!-- Defining location of Mapping XML --</emphasis>>
+    <![CDATA[<property name="]]><emphasis role="bold">mappingLocations</emphasis>">
+        <![CDATA[<list>
+            <value>classpath:anyframe/sample/model/bidirection/Category.hbm.xml</value>
+            <value>classpath:anyframe/sample/model/bidirection/Country.hbm.xml</value>
+            <value>classpath:anyframe/sample/model/bidirectionMovie.hbm.xml</value>
+        </list>
+    </property>
+<]]><emphasis role="bold">!-- Hibernate Property configuration --</emphasis>>
+    <![CDATA[<property name="]]><emphasis role="bold">hibernateProperties</emphasis>">
+        <![CDATA[<props>
+            <prop key="hibernate.hbm2ddl.auto">create</prop>
+            <!-- Setting dialect by DBMS-->
+            <prop key="hibernate.dialect">org.hibernate.dialect.HSQLDialect</prop>
+            <!-- Whether or not to show sql statement using hibernate-->
+            <prop key="hibernate.show_sql">false</prop>
+            <prop key="hibernate.format_sql">true</prop>
+        </props>
+    </property>
+</bean>]]></programlisting>
+			</para>
+		</section>
+
+      	<section id="hibernate_hibernate_springintegration_property_dynamic">
+        	<title>DynamicHibernateService property definition
+					for executing Dynamic HQL, Dynamic Native SQL</title>
+
+        	<para>
+        		To create HQL by condition dynamically,
+					Anyframe provides DynamicHibernateService.
+					To use this function, define the properties of DynamicHibernateService class as the following,
+					and refer to DynamicHibernateService when defining a specific DAO class.	
+					The following is a part of context-hibernate.xml file which defines dynamicHibernateService bean.						
+                <programlisting language="xml"><![CDATA[<bean id="dynamicHibernateService"
+        class="]]><emphasis role="bold"><![CDATA[anyframe.core.hibernate.impl.DynamicHibernateService]]></emphasis>">
+    <![CDATA[<!-- Defining SessionFactory  -->]]>
+    <![CDATA[<property name="]]><emphasis role="bold">sessionFactory</emphasis><![CDATA[" ref="sessionFactory" />
+ <!-- Assigning the path of xml file which defines velocity grammar-applied dynamic HQL  -->
+    <property name="]]><emphasis role="bold">fileNames</emphasis>">
+        <![CDATA[<list>
+            <value>classpath:anyframe/core/hibernate/spring/dynamic-hibernate.xml</value>
+        </list>
+    </property>
+</bean>]]></programlisting>
+			</para>
+
+			<para>
+				When defined as above, dynamicHibernateService bean will have
+					sessionFactory bean as SessionFactory, and HQL or Native SQL
+					relevant to XMLs defined in fineNames will be searched.					
+			</para>
+		</section>
+	</section>
+
+    <section id="hibernate_hibernate_springintegration_mapping">
+		<title>Creating mapping XML file</title>
+
+      	<para>
+      		Create mapping information between the object and table to use in a specific business service in Mapping XML file.				
+				In addition, the location of Mapping XML file must be defined in
+				the above-mentioned SessionFactory configuration file as the following.				
+            <programlisting language="xml"><![CDATA[<bean id="sessionFactory"
+        class="]]><emphasis role="bold"><![CDATA[org.springframework.orm.hibernate3.LocalSessionFactoryBean]]></emphasis>">
+    <![CDATA[<property name="dataSource" ref="dataSource" />
+    <]]><emphasis role="bold">!-- Defining location of Mapping XML --</emphasis>>
+    <![CDATA[<property name="]]><emphasis role="bold"><![CDATA[mappingLocations]]></emphasis>">
+        <![CDATA[<list>
+            <]]><emphasis role="bold">value</emphasis><![CDATA[>]]><emphasis role="bold"><![CDATA[classpath:anyframe/sample/model/bidirection/Movie.hbm.xml]]></emphasis><![CDATA[<]]><emphasis role="bold"><![CDATA[/value]]></emphasis>>
+        <![CDATA[</list>
+    </property>
+</bean>]]></programlisting>
+		</para>
+
+      	<para>
+      		For how to develop Mapping File in detail, refer to <link linkend="hibernate_hibernate_mappingfile">Hibernate Mapping File</link>.      		
+      	</para>
+	</section>
+
+    <section id="hibernate_hibernate_springintegration_dao">
+		<title>Creating DAO class</title>
+
+      	<para>
+      		Spring provides HibernateDaoSupport class to integrate with Hibernate more
+				easily, and developers can inherit and implement HibernateDaoSupport class when creating DAO class.
+				By calling getHibernateTemplate() method, each DAO class can use
+				HibernateTemplate provided by HibernateDaoSupport class and can perform
+				input/modify/delete/search processes.
+				In addition, when using dynamicHibernateService for handling Dynamic
+				HQL, refer to dynamicHibernateService as mentioned above.
+      	</para>
+
+		<section id="hibernate_hibernate_springintegration_dao_property">
+        	<title>Creating DAO configuration file</title>
+
+        	<para>
+        		Create configuration file of DAO class.
+					Properties of MovieDAOHibernateImpl referring SessionFactory and
+					DynamicHibernateService can be defined as the following.
+                <programlisting language="xml"><![CDATA[<bean id="movieService" class="org.anyframe.sample.service.movie.impl.MovieServiceImpl">
+    <property name="movieDAO">
+        <bean class="org.anyframe.sample.service.movie.impl.MovieDAOHibernateImpl">
+           <!-- Defining SessionFactory to use Hibernate Template -->
+            <property name="]]><emphasis role="bold">sessionFactory</emphasis><![CDATA[" ref="sessionFactory"/>
+            <!-- Defining dynamicHibernateService to support Dynamic HQL query 
+            (]]><emphasis role="bold">Defining only when using dynamicHibernateService</emphasis>) -->
+            <![CDATA[<property name="]]><emphasis role="bold">dynamicHibernateService</emphasis><![CDATA[" ref="dynamicHibernateService"/>
+        </bean>
+    </property>
+</bean>]]> </programlisting>
+			</para>
+
+        	<para>
+        		For the code above, see context-sample.xml. 
+        	</para>
+		</section>
+
+      	<section id="hibernate_hibernate_springintegration_dao_class">
+        	<title>Developing DAO class</title>
+
+			<para>
+        		By inhering HibnernateDaoSupport provided in Spring, define DAO class.
+					In this case, CRUD is possible using HibernateTemplate through getHibernateTemplate() method.
+                <programlisting language="java"><![CDATA[public class MovieDAOHibernateImpl ]]><emphasis
+        role="bold">extends HibernateDaoSupport</emphasis><![CDATA[implements MovieDAO{
+
+    private DynamicHibernateService dynamicHibernateService;
+
+    //dynamicHibernateService Setter Injection]]>
+    <emphasis role="bold"><![CDATA[public void setDynamicHibernateService(
+            DynamicHibernateService dynamicHibernateService) {
+            this.dynamicHibernateService = dynamicHibernateService;
+        }]]></emphasis>
+
+    <![CDATA[public void createMovie(Movie movie) throws Exception {]]>
+        <emphasis role="bold"><![CDATA[this.getHibernateTemplate().save(movie);]]></emphasis>
+    }
+    <![CDATA[public Movie findMovie(String movieId) throws Exception {]]>
+        <emphasis role="bold"><![CDATA[return (Movie) this.getHibernateTemplate().get(Movie.class, movieId);]]></emphasis>
+    }
+
+    <![CDATA[public List findMovieList(int conditionType, String condition)
+                throws Exception {
+        Object[] args = new Object[3];
+        if (conditionType == 0) {
+            args[0] = "director=%" + condition + "%";
+            args[1] = "sortColumn=movie.director";
+        } else {
+            args[0] = "title=%" + condition + "%";
+            args[1] = "sortColumn=movie.title";
+        }
+        args[2] = "sortDirection=ASC";
+
+        return]]> <emphasis role="bold"><![CDATA[dynamicHibernateService.findList("findMovieListAll", args);]]></emphasis>
+    }
+
+    <![CDATA[public List findMovieListAll() throws Exception {]]>
+    <emphasis role="bold"><![CDATA[return this.getHibernateTemplate().find(
+            "FROM Movie movie ORDER BY movie.title");]]></emphasis>
+    }
+
+    <![CDATA[public void removeMovie(Movie movie) throws Exception {]]>
+        <emphasis role="bold"><![CDATA[this.getHibernateTemplate().delete(movie);]]></emphasis>
+    }
+
+    <![CDATA[public void updateMovie(Movie movie) throws Exception {]]>
+        <emphasis role="bold"><![CDATA[this.getHibernateTemplate().update(movie);]]></emphasis>
+    }
+
+    <![CDATA[public void updateMovieByBulk(Movie movie) throws Exception {
+        StringBuilder hqlBuf = new StringBuilder();
+        hqlBuf.append("UPDATE Movie movie ");
+        hqlBuf.append("SET movie.director = ? ");
+        hqlBuf.append("WHERE movie.movieId = ? ");
+
+        //In the case of CUD using HQL statement, 
+        //use getHibernateTemplate().bulkUpdate() method.]]>
+        <emphasis role="bold"><![CDATA[this.getHibernateTemplate().bulkUpdate(hqlBuf.toString(),
+                new Object[] { movie.getDirector(), movie.getMovieId() });]]></emphasis>
+    }
+
+    <![CDATA[public void createCategory(Category category) throws Exception {]]>
+        <emphasis role="bold"><![CDATA[this.getHibernateTemplate().save(category);]]></emphasis>
+    }
+
+    <![CDATA[public void createCountry(Country country) throws Exception {]]>
+        <emphasis role="bold"><![CDATA[this.getHibernateTemplate().save(country);]]></emphasis>
+    }
+}</programlisting>
+			</para>
+
+        	<para>
+        		For the code above, see  MovieDAOHibernateImpl.java.
+        	</para>
+
+        	<para>
+        		※ For more details on Dynamic Hibernate, refer to this manual>> Hibernate Plugin >> <link linkend="hibernate_dynamic_part">
+				Dynamic Hibernate</link>.
+        	</para>
+		</section>
+	</section>
+
+    <section id="hibernate_hibernate_springintegration_test">
+		<title>Developing Test Code</title>
+
+		<para>
+			If integration work of Spring with Hibernate is completed as above,
+				develop test code and check whether it is properly working.
+				The following is a part of HibernateSpringIntegration.java file, an example of test code.
+            <programlisting language="java"><![CDATA[public class HibernateSpringIntegration {
+    private MovieService movieService;
+
+        //Assign the location of business service configuration file for running test.      
+        protected String[]]]> <emphasis role="bold"><![CDATA[getConfigLocations()]]></emphasis> {
+        <![CDATA[return new String[] { "classpath:anyframe/core/hibernate/spring/context-*.xml" };
+    }
+
+    //MovieService Setter Injection
+    public void]]> <emphasis role="bold">s<![CDATA[etMovieService]]></emphasis><![CDATA[(MovieService movieService) {
+        this.movieService = movieService;
+    }
+
+/**
+ * [Flow #-1] By MovieService integrating Hibernate and Spring Framework, 
+ * Create/Read/Update/Delete single item movie information.
+ * 
+ * @throws Exception
+ *             throws exception which is from MovieService
+ */
+    public void movieService() throws Exception {
+        Movie movie = new Movie();
+        movie.setMovieId("MV-00001");
+        movie.setDirector("Jaeyong Gwak");
+        movie.setReleaseDate(DateUtil.string2Date("2001-07-27", "yyyy-MM-dd"));
+        movie.setTitle("My Sassy Girl");
+        //movie object registration ]]>
+        <emphasis role="bold"><![CDATA[movieService.createMovie(movie);]]></emphasis>
+
+        <![CDATA[Movie result = movieService.findMovie("MV-00001");
+
+        movie.setDirector("Update Jaeyong Gwak");]]>
+        //movie objct update
+        <emphasis role="bold"><![CDATA[movieService.updateMovie(movie);]]></emphasis>
+
+        //movie object search 
+        <emphasis role="bold"><![CDATA[result = movieService.findMovie("MV-00001");]]></emphasis>
+        <![CDATA[result.getDirector());]]>
+
+        // movie object delete
+        <emphasis role="bold"><![CDATA[movieService.removeMovie(movie);]]></emphasis>
+
+        //movie object search 
+        <emphasis role="bold"><![CDATA[result = movieService.findMovie("MV-00001");]]></emphasis>
+    }
+}</programlisting>
+		</para>
+
+      	<para>
+      		With the codes above, it is possible to check
+				whether the CRUD-related methods are properly working.
+      	</para>
+ 	</section>
+
+    <section id="hibernate_hibernate_springintegration_transaction">
+		<title>Declarative transaction management</title>
+
+      	<para>
+      		When using Hibernate, declarative transaction management using Spring AOP is possible.
+				For this, refer to this manual>> Foundation Plugin >> Spring >> 
+      		>> Transaction Management >> <ulink url="http://dev.anyframejava.org/docs.en/anyframe/plugin/essential/core/1.6.1-SNAPSHOT/reference/htmlsingle/core.html#core_spring_transaction_declarative">Declarative Transaction Management</ulink>.
+      		But, Spring provides org.springframework.orm.hibernate3.HibernateTransactionManager,
+				which is a TransactionManager for Hibernate, to help optimized
+				transaction management.
+				For an example of the configuration, the following is a part of context-transaction.xml.      		
+            <programlisting language="xml"><![CDATA[<bean id="transactionManager"
+        class="]]><emphasis role="bold"><![CDATA[org.springframework.orm.hibernate3.HibernateTransactionManager]]></emphasis>">
+    <![CDATA[<property name="]]><emphasis role="bold"><![CDATA[sessionFactory]]></emphasis><![CDATA[" ref="sessionFactory" />
+</bean>
+
+<tx:advice id="txAdvice" transaction-manager="transactionManager">
+    <tx:attributes>
+        <tx:method name="*" propagation="REQUIRES_NEW" rollback-for="Exception" />
+    </tx:attributes>
+</tx:advice>
+
+<aop:config proxy-target-class="true">
+    <aop:pointcut id="executionMethods"
+            expression="execution(* org.anyframe.sample..*Impl.*(..))" />
+    <aop:advisor advice-ref="txAdvice" pointcut-ref="executionMethods" />
+</aop:config>]]></programlisting>
+		</para>
+
+      	<para>
+      		Other definition ways are similar to when using Spring TransactionManager.
+				For details on Hibernate-based transaction management,
+				refer to this manual>>Hibernate Plugin >> Hibernate >> <link linkend="hibernate_hibernate_transaction"> Transaction Management </link>.
+      	</para>
+    </section>
+</chapter>
+	
+	

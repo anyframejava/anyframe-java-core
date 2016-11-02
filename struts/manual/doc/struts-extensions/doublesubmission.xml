@@ -1,0 +1,259 @@
+<chapter id="struts_extensions_doublesubmission">
+	<title>Preventing Double Form Submission</title>
+
+	<para>
+		Anyframe의 Struts Extensions에서는 Synchronized Token이라는 진보된 방법을 통해
+  		선언적으로 중복 Form submit으로 인한 오동작을 방지할 수 있는 기능을 제공한다.
+  	</para>
+
+	<section id="struts_extensions_doublesubmission_concept">
+    	<title>Double Submit의 개념</title>
+
+	    <para>중복 Form Submit은 다음과 같은 경우에 발생할 수 있다.</para>
+	    <itemizedlist>
+    		<listitem>
+        		<para>Browser의 Refresh Button을 사용한 경우</para>
+      		</listitem>
+		    <listitem>
+        		<para>Browser의 Back Button을 사용하여 이전 Page로 이동 후 다시 Form Submit 하는 경우</para>
+      		</listitem>
+		    <listitem>
+        		<para>Browser History을 사용하여 이전 Page로 이동 후 다시 Form Submit 하는 경우</para>
+      		</listitem>
+		    <listitem>
+        		<para>서버에 영향을 주도록 고의적으로 악의적인 Form Submit을 하는 경우</para>
+      		</listitem>
+		    <listitem>
+        		<para>submit Button을 한번 이상 Click 하는 경우</para>
+      		</listitem>
+    	</itemizedlist>
+
+    	<para>
+    		<![CDATA[Browser Refresh Button을 사용한 경우에 중복 submit이 발생하는 이유는 Form Submit 이후에
+    		Browse 주소창에 보이는 URL에 있다. 예를 들어, "<form name='test'
+    		action='/submitForm.do'>" 을 통해 Form Submit이 발생하였다라고 가정하자. 이 Form이 전송된
+    		이후에 주소창에 '/submitForm.do'이 남아있고, 이 상황에서 Refresh Button을 누르면 동일한 URL이 재전송
+    		되는 것이다. 이러한 상황을 막는 가장 손쉬운 방법은 Form Submit 후에 HTTP Redirect 기능을 사용하는 것이다.
+    		만일 test Form 전송 후에 보여 주는 Page가 success.jsp 라고 하면, HTTP Redirect를 사용할 경우
+    		Browse 주소창에 success.jsp가 보일 것이다. 이 경우에는 Refresh Button을 눌러도 success.jsp가
+    		다시 로드된다. <forward name="success" path="/Success.jsp" redirect="true"
+		    /> 이렇게 함으로써 우연히 Browser Refresh Button을 눌렀을 때의 동작 오류를 방지할 수 있다. 하지만
+    		Browser Back Button 등을 사용한 Form Resubmit을 근원적으로 막지는 못하게 된다. 따라서, Anyframe
+    		에서는 DefaultActionMapping과 AbstractActionSupport를 제공함으로써, 선언적인 기법으로
+    		Synchronzed Token을 처리하여 중복 Form Submit을 방지할 수 있게 한다. 다음은 Synchronized
+    		Token을 이용한 중복 Form Submit 방지 개념도이다.]]>
+    	</para>
+
+	    <mediaobject>
+	      <imageobject>
+	        <imagedata align="center" fileref="../image/struts/extensions/default_02.jpg" />
+	      </imageobject>
+	      <textobject>
+			<phrase>Synchronized Token을 이용한 중복 Form Submit 방지 개념</phrase>
+		  </textobject>
+	    </mediaobject>
+	</section>
+
+	<section id="struts_extensions_doublesubmission_tokenhandling">
+    <title>일반적인 Token 처리</title>
+
+	    <para>일반적으로 Action 클래스에서는 다음과 같은 로직을 통해 중복 Form Submit 여부를 체크할 수 있다.</para>
+	
+	    <itemizedlist>
+		    <listitem>
+	    		<para>
+	    			Action Class
+	    			<programlisting language="java">boolean valid = isTokenValid(request, true);
+if (valid) {
+    // TODO: submit 할 때 수행할 로직을 넣을 것
+    System.out.println("status: performed");
+} else {
+    // TODO: init / reload 할 때 수행할 로직을 넣을 것
+    System.out.println("status: initialized or reloaded");
+}
+saveToken(request);</programlisting>
+				</para>
+	      	</listitem>
+		    <listitem>
+				<para>
+					JSP
+	     	   		<programlisting language="xml"><![CDATA[<input type="hidden" name="org.apache.struts.taglib.html.TOKEN" 
+value="<%= session.getAttribute(org.apache.struts.Globals.TRANSACTION_TOKEN_KEY) %>">]]></programlisting>
+				</para>
+
+	        	<para>
+	        		UI(JSP, HTML)에서는 "org.apache.struts.taglib.html.TOKEN"을 Key로 하는 Hidden Field를 통해 할당된
+	        		Token 값을 서버로 전송하고, 해당 Action 클래스에서는 isTokenValid 메소드 호출을 통해 이 Token 값과
+	        		Session에 저장된 Token 값을 비교함으로써, Token의 유효성을 검사한다.
+	        	</para>
+			</listitem>
+		</itemizedlist>
+	</section>
+
+	<section id="struts_extensions_doublesubmission_declarativetokenhandling">
+    	<title>선언적인 Token 처리</title>
+
+    	<para>
+    		중복 Form Submit 방지 처리가 필요한 모든 Action과 JSP에 Token 처리를 위한 로직이 중복 구현되지
+    		않도록 하기 위해, Anyframe 에서는 AbstractActionSupport 클래스와 DefaultActionMapping
+    		클래스를 이용하여 선언적으로 Sychronized Token을 처리할 수 있는 기능을 제공한다. 선언적인 Synchronized
+    		Token 처리를 위해서는 Struts 속성 정의 파일 내에 Action 매핑시 다음과 같은 속성을 추가 정의해 주어야 한다.
+    	</para>
+	    <itemizedlist>
+      		<listitem>
+        		<para>
+        			<emphasis role="bold">saveToken</emphasis> : 해당 Action 수행 후,
+        			Client에서 전달한 Token을 Session에 저장할지에 대한 설정
+        		</para>
+      		</listitem>
+		    <listitem>
+        		<para>
+        			<emphasis role="bold">validateToken</emphasis> : 해당 Action 수행 전,
+        			Token의 유효성을 체크할지에 대한 설정
+        		</para>
+      		</listitem>
+		    <listitem>
+        		<para>
+        			<emphasis role="bold">resetToken</emphasis> : Token의 유효성을 체크한 후에
+        			Session에 저장된 Token을 reset할지에 대한 설정
+        		</para>
+      		</listitem>
+    	</itemizedlist>
+	    <para>
+	    	아래는 struts-config-token.xml 파일의 일부로, 선언적인 기법으로 중복 Form Submit을 방지하는 예제이다.
+	    	<programlisting
+	    	language="xml"><![CDATA[<action-mappings type="org.anyframe.struts.action.DefaultActionMapping">
+    <action path="/synchronizedTokenView"
+            type="org.anyframe.struts.action.DefaultForwardAction"
+            parameter="/extensions/token.jsp">
+            <]]><emphasis role="bold">set-property property</emphasis>="<emphasis
+          role="bold">saveToken</emphasis>" <emphasis role="bold">value</emphasis>="<emphasis
+          role="bold">true"</emphasis><![CDATA[ />
+    </action>
+    <action path="/doubleSubmit"
+            type="org.anyframe.sample.struts.action.SampleTokenAction"
+            name="submitForm" scope="request">
+        <]]><emphasis role="bold">set-property</emphasis> <emphasis
+          role="bold">property</emphasis>="<emphasis role="bold">validateToken</emphasis>" <emphasis
+          role="bold">value</emphasis>="<emphasis role="bold">true</emphasis><![CDATA[" />
+        <]]><emphasis role="bold">set-property</emphasis> <emphasis
+          role="bold">property</emphasis>="<emphasis role="bold">resetToken</emphasis>" <emphasis
+          role="bold">value</emphasis>="<emphasis role="bold">true</emphasis><![CDATA[" />
+        <forward name="success" path="/extensions/tokenSuccess.jsp" />
+    </action>
+</action-mappings>]]></programlisting>
+		</para>
+
+    	<para>
+    		각 Action 매핑시 정의한 위의 세가지 속성이 AbstractActionSupport 클래스를 통해 어떻게 처리되는지에
+   			 대해서는 다음 예를 통해 상세히 살펴보자.
+   		</para>
+
+		<section id="struts_extensions_doublesubmission_declarativetokenhandling_samples">
+	      	<title>Samples</title>
+	
+		    <orderedlist>
+	        	<listitem>
+	          		<para>
+	          			1.중복 Form Submit 방지가 필요한 UI의 경우, 해당 UI를 로드시키기 위한 Action 실행을 통해
+	          			Token을 Session에 저장해야 한다. 따라서 해당 Action 매핑 정의시 saveToken 속성값을 true로
+	          			정의해 주도록 한다.
+	          			<programlisting
+	          			language="xml"><![CDATA[<set-property property="saveToken" value="true"/>]]></programlisting>
+	          		</para>
+	        	</listitem>
+		        <listitem>
+	          		<para>
+	          			해당 Action 클래스의 process 메소드 수행후,AbstractActionSupport의
+	          			postProcess 메소드에서는 Action 매핑시 정의한 saveToken이 true일 때 상위 클래스에서 제공하는
+	          			saveToken 메소드를 호출함으로써, 이 Token을 Session에 저장한다.
+	          			<programlisting
+	          			language="java">public ActionForward postProcess(ActionMapping mapping, ActionForm form,
+        HttpServletRequest request, HttpServletResponse response,
+        ActionForward forward) throws Exception {
+    boolean saveToken = false;
+    if (mapping instanceof DefaultActionMapping) {
+        DefaultActionMapping t_mapping = (DefaultActionMapping) mapping;
+        saveToken = t_mapping.isSaveToken();
+    }
+    if (saveToken) {
+        saveToken(request);
+    }
+    return forward;
+}</programlisting>
+					</para>
+		        </listitem>
+		        <listitem>
+			        <para>
+			        	해당 UI에서 Form Submit시 이를 처리하기 위한 Action 클래스의 매핑 정보에
+	          			validateToken, resetToken 속성값을 true로 정의해 주도록 한다.
+	          			<programlisting
+          				language="xml"><![CDATA[<set-property property="validateToken" value="true"/>
+<set-property property="resetToken" value="true"/>]]></programlisting>
+					</para>
+		        </listitem>
+		        <listitem>
+					<para>
+						해당 Action 클래스의 process 메소드 수행 전에,AbstractActionSupport의 preProcess 메소드에서는
+						Action 매핑시 정의한 validateToken, resetToken 값에 따라 Session에 있는 Token이 유효한지 체크하고,
+						유효하다면 Session에 있는 Token을 지우게 된다. 이렇게 함으로써 중복 Form Submit만 발생하는 경우
+						Session에 있는 Token은 이미 지워졌으므로, Token 유효성 체크시 오류가 발생하게 되는 것이다.
+						<programlisting language="java">public void preProcess(ActionMapping mapping, ActionForm form,
+         HttpServletRequest request, HttpServletResponse response)
+         throws Exception {
+
+    boolean validateToken = false;
+    boolean resetToken = false;
+
+    if (mapping instanceof DefaultActionMapping) { 
+        DefaultActionMapping t_mapping = (DefaultActionMapping) mapping;
+        validateToken = t_mapping.isValidateToken();
+        resetToken = t_mapping.isResetToken();
+    }
+    
+    if (validateToken) {
+        if (!isTokenValid(request, resetToken)) {
+            throw new InvalidTokenException("common.msg.invalidtoken.error");
+       }
+    }
+}</programlisting>
+					</para>
+				</listitem>
+			</orderedlist>
+		</section>
+
+		<section id="struts_extensions_doublesubmission_declarativetokenhandling_comment">
+			<title>참고 사항</title>
+	
+			<itemizedlist>
+				<listitem>
+					<para><![CDATA[<html:form> 사용]]></para>
+	
+					<para>
+						<![CDATA[<html:form>를 사용하여 Form을 생성하는 경우, 별도 정의없이 Token 할당을 위한
+	          			Hidden 필드가 추가된다. 만일 <html:form>를 사용하지 않는 경우에는 다음과 같이 Hidden
+	          			Field를 추가 정의해 주어야 한다.]]>
+	          			<programlisting language="xml"><![CDATA[<input type="hidden" name="org.apache.struts.taglib.html.TOKEN" 
+    value="<%= session.getAttribute(org.apache.struts.Globals.TRANSACTION_TOKEN_KEY) %>">]]></programlisting>
+					</para>
+        		</listitem>
+
+        		<listitem>
+					<para>DefaultForwardAction 사용</para>
+
+					<para>
+						별도 Action 수행없이 단순 페이지 이동만이 필요한 경우 Struts에서 기본으로 제공하는
+		          		ForwardAction을 사용하게 된다. 그러나 이런 경우에도 입력 화면으로 이동하기 전에 Sychronized
+		          		Token 처리를 위한 설정이 필요하다면, Anyframe 에서 제공하는 DefaultForwardAction을 사용토록 한다.
+		          		<programlisting language="xml"><![CDATA[<action path="/synchronizedTokenView"
+    type="org.anyframe.struts.action.DefaultForwardAction"
+    parameter="/extensions/token.jsp">
+    <set-property property="saveToken" value="true" />
+</action>]]></programlisting>
+					</para>
+				</listitem>
+      		</itemizedlist>
+		</section>
+  	</section>
+</chapter>
+

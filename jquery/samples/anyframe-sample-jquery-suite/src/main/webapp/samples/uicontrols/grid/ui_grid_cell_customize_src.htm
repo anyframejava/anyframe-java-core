@@ -1,0 +1,184 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
+<html>
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+<title>Grid Cell Customizing (Image & DatePicker)</title>
+
+<link href="../../../common/css/smoothness/jquery-ui-1.10.0.custom.css" rel="stylesheet">
+<link href="../../../common/css/smoothness/jquery.jqgrid.css" rel="stylesheet">
+<script src="../../../common/exlibs/jquery-1.9.0.js"></script>
+<script src="../../../common/exlibs/jquery-ui-1.10.0.custom.js"></script>
+<script src="../../../common/exlibs/jquery.jqGrid.src.js"></script>
+
+<link href="sub_css/basic.css" rel="stylesheet">
+
+<script type="text/javascript">
+
+	var ENV = {
+			ID_GRID : "#grid"
+	};
+	
+	var GRID_DATA = [ 
+	                	{id:"1", date:"2013-02-01", stat:"succ", selimg:"youtube"},
+	                	{id:"2", date:"2013-02-01", stat:"fail", selimg:"vimeo"},	                 
+	                	{id:"3", date:"2013-02-01", stat:"fail", selimg:"youtube"}	
+	                ];                
+	
+	var mainView = {
+			
+			_grid : null,
+			_maxrowid : 10,
+			
+			init : function()
+			{
+				var owner = this; 
+
+				this._grid = $(ENV.ID_GRID);
+				
+				this._grid.jqGrid({
+					
+					datatype: "local",
+					data: GRID_DATA,
+					width: 700,
+					height: 200,
+					caption: "Grid Cell Customizing",
+					colNames: [ "아이디", "일시", "상태", "상태이미지", "이미지선택" ],						
+					colModel: [
+					          	{name:"id", sortable:false, editable:false },
+					          	{name:"date", editable:true, editoptions: {
+					          									dataEvents: 
+					          									[
+					          									  { type: 'focusin', fn: function(evt) {
+					          										  	$(this).datepicker({dateFormat:'yy-mm-dd'});
+					          									  } } 
+					          									]
+					          									
+					          								} 
+					          	},
+					          	{name:"stat", editable:true, edittype:"select", 
+					          								 editoptions: {value: {succ:"succ", fail:"fail"}} 
+					          	},
+					          	{name:"statimg", editable:false, formatter: owner.statImageFormatter },
+					          	{name:"selimg", editable:true, edittype:"select", 
+					          								   editoptions: {value: { youtube: "youtube", vimeo: "vimeo" }}, 
+					          								   formatter: owner.statImageFormatter2 
+					          	}					          	
+					          ]
+				});
+				
+			},
+			
+			statImageFormatter : function(cellvalue, options, rowObject) 
+			{
+				if (rowObject.stat == "succ")
+				{
+					return "<img src='sub/success.png' width='32' height='32'>";
+				}
+				else if (rowObject.stat == "fail")
+				{
+					return "<img src='sub/fail.png' width='32' height='32'>";
+				}
+				else 
+					return "<img src='sub/success.png' width='32' height='32'>";
+			},
+			
+			statImageFormatter2 : function(cellvalue, options, rowObject) 
+			{
+				if (cellvalue == "youtube")
+				{
+					return "<img src='sub/youtube.png' width='32' height='32'>";
+				}
+				else if (cellvalue == "vimeo")
+				{
+					return "<img src='sub/vimeo.png' width='32' height='32'>";
+				}				
+			},			
+			
+			addRow : function()
+			{
+				var addparams = {},
+					newrowid = this._getNextNewRowId();
+				
+				addparams.rowID = newrowid;
+				addparams.initdata = { id: newrowid };
+				addparams.position = "last";
+				addparams.useDefValues = false;
+				addparams.useFormatter = false;
+				addparams.addRowParams = { extraparam : {} };
+				
+				this._grid.jqGrid('addRow', addparams);	
+			},
+			
+			editRow : function(rowid)
+			{
+				this._grid.editRow(rowid);
+			},
+			
+			saveRow : function(rowid)
+			{
+				var owner = this;
+				
+				var saveparams = {
+						
+						url : "clientArray",
+						
+						'aftersavefunc' : function()
+						{
+							var onerow = owner._grid.jqGrid('getRowData', arguments[0]),
+							    newstatimg = owner.statImageFormatter(null, null, onerow);
+							
+							onerow.statimg = newstatimg;
+							owner._grid.jqGrid('setRowData', arguments[0], onerow);
+						}
+				}
+				
+				this._grid.saveRow(rowid, saveparams);
+			},
+			
+			getSelectedOneRow : function()
+			{
+				return this._grid.jqGrid('getGridParam', 'selrow');
+			},			
+			
+			_getNextNewRowId : function() 
+			{
+				this._maxrowid++;
+				return ("" + this._maxrowid);
+			}
+	};
+
+	$(document).ready(function() {
+		
+		mainView.init();
+		
+		$('button').click(function(evt) {
+			
+			var cmdWhat = ($(this).text()).toLowerCase();
+			
+			if (cmdWhat == "add") mainView.addRow();
+			else if (cmdWhat == "edit") mainView.editRow( mainView.getSelectedOneRow() );
+			else if (cmdWhat == "save") mainView.saveRow(  mainView.getSelectedOneRow() );
+			
+		});
+		
+	});
+	
+</script>
+
+</head>
+<body class="grid_demo">
+	<div>
+		<ul>
+			<li><label>Inline Editing : </label>
+				<button style="width:100px">Add</button>
+				<button style="width:100px">Edit</button>
+				<button style="width:100px">Save</button>
+			</li>						
+		</ul>	
+	</div>
+	
+	<div id="grid_container">
+		<table id="grid"></table>
+	</div>
+</body>
+</html>

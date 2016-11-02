@@ -1,0 +1,79 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<FDL version="1.5">
+  <TypeDefinition url="..\default_typedef.xml"/>
+  <Form id="comm_card" classname="comm_card" left="0" top="0" width="250" height="400" titletext="New Form" onload="form_onload">
+    <Layouts>
+      <Layout>
+        <Static id="stc_title" taborder="0" text="Title" left="5" top="0" height="56" right="5" style="background:#ffffffff;"/>
+        <Static id="stc_contents" taborder="1" text="Contents" left="5" right="5" height="123" style="background:#ffffffff;font:antialias 9 NanumGothic;" bottom="29" wordwrap="char"/>
+        <ImageViewer id="img_view" taborder="2" left="0" top="96" right="0" bottom="130" style="border:0 solid #bdbdbdff ;" stretch="fixaspectratio"/>
+        <Static id="stc_date" taborder="3" text="Date" left="5" top="56" right="5" height="40" style="background:#ffffffff;font:antialias 9 NanumGothic;"/>
+        <Static id="stc_cnt" taborder="4" left="0" height="20" right="0" bottom="0" style="background:lightsteelblue;align:right middle;"/>
+      </Layout>
+    </Layouts>
+    <Script type="xscript5.0"><![CDATA[/**************************************************************************************************
+ * 01. 업무구분				: 
+ * 02. 화 면 명				: 
+ * 03. 화면설명				:  
+ * 04. 관련 화면 및 서비스	: 
+ * 05. 관련 테이블명			: 
+ * 06. 작 성 자				: 
+ * 07. 작 성 일				: 
+ * 08. 수정이력
+ **************************************************************************************************
+ *    수정일            이름        사유
+ **************************************************************************************************
+ *    
+ *************************************************************************************************/
+
+//-------------------------------------------------------------------------------------------------
+// 1. 공통함수 include
+//-------------------------------------------------------------------------------------------------
+include "lib::comForm.xjs";
+
+//-------------------------------------------------------------------------------------------------
+// Form 전역변수 선언
+//-------------------------------------------------------------------------------------------------
+this.key = null;
+
+//-------------------------------------------------------------------------------------------------
+// 2. Form 함수 정의
+//-------------------------------------------------------------------------------------------------
+this.form_onload = function(obj:Form, e:nexacro.LoadEventInfo)
+{
+
+}
+
+//초기설정
+this.fn_init = function()
+{
+	//공통코드 설정
+}
+
+//-------------------------------------------------------------------------------------------------
+// 3. Transaction 함수 정의
+//-------------------------------------------------------------------------------------------------
+
+//-------------------------------------------------------------------------------------------------
+// 4. User 함수 정의
+//-------------------------------------------------------------------------------------------------
+this.setInfo = function(key, title, date, url, contents, cnt)
+{
+	this.key = key;
+	this.stc_title.set_text(title);
+	
+	var dt = Eco.date.strToDate(date);
+	var strdate = Eco.date.getMaskFormatString(dt, "yyyy년 MM월 dd일");	
+	this.stc_date.set_text(strdate);
+	
+	this.img_view.set_image(url);
+	this.stc_contents.set_text(contents);
+	
+	this.stc_cnt.set_text("조회수 : "+cnt);
+}
+//-------------------------------------------------------------------------------------------------
+// 5. Event 함수 정의
+//------------------------------------------------------------------------------------------------
+]]></Script>
+  </Form>
+</FDL>

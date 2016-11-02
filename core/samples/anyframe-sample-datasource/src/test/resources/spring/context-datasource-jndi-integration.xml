@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:jee="http://www.springframework.org/schema/jee"
+	xmlns:context="http://www.springframework.org/schema/context"
+	xmlns:util="http://www.springframework.org/schema/util"
+	xsi:schemaLocation="
+       http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-4.0.xsd
+       http://www.springframework.org/schema/jee http://www.springframework.org/schema/jee/spring-jee-4.0.xsd		
+       http://www.springframework.org/schema/context http://www.springframework.org/schema/context/spring-context-4.0.xsd
+	http://www.springframework.org/schema/util http://www.springframework.org/schema/util/spring-util-4.0.xsd">
+
+	<util:properties id="contextProperties" location="classpath:context.properties"/>
+       
+    <jee:jndi-lookup id="dataSource" jndi-name="AnyframeDS" resource-ref="true">
+        <jee:environment>
+		java.naming.factory.initial=#{contextProperties['java.naming.factory.initial']}
+		java.naming.provider.url=#{contextProperties['java.naming.provider.url']}
+        </jee:environment>
+    </jee:jndi-lookup>
+ 	
+</beans>

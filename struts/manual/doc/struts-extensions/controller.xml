@@ -1,0 +1,423 @@
+<chapter id="struts_extensions_controller">
+	<title>Controller</title>
+
+	<para>
+		Struts의 Controller는 크게 ActionServlet, RequestProcessor, Action 클래스로
+  		구성된다. Anyframe 에서는 Struts Controller의 기본 기능과 Business Service연계, 로깅, 인증 및
+  		권한 처리, Exception 처리 등을 위한 확장 기능을 제공하고 있다. 각각에 대한 내용은 아래와 같다.
+  	</para>
+
+	<section id="struts_extensions_controller_defaultactionservlet">
+    	<title>DefaultActionServlet</title>
+
+    	<para>
+    		<![CDATA[<servlet-class>는 org.apache.struts.action.ActionServlet을 extends한
+    		org.anyframe.struts.action.DefaultActionServlet 으로 정의한다.
+    		<init-param>은 ActionServlet이 제공하는 기본 기능과 Character Encoding을 설정 할 수
+    		있다. Character Encoding 속성은 DefaulActionServlet에서 확장한 것으로 정의된 Message
+    		Resource Bundle을 읽어들일 때, 적용할 Character Encoding을 설정하기 위한 것인다. 다음은
+    		DefaultActionServlet을 <servlet>으로 설정한 web.xml 의 일부이다.]]> 
+    		<programlisting language="xml"><![CDATA[<servlet>
+    <servlet-name>action</servlet-name>
+    <servlet-class>
+        org.anyframe.struts.action.DefaultActionServlet
+    </servlet-class>
+    <init-param>
+        <param-name>config</param-name>
+            <param-value>
+            /config/struts/struts-config.xml,
+            /config/struts/struts-config-login.xml,
+            /config/struts/struts-config-dispatch.xml,
+            /config/struts/struts-config-token.xml,
+            /config/struts/struts-config-exception.xml,
+            /config/struts/struts-config-authorization.xml
+        </param-value>
+    </init-param>
+    <init-param>
+        <param-name>character-encoding</param-name>
+        <param-value>utf-8</param-value>
+    </init-param>
+    <init-param>
+        <param-name>debug</param-name>
+        <param-value>3</param-value>
+    </init-param>
+    <init-param>
+        <param-name>detail</param-name>
+        <param-value>3</param-value>
+    </init-param>
+    <init-param>
+        <param-name>convertNull</param-name>
+        <param-value>true</param-value>
+    </init-param>
+    <load-on-startup>0</load-on-startup>
+</servlet>]]></programlisting>
+		</para>
+	</section>
+
+	<section id="struts_extensions_controller_defaultrequestprocessor">
+		<title>DefaultRequestProcessor</title>
+
+		<para>
+			org.anyframe.struts.tiles.DefaultRequestProcessor는 Struts의
+    		TilesRequestProcessor를 extends하고 있다. 따라서, DefaultRequestProcessor를 Struts
+    		속성 정의 파일에 controller로써 설정한 경우에는 반드시 plug-in으로 TilesPlugin를 등록해 주어야 한다.
+    		TilesPlugin을 plug-in으로 등록하는 방법은 Struts Tiles의 <link
+    		linkend="struts_view_tiles_installation">Tiles 설치</link><![CDATA[ 를 참고한다. 아래는 struts-config-common.xml 의 일부로,
+    		DefaultRequestProcessor를 <controller> 내에 정의하고 있다.]]>
+    		<programlisting language="xml"><![CDATA[<controller contentType="text/html;charset=utf-8" locale="true" 
+    		processorClass="]]><emphasis
+    		role="bold">org.anyframe.struts.tiles.DefaultRequestProcessor</emphasis><![CDATA["/>]]></programlisting>
+    	</para>
+
+		<section id="struts_extensions_controller_defaultrequestprocessor_function">
+			<title>DefaultRequestProcessor 기능</title>
+
+			<itemizedlist>
+				<listitem>
+					<para>role 기반의 인증 및 관리 기능</para>
+				</listitem>
+				<listitem>
+					<para>web.xml에서 설정한 character-encoding 값 적용</para>
+				</listitem>
+	    	    <listitem>
+	    		      <para>Locale 정보를 Session에 org.apache.struts.action.LOCALE이란 key 값으로 저장</para>
+	       		</listitem>
+			</itemizedlist>
+	
+	      	<para>
+	      		아래는 인증 및 권한 처리를 수행하고 있는 DefaultRequestProcessor의 processRoles 메소드
+	      		구현 로직의 일부이다.
+      			<programlisting language="java">protected boolean <emphasis
+            	role="bold">processRoles</emphasis><![CDATA[(HttpServletRequest request,
+                        HttpServletResponse response, ActionMapping mapping)
+                                throws IOException, ServletException {
+    // [public] Is this action protected by role requirements?
+    String roles[] = mapping.getRoleNames();
+    if ((roles == null) || (roles.length < 1)) {
+        return (true);
+    }
+	
+    Subject _subject = null;
+	
+    HttpSession session = request.getSession();
+    _subject = (Subject) session.getAttribute("subject");
+	
+    if (_subject == null) {
+        log.debug("#AuthenticationException is encounted");
+	    
+    ExceptionConfig config = mapping.findException(AuthenticationException.class);
+	    
+    if(config == null ){
+        mapping.findException(Exception.class);
+    }
+	    
+    AuthenticationException ae = new AuthenticationException(config.getKey(), request
+	            .getRequestURI());
+	// 중략 ...
+]]></programlisting>
+			</para>
+
+			<para>
+				<![CDATA[위의 소스 코드에서 보듯이 Struts 속성 정의 파일의 특정 action 매핑 정보에 role이 부여되었을 때
+	      		Session에 저장된 Subject에서 사용자 인증 정보를 확인한 후, 인증되지 않았을 경우
+	      		AuthenticationException을 throw한다. Exception 메시지의 key는 Struts 속성 정의 파일
+	      		<exception> 내에 정의된 AuthenticationException에 대한 key와 동일하며, 정의되지 않았을
+	      		경우엔 java.lang.Exception에 대한 key와 동일하다. 아래는  struts-config-exception.xml 파일의 일부로
+	      		AuthenticationException을 Global Level Exception으로 등록한 예이다.]]>
+	      		<programlisting language="xml"><![CDATA[<global-exceptions>
+     <exception key="common.msg.authentication.error" 
+                    path="/WEB-INF/jsp/struts/common/error.jsp"
+                    type="org.anyframe.struts.util.AuthenticationException" 
+                    handler="org.anyframe.struts.action.DefaultExceptionHandler" />
+</global-exceptions>]]></programlisting>
+			</para>
+			<para>
+				메시지리소스로 등록하는 메시지 properties 파일에는 common.msg.authentication.error 의 메시지 키에 대하여 
+				<programlisting language="java"><emphasis
+				role="bold">common.msg.authentication.error</emphasis>=Authentication Fail 
+        - You are not logon or Session expired. Please try re-logon. - {0}.
+common.msg.authorization.error=You can not access this page. - {0}.
+..</programlisting>
+	과 같이 메시지 파일이 등록되어 있음을 가정한다.
+			</para>
+		</section>
+	</section>
+
+	<section id="struts_extensions_controller_abstractactionsupport">
+    	<title>AbstractActionSupport</title>
+
+    	<para>org.anyframe.struts.action.AbstractActionSupport 클래스는 다음과 같은 주요 기능을 제공한다.</para>
+
+	    <itemizedlist>
+    		<listitem>
+        		<para>Spring 기반의 Anyframe 서비스와의 손쉬운 연동 지원</para>
+      		</listitem>
+		    <listitem>
+        		<para>선언적인 Synchronized Token 처리</para>
+      		</listitem>
+     		<listitem>
+		        <para>공통 Exception 처리</para>
+      		</listitem>
+    	</itemizedlist>
+	    <para>
+	    	따라서, 각 Action 클래스는 AbstractActionSupport를 상속받아 구현하되, process 메소드를 오버라이드하여 
+	    	비즈니스 레이어와 연계하여 클라이언트의 요청을 처리하는 로직을 담도록 한다. 위와 같은 주요 기능을 제공하는
+    		AbstractActionSupport의 execute 메소드는 다음과 같이 구현되어 있다.
+    		<programlisting language="java">public ActionForward execute(ActionMapping mapping, ActionForm form,
+                                HttpServletRequest request, HttpServletResponse response)
+                                                            throws Exception {
+
+    ActionForward forward = null;
+
+    try {
+        <emphasis role="bold">preProcess</emphasis>(mapping, form, request, response);
+        
+        getLogger().debug(this.getClass().getName() + ".process() Started!");
+        forward = <emphasis role="bold">process</emphasis>(mapping, form, request, response);
+        getLogger().debug(this.getClass().getName() + ".process() Ended!");
+        forward = <emphasis role="bold">postProcess</emphasis>(mapping, form, request, response, forward);
+    } catch (InvalidTokenException tokenException) {
+        forward = <emphasis role="bold">processInvalidTokenException</emphasis>(mapping, form, request,
+                            response, tokenException);
+    } catch (RuntimeException uncheckedException) {
+        forward = <emphasis role="bold">processUnCheckedException</emphasis>(mapping, form, request,
+                            response, uncheckedException);
+    } catch (Exception checkedException) {
+        getLogger().debug("\n Action Support Exception catch!!");
+        forward = <emphasis role="bold">processCheckedException</emphasis>(mapping, form, request, response,
+                            checkedException);
+    } finally {
+        forward = <emphasis role="bold">processFinally</emphasis>(mapping, form, request, response, forward);
+    }
+    return forward;
+}</programlisting>
+		</para>
+
+    	<para>
+    		다음 목록에 제시된 메소드들은 AbstractActionSupport 클래스 내에 구현된 메소드들로써, execute
+    		메소드의 로직을 수행하기 위해 적절한 순서에 따라 호출된다.
+    	</para>
+
+    	<itemizedlist>
+      		<listitem>
+        		<para>
+        			preProcess : AbstractActionSupport 클래스를 상속받은 Action 클래스의 process 메소드 수행 전에
+        			호출되는 메소드로서 Action 매핑 정보(validateToken, resetToken)에 기반하여 Token의 유효성을
+        			체크한다. 해당 Action을 수행하기 위한 preCondition이 필요할 경우 이 메소드를 오버라이드하면 된다.
+        		</para>
+      		</listitem>
+      		<listitem>
+        		<para>
+        			process : abstract 메소드이다. 따라서, AbstractActionSupport를 상속받은 하위 Action 클래스에서
+        			반드시 구현해야 하며, process 메소드 내에는 비즈니스 레이어와 연계하여 클라이언트의 요청을 처리하는 로직을 담는다.
+        		</para>
+      		</listitem>
+		    <listitem>
+        		<para>
+        			postProcess : AbstractActionSupport 클래스를 상속받은 Action 클래스의 process 메소드 수행 후
+        			호출되는 메소드로서 Action 매핑 정보(saveToken)에 기반하여 Token을 생성한다. 해당 Action을 수행하기
+        			위한 postCondition이 필요할 경우 이 메소드를 오버라이드하면 된다.
+        		</para>
+ 		    </listitem>
+      		<listitem>
+		  		<para>
+		  			processInvalidTokenException : Synchronized Token 사용시 Token이 유효하지 않을 경우에 대한 처리 로직을 담고 있다.
+		  			"요청이 올바르지 않습니다."라는 메시지를 담은 ActionMessage를 생성하고, InvalidTokenException을 throw한다.
+		  		</para>
+      		</listitem>
+		    <listitem>
+        		<para>
+        			processUnCheckedException : preProcess(), process(), postProcess() 수행시 RunTimeException이 발생한
+        			경우, 해당 Exception을 throw한다. UnCheckedException 발생시 별도 처리 로직이 필요한 경우 이 메소드를
+        			오버라이드하면 된다.
+        		</para>
+      		</listitem>
+		    <listitem>
+        		<para>
+        			processCheckedException : preProcess(), process(), postProcess() 수행시 Exception이 발생한 경우, 해당
+        			Exception을 throw한다. CheckedException 발생시 별도 처리 로직이 필요한 경우 이 메소드를 오버라이드하면 된다.
+        		</para>
+      		</listitem>
+		    <listitem>
+        		<para>
+        			processFinally : AbstractActionSupport 클래스 execute 메소드의 finally 구문에서 호출되는 메소드이다.
+        			finally 구문에서 별도 처리 로직이 필요한 경우 이 메소드를 오버라이드하면 된다.
+        		</para>
+      		</listitem>
+    	</itemizedlist>
+	    <para>
+		   	위에서 제시한 AbstractActionSupport의 기본 제공 기능 이외에 각 Action 클래스에서 처리해야 할 공통
+    		기능이 필요할 경우, AbstractActionSupport를 상속받은 클래스를 생성하고, 해당 클래스에서 필요한 기능을 추가하도록
+    		한다. 그리고 각 Action 클래스는 AbstractActionSupport를 상속받은 클래스를 상속받아 구현하도록 한다.
+    	</para>
+	
+	    <section id="struts_extensions_controller_abstractactionsupport_actionsample">
+      		<title>Action Sample</title>
+
+      		<para>
+      			다음은 AbstractActionSupport를 상속받아 구현한 LoginAction.java 이다.
+      			<programlisting language="java">public class LoginAction extends <emphasis
+	            role="bold">AbstractActionSupport</emphasis> {
+	
+    public Log <emphasis role="bold">getLogger</emphasis>() throws Exception {
+        return LogFactory.getLog(this.getClass().getName());
+    }
+	
+    public ActionForward process(ActionMapping mapping, ActionForm form,
+                HttpServletRequest request, HttpServletResponse response)
+                    throws Exception {
+        AuthenticationService authenticationService = 
+                (AuthenticationService) getService("authenticationService");
+
+        UserForm userForm = (UserForm) form;
+        UserVO userVO = new UserVO();
+        BeanUtils.copyProperties(userVO, userForm);
+
+        Subject subject = authenticationService.authenticate(userVO);
+
+        HttpSession session = request.getSession();
+
+        session.setAttribute("subject", subject);
+        return (mapping.findForward("success"));
+    }
+}</programlisting>
+			</para>
+
+      		<para>
+      			위의 소스코드에서는 LoginAction 클래스에서 개별 Logger를 사용하기 위해
+      			AbstractActionSupport의 getLogger 메소드를 오버라이드하고 있다.
+      		</para>
+    	</section>
+  	</section>
+
+	<section id="struts_extensions_controller_defaultdispathaction">
+    	<title>DefaultDispathActionSupport</title>
+
+    	<para>
+    		org.anyframe.web.struts.action.DefaultDispathActionSupport은 앞서 언급한 AbstractActionSupport를
+    		상속받아 구현한 클래스로써 Struts에서 기본으로 제공하는 DispatchAction과 동일한 기능을 제공한다.
+    	</para>
+	
+	    <section id="struts_extensions_controller_defaultdispathaction_sample">
+      		<title>Action Sample</title>
+
+      		<para>
+      			다음은 DefaultDispatchActionSupport를 상속받아 구현한  ProductAction.java 이다.
+      			<programlisting language="java">public class ProductAction extends <emphasis
+            	role="bold">DefaultDispatchActionSupport</emphasis> {
+
+    public ActionForward get(ActionMapping mapping, ActionForm form,
+            HttpServletRequest request, HttpServletResponse response)
+            throws Exception {
+            
+        // TODO : 단건 조회 기능 관련 로직
+			
+        return mapping.findForward("success_get");
+			
+	}
+
+    public ActionForward list(ActionMapping mapping, ActionForm form,
+            HttpServletRequest request, HttpServletResponse response)
+            throws Exception {
+		
+        // TODO : 리스트 조회 기능 관련 로직
+		
+        return mapping.findForward("success_list");
+    }
+}</programlisting>
+			</para>
+
+			<para>
+				DefaultDispatchActionSupport를 상속한 Action 클래스는 DispatchAction이므로,
+      			AbstractActionSupport를 상속한 Action 클래스 작성과 다르게 한 Action 내에 여러 메소드 정의가  가능하다.
+      		</para>
+		</section>
+	</section>
+
+	<section id="struts_extensions_controller_defaultforwardaction">
+    	<title>DefaultForwardAction</title>
+
+    	<para>
+    		org.anyframe.web.struts.common.action.DefaultForwardAction은 Struts에서
+    		기본으로 제공하는 ForwardAction과 동일한 기능을 수행한다. 단, 차이점은 DefaultForwardAction은
+    		AbstractActionSupport를 상속받았기 때문에 공통 Exception 처리, Synchronized Toke 처리 등이
+    		가능하다는 장점이 있다. 아래는 DefaultForwardAction을 이용해 Action 매핑을 정의한 struts-config-dispatch.xml
+    		 파일의 일부이다. 요청 URL이 dispatchActionView.do일 경우 DefaultForwardAction을 통해
+    		/extensions/dispatch.jsp 페이지로 이동할 것이다. <programlisting language="xml"><![CDATA[<action path="/dispatchActionView"
+    		type="org.anyframe.struts.action.DefaultForwardAction" parameter="/extensions/dispatch.jsp" />]]></programlisting>
+    	</para>
+	</section>
+
+	<section id="struts_extensions_controller_anyframemipaction">
+    	<title>AnyframeMiPAction</title>
+
+    	<para>
+    		프리젠테이션 레이어 구성시 X-Internet 제품인 MiPlatform을 이용하는 경우 MiPlatform에서 다루는
+    		고유한 형태의 데이터를 쉽게 처리할 수 있도록 하기 위해org.anyframe.struts.action.mip.AnyframeMiPAction
+    		클래스를 제공한다. 개발자는 AnyframeMiPAction을 상속받아 개별 Action을 개발하되, process 메소드를 구현해주도록 한다.
+    	</para>
+
+    	<para>process 메소드는 MiPlatform과 관련하여 다음과 같은 입력 인자를 가진다.</para>
+
+	    <informaltable>
+	      <caption>MiPlatform과 관련한 입력 인자</caption>
+	      <tgroup cols="3">
+	      <colspec colnum="1" colname="col1" colwidth="1*"/>
+			<colspec colnum="2" colname="col2" colwidth="1*" />
+			 <colspec colnum="3" colname="col3" colwidth="4*"/>
+				<thead>
+				<row>
+					<entry align="center">Type</entry>
+					<entry align="center">Paramter Name</entry>
+					<entry align="center">Description</entry>
+				</row>
+			</thead>
+	        <tbody>
+	          <row>
+	            <entry>VariableList</entry>
+	            <entry>inVl</entry>
+	            <entry>Client에서 GET 방식으로 전송한 parameter들 포함</entry>
+	          </row>
+	          <row>
+	            <entry>VariableList</entry>
+	            <entry>outVl</entry>
+	            <entry>Client로 전송하는 VariableList</entry>
+	          </row>
+	          <row>
+	            <entry>DatasetList</entry>
+	            <entry>inDl</entry>
+	            <entry>Client에서 POST 방식으로 전송한 Dataset XML 포함</entry>
+	          </row>
+	          <row>
+	            <entry>DatasetList</entry>
+	            <entry>outDl</entry>
+	            <entry>Client로 전송하는 Dataset XML 설정</entry>
+	          </row>
+	        </tbody>
+	      </tgroup>
+	    </informaltable>
+
+		<section id="struts_extensions_controller_anyframemipaction_sampleaction">
+			<title>Sample Action</title>
+
+			<para>
+				다음은 AnyframeMiPAction을 상속받아 구현한 클래스의 일부로, process 메소드 내부에서 비즈니스
+      			서비스를 실행하고, 그 결과값을 반환하고 있다.
+      			<programlisting language="java">public void process(ActionMapping mapping, PlatformRequest request,
+        VariableList inVl, DatasetList inDl, VariableList outVl,
+            DatasetList outDl) throws Exception {
+    this.inVl = inVl;
+    this.inDl = inDl;
+    this.outVl = outVl;
+    this.outDl = outDl;
+
+    MiPUserService userService = (MiPUserService)getService("userService");
+    Dataset ds = userService.getUserList(inVl);
+    outDl.addDataset("ds_access",ds);
+
+    // 중략 ...
+}</programlisting>
+			</para>
+    </section>
+  </section>
+</chapter>

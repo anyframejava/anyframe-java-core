@@ -1,0 +1,102 @@
+<chapter id="simpleweb_configuration">
+	<title>Configuration</title>
+	<para>위에 나열된 Anyframe에서 제공하는 기능들을 이용한다면, Spring MVC 기반의 웹 어플리케이션 개발을 간소화시켜줄 수 있다. 
+   다만, Partial Rendering과 Popup 등의 Spring JS(JavsScript) 기반으로 동작하는 기능을 사용하기 위해서는 
+   해당 웹 어플리케이션의 화면 레이아웃이 Tiles로 구성되어야 한다. 
+	</para>
+	<section id="simpleweb_configuration_tilesview">
+		<title>Tiles View 설정</title>
+		<para>
+			Spring MVC에서는 Tiles 기반의 Spring JS(Ajax 지원)를 사용하기 위해 AjaxUrlBasedViewResolver와 AjaxTilesView 클래스를 
+			제공한다. Anyframe의 보다 많은 기능을 제공하기 위해 각각의 클래스를 확장한 AjaxUrlBasedContentTypeViewResolver와 AjaxParamTilesView를 
+			제공하며 아래와 같이 설정해 주도록 한다.
+			다음은 simpleweb-plugin 설치로 추가된 Spring 속성 정의 파일 simpleweb-servlet.xml 파일의 일부이다.
+	<programlisting language="xml"><![CDATA[<bean id="ajaxViewResolver" class="org.anyframe.simpleweb.js.ajax.]]><emphasis role="bold"><![CDATA[AjaxUrlBasedContentTypeViewResolver]]></emphasis><![CDATA[">
+	<property name="viewClass" value="org.anyframe.simpleweb.js.ajax.tiles2.]]><emphasis role="bold"><![CDATA[AjaxParamTilesView]]></emphasis><![CDATA["/>
+	<property name="order" value="1"/>
+	<property name="contentType" value="text/html;charset=utf-8"/>	
+</bean>]]></programlisting>
+		또한, 이러한 Tiles를 사용할 경우 Tiles Definition 정보가 작성되어 있는 xml 파일의 위치를
+		TilesConfigurer를 통해 정의 해야 한다. 이는 Anyframe Tiles Plugin 설치시 자동으로 등록 되며, 자세한 사항은
+		<ulink url="http://dev.anyframejava.org/docs/anyframe/plugin/optional/tiles/1.0.3-SNAPSHOT/reference/htmlsingle/tiles.html#tiles_tilesintegration_tilesconfigurer">Tiles Plugin >> Tiles Configure</ulink>를 참조하도록 한다.
+		</para>
+	</section>
+	
+	<!--  Tiles Configuration 이동.. START -->
+	<section id="simpleweb_configuration_tilesconfigurer">
+		<title>Tiles Configurer 설정</title>
+		<para>Tiles를 사용할 경우 Tiles Definition 정보가 작성되어 있는 xml 파일의 위치를
+		TilesConfigurer를 통해 정의하도록 한다. 이 때, Anyframe에서는 Spring 3.0의 EL문을 사용할 수 있도록
+		tilesInitializer를 통해 ELTilesInitializer 아래와 같이 정의해 주도록 한다.
+		다음은 simpleweb-plugin 설치로 추가된 Spring 속성 정의 파일 moviefinder-servlet.xml 파일의 일부이다.
+		<programlisting language="xml"><![CDATA[<bean id="tilesConfigurer" class="org.springframework.web.servlet.view.tiles2.TilesConfigurer">
+	]]><emphasis role="bold"><![CDATA[<property name="tilesInitializer">
+		<bean class="org.anyframe.tiles.ELTilesInitializer">]]></emphasis><![CDATA[
+			<property name="definitions">
+				<list>
+					<value>/WEB-INF/tilesviews.xml</value>
+				</list>
+			</property>
+		</bean>
+	</property>
+</bean>	]]></programlisting>
+		</para>
+		<note>
+			<title>Servlet 2.4 spec의 Tiles EL 지원</title>
+			<para>위에서 설명한 Tiles에서 제공하는 EL은 기본적으로 Servlet 2.5 spec이상에서만 지원된다.
+			이에 Anyframe Simpleweb에서는 Servlet 2.4 spec에서도 Tiles EL을 지원해 주기 위해 
+			tilesInitializer 클래스를 제공한다.	설정 방법은 아래와 같다.</para>
+			<programlisting language="xml"><![CDATA[<bean id="tilesConfigurer" class="org.springframework.web.servlet.view.tiles2.TilesConfigurer">
+	]]><emphasis role="bold"><![CDATA[<property name="tilesInitializer">
+		<bean class="org.anyframe.tiles.Servlet24ELTilesInitializer">]]></emphasis><![CDATA[
+			<property name="definitions">
+				<list>
+					<value>/WEB-INF/tilesviews.xml</value>
+				</list>
+			</property>
+		</bean>
+	</property>
+</bean>]]></programlisting>
+		</note>
+	</section>
+	<!--  Tiles Configuration 이동.. END -->
+	<!-- Jquery Configuration 이동... START -->
+	<section id="simpleweb_configuration_json">
+		<title>JSON View 설정</title>
+		<para>jQuery를 사용하여 Application을 개발할 때 기본적으로 JSON 객체 타입의 데이터를 
+		주고 받게 되며 Spring 3.0에서는 이러한 JSON View를 지원하기 위해 MappingJacksonJsonView 클래스를 제공한다.
+		Application에서는 JSON View가 아닌 일반적인 JSP View도 함께 사용하므로 이미 정의되어 있는 AjaxUrlBasedContentTypeViewResolver와 별도로
+		XmlViewResolver를 정의하고 JSON 요청을 처리할 MappingJacksonJsonView를 정의하도록 한다.
+		다음은 simpleweb-plugin 설치로 추가된 Spring 속성 정의 파일 simpleweb-vo-servlet.xml의 일부이다.
+		(simpleweb-map-servlet.xml of Simpleweb-Map plugin, simpleweb-json-servlet.xml of Simpleweb-JSON plugin) 
+		<programlisting language="xml"><![CDATA[<bean name="jsonViewResolver" class="]]><emphasis role="bold"><![CDATA[org.springframework.web.servlet.view.XmlViewResolver]]></emphasis><![CDATA[">
+	<property name="order" value="1"/>
+	<property name="location" value="/WEB-INF/simpleweb-json-views.xml"/>
+</bean>]]></programlisting>
+			<warning><title>다중 View Resolver의 우선 순위</title>
+				<para>UrlBasedViewResolver를 상속받고 있는 View Resolver들은 View 이름을 찾지 못하면 404 에러를 발생 시키므로 View Resolver 중 우선 순위를 제일 낮게 설정해 줘야 한다. 
+				이에 XmlViewResolver의 우선 순위를 위에서 정의한 AjaxUrlBasedContentTypeViewResolver의 우선 순위보다
+				높게 정의해줘야 한다.</para>
+			</warning>
+		</para>
+		위에서 정의한 XmlViewResolver에서 View 정보를 정의할 simpleweb-vo-views.xml에 MappingJacksonJsonView를 정의해 준다. 
+		다음은 simpleweb-plugin 설치로 추가된 Spring 속성 정의 파일 simpleweb-vo-views.xml 파일의 일부이다. 
+		<programlisting language="xml"><![CDATA[<bean name="jsonView" class="]]><emphasis role="bold"><![CDATA[org.springframework.web.servlet.view.json.MappingJacksonJsonView]]></emphasis><![CDATA["/>]]></programlisting>
+		위의 코드에서 "jsonView"라는 view 이름을 MappingJacksonJsonView에서 처리하게 되므로 JSON 요청을 처리하는 Controller 클래스의 리턴되는 view 이름은 "jsonView"가 되도록 한다. 
+	</section>
+	<!-- jQuery Configuration 이동... END -->
+	<section id="simpleweb_configuration_interceptor">
+		<title>TilesInterceptor 설정</title>
+		<para>Tiles Layout 기반의 개발을 하기 위해서는 기본적으로 리턴되는 view 이름을 Tiles Definition으로 정의하고 있다. 
+		이 때, Anyframe submit tag, link tag의 layout 속성을 사용하여 view 이름을 정의해 줄 수 있다. 이 때, 이 속성을 정의하지 않을 시 즉, Tiles Definition을 정의하지 않을 시에
+		오류가 발생하게 된다. 이에 layout을 정의하지 않아도 기본적으로 "standardLayout"이라는  view를 출력해주기 위해 
+		아래와 같이 Simpleweb을 사용하는 요청에 대해 Interceptor를 정의해 줘야한다. 아래는 Inertceptor를 정의한 simpleweb-servlet.xml의 일부이다.
+		</para>
+		<programlisting language="xml"><![CDATA[<mvc:interceptors>
+		<mvc:interceptor>
+			<mvc:mapping path="/simple*"/>
+			<bean class="org.anyframe.simpleweb.interceptor.TilesInterceptor"/>
+		</mvc:interceptor>
+	</mvc:interceptors>]]></programlisting>
+	</section>
+</chapter>

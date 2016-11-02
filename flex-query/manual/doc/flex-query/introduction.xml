@@ -1,0 +1,71 @@
+<chapter id="flex_query_introduction">
+	<title>Introduction</title>
+	<para>
+		Abobe의 Flex는 MXML를 작성해 플래시로 된 화면을 만드는 RIA개발 솔루션이다. 컴파일된 결과가 플래시 파일로 만들어지기 때문에
+		플래시플레이어만 설치되어 있다면 어떠한 브라우저에서 실행 가능하고 플래시 화면처럼 화려하고 다양한 화면을 만들 수 있다. 
+	</para>
+	<para>
+		Flex에서 기본으로 제공하는 HTTPService만으로도 Web Application개발이 가능하기는 하지만 데이터 전송 방식이 XML이라는데
+		많은 제약이 있다. BlazeDS를 사용하게 되면 HTTPService뿐만 아니라 RemotingService, MessageService등을 사용해
+		Client와 Server간의 데이터를 주고 받을 수 있다.
+	</para>
+	<para>
+		Spring BlazeDS Integration은 BlazeDS와 Spring Framework를 이용해 Flex Web Application을 개발 할 때, 복잡하고 어려운
+		설정들을 간소화 할 수 있는 기능들을 제공한다. 
+	</para>
+	<section id="flex_query_introduction_sec001">
+		<title>Flex</title>
+		<section id="flex_query_introduction_sec001_001">
+		<title>Flex의 동작 원리</title>
+		<para>
+			Flex는 기본적으로는 Action Script, MXML, Asset(CSS, Image)로 구성되어 있고 컴파일 된 SWF파일이 플래시 플레이어에서 실행 된다. 
+		</para>
+		<mediaobject>
+			<imageobject>
+				<imagedata fileref="../image/flex-query/flex_application.jpg"	align="center" />
+			</imageobject>
+			<textobject>
+				<phrase>Flex는 기본적으로는 Action Script, MXML, Asset(CSS, Image)로 구성되어 있고 컴파일 된 SWF파일이 플래시 플레이어에서 실행 된다.</phrase>
+			</textobject>
+		</mediaobject>
+		</section>
+		<section id="flex_query_introduction_sec001_002">
+		<title>MXML의 컴파일과 Flex Builder</title>
+		<para>
+			MXML파일을 컴파일 하기 위해서는 아래와 같이 Flex SDK에서 제공하는 mxmlc.exe명령어를 이용하면 된다.
+		</para>
+		<programlisting language="java">mxmlc -file -specs Main.mxml</programlisting>
+		<para>
+			Flex Builder 3는 Flex개발을 위한 IDE이며, mxmlc와 compc 컴파일러가 포함되어 있어 mxml을 자동으로 컴파일해준다.
+			Flex Builder 3는 독립실행 버전과 Eclipse플러그인 버전이 있다. 독립실행 버전은 별도의 이클립스 설치가 필요 없지만,
+			JDT(Java Development Tools)를 사용 할 수 없다.
+		</para>
+		<para>
+			Flex Builder 3는 MXML의 자동 컴파일 외에 디버깅, 자동완성, 모니터링 등의 개발 시 필요한 기능들과 
+			컴포넌트 디자인을 쉽게 할 수있도록 디자인 뷰를 제공한다.
+		</para>
+		</section>
+	</section>
+		<section id="flex_query_introduction_sec002">
+		<title>BlazeDS</title>
+		<para>
+			Flex에서 기본으로 제공하는 Data통신 방식인 HTTPService는 XML형태로 데이터를 주고 받기 때문에 대용량 데이터 전송에 적합하지 않고 MXML의 소스코드내에
+			url정보가 입력되기 때문에 보안상 문제가 있다. BlazeDS는 Client와 Server사이에 데이터 전송을 위해  Adobe에서 제공하는 Opensource S/W이다. 
+			BlazeDS는 크게 다음과 같이 구성되어 있다.
+		</para>
+		<itemizedlist>
+			<listitem>
+				<para><emphasis role="bold">Client</emphasis> : RemoteObject, HTTPService, WebService, Producer, Consumer
+				 </para>
+			</listitem>
+			<listitem>
+				<para><emphasis role="bold">Server</emphasis> : BlazeDS 라이브러리, BlazeDS 설정 파일, MessageBrokerServlet
+				 </para>
+			</listitem>
+  		</itemizedlist>
+  		<para>
+  			BlazeDS는 Client와 Server 사이의 데이터 전송 방식으로 RPC(HTTPService, WebService, RemoteObject) Service, Messaging Service를 제공하는데
+  			각 Service에 대한 상세 내용은 <link linkend="flex_dataintegraion_sec002">BlazeDS를 이용한 Data 연동</link>을 참고한다.
+		</para>
+	</section>
+</chapter>

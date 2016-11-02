@@ -1,0 +1,170 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+
+<!DOCTYPE book PUBLIC "-//OASIS//DTD DocBook XML V4.5//EN" "http://www.oasis-open.org/docbook/xml/4.5/docbookx.dtd"
+[
+<!ENTITY simpleweb_jquery_controller SYSTEM "simpleweb-jquery/controller.xml">
+<!ENTITY simpleweb_jquery_json SYSTEM "simpleweb-jquery/json.xml">
+]
+>
+
+<!--
+		Licensed to the Apache Software Foundation (ASF) under one or more
+		contributor license agreements. See the NOTICE file distributed with
+		this work for additional information regarding copyright ownership.
+		The ASF licenses this file to you under the Apache License, Version
+		2.0 (the "License"); you may not use this file except in compliance
+		with the License. You may obtain a copy of the License at
+
+		http://www.apache.org/licenses/LICENSE-2.0 Unless required by
+		applicable law or agreed to in writing, software distributed under the
+		License is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR
+		CONDITIONS OF ANY KIND, either express or implied. See the License for
+		the specific language governing permissions and limitations under the
+		License.
+-->
+    
+<book lang="en">
+	<title>Anyframe Simpleweb jQuery Plugin</title>
+	
+	<bookinfo>
+		<copyright>
+			<year>2007-2012</year>
+			<holder>Samsung SDS</holder>
+		</copyright>
+		<releaseinfo>Version 1.0.4-SNAPSHOT</releaseinfo>
+
+		<productname>Anyframe Simpleweb jQuery Plugin</productname>
+
+		<authorgroup>
+			<corpauthor></corpauthor>
+		</authorgroup>
+
+		<mediaobject>
+			<imageobject>
+				<!-- logo 변경 -->
+				<imagedata fileref="../image/common/logo_pdf.jpg"/>
+			</imageobject>
+		</mediaobject>
+		<legalnotice>
+			<para>
+			The copyright of this document is the property of Samsung SDS. 
+			Permission is granted to use this document for free only for the purpose of open source community activity. 
+			The copyright holder should be clearly stated in case this document is copied or distributed, and changed contents should be specified. 
+			Permission is not granted for the commercial use of the modification of the original document. 
+			Should there be parts considered to have errors in this document, please register the issue for which we will take proper action.
+			</para>
+		</legalnotice>
+	</bookinfo>
+	
+	<part id="simpleweb_jquery_introduction_part">
+		<title>Introduction</title>
+		<partintro id="simpleweb_jquery_introduction_part_intro">
+			<para>
+				Simpleweb jQuery Plugin is composed of sample codes created by using a common Controller class and tag libraries that use JSON type data and reference libraries necessary to use them  to enable developer to develop Spring MVC-based web applications more easily and simply.
+				Here are also included the samples on ways to connect with <ulink url="http://jquery.com/">jQuery</ulink>. 
+				The jQuery components used in Plugin sample codes include jqgrid, quickpager, autocomplete, jstree, ui-tab, dropdown, uploadify, etc.
+			</para>
+			<para role="introduction_title">
+				<emphasis role="bold">Installation</emphasis>
+			</para>
+			<para>Install simpleweb-jquery plugin by entering the following command in the Command window.</para>
+			<programlisting language="java"><![CDATA[mvn anyframe:install -Dname=simpleweb-jquery]]></programlisting>
+			<para>
+				The installation result can be checked by using the installed (mvn anyframe:installed) or the jetty:run (mvn clean
+				jetty:run) commands. 
+			</para>
+			<informaltable>
+				<caption>Dependent Plugins</caption>
+				<tgroup cols="2">
+					<colspec colnum="1" colname="col1" colwidth="5*" />
+					<colspec colnum="2" colname="col2" colwidth="5*" />
+					<thead>
+						<row>
+							<entry align="center">Plugin Name</entry>
+							<entry align="center">Version Range</entry>
+						</row>
+					</thead>
+					<tbody>
+						<row>
+							<entry align="center">
+								<ulink
+									url="http://dev.anyframejava.org/docs.en/anyframe/plugin/optional/simpleweb/1.0.3-SNAPSHOT/reference/htmlsingle/simpleweb.html">Simpleweb</ulink>
+							</entry>
+							<entry align="center" valign="middle">2.0.0 > * > 1.0.2</entry>
+						</row>
+					</tbody>
+				</tgroup>
+			</informaltable>
+		</partintro>
+	</part>	
+	
+	<part id="simpleweb_jquery_controller_part">
+		<title>Controller</title>
+		<partintro>
+			<para>
+				This chapter will cover the Controller class provided by Anyframe that is used when JSON objects are returned to connect with jQuery.  
+			</para>
+		</partintro>
+		&simpleweb_jquery_controller;
+	</part>
+	
+	<part id="simpleweb_jquery_jquery_part">
+		<title>Development of Simpleweb using jQuery</title>
+		<partintro>
+			<para>
+				In this chapter the way to connect Simpleweb and jQuery will be explained centering on Sample Application generated when Simpleweb jQuery Plugin (simpleweb-jquery) is installed.
+				The data that is shown on the screen when jQuery is used is returned in the JSON object type. 
+				Basically the components of jQuery provided by Sample Application created when simpleweb-jquery plugin is installed  
+				include jqgrid, jstree, autocomplete, dropdown, jquery-ui, quickpager, and uploadify. 
+				All the files related to jQuery (js and css) exist under the [project]/src/main/webapp/simpleweb-jquery/jquery folder.
+			</para>
+
+			<para>
+			These js or css files related to jQuery are defined at the top of standard.jsp used by simpleweb-jquery. 
+			The following is part of the standard.jsp file added by installing simpleweb plugin.
+			</para>
+			<programlisting language="java"><![CDATA[<!-- for jquery -->
+<script type="text/javascript" src="<c:url value='/simpleweb-jquery/jquery/jquery-1.6.2.min.js'/>"></script>
+<link rel="stylesheet" href="<c:url value='/simpleweb-jquery/css/jquery.css'/>" type="text/css" />
+
+<!-- jquery ui, jqGrid -->
+<script type="text/javascript" src="<c:url value='/simpleweb-jquery/jquery/jqgrid/i18n/grid.locale-en.js'/>"></script>
+<script type="text/javascript" src="<c:url value='/simpleweb-jquery/jquery/jquery-ui/jquery-ui-1.8.16.custom.min.js'/>"></script>
+<script type="text/javascript" src="<c:url value='/simpleweb-jquery/jquery/jqgrid/jquery.jqGrid.min.js'/>"></script>
+<link href="<c:url value='/simpleweb-jquery/jquery/jqgrid/ui.jqgrid.css'/>" rel="stylesheet" type="text/css" />
+
+<!-- jquery form -->  
+<script type="text/javascript" src="<c:url value='/simpleweb-jquery/jquery/form/jquery.form.js'/>"></script>
+
+<!-- jquery:jstree-1.0.RC3 -->
+<script type="text/javascript" src="<c:url value='/simpleweb-jquery/jquery/jstree/jquery.jstree.js'/>"></script>
+
+<!-- jquery tab -->
+<link href="<c:url value='/simpleweb-jquery/jquery/jquery-ui/smoothness/jquery-ui-1.8.16.custom.css'/>" rel="stylesheet" type="text/css" />
+	
+<!-- jquery uploadify -->
+<link type="text/css" href="<c:url value='/simpleweb-jquery/jquery/uploadify/uploadify.css'/>" rel="stylesheet">
+<script src="<c:url value='/simpleweb-jquery/jquery/uploadify/swfobject.js'/>" type="text/javascript"></script>
+<script src="<c:url value='/simpleweb-jquery/jquery/uploadify/jquery.uploadify.v2.1.4.min.js'/>" type="text/javascript"></script>
+
+<!-- jquery image dropdown -->
+<script type="text/javascript" src="<c:url value='/simpleweb-jquery/jquery/dropdown/msdropdown/js/jquery.dd.js'/>"></script>
+<link href="<c:url value='/simpleweb-jquery/jquery/dropdown/msdropdown/dd.css'/>" rel="stylesheet" type="text/css" />
+
+<!--  quick pager -->
+<script type="text/javascript" src="<c:url value='/simpleweb-jquery/jquery/quickpager/quickpager.mod.jquery.js'/>"></script>
+<link rel="stylesheet" href="<c:url value='/simpleweb-jquery/jquery/quickpager/pagination.css'/>" type="text/css" />
+
+<!-- validator -->
+<script type="text/javascript" src="<c:url value='/simpleweb-jquery/jquery/validate/jquery.validate.js'/>"></script>]]></programlisting>
+			<para>
+			Only the files on necessary components among the js and css files imported above will be defined. 
+			jQuery also provides various plugin-type components, which can be used in connection when necessary.
+			When basically JSON-type objects are used, the basic usage of Anyframe Tag Library is the same as when VO or Map are used.
+			Let us look at how to connect basic components of jQuery mentioned above. 
+			</para>			
+		</partintro>
+		&simpleweb_jquery_json;
+	</part>
+
+</book>

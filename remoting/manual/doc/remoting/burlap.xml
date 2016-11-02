@@ -1,0 +1,310 @@
+<chapter id="remoting_burlap">
+	<title>Burlap</title>
+	
+    <para>
+    	Hessian과 Burlap은 HTTP를 통해 경량의 원격 서비스를 가능하게 하는
+    	<ulink url="http://www.caucho.com/">Caucho Technology</ulink> 가 제공하는
+    	솔루션이다.
+    </para>
+
+    <itemizedlist>
+      	<listitem>
+        	<para>
+        		RMI의 방화벽 문제 해결
+        	</para>
+      	</listitem>
+
+      	<listitem>
+        	<para>
+        		메모리와 저장 공간이 제한된 환경에서 사용 적합(애플릿/무선 단말기)
+        	</para>
+      	</listitem>
+
+      	<listitem>
+        	<para>
+        		제약 사항 - <emphasis role="bold">자바 표준 직렬화 매커니즘이 아닌 자체 직렬화 매커니즘
+        		사용으로 복합 데이터 모델 불충분 </emphasis>
+        	</para>
+      	</listitem>
+	</itemizedlist>
+
+    <para>
+    	Spring을 사용하지 않는 경우에도 Burlap 서비스를 작성하는 것은 매우 쉽다. 서비스 클래스가
+    	com.caucho.burlap.server.BurlapServlet을 확장하도록 하고 노출 대상 메소드의 지시자를 public으로
+    	설정하면 된다. Spring 기반으로 Burlap 서비스를 작성하는 경우 Dependency Injection, Spring AOP
+   	 	등의 Spring의 기능을 모두 이용할 수 있으므로 Spring Remoting 기능으로 제공하고 있다. RMI 서비스 작성 시
+    	Spring 설정 파일에 RmiServiceExporter 빈을 설정한 것과 마찬가지로 Burlap 서비스 작성시에는
+    	BurlapServiceExporter 빈을 사용한다. Property 설정이 거의 유사하지만 RmiServiceExporter빈에서
+    	설정했던 serviceName, registryPort Property 설정은 지정하지 않는다. Burlap 서비스는 RMI
+    	레지스트리를 갖고 있지 않으므로 서비스 명과 Port 번호 설정이 필요하지 않다. 다음은 Burlap 기능을 Server와
+    	Client 단에서 어떻게 사용해야 하는지에 대한 사용법이다.
+    </para>
+
+    <section id="remoting_burlap_serverconfiguration">
+    	<title>Server Configuration</title>
+
+		<para>
+			서버 구현 방식은 일반 서비스 빈 개발 방식과 같으며 BurlapServiceExporter 클래스를 이용하여 손쉽게
+      		일반 Spring Bean으로 작성된 서비스를 Burlap Service로 노출시킬 수 있다. 이때 모든 public 메소드는
+      		서비스 메소드로 노출된다.
+      	</para>
+
+      	<informaltable>
+      		<caption>Burlap Service 노출을 위한 설정</caption>
+        	<tgroup cols="4">
+         		<colspec colnum="1" colname="col1" colwidth="2*"/>
+        		<colspec colnum="2" colname="col2" colwidth="5*"/>
+        		<colspec colnum="3" colname="col3" colwidth="1*"/>
+        		<colspec colnum="4" colname="col4" colwidth="2*"/>
+          		<thead>
+            		<row>
+              			<entry align="center">Property Name</entry>
+
+              			<entry align="center">Description</entry>
+
+              			<entry align="center">Required</entry>
+
+              			<entry align="center">Default Value</entry>
+            		</row>
+          		</thead>
+
+          		<tbody>
+            		<row>
+              			<entry>service</entry>
+
+              			<entry>Burlap 서비스로 노출시키고 싶은 Spring Bean의 id를 설정한다.</entry>
+
+              			<entry align="center">Y</entry>
+
+              			<entry align="center">N/A</entry>
+            		</row>
+
+            		<row>
+             	 		<entry>serviceInterface</entry>
+
+              			<entry>Burlap 서비스로 노출되는 서비스의 인터페이스 클래스를 패키지정보와 함께 작성한다.</entry>
+
+              			<entry align="center">Y</entry>
+
+              			<entry align="center">N/A</entry>
+            		</row>
+          		</tbody>
+        	</tgroup>
+      	</informaltable>
+
+      	<section id="remoting_burlap_serverconfiguration_sample">
+        	<title>Samples</title>
+
+        	<para>
+        		다음은 Burlap 서버 구현 속성 설정에 대한 예제이다. 서비스는 일반 Spring Bean 개발과 동일하며
+        		BurlapServiceExporter Bean에서 property 설정 정보를 참조하여 Burlap 서비스로 노출시키고
+        		있다.
+        	</para>
+
+        	<itemizedlist>
+          		<listitem>
+            		<para>
+            			<emphasis role="bold">Configuration</emphasis>
+            		</para>
+
+            		<para>
+            			다음은 Burlap 서비스를 지원하는 BurlapServiceExporter의 속성을 정의한 context-remoting-burlap.xml의 일부이다.
+            		</para>
+
+            		<programlisting language="xml"><![CDATA[<bean]]> <emphasis role="bold">id="org.anyframe.sample.remoting.moviefinder.service.MovieService"</emphasis>
+        <![CDATA[class="org.anyframe.sample.remoting.moviefinder.service.impl.MovieServiceImpl">
+    <property name="movieDao" ref="movieDao"/>
+</bean>
+
+<bean id="movieDao" class="org.anyframe.sample.remoting.moviefinder.service.impl.MovieDao" />
+    
+<!-- Add Burlap ServiceExporter -->
+<bean id="burlapMovieService"]]> 
+        <emphasis role="bold">class="org.springframework.remoting.caucho.BurlapServiceExporter"</emphasis>>
+
+    <![CDATA[<property name="service" ref="org.anyframe.sample.remoting.moviefinder.service.MovieService" />
+    <property name="serviceInterface" 
+            value="org.anyframe.sample.remoting.moviefinder.service.MovieService" />
+</bean>]]></programlisting>
+
+            		<para>
+            			여기서 BurlapServiceExporter 빈은 Spring MVC의 컨트롤러로 작성되어 있으므로
+            			Spring MVC의 DispatcherServlet을 web.xml 파일에 설정해야 한다. HTTP로 서비스를
+            			제공하기 위해서 웹 어플리케이션으로 서비스를 배포하여 제공하고 있다. 다음은 서버 사이드 웹 어플리케이션의
+            			web.xml 의 일부이다.
+            			<programlisting language="xml"><![CDATA[<web-app>
+    <context-param>
+        <param-name>contextConfigLocation</param-name>
+        <param-value>WEB-INF/WEB-INF/context-remoting-burlap.xml</param-value>
+    </context-param>
+
+    <listener>
+        <listener-class>
+            org.springframework.web.context.ContextLoaderListener
+        </listener-class>
+    </listener>
+    <servlet>
+        <servlet-name>remoting</servlet-name>
+        <servlet-class>
+            org.springframework.web.servlet.DispatcherServlet
+        </servlet-class>
+        <init-param>
+            <param-name>contextConfigLocation</param-name>
+            <param-value>WEB-INF/context-remoting-burlap.xml</param-value>
+        </init-param>
+        <load-on-startup>1</load-on-startup>
+    </servlet>
+    <servlet-mapping>
+        <servlet-name>remoting</servlet-name>
+        <url-pattern>/*</url-pattern>
+    </servlet-mapping>
+</web-app>]]></programlisting>
+					</para>
+
+            		<para>
+            			여기서 Spring MVC의 URL Mapping 기능을 사용하여 HTTP 기반의 Burlap 컨트롤러를
+            			호출할 수 있도록 한다. 다음은 서버 사이드 웹 어플리케이션의 remoting-burlap-servlet.xml 의 일부이다. *
+            			패턴의 모든 URL에 대한 요청이 DispatcherServlet으로 전달된 후 urlMapping 정보에 의해
+            			burlapMovieService가 호출되어 Burlap 서비스가 제공된다.
+						<programlisting language="xml"><![CDATA[<bean id="urlMappingUser" class="org.springframework.web.servlet.handler.SimpleUrlHandlerMapping">
+    <property name="mappings">
+        <props>
+            <prop key="/MovieService">burlapMovieService</prop>
+        </props>
+    </property>
+</bean>]]></programlisting>
+					</para>
+          		</listitem>
+         
+        	</itemizedlist>
+		</section>
+	</section>
+
+    <section id="emoting_remoting_burlap_clientconfiguration">
+      	<title>Client Configuration</title>
+
+      	<para>
+      		클라이언트는 Spring에서 제공하는
+      		org.springframework.remoting.caucho.BurlapProxyFactoryBean 클래스를 사용하여
+      		Burlap Service에 접근할 수 있다.
+      	</para>
+
+      	<informaltable>
+      		<caption>Burlap Service 접근을 위한 설정</caption>
+        	<tgroup cols="4">
+         		<colspec colnum="1" colname="col1" colwidth="2*"/>
+        		<colspec colnum="2" colname="col2" colwidth="5*"/>
+        		<colspec colnum="3" colname="col3" colwidth="1*"/>
+        		<colspec colnum="4" colname="col4" colwidth="2*"/>
+          		<thead>
+            		<row>
+              			<entry align="center">Property Name</entry>
+
+              			<entry align="center">Description</entry>
+
+              			<entry align="center">Required</entry>
+
+              			<entry align="center">Default Value</entry>
+            		</row>
+          		</thead>
+
+          		<tbody>
+            		<row>
+              			<entry>serviceUrl</entry>
+
+              			<entry>
+              				Burlap 서비스 접근 URL 정보이다. "http://" + 서버ip + ":" + port 번호
+              				+ "/" + 서비스 명 (ex.http://localhost:9002/MovieService)
+              			</entry>
+
+              			<entry align="center">Y</entry>
+
+              			<entry align="center">N/A</entry>
+            		</row>
+
+            		<row>
+              			<entry>serviceInterface</entry>
+
+              			<entry>Burlap 서비스로 노출되는 서비스의 인터페이스 클래스를 패키지정보와 함께 작성한다.</entry>
+
+              			<entry align="center">Y</entry>
+
+              			<entry align="center">N/A</entry>
+            		</row>
+          		</tbody>
+        	</tgroup>
+		</informaltable>
+
+		<section id="emoting_remoting_burlap_clientconfiguration_sample">
+        	<title>Samples</title>
+
+        	<para>
+        		다음은 Burlap 클라이언트 속성 설정에 대한 예제이다. 클라이언트는 BurlapProxyFactoryBean에서
+        		property 설정 정보를 참조하여 Burlap 서비스에 접근하고 있다.
+        	</para>
+
+        	<itemizedlist>
+          		<listitem>
+            		<para>
+            			<emphasis role="bold">Configuration</emphasis>
+            		</para>
+
+            		<para>
+            			다음은 Burlap 서비스에 접근하는 BurlapProxyFactoryBean의 속성을 정의한
+            			context-remoting-burlap-client.xml 의 일부이다.
+            			<programlisting language="xml"><![CDATA[<!-- Add Burlap Client -->
+<bean id="movieServiceClient"]]> 
+  <emphasis role="bold">class="org.springframework.remoting.caucho.BurlapProxyFactoryBean"</emphasis><![CDATA[>
+  
+    <property name="serviceUrl" value="http://localhost:9002/MovieService" />
+    <property name="serviceInterface"
+            value="org.anyframe.sample.remoting.moviefinder.service.MovieService"/>
+</bean>]]></programlisting>
+					</para>
+
+            		<para>
+            			RMI 서비스에 접근하는 클라이언트와 마찬가지로 serviceInterface Property에는 서비스가
+            			구현하는 인터페이스 클래스를 설정하고. serviceUrl Property에는 서비스 URL을 작성하는데 Burlap은
+            			HTTP 기반으로 제공되므로 HTTP URL을 작성하도록 한다.
+            		</para>
+          		</listitem>
+          
+        	</itemizedlist>
+		</section>
+	</section>
+
+    <section id="emoting_remoting_burlap_difference">
+		<title>Hessian과 Burlap의 차이점</title>
+
+      	<itemizedlist>
+        	<listitem>
+          		<para>
+          			Hessian의 경우 RMI와 같이 클라이언트와 원격 시스템의 서비스 간 통신을 할때 바이너리 데이터를
+          			사용한다.
+          		</para>
+        	</listitem>
+
+        	<listitem>
+          		<para>
+          			Burlap의 경우 XML 기반으로 통신한다. Hessian의 바이너리 데이터에 비해
+          			Human-readable하다. 그러나 SOAP 메시지 기반의 Remoting과 달리 Burlap의 XML 메시지는
+          			WSDL이나 IDL과 같은 별도의 Definition Language가 없는 간단한 구조로 구성되어 있다.
+          		</para>
+        	</listitem>
+
+        	<listitem>
+          		<para>
+          			바이너리 데이터를 사용하는 Hessian이 네트워크 환경에서의 데이터 전송 면에서 더 효율적이다.
+          		</para>
+        	</listitem>
+
+        	<listitem>
+          		<para>
+          			그러나 메시지 가독성이 중요한 경우 혹은 Hessian 구현이 존재하지 않는 타 Language와 통신해야 하는
+          			경우에는 Burlap을 사용해야 한다.
+          		</para>
+        	</listitem>
+		</itemizedlist>
+	</section>
+</chapter>
+

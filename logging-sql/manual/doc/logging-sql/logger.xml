@@ -1,0 +1,80 @@
+<chapter id="loggingsql_sqllogging_logger">
+		<title>Logger 정의</title>
+
+		<para>
+			lo4jdbc를 사용하여 로그를 남기기 위해서는 log4j.xml 파일 내에 다음을 참고하여, 필요한 Logger를
+      		정의하도록 한다.
+      	</para>
+
+		<itemizedlist>
+			<listitem>
+				<para>
+					<emphasis role="bold">jdbc.sqlonly</emphasis> : SQL문만을 로그로
+          			남기며, PreparedStatement일 경우 관련된 argument 값으로 대체된 SQL문이 보여진다.
+          		</para>
+        	</listitem>
+
+        	<listitem>
+          		<para>
+          			<emphasis role="bold">jdbc.sqltiming</emphasis> : SQL문과 해당
+          			SQL을 실행시키는데 수행된 시간 정보(milliseconds)를 포함한다.
+          		</para>
+        	</listitem>
+
+        	<listitem>
+				<para>
+					<emphasis role="bold">jdbc.audit</emphasis> : ResultSet을 제외한
+          			모든 JDBC 호출 정보를 로그로 남긴다. 많은 양의 로그가 생성되므로 특별히 JDBC 문제를 추적해야 할 필요가 있는
+          			경우를 제외하고는 사용을 권장하지 않는다.
+          		</para>
+        	</listitem>
+
+        	<listitem>
+          		<para>
+          			<emphasis role="bold">jdbc.resultset</emphasis> : ResultSet을
+          			포함한 모든 JDBC 호출 정보를 로그로 남기므로 매우 방대한 양의 로그가 생성된다.
+          		</para>
+        	</listitem>
+      	</itemizedlist>
+
+      	<para>
+      		또한, 각 Logger에 대한 로그 레벨은 DEBUG, INFO, ERROR 중 하나를 선택할 수 있다.
+      	</para>
+
+		<itemizedlist>
+        	<listitem>
+         	 	<para>
+         	 		DEBUG - SQL이 실행된 클래스명과 Line 번호를 로그로 남긴다.
+         	 	</para>
+        	</listitem>
+
+        	<listitem>
+          		<para>
+          			INFO - SQL문을 로그로 남긴다.
+          		</para>
+        	</listitem>
+
+        	<listitem>
+          		<para>
+          			ERROR - SQL 실행 에러가 발생한 경우 stack trace 정보를 로그로 남긴다.
+          		</para>
+        	</listitem>
+      	</itemizedlist>
+
+      	<para>
+      		단, WebLogic Server에 정의된 JNDIDataSource를 사용할 경우 <emphasis
+      		role="bold">WAS에 추가한 JNDIDataSource에서 log4j.xml 파일을 읽어낼 수 있어야 하므로,
+      		log4j-*.jar와 log4j.xml은 해당 WAS의 클래스패스 상([Domain Server
+      		Home/lib])에 놓여 있어야 함에 유의해야 한다.</emphasis> WebLogic 9.2 기반에서 log4j.xml
+      		파일의 경우 jar 파일 형태로 압축하여 [Domain Server Home/lib]에 위치시키거나, WebLogic Server
+			실행을 위한 자바 옵션에 다음과 같이 추가해 줄 수 있다. <programlisting>-Dlog4j.configuration=file:///path../log4j.xml</programlisting>
+		</para>
+      	<warning>
+      		<title>Anyframe Monitoring Tool을 통해 모니터링하는 경우</title>
+      		 <para>
+      	 		해당 웹어플리케이션에 대해 Anyframe Monitoring Tool을 통해 모니터링하는 경우, Monitoring Tool의 Logging 
+				처리 로직으로 인해 WAS 로드시 ClassCastException이 발생하므로  -Dlog4j.defaultInitOverride=true 옵션을 추가해 
+				주어야 한다. 이러한 경우 Monitoring Agent에 대한 로그는 확인할 수 없게 된다.
+			</para>      
+      	</warning>          
+</chapter>

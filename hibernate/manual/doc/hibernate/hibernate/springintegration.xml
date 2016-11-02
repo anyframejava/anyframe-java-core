@@ -1,0 +1,336 @@
+<chapter id="hibernate_hibernate_springintegration">
+	<title>Spring Integration</title>
+
+    <para>
+    	Spring에서는 Hibernate 기반에서 DAO 클래스를 쉽게 구현할 수 있도록 하기 위해 HibernateTemplate을 제공하고 있다. 
+    	(※ Spring 2.5 부터는 Hibernate 3 버전을 지원한다.) 또한, Anyframe에서는 Veloticy 문법을 이용하여 Dynamic HQL, 
+    	Dynamic Native SQL문을 처리하기 위해서 DynamicHibernateService를 제공한다. Hibernate을 이용하여 데이터 액세스 
+    	처리를 수행하는 경우 하나의 비즈니스 서비스를 구성하는 요소들은 일반적으로 다음과 같이 구성될 수 있다.
+    </para>
+
+    <mediaobject>
+		<imageobject>
+        	<imagedata align="center" fileref="../image/hibernate/diagram.png" />
+      	</imageobject>
+      	<textobject>
+   			<phrase>
+   				Spring 기반에서 Hibernate을 통해 데이터 액세스 처리를 수행하기 위한 클래스들의 관계를 보여주는 클래스 다이어그램이다.
+   				Spring에서 Hibernate과 연계하기 위해 제공하는 HibernateDaoSupport 클래스를 상속받아 DAO 클래스를 구현해야 하고, 비즈니스 구현체에서 이 
+   				DAO 클래스를 이용하여 데이터 접근 처리를 수행함을 알 수 있다.
+   			</phrase>
+   		</textobject>
+    </mediaobject>
+
+    <para>
+    	Spring 기반에서 Hibernate을 통해 데이터 액세스 처리를 수행하기 위해서는 다음과 같은 절차에 따라 비즈니스 서비스를 개발할 수 있다.
+    </para>
+
+    <section id="hibernate_hibernate_springintegration_property">
+		<title>Hibernate 속성 정의 파일 작성</title>
+
+      	<para>
+      		Hibernate을 Spring과 연계하기 위해서는 SessionFactory 설정이 필요하다. 또한, Dynamic HQL, Dynamic Native SQL 
+      		실행을 위해서는 Anyframe에서 제공하는 DynamicHibernateService에 대한 설정도 필요하다.
+      	</para>
+
+		<section id="hibernate_hibernate_springintegration_springintegration_sessionfactory">
+        	<title>Session Factory 속성 정의</title>
+
+        	<para>
+        		Spring에서 제공하는 HibernateDaoSupport는 내부적으로 Hibernate 연계를 위해 HibernateTemplate을 생성하는데 
+        		이 클래스는 SessionFactory를 필요로 한다. 이를 위해 HibernateDaoSupport를 상속받은 클래스들은 SessionFactory를 
+        		필요로 하며, SessionFactory는 다음과 같은 속성 정보를 가질 수 있다. 다음은 SessionFactory의 속성을 정의한
+        		context-hibernate.xml 파일의 일부이다. 
+                <programlisting language="xml"><![CDATA[<bean id="sessionFactory" class="]]><emphasis role="bold"><![CDATA[org.springframework.orm.hibernate3.LocalSessionFactoryBean]]></emphasis>">
+    <![CDATA[<]]><emphasis role="bold">!-- SessionFactory에서 사용할 dataSource 정의 --</emphasis>>
+    <![CDATA[<property name="]]><emphasis role="bold">dataSource</emphasis><![CDATA[" ref="dataSource" />
+    <]]><emphasis role="bold">!-- Mapping XML의 위치 지정 --</emphasis>>
+    <![CDATA[<property name="]]><emphasis role="bold">mappingLocations</emphasis>">
+        <![CDATA[<list>
+            <value>classpath:anyframe/sample/model/bidirection/Category.hbm.xml</value>
+            <value>classpath:anyframe/sample/model/bidirection/Country.hbm.xml</value>
+            <value>classpath:anyframe/sample/model/bidirectionMovie.hbm.xml</value>
+        </list>
+    </property>
+<]]><emphasis role="bold">!-- Hibernate Property에 대한 속성 정의 --</emphasis>>
+    <![CDATA[<property name="]]><emphasis role="bold">hibernateProperties</emphasis>">
+        <![CDATA[<props>
+            <prop key="hibernate.hbm2ddl.auto">create</prop>
+            <!-- DBMS에 따른 dialect 설정-->
+            <prop key="hibernate.dialect">org.hibernate.dialect.HSQLDialect</prop>
+            <!-- hibernate을 이용한 sql문을 보여줄지 여부-->
+            <prop key="hibernate.show_sql">false</prop>
+            <prop key="hibernate.format_sql">true</prop>
+        </props>
+    </property>
+</bean>]]></programlisting>
+			</para>
+		</section>
+
+      	<section id="hibernate_hibernate_springintegration_property_dynamic">
+        	<title>Dynamic HQL, Dynamic Native SQL 실행을 위한 DynamicHibernateService 속성 정의</title>
+
+        	<para>
+        		조건에 따라 HQL문을 dynamic하게 생성해 주기 위해 Anyframe에서는 DynamicHibernateService를 제공한다. 이러한 
+        		기능을 사용하기 위해서는 다음과 같이 DynamicHibernateService 클래스에 대한 속성을 정의하고 특정 DAO 클래스 정의시
+        		DynamicHibernateService를 참조하도록 할 수 있다. 다음은 dynamicHibernateService bean이 정의된 context-hibernate.xml 
+        		파일의 일부이다. 
+                <programlisting language="xml"><![CDATA[<bean id="dynamicHibernateService"
+        class="]]><emphasis role="bold"><![CDATA[org.anyframe.hibernate.impl.DynamicHibernateServiceImpl]]></emphasis>">
+    <![CDATA[<!-- SessionFactory 지정  -->]]>
+    <![CDATA[<property name="]]><emphasis role="bold">sessionFactory</emphasis><![CDATA[" ref="sessionFactory" />
+    <!-- Velocity 문법이 적용된 dynamic한 HQL을 정의한 XML파일의 경로 지정 -->
+    <property name="]]><emphasis role="bold">fileNames</emphasis>">
+        <![CDATA[<list>
+            <value>classpath*:hibernate/spring/dynamic-hibernate.xml</value>
+        </list>
+    </property>
+</bean>]]></programlisting>
+			</para>
+
+			<para>
+				위와 같이 정의할 경우 dynamicHibernateService bean은 sessionFactory bean을 SessionFactory로 가지며 fileNames에 
+				정의된 XML들에서 해당되는 HQL또는 Native SQL을 찾게 될것이다.
+			</para>
+		</section>
+	</section>
+
+    <section id="hibernate_hibernate_springintegration_mapping">
+		<title>Mapping XML 파일 작성</title>
+
+      	<para>
+      		특정 비즈니스 서비스에서 사용할 객체와 테이블간의 매핑 정보를 Mapping XML 파일에 작성한다. 또한 Mapping XML 파일의 위치를 
+      		앞서 언급한 SessionFactory 속성 정의 파일에 아래와 같이 정의해 줘야한다.
+            <programlisting language="xml"><![CDATA[<bean id="sessionFactory"
+        class="]]><emphasis role="bold"><![CDATA[org.springframework.orm.hibernate3.LocalSessionFactoryBean]]></emphasis>">
+    <![CDATA[<property name="dataSource" ref="dataSource" />
+    <]]><emphasis role="bold">!-- Mapping XML의 위치 지정 --</emphasis>>
+    <![CDATA[<property name="]]><emphasis role="bold"><![CDATA[mappingLocations]]></emphasis>">
+        <![CDATA[<list>
+            <]]><emphasis role="bold">value</emphasis><![CDATA[>]]><emphasis role="bold"><![CDATA[classpath:/hibernate/*.hbm.xml]]></emphasis><![CDATA[<]]><emphasis role="bold"><![CDATA[/value]]></emphasis>>
+        <![CDATA[</list>
+    </property>
+</bean>]]></programlisting>
+		</para>
+
+      	<para>
+      		자세한 Mapping File 작성은 <link linkend="hibernate_hibernate_mappingfile">Hibernate Mapping File</link> 을 
+      		참고하도록 한다.
+      	</para>
+	</section>
+
+    <section id="hibernate_hibernate_springintegration_dao">
+		<title>DAO 클래스 생성</title>
+
+      	<para>
+      		Spring에서는 Hibernate을 보다 쉽게 연계하기 위해 HibernateDaoSupport 클래스를 제공하며 각 DAO 생성시 HibernateDaoSupport 
+      		클래스를 상속받아 구현할 수 있다. 각 DAO 클래스는 getHibernateTemplate()메소드를 호출함으로써 HibernateDaoSupport 
+      		클래스에서 제공하는 HibernateTemplate을 이용하여 기본 입력/수정/삭제/조회 작업을 수행할 수 있다. 또한, Dynamic HQL 
+      		처리를 위해 dynamicHibernateService를 사용해야 할 경우에는 위에서 언급한 바와 같이 dynamicHibernateService에 대한 
+      		참조가 필요하다.
+      	</para>
+
+		<section id="hibernate_hibernate_springintegration_dao_property">
+        	<title>DAO 속성 정의 파일 작성</title>
+
+        	<para>
+        		DAO 클래스에 대한 속성 정의 파일을 작성한다. SessionFactory와 DynamicHibernateService를 참조하는 MovieDAOHibernateImpl 
+        		클래스에 대한 속성은 다음과 같이 정의할 수 있다. 
+                <programlisting language="xml"><![CDATA[<bean id="movieService" class="org.anyframe.sample.service.movie.impl.MovieServiceImpl">
+    <property name="movieDAO">
+        <bean class="org.anyframe.sample.service.movie.impl.MovieDAOHibernateImpl">
+            <!-- Hibernate Template을 이용하기 위한 SessionFactory 정의 -->
+            <property name="]]><emphasis role="bold">sessionFactory</emphasis><![CDATA[" ref="sessionFactory"/>
+            <!-- Dynamic HQL문 지원을 위한 dynamicHibernateService 정의 
+            (]]><emphasis role="bold">dynamicHibernateService를 사용할 때만 정의</emphasis>) -->
+            <![CDATA[<property name="]]><emphasis role="bold">dynamicHibernateService</emphasis><![CDATA[" ref="dynamicHibernateService"/>
+        </bean>
+    </property>
+</bean>]]> </programlisting>
+			</para>
+
+        	<para>
+        		위 코드는 context-sample.xml 에서 확인할 수 있다.
+        	</para>
+		</section>
+
+      	<section id="hibernate_hibernate_springintegration_dao_class">
+        	<title>DAO 클래스 개발</title>
+
+			<para>
+        		Spring에서 제공하는 HibnernateDaoSupport를 상속받아 DAO 클래스를 정의한다. 이 때, getHibernateTemplate() 
+        		메소드를 사용하여 HibernateTemplate을 이용한 데이터 입력/수정/삭제/조회가 가능하다. 
+                <programlisting language="java"><![CDATA[public class MovieDAOHibernateImpl ]]><emphasis
+        role="bold">extends HibernateDaoSupport</emphasis><![CDATA[implements MovieDAO{
+
+    private DynamicHibernateService dynamicHibernateService;
+
+    //dynamicHibernateService Setter Injection]]>
+    <emphasis role="bold"><![CDATA[public void setDynamicHibernateService(
+            DynamicHibernateService dynamicHibernateService) {
+            this.dynamicHibernateService = dynamicHibernateService;
+        }]]></emphasis>
+
+    <![CDATA[public void createMovie(Movie movie) throws Exception {]]>
+        <emphasis role="bold"><![CDATA[this.getHibernateTemplate().save(movie);]]></emphasis>
+    }
+    <![CDATA[public Movie findMovie(String movieId) throws Exception {]]>
+        <emphasis role="bold"><![CDATA[return (Movie) this.getHibernateTemplate().get(Movie.class, movieId);]]></emphasis>
+    }
+
+    <![CDATA[public List findMovieList(int conditionType, String condition)
+                throws Exception {
+        Object[] args = new Object[3];
+        if (conditionType == 0) {
+            args[0] = "director=%" + condition + "%";
+            args[1] = "sortColumn=movie.director";
+        } else {
+            args[0] = "title=%" + condition + "%";
+            args[1] = "sortColumn=movie.title";
+        }
+        args[2] = "sortDirection=ASC";
+
+        return]]> <emphasis role="bold"><![CDATA[dynamicHibernateService.findList("findMovieListAll", args);]]></emphasis>
+    }
+
+    <![CDATA[public List findMovieListAll() throws Exception {]]>
+    <emphasis role="bold"><![CDATA[return this.getHibernateTemplate().find(
+            "FROM Movie movie ORDER BY movie.title");]]></emphasis>
+    }
+
+    <![CDATA[public void removeMovie(Movie movie) throws Exception {]]>
+        <emphasis role="bold"><![CDATA[this.getHibernateTemplate().delete(movie);]]></emphasis>
+    }
+
+    <![CDATA[public void updateMovie(Movie movie) throws Exception {]]>
+        <emphasis role="bold"><![CDATA[this.getHibernateTemplate().update(movie);]]></emphasis>
+    }
+
+    <![CDATA[public void updateMovieByBulk(Movie movie) throws Exception {
+        StringBuilder hqlBuf = new StringBuilder();
+        hqlBuf.append("UPDATE Movie movie ");
+        hqlBuf.append("SET movie.director = ? ");
+        hqlBuf.append("WHERE movie.movieId = ? ");
+
+        //HQL문을 이용한 CUD를 할 경우에는 
+        //getHibernateTemplate().bulkUpdate() 메소드를 사용한다.]]>
+        <emphasis role="bold"><![CDATA[this.getHibernateTemplate().bulkUpdate(hqlBuf.toString(),
+                new Object[] { movie.getDirector(), movie.getMovieId() });]]></emphasis>
+    }
+
+    <![CDATA[public void createCategory(Category category) throws Exception {]]>
+        <emphasis role="bold"><![CDATA[this.getHibernateTemplate().save(category);]]></emphasis>
+    }
+
+    <![CDATA[public void createCountry(Country country) throws Exception {]]>
+        <emphasis role="bold"><![CDATA[this.getHibernateTemplate().save(country);]]></emphasis>
+    }
+}</programlisting>
+			</para>
+
+        	<para>
+        		위의 코드는 MovieDAOHibernateImpl.java 에서 확인할 수 있다.
+        	</para>
+
+        	<para>
+        		※ Dynamic Hibernate에 대한 자세한 사항은 본 매뉴얼 >> Hibernate Plugin >> <link linkend="hibernate_dynamic_part">
+				Dynamic Hibernate</link>를 참고한다.
+        	</para>
+		</section>
+	</section>
+
+    <section id="hibernate_hibernate_springintegration_test">
+		<title>Test Code 작성</title>
+
+		<para>
+			위와 같이 Spring과 Hibernate 연계 작업이 완료되었다면 Test Code를 작성해서 정상 동작 여부를 확인해 보도록 하자. 다음은 
+			Test Code의 예인 HibernateSpringIntegration.java 파일의 일부이다. 
+            <programlisting language="java"><![CDATA[public class HibernateSpringIntegration {
+    private MovieService movieService;
+
+        //Test 실행에 필요한 비즈니스 서비스 정의 파일의 위치를 지정해준다.
+        protected String[]]]> <emphasis role="bold"><![CDATA[getConfigLocations()]]></emphasis> {
+        <![CDATA[return new String[] { "classpath:anyframe/core/hibernate/spring/context-*.xml" };
+    }
+
+    //MovieService Setter Injection
+    public void]]> <emphasis role="bold">s<![CDATA[etMovieService]]></emphasis><![CDATA[(MovieService movieService) {
+        this.movieService = movieService;
+    }
+
+/**
+ * [Flow #-1] Hibernate과 Spring Framework을 연계한 MovieService를
+ * 통해 단건의 Movie 정보를 등록,수정,삭제,조회하여 본다.
+ * 
+ * @throws Exception
+ *             throws exception which is from MovieService
+ */
+    public void movieService() throws Exception {
+        Movie movie = new Movie();
+        movie.setMovieId("MV-00001");
+        movie.setDirector("Jaeyong Gwak");
+        movie.setReleaseDate(DateUtil.string2Date("2001-07-27", "yyyy-MM-dd"));
+        movie.setTitle("My Sassy Girl");
+        //movie 객체 등록]]>
+        <emphasis role="bold"><![CDATA[movieService.createMovie(movie);]]></emphasis>
+
+        <![CDATA[Movie result = movieService.findMovie("MV-00001");
+
+        movie.setDirector("Update Jaeyong Gwak");]]>
+        //movie 객체 수정
+        <emphasis role="bold"><![CDATA[movieService.updateMovie(movie);]]></emphasis>
+
+        //movie 객체 조회
+        <emphasis role="bold"><![CDATA[result = movieService.findMovie("MV-00001");]]></emphasis>
+        <![CDATA[result.getDirector());]]>
+
+        //movie 객체 삭제
+        <emphasis role="bold"><![CDATA[movieService.removeMovie(movie);]]></emphasis>
+
+        //movie 객체 조회
+        <emphasis role="bold"><![CDATA[result = movieService.findMovie("MV-00001");]]></emphasis>
+    }
+}</programlisting>
+		</para>
+
+      	<para>
+      		위와 같은 코드로 MovieService를 통해 입력/수정/삭제/조회 관련 메소드들이 잘 작동되는지 확인할 수  있다.
+      	</para>
+ 	</section>
+
+    <section id="hibernate_hibernate_springintegration_transaction">
+		<title>선언적인 트랜잭션 관리</title>
+
+      	<para>
+      		Hibernate을 사용할 시에도 Spring의 AOP를 이용한 선언적인 트랜잭션 관리가 가능하다. 이는 본 매뉴얼 >> Core Plugin >> Spring >> 
+      		>> Transaction Management >> <ulink url="http://dev.anyframejava.org/docs/anyframe/plugin/essential/core/1.6.1-SNAPSHOT/reference/htmlsingle/core.html#core_spring_transaction_declarative">Declarative Transaction Management</ulink>에서 기본적인
+      	    내용을 확인할 수 있다. 단, Spring에서는 다음과 같이 Hibernate을 위한 TransactionManager인 org.springframework.orm.
+      	    hibernate3.HibernateTransactionManager를 제공함으로써 Hibernate에 최적화된 형태로 트랜잭션을 관리할 수 있게 해주며 
+      	          설정 방법의 예는 context-transaction.xml 의 일부인 다음과 같다. 
+            <programlisting language="xml"><![CDATA[<bean id="transactionManager"
+        class="]]><emphasis role="bold"><![CDATA[org.springframework.orm.hibernate3.HibernateTransactionManager]]></emphasis>">
+    <![CDATA[<property name="]]><emphasis role="bold"><![CDATA[sessionFactory]]></emphasis><![CDATA[" ref="sessionFactory" />
+</bean>
+
+<tx:advice id="txAdvice" transaction-manager="transactionManager">
+    <tx:attributes>
+        <tx:method name="*" propagation="REQUIRES_NEW" rollback-for="Exception" />
+    </tx:attributes>
+</tx:advice>
+
+<aop:config proxy-target-class="true">
+    <aop:pointcut id="executionMethods"
+            expression="execution(* org.anyframe.sample..*Impl.*(..))" />
+    <aop:advisor advice-ref="txAdvice" pointcut-ref="executionMethods" />
+</aop:config>]]></programlisting>
+		</para>
+
+      	<para>
+      		기타 정의 방법은 기존 Spring TransactionManager를 사용할 때와 동일하다. Hibernate 기반의 트랜잭션 관리에 대한 자세한 
+      		내용은 본 매뉴얼 >> Hibernate Plugin >> Hibernate >> <link linkend="hibernate_hibernate_transaction"> Transaction Management </link>를
+      		참고한다.
+      	</para>
+    </section>
+</chapter>
+	
+	

@@ -1,0 +1,333 @@
+<chapter id="loggingsql_sqllogging_datasource">
+		<title>DataSource 속성 정의</title>
+
+
+		<section id="loggingsql_sqllogging_datasource_jdbc">
+        	<title>JDBCDataSource를 사용할 경우</title>
+
+        	<itemizedlist>
+          		<listitem>
+            		<para>
+            			기본적으로 지원되는 JDBC Driver일 경우 DataSource 속성 정의시
+						driverClassName은 net.sf.log4jdbc.DriverSpy로 정의하고 url은 사용하고 있는 url
+						 앞에 'jdbc:log4'를 추가한다. 다음은 일반적인 유형의 DataSource 속성 정의 파일인
+						context-datasource.xml 이다. 
+						<programlisting language="xml"><![CDATA[<bean id="]]><emphasis role="bold">commonDataSource</emphasis><![CDATA[" class="org.apache.commons.dbcp.BasicDataSource" destroy-method="close">
+    <property name="driverClassName" value="net.sf.log4jdbc.DriverSpy"/>
+    <property name="url" value="jdbc:log4jdbc:hsqldb:file:/./DATABASE/db/sampledb"/>
+    <property name="username" value="sa"/>
+</bean>]]></programlisting>
+					</para>
+
+            		<para>
+            			[참고] DriverSpy에서 지원하는 기본 JDBC Driver 목록은 다음과 같다.
+            			<programlisting>. oracle.jdbc.driver.OracleDriver 
+. com.sybase.jdbc2.jdbc.SybDriver
+. net.sourceforge.jtds.jdbc.Driver
+. com.microsoft.jdbc.sqlserver.SQLServerDriver
+. weblogic.jdbc.sqlserver.SQLServerDriver
+. com.informix.jdbc.IfxDriver
+. org.apache.derby.jdbc.ClientDriver
+. org.apache.derby.jdbc.EmbeddedDriver
+. com.mysql.jdbc.Driver
+. org.postgresql.Driver
+. org.hsqldb.jdbcDriver
+. org.h2.Driver</programlisting>
+					</para>
+          		</listitem>
+
+				<listitem>
+            		<para>
+            			<emphasis role="bold">기본적으로 지원되지 않는 JDBC Driver일
+            			경우</emphasis>
+            		</para>
+
+            		<para>
+            			net.sf.log4jdbc.DriverSpy에서 기본적으로 지원하는 JDBC Driver가 아닌 경우에는
+           				 앞서 언급한 기본 정의 방식과 동일하게 정의하되, System Property에 대한 추가 셋팅이 필요하다.
+            			Eclipse를 통해 작업하는 경우 Open Run Diaglog &gt; Arguments 탭 &gt; VM
+            			arguments 에 <emphasis role="bold">log4jdbc.drivers</emphasis> 를
+            			속성키로, 실제 DB의 Driver 클래스명을 속성값으로 정의해주면 된다. 
+            			<programlisting><emphasis role="bold">-Dlog4jdbc.drivers=com.ibm.db2.jcc.DB2Driver </emphasis></programlisting>
+                  	</para>
+          		</listitem>
+        	</itemizedlist>
+		</section>
+
+
+
+		<section id="loggingsql_sqllogging_datasource_jndi">
+        	<title>JNDIDataSource를 사용할 경우</title>
+
+        	<para>
+        		JNDIDataSource를 사용하는 경우 해당하는 WAS에 사용하고자 하는 DataSource에 대해 정의되어
+        		있어야 한다.
+        	</para>
+
+       		<itemizedlist>
+          		<listitem>
+            		<para>
+            			<emphasis role="bold">WebLogic인 경우</emphasis>
+            		</para>
+
+            		<orderedlist>
+              			<listitem>
+                			<para>
+                				<emphasis role="bold">DataSource 추가</emphasis>
+                			</para>
+
+                			<para>
+                				WebLogic에 사용하고자 하는 DataSource를 정의한다. 이 때, JDBCDataSource
+                				정의시와 마찬가지로 <emphasis role="bold">driverClassName은
+                				net.sf.log4jdbc.DriverSpy로 정의하고 url은 사용하고 있는 url 앞에
+                				'jdbc:log4'를 추가</emphasis> 하도록 한다. url 정의시 Step 3의 <emphasis
+                				role="bold">JDBCDataSource를 사용할 경우</emphasis> 를 참고하도록 한다.
+                			</para>
+                
+                			<note>
+                				<title>참고</title>
+                				<para>
+                					WebLogic Server에 net.sf.log4jdbc.DriverSpy를 이용한 DataSource를 추가하기 위해서는 
+									WebLogic과 log4jdbc 사이에서 정상적인 호출이 발생할 수 있도록 해야 한다. 
+									따라서, WebLogic Server 실행 전에 [Domain Server Home/lib]에 
+									log4jdbcX-*.jar, slf4j-api-*.jar, slf4j-log4j12-*.jar를 
+									복사해두어야 함에 유의하도록 한다.
+								</para>				        
+							</note>
+
+                			<para>
+                				다음은 WebLogic 9.2 Server에 추가한 TestDataSource에 대한 설정
+                				내용이다.
+                			</para>
+
+                			<mediaobject>
+                  				<imageobject>
+                    				<imagedata align="center"
+                               			fileref="../image/logging-sql/weblogic-datasource-jdbc3.jpg" />
+                  				</imageobject>
+                  				<textobject>
+									<phrase>WebLogic 9.2 Server에 추가한 TestDataSource에 대한 설정</phrase>
+								</textobject>
+                			</mediaobject>
+              			</listitem>
+
+              			<listitem>
+                			<para>
+                				<emphasis role="bold">DataSource 속성 정의</emphasis>
+                			</para>
+
+                			<para>
+                				JNDIDataSource를 정의한 후에 해당 JNDIDataSource를 사용하기 위해서는 다음을
+                				참조하여 context-datasource-jndi.xml 파일을 정의할 수 있다.
+                				<programlisting language="xml"><![CDATA[<bean id="commonDataSource" class="org.springframework.jndi.JndiObjectFactoryBean">
+    <property name="jndiName" value="TestDataSource" />
+    <property name="jndiTemplate" ref="jnditemplate" />
+</bean>
+<bean id="jnditemplate"
+        class="org.springframework.jndi.JndiTemplate">
+    <property name="environment">
+        <props>
+            <prop key="java.naming.factory.initial">
+                weblogic.jndi.WLInitialContextFactory
+            </prop>
+            <prop key="java.naming.provider.url">
+                t3://localhost:7001
+            </prop>
+        </props>
+    </property>
+</bean>]]></programlisting>
+                			</para>
+              			</listitem>
+            		</orderedlist>
+          		</listitem>
+
+          		<listitem>
+            		<para>
+            			<emphasis role="bold">JEUS인 경우</emphasis>
+            		</para>
+
+            		<orderedlist>
+              			<listitem>
+                			<para>
+                				<emphasis role="bold">DataSource 추가</emphasis>
+                			</para>
+
+                			<para>
+                				JEUS에 사용하고자 하는 JNDIDataSource를 추가한다. 다음은 사용하고자 하는
+                				JNDIDataSource가 추가된 JEUS Server의 JEUSMain.xml 파일 내용의
+                				일부이다.
+                				<programlisting language="xml"><![CDATA[1. XA 모드일 경우
+<resource>
+    <data-source>
+        <database>
+            <vendor>oracle</vendor>
+            <export-name>OracleDS</export-name>
+            <data-source-class-name>
+                 oracle.jdbc.xa.client.OracleXADataSource
+            </data-source-class-name>
+            <data-source-type>XADataSource</data-source-type>
+            <database-name>test2</database-name>
+            <data-source-name>
+                 oracle.jdbc.xa.client.OracleXADataSource
+            </data-source-name>
+            <port-number>1521</port-number>
+            <server-name>server.ip</server-name>
+            <user>anyframe</user>
+            <password>anyframe</password>
+            <driver-type>thin</driver-type>
+            <connection-pool>
+                <pooling>
+                    <min>2</min>
+                    <max>30</max>
+                    <step>4</step>
+                    <period>3600000</period>
+                </pooling>
+            </connection-pool>
+        </database>
+    </data-source>
+</resource>
+2. ConnectionPool 모드일 경우     
+<resource>
+    <data-source>
+        <database>
+            <vendor>oracle</vendor>
+            <export-name>OraclePoolDS</export-name>
+            <data-source-class-name>
+                 oracle.jdbc.pool.OracleConnectionPoolDataSource
+            </data-source-class-name>
+            <data-source-type>ConnectionPoolDataSource</data-source-type>
+            <database-name>test2</database-name>
+            <data-source-name>
+                 oracle.jdbc.pool.OracleConnectionPoolDataSource
+            </data-source-name>
+            <port-number>1521</port-number>
+            <server-name>server.ip</server-name>
+            <user>anyframe</user>
+            <password>anyframe</password>
+            <driver-type>thin</driver-type>
+            <connection-pool>
+                <pooling>
+                    <min>2</min>
+                    <max>30</max>
+                    <step>4</step>
+                    <period>3600000</period>
+                </pooling>
+                <check-query>select sysdate from dual</check-query>
+                <check-query-period>10000</check-query-period>
+            </connection-pool>
+        </database>
+    </data-source>
+</resource>]]></programlisting>
+                			</para>
+              			</listitem>
+
+              			<listitem>
+                			<para>
+                				<emphasis role="bold">DataSource Wrapper 정의 및
+                				컴파일</emphasis>
+                			</para>
+
+                			<para>
+                				WAS가 JEUS인 경우 JNDIDataSource 추가시 DB URL을 별도로 정의할 수 없으므로
+                				DriverSpy를 통한 SQL Logging을 수행할 수 없다. 이 경우에는 다음의
+                				AnyframeDataSourceSpy와 같이 별도의 DataSource Wrapper 클래스를 정의하여 사용할
+                				수 있다.
+                				<programlisting language="java">package net.sf.log4jdbc;
+
+import java.io.PrintWriter;
+import java.sql.Connection;
+import java.sql.SQLException;
+
+import javax.sql.DataSource;
+
+import net.sf.log4jdbc.ConnectionSpy;
+import net.sf.log4jdbc.SpyLogDelegator;
+import net.sf.log4jdbc.SpyLogFactory;
+import net.sf.log4jdbc.RdbmsSpecifics;
+
+public class AnyframeDataSourceSpy implements DataSource {
+
+    private DataSource dataSource = null;
+
+    static final SpyLogDelegator log = SpyLogFactory.getSpyLogDelegator();
+
+    static RdbmsSpecifics defaultRdbmsSpecifics = new RdbmsSpecifics();
+
+    public AnyframeDataSourceSpy() {
+    }
+    public Connection getConnection() throws SQLException {
+        return getWrappedConnection(dataSource.getConnection());
+    }
+    public Connection getConnection(String username, String password)
+            throws SQLException {
+        return getWrappedConnection(dataSource
+                .getConnection(username, password));
+    }
+    public PrintWriter getLogWriter() throws SQLException {
+        return dataSource.getLogWriter();
+    }
+    public int getLoginTimeout() throws SQLException {
+        return dataSource.getLoginTimeout();
+    }
+    public void setLogWriter(PrintWriter out) throws SQLException {
+        dataSource.setLogWriter(out);
+    }
+    public void setLoginTimeout(int seconds) throws SQLException {
+        dataSource.setLoginTimeout(seconds);
+    }
+    private Connection getWrappedConnection(Connection con) {
+        if (log.isJdbcLoggingEnabled())
+        {
+            ConnectionSpy cspy = new ConnectionSpy(con);
+            cspy.setRdbmsSpecifics(defaultRdbmsSpecifics);
+            return cspy;
+        }
+        else
+        {
+            return con;
+        }
+    }
+    public void setDataSource(DataSource dataSource) {
+
+        this.dataSource = dataSource;
+    }
+}</programlisting>
+                			</para>
+						</listitem>
+
+              			<listitem>
+                			<para>
+                				<emphasis role="bold">DataSource 속성 정의</emphasis>
+                			</para>
+
+                			<para>
+								앞서 정의한 DataSource Wrapper를 통해 해당 어플리케이션의 DataSource가 실행될
+                				수 있도록 다음을 참조하여 context-datasource-wrapper.xml 파일을
+               					정의한다. 
+               					<programlisting language="xml"><![CDATA[<bean id="realDataSource"
+        class="org.springframework.jndi.JndiObjectFactoryBean">
+    <property name="jndiName" value="OraclePoolDS" />
+    <property name="jndiTemplate" ref="jnditemplate" />
+</bean>
+<bean id="jnditemplate"
+        class="org.springframework.jndi.JndiTemplate">
+    <property name="environment">
+        <props>
+            <prop key="java.naming.factory.initial">
+                jeus.jndi.JNSContextFactory
+            </prop>
+            <prop key="java.naming.provider.url">server.ip:9736</prop>
+        </props>
+    </property>
+</bean> 
+
+<bean id="commonDataSource" class="]]><emphasis role="bold">net.sf.log4jdbc.AnyframeDataSourceSpy</emphasis><![CDATA[">
+    <property name="dataSource" ref="realDataSource"/>
+</bean>]]></programlisting>
+                			</para>
+              			</listitem>
+            		</orderedlist>
+          		</listitem>
+       	</itemizedlist>
+      	</section>
+</chapter>

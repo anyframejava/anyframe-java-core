@@ -1,0 +1,177 @@
+<chapter id="xp_query_xpuisample_architecture">
+	<title>Architecture</title>
+	
+	<para>
+		본 문서의 이해를 돕기 위하여 Anyframe XP Query Plugin 전체 소프트웨어 아키텍처를 그림으로 나타내면 다음과 같다.
+	</para>
+	
+	<mediaobject>
+		<imageobject>
+			<imagedata align="center" fileref="../image/xp-query/xpuisample/architecture.png" />
+		</imageobject>
+		<textobject>
+			<phrase>Anyframe XP Query Plugin 전체 소프트웨어 아키텍처</phrase>
+		</textobject>
+	</mediaobject>
+	<para>
+		위의 아키텍처는 공통 Controller와 공통 Service, 공통 Dao에 의해서 최적화되며, 일반적인 CRUD 형태의 작업은
+		이들을 이용하는 공통 Flow(Common Flow)를 통해서 수행 된다. 만약 단순 CRUD가 아닌 복잡한 비즈니스 로직을 구현하는
+		경우에 대해서는 공통 Service를 대체하는 별도의 Service(예: Service A, Service B)를 구현하면 되며,
+		파일 업로드/다운로드, 로그인 등과 같이 공통 Controller의 범위를 벗어나는 Controller의 경우에는 Service와
+		마찬가지로 별도의 Controller(예: Controller A)를 구현하여 수행한다.
+	</para>
+	<para>
+		위의 그림에서 볼 수 있읏이 Model 2 MVC 구조에 기반한 프레젠테이션, 비즈니스 레이어는 각 레이어 별로 개발 생산성을
+		향상 시키기 위한 공통 클래스를 사용하기 때문에, 경우에 따라서 다음과 같은 3가지 유형으로 개발을 진행 할 수 있다.
+	</para>
+	
+	<para>
+		(1) 단일 테이블에 대한 단순 CRUD 기능의 경우에는 UI XFDL + Query XML 만을 작성 	
+	</para>
+	
+	<para>
+		(2) 복잡한 로직을 가진 기능의 경우에는 UI XFDL + Service + Query XML을 작성
+	</para>
+	<para>
+		(3) 파일 업로드, 다운로드 등과 같이 표준적인 인터페이스를 가지지 않는 웹 컨트롤러를 개발하는 경우에는
+		공통 Controller 대신 별도의  Controller + UI XFDL + Service + Query XML을 작성
+	</para>
+	<para>
+		Anyframe XP Query Plugin에서는 총 15개의 화면 샘플을 제공한다. 이 중 1~14번 화면은 (1)의 방식을, 15번 화면은 (2)의 방식을, 사용자 로그인 기능과
+		파일 업/다운로드 기능은 (3)의 방식으로 개발되어 있다.
+	</para>
+	
+	<section id="xp_query_xpuisample_architecture_presentation">
+		<title>Presentation Layer</title>
+		<para>
+			Anyframe XP Query Plugin에 적용된 Web 프레임워크는 MVC모델의 View와 Controller 영역을 담당하며, 이는 프레젠테이션 레이어에 해당된다.
+			이번 절에서는 프레임워크 기반 개발 시 기본적으로 필요한 설정 파일 구성에 대해서 기술 하도록 한다. 
+		</para>
+		<para>
+			web.xml, *-servlet.xml 파일의 설정은 다음과 같다.
+		</para>
+		<itemizedlist>
+			<listitem>
+				<para>
+					web.xml
+				</para>
+				<para>
+					web.xml은 Web Application배포 지시자로써, JAVA EE	환경에서 해당 Web Application이 서버상에 어떻게 배포되어야
+					하는지에 대하여 기술하는 XML 파일이다. 프레임워크 기반 개발과 관련하여 web.xml 작성 방법은 Anyframe 매뉴얼을
+					참조하도록 한다. (<ulink url="http://dev.anyframejava.org/docs/anyframe/plugin/essential/core/1.6.1-SNAPSHOT/reference/htmlsingle/core.html#core_springmvc_configuration_webxml">web.xml 설정</ulink>)
+				</para>
+			</listitem>
+			
+			<listitem>
+				<para>
+					xp-query-servlet.xml
+				</para>
+				<para>
+					본 샘플에서는 각각의 샘플 화면들은 공통 Controller인 XPController를 사용하고 있으므로 해당 Controller를 xp-servlet.xml 파일에 Bean으로 등록 하였다.
+					그 밖의 로그인 기능, 파일첨부 기능을 구현한 Controller의 경우 Annotation 기반으로 작성되었기 때문에 추가적으로 설정 파일에 Bean 등록을 할 필요는 없다.
+					<programlisting language="xml"><![CDATA[<!-- XPController bean definition -->
+<!-- Because XPController can't be scanned by context:component-scan as 
+	its package isn't "org.anyframe.plugin.*" -->
+<bean name="/xpController.do" class="org.anyframe.xp.query.web.XPController" >
+	<property name="messageConverter" ref="httpXpMessageConverter" />
+</bean>
+
+<!-- HttpXPMessageConverter bean definition for XPLATFORM Data transform -->
+<bean id="httpXpMessageConverter"
+	class="org.anyframe.xp.query.web.converter.HttpXPMessageConverter" />]]></programlisting>
+					위의 Controller 정의에서 볼 수 있듯이, 단순 CRUD 기능의 경우에는 개발자가 별도의 Controller를 구현할 필요 없이 XPController를 사용하면 된다. 
+					다만 파일 업로드/다운로드와 같이 UI와의 인터페이스가 별도로 구성되거나, 또는 XPController에서 지원하지 못하는 기능을 추가하고자 하는 경우, 
+					개발자의 필요에 따라 @RequestBody/@ResponseBody Annotation을 이용하여 Controller를 신규로 작성할 수 있다 . 사용자 정의 Controller 예제는
+					본 샘플의 LoginController, MovieController 등이 있다.
+				</para>
+			</listitem>
+		</itemizedlist>
+	</section>
+	
+	<section id="xp_query_xpuisample_architecture_business">
+		<title>Business Layer</title>
+		<para>
+			본 샘플은 Anyframe XP Query를 기반으로 구현되어
+			대부분의 비즈니스 로직이 공통화 처리 되어있다. 하지만 특정 비즈니스 로직을 구현 해야 하는 경우
+			사용자 정의 서비스를 만들어야 하는데, 본 절에서는 사용자 정의 서비스 구현에 필요한 기본적인 설정 파일 구성과
+			예제에 대해 기술한다.
+		</para>
+		<para>
+			주요 설정 파일은 다음과 같다.
+		</para>
+		<itemizedlist>
+			<listitem>
+				<para>
+					mapping-xp-xxx.xml
+				</para>
+				<para>
+					QueryService를 사용할 경우 실행하고자 하는 쿼리를 정의한 파일로, 작성방법은 Anyframe 매뉴얼을 참조하도록 한다.
+					(<ulink url="http://dev.anyframejava.org/docs/anyframe/plugin/optional/query/1.6.1-SNAPSHOT/reference/htmlsingle/query.html#query_mapping">Query Service Manual Page</ulink>)
+				</para>
+			</listitem>
+			<listitem>
+				<para>
+					context-xp-query.xml
+				</para>
+				<para>
+					context-xxx.xml은 Spring에서 관리하는 Bean 속성 정의 파일로, context-xp-query.xml에는 
+					Anyframe XP Query의 공통 Service, 공통 Dao에 대한 Bean 정의가 명시되어 있다.
+					<programlisting language="xml"><![CDATA[<bean name="xpService" class="org.anyframe.xp.query.service.impl.XPServiceImpl">
+	<constructor-arg ref="xpDao" />
+</bean>
+
+<bean name="xpDao" class="org.anyframe.xp.query.service.impl.XPDao">
+	<constructor-arg ref="xpQueryService" />
+</bean>]]></programlisting>
+				</para>
+			</listitem>
+		</itemizedlist>
+		<para>
+			공통 서비스를 이용하지 않고 비즈니스 로직을 추가 해야 하는 경우, 먼저 아래의 코드와 같은 XPService를 상속받은 interface 클래스를
+			생성해야 한다.
+		</para>
+    	<programlisting language="java"><![CDATA[public interface MovieService extends XPService{
+	
+	public void getList(VariableList inVl, DataSetList inDl, VariableList outVl, DataSetList outDl) throws Exception;
+	
+	public void saveAll(VariableList inVl, DataSetList inDl, VariableList outVl, DataSetList outDl) throws Exception;
+	
+	public void create(DataSet ds) throws Exception;
+	
+	public void get(VariableList inVl, DataSetList inDl, VariableList outVl, DataSetList outDl) throws Exception;
+	
+	public void update(VariableList inVl, DataSetList inDl, VariableList outVl, DataSetList outDl) throws Exception;
+}]]>
+</programlisting>
+		<para>
+			다음으로 앞서 만든 interface 클래스를 구현하는 구현체를 개발 해야 한다. 이 때, XPServiceImpl 클래스를 상속하고,
+			DB 연결을 위해서 XPDao를 Inject 받는다.
+			아래의 코드는 XPServiceImpl 클래스를 상속받은 예제이다.
+		</para>
+    	<programlisting language="java"><![CDATA[
+@Service("xpQueryMovieService")
+@Transactional(rollbackFor = {Exception.class}, propagation = Propagation.REQUIRED)
+public class MovieServiceImpl extends XPServiceImpl implements MovieService{
+
+	@Inject
+	public MovieServiceImpl(XPDao xpDao){
+		super.xpDao = xpDao;
+	}
+	
+	public void getList(VariableList inVL, DataSetList inDl, VariableList outVl, DataSetList outDl) throws Exception{
+		DataSet outDs = xpDao.getList("findXPMovieList", inDl.get("dsSearch"));
+		outDs.setName("dsResult");
+		outDl.add(outDs);
+	}
+	
+	//...중략
+	]]>
+</programlisting>
+		<para>
+			위의 예제와 같이, 구현한 클래스를 Bean으로 등록하기 위해서 클래스 정의부분 상단에 @Service Annotation을 정의 해야 한다.
+			@Service, @Transaction 등과 같은 Annotation 관련 내용은 Anyframe 매뉴얼을 참고 하도록 한다.
+			<ulink url="http://dev.anyframejava.org/docs/anyframe/plugin/essential/core/1.6.1-SNAPSHOT/reference/htmlsingle/core.html#core_spring_annotation_mc">(Annotation 설정)</ulink>
+		</para>
+	</section>
+</chapter>
+    

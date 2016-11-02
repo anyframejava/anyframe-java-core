@@ -1,0 +1,46 @@
+<?xml version="1.0" encoding="utf-8"?>
+<mx:Panel xmlns:fx="http://ns.adobe.com/mxml/2009" 
+		  xmlns:s="library://ns.adobe.com/flex/spark" 
+		  xmlns:mx="library://ns.adobe.com/flex/mx" 
+		  scroll="false" 
+		  layout="absolute" 
+		  width="222" height="108" 
+		  styleName="panelLogin" 
+		  y="22" x="12" 
+		  titleStyleName="login">
+
+	<fx:Script>
+		<![CDATA[
+			import mx.rpc.events.ResultEvent;
+			import mx.events.ResizeEvent;
+			import mx.rpc.http.mxml.HTTPService;
+			public var VisitHistory:SharedObject;
+			 
+			private var httpService:HTTPService	= new HTTPService();
+			
+			public function logout():void{
+				httpService.url = "./samples/login/logout_result.jsp?result_logout=success";
+				httpService.addEventListener("result", resultHandler);
+				httpService.send();
+			} 
+			
+			private function resultHandler(event:ResultEvent):void{
+				var checkLogout:String = httpService.lastResult.result.logout_result;
+				parentDocument.currentState = "logoutMode";
+				
+				if (parentDocument.visitHistory.data.visitCheck == 1){
+					parentDocument.loginView.userId.text= parentDocument.visitHistory.data.userId;
+				}else{
+					parentDocument.loginView.userId.text= "";
+				}
+				parentDocument.loginView.password.text="";
+				parentDocument.loginUser.userId = null;
+			}
+		]]>
+	</fx:Script>
+	
+	<mx:Text x="25" y="14" text="Welcome!" fontWeight="bold" color="#000000"/>
+	<mx:Button x="167" y="42" styleName="buttonLogout" width="28" height="46" toolTip="Logout" click="logout()"/>
+	<mx:Label x="29" y="43" id="userName" fontWeight="bold"/>
+	<mx:Label x="29" y="63" fontWeight="bold"  color="#666666" text="님이 로그인 하셨습니다."/>
+</mx:Panel>

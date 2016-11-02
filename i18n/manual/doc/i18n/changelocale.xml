@@ -1,0 +1,79 @@
+<chapter id="i18n_i18n_changelocale">
+	<title>사용자 Locale 변경</title>
+	<para>
+		I18N Plugin에서는 Locale 변경을 위해 LocaleResolver를 구현한 SessionLocaleResolver와 LocaleChangeInterceptor를 사용한다. 
+		LocaleResolver와 LocaleChangeInterceptor는 org.springframework.web.servlet.i18n 패키지에 정의되어 있으며,
+		LocaleResolver와 관련된 보다 자세한 내용은
+		<ulink url="http://dev.anyframejava.org/docs/anyframe/plugin/essential/core/1.6.1-SNAPSHOT/reference/htmlsingle/core.html#core_springmvc_internationalization">국제화(Internationalization) 매뉴얼</ulink>을 참조한다.			
+	</para>
+	   		
+	<section id="i18n_locale_resolver">
+		<title>LocaleResolver</title>
+			<para>
+				사용자들이 사용하고자 하는 Locale을 직접 선택할 수 있도록 구현해야 한다면 CookieLocaleResolver 또는 SessionLocaleResolver를 이용할 수 있으며, I18N Plugin은 SessionLocaleResolver를 사용하고 있다.
+			</para>
+			
+			<para>
+				다음은 SessionLocaleResolver Bean을 등록한 속성 정의 파일이다.
+			</para>
+
+			<programlisting language="xml">
+				<![CDATA[
+<bean id="localeResolver" class="org.springframework.web.servlet.i18n.SessionLocaleResolver">
+	<property name="defaultLocale" value="en_US" />
+</bean>]]>
+			</programlisting>
+	</section>
+	
+	<section id="i18n_locale_intercepter">
+       	<title>LocaleChangeInterceptor</title>
+          	<para>
+          		LocaleResolver만 이용하여 Locale을 바꾸는 경우, Controller마다 정의한 LocaleResolver를 가져와서 Locale을 변경하는 코드가 필요하다.
+				<ulink url="http://dev.anyframejava.org/docs/anyframe/plugin/essential/core/1.6.1-SNAPSHOT/reference/htmlsingle/core.html#core_springmvc_internationalization">LocaleResolver를 이용한 Locale 변경</ulink>을 참고한다.
+			</para>	 
+			<para>
+          		I18N Plugin에서는 LocaleCahangeInterceptor를 사용하여 Locale 변경 요청에 대해 자동으로 Locale을 변경하도록 한다. Controller에 매번 Locale 변경 코드를 넣는 것 보다 Interceptor를 이용하는 것이 더 간편하다. 
+          		<ulink url="http://dev.anyframejava.org/docs/anyframe/plugin/essential/core/1.6.1-SNAPSHOT/reference/htmlsingle/core.html#core_springmvc_internationalization_multilanguage_localechangeinterceptor">LocaleChangeInterceptor를 이용한 Locale 변경</ulink>을 참고한다.
+          	</para>
+          	
+			<para>다음은 I18N Plugin을 통해 설치된 샘플 화면중의 하나이다.</para>
+			
+			<mediaobject>
+       			<imageobject>
+         			<imagedata align="center"
+                   			fileref="../image/i18n/i18n_locale.png" />
+       			</imageobject>
+       			<textobject>
+					<phrase>I18N Plugin을 통해 설치된 샘플 화면</phrase>
+				</textobject>
+       		</mediaobject>
+			<para>
+				위 화면에서 보고 싶은 언어를 클릭하면 내부적으로 ChangeLocaleIntercepter가 호출되고, Request의 URL로 부터 Locale 값을 가져와서 LocaleResolver에 Locale값을 설정하게 될 것이다. 
+			</para>
+			<para>
+				아래는 LocaleIntercepter Bean을 핸들러 매핑에 등록한 예이다. LocaleChangeInterceptor 내부에서 LocaleResolver를 사용하기 때문에 LocaleResolver가 먼저 속성 정의 파일에 정의되어야 한다.
+			</para>
+			<programlisting language="xml">
+				<![CDATA[
+<mvc:interceptors>
+	<mvc:interceptor>
+	<mvc:mapping path="/i18n*"/>
+		<bean id="localeChangeInterceptor" class="org.springframework.web.servlet.i18n.LocaleChangeInterceptor">
+   			<property name="paramName" value="locale"/>
+		</bean>
+	</mvc:interceptor>
+</mvc:interceptors>}]]>
+			</programlisting>
+	
+		<para>앞 화면에서 태극기를 클릭한 경우 다음과 같이 다른 언어로 변경된 화면을 확인할 수 있다.</para>
+		<mediaobject>
+       		<imageobject>
+        		<imagedata align="center" fileref="../image/i18n/i18n_locale_changed.png" />
+       		</imageobject>
+       		<textobject>
+				<phrase>태극기 아이콘을 클릭하여 한국어로 표현된 화면</phrase>
+			</textobject>
+       	</mediaobject>
+       	
+	</section>
+</chapter>

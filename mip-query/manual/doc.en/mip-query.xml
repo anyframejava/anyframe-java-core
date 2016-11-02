@@ -1,0 +1,159 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+
+<!DOCTYPE book PUBLIC "-//OASIS//DTD DocBook XML V4.5//EN" "http://www.oasis-open.org/docbook/xml/4.5/docbookx.dtd"
+[
+<!ENTITY mip_query_integration_mipcontroller SYSTEM "mip-query/integration/mipcontroller.xml">
+<!ENTITY mip_query_integration_mipquery SYSTEM "mip-query/integration/mipquery.xml">
+<!ENTITY mip_query_simplification_mipservice SYSTEM "mip-query/simplification/mipservice.xml">
+<!ENTITY mip_query_mipuisample_architecture SYSTEM "mip-query/mipuisample/architecture.xml">
+<!ENTITY mip_query_mipuisample_commonflow SYSTEM "mip-query/mipuisample/commonflow.xml">
+<!ENTITY mip_query_mipuisample_i18n SYSTEM "mip-query/mipuisample/i18n.xml">
+<!ENTITY mip_query_mipuisample_sampleui SYSTEM "mip-query/mipuisample/sampleui.xml">
+<!ENTITY mip_query_mipuisample_standards SYSTEM "mip-query/mipuisample/standards.xml">
+<!ENTITY mip_query_mipuisample_validation SYSTEM "mip-query/mipuisample/validation.xml">
+]
+>
+
+<!--
+		Licensed to the Apache Software Foundation (ASF) under one or more
+		contributor license agreements. See the NOTICE file distributed with
+		this work for additional information regarding copyright ownership.
+		The ASF licenses this file to you under the Apache License, Version
+		2.0 (the "License"); you may not use this file except in compliance
+		with the License. You may obtain a copy of the License at
+
+		http://www.apache.org/licenses/LICENSE-2.0 Unless required by
+		applicable law or agreed to in writing, software distributed under the
+		License is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR
+		CONDITIONS OF ANY KIND, either express or implied. See the License for
+		the specific language governing permissions and limitations under the
+		License.
+-->
+    
+<book lang="en">
+	<title>Anyframe MiP Query Plugin</title>
+	
+	<bookinfo>
+		<copyright>
+			<year>2007-2014</year>
+			<holder>Samsung SDS</holder>
+		</copyright>
+		<releaseinfo>Version 1.6.1-SNAPSHOT</releaseinfo>
+
+		<productname>Anyframe MiP Query Plugin</productname>
+
+		<authorgroup>
+			<corpauthor></corpauthor>
+		</authorgroup>
+
+		<mediaobject>
+			<imageobject>
+				<!-- logo 변경 -->
+				<imagedata fileref="../image/common/logo_pdf.jpg"/>
+			</imageobject>
+		</mediaobject>
+		<legalnotice>
+			<para>
+			The copyright of this document is the property of Samsung SDS. 
+			Permission is granted to use this document for free only for the purpose of open source community activity. 
+			The copyright holder should be clearly stated in case this document is copied or distributed, and changed contents should be specified. 
+			Permission is not granted for the commercial use of the modification of the original document. 
+			Should there be parts considered to have errors in this document, please register the issue for which we will take proper action.
+			</para>
+		</legalnotice>
+	</bookinfo>
+	
+	<part id="mip_query_installation_part">
+		<title>Introduction</title>
+		<partintro id="mip_query_installation_part_intro">
+			<para>
+				MiPlatform is receiving spotlight domestically as a RIA development platform based on X-internet. 
+				Thus, Anyframe provides MiPQueryService and MiPController to process data dedicated to MiPlatform when applications are developed based on MiPlatform. 
+				mip-query plugin is composed of sample codes to guide basic usage of MiPQueryService and MiPController, the models connected with MiPlatform provided by Anyframe  
+				and necessary libraries.
+				Anyframe provides common server modules to help implement basic CRUD functions without coding at all on the server side when applications are developed based on MiPlatform. 
+				The mip-query plugin includes sample applications which created MiPlatform-based UI, which are frequently used in the field, for each type using the common server modules.  
+				
+			</para>
+			<para role="introduction_title"><emphasis role="bold">Installation</emphasis></para>
+			<para>Install mip-query plugin by entering the following command in the Command window.</para>
+			<programlisting language="java"><![CDATA[mvn anyframe:install -Dname=mip-query]]></programlisting>
+			<para>
+				The installation result can be checked by using the installed (mvn anyframe:installed) or the jetty:run (mvn clean jetty:run) commands. 
+			</para>
+			<para role="introduction_title"><emphasis role="bold">Dependent Plugins</emphasis></para>
+			<informaltable>
+				<caption>Dependent Plugins</caption>
+				<tgroup cols="2">
+					<colspec colnum="1" colname="col1" colwidth="5*" />
+					<colspec colnum="2" colname="col2" colwidth="5*" />
+					<thead>
+						<row>
+							<entry align="center">Plugin Name</entry>
+							<entry align="center">Version Range</entry>
+						</row>
+					</thead>
+					<tbody>
+						<row>
+							<entry align="center"><ulink url="http://dev.anyframejava.org/docs.en/anyframe/plugin/optional/query-ria/1.6.1-SNAPSHOT/reference/htmlsingle/query-ria.html">query-ria</ulink></entry>
+							<entry align="center" valign="middle">2.0.0 > * > 1.4.0</entry>
+						</row>
+					</tbody>
+				</tgroup>
+			</informaltable>
+		</partintro>
+	</part>
+	
+	<part id="mip_query_integration_part">
+		<title>Miplatform Integration</title>
+		<partintro id="mip_query_integration_part_intro">
+			<para>
+				Anyframe provides MiPQueryService and AbstractMiPController to easily and conveniently connect with MiPlatform 
+				that is a RIA development platform.
+			</para>
+		</partintro>
+		&mip_query_integration_mipcontroller;
+		&mip_query_integration_mipquery;
+	</part>
+	
+	<part id="mip_query_simplification_part">
+		<title>Miplatform Simplification</title>
+		<partintro id="mip_query_simplification_part_intro">
+			<para>
+				Miplatform uses a data type that is MiPlatform-specific to transfer data. 
+				The commonly used type is Dataset object. 
+				Dataset is only for MiPlatform, so for simple CRUD functions, 
+				server logic such as Java Generics can be used through common handling. 
+				Therefore, when application is developed based on MiPlatform, 
+				developer will be provided with a common server module so that Service or DAO does not have to be developed 
+				for implementing CRUD function that has no complex or special work logic.  
+			</para>
+		</partintro>
+		&mip_query_simplification_mipservice;
+	</part>		
+
+	<part id="mip_query_mipuisample_part">
+		<title>MiPlatform UI Sample</title>
+		<partintro id="mipsample_mipuisample_part_intro">
+			<para>
+				We try to suggest effective ways for development for apllication development projects based on MiPlatform along with Anyframe Java by suggesting the way to use Anyframe Java, which is a Java EE application development framework and MiPlatform, an RIA UI development platform in connection. 
+				To reduce the time required to define development templates in the beginning of projects, 
+				We will provide MiPlatform screen samples and Eclipse project samples that can be referred to,  
+				and explain from installation to implementation functions and ways to apply them.
+			</para>
+			<para>
+				Anyframe MiPlatform UI Sample shows how to develop Java EE applications based on Anyframe when UIs are developed using MiPlatform, which is one of UI development platforms that are used frequently these days to realize Rich User Experience,  
+				and provides samples of basic pages extracted from some projects that used Anyframe and MiPlatform. 
+				The difference with MiPlatform samples provided through Anyframe Community Portal in the past is  
+				that it uses Anyframe Ria MiPlatform, a common modue composed of a common Controller, a common Service, etc. to eliminate unnecessarily overlapping coding for simple CRUD functions. 
+				
+			</para>
+		</partintro>
+		&mip_query_mipuisample_architecture;
+		&mip_query_mipuisample_sampleui;
+		&mip_query_mipuisample_standards;
+		&mip_query_mipuisample_commonflow;
+		&mip_query_mipuisample_validation;
+		&mip_query_mipuisample_i18n;
+	</part>	
+</book>

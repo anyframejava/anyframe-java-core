@@ -1,0 +1,102 @@
+<chapter id="springrest_restsupport_uritemplate">
+
+	<title>Request Mapping</title>
+	
+	<para>
+		As mentioned above, REST support provided by Spring are all based on Spring MVC. 
+		Service exposed in REST are Controller methods so they are not much different from the previous way of developing web applications.
+	</para>
+	
+	<para>
+		@RequestMapping is used for mapping URI which is Resource ID to Controller class or method. 
+		@RequestMapping supports URI Template, so it can be used like the below sample code. 
+		<programlisting language="java">@Controller
+<emphasis role="bold">@RequestMapping("/movies")</emphasis>
+public class MovieController {
+    // ...
+    <emphasis role="bold">@RequestMapping(value = "/{movieId}", method = RequestMethod.GET)</emphasis>
+    public String get(@PathVariable String movieId, Model model) throws Exception {
+        // ...
+    }
+}</programlisting>
+		Also, @RequestMapping provides 'method' property to use all HTTP methods, which is a key in the REST architecture guideline. 
+		So, the above get() method should be mapped when '/movies/MV-00001' URI is requested as GET.
+	</para>
+	
+	<note>
+		<title>DispatcherServlet URL Mapping</title>
+		<para>
+			The web application previously developed based on Spring MVC uses URL in 'xxx.do' format, 
+			As explained above, REST style URL is designed so that it is used in hierarchical structure like '/movies' and '/movies/MV-00001'. 
+			Therefore, define DispatcherServlet in web.xml, and map the URL pattern that the defined DispatcherServlet has to handle as '/'. 
+		</para>
+		<para>
+			In this case, view does not show properly because static resource such as css or image also goes through DispatcherServlet. 
+			Therefore, Spring provides <emphasis role="bold"><![CDATA[<mvc:default-servlet-handler/>]]></emphasis>. 
+			The role of this tag is to internally register <emphasis role="bold">DefaultServletHttpRequestHandler</emphasis>. 
+			This handler has the least priority, and is mapped as /**. 
+			So, after going through all other handler mappings, only the failed URLs are transferred. 
+			To handle the request that is finally handed over, DefaultServletHttpRequestHandler does not directly handle static resources 
+			but uses default sublet originally provided by server. 
+			So, '/' can be mapped in DispatcherServlet without using URLRewriteFilter.
+		</para>
+		<para>
+			However, springrest plugin of Anyframe should run along with other plugins such as foundation plugin, 
+			so it is set so that <![CDATA[<mvc:default-servlet-handler/>]]> is not used 
+			and only mapping is added in the previously defined DispatcherServlet as below.
+			<programlisting language="xml"><emphasis role="bold"><![CDATA[<servlet-mapping>
+    <servlet-name>action</servlet-name>
+    <url-pattern>/springrest/*</url-pattern>
+</servlet-mapping>]]></emphasis></programlisting> 
+		</para>
+	</note>
+		
+	<para>
+		Also, Spring adds new Annotation named <emphasis role="bold">@PathVariable</emphasis> so that variable included in URI Template can be extracted. 
+	</para>
+	
+	<para>
+		The following is an example of using @PathVariable.
+		<programlisting language="java"><emphasis role="bold">@RequestMapping(value = "/{movieId}"</emphasis>, method = RequestMethod.GET)
+public String get(<emphasis role="bold">@PathVariable String movieId</emphasis>, Model model)
+      throws Exception {
+    Movie movie = this.movieService.get(movieId);
+    // ...
+    return "springrestViewMovie";
+}</programlisting>
+		When URI request such as  '/movies/MV-00001' is transferred to server, 
+		the above get method is handled and 'MV-00001' value is bound as 'movieId' input argument.
+	</para>
+	<para>
+		Variable name can be defined and used as below, or various variables can be used. 
+		<programlisting language="java"><emphasis role="bold">@RequestMapping(value = "/movies/{movie}/posters/{poster}"</emphasis>, method = RequestMethod.GET)
+public String get(<emphasis role="bold">@PathVariable("movie") String movieId, @PathVariable("poster") String posterId</emphasis>, Model model)
+      throws Exception {
+    // ...
+    return "springrestViewMovie";
+}</programlisting>
+	</para>
+		
+	<para>
+		Can be used in Ant-style path like '/movies/*/posters/{posterId}', 
+		and URI Template variable can be bound as an input argument that is not String.
+		<programlisting language="java">@InitBinder
+public void initBinder(WebDataBinder binder) {
+    SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd");
+    binder.registerCustomEditor(Date.class, new CustomDateEditor(dateFormat, false));
+}
+
+<emphasis role="bold">@RequestMapping("/plans/{date}")</emphasis>
+public void get(<emphasis role="bold">@PathVariable Date date</emphasis>) {
+    // ...
+}</programlisting>
+		For example, request that comes in as '/plans/2010-09-05' URI is handled by the above method, 
+		and '2010-09-05' is bound as Date type in date argument.
+	</para>
+	
+	<para>
+		Refer to 
+	    <ulink url="http://dev.anyframejava.org/docs.en/anyframe/plugin/essential/core/1.6.1-SNAPSHOT/reference/htmlsingle/core.html#core_springmvc_controller_implementation">Controller Implementation of Core Plugin Manual</ulink> 
+	    for properties that can be used in @RequestMapping.
+	</para>
+</chapter>

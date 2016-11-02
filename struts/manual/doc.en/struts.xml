@@ -1,0 +1,201 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+
+<!DOCTYPE book PUBLIC "-//OASIS//DTD DocBook XML V4.5//EN" "http://www.oasis-open.org/docbook/xml/4.5/docbookx.dtd"
+[
+<!ENTITY struts_architecture SYSTEM "struts/architecture.xml">
+<!ENTITY struts_configuration SYSTEM "struts/configuration.xml">
+<!ENTITY struts_controller SYSTEM "struts/controller.xml">
+<!ENTITY struts_view SYSTEM "struts/view.xml">
+<!ENTITY struts_internationalization SYSTEM "struts/internationalization.xml">
+<!ENTITY struts_validator SYSTEM "struts/validator.xml">
+<!ENTITY struts_exceptionhandling SYSTEM "struts/exceptionhandling.xml">
+<!ENTITY struts_resources SYSTEM "struts/resources.xml">
+<!ENTITY struts_extensions SYSTEM "struts-extensions.xml">
+<!ENTITY struts_extensions_controller SYSTEM "struts-extensions/controller.xml">
+<!ENTITY struts_extensions_view SYSTEM "struts-extensions/view.xml">
+<!ENTITY struts_extensions_doublesubmission SYSTEM "struts-extensions/doublesubmission.xml">
+<!ENTITY struts_extensions_exceptionhandling SYSTEM "struts-extensions/exceptionhandling.xml">
+<!ENTITY struts_extensions_authandauthorization SYSTEM "struts-extensions/authandauthorization.xml">
+<!ENTITY struts_extensions_springintegration SYSTEM "struts-extensions/springintegration.xml">
+<!ENTITY struts_extensions_resources SYSTEM "struts-extensions/resources.xml">
+]
+>
+
+<!--
+		Licensed to the Apache Software Foundation (ASF) under one or more
+		contributor license agreements. See the NOTICE file distributed with
+		this work for additional information regarding copyright ownership.
+		The ASF licenses this file to you under the Apache License, Version
+		2.0 (the "License"); you may not use this file except in compliance
+		with the License. You may obtain a copy of the License at
+
+		http://www.apache.org/licenses/LICENSE-2.0 Unless required by
+		applicable law or agreed to in writing, software distributed under the
+		License is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR
+		CONDITIONS OF ANY KIND, either express or implied. See the License for
+		the specific language governing permissions and limitations under the
+		License.
+-->
+    
+<book lang="en">
+	<title>Anyframe Struts Plugin</title>
+	
+	<bookinfo>
+		<copyright>
+			<year>2007-2012</year>
+			<holder>Samsung SDS</holder>
+		</copyright>
+		<releaseinfo>Version 1.0.4-SNAPSHOT</releaseinfo>
+
+		<productname>Anyframe Struts Plugin</productname>
+
+		<authorgroup>
+			<corpauthor></corpauthor>
+		</authorgroup>
+
+		<mediaobject>
+			<imageobject>
+				<!-- logo 변경 -->
+				<imagedata fileref="../image/common/logo_pdf.jpg"/>
+			</imageobject>
+		</mediaobject>
+		<legalnotice>
+			<para>
+			The copyright of this document is the property of Samsung SDS. 
+			Permission is granted to use this document for free only for the purpose of open source community activity. 
+			The copyright holder should be clearly stated in case this document is copied or distributed, and changed contents should be specified. 
+			Permission is not granted for the commercial use of the modification of the original document. 
+			Should there be parts considered to have errors in this document, please register the issue for which we will take proper action.
+			</para>
+		</legalnotice>
+	</bookinfo>
+	
+	<part id="struts_introduction_part">
+		<title>Introduction</title>
+		<partintro id="struts_introduction_part_intro">
+			<para>
+				Struts plugin is composed of sample codes to guide how to connect <ulink url="http://struts.apache.org/">Apache Struts</ulink>, which is frequently used as the Web framework when JavaEE applications are developed, and 
+				Spring and reference libraries necessary to use these open sources.
+			</para>
+			<para role="introduction_title">
+				<emphasis role="bold">Installation</emphasis>
+			</para>
+			<para>Install struts plugin by entering the following command in the Command window.</para>
+			<programlisting language="java"><![CDATA[mvn anyframe:install -Dname=struts]]></programlisting>
+			<para>
+				The installation result can be checked by using the installed (mvn anyframe:installed) or the jetty:run(mvn clean
+				jetty:run) commands. 
+			</para>
+			<informaltable>
+				<caption>Dependent Plugins</caption>
+				<tgroup cols="2">
+					<colspec colnum="1" colname="col1" colwidth="5*" />
+					<colspec colnum="2" colname="col2" colwidth="5*" />
+					<thead>
+						<row>
+							<entry align="center">Plugin Name</entry>
+							<entry align="center">Version Range</entry>
+						</row>
+					</thead>
+					<tbody>
+						<row>
+							<entry align="center">
+								<ulink
+									url="http://dev.anyframejava.org/docs.en/anyframe/plugin/optional/query/1.5.0-SNAPSHOT/reference/htmlsingle/query.html">Query</ulink>
+							</entry>
+							<entry align="center" valign="middle">2.0.0 > * > 1.4.0</entry>
+						</row>
+					</tbody>
+				</tgroup>
+			</informaltable>
+			<para>
+			</para>
+		</partintro>
+	</part>	
+	
+	<part id="struts_overview_part">
+		<title>Struts</title>
+		<partintro id="struts_overview_part_intro">
+			<para>
+				Apache Struts Framework is open-source framework to develop Java web application. 
+				Struts helps the development of web application based on Model-View-Controller(MVC) architecture 
+				which is one of the separate concerns of software application. 
+				Struts provides Controller in ActionServlet format, and provides guidelines to implement view layer using JSP Taglib. 
+				Also, in Web Struts of Spring Framework (spring-webmvc-struts.jar), 
+				environment to access the interface of business layer registered as Spring Bean in WebApplicationContext of Struts is provided 
+				when business layer is composed based on Spring Framework. 
+			</para>
+			
+			<para>
+				The following are the characteristics of Struts.
+		  		<itemizedlist>
+				    <listitem>
+						<para><emphasis role="bold">The roles are clearly separated due to the following MVC architecture.</emphasis></para>
+						<para>
+		 					ActionServlet, which is a controller connecting model and view, 
+		 					executes Action class according to entered HTTP Request, 
+		 					and Action class executes model-related business layer or database logic. 
+		 					Also, ActionForm class for returning data between model and view can be used.
+		 				</para>
+		    		</listitem>
+		 		   	<listitem>
+						<para><emphasis role="bold">Provides Taglib that conveniently helps view development implemented with JSP.</emphasis></para>
+						<para>
+						   In Taglib basically provided by Struts, there are Bean, HTML, Logic, and Nested.
+		 				</para>
+		    		</listitem>
+		    		<listitem>
+		      			<para><emphasis role="bold">Exception Handling is possible by setting configuration.</emphasis></para>
+		      			<para>
+		 					Exception page can be set according to exception type using exception handling of struts-config.xml.
+		 				</para>
+		    		</listitem>
+		    		<listitem>
+		      			<para><emphasis role="bold">Authorization is possible by setting QConfiguration.</emphasis></para>
+		      			<para>
+		 					Can be set for only users that have specific URL authorization and permission, to access related URL.
+		 				</para>
+		    		</listitem>
+		    		<listitem>
+		      			<para><emphasis role="bold">Validation Check is possible in Controller.</emphasis></para>
+		      			<para>
+		 					Validation check on user input value can be performed with controller, not view.
+		 				</para>
+		   			</listitem>
+		   			<listitem>
+		      			<para><emphasis role="bold">Supports internationalization(I18N) function using MessageResource.</emphasis></para>
+		      			<para>Possible to show web page in various languages according to user locale information.</para>
+		   			</listitem>
+		   				
+		  		</itemizedlist>
+	  		</para>
+		</partintro>
+		&struts_architecture;
+		&struts_configuration;
+		&struts_controller;
+		&struts_view;
+		&struts_internationalization;
+		&struts_validator;
+		&struts_exceptionhandling;
+	</part>			
+	
+	<part id="struts_extensions_overview_part">
+		<title>Struts Extensions</title>
+		<partintro id="struts_extensions_overview_part_intro">
+			<para>
+			  Struts Extensions provides additional functions to use Apache Struts Framework more easily on the project. 
+			  It provides DefaultRequestProcessor that extends TilesRequestProcessor of Struts 
+			  that has added role-based authentication and management functions, etc., 
+			  AbstractActionSupport that has added declarative Synchronized Token handling function, etc., 
+			  and DefaultExceptionHandler, etc. for various Controller class and exception handling. 
+			  Also, AnyframeMiPAction class, that is in charge of common logic when developing view using MiPlatform which is Ria Solution, is included.
+			</para>
+		</partintro>
+		&struts_extensions_controller;
+		&struts_extensions_view;
+		&struts_extensions_doublesubmission;
+		&struts_extensions_exceptionhandling;
+		&struts_extensions_authandauthorization;
+		&struts_extensions_springintegration;
+	</part>	
+</book>

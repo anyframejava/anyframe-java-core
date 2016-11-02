@@ -1,0 +1,751 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+
+<!DOCTYPE book PUBLIC "-//OASIS//DTD DocBook XML V4.5//EN" "http://www.oasis-open.org/docbook/xml/4.5/docbookx.dtd"
+[
+<!ENTITY hibernate_hibernate_configuration SYSTEM "hibernate/hibernate/configuration.xml">
+<!ENTITY hibernate_hibernate_mappingfile SYSTEM "hibernate/hibernate/mappingfile.xml">
+<!ENTITY hibernate_hibernate_persistence SYSTEM "hibernate/hibernate/persistence.xml">
+<!ENTITY hibernate_hibernate_basiccrud SYSTEM "hibernate/hibernate/basiccrud.xml">
+<!ENTITY hibernate_hibernate_hql SYSTEM "hibernate/hibernate/hql.xml">
+<!ENTITY hibernate_hibernate_criteria SYSTEM "hibernate/hibernate/criteria.xml">
+<!ENTITY hibernate_hibernate_nativesql SYSTEM "hibernate/hibernate/nativesql.xml">
+<!ENTITY hibernate_hibernate_performance SYSTEM "hibernate/hibernate/performance.xml">
+<!ENTITY hibernate_hibernate_concurrency SYSTEM "hibernate/hibernate/concurrency.xml">
+<!ENTITY hibernate_hibernate_transaction SYSTEM "hibernate/hibernate/transaction.xml">
+<!ENTITY hibernate_hibernate_springintegration SYSTEM "hibernate/hibernate/springintegration.xml">
+<!ENTITY hibernate_dynamic_configuration SYSTEM "hibernate/dynamic/configuration.xml">
+<!ENTITY hibernate_dynamic_hql SYSTEM "hibernate/dynamic/hql.xml">
+<!ENTITY hibernate_dynamic_nativesql SYSTEM "hibernate/dynamic/nativesql.xml">
+<!ENTITY hibernate_sample_download SYSTEM "hibernate/download.xml">
+]
+>
+
+<!--
+		Licensed to the Apache Software Foundation (ASF) under one or more
+		contributor license agreements. See the NOTICE file distributed with
+		this work for additional information regarding copyright ownership.
+		The ASF licenses this file to you under the Apache License, Version
+		2.0 (the "License"); you may not use this file except in compliance
+		with the License. You may obtain a copy of the License at
+
+		http://www.apache.org/licenses/LICENSE-2.0 Unless required by
+		applicable law or agreed to in writing, software distributed under the
+		License is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR
+		CONDITIONS OF ANY KIND, either express or implied. See the License for
+		the specific language governing permissions and limitations under the
+		License.
+-->
+    
+<book lang="en">
+	<title>Anyframe Hibernate Plugin</title>
+	
+	<bookinfo>
+		<copyright>
+			<year>2007-2014</year>
+			<holder>Samsung SDS</holder>
+		</copyright>
+		<releaseinfo>Version 1.6.1-SNAPSHOT</releaseinfo>
+
+		<productname>Anyframe Hibernate Plugin</productname>
+
+		<authorgroup>
+			<corpauthor></corpauthor>
+		</authorgroup>
+
+		<mediaobject>
+			<imageobject>
+				<!-- Change logo -->
+				<imagedata fileref="../image/common/logo_pdf.jpg"/>
+			</imageobject>
+		</mediaobject>
+		<legalnotice>
+			<para>The copyright of this document is the property of Samsung SDS.
+       Permission is granted to use this document for free only for the purpose of open source community activity. 
+       The copyright holder should be clearly stated in case this document is copied or distributed, 
+       and changed contents should be specified. 
+       Permission is not granted for the commercial use of the modification of the original document.  
+       Should there be parts considered to have errors in this document, 
+       please register the issue for which we will take proper action.
+			</para>
+		</legalnotice>
+	</bookinfo>
+	
+	<part id="hibernate_introduction_part">
+		<title>Introduction</title>
+		<partintro id="hibernate_introduction_part_intro">
+			<para>
+				Hibernate Plugin is composed of sample codes to guide basic usage of <ulink url="http://www.hibernate.org">Hibernate</ulink>, which is a major ORM (Object Relational Mapping) tool,  
+				and reference libraries necessary to use these open sources.		
+			</para>		
+			<para role="introduction_title"><emphasis role="bold">Installation</emphasis></para>
+			<para>Install hibernate plugin by entering the following command in the Command window.</para>
+			<programlisting language="java"><![CDATA[mvn anyframe:install -Dname=hibernate]]></programlisting>
+			<para>
+				The installation result can be checked by using the installed (mvn anyframe:installed) or the jetty:run (mvn clean jetty:run) commands. 
+			</para>
+			<para role="introduction_title"><emphasis role="bold">Dependent Plugins</emphasis></para>
+			<informaltable>
+				<tgroup cols="2">
+					<colspec colnum="1" colname="col1" colwidth="5*" />
+					<colspec colnum="2" colname="col2" colwidth="5*" />	
+					<thead>
+						<row>
+							<entry align="center">Plugin Name</entry>
+							<entry align="center">Version Range</entry>
+						</row>
+					</thead>
+					<tbody>
+						<row>
+							<entry align="center"><ulink url="http://dev.anyframejava.org/docs.en/anyframe/plugin/essential/core/1.5.2-SNAPSHOT/reference/htmlsingle/core.html">Core</ulink></entry>
+							<entry align="center" valign="middle">2.0.0 > * > 1.4.0</entry>
+						</row>
+					</tbody>
+				</tgroup>
+			</informaltable>
+		</partintro>
+	</part>	
+	
+
+	<part id="hibernate_hibernate_part">
+		<title>Hibernate</title>
+		<partintro id="hibernate_hibernate_part_intro">
+			<para>
+				Hibernate is an ORM tool that solves mismatch between object
+		oriented modeling and relational data modeling, which the POJO-based
+		development is possible as it is not defining the dependent limitations
+		to a specific platform such as Entity Bean of EJB. Also, various
+		collection types supported from Java are supported to minimize the
+		limitations of mapping the object oriented modeling to relational data
+		modeling.				
+			</para>	
+			<para>The features of Hibernate are as the followings.</para>
+		
+		  	<itemizedlist>
+				<listitem>
+		      		<para>
+		      			As Hibernate-based development is not affected by specific DBMS, it is possible to operate properly simply by updating
+				configuration information without data access process codes even when DBMS is updated.		      		
+		      		</para>
+		    	</listitem>
+		
+		    	<listitem>
+		      		<para>
+		      			As it is developed with SQL and reduces time spent on creating code 
+		      			which is modified to object to deliver from SQL execution result  code writing time, 
+				developers can focus on the business logic and reduce development time.
+		      		</para>
+		    	</listitem>
+		
+		    	<listitem>
+		      		<para>
+		      			By having less JDBC Api-based codes and managing the mapping
+				file separately, the parts affected by DB information update is also
+				reduced.		      			
+		      		</para>
+		    	</listitem>
+		
+		    	<listitem>
+		      		<para>
+		      			By taking the following access ways, access to DBMS is reduced and application performance is enhanced ultimately.		      			
+		      		</para>
+		
+		      		<itemizedlist>
+		        		<listitem>
+		          			<para>Basically, select the lazy loading strategy accessing DBMS only when necessary. </para>
+		        		</listitem>
+			
+		        		<listitem>
+		          			<para>Batch process for changes on session end</para>
+		        		</listitem>
+		
+		        		<listitem>
+		          			<para>Using 1st level cache and 2nd level cache to use cached object without re-accessing DBMS
+		          			</para>
+		        		</listitem>
+		      		</itemizedlist>
+				</listitem>
+		
+		    	<listitem>
+		      		<para>
+		      			Most developers are familiar with using DTO (Data
+				Transfer Object) and DAO patterns to develop the application's
+				data access logic, resulting a disadvantage of having unfamiliarity
+				on designing the object having data and logic.
+		      		</para>
+		    	</listitem>
+			</itemizedlist>	
+			
+		  	<para>
+		  		This page will take a look at the basic concept of Hibernate by
+		using Hibernate 3.6.5.Final version. First, the persistent class that
+		defines the data existing physically regardless of application
+		execution and the life cycle of persistent class will be covered and
+		the Hibernate session managing the persistency of these objects will be organized.
+		  	</para>
+  
+			<para>
+				<emphasis role="bold">Conceptual Architecture</emphasis>
+			</para>
+
+			<para>The basic structure of Hibernate is as the following.</para>
+
+			<mediaobject>
+				<imageobject>
+					<imagedata align="center"
+						fileref="../image/hibernate/conceptual_arch.png" />
+				</imageobject>
+			</mediaobject>
+
+			<para>
+					The main components needed by Hibernate to execute DBMS based
+		applications are <emphasis role="bold">Persistent Objects, Hibernate Properties and
+			XML Mapping</emphasis> and each plays the following roles.
+			</para>
+
+			<itemizedlist>
+				<listitem>
+					<para>
+						Persistent Objects : The persistent object handles the data
+				existing physically regardless of application execution. Generally,
+				when developing an application using DBMS data, the business layer
+				of the application handles the application data via SQL for the
+				specific DBMS. But Hibernate-based applications can integrate
+				application data and DBMS with persistent object as the main.
+					</para>
+				</listitem>
+
+				<listitem>
+					<para>
+						<link linkend="hibernate_hibernate_configuration">Hibernate Properties</link>
+						: The file including properties related to
+				Hibernate execution, which can be defined as hibernate.cfg.xml or
+				hibernate.properties. Mainly handles DBMS, Logging, Cache and Mapping File information.
+					</para>
+				</listitem>
+
+				<listitem>
+					<para>
+						<link linkend="hibernate_hibernate_mappingfile">XML Mapping</link>
+						:XML file to state various mapping information between
+				persistent object and specific tables. Hibernate creates SQL to be
+				executed based on Hibernate Mapping XML.
+					</para>
+				</listitem>
+			</itemizedlist>
+			
+			
+
+			<para>
+				<emphasis role="bold">Persistent Classes</emphasis>
+			</para>
+
+			<para>
+				Persistent Class is the object mapped with a specific table of DB
+		by using Hibernate, where the writing Persistence Class is important
+		to use Hibernate properly. The basic conditions to use Java Class as
+		the Hibernate Persistent Class are as the following.			
+			</para>
+
+			<itemizedlist>
+				<listitem>
+					<para>
+							<emphasis role="bold">[Required] Default Constructor
+					Implementation:</emphasis>
+				As Hibernate uses the Constructor.newInstance() to create the
+				instance of corresponding class, note that a default constructor not
+				having input parameters needs to be created in the corresponding class to use as the
+				persistence object.					
+					</para>
+		
+		            <programlisting language="java"><![CDATA[public class Category implements java.io.Serializable {
+    <!-- ... -->]]>
+    <emphasis role="bold"><![CDATA[public Category() {]]></emphasis>
+    <emphasis role="bold">}</emphasis>
+}</programlisting>
+				</listitem>
+
+				<listitem>
+					<para>
+					<emphasis role="bold">[Recommended] Define identifier field mapping with table's primary key column:</emphasis>
+				Generally, having the identifier field mapping with DB table's
+				primary key in Hibernate persistent class is not a requirement, but necessary in
+				some cases. (Ex. when using Session.saveOrUpdate or
+				Session.merge method), but having identifier in a general domain object is typical, 
+				it is recommended to define the identifier field
+				in persistent class.					
+					</para>
+				</listitem>
+
+				<listitem>
+					<para>
+						<emphasis role="bold">[Recommended] Not define as a final
+					class:</emphasis> Hibernate's lazy loading needs to use proxy, but when declaring
+				persistent class as final, proxy cannot be used. When declaring Persistent class with final, proxy cannot be used.			
+					</para>
+				</listitem>
+
+				<listitem>
+					<para>
+						<emphasis role="bold">[Recommended] Define getter and setter
+					for attribution information access:</emphasis>
+				Hibernate can handle mapping when there exists method composed of getter/setter.					
+		                <programlisting language="java"><![CDATA[public class Category implements java.io.Serializable {
+
+    private String categoryId;
+    private String categoryName;
+
+    ...
+    public String getCategoryId() {
+        return this.categoryId;
+    }
+
+    public void setCategoryId(String categoryId) {
+        this.categoryId = categoryId;
+    }
+
+    public String getCategoryName() {
+        return this.categoryName;
+    }
+
+    public void setCategoryName(String categoryName) {
+        this.categoryName = categoryName;
+    }
+    ...
+}]]></programlisting>
+					</para>
+		
+					<para>
+						If the mapping information for DB column in mapping file is
+				configured as the following, gettter/setter method are unnecessary.
+		                <programlisting language="xml"><![CDATA[<property name="name" column="NAME"]]> <emphasis role="bold"><![CDATA[access="field"]]></emphasis>/></programlisting>
+					</para>
+				</listitem>
+
+				<listitem>
+					<para>
+						<emphasis role="bold">[Optional] equals(), hashCode() method
+					implementation:</emphasis>
+				The next category 1 and category 2 read identical data from
+				identical table are not handled as equal objects as they were
+				obtained via different sessions. When a comparison of the objects
+				obtained via other session like this is necessary, implement
+				equals() method appropriately.						
+		                <programlisting language="java"><![CDATA[Session session1 = SessionFactory.openSession();
+    Category category1 = (Category)session1.get(Category.class, "test");
+session1.close();
+
+Session session2 = SessionFactory.openSession();
+    Category category2 = (Category)session2.get(Category.class, "test");
+session2.close();]]></programlisting>
+					</para>
+					<para>
+					<programlisting language="java"><![CDATA[public boolean equals(Object other) {
+    if ( !(other instanceof Category) ) return false;
+    Category castOther = (Category) other;
+    return new EqualsBuilder().append(this.getCategoryId(),
+    castOther.getCategoryId()).isEquals();
+    }
+    public int hashCode() {
+        return new HashCodeBuilder().append(getCategoryId()).toHashCode();
+}]]></programlisting>
+					</para>
+				</listitem>
+		
+				<listitem>
+					<para>
+							<emphasis role="bold">[Optional] Serializable interface
+					implementation:</emphasis>
+				In Hibernate, the persistent classes do not need to implement the
+				java.io.Serializable interface, but it is required to store
+				persistent object to HttpSession or delivering by using RMI.					
+					</para>
+					<para>
+		                <programlisting language="java"><![CDATA[public class Category implements java.io.Serializable {
+   ...
+}]]></programlisting>
+					</para>
+				</listitem>
+		
+			</itemizedlist>
+
+			<para>
+				<emphasis role="bold">Dynamic Model</emphasis>
+			</para>
+			<para>
+				As the Hibernate supports dynamic model (Map),the persistent
+		entity does not need to be either JavaBean or POJO. When using dynamic
+		model, define only the Hibernate Mapping file without writing the
+		persistent class.			
+			</para>
+			<para>
+				The following is a part of Hibernate session accessing source
+		using map.
+			</para>
+			<para>
+		        <programlisting language="java"><![CDATA[Session sessions = SessionFactory.openSession();
+    Map<String, String> categoryMap = new HashMap<String, String>();
+    categoryMap.put("categoryId", "CTGR-0001");
+    categoryMap.put("categoryName", "Romantic");
+    categoryMap.put("categoryDesc, "Romantic genre");
+
+    sessions.save("Category", categoryMap);
+   ...]]></programlisting>
+			</para>
+		
+			<para>
+				<emphasis role="bold">Hibernate Session</emphasis>
+			</para>
+		
+			<para>
+				Session is an object performing a connection between
+		Hibernate and DB connection, which maintains connection until the
+		session is closed after opening a single DB connection on session
+		development. As all the objects (persistent objects) loaded by
+		Hibernate is related with session, the object changes are
+		automatically reflected by session or handled with lazy loading.			
+			</para>
+
+			<para>
+				Creating a new session can be done via SessionFacotry and the
+		following is an example code initializing the SessionFactory with
+		hibernate.cfg.xml file as the base at Hibernate.				
+			</para>
+			<para>
+		        <programlisting language="java"><![CDATA[SessionFactory initialSessionFactory
+        = new Configuration().configure(hibernateconfig/hibernate.cfg.xml")
+                .buildSessionFactory();]]></programlisting>
+			</para>
+		
+			<para>
+				There are two ways of openSession() and getCurrentSession() to
+		create a new session via SessionFactory.	
+			</para>
+			<itemizedlist>
+				<listitem>
+					<para>
+						<emphasis role="bold">openSession</emphasis>
+					</para>
+		
+					<para>
+						A new session is created when openSession of SessionFactory is
+				called each time.				
+		                <programlisting language="java">Session session1 = SessionFactory.openSession();
+Session session2 = SessionFactory.openSession();</programlisting>
+					</para>
+		
+					<para>
+						The session1 and session2 created from above source are
+				different sessions.					
+					</para>
+				</listitem>
+
+				<listitem>
+					<para>
+						<emphasis role="bold">getCurrentSession</emphasis>
+					</para>
+		
+					<para>
+						The other way to create a session from SessionFactory is using
+				the getCurrentSession() method. The getCurrentSession() returns
+				proxy and when there's a created session, the created session
+				is and if not, a new session is returned.
+					
+					</para>
+					<para>
+		                <programlisting language="java"><![CDATA[Session session1 = initialSessionFactory.getCurrentSession();
+Session session2 = initialSessionFactory.getCurrentSession();
+session1.close();
+Session session3 = initialSessionFactory.getCurrentSession();]]></programlisting>
+					</para>
+					<para>
+						The case of calling getCurrentSession(), which can confirm that
+				the session1 and session2 are identical session's proxy
+				objects, but the session3 is a different proxy object.
+					
+					</para>
+				</listitem>
+			</itemizedlist>
+		
+			<para>
+				There is a difference between the sessions obtained by calling
+		openSession() and getCurrentSession() methods. The session created
+		with openSession() does not get closed even when the related
+		transaction is closed, the session obtained by getCurrentSession()
+		gets closed when the transaction is closed. So, the session
+		obtained with openSession() must be closed manually by calling
+		session.close() and the the session obtained with getCurrentSession()
+		should not call Session.close() method separately.			
+			</para>
+
+			<para>
+				<emphasis role="bold">Persistent Object States</emphasis>
+			</para>
+
+			<itemizedlist>
+				<listitem>
+					<para>
+						<emphasis role="bold">Lifecycle</emphasis>
+					</para>
+		
+					<para>
+						In Hibernate, the persistent object can have 3 status of
+				transient, persistent and detached and cause status variations.
+				Descriptions about each status are as the followings.
+				
+					</para>
+		
+					<mediaobject>
+						<imageobject>
+							<imagedata align="center" fileref="../image/hibernate/polifecycle.png" />
+						</imageobject>
+					</mediaobject>
+		
+					<itemizedlist>
+						<listitem>
+							<para>
+								Transient : In case that Object was created by not yet being managed					
+		                        <programlisting language="java">...
+<![CDATA[Category category = new Category();
+
+category.setCategoryId("CTGR-0001");
+category.setCategoryName("Romantic");
+category.setCategoryDesc("Romantic genre");
+..중략]]></programlisting>
+							</para>
+		
+							<para>
+								As the above source, the staus that the persistent class instance was
+						created, but not yet being managed by Hibernate is called as
+						transient status.						
+							</para>
+						</listitem>
+		
+						<listitem>
+							<para>
+								<emphasis role="bold">Persistent : </emphasis>
+						In case that the object is being managed by Hibernate and the
+						functions (mapping with specific row of table and automatically
+						reflects changed values, Lazy Loading, etc) are applied.					
+		                        <programlisting language="java"><![CDATA[Category category = new Category();
+category.setCategoryId("CTGR-0001");
+category.setCategoryName("Romantic");
+category.setCategoryDesc("Romantic genre"); // -- transient status
+session.save(category); // -- Persistent status]]> </programlisting>
+							</para>
+		
+							<para>
+								When the method such as Hibernate's session's
+						save(),persist() is used on the persistent class of transient
+						status, it becomes the persistent status that can use the
+						functions provided from Hibernate.
+							</para>
+		
+							<para>
+								Below is a part of HibernatePersistentObjcetStates.java to
+						test the reflection of automatic reflections when persistent
+						status object value is changed..</para>
+		
+							<para>
+		                        <programlisting language="java"><![CDATA[public void persistentState() throws Exception {
+    newSession();
+
+    Category category = new Category();
+    category.setCategoryId("CTGR-0001");
+    category.setCategoryName("Romantic");
+    category.setCategoryDesc("Romantic genre");
+
+    session.save(category);
+
+    category.setCategoryName("Comedy");
+    category.setCategoryDesc("Comedy consists...");
+
+    closeSession();
+}]]></programlisting>
+										The following is a part of query log when above test code is
+						executed. 
+                        		<programlisting><![CDATA[1: insert into PUBLIC.CATEGORY (CATEGORY_NAME, CATEGORY_DESC, CATEGORY_ID)
+        values ('Romantic','Romantic genre', 'CTGR-0001')
+1: update PUBLIC.CATEGORY set CATEGORY_NAME='Comedy', CATEGORY_DESC='Comedy consists'
+        where CATEGORY_ID='CTGR-0001']]></programlisting>
+							</para>
+
+							<para>
+								As seen on above log, even though the save or update command
+						was not executed after changing the category value, the update
+						query executes when the transaction is closed. As such, when
+						it becomes persistent, the specific row of DB table is mapped
+						and reflected automatically.
+							</para>
+						</listitem>
+		
+						<listitem>
+							<para>
+								<emphasis role="bold">Detached : </emphasis>
+								The object being managed by Hibernate, but unlike the persistent
+						status, the functions provided by Hibernate are not being
+						supported, which the changed value does not automatically get
+						reflected to DB even the attribute value of object changes.
+							</para>
+		
+							<para>
+									The following is a part of HibernatePersistentObjcetStates.java
+						which tests for the case when Detached persistent object value is
+						changed
+						and Session is closed leading to the failure of DB input.								
+		                        <programlisting language="java"><![CDATA[public void detachedState() throws Exception {
+    newSession();
+
+    Category category = new Category();
+    category.setCategoryId("CTGR-0001");
+    category.setCategoryName("Romantic");
+    category.setCategoryDesc("Romantic genre");
+
+    session.save(category);
+
+    closeSession();
+
+    newSession();
+
+    category.setCategoryName("Comedy");
+    category.setCategoryDesc("Comedy consists");
+    closeSession();
+    ...]]></programlisting>
+							</para>
+		
+							<para>
+								In the test case above, after making the state of persistent
+						object detached and modifying the value,
+						if close the following
+						session, it is not updated unlike persistent
+						state.
+						Executed query log is as follows.							
+		                        <programlisting><![CDATA[insert into
+        PUBLIC.CATEGORY (CATEGORY_NAME, CATEGORY_DESC, CATEGORY_ID) 
+            values ('Romantic', 'Romantic genre', 'CTGR-0001']]></programlisting>
+							</para>
+		
+							<para>
+								As seen on above log, unlike the persistent state status, the
+						update query is not executedf even when the persistent object is
+						changed.
+							</para>
+		
+							<para>
+								<emphasis role="bold">Notes: </emphasis>
+								Object which was not initialized in one Session cannot be fetched
+						if changed to Detached.
+						The following is a part of
+						HibernateLazyInitializationException.java,
+						a test code for checking LazyInitializationException occurrence
+						when fetching uninitialized related object .								
+		                        <programlisting language="java"><![CDATA[public void findMovie() throws Exception {
+    ...
+    Movie movie = (Movie) session.get(Movie.class, "MV-00001");
+    ...
+    session.close();
+
+    try {
+        movie.getCategories().iterator();
+        fail("expected LazyInitializationException");
+    } 
+    catch (Exception e) {
+        ...
+}]]></programlisting>
+							</para>
+		
+							<para>
+								Movie and Category has 1:n relations.
+						After performing single item search targeting movie table,
+						complete session and make movie object detached.
+						And the LazyInitializationException occurs when desired to obtain the 
+						not	initialized category list information.
+								</para>
+						</listitem>
+					</itemizedlist>
+				</listitem>
+			</itemizedlist>							
+		</partintro>
+		&hibernate_hibernate_configuration;
+		&hibernate_hibernate_mappingfile;
+		&hibernate_hibernate_persistence;
+		&hibernate_hibernate_basiccrud;
+		&hibernate_hibernate_hql;
+		&hibernate_hibernate_criteria;
+		&hibernate_hibernate_nativesql;
+		&hibernate_hibernate_performance;
+		&hibernate_hibernate_concurrency;
+		&hibernate_hibernate_transaction;
+		&hibernate_hibernate_springintegration;
+	</part>		
+	
+	<part id="hibernate_dynamic_part">
+		<title>Dynamic Hibernate</title>
+		<partintro id="hibernate_dynamic_intro">
+			<para>
+				When performing access control using only Hibernate,
+			to develop HQL and Native SQL which dynamically changes according to
+			the input condition,
+			logic for HQL or Native SQL queries must be included in the relevant JAVA
+			code.
+			This can mix queries and JAVA code making change or maintenance
+			difficult.
+			Therefore, Hibernate provides DynamicHibernateService
+			which integrate Hibernate and Velocity by defining HQL and Native SQL
+			which dynamically changes
+			according to separate XMLs, and handle them using Hibernate.
+			Syntax mainly used in Dynamic HQL or Dynamic Native SQL is as the following.				
+		    </para>
+		    <itemizedlist>
+		    	<listitem>
+		        	<para>
+		        		<emphasis role="bold">:ParameterName</emphasis> : 
+		        		Used when assigning variable in named parameter type.		        
+		            </para>
+		        </listitem>
+		
+		        <listitem>
+		            <para>
+		            	<emphasis role="bold">{{Replacement string key}} </emphasis>
+							: By replacing with the relevant string key, perform the query.		            	
+		            </para>
+				</listitem>
+		
+		        <listitem>
+		            <para>
+		            	<emphasis role="bold">#if ~ (#elseif) ~ #end </emphasis>
+							: Conditional branch
+		            </para>
+		        </listitem>
+		
+		        <listitem>
+		            <para>
+		            	<emphasis role="bold"># foreach ~ #end</emphasis> :
+		            	Loop
+		            </para>
+		        </listitem>
+		
+		        <listitem>
+		            <para>
+		            	<emphasis role="bold">$velocityCount</emphasis>
+							: Define the part to check Loop index in foreach phrase.
+		            </para>
+		        </listitem>
+			</itemizedlist>
+			<para>
+				There is one type of DynamicHibernateService implementation
+		    </para>
+		</partintro>
+		&hibernate_dynamic_configuration;
+		&hibernate_dynamic_hql;
+		&hibernate_dynamic_nativesql;
+	</part>	
+
+	<part id="sample_download">
+		<title>Sample Download</title>
+			<partintro id="hibernate_dynamic_intro">
+				<para>Download page</para>
+			</partintro>
+		&hibernate_sample_download;
+	</part>
+</book>
+

@@ -1,0 +1,318 @@
+<chapter id="remoting_hessian">
+	<title>Hessian</title>
+	
+    <para>
+    	Hessian and Burlap are solutions provided by <ulink
+    	url="http://www.caucho.com/">Caucho Technology </ulink> that enable lightweight remoting service through HTTP.
+    </para>
+
+    <itemizedlist>
+    	<listitem>
+        	<para>
+        		Solves RMI firewall problem
+        	</para>
+      	</listitem>
+
+      	<listitem>
+        	<para>
+        		Appropriate for use in an environment that has limited memory and storage space (applets/wireless devices)
+        	</para>
+      	</listitem>
+
+      	<listitem>
+        	<para>
+        		Limitations - <emphasis role="bold">Using its own serialization mechanism instead of 
+        		the standard Java serialization mechanism makes it insufficient for applying to composite data model.</emphasis>
+        	</para>
+      	</listitem>
+	</itemizedlist>
+
+    <para>
+    	It is easy to develop Hessian service even when Spring is not used. 
+    	Make sure that service class extends com.caucho.hessian.server.HessianServlet, 
+    	and set the exposure method modifier to public. 
+    	When developing Hessian service based on Spring, 
+    	all Spring functions including Dependency Injection and	Spring AOP can be used, 
+    	so the Spring Remoting is provided. 
+    	It is possible to use HessianServiceExporter bean during developing Hessian service,
+    	just as RmiServiceExporter bean is set in Spring configuration file when developing RMI service. 
+    	The property is similar, 
+    	but serviceName, registryPort property in RmiServiceExporter bean is not used. 
+    	Hessian service does not have RMI registry, so the service name and port does not have to be defined.
+    </para>
+
+    <para>
+    	Next is how to use the Hessian for server and client layer.
+    </para>
+
+    <section id="remoting_hessian_serverconfiguration">
+    	<title>Server Configuration</title>
+
+      	<para>
+      		Server implementation is the same as general bean development. 
+      		HessianServiceExporter class can be used to easily expose service developed with general Spring Bean as Hessian Service. 
+      		In this case, all public methods are exposed as service method.
+      	</para>
+
+      	<informaltable>
+        	<tgroup cols="4">
+         		<colspec colnum="1" colname="col1" colwidth="2*"/>
+        		<colspec colnum="2" colname="col2" colwidth="5*"/>
+        		<colspec colnum="3" colname="col3" colwidth="1*"/>
+        		<colspec colnum="4" colname="col4" colwidth="2*"/>
+          		<thead>
+	            	<row>
+	              		<entry align="center">Property Name</entry>
+	
+	              		<entry align="center">Description</entry>
+	
+	              		<entry align="center">Required</entry>
+	
+	              		<entry align="center">Default Value</entry>
+	            	</row>
+          		</thead>
+
+          		<tbody>
+            		<row>
+              			<entry>service</entry>
+
+              			<entry>Set the id of the Spring Bean you wish to expose as Hessian service.</entry>
+
+              			<entry align="center">Y</entry>
+
+              			<entry align="center">N/A</entry>
+            		</row>
+
+            		<row>
+              			<entry>serviceInterface</entry>
+
+              			<entry>Set the Interface class of service exposed as Hessian service along with package.</entry>
+
+              			<entry align="center">Y</entry>
+
+              			<entry align="center">N/A</entry>
+            		</row>
+          		</tbody>
+        	</tgroup>
+		</informaltable>
+
+		<section id="sremoting_hessian_serverconfiguration_sample">
+        	<title>Samples</title>
+
+        	<para>
+        		The following is an example on the properties for Hessian server implementation. 
+        		The service development is the same as general Spring Bean 
+        		and is exposed as Hessian service referring to the property in HessianServiceExporter Bean.
+        	</para>
+
+        	<itemizedlist>
+          		<listitem>
+            		<para>
+            			<emphasis role="bold">Configuration</emphasis>
+            		</para>
+
+            		<para>
+            			The following is part of context-remoting-hessian.xml 
+            			which defines the property of HessianServiceExporter 
+            			that supports Hessian service.
+            		</para>
+
+            		<programlisting language="xml"><![CDATA[<bean]]> <emphasis role="bold">id="org.anyframe.sample.remoting.moviefinder.service.MovieService"</emphasis>
+        <![CDATA[class="org.anyframe.sample.remoting.moviefinder.service.impl.MovieServiceImpl">
+    <property name="movieDao" ref="movieDao"/>
+</bean>
+
+<bean id="movieDao" class="org.anyframe.sample.remoting.moviefinder.service.impl.MovieDao" />
+    
+<!-- Add Hessian ServiceExporter -->
+<bean id="hessianMovieService"]]> 
+        <emphasis role="bold">class="org.springframework.remoting.caucho.HessianServiceExporter"</emphasis><![CDATA[>
+
+    <property name="service" ref="org.anyframe.sample.remoting.moviefinder.service.MovieService" />
+    <property name="serviceInterface" 
+            value="org.anyframe.sample.remoting.moviefinder.service.MovieService" />
+</bean>]]></programlisting>
+
+            		<para>
+            			HessianServiceExporter bean is developed with Spring MVC controller, 
+            			so Spring MVC DispatcherServlet should be defined in web.xml. 
+            			To provide service in HTTP, the service is deployed in web application. 
+            			The following is part of web.xml of server side web application.
+            			<programlisting language="xml"><![CDATA[<web-app>
+    <context-param>
+        <param-name>contextConfigLocation</param-name>
+        <param-value>WEB-INF/context-remoting-hessian.xml</param-value>
+    </context-param>
+    ...
+    <listener>
+        <listener-class>
+            org.springframework.web.context.ContextLoaderListener
+        </listener-class>
+    </listener>
+    ...
+    <servlet>
+        <servlet-name>remoting</servlet-name>
+        <servlet-class>
+            org.springframework.web.servlet.DispatcherServlet
+        </servlet-class>
+        <init-param>
+            <param-name>contextConfigLocation</param-name>
+            <param-value>/WEB-INF/remoting-hessian-servlet.xml</param-value>
+        </init-param>
+        <load-on-startup>1</load-on-startup>
+    </servlet>
+    <servlet-mapping>
+        <servlet-name>remoting</servlet-name>
+        <url-pattern>/*</url-pattern>
+    </servlet-mapping>
+    ...
+</web-app>]]></programlisting>
+					</para>
+
+            		<para>
+            			Use URL Mapping of Spring MVC to call Hessian controller based on HTTP. 
+            			The following is a part of hessian-servlet.xml of server side web application. <![CDATA[*]]> 
+            			After all URL requests of pattern have been transferred to DispatcherServlet, 
+            			hessianMovieService is called by urlMapping, and Hessian service is supported. 
+            			<programlisting language="xml"><![CDATA[<bean id="urlMappingUser" class="org.springframework.web.servlet.handler.SimpleUrlHandlerMapping">
+    <property name="mappings">
+        <props>
+            <prop key="/MovieService">hessianMovieService</prop>
+        </props>
+    </property>
+</bean>]]></programlisting>
+					</para>
+				</listitem>
+
+
+			</itemizedlist>
+		</section>
+	</section>
+
+    <section id="sremoting_hessian_cilentconfiguration">
+      	<title>Client Configuration</title>
+
+      	<para>
+      		Client can use org.springframework.remoting.caucho.HessianProxyFactoryBean class provided by 
+      		Spring to access Hessian Service.
+      	</para>
+
+      	<informaltable>
+        	<tgroup cols="4">
+         		<colspec colnum="1" colname="col1" colwidth="2*"/>
+        		<colspec colnum="2" colname="col2" colwidth="5*"/>
+        		<colspec colnum="3" colname="col3" colwidth="1*"/>
+        		<colspec colnum="4" colname="col4" colwidth="2*"/>
+          		<thead>
+            		<row>
+              			<entry align="center">Property Name</entry>
+
+              			<entry align="center">Description</entry>
+
+              			<entry align="center">Required</entry>
+
+              			<entry align="center">Default Value</entry>
+            		</row>
+          		</thead>
+
+          		<tbody>
+            		<row>
+              			<entry>serviceUrl</entry>
+
+              			<entry>
+              				Hessian service access URL. "http://" + server ip + ":" + port number
+              				+ "/" + service name (e.g., http://localhost:9002/MovieService)
+              			</entry>
+
+              			<entry align="center">Y</entry>
+
+              			<entry align="center">N/A</entry>
+            		</row>
+
+            		<row>
+              			<entry>serviceInterface</entry>
+
+              			<entry>
+              			Set the Interface class of service exposed as Hessian service along with package.</entry>
+              			<entry align="center">Y</entry>
+
+              			<entry align="center">N/A</entry>
+            		</row>
+          		</tbody>
+        	</tgroup>
+		</informaltable>
+
+		<section id="sremoting_hessian_cilentconfiguration_sample">
+        	<title>Samples</title>
+
+        	<para>
+        		The following is an example of Hessian client property. 
+        		Client refers to property of HessianProxyFactoryBean to access Hessian service.
+        	</para>
+
+        	<itemizedlist>
+          		<listitem>
+            		<para>
+            			<emphasis role="bold">Configuration</emphasis>
+            		</para>
+
+            		<para>
+            			The following is a part of context-remoting-hessian-client.xml 
+            			which defines the properties of HessianProxyFactoryBean that accesses Hessian service.
+            			<programlisting language="xml"><![CDATA[<!-- Add Hessian Client -->
+<bean id="movieServiceClient"]]> 
+  <emphasis role="bold">class="org.springframework.remoting.caucho.HessianProxyFactoryBean"</emphasis><![CDATA[>
+  
+    <property name="serviceUrl" value="http://localhost:9002/MovieService" />
+    <property name="serviceInterface" 
+            value="org.anyframe.sample.remoting.moviefinder.service.MovieService"/>
+</bean>]]></programlisting>
+					</para>
+
+            		<para>
+            			Like a client that accesses RMI service, 
+            			set Interface class implemented by service in serviceInterface property. 
+            			Service URL is set in serviceUrl property, 
+            			so HTTP URL should be set because Hessian is provided based on HTTP.
+            		</para>
+          		</listitem>
+
+          
+        	</itemizedlist>
+		</section>
+    </section>
+
+    <section id="sremoting_hessian_difference">
+		<title>The difference between Hessian and Burlap</title>
+
+		<itemizedlist>
+        	<listitem>
+          		<para>
+          			Like RMI, Hessian uses binary data when communicating with client through remote system service.
+          		</para>
+        	</listitem>
+
+        	<listitem>
+          		<para>
+          			Burlap communicates based on XML. 
+          			It is Human-readable compared to binary data of Hessian. 
+          			However, Burlap's XML message is different from Remoting based on SOAP message 
+          			in that it has a simple structure that does not have a separate definition languages such as WSDL or IDL.
+          		</para>
+        	</listitem>
+
+        	<listitem>
+          		<para>
+          			Hessian that uses binary data is more efficient in transferring data in the network environment.
+          		</para>
+        	</listitem>
+
+        	<listitem>
+          		<para>
+          			However, Burlap should be used when readability is important 
+          			and when communicating with other languages that Hessian implementation does not exist.
+          		</para>
+        	</listitem>
+      	</itemizedlist>
+	</section>
+</chapter>

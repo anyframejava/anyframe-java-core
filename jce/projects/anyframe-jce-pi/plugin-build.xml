@@ -1,0 +1,38 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<plugin name="jce" description="JCE Plugin is the basic plugin which is the basis of all plugins provided by Anyframe, and consists of sample code to guide how to use Spring MVC, Spring, etc. and reference libraries to use these open sources.">
+	<groupId>org.anyframe.plugin</groupId>
+	<artifactId>anyframe-jce-pi</artifactId>
+	<version>1.6.1-SNAPSHOT</version>
+	<dependent-plugins>
+		<dependent-plugin name="datasource" version="2.0.0&gt;*"/>
+		<dependent-plugin name="logging" version="2.0.0&gt;*"/>
+		<dependent-plugin name="spring" version="2.0.0&gt;*"/>
+	</dependent-plugins>	
+	<resources>
+		<resource dir="src/main/java" filtered="true" packaged="true">
+			<include name="**/*.java" />
+		</resource>
+		<resource dir="src/main/resources" filtered="true" packaged="false">
+			<include name="**/*.*" />
+		</resource>
+		<resource dir="src/test/java" filtered="true" packaged="true">
+			<include name="**/*.java" />
+		</resource>
+		<resource dir="src/test/resources" filtered="false" packaged="false">
+			<include name="**/*.xml" />
+		</resource>
+    	<resource dir="src/main/webapp" filtered="false" packaged="false">
+      		<include name="**/sample/**/*.*"/>
+     		<include name="**/anyframe.jsp"/> 
+		</resource>
+  		<resource dir="src/main/webapp/WEB-INF" filtered="false" packaged="false">
+    		<include name="**/jsp/jce/**/*.*"/>
+        	<exclude name="**/web.xml" merged="true"/>
+   		</resource>
+		<resource dir="db/scripts" filtered="false" packaged="false">
+			<include name="**/*.sql" />
+		</resource>
+	</resources>
+	<samples>true</samples>
+	<essential>true</essential>
+</plugin>

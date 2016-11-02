@@ -1,0 +1,146 @@
+<?xml version="1.0" encoding="utf-8"?>
+
+<!DOCTYPE book PUBLIC "-//OASIS//DTD DocBook XML V4.5//EN" "http://www.oasis-open.org/docbook/xml/4.5/docbookx.dtd"
+[
+<!ENTITY jdbcsupport_injectionandlogging_introduction SYSTEM "jdbc-support/introduction.xml">
+<!ENTITY jdbcsupport_injectionandlogging_architecture SYSTEM "jdbc-support/architecture.xml">
+<!ENTITY jdbcsupport_injectionandlogging_configuration SYSTEM "jdbc-support/configuration.xml">
+<!ENTITY jdbcsupport_injectionandlogging_implementation SYSTEM "jdbc-support/implementation.xml">
+<!ENTITY jdbcsupport_injectionandlogging_caution SYSTEM "jdbc-support/caution.xml">
+<!ENTITY jdbcsupport_injectionandlogging_resources SYSTEM "jdbc-support/resources.xml">
+]
+>
+
+<!--
+		Licensed to the Apache Software Foundation (ASF) under one or more
+		contributor license agreements. See the NOTICE file distributed with
+		this work for additional information regarding copyright ownership.
+		The ASF licenses this file to you under the Apache License, Version
+		2.0 (the "License"); you may not use this file except in compliance
+		with the License. You may obtain a copy of the License at
+
+		http://www.apache.org/licenses/LICENSE-2.0 Unless required by
+		applicable law or agreed to in writing, software distributed under the
+		License is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR
+		CONDITIONS OF ANY KIND, either express or implied. See the License for
+		the specific language governing permissions and limitations under the
+		License.
+-->
+    
+<book lang="en">
+	<title>Anyframe Jdbc Support Plugin</title>
+	
+	<bookinfo>
+		<copyright>
+			<year>2007-2014</year>
+			<holder>Samsung SDS</holder>
+		</copyright>
+		<releaseinfo>Version 1.1.1-SNAPSHOT</releaseinfo>
+
+		<productname>Anyframe Jdbc Support Plugin</productname>
+		
+		<authorgroup>
+			<corpauthor></corpauthor>
+		</authorgroup>
+		
+		<mediaobject>
+			<imageobject>
+				<imagedata fileref="../image/common/logo_pdf.jpg"/>
+			</imageobject>
+		</mediaobject>
+		<legalnotice>
+			<para>
+				The copyright of this document belongs to Samsung SDS and you are free to use for the purpose of open source community activities. 
+				In the case of copying and distributing this document, please state this copyright holder. In the case of changing this document, 
+				please specify changes between original and modified document. 
+				Commercial use of modified document is not allowed. In the case of errors in this document, please register them as issue 
+				for further corrective action. 
+			</para>
+		</legalnotice>
+	</bookinfo>
+ 
+	<part id="jdbcsupport_introduction_part">
+		<title>Introduction</title>
+		<partintro id="idgen_introduction_partintro">
+			<para>
+			 Jdbc-support provides functionalities to fend off security risk of SQL Injection by expanding open source p6spy and log or 
+			 reprocess the finally executed query.  
+			 Jdbc-support plugin includes library and default setup needed for this functionality. 
+			</para>		
+			<para role="introduction_title"><emphasis role="bold">Installation</emphasis></para>
+			<para>Enter the command as below at Command Window and install jdbc-support plugin. </para>
+			<programlisting language="java"><![CDATA[mvn anyframe:install -Dname=jdbc-support]]></programlisting>
+			<para>
+				By using installed(mvn anyframe:installed) or jetty:run(mvn clean jetty:run) command, installation result can be checked. 
+			</para>
+			<informaltable>
+				<caption>Dependent Plugins</caption>
+				<tgroup cols="2">
+					<colspec colnum="1" colname="col1" colwidth="5*" />
+					<colspec colnum="2" colname="col2" colwidth="5*" />
+					<thead>
+						<row>
+							<entry align="center">Plugin Name</entry>
+							<entry align="center">Version Range</entry>
+						</row>
+					</thead>
+					<tbody>
+						<row>
+							<entry align="center"><ulink url="http://dev.anyframejava.org/docs.en/anyframe/plugin/essential/core/1.6.1-SNAPSHOT/reference/htmlsingle/core.html">core</ulink></entry>
+							<entry align="center" valign="middle">2.0.0 > * > 1.4.0</entry>
+						</row>
+					</tbody>
+				</tgroup>
+			</informaltable>		
+		</partintro>
+	</part>
+ 	 
+	<part id="jdbcsupport_jdbcsupport_part">
+		<title>Jdbc Support</title>
+		<partintro>
+		    <para>
+		    	Described is anyframe-jdbc-support. It provides functionality to recognize SQL Injection pattern and process warning or replacement 
+		    	against that in the case of logging (or reprocessing) the latest SQL statement or executing Query.
+			  	Explained are the difference with similar open source or log4jdbc along with ajdbc-support setup and precautions in each category 
+			  	as below. 
+		    </para>
+		    <itemizedlist>
+		      	<listitem>
+		        	<para>
+		        		Implementation Background 
+		        	</para>
+		      	</listitem>
+		
+		      	<listitem>
+		        	<para>
+		        		Architecture
+		        	</para>
+		      	</listitem>
+		
+		      	<listitem>
+		        	<para>
+		        		Configuration
+		        	</para>
+		      	</listitem>
+		
+		      	<listitem>
+		       		<para>
+		        		How to implement default and customized versions for user
+		        	</para>
+		      	</listitem>
+		
+		      	<listitem>
+		        	<para>
+		        		Other considerations 
+		        	</para>
+		      	</listitem>
+		    </itemizedlist>		    
+		</partintro>	
+		&jdbcsupport_injectionandlogging_introduction;
+		&jdbcsupport_injectionandlogging_architecture;
+		&jdbcsupport_injectionandlogging_configuration;
+		&jdbcsupport_injectionandlogging_implementation;
+		&jdbcsupport_injectionandlogging_caution;
+		&jdbcsupport_injectionandlogging_resources;
+	</part>	
+</book>

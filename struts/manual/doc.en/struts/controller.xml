@@ -1,0 +1,568 @@
+<chapter id="struts_controller">
+	<title>Controller</title>
+
+  		<para>
+  			Controller is the intermediary between MVC model and view. 
+  			It consists of ActionServlet that is in charge of handling request, initializing request, etc., 
+  			RequestProcessor that creates ActionForm from user request and executes execute() of Action class, 
+  			and Action class that calls business logic and sets forward information on success or failure.
+  			 
+  		</para>
+
+  		<section id="struts_controller_actionservlet">
+    	<title>ActionServlet</title>
+
+    		<para>ActionServlet is a main class that plays controller role in Struts.</para>
+
+	    	<section id="struts_controller_actionservlet_role">
+    		<title>Role of ActionServlet</title>
+
+      			<itemizedlist>
+        			<listitem>
+          				<para>Single point of entry that receives user request (Front Controller)</para>
+        			</listitem>
+        			<listitem>
+          				<para>In charge of resource initialization and clean-up</para>
+        			</listitem>
+      			</itemizedlist>
+    		</section>
+    		
+    		<section id="struts_controller_actionservlet_initprocess">
+      		<title>Initialization Process</title>
+
+      			<para>The following initialization is performed in ActionServlet init() method</para>
+
+      			<itemizedlist>
+        			<listitem>
+          				<para>Initialize messages that are used for error or alert in Struts</para>
+        			</listitem>
+			        <listitem>
+          				<para>Initialize information (debug, config, detail) defined as init-param in web.xml.</para>
+        			</listitem>
+        			<listitem>
+          				<para>Initialize servlet-mapping information set in web.xml.</para>
+        			</listitem>
+        			<listitem>
+          				<para>Save ActionServlet object in ServletContext</para>
+        			</listitem>
+			        <listitem>
+          				<para>
+          					Use default module information defined by init-param 'config' (if not defined, '/WEB-INF/struts-config.xml'), 
+          					to create ApplicationConfig object. 
+          				</para>
+        			</listitem>
+        			<listitem>
+          				<para>Initialize if setting related to message resource exists in struts-config.xml.</para>
+        			</listitem>
+			        <listitem>
+          				<para>Initialize if DataSource is set in struts-config.xml.</para>
+        			</listitem>
+        			<listitem>
+          				<para>Initialize Plug-in information defined in struts-config.xml.</para>
+        			</listitem>
+      			</itemizedlist>
+    		</section>
+
+    		<section id="struts_controller_actionservlet_runtime">
+      		<title>During Execution (When ActionServlet instance receives HTTP Request.)</title>
+
+      			<itemizedlist>
+        			<listitem>
+          				<para>Find sub-application according to request prefix of request.</para>
+        			</listitem>
+        			<listitem>
+          				<para>Find RequestProcessor and call process() method</para>
+        			</listitem>
+      			</itemizedlist>
+    		</section>
+
+    		<section id="struts_controller_actionservlet_shutdown">
+      		<title>ShutDown Process</title>
+
+				<itemizedlist>
+        			<listitem>
+          				<para>Call RequestProcessor destroy() method.</para>
+        			</listitem>
+
+        			<listitem>
+          				<para><![CDATA[If a value defined by <plug-in> exits, call relevant destroy() method]]></para>
+        			</listitem>
+
+        			<listitem>
+          			<para><![CDATA[If a value defined by <data-sources> exits, call relevant close() method]]></para>
+        			</listitem>
+      			</itemizedlist>
+    		</section>
+  		</section>
+
+		<section id="struts_controller_requestprocessor">
+    	<title >RequestProcessor</title>
+
+		    <para>
+		    	RequestProcessor was provided from Struts 1.1 onwards 
+    			for developer to extend the contents of request handling when necessary. 
+    			The merit is that ActionServlet and RequestProcessor class is separated, 
+    			so each application module can have a RequestProcessor. 
+    			RequestProcessor provides various methods that can be extended additional to the previous basic functions provided by ActionServlet.
+    		</para>
+
+    		<para>Anyframe inherits RequestProcessor and provides a class that is extended to DefaultRequestProcessor.</para>
+
+    		<section id="struts_controller_requestprocessor_role">
+      		<title>Role of RequestProcessor</title>
+
+      			<itemizedlist>
+        			<listitem>
+          				<para>Receives data from Request to create ActionForm</para>
+        			</listitem>
+        			<listitem>
+          				<para>Executes Action execute() method</para>
+        			</listitem>
+        			<listitem>
+          				<para>Returns ActionForm</para>
+        			</listitem>
+			        <listitem>
+          				<para>Executes forward or redirect as defined in Configuration.</para>
+        			</listitem>
+			        <listitem>
+          				<para>Keep configuration information of application</para>
+        			</listitem>
+      			</itemizedlist>
+    		</section>
+
+    		<section id="struts_controller_requestprocessor_process()">
+      		<title>Request processing procedure of process() method</title>
+
+      			<itemizedlist>
+        			<listitem>
+          				<para>
+          					Create new Request Wrapper in case HTTP Request content type is multipart/form-data.
+          				</para>
+        			</listitem>
+			        <listitem>
+          				<para>processPath(): Extracts "path" value for handling ActionMapping in request URI.</para>
+        			</listitem>
+			        <listitem>
+          				<para>processLocale(): Extracts locale information from request and saves in session</para>
+        			</listitem>
+			        <listitem>
+          				<para>processContent(): Sets request content type and encoding information</para>
+        			</listitem>
+			        <listitem>
+          				<para>
+          					<![CDATA[processNoCache(): Sets struts-config.xml so that there is no need to use cache of browser in HTTP Response header 
+          					when the nocache value of <controller> is set to true.]]>
+          				</para>
+        			</listitem>
+			        <listitem>
+          				<para>
+          					processPreprocess(): If there is a task that should be executed before request is handled, 
+          					inherits RequestProcessor and <emphasis role="bold">overrides this method in extended class</emphasis>. 
+          				</para>
+        			</listitem>
+			        <listitem>
+          				<para>processMapping(): Searches ActionMapping using extracted "path" information.</para>
+       	 			</listitem>
+			        <listitem>
+          				<para>processRoles(): Checks if user currently has the role to execute request</para>
+        			</listitem>
+        			<listitem>
+          				<para>
+          					processActionForm(): When set ActionForm exists in ActionMapping, 
+          					searches ActionForm from scope defined in configuration file, 
+          					when it does not exist, creates new ActionForm and saves it in related scope.
+          				</para>
+        			</listitem>
+        			<listitem>
+          				<para> processPopulate(): Saves HTTP Request parameters in ActionForm</para>
+        			</listitem>
+        			<listitem>
+          				<para>
+          					processValidate(): When 'validate' value is set to true in configuration file, call ActionForm validate() method.
+          				</para>
+        			</listitem>
+        			<listitem>
+          				<para>
+          					<![CDATA[ processForward(): When forward or include property is set in <action> of configuration file, 
+          					calls RequestDispatcher forward() and include() method]]>
+          				</para>
+			        </listitem>
+			        <listitem>
+          				<para>
+          					 processActionCreate(): Creates Action object relevant to request. 
+          					 After created for the first time, is saved in ServletContext and re-used. 
+          				</para>
+        			</listitem>
+        			<listitem>
+          				<para> processActionPerform(): Call execute() method of Action object</para>
+        			</listitem>
+			        <listitem>
+          				<para>
+          					 processActionForward(): Forward to URL relevant to ActionForward that is the execute() method return value of Action object.
+          				</para>
+        			</listitem>
+      			</itemizedlist>
+    		</section>
+
+			<section id="struts_controller_requestprocessor_sample">
+      		<title>Sample</title>
+
+		    	<para>
+		    		<![CDATA[Below is an example of setting RequestProcessor as struts-config.xml <controller>.]]>
+		    		<programlisting
+		    		language="xml"><![CDATA[<controller contentType="text/html;charset=UTF-8"
+                debug="3" locale="true" nocache="true"
+                        processorClass="org.apache.struts.action.RequestProcessor"/>]]></programlisting>
+      			</para>
+
+			    <para>
+			    	On the above processorClass, controller which is an extension of RequestProcessor can be set when necessary. 
+			     	Anyframe provides DefaultRequestProcessor which has extended RequestProcessor.
+			     </para>
+    		</section>
+  		</section>
+
+  		<section id="struts_controller_action">
+    	<title>Action</title>
+
+    		<para>Action class calls business logic and sets appropriate forward information on success or failure</para>
+
+    		<section id="struts_controller_action_role">
+      		<title>Role of Action</title>
+
+      			<itemizedlist>
+        			<listitem>
+          				<para>Action execute() connects client request and business logic.</para>
+        			</listitem>
+        			<listitem>
+          				<para>Action connects controller and model in MVC structure</para>
+        			</listitem>
+      			</itemizedlist>
+    		</section>
+
+    		<section id="struts_controller_action_realization">
+      		<title>Action Implementation</title>
+
+      			<itemizedlist>
+        			<listitem>
+          				<para>
+          					One instance handles all requests mapped as its action, 
+          					so execute() method should be implemented in thread-safe method.
+          				</para>
+        			</listitem>
+        			<listitem>
+          				<para>Business logic executed by Action class should be related to only one task</para>
+        			</listitem>
+        			<listitem>
+          				<para>execute() should always return ActionForward</para>
+        			</listitem>
+        			<listitem>
+          				<para>Only logic that calls business logic should exist. 
+          				Business logic should be implemented on model object.</para>
+				        <para>
+				        	Action instance is a single instance. It shares instances which all the client requests are the same, 
+				        	so saving client information as Action class member variable is not appropriate implementation. 
+				        	If client information is needed, save in request or session, 
+				        	and to show the status of a specific client, use regional variable in execute() method so that no problem occurs for each thread. 
+				        	Defining action class is very important for the developer to learn, and is an important task in which 
+				        	you extract user input data returned as request, call business logic, and forward the results again to client. 
+				        </para>
+        			</listitem>
+      			</itemizedlist>
+    		</section>
+
+    		<section id="struts_controller_action_sample">
+      		<title>Sample</title>
+
+				<itemizedlist>
+        			<listitem>
+	          			<para>Example of defining Action class</para>
+	
+	          			<para>
+	          				Below is LoginAction.java source code that is saved in Session after being checked by receiving user input value needed for login.
+	          				<programlisting
+          					language="java"><![CDATA[public class LoginAction extends Action{
+
+    public ActionForward execute(ActionMapping mapping, ActionForm form,
+        HttpServletRequest request, HttpServletResponse response) 
+        throws Exception {
+			
+        UserForm userForm = (UserForm) form;
+		
+        String userId = userForm.getUserId();
+        String password = userForm.getPassword(); 
+		
+        //User Id, Password check
+        if ((userId != null && userId.equals("anyframe"))
+            && (password != null && password.equals("anyframe"))) {
+			
+            //Save user information in Session when login has been successful.
+            Set principals = new HashSet();
+            Set credentials = new HashSet();
+			
+            //Save user name and authorization.
+            principals.add(new TypedPrincipal("Anyframe", TypedPrincipal.USER));
+            principals.add(new TypedPrincipal("ADMIN", TypedPrincipal.GROUP));
+            Subject subject = new Subject(false, principals, credentials,
+                        credentials);
+            HttpSession session = request.getSession();
+            session.setAttribute("subject", subject);
+ 
+        } else {
+            throw new FailedLoginException();
+        }
+        return (mapping.findForward("success"));
+    }
+}]]></programlisting>
+						</para>
+
+	          			<para>
+	          				When execute() method is called, receive userid and password saved in ActionForm, 
+	          				and if user authentication is successful (on the above, anyframe/anyframe is temporarily checked as ADMIN user without business service.), 
+	          				subject object is set in Session, and ActionForward defined as success is returned. 
+	          				If authentication fails, make FailedLoginException occur and follow the exception handling process set in struts-config.xml.		
+	          			</para>
+	        		</listitem>
+	        		<listitem>
+	          			<para>Example of Action Mapping</para>
+	
+	      			    <para>Below is a part of struts-config-login.xml that sets the LoginAction.java mapping information above. 
+	      			    <programlisting language="xml"><![CDATA[<action
+    path="/login"
+    type="org.anyframe.sample.struts.action.LoginAction"
+    name="userForm"
+    scope="request"
+    input="/basic/login.jsp">
+    <exception key="error.password.mismatch" path="/basic/login.jsp" 
+        type="javax.security.auth.login.FailedLoginException" />
+    <forward name="success" path="/basic/main.jsp" />
+</action>]]></programlisting>
+						</para>
+        			</listitem>
+
+        			<listitem>
+          				<para>Business service invoke in Spring Bean format</para>
+
+          				<para>
+          					Spring Framework provides ActionSupport (internal extends Action of Struts) of spring-webmvc-struts to combine with Struts. 
+          					If you extend ActionSupport class rather than Action class of Struts, 
+          					accessing business service in Spring Framework Bean format will be easy. 
+          					Instructions on how to use this is as follows.
+          					<programlisting
+          					language="java"><![CDATA[public class SampleAction extends ActionSupport {
+    public ActionForward execute(ActionMapping mapping, ActionForm form,
+        HttpServletRequest request, HttpServletResponse response)
+        throws Exception {
+		
+        ApplicationContext ctx = getWebApplicationContext();
+        BusinessService businessService = 
+                            (BusinessService)ctx.getBean("businessService");
+         //...
+        return mapping.findForward("success");
+    }
+}]]></programlisting>
+						</para>
+        			</listitem>
+    			</itemizedlist>
+   			</section>
+		</section>
+
+  		<section id="struts_controller_actionforward">
+    	<title>ActionForward</title>
+
+    		<section id="struts_controller_actionforward_role">
+      		<title>Role of ActionForward</title>
+
+      			<itemizedlist>
+        			<listitem>
+          				<para>Logical abstract of web resources such as JSP page or servlet</para>
+       				</listitem>
+			        <listitem>
+          				<para>Saves information on physical resources in configuration file</para>
+        			</listitem>
+      			</itemizedlist>
+
+      			<para>
+      				In Action class, execute() method returns ActionForward object. 
+      				ActionForward wraps resources to separate application and physical resources, 
+      				and defines them in configuration file in factors such as name, path, and redirect properties of forward, 
+      				and does not include them in code. 
+      				RequestDispatcher executes forward or redirect of ActionForward according to value of redirect element. 
+      				ActionMapping is generally used to find ActionForward already defined in the configuration file when returning ActionForward from action. 
+      				The following code shows how to find ActionForward based on logical name by using ActionMapping.
+      				<programlisting language="java">return <emphasis
+      				role="bold">mapping.findForward("success");</emphasis></programlisting>
+      			</para>
+    		</section>
+		</section>
+
+		<section id="struts_controller_actionpackage">
+    	<title>Actions Package</title>
+
+    		<para>
+    			Struts includes five Action classes that are in out-of-the-box format and can be easily combined with application. 
+    			Using this can shorten development time.  
+    		</para>
+
+    		<section id="struts_controller_actionpackage_org.apache.struts.actions">
+      		<title>Action that has been previously defined in org.apache.struts.actions package</title>
+
+      			<itemizedlist>
+        			<listitem>
+          				<para>org.apache.struts.actions.ForwardAction</para>
+        			</listitem>
+			        <listitem>
+          				<para>org.apache.struts.actions.IncludeAction</para>
+        			</listitem>
+        			<listitem>
+          				<para>org.apache.struts.actions.DispatchAction</para>
+        			</listitem>
+			        <listitem>
+          				<para>org.apache.struts.actions.LookupDispatchAction</para>
+        			</listitem>
+        			<listitem>
+          				<para>org.apache.struts.actions.SwitchAction</para>
+        			</listitem>
+      			</itemizedlist>
+			    <para>
+			    	The following figure is a simple class diagram of the classes that are included in org.apache.struts.actions package of Struts. 
+				</para>
+
+				<mediaobject>
+					<imageobject>
+						<imagedata align="center" fileref="../image/struts/actions_classdiagram.jpg" />
+					</imageobject>
+				</mediaobject>
+    		</section>
+
+			<section id="struts_controller_actionpackage_org.apache.struts.actions.forwardaction">
+      		<title>org.apache.struts.actions.ForwardAction</title>
+
+      			<para>
+      				When executing only forwarding, Action class is not directly implemented and ForwardAction already implemented in struts is used. 
+      				This Action class executes forward with URI defined in parameter property. 
+      				<programlisting language="xml"><![CDATA[<action
+    path="/loginView"
+    type="org.apache.struts.actions.ForwardAction"
+    parameter="/basic/login.jsp">
+</action>]]></programlisting>
+				</para>
+
+      			<para>
+      				Forwarded as /basic/login.jsp if request url is loginView.do. 
+      				It is not appropriate to directly call JSP without going through Action class. 
+      				This is violating controller responsibilities in the MVC structure 
+      				and is skipping the middle process of handling in Struts, so a problem may occur. 
+      			    (ex. Appropriate message cannot be received from resource bundle.)
+      			</para>
+    		</section>
+
+    		<section id="struts_controller_actionpackage_org.apache.struts.actions.includeaction">
+      		<title>org.apache.struts.actions.IncludeAction</title>
+
+      			<para>
+      				Is similar to ForwardAction, and is provided to easily combine the previous servlet based components with 
+      				struts based web application.
+      				<programlisting language="xml"><![CDATA[<action
+    input="/subscription.jsp"
+    name="subscriptionForm"
+    path="/saveSubscription"
+    parameter="/path/to/processing/servlet"
+    scope="request"
+    type="org.apache.struts.actions.IncludeAction" />
+</action>]]></programlisting>
+				</para>
+    		</section>
+
+    		<section id="struts_controller_actionpackage_org.apache.struts.actions.dispatchaction">
+      		<title>org.apache.struts.actions.DispatchAction</title>
+
+	      		<para> 
+	      			If an Action class is made for all functions, management becomes difficult because of the large number of classes. 
+	      			Struts provides DispatchAction that integrates related functions into one Action. 
+	      			For instance, if several functions such as add, update, and view are implemented as method 
+	      			(cf. implemented as execute() method in general Action) in one Action (extends DispatchAction), 
+	      			method can be called with the string key value (Defined as "method" below. Other strings can be used.) 
+	      			defined as parameter property value of configuration file. 
+	      			Below is ShoppingCartAction.java source code that extends DispatchAction.
+	      			<programlisting language="java"><![CDATA[public class ShoppingCartAction extends DispatchAction {
+
+    public ActionForward add (
+        ActionMapping mapping,
+        ActionForm form,
+        HttpServletRequest request,
+        HttpServletResponse response) throws Exception{
+	    // TODO : Logic related to add function
+        return mapping.findForward("add");
+    }
+
+    public ActionForward update (
+    ...
+    // TODO : Logic related to update function
+    return mapping.findForward("update");
+    }
+
+    public ActionForward search (
+    ...
+    // TODO : Logic related to search function
+    return mapping.findForward("search");
+    }
+
+    public ActionForward view (
+    ...
+    // TODO : Logic related to view function
+    return mapping.findForward("view");
+    }
+}]]></programlisting>
+				</para>
+
+				<para>
+					This is a part of struts-config-dispatch.xml which has set action mapping information on ShoppingCartAction.
+					<programlisting language="xml"><![CDATA[<action
+    path="/shoppingCart"
+    type="org.anyframe.sample.struts.web.action.ShoppingCartAction"
+    name="dispatchForm"
+    parameter="dispatchMethod"
+    scope="request">
+    <forward name="add" path="/dispatchActionView.do" />
+    <forward name="list" path="/dispatchActionView.do" />
+    <forward name="update" path="/dispatchActionView.do" />
+    <forward name="delete" path="/dispatchActionView.do" />
+</action>]]></programlisting>
+				</para>
+    		</section>
+
+			<section id="struts_controller_actionpackage_org.apache.struts.actoins.lookupdispatchacton">
+      		<title>org.apache.struts.actions.LookupDispatchAction</title>
+
+      			<para>
+      				Is similar with DispatchAction. 
+      				However, method is not found in parameter property, but found using the key value of resource bundle. 
+      				When there is several submit buttons in one HTML Form, 
+      				you can handle more easier by using LookupDispatchAction.
+      			</para>
+    		</section>
+
+    		<section id="struts_controller_actoinpackage_org.apache.struts.actions.switchaction">
+      		<title>org.apache.struts.actions.SwitchAction</title>
+
+      			<para>
+      				This class supports the switching of one application module to another and controls application resources. 
+      				Application module can be switched with prefix and page parameter. 
+      				The following is an example.
+      				<programlisting language="xml"><![CDATA[<action path="/toModule"
+          type="org.apache.struts.actions.SwitchAction"/>]]></programlisting>
+      
+      				<programlisting language="xml">/toModule.do?<emphasis
+      				role="bold">prefix</emphasis><![CDATA[=/moduleB&]]><emphasis
+      role="bold">page</emphasis>=/index.do</programlisting>
+      			</para>
+
+      			<para>
+      				If you wish to switch to default module, you can call by setting prefix to null String.
+      				<programlisting
+      				language="java"><![CDATA[/toModule.do?prefix=&page=/index.do]]></programlisting>
+      			</para>
+    		</section>
+  		</section>
+</chapter>

@@ -1,0 +1,79 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<FDL version="1.5">
+  <TypeDefinition url="..\default_typedef.xml"/>
+  <Form id="PositionSizePopup" classname="PositionSizePopup" left="0" top="0" width="884" height="123" titletext="Modal Window" onload="PositionSizePopup_onload">
+    <Layouts>
+      <Layout>
+        <Static id="Static61" taborder="4" text="(XComp, width, height, direction, offset, scope)&#13;&#10;⇒ (btn_pop, 44, 23, &quot;vert&quot;, 2, this)" cssclass="WFDA_sta_Box" left="8" top="42" width="388" height="70"/>
+        <Static id="st_1_sample12" taborder="7" cssclass="WFDA_sta_BoxR" left="561" top="42" width="313" height="70"/>
+        <Static id="st_15_result_pop" taborder="6" cssclass="WFDA_sta_BoxR" left="395" top="42" width="167" height="70"/>
+        <PopupDiv id="PopupDiv00" text="[PopupDiv 사용 메시지]&#13;&#10;Modal Window 내부 및 외부 표시가능." left="566" top="257" width="350" height="55" style="background:#ffff00ff;border:1 solid #3c3c44ff ;" visible="false" taborder="2"/>
+        <Edit id="Edit00" taborder="1" left="579" top="68" width="267" height="20" password="true" value="1234"/>
+        <Button id="Button32" taborder="5" text="실행" onclick="Button32_onclick" cssclass="WF_btn_Point" left="330" top="50" width="56" height="22"/>
+        <Static id="Static00" taborder="8" text="모달창을 기준으로 하는 position 가져오기" left="8" top="8" width="867" height="32" wordwrap="none"/>
+        <Static id="st_message" taborder="9" text="[Static 사용 메시지]          닫기(X)&#13;&#10; Modal Window 내부에서 표시" left="569" top="138" width="350" height="55" style="background:#ffff00ff;border:1 solid #3c3c44ff ;bordertype:round 3 3 ;align:center middle;" visible="false" onclick="st_message_onclick"/>
+      </Layout>
+    </Layouts>
+    <Script type="xscript5.0"><![CDATA[
+this.method = "";
+
+this.PositionSizePopup_onload = function(obj:Form, e:nexacro.LoadEventInfo)
+{
+	var arg = Eco.XComp.getPopupArguments(this, ['method']);
+	this.method = arg["method"];
+}
+
+
+
+this.Button32_onclick = function(obj:Button,  e:nexacro.ClickEventInfo)
+{
+	var w = 350; 
+	var h = 55; 
+    var position = "";
+    
+	// 14.8 getPopupPosition api 사용 예제
+	if(this.method == "getPopupPosition") {
+		position = Eco.XComp.PositionSize.getPopupPosition(this.Edit00, w, h, "vert", 2);
+		
+		this.displayPopup(w, h, position);	
+		
+		
+	// 15.3 getPositionByForm api 사용 예제	
+	} else if(this.method == "getPositionByForm") {
+		position = Eco.XComp.PositionSize.getPositionByForm(this.Edit00, w, h, "vert", 2, this);
+		
+		this.st_message.move(position[1], position[2], w, h);
+		this.st_message.set_visible(true);		
+	}
+	
+	
+	this.st_15_result_pop.set_text( "(array) " + position );
+	
+
+}
+
+
+this.displayPopup = function(w, h, position)
+{
+	//screen 영역을 초과하는 공간을 요청하면,표시가능 x,y좌표 및 size를 반환한다.
+	if(position.length > 3)
+	{
+		w = position[3]; //표시가능한 width 
+		h = position[4]; //표시가능한 height
+		
+		this.PopupDiv00.resize(w, h);
+	}
+
+	this.PopupDiv00.trackPopup(position[1], position[2], w, h);	
+}
+
+
+
+this.st_message_onclick = function(obj:Static,  e:nexacro.ClickEventInfo)
+{
+	obj.set_visible(false);
+}
+
+]]></Script>
+  </Form>
+</FDL>

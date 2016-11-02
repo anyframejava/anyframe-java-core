@@ -1,0 +1,1000 @@
+﻿//XJS=comGrid.xjs
+(function()
+{
+    return function(path)
+    {
+        var obj;
+    
+        // User Script
+        this.registerScript(path, function() {
+
+        /*
+         ===============================================================================
+         ==  Grid관련 공통함수들은 여기에 작성한다.
+         ===============================================================================
+         ● gfn_gridSort              : 그리드의 Sort를 처리한다.
+         ● gfn_clearSortMark         : Seleted Column을 제외한 Sort Mark 제거
+         ● gfn_setGridCheckAll       : 그리드 Head중 check box가 있을 경우, check box 클릭 이벤트 발생시 전체 row에 대한 check/uncheck 설정 함수
+         ★ gfn_exportExcel           : 그리드를 Excel로 Export하는 함수
+         ★ gfn_importExcel           : 그리드를 Excel로 Import하는 함수
+         */
+
+        // 헤더 클릭시 정렬
+        this.fv_constAscMark = "↓";
+        this.fv_constDescMark = "↑";
+        this.fv_constSortFlag = false;
+        this.fv_exportObject;
+        this.fv_exportFileName;
+
+        this.ct_separator = "	";
+
+        this.ct_sheet = "Sheet";
+        this.fv_arrClipboard = null;
+        //this.ct_exportTimerId = 293322;
+        /**
+         * @class 그리드의 Sort를 처리한다.
+         * @param obj:Grid
+         * @param e:GridClickEventInfo
+         * @return None
+         */  
+        this.gfn_gridSort = function (obj,e)
+        {
+        	// 컬럼의 정렬방식을 'head'의 text에 "↑,↓"여부로 판단.
+        	// 이미지로 대체 가능.
+        	var strType = obj.getCellProperty("head", e.cell, "displaytype");
+        	if (strType == "checkbox"){
+        		return;
+        	}
+
+        	var bindDs = this.objects[obj.binddataset];
+        	if (bindDs.rowcount == 0){
+        		return false;
+        	}
+
+        	var BodyColId = (obj.getCellProperty("body", e.col, "text")).toString().split(":");
+        	bindDs.set_enableevent(false);
+        	for (var i=0; i<obj.getCellCount("head"); i++){
+        		if (obj.getCellText(-1, i) == "undefined"){
+        			continue;
+        		}
+        		
+        		var strHeadText = obj.getCellText(-1, i);
+        		if (i == e.cell){
+        			if (strHeadText.substr(strHeadText.length - 1) == this.fv_constAscMark){
+        				obj.setCellProperty("head", i, "text", strHeadText.substr(0, strHeadText.length - 1) + this.fv_constDescMark);
+        				bindDs.set_keystring(("S:-" + BodyColId[1]));
+        			} else if (strHeadText.substr(strHeadText.length - 1) == this.fv_constDescMark){
+        				obj.setCellProperty("head", i, "text", strHeadText.substr(0, strHeadText.length - 1) + this.fv_constAscMark);
+        				bindDs.set_keystring(("S:+" + BodyColId[1]));
+        			} else {
+        				obj.setCellProperty("head", i, "text", strHeadText + this.fv_constAscMark);
+        				bindDs.set_keystring(("S:+" + BodyColId[1]));
+        			}
+        		} else {
+        			// 정렬표시 삭제
+        			if (strHeadText.substr(strHeadText.length - 1) == this.fv_constAscMark || strHeadText.substr(strHeadText.length - 1) == this.fv_constDescMark){
+        				obj.setCellProperty("head", i, "text", strHeadText.substr(0, strHeadText.length - 1));
+        			}
+        		}
+        	}
+        	bindDs.set_enableevent(true);
+        	bindDs.set_rowposition(0);
+        }
+
+        /**
+         * @class 그리드의 Sort Mark 제거
+         * @param obj:Grid
+         * @return None
+         */  
+        this.gfn_clearSortMark = function (obj)
+        {
+        	var nColCnt = obj.getCellCount("head");
+        	var sRepText;
+        	for (var ii=0; ii<nColCnt; ii++){
+        		if(obj.getCellProperty("head", ii, "displaytype") != "checkbox"){
+        			sRepText = String(obj.getCellProperty("head", ii, "text")).trim();
+        			if(!Eco.isEmpty(sRepText)){
+        				sRepText = sRepText.split(this.fv_constAscMark).join("").split(this.fv_constDescMark).join("");
+        			}
+        			obj.setCellProperty("head", ii, "text", sRepText);
+        		}
+        	}
+        	var bindDs = this.objects[obj.binddataset];
+        	bindDs.set_keystring("");
+        }							
+
+        /**
+         * @class 그리드 Head중 check box가 있을 경우, check box 클릭 이벤트 발생시 전체 row에 대한 check/uncheck 설정 함수
+         * @param obj:Grid
+         * @param e:GridClickEventInfo
+         * @return None
+         */  
+        this.gfn_setGridCheckAll = function (obj,e)
+        {
+        	if (obj.readonly == true){
+        		return;
+        	}
+        	
+        	var strVal;
+        	var strChkCol;
+        	var dsObj;
+        	
+        	dsObj = this.objects[obj.binddataset];
+        	if (Eco.isEmpty(dsObj))	return;
+
+        	var strType = obj.getCellProperty("head", e.cell, "displaytype");
+        	if (strType != "checkbox"){
+        		return;
+        	}
+        	
+        	strChkCol = obj.getCellProperty("body", e.col, "text");
+        	if (Eco.isEmpty(strChkCol))	return;
+        	
+        	strChkCol = strChkCol.replace("bind:", "");
+
+        	// Head셋팅
+        	strVal = obj.getCellProperty("head", e.cell, "text");
+        	if (Eco.isEmpty(strVal) || strVal == ""){
+        		strVal = "0";
+        	}
+
+        	if (strVal == "0"){
+        		obj.setCellProperty("head", e.cell, "text", '1');
+        		strVal = "1";
+        	} else {
+        		obj.setCellProperty("head", e.cell, "text", '0');
+        		strVal = "0";
+        	}
+        	
+        	// Body셋팅
+        	dsObj.set_enableevent(false);
+        	for (var i=0; i<dsObj.rowcount; i++){
+        		dsObj.setColumn(i, strChkCol, strVal);
+        	}
+        	dsObj.set_enableevent(true);
+        }
+
+        /**
+         * @class 그리드를 Excel로 Export하는 함수
+         * @param obj:Grid 
+         * @param sFileName - Export될 파일명
+         * @return None
+         */  
+        this.gfn_exportExcel = function(obj,sFileName)
+        {
+        	this.fv_exportObject = obj;
+        	this.fv_exportFileName = sFileName;
+        	
+        	//this.setWaitCursor(true,true);
+        	this._gfn_exportExcelProcess();
+        	//trace( "\n"+ "exportData() result : " + result);
+        }
+
+        this._gfn_exportExcelProcess = function()
+        {
+            var obj = this.fv_exportObject;
+            var sFileName = this.fv_exportFileName;
+          	var dToday = new Date();
+        	var oGrid;
+        	var sSheetName;
+        	var strType = obj.toString().toUpperCase();
+        	if (!Eco.isEmpty(sFileName)){
+        		sFileName = dToday.getTime() + "_" + sFileName;
+        	} else {
+        		sFileName = dToday.getTime();
+        	}
+        	
+        	this.exportObj = new ExcelExportObject();
+        	var sSvcUrl = application.services["svc"].url+"XExportImport";
+        	
+         	this.exportObj.addEventHandler("onerror", this._gfn_exportExcel_onerror, this);
+        	this.exportObj.addEventHandler("onsuccess", this._gfn_exportExcel_onsuccess, this);
+        	this.exportObj.addEventHandler("onprogress", this._gfn_exportExcel_onprogress, this);
+        	
+        	this.exportObj.set_exporttype(nexacro.ExportTypes.EXCEL2007);
+        	this.exportObj.set_exportuitype("exportprogress");
+        	this.exportObj.set_exporteventtype("itemrecord");
+        	this.exportObj.set_exportmessageprocess("%d[%d/%d]");
+        	
+        	this.exportObj.set_exporturl(sSvcUrl);
+        	this.exportObj.set_exportfilename(sFileName);
+        	
+        	if (strType == "[OBJECT GRID]"){
+        	    oGrid = obj;
+        	    sSheetName = this.ct_sheet+"1";
+        	    this.exportObj.addExportItem(nexacro.ExportItemTypes.GRID, oGrid,  sSheetName + "!A1","allband","allrecord","suppress","none","background","font", "both");
+        	} else {
+        	    for (var i=0; i<obj.length; i++){
+        	        sSheetName = this.ct_sheet+(i+1);
+        	        oGrid = obj[i];
+        	        this.exportObj.addExportItem(nexacro.ExportItemTypes.GRID, oGrid,  sSheetName + "!A1","allband","allrecord","suppress","none","background","font", "both");
+        	    }
+        	}
+        	var result = this.exportObj.exportData();
+        }
+
+        /*----------------------------------------------------------------------------------------------------
+         *  Excel Export & Import 성공 및 실패 여부
+         ----------------------------------------------------------------------------------------------------*/
+        this._gfn_exportExcel_onerror = function(obj,e)
+        {
+        	trace("_gfn_exportExcel_onerror : ");
+        	trace("------------- 에러남 --------------------");
+        	trace(e.eventid);
+        	trace(e.fromobject);
+        	trace(e.fromreferenceobject);
+        	trace(e.errorcode);
+        	trace(e.errormsg); 
+        	trace("------------------------------------------");
+        }
+
+        /*----------------------------------------------------------------------------------------------------
+         *  Excel Export & Import 성공 및 실패 여부
+         ----------------------------------------------------------------------------------------------------*/
+        this._gfn_exportExcel_onsuccess = function(obj,e)
+        {
+        	trace("_gfn_exportExcel_onsuccess : ");
+
+        	trace("------------------성공함-----------------");
+        	trace(e.eventid);
+        	trace(e.fromobject);
+        	trace(e.fromreferenceobject);
+        	trace(e.url);
+        	trace("------------------------------------------");
+        }
+
+        this._gfn_exportExcel_onprogress = function(obj,e)
+        {
+        	//trace(e.getSetter);
+        	//trace(e.getNumSetter);
+        }
+
+        /**
+         * @class 그리드를 Excel로 Import하는 함수 ( 확장 )
+         * @param obj:Grid or Dataset
+         * @param excelParam - 추가파라미터 
+        			excelParam.sheet 			- 시트명(기본값 : Sheet1)
+        			excelParam.startrow 		- import할 시작로우(기본값 : 1)
+        			excelParam.bindcolumns 		- 바인딩할 데이타셋의 컬럼정보(기본값 : 컬럼순)
+        			excelParam.callback 		- import후 콜백함수(기본값 : fn_callbackImportExcel);
+         * @return None
+         * @example
+        	var excelParam = 
+        			{
+        			sheet:1
+        			, startrow:1
+        			, bindcolumns:["", "id", "code", "name", "dis"]
+        			, callback:"fn_callbackUser"
+        			};
+        	this.gfn_importExcelToDs(this.grd_list, excelParam);	
+         */  
+        this._excelParam; 
+        this.gfn_importExcel =function(obj,excelParam)
+        {
+        	if(Eco.isEmpty(excelParam)) excelParam = {};
+        	
+        	//binddataset설정
+        	if(obj.toString() == "[object Grid]")
+        	{
+        		excelParam.binddataset = obj.binddataset;		
+        	}
+        	else if(obj.toString() == "[object Dataset]")
+        	{
+        		excelParam.binddataset = obj.name;
+        	}
+        	else
+        	{
+        		trace("첫번째 파리미터 오류");
+        		return;
+        	}
+        	
+        	//sheet 기본값설정
+        	excelParam.sheet = (Eco.isEmpty(excelParam.sheet)) ? "Sheet1" : excelParam.sheet;
+        	//startrow 기본값설정
+        	excelParam.startrow = (Eco.isEmpty(excelParam.startrow)) ? 1 : excelParam.startrow;
+        	//callback함수 기본값설정
+        	excelParam.callback = (Eco.isEmpty(excelParam.callback)) ? "fn_callbackImportExcel" : excelParam.callback;
+        	
+        	//service url 설정
+        	var sSvcUrl = application.services["svc"].url+"XExportImport";	
+        	
+        	//임시데이타셋 생성
+        	var _ds_exlTemp;
+        	var _ds_exlTempNm = "_ds_excelTemp";
+        	if (!this.isValidObject(_ds_exlTempNm))
+        	{
+        		_ds_exlTemp = new Dataset(_ds_exlTempNm);
+        		_ds_exlTemp.name = _ds_exlTempNm;
+        		this.addChild(_ds_exlTempNm, _ds_exlTemp);
+        	}
+        	else
+        	{
+        		_ds_exlTemp = this.objects[_ds_exlTempNm];
+        	}
+        	
+        	//파라미터저장
+        	this._excelParam = excelParam;	
+        	
+        	this.importObj = new nexacro.ExcelImportObject("ExcelImportObj",this);	
+        	this.importObj.set_importtype(nexacro.ImportTypes.EXCEL);
+        	this.importObj.addEventHandler("onsuccess", this._gfn_importExcel_onsuccess, this);
+        	this.importObj.addEventHandler("onerror", this._gfn_importExcel_onerror, this);		
+        	this.importObj.set_importurl(sSvcUrl);
+        	
+        	this.setWaitCursor();
+        	
+        	this.importObj.importData("", "[command=getsheetdata;output=outDs;body="+this._excelParam.sheet+"!A"+this._excelParam.startrow+";]", "[_ds_excelTemp=outDs]");	
+        }
+
+        this._gfn_importExcel_onsuccess = function(obj,e)
+        {
+        	trace("=========== excel importExcel onsuccess ============");	
+        // 	trace("e.eventid:"+e.eventid);
+        // 	trace("e.fromobject:"+e.fromobject);
+        // 	trace("e.fromreferenceobject:"+e.fromreferenceobject);
+        // 	trace("e.url:"+e.url);
+        	
+        	this.setWaitCursor(false);
+        	
+        	var dsTemp = this._ds_excelTemp;
+        	var dsObj = this.objects[this._excelParam.binddataset];
+
+        	dsObj.clearData();
+        	
+        	var sBindColumns = this._excelParam.bindcolumns;
+        	var sBindColumn = "", nRow = -1;
+        	if(!Eco.isEmpty(sBindColumns))
+        	{
+        		for(var i = 0; i < dsTemp.rowcount; i++)
+        		{
+        			nRow = dsObj.addRow();
+        			for(var j = 0; j < sBindColumns.length; j++)
+        			{
+        				sBindColumn = sBindColumns[j];
+        				if(!Eco.isEmpty(sBindColumn))
+        				{
+        					dsObj.setColumn(nRow, sBindColumn, dsTemp.getColumn(i, "Column"+j));
+        				}
+        			}
+        		}
+        	}
+        	else
+        	{
+        		for(var i = 0; i < dsTemp.rowcount; i++)
+        		{
+        			nRow = dsObj.addRow();
+        			for(var j = 0; j < dsObj.getColCount(); j++)
+        			{
+        				dsObj.setColumn(nRow, dsObj.getColID(j), dsTemp.getColumn(i, "Column"+j));
+        			}
+        		}
+        	}
+
+        	if(!Eco.isEmpty(this._excelParam.callback)){
+        		try{
+        			eval("this."+this._excelParam.callback).call(this, 0, "success");
+        		}catch(e){}
+        	}
+        	
+        	this._excelParam = null;
+        	this._ds_excelTemp.clear(); 	      
+        }
+
+        this._gfn_importExcel_onerror = function(obj,e)
+        {
+        	trace("=========== excel importExcel onerror ============");
+        // 	trace("e.eventid:"+e.eventid);
+        // 	trace("e.fromobject:"+e.fromobject);
+        // 	trace("e.fromreferenceobject:"+e.fromreferenceobject);
+        // 	trace("e.errorcode:"+e.errorcode);
+        // 	trace("e.errormsg:"+e.errormsg);	
+        	
+        	this.setWaitCursor(false);
+        	
+        	if(!Eco.isEmpty(this._excelParam.callback)){
+        		try{
+        			eval("this."+this._excelParam.callback).call(this, e.statuscode, e.errormsg);
+        		}catch(e){}
+        	}	
+        }
+
+        // this._gfn_importExcelUserMapping_onerror = function(obj:ExcelImportObject,  e:nexacro.ExcelImportErrorEventInfo)
+        // {
+        // 	trace("=========== excel _gfn_importExcelUserMapping_onerror onerror ============");
+        // 	trace("e.eventid:"+e.eventid);
+        // 	trace("e.fromobject:"+e.fromobject);
+        // 	trace("e.fromreferenceobject:"+e.fromreferenceobject);
+        // 	trace("e.errorcode:"+e.errorcode);
+        // 	trace("e.errormsg:"+e.errormsg);
+        // 	
+        // 	this._excelParam = null;
+        // 	this._ds_excelTemp.clear();
+        // 	this.setWaitCursor(false);
+        // }
+
+        /**
+         * @class 그리드 추가메뉴 Open(컨텍스트 메뉴)
+         * @param obj - Grid object
+         * @param e - GridMouseEventInfo
+         * @param type - 메뉴구성
+         * @return None
+         */  
+        this.gfn_openGridMenu = function(obj,e,type)
+        {
+        	application.gds_gridMenu.filter("");
+        	// type에 따른 메뉴 구성
+        	if (!Eco.isEmpty(type)){
+        		var arrType = type.split(":");
+        		var cnt = application.gds_gridMenu.rowcount;
+        		for (var i=0; i<cnt; i++){
+        			if (!Eco.isEmpty(arrType[i])){
+        				application.gds_gridMenu.setColumn(i, "bUse", arrType[i]);
+        			} else {
+        				application.gds_gridMenu.setColumn(i, "bUse", "Y");
+        			}
+        		}
+        		application.gds_gridMenu.filter("bUse == 'Y' || bUse== 'y'");
+        	}
+        	
+        	var sPmuGridMenu = "pmu_gridMenu_"+obj.name;
+        	var oPmuGridMenu = this.components[sPmuGridMenu];
+        	
+        	if (Eco.isEmpty(oPmuGridMenu)){
+        		oPmuGridMenu = new PopupMenu;
+        		oPmuGridMenu.init(sPmuGridMenu, 0,0,0,0);
+        		this.addChild(sPmuGridMenu, oPmuGridMenu);
+        		oPmuGridMenu.set_innerdataset(application.gds_gridMenu);
+        		oPmuGridMenu.set_levelcolumn("menuLvl");
+        		oPmuGridMenu.set_idcolumn("menuId");
+        		oPmuGridMenu.set_captioncolumn("menuNm");
+        		oPmuGridMenu.set_enablecolumn("bEnbleColumn");
+        		oPmuGridMenu.set_hotkeycolumn("hotkeyColumn");
+        		oPmuGridMenu.set_iconcolumn("iconColumn");
+        		oPmuGridMenu.show();
+        		
+        		oPmuGridMenu.addEventHandler("onmenuclick", this._gfn_grdMenu_onmenuclick, this);
+        	}
+        		
+        	//oPmuGridMenu.row = e.row;
+        	if (Eco.isEmpty(oPmuGridMenu.grid_format)){
+        		oPmuGridMenu.grid_format = "<Formats>\r\n" + obj.getCurFormatString() + "</Formats>";
+        	}
+        	
+        	var sPdvGridMenu = "pdv_gridMenu_"+obj.name;
+        	var oPdvGridMenu = this.components[sPdvGridMenu];	
+        	
+        	if (Eco.isEmpty(oPdvGridMenu)){
+        		oPdvGridMenu = new PopupDiv;
+        		oPdvGridMenu.init(sPdvGridMenu,0,0,0,0);
+        		oPdvGridMenu.style.set_border("1 solid #777777ff");
+        		oPdvGridMenu.style.set_background("#ffffff");
+        		this.addChild(sPdvGridMenu, oPdvGridMenu);
+        		//oPdvGridMenu.set_async(false);
+        		//oPdvGridMenu.addEventHandler("onpopup", this._pdv_FilterList_onpopup, this);
+        		oPdvGridMenu.addEventHandler("oncloseup", this._pdv_FilterList_oncloseup, this);
+        		oPdvGridMenu.show();
+        	}		
+        	// filter 적용 여부 판단.
+        	// filter가 적용된 경우 처리
+        	if (this.gfn_isFiterString(obj)){
+        // 		var nRow;
+        // 		if (oPdvGridMenu.url == "COM::COM_FILTER_LIST.xfdl"){
+        // 			// 단일 필터가 이미 적용된 경우에는
+        // 			// 다중 필터 메뉴를 클릭이 되지 않도록 한다.
+        // 			nRow = application.gds_gridMenu.findRow("menuId", "200");
+        // 		} else {// 다중필터가 적용된 경우는 단일 필터 메뉴를 diable 처리
+        // 			nRow = application.gds_gridMenu.findRow("menuId", "100");
+        // 		}
+        // 		application.gds_gridMenu.setColumn(nRow, "bEnbleColumn", "0");
+        	}
+        	else {
+        		for (var i=0; i<application.gds_gridMenu.getRowCount(); i++){
+        			application.gds_gridMenu.setColumn(i, "bEnbleColumn", "1");
+        		}
+        	}
+        	
+        	//userproperty 설정
+        	oPmuGridMenu.grid = obj;
+        	oPmuGridMenu.cell = e.cell;
+         	oPmuGridMenu.popupdiv = oPdvGridMenu;
+         	
+         	//PopupMenu 오픈
+        	var x = system.screenToClientX(application.mainframe, system.clientToScreenX(application.mainframe, e.screenX));
+        	var y = system.screenToClientY(application.mainframe, system.clientToScreenY(application.mainframe, e.screenY));
+        	oPmuGridMenu.trackPopup(x, y);	
+        }
+
+        /**
+         * @class 그리드 메뉴에서 메뉴를 눌렀을 때 발생하는 이벤트
+         * @param obj - PopupMenu
+         * @param e - MenuClickEventInfo
+         * @return None
+         */  
+        this._gfn_grdMenu_onmenuclick = function(obj,e)
+        {
+        	switch (e.id){
+        		case "000":		// 행복사
+        			var objDs = obj.grid.binddataset;
+        			//trace(this.objects[objDs].saveXML());
+        			var varProperty = obj.grid.getCellProperty("body",0,"edittype");
+        			if (varProperty == "checkbox"){	//다중행복사(checkbox일경우)
+        				var strColID = this.objects[objDs].getColID(0);
+        				var nRowCnt = this.objects[objDs].getRowCount();
+        				for (var i=0; i<nRowCnt; i++){
+        					var strChkVal = this.objects[objDs].getColumn(i,strColID);
+        					if (strChkVal == 1){
+        						var nToRow = this.objects[objDs].addRow();
+        						this.objects[objDs].copyRow(nToRow,this.objects[objDs],i);						
+        					}
+        				}
+        			} else {	//단일행복사
+        				var nFromRow = this.objects[objDs].rowposition;
+        				var nToRow = this.objects[objDs].addRow();
+        				this.objects[objDs].copyRow(nToRow,this.objects[objDs],nFromRow);
+        			}
+        			break;
+        		case "100":		// 필터
+         			obj.popupdiv.set_async("false");
+         			obj.popupdiv.set_url("comPop::com_grid_filter.xfdl");
+         			obj.popupdiv.set_width(170);
+         			obj.popupdiv.set_height(310);
+         			obj.popupdiv.set_scrollbars("none");
+         			
+         			obj.popupdiv.fn_getInfo(obj.grid);
+         			var bindColID = this.gfn_getCellBind(obj.grid, obj.cell);
+         			obj.popupdiv.fn_setList(bindColID);
+        			//obj.popupdiv.trackPopupByComponent(obj, obj.width, obj.height);
+        			var x = system.screenToClientX(application.mainframe, system.clientToScreenX(obj, 0));
+        			var y = system.screenToClientY(application.mainframe, system.clientToScreenY(obj, 0));
+        			obj.popupdiv.trackPopup(x, y);
+        			break;
+        		case "200":		// 다중필터
+        		    obj.popupdiv.set_async("false");
+        			obj.popupdiv.set_url("comPop::com_grid_multi_filter.xfdl");
+        			obj.popupdiv.set_width(378);
+        			obj.popupdiv.set_height(247);
+         			obj.popupdiv.set_scrollbars("none");
+         			
+        			// 그리드의 기본정보 셋팅
+        			obj.popupdiv.fn_setPatentGridInfo(obj.grid);
+        			//obj.popupdiv.trackPopupByComponent(obj, obj.position.x, obj.position.y);
+        			var x = system.screenToClientX(application.mainframe, system.clientToScreenX(obj, 0));
+        			var y = system.screenToClientY(application.mainframe, system.clientToScreenY(obj, 0));
+        			obj.popupdiv.trackPopup(x, y);	
+        			break;
+        		case "300":		// 필터제거(전체)
+        			try{
+        				obj.popupdiv.fn_deleteAll(obj.grid.getBindDataset());
+        			}catch(e){}
+        			break;
+        		case "400":		// 정렬제거(전체)
+        			this.gfn_clearSortMark(obj.grid);
+        			break;
+        		case "500":		// 찾기
+        			this.gfn_openFindForm(obj.parent, obj.grid);
+        			break;
+        		case "600":		// Excel 내보내기
+        			this.gfn_exportExcel(obj.grid);
+        			break;
+        		case "700":		// Excel 가져오기
+        			this.gfn_importExcel(obj.grid);
+        			break;
+        		case "800":		// 칼럼숨기기
+        			obj.grid.deleteContentsCol(obj.cell);
+        			break;
+        		case "900":		// 컬럼보이기(전체)
+        			obj.grid.set_formats(obj.grid_format);
+        			break;
+        		case "1000":	// 틀고정
+        			this.gfn_cellFix(obj.grid,obj.cell); 
+        			break;
+        		case "1100":	// 틀고정 해제
+        			this.gfn_cellUnFix(obj.grid); 
+        			break;
+        	}
+        }
+
+        /**
+         * @class 그리드의 내용을 범위로 지정하여 복사(Ctrl+C) 할 수 있음
+         * @param obj:Grid (단일Export - Grid Object, 다수Export - Array Objec[Grid Object,Grid Object])
+         * @param e:KeyEventInfo
+         * @return None
+         */  
+        this.gfn_gridCopy = function (obj,e)
+        {
+        	// Ctrl + C
+        	if (e.ctrlKey && e.keycode == 67){
+        		this.gfn_clipboardCopy(obj);
+        	} else if (e.ctrlKey && e.keycode == 86){	// Ctrl + V
+        		this.gfn_clipboardPaste(obj);
+        	}
+        }
+
+        /**
+         * @class 그리드에 EnterKey 입력시 자동 Cell 이동 
+         * @param obj:Grid (단일Export - Grid Object, 다수Export - Array Objec[Grid Object,Grid Object])
+         * @param e:KeyEventInfo
+         * @return None
+         */  
+        this.gfn_gridOnkeydup = function(obj,e)
+        {
+        // 	if (e.keycode == 13){
+        // 		if (obj.getCellProperty("body", obj.currentcell, "edittype") != "textarea"){
+        //  			var rtn = obj.moveToNextCell();
+        // 			if (rtn == false){
+        // 				var objNextComponent = obj.parent.getNextComponent(obj, true);
+        // 				objNextComponent.setFocus();
+        // 				var strType = objNextComponent.toString().toUpperCase();
+        // 				if (strType == "[OBJECT GRID]"){
+        // 					var objDs = objNextComponent.getBindDataset();
+        // 					objDs.set_rowposition(0);
+        // 					objNextComponent.setCellPos(0);
+        // 				}
+        // 			}
+        // 		}	
+        // 	}
+        }
+
+        /**
+         * @class Clipboard에 Copy된 내용을 그리드의 선택된 영역에 Copy 한다.
+         * @param objGrid: Area Select 된 Grid
+         * @return None gfn_clipboardPaste(objGrid);
+         */ 
+
+        this.gfn_clipboardCopy = function (objGrid)
+        {
+        	var orgDataset = this.gfn_getDataset(objGrid.binddataset);
+        	var strColID;
+        	var strValue;
+        	var strClipboard = "";
+        	var nAreaStartRow;
+        	var nAreaEndRow;
+        	var nAreaStartCol;
+        	var nAreaEndCol;
+
+        // 	if (objGrid.selecttype == "area"){
+        // 		nAreaStartRow = objGrid.selectstartrow;
+        // 		nAreaEndRow = objGrid.selectendrow;
+        // 		nAreaStartCol = objGrid.selectstartcol;
+        // 		nAreaEndCol = objGrid.selectendcol;
+        // 	} else {
+        		nAreaStartRow = objGrid.selectstartrow;
+        		nAreaEndRow = objGrid.selectendrow;
+        		nAreaStartCol = 0;
+        		nAreaEndCol = objGrid.getCellCount("Body");
+        //	}
+
+        	for (var nRow = nAreaStartRow; nRow <= nAreaEndRow; nRow++){
+        		for (var nCell = nAreaStartCol; nCell < nAreaEndCol; nCell++){
+        			strColID = String(objGrid.getCellProperty("body", nCell, "text"));
+        			strValue = this.gfn_isEmpty(orgDataset.getColumn(nRow, strColID.substr(5)));
+        			strClipboard = strClipboard + strValue + this.ct_separator;
+        		}
+        		strClipboard = strClipboard.substr(0, strClipboard.length - 1);
+        		strClipboard = strClipboard + "\n";
+        	}
+        	
+        	strClipboard = strClipboard.substr(0, strClipboard.length - 1);
+        	trace("strClipboard = " + strClipboard);
+        	system.setClipboard("CF_TEXT", strClipboard);
+        	this.fv_arrClipboard = strClipboard;
+        	
+        	return;
+        }
+
+        /**
+         * @class Clipboard에 Copy된 내용을 그리드의 선택된 영역에 Paste 한다.
+         * @param objGrid: Area Select 된 Grid
+         * @return None gfn_clipboardPaste(objGrid);
+         */  
+        this.gfn_clipboardPaste = function (objGrid)
+        {
+        	var orgDataset = this.gfn_getDataset(objGrid.binddataset);
+        	var nSearchRow = 0;
+        	var nSearchCol = 0;
+        	var strColID;
+        	var strValue;
+        	var strEditType;
+        	var strBgColor;
+            var strClipboardData = "";
+            
+        	// 숫자 자릿수 구분은 comma 를 사용하기 때문에 호환을 위해서 comma 를 제거한다.
+        	try{
+        	   strClipboardData = system.getClipboard("CF_TEXT").split(",").join("");
+        	}catch(e){}
+        	
+        	if (Eco.isEmpty(strClipboardData)){
+        	    strClipboardData = this.fv_arrClipboard.split(",").join("");
+        	}
+        	
+        	// 유럽의 숫자 자릿수 구분은 space 를 사용하기 때문에 호환을 위해서 space 를 제거한다.
+        	strClipboardData = strClipboardData.split(" ").join("");
+        	var strClipboardRecord = strClipboardData.split("\n");
+        	var strClipboardColunm;
+        	
+        	var nAreaStartRow;
+        	var nAreaEndRow;
+        	var nAreaStartCol;
+        	var nAreaEndCol;
+
+        // 	if (objGrid.selecttype == "area"){
+        // 		nAreaStartRow = objGrid.selectstartrow;
+        // 		nAreaEndRow = objGrid.selectendrow;
+        // 		nAreaStartCol = objGrid.selectstartcol;
+        // 		nAreaEndCol = objGrid.selectendcol;
+        // 	} else {
+        		nAreaStartRow = objGrid.selectstartrow;
+        		nAreaEndRow = objGrid.selectendrow;
+        		nAreaStartCol = 0;
+        		nAreaEndCol = objGrid.getCellCount("Body")-1;
+        //	}
+
+        	for (var nRow = nAreaStartRow; nRow < (parseInt(nAreaStartRow) + parseInt(strClipboardRecord.length)); nRow++){
+        		strClipboardColunm = strClipboardRecord[nSearchRow].split(this.ct_separator);
+        		nSearchCol = 0;
+        		var nAreaCell = parseInt(nAreaStartCol) + parseInt(strClipboardColunm.length);
+        		for (var nCell = nAreaStartCol; nCell < nAreaCell; nCell++){
+        			strColID = String(objGrid.getCellProperty("body", nCell, "text")).substr(5);
+        			strEditType = objGrid.getCellProperty("body", nCell, "edittype");
+        			strValue = strClipboardColunm[nSearchCol];
+
+                    //에디터 타입이 none이거나 값이 없으면 카피 안함
+        			if (!(strEditType == "none" || Eco.isEmpty(strValue))){
+        				orgDataset.setColumn(nRow, strColID, strValue);
+        			}
+        			nSearchCol++;
+        		}
+        		nSearchRow++;
+        	}
+        	return;
+        }
+
+        
+        /**
+         * @class 팝업Div가 열릴 때 발생하는 이벤트
+         * @param obj - PopupDiv
+         * @param e - EventInfo
+         * @return None
+         */  
+        this._pdv_FilterList_onpopup = function(obj,e)
+        {
+        	//this.grdMenu.closePopup();
+        }
+
+        /**
+         * @class 팝업Div가 닫힐 때 발생하는 이벤트
+         * @param obj - PopupDiv
+         * @param e - EventInfo
+         * @return None
+         */  
+        this._pdv_FilterList_oncloseup = function(obj,e)
+        {
+        	obj.fn_closeup();
+        }
+
+        /**
+         * @class 그리드내의 문자열을 찾기 위한 form Open
+         * @param objParent - 부모 객체
+         * @param objGrid - 부모 그리드
+         * @return None
+         */  
+        this.gfn_openFindForm = function(objParent,objGrid)
+        {
+        	var objArgs = {arg1:objGrid,
+        				   arg2:objParent,
+        				   arg3:"2"};	// 1 - 화면내 그리드 모두, 2 - 특정 그리드
+        	//this.gfn_checkExistFindDlg();
+        	// Modaless형태로 오픈함
+        	//var rtn = gfn_dialog(id, sUrl, sTitle, objArgs, nWidth, nHeight, bCloseBtn, "", true);
+        	var sOption = "width=206,height=72,title=true,modeless=true";
+        	var sPopupCallBack = "fn_popupAfter";
+        	this.gfn_openPopup("com_find_pop","comPop::com_find_pop.xfdl",objArgs,sOption,sPopupCallBack);	
+        }
+
+        /**
+         * @class 이전에 Find form을 띄워 놓은 것이 있다면 Close한다.
+         * @param objGrid - 부모 그리드
+         * @return None
+         */  
+        this.gfn_checkExistFindDlg = function()
+        {
+        	var obj = application.popupframes["__GirdFindForm__"];
+        	// obj가 존재하는 경우라면 삭제한다.
+        	if(obj != null) {
+        		obj.destroy();
+        	}
+        }
+
+        /**
+         * @class 그리드 dataset에 filter가 적용되어 있는지 여부 판단.
+         * @param objGrid - 그리드
+         * @return 적용되어 있으면 true 아니면 false
+         */ 
+        this.gfn_isFiterString = function(objGrid)
+        {
+        	var bRet = false;
+        	// bind되어 있는 데이터 셋을 가져온다.
+        	var objBindDs = objGrid.getBindDataset();
+        	if (Eco.isEmpty(objBindDs)){
+        		bRet = false;
+        	}
+        	if (!Eco.isEmpty(objBindDs.filterstr.current)){
+        		bRet = true;
+        	}
+        	return bRet;
+        }
+
+        /**
+         * @class 그리드의 cell에 바인딩된 데이타셋의 컬럼ID를 구함
+         * @param objGrid - Grid object
+         * @param cellIdx - cell index
+         * @param band - Grid band
+         * @return 컬럼ID
+         */  
+        this.gfn_getCellBind = function(obj,cellIdx,band)
+        {
+        	if (Eco.isEmpty(band)){
+        		band = "body";
+        	}
+        	var cellText = "";
+        	
+        	if(!Eco.isEmpty(cellIdx)){
+        		cellText = new String(obj.getCellProperty(band, cellIdx, "text")).trim();
+        		if (Eco.isEmpty(cellText)){
+        			return "";
+        		}
+        	}else{
+        		cellText = obj.getCellProperty("body", obj.currentcell, "text");
+        	}
+
+        	var arrText = cellText.split(":");
+        	if (arrText[0].toLowerCase() != "bind"){
+        		return "";
+        	}
+        	return arrText[1];
+        }
+
+        /**
+         * @class 그리드에서 바인드된 컬럼명으로 컬럼 index를 리턴하는 함수
+         * @param obj - Grid Object
+         * @param strCol - 바인드된 컬럼명
+         * @param strBand - 얻고자 하는 Cell의 영역('Head'/'Body'/'Summ'('Summary'))
+         * @return int 컬럼 index
+         */  
+        this.gfn_getColumnIdx = function (obj,strCol,strBand)
+        {
+        	if (strBand == null){
+        		strBand = "Body";
+        	}
+        	var nCnt = obj.getCellCount(strBand);
+        	var strCellCol;
+        	for (var i=0; i<nCnt; i++){
+        		if (strCol == this.gfn_getCellBind(obj, i, strBand)){
+        			return i ;
+        		}
+        	}
+        	return -1;
+        }
+
+        /**
+         * @class Bind되어 있는 Dataset에 해당되는 ColumnId 를 가지고 있는 Cell의 Index
+         * @param obj - Grid Object
+         * @param sCompColumnId - sCompColumnId 비교할 ColumnId
+         * @return Cell Index/못찾으면 '-1' 을 반환
+         */  
+        this.gfn_getCellIdx = function (obj,strCompColumnId)
+        {
+            //Cell Id에 해당하는 번호를 반환함
+            var arrColumnId = new Array();
+            var nCellCnt = obj.getCellCount("body");
+            for (var i=0; i<nCellCnt; i++){
+                var strColumnId = String(obj.getCellProperty("body", i, "text")).replace("bind:", "");
+                if (strColumnId == strCompColumnId) return i;
+            }
+            return -1;
+        }
+
+        /**
+         * @class 해당 데이터셋명으로 검색하여 데이터셋찾아서 리턴 없으면 -1을 반환
+         * @param sDsNm     - 데이터셋명
+         * @return Dataset
+         */   
+        this.gfn_getDataset = function(sDsNm)
+        {
+            return Eco.XComp.query(this, "typeOf == 'Dataset' && prop[name] == '"+sDsNm+"'")[0];
+        	/*var objDataset;
+        	if (!this.isValidObject(sDsNm)){
+        		objDataset = new Dataset(sDsNm);
+        		objDataset.name = sDsNm;
+        		this.addChild(sDsNm, objDataset);
+        	} else {
+        		//objDataset = eval(strDatasetNm);
+        		objDataset = this.objects[sDsNm];
+        	}
+        	return objDataset;*/
+        }
+
+        /**
+         * @class 그리드 틀고정 설정
+         * @param objGrid - Grid object
+         * @param nCell - cell index
+         * @return N/A
+         */  
+        this.gfn_cellFix = function(obj,nCell)
+        {
+        	
+        	var cnt=0;
+        	for(var j=nCell; j>=0; j--) {
+        		var aa = obj.getCellProperty("Head", j, "col");
+        		var icell = nCell;
+        	
+        	
+        		for(var i=icell; i>=0; i--) {
+        	
+        			if( (obj.getCellProperty("Head", i, "row") == 0) && (aa==obj.getCellProperty("Head", i, "col")) ) {
+        				if(cnt==0) {
+        									var bb = obj.getCellProperty("Head", i, "col");
+        					var cc = obj.getCellProperty("Head", i, "colspan")-1;
+        					var dd = bb+cc;
+        					
+        					for(k=0; k<=dd;  k++){
+        						obj.setFormatColProperty(k, "band", "left");
+        					}
+        				}
+        				cnt++;
+        			} 
+        		}
+
+        	}
+        	
+        	return;
+        	
+        // 	var nCol = obj.getCellProperty("Head", nCell, "col");
+        // 	var nColSpan = obj.getCellProperty("Head", nCell, "colspan");
+        // 	var nMaxCol = 0;
+        // 	if (nMaxCol < (nCol+nColSpan)){
+        // 		nMaxCol = nCol+nColSpan;
+        // 	}
+        // 	for (var i=obj.getFormatColCount()-1; i>=0; i--){
+        // 		obj.setFormatColProperty(i, "band", "body");
+        // 		//obj.setCellProperty( "Head", i, "background", "red");
+        // 		//obj.setCellProperty( "Head", i, "line", "1 solid #ebebebff,1 solid #ebebebff,1 solid #ebebebff,1 solid #ebebebff");
+        // 		obj.setCellProperty( "Body", i, "line", "1 solid #ebebebff,1 solid #ebebebff,1 solid #ebebebff,1 solid #ebebebff");
+        // 	}
+        // 	
+        // 	for (var i=0; i< nMaxCol; i++){
+        // 		obj.setFormatColProperty(i, "band", "left");
+        // 		//obj.setCellProperty( "Head", i, "background", "#dbe8ffff URL('theme://images/compulsory.png') left top");
+        // 		if (i == nMaxCol-1){
+        //  			 //obj.setCellProperty( "Head", (i-nColSpan-1), "line", "1 solid #ebebebff,2 solid #9cd1ffff,1 solid #ebebebff,1 solid #ebebebff");  //1px solid #b1b5b9ff,1px solid blue
+        //  			 obj.setCellProperty( "Body", i, "line", "1 solid #ebebebff,2 solid #9cd1ffff,1 solid #ebebebff,1 solid #ebebebff");  //1px solid #b1b5b9ff,1px solid blue
+        // 		}
+        // 	}
+        }
+
+        /**
+         * @class 그리드 틀고정 해제
+         * @param objGrid - Grid object
+         * @return N/A
+         */  
+        this.gfn_cellUnFix = function(obj)
+        {
+        	for (var i= obj.getFormatColCount()-1; i>=0; i--){
+        		obj.setFormatColProperty(i, "band", "body");
+        //		obj.setCellProperty( "Head", i, "background", "#F0F0F0");
+        // 		obj.setCellProperty( "Head", i, "line", "1 solid #ebebebff,1 solid #ebebebff,1 solid #ebebebff,1 solid #ebebebff");
+        // 		obj.setCellProperty( "Body", i, "line", "1 solid #ebebebff,1 solid #ebebebff,1 solid #ebebebff,1 solid #ebebebff");
+        	}
+        // 		fomat = strFormat;
+        // 		obj.set_formats(fomat);
+        }
+        });
+
+
+    
+        this.loadIncludeScript(path);
+        
+        obj = null;
+    };
+}
+)();

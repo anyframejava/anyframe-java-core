@@ -1,0 +1,612 @@
+<chapter id="core_spring_spel">
+	<title>SpEL(Spring Expression Language)</title>
+	<para>
+		Spring 3에서 새롭게 선보이고 있는 Spring Expression Language(이하 SpEL)는 Expression Language의 하나로써 런타임시 특정 객체의 정보에 접근하거나 조작할 수 있도록 지원한다. 
+		Syntax는 Unified EL과 유사하나 부가적인 기능을 추가 제공하고 있다. 또한 SpEL는 Spring의 모든 내부 프로젝트들의 Expression Evaluation을 위한 기반으로써 활용된다.
+		본 섹션에서는 XML/Annotation 기반으로 Bean 정의시 SpEL을 어떻게 활용하는지, Spring에서 제공하는 Expression Interface를 직접 이용하여 정의된 Expression을 어떻게 
+		Evaluation하는지 알아보도록 하자. 그리고 Spring 기반에서 Expression 정의를 위한 Syntax는 <link linkend="core_spring_spel_language">Language Reference</link>를 
+		참고하도록 한다.
+	</para>
+	
+	<section id="core_spring_spel_bean">	
+		<title>Bean Definition using SpEL</title>
+		<para>
+			Spring에서 XML/Annotation 기반으로 Bean을 정의할 때 #{expression} 형태로 SpEL를 활용할 수 있다.
+		</para>
+		<section id="core_spring_spel_bean_xml">
+			<title>XML based Bean Definition</title>
+			<para>
+				다음은 Core Plugin 설치로 추가된 Spring 속성 정의 파일 context-transaction.xml의 일부로써 SpEL을 활용하여 dataSource Bean을 정의하고 있다. 
+				클래스패스 상에 존재하는 context.properties 파일을 로드하여 contextProperties라는 이름의 Bean에서 관리하도록 정의해두고, dataSource Bean에서는 
+				contextProperties Bean에 접근하여 driver, url, username, password에 대한 속성 정보를 추출함으로써 해당 Bean의 속성을 셋팅하고 있음을 알 수 있다.
+			</para>			
+			<programlisting language="xml"><![CDATA[
+<util:properties id="contextProperties" location="classpath:context.properties"/>
+ 	
+<bean id="dataSource" class="org.apache.commons.dbcp.BasicDataSource" destroy-method="close">
+    <property name="driverClassName" value=]]><emphasis role="bold">"#{contextProperties.driver}"</emphasis><![CDATA[/>
+    <property name="url" value=]]><emphasis role="bold">"#{contextProperties.url}"</emphasis><![CDATA[/>
+    <property name="username" value=]]><emphasis role="bold">"#{contextProperties.username}"</emphasis><![CDATA[/>
+    <property name="password" value=]]><emphasis role="bold">"#{contextProperties.password}"</emphasis><![CDATA[/>
+</bean>]]></programlisting>
+			<para>
+				'systemProperties'는 SpEL에서 정의한 내부 변수명으로 시스템 변수의 값을 추출하고자 할 때 #{systemProperties[...]}와 같은 형태로 활용할 수 있다.
+				즉, 앞서 언급한 DB 속성 정보를 Driver, URL, UserName, Password라는 시스템 변수로 셋팅해 두었다면 다음과 같이 dataSource Bean의 속성 정의를 변경할 수 있을 것이다.
+			</para>
+			<programlisting language="xml"><![CDATA[
+<bean id="dataSource" class="org.apache.commons.dbcp.BasicDataSource" destroy-method="close">
+    <property name="driverClassName" value=]]><emphasis role="bold">"#{systemProperties['Driver']}"</emphasis><![CDATA[/>
+    <property name="url" value=]]><emphasis role="bold">"#{systemProperties['URL']}"</emphasis><![CDATA[/>
+    <property name="username" value=]]><emphasis role="bold">"#{systemProperties['UserName']}"</emphasis><![CDATA[/>
+    <property name="password" value=]]><emphasis role="bold">"#{systemProperties['Password']}"</emphasis><![CDATA[/>
+</bean>]]></programlisting>			
+		</section>
+		
+		<section id="core_spring_spel_bean_annotation">
+			<title>Annotation based Bean Definition</title>
+			<para>
+				Spring에서 Annotation 기반으로 Bean을 정의할 때, XML과 달리 @Value라는 Annotation과 함께 Expression을 정의해 주어야 하며 @Value는 field, method, 
+				method/constructor argument에 적용할 수 있다.
+			</para>
+			<para>
+				다음은 Core Plugin 설치로 추가된 DAO 클래스 ~/service/impl/MovieDao.java의 일부로써 SpEL을 활용하여 MovieDao Bean의 pageSize, pageUnit 속성을 셋팅하고 
+				있음을 알 수 있다. contextProperties Bean으로부터 'pageSize', 'pageUnit' 정보를 추출하여 해당하는 field의 값을 셋팅하고 이를 활용하게 될 것이다.
+			</para>	
+			<programlisting language="java">@Repository("coreMovieDao")
+public class MovieDao extends JdbcDaoSupport {
+    <emphasis role="bold">@Value("#{contextProperties['pageSize'] ?: 10}")</emphasis>
+    int pageSize;
+
+    <emphasis role="bold">@Value("#{contextProperties['pageUnit'] ?: 10}")</emphasis>
+    int pageUnit;
+
+    @Inject
+    public void setJdbcDaoDataSource(DataSource dataSource) {
+        super.setDataSource(dataSource);
+    }
+
+    ...
+}</programlisting>
+			<para>
+				위 코드에서는 Elvis Operator를 활용하여 Expression을 정의하고 있으며 contextProperties라는 이름의 Bean이 'pageSize' 값을 가지고 있지 않을 경우 기본값을
+				'10'으로 셋팅하도록 요구하고 있다.
+			</para>
+			<para>
+				Annotation 기반 Bean 정의시에도 XML과 마찬가지로 'systemProperties'를 활용하여 시스템 변수의 값을 추출할 수 있다.
+			</para>
+		</section>			
+	</section>
+	
+	<section id="core_spring_spel_evaluation">
+		<title>Expression Evaluation using Spring's Expression Interface</title>
+		<para>
+			org.springframework.expression.ExpressionParser는 정의된 Expression을 Parsing하여 org.springframework.expression.Expression 형태로 리턴하다.
+			그리고 org.springframework.expression.Expression은 앞서 Parsing한 Expression을 Evaluating하는 역할을 수행하게 된다.
+		</para>
+		<programlisting language="java">ExpressionParser parser = new SpelExpressionParser();
+Expression expression = parser.parseExpression("'Hello Anyframe'");
+String stringVal = (String)expression.getValue();</programlisting>
+		<para>
+			따라서 위의 코드 실행 결과 Expression 객체는 정의된 Literal Expression "'Hello Anyframe'"을 Evaluate하여 'stringVal'에 'Hello Anyframe'라는 값을
+			할당하게 될 것이다. Evaluate된 결과를 특정 타입의 클래스로 전달받고자 하는 경우에는 getValue() 메소드 호출시 인자로 클래스 타입을 정의해줄 수 있다.
+		</para>
+		<programlisting language="java">ExpressionParser parser = new SpelExpressionParser();
+Expression expression = parser.parseExpression("'Hello Anyframe'");
+String stringVal = expression.getValue(String.class);</programlisting>		
+		<para>
+			SpEL에서는 정의된 Expression을 Evaluate하여 특정 객체의 속성 정보에 접근하거나 수정하기 위해 2가지 방법을 제공한다. 
+			Expression을 통해 Movie 객체로부터 'nowPlaying' 속성값에 접근하는 로직을 기반으로 각 방법에 대해 알아보도록 하자.
+		</para>
+		<para>
+			다음 코드에서는 Expression의 getValue() 메소드 호출시 Movie 객체를 셋팅한 org.springframework.expression.spel.support.StandardEvaluationContext 객체를 
+			활용하고 있다. 따라서 EvaluationContext를 기반으로 Expression Evaluation이 이루어지게 될 것이다. 그러나 Evaluation 대상이 되는 객체가 자주 변경되어야 하는 경우에는 해당 객체가 
+			변경될 때마다 SpelExpressionParser() 생성 로직이 매번 구현되어야 하므로 적절치 않은 방법이다.
+		</para>
+		<programlisting language="java">Movie movie = getGenre().getMovies().get(0);
+StandardEvaluationContext context = new StandardEvaluationContext(movie);
+
+ExpressionParser parser = new SpelExpressionParser();
+String playing = parser.parseExpression("nowPlaying").<emphasis role="bold">getValue(context, String.class)</emphasis>;</programlisting>
+		<para>
+			다음은 Expression의 getValue() 메소드 호출시 Movie 객체를 직접 활용하고 있다. 이 경우 Expression Evaluation할 때마다 내부적으로 EvaluationContext가 새롭게 생성되어
+			관리될 것이다. Evaluation 대상이 되는 객체가 자주 변경되어야 하는 경우에 활용할 수 있는 방법이다. 
+		</para>
+		<programlisting language="java">Movie movie = getGenre().getMovies().get(0);
+ExpressionParser parser = new SpelExpressionParser();
+String playing = parser.parseExpression("nowPlaying").<emphasis role="bold">getValue(movie, String.class)</emphasis>;</programlisting>		
+		<para>
+			단, SpEL에서는 다음과 같은 이유로 첫번째 언급한 방법을 사용할 것을 권장하고 있다. 
+		</para>
+		<itemizedlist>
+     		<listitem>
+     			<para>EvalutionContext를 생성하고 구성하는데 소요되는 비용이 상대적으로 비싸다.</para>
+     		</listitem>
+     		<listitem>
+     			<para>EvalutionContext가 상태 정보를 캐싱함으로써 재사용시 다음 Expression Evaluation이 보다 빠르게 수행될 수 있도록 지원한다.</para>
+     		</listitem>
+     	</itemizedlist>		
+	</section>	
+	
+	<section id="core_spring_spel_language">
+		<title>Language Reference</title>
+		<para>
+			다음에서는 다양한 형태의 Spring Expression 정의 방법에 대해 예제 코드와 함께 자세히 알아보도록 하자.
+		</para>
+		<section id="core_spring_spel_language_literal">
+			<title>Literal Expressions</title>
+			<para>
+				정의된 문자열을 String, Date, Number, boolean, null 타입으로 변경하여 전달할 수 있다. String 타입의 경우 single quote(')를 사용하여 정의하도록 한다.
+				다음은 Spring ExpressionParser를 활용하여 다양한 문자열을 지정된 타입으로 변경해보는 로직을 포함한 테스트 메소드이다. 				
+			</para>
+			<programlisting language="java">public void evaluateLiteralExpression() throws Exception {
+    ExpressionParser parser = new SpelExpressionParser();
+    String stringVal = (String) parser.parseExpression("'Hello Anyframe'").getValue();
+    System.out.println("[Literal Expression] Evaluate 'Hello Anyframe' : " + stringVal);
+
+    double doubleVal = (Double) parser.parseExpression("6.0221415E+23").getValue();
+    System.out.println("[Literal Expression] Evaluate '6.0221415E' : " + doubleVal);
+
+    Date dateVal = (Date) parser.parseExpression("'2010/07/05'").getValue(Date.class);
+    System.out.println("[Literal Expression] Evaluate '2010/07/05' : " + dateVal);
+
+    boolean booleanVal = (Boolean) parser.parseExpression("true").getValue();
+    System.out.println("[Literal Expression] Evaluate 'true' : " + booleanVal);
+
+    Object nullVal = parser.parseExpression("null").getValue();
+    System.out.println("[Literal Expression] Evaluate null : " + nullVal);
+}</programlisting>
+			<para>
+				위 메소드 실행 결과는 다음과 같이 출력될 것이다.
+			</para>				
+			<programlisting language="java">[Literal Expression] Evaluate 'Hello Anyframe' : Hello Anyframe
+[Literal Expression] Evaluate '6.0221415E' : 6.0221415E23
+[Literal Expression] Evaluate '2010/07/05' : Mon Jul 05 00:00:00 KST 2010
+[Literal Expression] Evaluate 'true' : true
+[Literal Expression] Evaluate null : null</programlisting>
+		</section>
+		
+		<section id="core_spring_spel_language_list">
+			<title>Properties, Arrays, Lists, Maps, Indexers</title>
+			<para>
+				Properties, Arrays, List, Map 등과 같은 객체가 가진 내부 객체 목록에 접근하기 위해 ['index'] 또는 ['key']와 같은 형태의 Expression을 정의할 수 있다.
+				또한 period(.)를 사용하면 내부 객체의 속성 정보에 접근할 수 있게 된다. (특정 객체의 속성 정보에 접근시 속성명의 첫번째 문자에 대해서는 Case Insensitive하다.)
+				다음은 Genre 객체 내에 포함된 java.util.ArrayList 타입의 movies로부터 첫번째 Movie 정보의 Title 값을 추출해 보는 테스트 메소드이다.
+			</para>
+			<programlisting language="java">public void evaluateListExpression() throws Exception {
+    Genre genre = getGenre();
+    StandardEvaluationContext context = new StandardEvaluationContext(genre);
+
+    ExpressionParser parser = new SpelExpressionParser();
+    String title = parser.parseExpression(<emphasis role="bold">"movies[0].Title"</emphasis>).getValue(context, String.class);
+    System.out.println("[List Expression] Movie title : " + title);
+}</programlisting>
+			<para>
+				위 메소드에서 활용한 테스트 데이터 Genre가 [<link linkend="core_spring_spel_language_resource">테스트 데이터 : Genre <![CDATA[&]]> Movies</link>]의 형태로 구성되어 
+				있을 경우 첫번째 Movie 정보의 Title 값인 'Shrek (2001)'이 출력될 것이다.
+			</para>
+			<programlisting language="java">[List Expression] Movie title : Shrek (2001)</programlisting>
+		</section>	
+		
+		<section id="core_spring_spel_language_method">
+			<title>Methods</title>
+			<para>
+				일반적인 Java Syntax를 활용하여 지정된 메소드를 실행시킬 수 있다. 다음은 Spring ExpressionParser를 활용하여 substring()이라는 메소드를 실행하는 테스트 로직의 일부이다. 
+			</para>
+			<programlisting language="java">ExpressionParser parser = new SpelExpressionParser();			
+String c = parser.parseExpression(<emphasis role="bold">"'abc'.substring(1)"</emphasis>).getValue(String.class);</programlisting>
+			<para>
+				Expression이 위와 같이 정의된 경우 특정 문자열을 substring한 결과인 'bc'라는 결과값이 리턴될 것이다.
+			</para>
+		</section>
+		
+		<section id="core_spring_spel_language_relationalop">
+			<title>Relational Operators</title>
+			<para>
+				equal('=='), not equal('!='), less than('<![CDATA[<]]>'), less than or equal('<![CDATA[<=]]>'), greater than('>'), and greater than or equal('>=') 등과
+				같은 Relational Operator를 활용할 수 있다. XML 문서 등에서의 <![CDATA[<]]>와 같은 사용으로 인한 문제를 피하기 위해서는 Relational Operators는 문자로도 표현할 수 있다.
+				(case insensitive)
+			</para>
+			<programlisting language="java">lt ('<![CDATA[<]]>'), gt ('>'), le ('<![CDATA[<=]]>'), ge ('>='), 
+eq ('=='), ne ('!='), div ('/'), mod ('%'), not ('!')</programlisting>
+			<para>	
+				이 외에도 'instanceof'와 Regular Expression 기반의 'matches'도 지원한다.
+				다음은 Spring ExpressionParser를 활용하여 Relational Operator를 포함한 Expression을 실행하는 테스트 로직의 일부이다.
+			</para>
+			<programlisting language="java">ExpressionParser parser = new SpelExpressionParser();
+boolean falseValue = parser.parseExpression("2 <![CDATA[<]]> -5.0").getValue(Boolean.class);
+boolean falseValue = parser.parseExpression("'xyz' instanceof T(int)").getValue(Boolean.class);
+boolean trueValue = 
+    parser.parseExpression("'5.00' matches '^-?\\d+(\\.\\d{2})?$'").getValue(Boolean.class);</programlisting>
+		</section>
+		
+		<section id="core_spring_spel_language_logicalop">
+			<title>Logical Operators</title>
+			<para>
+				and, or, not 등과 같은 Logical Operator를 활용할 수 있다.
+				다음은 Spring ExpressionParser를 활용하여 Logical Operator를 포함한 Expression을 실행하는 테스트 로직의 일부이다.
+			</para>
+			<programlisting language="java">ExpressionParser parser = new SpelExpressionParser();
+boolean falseValue = parser.parseExpression("true and false").getValue(Boolean.class);
+boolean trueValue = parser.parseExpression("true or false").getValue(Boolean.class);
+boolean falseValue = parser.parseExpression("!true").getValue(Boolean.class);</programlisting>
+		</section>		
+		
+		<section id="core_spring_spel_language_mathematicalop">
+			<title>Mathematical Operators</title>
+			<para>
+				+, -, *, /, %, ^와 같은 Mathematical Operator를 활용할 수 있다.
+				다음은 Spring ExpressionParser를 활용하여 Mathematical Operator를 포함한 Expression을 실행하는 테스트 로직의 일부이다.
+			</para>
+			<programlisting language="java">ExpressionParser parser = new SpelExpressionParser();
+String testString = 
+    parser.parseExpression("'test' + ' ' + 'string'").getValue(String.class);			
+int two = parser.parseExpression("1 + 1").getValue(Integer.class);	
+int minusTwentyOne = parser.parseExpression("1+2-3*8").getValue(Integer.class);</programlisting>
+		</section>	
+		
+		<section id="core_spring_spel_language_assignment">
+			<title>Assignment</title>
+			<para>
+				Assignment Operator('=')를 활용하여 setter 메소드를 실행한 것과 동일하게 특정 객체의 속성값을 수정할 수 있다.
+				다음은 Assignment Operator를 활용하여 Genre 객체의 'Name' 값을 'Animation'으로 변경해보는 로직을 포함한 테스트 메소드이다.
+			</para>
+			<programlisting language="java">public void evaluateAssignmentExpression() throws Exception {
+    Genre genre = getGenre();
+    StandardEvaluationContext context = new StandardEvaluationContext(genre);
+
+    ExpressionParser parser = new SpelExpressionParser();
+    String genreName = parser.parseExpression(<emphasis role="bold">"Name = 'Animation'"</emphasis>)
+        .getValue(context, String.class);
+    System.out.println("[Assignment Expression] Genre Name : " + genreName);
+}</programlisting>
+			<para>
+				위 메소드에서 활용한 테스트 데이터 Genre가 [<link linkend="core_spring_spel_language_resource">테스트 데이터 : Genre <![CDATA[&]]> Movies</link>]의 형태로 구성되어 
+				있을 경우 'Name' 값이 'Adventure'였으나 Assignment Operator를 활용하여 값을 변경하였으므로 위 메소드 실행 결과는 다음과 같이 출력될 것이다.
+			</para>
+			<programlisting language="java">[Assignment Expression] Genre Name : Animation</programlisting>
+		</section>		
+		
+		<section id="core_spring_spel_language_types">
+			<title>Types</title>
+			<para>
+				특정 타입의 클래스를 표현하기 위해 'T' Operator를 활용할 수 있다. 또한 'T' Operator를 활용할 경우 특정 클래스의 static 메소드 호출이 가능하다.
+				java.lang 패키지 하위의 클래스일 경우 패키지를 별도 명시하지 않아도 무방하다.
+				다음은 Spring ExpressionParser를 활용하여 'T' Operator를 포함한 Expression을 실행하는 테스트 로직의 일부이다.
+			</para>
+			<programlisting language="java">ExpressionParser parser = new SpelExpressionParser();
+Class dateClass = parser.parseExpression("T(java.util.Date)").getValue(Class.class);
+Class stringClass = parser.parseExpression("T(String)").getValue(Class.class);
+</programlisting>
+		</section>
+		
+		<section id="core_spring_spel_language_constructor">
+			<title>Constructors</title>
+			<para>
+				'new' Operator를 활용하여 특정 클래스의 Constructor를 호출할 수 있다. 클래스명은 fully qulified 형태로 기술해주어야 한다. (단, primitive 타입의 클래스, 
+				java.lang 패키지의 클래스는 제외)
+				다음은 'new' Operator를 활용하여 Genre 클래스의 Constructor를 호출하여 신규 Genre 객체를 생성해보는 로직을 포함한 테스트 메소드이다.
+			</para>
+			<programlisting language="java">public void evaluateConstructorExpression() throws Exception {
+    ExpressionParser parser = new SpelExpressionParser();
+    Genre genre = parser.parseExpression(
+        <emphasis role="bold">"new org.anyframe.sample.domain.Genre('GR-01', 'Action')"</emphasis>)
+        .getValue(Genre.class);
+    System.out.println("[Constructor Expression] Genre Id : "
+        + genre.getGenreId() + ", Genre Name : " + genre.getName());
+}</programlisting>
+			<para>
+				위 메소드 실행 결과 Constructor 호출로 인해 신규 Genre 객체가 생성되었을 것이며 이 Genre 객체는 GenreId : 'GR-01', GenreName : 'Action'이라는 값을 갖고 있을 것이다.
+				따라서 위 메소드 실행 결과는 다음과 같이 출력될 것이다.
+			</para>
+			<programlisting language="java">[Constructor Expression] Genre Id : GR-01, Genre Name : Action</programlisting>
+		</section>		
+		
+		<section id="core_spring_spel_language_variable">
+			<title>Variables</title>
+			<para>
+				StandardEvaluationContext의 setVariable() 메소드르 호출하여 변수를 정의하고, 정의된 변수를 #{변수명} 형태로 Spring Expression 내에서 활용할 수 있다.
+				다음은 'newName'이라는 변수의 값을 'Animation'으로 정의해두고 Genre 객체의 'Name' 속성값을 #newName을 활용하여 변경해보는 로직을 포함한 테스트 메소드이다.
+			</para>
+			<programlisting language="java">public void evaluateVariablesExpression() throws Exception {
+    Genre genre = getGenre();
+    StandardEvaluationContext context = new StandardEvaluationContext(genre);
+    <emphasis role="bold">context.setVariable("newName", "Animation");</emphasis>
+
+    ExpressionParser parser = new SpelExpressionParser();
+    parser.parseExpression(<emphasis role="bold">"Name = #newName"</emphasis>).getValue(context);
+    System.out.println("[Variables Expression] Genre New Name : "
+        + genre.getName());
+}</programlisting>
+			<para>
+				위 메소드에서 활용한 테스트 데이터 Genre가 [<link linkend="core_spring_spel_language_resource">테스트 데이터 : Genre <![CDATA[&]]> Movies</link>]의 형태로 구성되어 
+				있을 경우 'Name' 값이 'Adventure'였으나 #newName을 활용하여 값을 변경하였으므로 위 메소드 실행 결과는 다음과 같이 출력될 것이다.				
+			</para>
+			<programlisting language="java">[Variables Expression] Genre New Name : Animation</programlisting>
+			<para>
+				단, #this와 #root는 예약어로써 #this는 현재 evaluation 대상이 되는 객체를, #root는 Context에 셋팅된 Root 객체를 의미한다.
+			</para>
+		</section>	
+		
+		<section id="core_spring_spel_language_function">
+			<title>Functions</title>
+			<para>
+				StandardEvaluationContext의 registerFunction() 메소드를 호출하여 특정 클래스의 메소드를 등록하고, 해당 메소드를 #{메소드명} 형태로 Spring Expression 내에서 
+				활용할 수 있다.
+				다음은 org.springframework.util.StringUtils 클래스 내의 'capitalize'라는 메소드를 Spring Expression내에서 호출해보는 로직을 포함한 테스트 메소드이다.
+			</para>
+			<programlisting language="java">public void evaluateFunctionExpression() throws Exception {
+    StandardEvaluationContext context = new StandardEvaluationContext();
+    <emphasis role="bold">context.registerFunction("capitalize", StringUtils.class
+        .getDeclaredMethod("capitalize", new Class[] { String.class }));</emphasis>
+
+    ExpressionParser parser = new SpelExpressionParser();
+    String capitalizedString = parser.parseExpression(
+        <emphasis role="bold">"#capitalize('hello anyframe')"</emphasis>)
+        .getValue(context, String.class);
+    System.out.println("[Function Expression] Capitalized String : "
+        + capitalizedString);
+}</programlisting>
+			<para>
+				위 메소드 실행 결과 capitalize() 메소드의 인자로 정의된 'hello anyframe'이라는 문자열에 대해 첫번째 문자가 Capitalize되어 다음과 같이 출력될 것이다.
+			</para>
+			<programlisting language="java">[Function Expression] Capitalized String : Hello anyframe</programlisting>
+		</section>	
+		
+		<section id="core_spring_spel_language_ternaryop">
+			<title>Ternary Operator</title>
+			<para>
+				if-then-else 로직 수행을 위해 Ternary Operator를 활용할 수 있다. 
+				다음은 Movie 객체의 getNowPlaying() 메소드 실행 결과값에 대해 Ternary Operator를 적용한 테스트 메소드이다.
+			</para>
+			<programlisting language="java">public void evaluateTernaryOperatorExpression() throws Exception {
+    Movie movie = getGenre().getMovies().get(0);
+    StandardEvaluationContext context = new StandardEvaluationContext(movie);
+
+    ExpressionParser parser = new SpelExpressionParser();
+    String playing = parser.parseExpression(
+        <emphasis role="bold">"getNowPlaying().equals('Y') ? 'playing' : 'not playing'"</emphasis>)
+        .getValue(context, String.class);
+    System.out
+        .println("[Ternary Operator Expression] Movie 'Shrek (2001)' is " + playing);
+}</programlisting>
+			<para>
+				위 메소드에서 활용한 테스트 데이터 Movie가 [<link linkend="core_spring_spel_language_resource">테스트 데이터 : Genre <![CDATA[&]]> Movies</link>]의 형태로 구성되어 
+				있을 경우 Movie 객체의 getNowPlaying()의 값이 'N'이므로 'not playing'이라는 문자열이 리턴될 것이다. 따라서 위 메소드 실행 결과는 다음과 같이 출력될 것이다.
+			</para>
+			<programlisting language="java">[Ternary Operator Expression] Movie 'Shrek (2001)' is not playing</programlisting>
+		</section>		
+		
+		<section id="core_spring_spel_language_elvisop">
+			<title>Elvis Operator</title>
+			<para>
+				일반적으로 Ternary Operator를 활용하는 경우 다음과 같이 변수가 반복해서 표현되는 경우가 있다. 
+			</para>
+			<programlisting language="java">ticketPrice!=null ? ticketPrice :'8000'</programlisting>
+			<para>
+				Ternary Operator를 간략화한 형태인 Elvis Operator를 활용하면 Expression 정의가 단순해진다. 
+				(Groovy Language에서 사용되었으며 Elvis의 머리 모양과 닮았다 하여 Elvis Operator란 용어로 불리운다.)  
+			</para>
+			<programlisting language="java">ticketPrice ? :'8000'</programlisting>
+			<para>
+				다음은 Movie 객체의 getTicketPrice() 메소드 실행 결과값에 대해 Elvis Operator를 적용한 테스트 메소드이다.
+			</para>
+			<programlisting language="java">public void evaluateElvisOperatorExpression() throws Exception {
+    Movie movie = getGenre().getMovies().get(1);
+    StandardEvaluationContext context = new StandardEvaluationContext(movie);
+
+    ExpressionParser parser = new SpelExpressionParser();
+    int ticketPrice = parser.parseExpression(<emphasis role="bold">"getTicketPrice()?:'8000'"</emphasis>)
+        .getValue(context, Integer.class);
+    System.out
+        .println("[Elvis Operator Expression] The ticket-price of 'Shrek (2001)' is "
+        + ticketPrice);
+}</programlisting>
+			<para>
+				위 메소드에서 활용한 테스트 데이터 Movie가 [<link linkend="core_spring_spel_language_resource">테스트 데이터 : Genre <![CDATA[&]]> Movies</link>]의 형태로 구성되어 
+				있을 경우 Movie 객체의 getTicketPrice()의 값이 셋팅되어 있지 않으므로 즉, Null 값을 가지므로 Elvis Operator 실행 결과 '8000'이라는 int 타입의 값이 리턴될 것이다. 
+				따라서 위 메소드 실행 결과는 다음과 같이 출력될 것이다.			
+			</para>
+			<programlisting language="java">[Elvis Operator Expression] The ticket-price of 'Shrek (2001)' is 8000</programlisting>
+		</section>	
+		
+		<section id="core_spring_spel_language_safenaviop">
+			<title>Safe Navigation Operator</title>
+			<para>
+				Groovy Language에서 사용된 Safe Navigation Operator는 Null 값을 가지는 객체를 대상으로 특정 메소드를 호출하거나 속성 정보에 접근하였을 경우 발생하는 NullPointerException을 
+				방지하기 위해 활용 가능하다.
+				다음은 Movie 객체 내의 Genre가 Null 값을 가질 경우 Safe Navigation Operator를 활용하여 NullPointerException이 throw되는 것을 방지한 테스트 메소드이다. 
+			</para>
+			<programlisting language="java">public void evaluateSafeNavigationOperatorExpression() throws Exception {
+    Movie movie = getGenre().getMovies().get(0);
+    StandardEvaluationContext context = new StandardEvaluationContext(movie);
+
+    ExpressionParser parser = new SpelExpressionParser();
+    String name = parser.parseExpression(<emphasis role="bold">"genre?.Name"</emphasis>).getValue(context,
+        String.class);
+    System.out
+        .println("[Save Navigation Operator Expression] The genre of 'Shrek (2001)' is "
+        + name);
+
+    <emphasis role="bold">movie.setGenre(null);</emphasis>
+    name = parser.parseExpression(<emphasis role="bold">"genre?.Name"</emphasis>).getValue(context,
+        String.class);
+    System.out
+        .println("[Safe Navigation Operator Expression] The genre of 'Shrek (2001)' is "
+        + name);
+}</programlisting>
+			<para>
+				위 메소드에서 활용한 테스트 데이터 Movie가 [<link linkend="core_spring_spel_language_resource">테스트 데이터 : Genre <![CDATA[&]]> Movies</link>]의 형태로 구성되어 
+				있을 경우 첫번째 Expression ("genre?.Name")의 실행 결과는 'Adventure'가 될 것이다. 그리고 위 코드 중간에서 보는 바와 같이 Movie 객체 내의 Genre의 값을 Null로 변경한 후,
+				두번째 Expression ("genre?.Name")을 실행하였을 때에는 NullPointerException이 발생하지 않고 null 값이 리턴되어 실행 결과가 다음과 같이 출력될 것이다.
+			</para>
+			<programlisting language="java">[Save Navigation Operator Expression] The genre of 'Shrek (2001)' is Adventure
+[Safe Navigation Operator Expression] The genre of 'Shrek (2001)' is null</programlisting>
+		</section>		
+		
+		<section id="core_spring_spel_language_collectionsel">
+			<title>Collection Selection</title>
+			<para>
+				?[selectionExpression] 형태의 Expression을 활용하면 대상이 되는 Collection 객체로부터 정의된 조건에 해당하는 Sub Collection을 도출할 수 있다.
+				또한 ?^[selectionExpression]는 정의된 조건에 부합하는 첫번째 데이터를, ?$[selectionExpression]는 정의된 조건에 부합하는 마지막 데이터를 도출할 때 활용 가능하다.
+				다음은 Genre 객체 내의 java.util.ArrayList 유형의 movies로부터 Runtime 속성값이 90을 초과하는 Movie 정보를 추출하는 Collection Selection Expression을 
+				포함하는 테스트 로직이다.
+			</para>
+			<programlisting language="java">public void evaluateCollectionSelectionExpression() throws Exception {
+    Genre genre = getGenre();
+    StandardEvaluationContext context = new StandardEvaluationContext(genre);
+
+    ExpressionParser parser = new SpelExpressionParser();
+    List<![CDATA[<Movie>]]> movies = (List<![CDATA[<Movie>]]>) parser.parseExpression(
+        <emphasis role="bold">"movies.?[Runtime > 90]"</emphasis>).getValue(context);
+
+    System.out.println("[Collection Selection Expression] Movie title is "
+        + movies.get(0).getTitle());
+}</programlisting>
+			<para>
+				위 메소드에서 활용한 테스트 데이터 Genre가 [<link linkend="core_spring_spel_language_resource">테스트 데이터 : Genre <![CDATA[&]]> Movies</link>]의 형태로 구성되어 
+				있을 경우 Runtime 속성값이 '90'을 초과하는 Movie 객체는 1개이므로 메소드 실행 결과는 다음과 같이 출력될 것이다.			
+			</para>
+			<programlisting language="java">[Collection Selection Expression] Movie title is Avatar</programlisting>			
+		</section>	
+		
+		<section id="core_spring_spel_language_collectionproj">
+			<title>Collection Projection</title>
+			<para>
+				![projectionExpression] 형태의 Expression을 활용하면 대상이 되는 Collection 객체로부터 Expression에 해당하는 정보만을 추출하여 생성한 새로운 Collection을 
+				전달받을 수 있다. 다음은 Genre 객체 내의 java.util.ArrayList 유형의 movies로부터 'title' 정보만을 추출하는 Collection Projection Expression을 포함하는 
+				테스트 메소드이다.
+			</para>
+			<programlisting language="java">public void evaluateCollectionProjectionExpression() throws Exception {
+    Genre genre = getGenre();
+    StandardEvaluationContext context = new StandardEvaluationContext(genre);
+
+    ExpressionParser parser = new SpelExpressionParser();
+    List<![CDATA[<String>]]> titleList = (List<![CDATA[<String>]]>) parser.parseExpression(
+        "movies.![title]").getValue(context);
+
+    System.out
+        .println("[Collection Projection Expression] first movie title is "
+            + titleList.get(0) + ", second movie title is " + titleList.get(1));
+}</programlisting>
+			<para>
+				위 메소드에서 활용한 테스트 데이터 Genre가 [<link linkend="core_spring_spel_language_resource">테스트 데이터 : Genre <![CDATA[&]]> Movies</link>]의 형태로 구성되어 
+				있을 경우 'title' 값만을 추출하여 전달받은 새로운 'titleList'는 2개의 Title을 가지고 있을 것이며 메소드 실행 결과는 다음과 같이 출력될 것이다.			
+			</para>
+			<programlisting language="java">[Collection Projection Expression] first movie title is Shrek (2001), second movie title is Avatar</programlisting>
+		</section>	
+		
+		<section id="core_spring_spel_language_templating">
+			<title>Expression Templating</title>
+			<para>
+				Expression Template은 다수의 Evaluation Block과 정의된 문자열을 혼합할 수 있도록 지원한다. 각 Evaluation Block은 별도로 정의한 prefix, suffix로 구분지어 정의할 수 있다.
+				Expression Template을 활용하기 위해서는 ExpressionParser.parseExpression() 메소드 호출시 첫번째 인자에는 Spring Expression, 두번째 인자에는 Expression Templating을 
+				위한 ParserContext를 지정해 주어야 한다. Spring Framework에서는 기본적으로 활용할 수 있는 ParserContext로 org.springframework.expression.common.TemplateParserContext를 
+				제공하며, TemplateParserContext는 '#{'을 prefix, '}'를 suffix 구분자로 지정하고 있음을 알 수 있다.
+			</para>
+			<programlisting language="java">public class TemplateParserContext implements ParserContext {
+    public String getExpressionPrefix() { return "#{"; }
+    public String getExpressionSuffix() { return "}"; }
+    public boolean isTemplate() { return true; }
+}</programlisting>
+			<para>
+				따라서 다음과 같이 Expression이 정의된 경우 randomPhrase의 값은 'random number is ####'와 같은 형태가 될 것이다.
+			</para>
+			<programlisting language="java">ExpressionParser parser = new SpelExpressionParser();
+String randomPhrase = 
+    parser.parseExpression("random number is #{T(java.lang.Math).random()}", 
+    new TemplateParserContext()).getValue(String.class);</programlisting>
+		</section>								
+		
+		<section id="core_spring_spel_language_resource">
+			<title>테스트 데이터 : Genre <![CDATA[&]]> Movies</title>
+			<para>
+				SpEL에서 지원하는 다양한 Expression 표현을 위해 활용된 Genre 객체는 getGenre() 메소드를 호출함으로써 얻어낼 수 있으며 Genre 객체는 
+				다음과 같은 데이터를 포함하고 있다. 기본적으로 Genre는 기본 속성 정보 외에 java.util.ArrayList 유형의 Movie 목록을 포함하고 있다. 또한 Movie 객체는 기본 속성
+				정보 외에 관련된 Genre 객체를 포함하고 있다.
+			</para>
+			<programlisting language="java">private Genre getGenre() {
+    Genre genre = new Genre();
+    genre.setGenreId("GR-02");
+    genre.setName("Adventure");
+
+    ArrayList<![CDATA[<Movie>]]> movies = new ArrayList<![CDATA[<Movie>]]>();
+
+    Movie movie = new Movie();
+    movie.setGenre(genre);
+    movie.setMovieId("MV-000001");
+    movie.setTitle("Shrek (2001)");
+    movie.setActors("Shrek");
+    movie.setDirector("Andrew Adamson");
+    movie.setReleaseDate(new Date());
+    movie.setRuntime(90);
+    movie.setTicketPrice(8000);
+    movie.setNowPlaying("N");
+    movies.add(movie);
+
+    movie = new Movie();
+    movie.setGenre(genre);
+    movie.setMovieId("MV-000002");
+    movie.setTitle("Avatar");
+    movie.setActors("Sigourney Weaver");
+    movie.setDirector("James Cameron");
+    movie.setReleaseDate(new Date());
+    movie.setRuntime(100);
+    movie.setNowPlaying("Y");
+    movies.add(movie);
+
+    genre.setMovies(movies);
+
+    return genre;
+}</programlisting>
+		</section>		
+	</section>
+  	<section id="core_spring_spel_resources">
+  		<title>Resources</title>
+		<para>
+			<itemizedlist>
+				<listitem>
+					<para>다운로드</para>
+					<para>
+						다음에서 sample 코드를 포함하고 있는 Eclipse 프로젝트 파일을 다운받은 후, 압축을 해제한다.
+					</para>
+					<itemizedlist>
+						<listitem>
+							<para>Maven 기반 실행</para>
+							<para>
+								Command 창에서 압축 해제 폴더로 이동한 후, mvn compile exec:java -Dexec.mainClass=...이라는 명령어를 실행시켜 결과를 확인한다.
+								각 Eclipse 프로젝트 내에 포함된 Main 클래스의 JavaDoc을 참고하도록 한다.
+							</para>
+						</listitem>
+						<listitem>
+							<para>Eclipse 기반 실행</para>
+							<para>
+								Eclipse에서 압축 해제 프로젝트를 import한 후, src/main/java 폴더 하위의 Main.java를 선택하고 마우스 오른쪽 버튼 클릭하여 컨텍스트 메뉴에서 
+								Run As > Java Application을 클릭한다. 	그리고 실행 결과를 확인한다.
+							</para>
+						</listitem>									
+					</itemizedlist>						
+					<informaltable>
+						<caption>Download List</caption>
+						<tgroup cols="2">
+							<colspec colnum="1" colname="col1" colwidth="4*"/>
+							<colspec colnum="2" colname="col2" colwidth="6*"/>
+							<thead>
+								<row>
+									<entry align="center">Name</entry>
+									<entry align="center">Download</entry>
+								</row>
+							</thead>
+							<tbody>										
+								<row>
+									<entry align="center">anyframe-sample-spel.zip</entry>
+									<entry align="center"><ulink url="http://dev.anyframejava.org/docs/anyframe/plugin/essential/core/1.6.1-SNAPSHOT/reference/sample/anyframe-sample-spel.zip">Download</ulink>
+									</entry>
+								</row>														
+							</tbody>
+						</tgroup>
+					</informaltable> 
+				</listitem>
+			</itemizedlist>
+		</para>
+	</section>	
+</chapter>

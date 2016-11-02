@@ -1,0 +1,178 @@
+<chapter id="jasperreports_integration_configuration">
+	<title>Configuration</title>
+	<para>
+		The two XML files below need to be set up as the following to connect JasperReports and Spring MVC.
+    </para>
+
+    <itemizedlist>
+		<listitem>
+        	<para>
+        		Develop web.xml
+        	</para>
+      	</listitem>
+
+      	<listitem>
+        	<para>
+        		Develop jasper-servlet.xml
+        	</para>
+      	</listitem>
+    </itemizedlist>
+
+    <para>
+    	All source codes in this manual are included as examples in the anyframe-jasperreports-pi project imported in Eclipse.
+    </para>
+
+    <section id="jasperreports_integration_configuration_webxml">
+		<title>Develop web.xml</title>
+
+      	<para>
+      		Add the contents below in web.xml under the anyframe-jasperreports-pi/src/main/webapp/WEB-INF folder. 
+      		Add only to JasperReports settings and not to previous Anyframe settings.
+      	</para>
+
+      	<para>
+      		DispatcherServlet which is in <emphasis role="bold">jasperaction</emphasis> servlet class should be serviced through the jasperaction servlet if url is requested as /reports/ pattern. 
+      		<emphasis role="bold">Image</emphasis> servlet is to set up image files when reporting is in HTML form. It is not needed if reporting is not in HTML form. 
+      		<programlisting language="xml"><![CDATA[<servlet>
+    <servlet-name>action</servlet-name>
+    <servlet-class>
+        org.springframework.web.servlet.DispatcherServlet
+    </servlet-class>
+    <init-param>
+        <param-name>contextConfigLocation</param-name>
+        <!-- in classpath, jasper-servlet.xml exists -->
+        <param-value>classpath:/springmvc/*-servlet.xml</param-value>
+    </init-param>
+    <load-on-startup>1</load-on-startup>
+</servlet>
+  
+<servlet-mapping>
+    <servlet-name>action</servlet-name>
+    <url-pattern>*.do</url-pattern>
+</servlet-mapping>
+
+<!-- jasper-configuration-START -->   
+<servlet>
+    <servlet-name>image</servlet-name>
+    <servlet-class>net.sf.jasperreports.j2ee.servlets.ImageServlet</servlet-class>
+</servlet>	
+
+<servlet-mapping>
+    <servlet-name>action</servlet-name>
+    <url-pattern>/reports/*</url-pattern>
+</servlet-mapping>
+
+<servlet-mapping>
+    <servlet-name>image</servlet-name>
+    <url-pattern>/reports/image</url-pattern>
+</servlet-mapping>
+<!-- jasper-configuration-END -->]]></programlisting></para>
+    </section>
+
+    <section id="jasperreports_integration_configuration_servletxml">
+		<title>Develop jasper-servlet.xml</title>
+
+		<para>
+			Register jasper-servlet.xml in empty file used by DispatcherServlet in action servlet class.
+      	</para>
+
+      	<itemizedlist>
+        	<listitem>
+          		<para>
+          			<emphasis role="bold">context:component-scan</emphasis> - According to @RequestMapping defined on the top of the controller through annotaion setting, 
+          			reportController bean designated when URL was requested is called in the form of /testReport.html, /testReport.pdf, etc. 
+          			(The same process can be carried out by registering urlMapping.)
+          		</para>
+        	</listitem>
+        
+        	<listitem>
+          		<para>
+          			<emphasis role="bold">ParameterizableViewController</emphasis> - In case url is requested in /jasperProduct.do form,
+          			execute /WEB-INF/jsp/jasper/listReport.jsp.
+          		</para>
+        	</listitem>
+
+        	<listitem>
+          		<para>
+          			<emphasis role="bold">reportViewResolver</emphasis> - In case url is requested in views.properties form, execute viewReport method of relevant controller class.
+          		</para>
+        	</listitem>
+
+        	<listitem>
+          		<para>
+          			<emphasis role="bold">reportView </emphasis>- The most important bean. If view name is reportView according to the controller, execute ExtendedJasperReportsMultiFormatView class. 
+          			The property of reportView is as follows.
+          		</para>
+
+          		<informaltable>
+            		<tgroup cols="3">
+              			<thead>
+                			<row>
+                  				<entry align="center">Property</entry>
+
+                  				<entry align="center">Value</entry>
+
+                  				<entry align="center">Description</entry>
+                			</row>
+              			</thead>
+
+              			<tbody>
+                			<row>
+                  				<entry>url</entry>
+
+                  				<entry>/WEB-INF/reports/testReport.jasper</entry>
+
+                  				<entry>The file that compiled jrxml file using JasperAssistant Preview</entry>
+                			</row>
+
+                			<row>
+                  				<entry>jdbcDataSource</entry>
+
+                  				<entry>dataSource</entry>
+
+                  				<entry>Use of dataSource bean currently using HSQL DB</entry>
+                			</row>
+
+                			<row>
+                  				<entry>exporterParameters - ...IMAGES_URI</entry>
+
+                  				<entry>image?image=</entry>
+
+                  				<entry>
+                  				Set up to use image servlet defined in web.xml to show image file during HTML reporting
+                  				</entry>
+                			</row>
+
+                			<row>
+                  				<entry>exporterParameters - ...CHARACTER_ENCODING</entry>
+
+                  				<entry>euc-kr</entry>
+
+                  				<entry>Set up to prevent Korean character encoding during reporting</entry>
+                			</row>
+              			</tbody>
+            		</tgroup>
+          		</informaltable>
+        	</listitem>
+      	</itemizedlist>
+
+      	<para>
+        <programlisting language="xml"><![CDATA[<bean id="reportViewResolver" class="org.springframework.web.servlet.view.ResourceBundleViewResolver">
+    <property name="order" value="1"/>
+    <property name="basename" value="jasperreports.views"/>
+</bean> 
+   
+<bean id="reportView" class="org.anyframe.jasperreports.view.ReportsMultiFormatView">
+    <property name="url" value="/WEB-INF/jsp/jasperreports/report/movieReport.jasper"/>
+    <property name="jdbcDataSource" ref="dataSource"/>
+    <property name="exporterParameters">
+        <map>
+            <entry key="net.sf.jasperreports.engine.export.JRHtmlExporterParameter.IMAGES_URI" value="image?image="/>
+            <entry key="net.sf.jasperreports.engine.JRExporterParameter.CHARACTER_ENCODING" value="euc-kr"/>
+        </map>
+    </property>
+</bean>]]></programlisting>
+		</para>
+	</section>
+</chapter>
+

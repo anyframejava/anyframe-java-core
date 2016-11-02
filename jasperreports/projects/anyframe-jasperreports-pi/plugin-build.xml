@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<plugin name="jasperreports" description="JasperReports Plugin consists of sample code that provides guidelines on how to execute Reporting by connecting Spring MVC and JasperReports, and reference libraries needed to use these open sources.">
+  <groupId>org.anyframe.plugin</groupId>
+  <artifactId>anyframe-jasperreports-pi</artifactId>
+  <version>1.0.3-SNAPSHOT</version>
+  <dependent-plugins>
+    <dependent-plugin name="core" version="2.0.0&gt;*&gt;1.4.0"/>
+  </dependent-plugins>
+  <resources>
+    <resource dir="src/main/java" filtered="true" packaged="true">
+      <include name="**/jasperreports/**/*.java"/>
+    </resource>
+    <resource dir="src/main/resources" filtered="true" packaged="false">
+      <include name="**/jasperreports/*.*"/>
+      <include name="**/*jasperreports*.xml"/>
+    </resource>
+    <resource dir="src/main/webapp" filtered="false" packaged="false">
+      <include name="**/*.jasper"/>
+      <include name="**/*.jrxml"/>
+      <exclude name="**/web.xml" merged="true"/>
+      <exclude name="**/anyframe.jsp" merged="true"/>
+    </resource>
+  </resources>
+  <samples>true</samples>
+  <interceptor>
+    <class></class>
+  </interceptor>
+  <essential>false</essential>
+  <checked>false</checked>
+</plugin>

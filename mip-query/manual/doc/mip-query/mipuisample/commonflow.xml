@@ -1,0 +1,552 @@
+<chapter id="mip_query_mipuisample_commonflow">
+	<title>Working with Common Flow</title>
+	<para>
+		앞에서 설명했듯이 Anyframe에서는, MiPlatform을 UI 개발 플랫폼으로 사용할 때 단순 CRUD작업에 대해서 어떠한 
+		화면에서든 <emphasis role="bold">공통Flow를</emphasis>거쳐 기능 처리가 가능하도록 Anyframe Ria MiPlatform
+		을 제공하고 있다. 본 절에서는  공통 Flow를 사용하기 위해서 MiPlatform 화면 개발 시에 반드시 설정해 
+		주어야 하는 부분에 대해서 설명한다.	 
+	</para>
+	
+	<section id="mip_query_mipuisample_commonflow_commonscript">
+		<title>Common Script</title>
+		<para>
+			모든 화면의 Form 스크립트에는 반드시 최상위에<emphasis role="bold">“#include javascript::common.js"</emphasis> 
+			을 기술해야 한다. common.js에는 Anyframe MiPlatform UI Sample에서 공통 적으로 사용되는 스크립트 함수들이 
+			정의되어 있고, 또한 그 외 공통 스크립트(*.js) 파일들을 포함하고 있다. (예:message.js, util.js) common.js
+			에 정의된 함수 중 Service Call과 관련된 함수는 다음과 같다.
+		</para>
+		
+		<section id="mip_query_mipuisample_commonflow_commonscript_servicecall">
+			<title>Service Call</title>
+			<para>
+				gfnService()는 서버 측에 Service를 요청하기 위한 함수로 내부적으로 MiPlatform 자체 Service API인 
+				transaction()을 호출한다.
+			</para>
+			
+			<section id="mip_query_mipuisample_commonflow_commonscript_servicecall_syntax">
+				<title>Syntax</title>
+				<para>
+					<emphasis role="bold">gfnService(strServiceId, strArgument)</emphasis>
+				</para>
+				<para>
+					예) gfnService(“getListCommunity”), gfnService(“saveAllBoard”)	
+				</para>
+			</section>
+			
+			<section id="mip_query_mipuisample_commonflow_commonscript_servicecall_parameters">
+				<title>Parameters</title>
+				
+				<informaltable>
+					<caption>gfnService() 함수 Parameters</caption>
+					<tgroup cols="2">
+						<colspec colnum="1" colname="col1" colwidth="3*" />
+						<colspec colnum="2" colname="col2" colwidth="7*" />
+						<thead>
+							<row>
+								<entry align="center">Parameter</entry>
+								<entry align="center">Description</entry>
+							</row>
+						</thead>
+
+						<tbody>
+							<row>
+								<entry align="left">strServiceId</entry>
+								<entry align="left">
+									사용자가 임의로 정하는 Service에 대한 고유한 ID
+									접두어는 아래 정의된 내용으로 한정함.
+									<itemizedlist>
+										<listitem>
+											<para><emphasis role="bold">getList: 조회</emphasis></para>
+										</listitem>
+				
+										<listitem>
+											<para><emphasis role="bold">getPagingList: 페이지조회</emphasis></para>
+										</listitem>
+			
+										<listitem>
+											<para><emphasis role="bold">get: 단건 조회</emphasis></para>										</listitem>
+												
+										<listitem>
+											<para><emphasis role="bold">create: 등록</emphasis></para>
+										</listitem>
+												
+										<listitem>
+											<para><emphasis role="bold">update: 수정</emphasis></para>
+										</listitem>
+												
+										<listitem>
+											<para><emphasis role="bold">remove: 삭제</emphasis></para>
+										</listitem>
+												
+										<listitem>
+											<para><emphasis role="bold">saveAll: 등록/수정/삭제 모두 수행 (하나의 Transaction)</emphasis></para>
+										</listitem>
+												
+										<listitem>
+											<para><emphasis role="bold">execute: DBMS의 Stored Procedure 실행</emphasis></para>
+										</listitem>
+									</itemizedlist>			
+									예) getListCommunity
+								</entry>
+							</row>
+							<row>
+								<entry align="left">strArgument</entry>
+								<entry align="left">
+									<para>Service 호출 시 HTTP GET 방식으로 전달할 파라미터</para> 
+									Syntax: “name1=value1 name2=value2”
+								</entry>
+							</row>
+						</tbody>
+					</tgroup>
+				</informaltable>
+			</section>
+		</section>
+		
+		<section id="mip_query_mipuisample_commonflow_commonscript_callback">
+			<title>Callback</title>
+			<para>
+				MiPlatform에서는 기본적으로 Service 호출이 Async 방식으로 이루어진다. gfnService()를 이용해 
+				서버 측에 요청을 보냈을 경우, 요청에 대한 응답이 도착했을 때 디폴트로 호출되는 함수는 <emphasis role="bold">gfnCallback()
+				</emphasis>이다. gfnCallback() 내부에서는 디폴트로 화면 스크립트 내의 <emphasis role="bold">fnCallback()</emphasis>을 호출한다. 
+				따라서 Service 호출이 완료된 후에 메세지 처리나 컴포넌트 reload 등의 기능을 수행하도록 적절하게 fnCallback()
+				을 정의하면 된다.
+			</para>
+			
+			<section id="mip_query_mipuisample_commonflow_commonscript_callback_syntax">
+				<title>Syntax</title>
+				<para>
+					<emphasis role="bold">fnCallback(strServiceId, strErrorCode, strErrorMsg)</emphasis>
+				</para>
+				<para>예)
+                    <programlisting language="java"><![CDATA[function fnCallback(strServiceId, strErrorCode, strErrorMsg) {
+    if ( strErrorCode == -1 ) {
+        gfnMsg(strErrorMsg, "ERR");
+    } else {
+        if(strServiceId == "getPagingListBoard") {
+            divPage.objListDataset = dsGrdBoard;
+            divPage.objPageDataset = dsSearch;
+            divPage.fnMakePage();
+        } else if(strServiceId == "saveAllBoard") {
+            gfnMsg("MSG_SAVE_SUCCESS");
+            divSearch_btnSearch_OnClick();
+        }
+    }
+}]]></programlisting>
+				</para>
+			</section>
+			
+			<section id="mip_query_mipuisample_commonflow_commonscript_callback_parameters">
+				<title>Parameters</title>
+				
+				<informaltable>
+					<caption>fnCallback() 함수 Parameters</caption>
+					<tgroup cols="2">
+						<colspec colnum="1" colname="col1" colwidth="3*" />
+						<colspec colnum="2" colname="col2" colwidth="7*" />
+						<thead>
+							<row>
+								<entry align="center">Parameter</entry>
+								<entry align="center">Description</entry>
+							</row>
+						</thead>
+
+						<tbody>
+							<row>
+								<entry align="left">strServiceId</entry>
+								<entry align="left">gfnService()로 Service 호출 시 입력했던 strServiceId와 동일한 값</entry>
+							</row>
+							
+							<row>
+								<entry align="left">strErrorCode</entry>
+								<entry align="left">에러 코드, ‘-1’ 인 경우 Error</entry>
+							</row>
+							
+							<row>
+								<entry align="left">strErrorMsg</entry>
+								<entry align="left">호출한 Service에서 넘겨준 에러 메세지</entry>
+							</row>
+						</tbody>
+					</tgroup>
+				</informaltable>
+			</section>
+		</section>
+	</section>	
+	
+	<section id="mip_query_mipuisample_commonflow_dataset">
+		<title>Common Dataset</title>
+		
+		<section id="mip_query_mipuisample_commonflow_dataset_service">
+			<title>Dataset for Service</title>
+			<para>
+				데이터를 가져오기 위해서 gfnService()를 통해 Service를 호출할 경우 호출할 Service에 대한 여러 가지 
+				파라미터 정보를 Dataset에 정의한다. 따라서 모든 화면에 다음과 같은 값들이 정의된 <emphasis role="bold">'dsService'</emphasis>라는 
+				이름의 Dataset이 반드시 포함되어야 한다.
+			</para>
+			
+			<informaltable>
+				<caption>dsService Dataset</caption>
+				<tgroup cols="2">
+					<colspec colnum="1" colname="col1" colwidth="3*" />
+					<colspec colnum="2" colname="col2" colwidth="7*" />
+					<thead>
+						<row>
+							<entry align="center">Column</entry>
+							<entry align="center">Description</entry>
+						</row>
+					</thead>
+					
+					<tbody>
+						<row>
+							<entry align="left">SVC_ID</entry>
+							<entry align="left">
+								<para>gfnService()의 strServiceId와 동일한 값을 지님</para>
+								<para>예) getListCommunity</para>
+							</entry>
+						</row>
+						
+						<row>
+							<entry align="left">QUERY_LIST</entry>
+							<entry align="left">
+								<para>
+								Service에서 실행해야 할 쿼리ID (space로 구분하여 다중입력 가능)
+								</para>
+								Syntax: “querySet” + 순번 + “=” + 쿼리ID
+	                            <para>
+								예) querySet1=getListMethodCode
+								querySet1=getListMethodCode querySet2=getListCategory
+								</para>
+	                            <para>
+								SVC_ID가 ‘saveAll’로 시작하는 경우(Grid 일괄 저장 시)는 comma(,)를 사용하여
+								<emphasis role="bold">create, update, remove 쿼리를 한번에 지정</emphasis>
+								</para>
+								<para>
+								예) querySet1=createCategory, updateCategory, removeCategory
+								</para>
+							</entry>
+						</row>
+						
+						<row>
+							<entry align="left">SERVICE</entry>
+							<entry align="left">
+								<para>공통Service를 사용하지 않을 경우 호출할 Service 정보 미지정시, 디폴트로 ‘gvService’에 설정된 공통Service인 
+								'mipService' 가 호출됨.</para>
+								Syntax: Service명 + “.” + Method명
+	                            <para></para>
+								예) categoryMgmtService.getListCategory, categoryMgmtService.createCategory
+							</entry>
+						</row>
+						
+						<row>
+							<entry align="left">IN_DATASET_LIST</entry>
+							<entry align="left">
+								<para>쿼리 실행 시, 파라미터로 사용될 Dataset ID (space로 구분하여 다중입력 가능)</para>
+								Syntax: “querySet”+ 순번 + “=” + DatasetID
+	                            <para></para>
+								예) querySet1=dsSearch
+	 							querySet1=dsSearch querySet2=dsParam
+							</entry>
+						</row>
+						
+						<row>
+							<entry align="left">OUT_DATASET_LIST</entry>
+							<entry align="left">
+								<para>쿼리 수행 결과로 받을 Dataset 이름 목록 (다중입력 가능 - space로 구분)</para>
+								Syntax: DatasetID + “=” + “querySet” + 순번
+	                            <para></para>
+								예) dsSearch=querySet1
+								dsSearch=querySet1 dsParam=querySet2
+							</entry>
+						</row>
+						
+						<row>
+							<entry align="left">CALLBACK</entry>
+							<entry align="left">
+								Service로부터 응답을 받았을 때 실행될 Callback 함수 이름
+								gfnCallback() 내에서 호출. 미지정시, 디폴트로 ‘fnCallback’ 호출.
+							</entry>
+						</row>
+						
+						<row>
+							<entry align="left">SYNC_YN</entry>
+							<entry align="left">
+								Y: Sync 호출
+								N: Async 호출 (default) – 권장
+							</entry>
+						</row>
+						
+						<row>
+							<entry align="left">CONTROLLER</entry>
+							<entry align="left">
+								공통Controller를 사용하지 않을 경우 호출할 Controller 정보 미지정시, 
+								디폴트로 ‘gvController’에 설정된 공통Controller인 ‘mipController.do’
+								가  호출됨.
+	                            <para></para>
+								공통Controller를 사용하지 않는 경우, 호출 할 Service에 대한 정보는 신규 작성한 
+								Controller 에서 포함하고 있으므로 SERVICE 속성을 따로 정의하지 않아도 됨.
+							</entry>
+						</row>		
+					</tbody>
+				</tgroup>
+			</informaltable>
+			<para></para>
+			<mediaobject>
+          		<imageobject>
+           			<imagedata align="center"
+                       	fileref="../image/mip-query/mipuisample/dsservice.png" />
+          		</imageobject>
+          		<textobject>
+					<phrase>dsService Dataset 구성</phrase>
+				</textobject>
+        	</mediaobject>
+		</section>
+	</section>
+	
+	<section id="mip_query_mipuisample_commonflow_example">
+		<title>Example</title>
+		
+		<para>
+			위에서 설명한 내용들을 바탕으로 공통Flow를 통해 커뮤니티 목록을 조회하여 Grid로 출력하는 단순 
+			조회화면을 생성해본다. 
+		</para>
+		<itemizedlist>
+			<listitem>
+				<para>
+					MiPlatform PID의 Project Explorer에서 ‘samples’ AppGroup을 선택한 상태로 메뉴 
+					바의 File > New를 클릭한다.
+				</para>
+			</listitem>
+			<listitem>
+				<para>
+					‘Make New...’ 팝업 창에서 ‘Form’을 선택하고 OK버튼을 클릭한다
+				</para>
+				<mediaobject>
+	          		<imageobject>
+	           			<imagedata align="center"
+	                       	fileref="../image/mip-query/mipuisample/newform.png" />
+	          		</imageobject>
+	          		<textobject>
+						<phrase>Make New 팝업 창</phrase>
+					</textobject>
+	        	</mediaobject>
+	        	<para></para>
+        	</listitem>
+        	<listitem>
+        		<para>
+        			Select Template 팝업 창에서 ‘Empty Form’을 선택하고 Next 버튼을 클릭한다.
+        		</para>
+        		<mediaobject>
+	          		<imageobject>
+	           			<imagedata align="center"
+	                       	fileref="../image/mip-query/mipuisample/select.png" />
+	          		</imageobject>
+	          		<textobject>
+						<phrase>Select Template 팝업 창</phrase>
+					</textobject>
+	        	</mediaobject>	
+        	</listitem>
+			<listitem>
+        		<para>
+        			Form Properties 팝업 창에서 Form의 이름과 파일명, 제목 등을 적절하게 입력하고 Finish
+        			 버튼을 클릭하면 새로운 Form이 생성된다.
+        		</para>
+        		<mediaobject>
+	          		<imageobject>
+	           			<imagedata align="center"
+	                       	fileref="../image/mip-query/mipuisample/form.png" />
+	          		</imageobject>
+	          		<textobject>
+						<phrase>Form Properties 팝업 창</phrase>
+					</textobject>
+	        	</mediaobject>
+	        	<para></para>
+        	</listitem>
+			<listitem>
+        		<para>
+        			새로 만든 Form 편집 창에서 하단의 Dataset 탭을 열어  +버튼을 이용하여 Dataset(‘dsService’,
+        			‘dsGrdCommunity’)을 추가한다. 또는 다른 샘플화면에서 ‘dsService’와 ‘dsGrdCommunity’ 
+        			Dataset을 복사하여 붙여 넣기 한다.
+        		</para>
+        		<mediaobject>
+	          		<imageobject>
+	           			<imagedata align="center"
+	                       	fileref="../image/mip-query/mipuisample/dataset.png"/>
+	          		</imageobject>
+	          		<textobject>
+						<phrase>Dataset 탭</phrase>
+					</textobject>
+	        	</mediaobject>
+	        	<para>
+	        		‘dsService’은 아래와 같은 컬럼 데이터를 포함한다.
+	        	</para>
+				<informaltable>
+					<caption>dsService Dataset 컬럼</caption>
+					<tgroup cols="2">
+						<colspec colnum="1" colname="col1" colwidth="3*" />
+						<colspec colnum="2" colname="col2" colwidth="7*" />
+						<thead>
+							<row>
+								<entry align="center">Column</entry>
+								<entry align="center">Description</entry>
+							</row>
+						</thead>
+						
+						<tbody>
+							<row>
+								<entry align="left">SVC_ID</entry>
+								<entry align="left">getListCommunity</entry>
+							</row>
+							<row>
+								<entry align="left">QUERY_LIST</entry>
+								<entry align="left">querySet1=findCommunityList</entry>
+							</row>
+							<row>
+								<entry align="left">SERVICE</entry>
+							</row>
+							<row>
+								<entry align="left">IN_DATASET_LIST</entry>
+							</row>
+							<row>
+								<entry align="left">OUT_DATASET_LIST</entry>
+								<entry align="left">dsGrdCommunity=querySet1</entry>
+							</row>
+							<row>
+								<entry align="left">CALLBACK</entry>
+							</row>
+							<row>
+								<entry align="left">SYNC_YN</entry>
+							</row>
+							<row>
+								<entry align="left">CONTROLLER</entry>
+							</row>
+						</tbody>
+					</tgroup>
+				</informaltable>
+				<para>‘dsGrdCommunity’는 아래와 같이 구성되어 있다.</para>
+				<informaltable>
+				<caption>dsGrdCommunity Dataset 구성</caption>
+				<tgroup cols="3">
+						<colspec colnum="1" colname="col1" colwidth="4*" />
+						<colspec colnum="1" colname="col1" colwidth="3*" />
+						<colspec colnum="2" colname="col2" colwidth="3*" />
+						<thead>
+							<row>
+								<entry align="center">Column</entry>
+								<entry align="center">Type</entry>
+								<entry align="center">Size</entry>
+							</row>
+						</thead>
+						
+						<tbody>
+							<row>
+								<entry align="left">COMMUNITY_ID</entry>
+								<entry align="left">STRING</entry>
+								<entry align="left">16</entry>
+							</row>
+							<row>
+								<entry align="left">COMMUNITY_NAME</entry>
+								<entry align="left">STRING</entry>
+								<entry align="left">256</entry>
+							</row>
+							<row>
+								<entry align="left">COMMUNITY_DESC</entry>
+								<entry align="left">STRING</entry>
+								<entry align="left">256</entry>
+							</row>
+							<row>
+								<entry align="left">CATEGORY_ID</entry>
+								<entry align="left">STRING</entry>
+								<entry align="left">16</entry>
+							</row>
+							<row>
+								<entry align="left">REG_ID</entry>
+								<entry align="left">STRING</entry>
+								<entry align="left">256</entry>
+							</row>
+							<row>
+								<entry align="left">REG_DATE</entry>
+								<entry align="left">STRING</entry>
+								<entry align="left">10</entry>
+							</row>
+						</tbody>
+					</tgroup>	
+				</informaltable>
+				<para></para>
+			</listitem>
+			<listitem>
+				<para>
+					Design 탭을 클릭하여 Form 편집 창을 연 다음, 오른쪽의 Properties에서 이벤트 보기 아이콘
+					을 클릭하고 Form의 OnLoadCompleted 이벤트의 ComboBox 부분을 더블 클릭
+	        		한다.
+				</para>
+				<mediaobject>
+	          		<imageobject>
+	           			<imagedata align="center"
+	                       	fileref="../image/mip-query/mipuisample/onload.png" />
+	          		</imageobject>
+	          		<textobject>
+						<phrase>OnLoadCompleted 이벤트 등록</phrase>
+					</textobject>
+	        	</mediaobject>
+	        	<para></para>
+	        </listitem>
+        	<listitem>
+        		<para>
+        			OnLoadCompleted 이벤트 발생 시에 호출될 Script 함수가 자동으로 생성되며 Script 편집 
+        			창으로 이동한다. 아래와 같이 Script 편집 창 가장 상단에 common.js를 include 하도록 
+        			선언하고, 자동 생성된 Script함수를 수정한다.
+                    <programlisting language="java"><emphasis role="bold">#include "javascript::common.js";</emphasis>
+function frmFORM_EXAMPLE_OnLoadCompleted(obj) {
+     <emphasis role="bold">gfnService("getListCommunity");</emphasis>
+}</programlisting>
+        		</para>
+        	</listitem>
+        	<listitem>
+        		<para>
+        			다시 Design탭을 클릭하여 Form 편집 창을 열고, Components Tool Bar에서 Grid 아이콘
+        			을 클릭한다. Form 위에서 Drag하여 적당한 크기의 Grid를 생성한다.
+        		</para>
+        		<mediaobject>
+	          		<imageobject>
+	           			<imagedata align="center"
+	                       	fileref="../image/mip-query/mipuisample/drawing.png" />
+	          		</imageobject>
+	          		<textobject>
+						<phrase>추가된 Grid 컴포넌트</phrase>
+					</textobject>
+	        	</mediaobject>
+	        	<para></para>
+        	</listitem>
+        	<listitem>
+        		<para>
+        			왼쪽의 Project Explorer에서 FORM_EXAMPLE 하위의 Datasets 중 ‘dsGrdCommunity’를 
+        			선택하여 위에서 생성한 Grid위로 Drag하고, 오른쪽 Properties에서 속성보기 아이콘
+        			을 클릭한 후, AutoFit 속성을 True로 변경한다.
+        		</para>
+        		<mediaobject>
+	          		<imageobject>
+	           			<imagedata align="center"
+	                       	fileref="../image/mip-query/mipuisample/autofit.png" />
+	          		</imageobject>
+	          		<textobject>
+						<phrase>Grid AutoFit 속성 변경 이벤트</phrase>
+					</textobject>
+	        	</mediaobject>
+	        	<para></para>
+        	</listitem>
+        	<listitem>
+        		<para>
+        			상단 Tool Bar에서 ‘Quick View’ 아이콘을 클릭하면 커뮤니티 목록이 출력되는 것을  확인할 수 있다.
+        		</para>
+        		<mediaobject>
+	          		<imageobject>
+	           			<imagedata align="center"
+	                       	fileref="../image/mip-query/mipuisample/frm_form.png" />
+	          		</imageobject>
+	          		<textobject>
+						<phrase>커뮤니티 목록이 출력된 Grid</phrase>
+					</textobject>
+	        	</mediaobject>
+        	</listitem>
+        </itemizedlist>
+	</section>		
+</chapter>

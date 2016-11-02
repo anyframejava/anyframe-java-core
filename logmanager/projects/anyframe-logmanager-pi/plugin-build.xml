@@ -1,0 +1,32 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<plugin name="logmanager" description="Log Manager Plugin is sample application that connected with Log Manager">
+  <groupId>org.anyframe.plugin</groupId>
+  <artifactId>anyframe-logmanager-pi</artifactId>
+  <version>1.1.1-SNAPSHOT</version>
+  	<dependent-plugins>
+		<dependent-plugin name="core" version="2.0.0&gt;*&gt;1.4.0" />
+	</dependent-plugins>
+  <resources>
+    <resource dir="src/main/java" filtered="true" packaged="true">
+      <include name="**/logmanager/**/*.java"/>
+    </resource>
+    <resource dir="src/main/resources" filtered="true" packaged="false">
+      <include name="**/*logmanager*.xml"/>
+      <exclude name="**/log4j.xml" merged="true"/>
+      <exclude name="**/logback.xml" merged="true"/>
+    </resource>
+    <resource dir="src/test/java" filtered="true" packaged="true">
+      <include name="**/logmanager/**/*.java"/>
+    </resource>
+    <resource dir="src/main/webapp" filtered="false" packaged="false">
+       <include name="**/logmanager/**/*.*"/>
+       <exclude name="**/web.xml" merged="true"/>
+       <exclude name="**/anyframe.jsp" merged="true"/>
+     </resource>
+  </resources>
+  <samples>true</samples>
+  <interceptor>
+    <class></class>
+  </interceptor>
+  <essential>false</essential>
+</plugin>

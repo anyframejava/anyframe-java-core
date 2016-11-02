@@ -1,0 +1,226 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+
+<!DOCTYPE book PUBLIC "-//OASIS//DTD DocBook XML V4.5//EN" "http://www.oasis-open.org/docbook/xml/4.5/docbookx.dtd"
+[
+<!ENTITY remoting_rmi SYSTEM "remoting/rmi.xml">
+<!ENTITY remoting_hessian SYSTEM "remoting/hessian.xml">
+<!ENTITY remoting_burlap SYSTEM "remoting/burlap.xml">
+<!ENTITY remoting_httpinvoker SYSTEM "remoting/httpinvoker.xml">
+<!ENTITY remoting_resources SYSTEM "remoting/resources.xml">
+]
+>
+
+<!--
+		Licensed to the Apache Software Foundation (ASF) under one or more
+		contributor license agreements. See the NOTICE file distributed with
+		this work for additional information regarding copyright ownership.
+		The ASF licenses this file to you under the Apache License, Version
+		2.0 (the "License"); you may not use this file except in compliance
+		with the License. You may obtain a copy of the License at
+
+		http://www.apache.org/licenses/LICENSE-2.0 Unless required by
+		applicable law or agreed to in writing, software distributed under the
+		License is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR
+		CONDITIONS OF ANY KIND, either express or implied. See the License for
+		the specific language governing permissions and limitations under the
+		License.
+-->
+    
+<book lang="ko">
+	<title>Anyframe Remoting Plugin</title>
+	
+	<bookinfo>
+		<copyright>
+			<year>2007-2014</year>
+			<holder>삼성SDS</holder>
+		</copyright>
+		<releaseinfo>Version 1.1.1-SNAPSHOT</releaseinfo>
+
+		<productname>Anyframe Remoting Plugin</productname>
+
+		<authorgroup>
+			<corpauthor></corpauthor>
+		</authorgroup>
+
+		<mediaobject>
+			<imageobject>
+				<!-- logo 변경 -->
+				<imagedata fileref="../image/common/logo_pdf.jpg"/>
+			</imageobject>
+			<textobject>
+				<phrase>Anyframe Java 로고</phrase>
+			</textobject>
+		</mediaobject>
+		<legalnotice>
+			<para>본 문서의 저작권은 삼성SDS에 있으며 Anyframe 오픈소스 커뮤니티 활동의 목적하에서 자유로운 이용이 가능합니다.
+			본 문서를 복제, 배포할 경우에는 저작권자를 명시하여 주시기 바라며 본 문서를 변경하실 경우에는 원문과 변경된 내용을 표시하여 주시기 바랍니다. 
+			원문과 변경된 문서에 대한 상업적 용도의 활용은 허용되지 않습니다. 본 문서에 오류가 있다고 판단될 경우 이슈로 등록해 주시면 적절한 조치를 취하도록 하겠습니다.
+			</para>
+		</legalnotice>
+	</bookinfo>
+	<part id="remoting_introduction_part">
+		<title>Introduction</title>
+		<partintro id="remoting_introduction_part_intro">
+			<para>
+				Remoting Plugin은 Spring Remoting에서 지원하는 원격 기술(RMI, Hessian/Burlap, HTTP Invoker 등) 중 HTTP Invoker의 기본 활용 방법을 가이드하기 위한 샘플 코드와 이를 
+			    활용하는데 필요한 참조 라이브러리들로 구성되어 있다.
+			</para>
+			<para role="introduction_title">
+				<emphasis role="bold">Installation</emphasis>
+			</para>
+			<para>Command 창에서 다음과 같이 명령어를 입력하여 remoting-plugin을 설치한다.</para>
+			<programlisting language="java"><![CDATA[mvn anyframe:install -Dname=remoting]]></programlisting>
+			<para>
+				installed(mvn anyframe:installed) 혹은 jetty:run(mvn clean
+				jetty:run) command를 이용하여 설치 결과를 확인해볼 수 있다. 
+			</para>
+			<informaltable>
+				<caption>Dependent Plugins</caption>
+				<tgroup cols="2">
+					<colspec colnum="1" colname="col1" colwidth="5*" />
+					<colspec colnum="2" colname="col2" colwidth="5*" />
+					<thead>
+						<row>
+							<entry align="center">Plugin Name</entry>
+							<entry align="center">Version Range</entry>
+						</row>
+					</thead>
+					<tbody>
+						<row>
+							<entry align="center">
+								<ulink
+									url="http://dev.anyframejava.org/docs/anyframe/plugin/optional/query/1.6.1-SNAPSHOT/reference/htmlsingle/query.html">query</ulink>
+							</entry>
+							<entry align="center" valign="middle">2.0.0 > * > 1.4.0</entry>
+						</row>
+					</tbody>
+				</tgroup>
+			</informaltable>
+		</partintro>
+	</part>
+		
+	<part id="remoting_overview_part">
+		<title>Spring Remoting</title>
+		<partintro id="remoting_overview_part_intro">
+			<para>
+				Remoting이란 클라이언트 어플리케이션과 원격 어플리케이션에서 제공하는 서비스간의 의사소통을 말한다.
+			</para>
+		
+		  	<para>
+		  		Spring Remoting에서 지원하는 원격 기술은 다음 표와 같다.
+		  	</para>
+		
+		  	<informaltable>
+		  		<caption>Spring Remoting에서 지원하는 원격 기술</caption>
+		    	<tgroup cols="2">
+		    		<colspec colnum="1" colname="col1" colwidth="3*"/>
+		            <colspec colnum="2" colname="col2" colwidth="7*"/>
+		      		<thead>
+		        		<row>
+		          			<entry align="center">원격 기술</entry>
+		
+		          			<entry align="center">설명</entry>
+		        		</row>
+		      		</thead>
+		
+		      		<tbody>
+		        		<row>
+		          			<entry>RMI(Remote Method Invocation)</entry>
+		
+		          			<entry>방화벽과 같은 네트워크 제약이 없는 상황에서 자바 기반의 서비스를 공개하거나 접근하려는 경우에 사용한다.</entry>
+		        		</row>
+		
+		        		<row>
+		          			<entry>Hessian/Burlap</entry>
+		
+		          			<entry>방화벽과 같이 네트워크 제약이 있는 상황에서 자바 기반의 서비스를 공개하거나 접근하려는 경우에 사용한다.</entry>
+		        		</row>
+		
+		        		<row>
+		          			<entry>HTTP Invoker</entry>
+		
+		          			<entry>방화벽과 같이 네트워크 제약이 있는 상황에서 Spring 기반의 서비스를 공개하거나 접근하려는 경우에 사용한다.</entry>
+		        		</row>
+		      		</tbody>
+				</tgroup>
+			</informaltable>
+		
+			<itemizedlist>
+		    	<listitem>
+		      		<para>
+		      			<emphasis role="bold">원격 기술 별 장점 및 단점</emphasis>
+		      		</para>
+		
+		      		<informaltable>
+		      			<caption>원격 기술 별 장점 및 단점</caption>
+		        		<tgroup cols="3">
+		        			<colspec colnum="1" colname="col1" colwidth="2*"/>
+				            <colspec colnum="2" colname="col2" colwidth="4*"/>
+				            <colspec colnum="3" colname="col3" colwidth="4*"/>
+				          	<thead>
+		            			<row>
+						            <entry align="center">원격 기술</entry>
+						
+						           <entry align="center">장점</entry>
+						
+						           <entry align="center">단점</entry>
+		            			</row>
+		          			</thead>
+		
+		          			<tbody>
+		            			<row>
+		              				<entry>RMI</entry>
+		
+		              				<entry>자바 객체 직렬화 매커니즘을 지원하므로 복잡한 형태의 데이터 타입을 네트워크 상에서 전송 가능함</entry>
+		
+		              				<entry>자바 대 자바 Remoting 솔루션이며 HTTP 프로토콜을 사용할 수 없음. RMI 컴파일러와 레지스트리가 별도로 필요함</entry>
+		            			</row>
+		
+		            			<row>
+						        	<entry>Hessian/Burlap</entry>
+						
+						            <entry>방화벽 문제 없음</entry>
+						
+						            <entry>
+						              	자체 객체 직렬화 매커니즘을 가지고 있어서 복잡한 형태의 데이터 타입 사용이 어려움. Burlap은
+						              	자바 클라이언트만 지원함
+						            </entry>
+		            			</row>
+		
+		            			<row>
+		              				<entry>HTTP Invoker</entry>
+		
+		              				<entry>HTTP 기반의 Remoting 기술 사용 편의성</entry>
+		
+		              				<entry>자바 대 자바 Remoting 솔루션이며 서버와 클라이언트 모두 Spring 어플리케이션으로 구축해야 함</entry>
+		            			</row>
+		
+		            			<row>
+					              	<entry>EJB</entry>
+					
+					              	<entry>Remoting, 어플리케이션 보안, 트랜잭션 처리 등을 위한 JavaEE 서비스</entry>
+					
+					              	<entry>무거운(heavyweight) 기술로 JavaEE 컨테이너가 반드시 필요함</entry>
+		            			</row>
+		
+		            			<row>
+		              				<entry>Web Services</entry>
+		
+		              				<entry>플랫폼과 언어에 독립적</entry>
+		
+		             			 	<entry>SOAP을 사용하며 웹 서비스 구동을 위한 엔진이 필요함</entry>
+		            			</row>
+							</tbody>
+						</tgroup>
+			      	</informaltable>
+		    	</listitem>
+			</itemizedlist>
+		</partintro>
+		&remoting_rmi;
+		&remoting_hessian;
+		&remoting_burlap;
+		&remoting_httpinvoker;
+		&remoting_resources;
+	</part>	
+
+</book>

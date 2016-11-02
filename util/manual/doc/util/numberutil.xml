@@ -1,0 +1,332 @@
+<chapter id="util_numberutil">
+	<title>NumberUtil의 활용</title>
+	<para>숫자 관련 계산, 검색, 변환 및 유효성 체크 기능 제공</para>
+	<para>다음은NumberUtil이 가지고 있는 메소드에 대한 설명이다.</para>
+	<informaltable>
+		<caption>NumberUtil 메소드</caption>
+		<tgroup cols="4">
+			<colspec colnum="1" colname="col1" colwidth="2*" />
+			<colspec colnum="2" colname="col2" colwidth="3*" />
+			<colspec colnum="3" colname="col3" colwidth="4*" />
+			<colspec colnum="4" colname="col4" colwidth="1*" />
+			<thead>
+				<row>
+					<entry align="center">Method</entry>
+					<entry align="center">Description</entry>
+					<entry align="center">Example</entry>
+					<entry align="center">Remarks</entry>
+				</row>
+			</thead>
+			<tbody>
+				<row>
+					<entry>
+						<emphasis role="bold">checkNumberType</emphasis>
+						(String str, String check)
+					</entry>
+					<entry>입력받은 문자열이 양수, 음수, 정수, 실수 인지 값을 받아 옳고 그름을 체크한다.</entry>
+					<entry>NumberUtil.checkNumberType("+1234", "positive")=true</entry>
+					<entry></entry>
+				</row>
+				<row>
+					<entry>
+						<emphasis role="bold">formatNumber</emphasis>
+						(double d, String format)
+					</entry>
+					<entry>입력한 double값을 포맷에 맞는 문자열 반환</entry>
+					<entry>NumberUtil.formatNumber(12345.67d, "###,###.#")="12,345.7"
+					</entry>
+					<entry>since core 1.0.4</entry>
+				</row>
+				<row>
+					<entry>
+						<emphasis role="bold">formatNumber</emphasis>
+						(int intValue, String format)
+					</entry>
+					<entry>입력한 int 값을 포맷에 맞는 문자열 반환</entry>
+					<entry>NumberUtil.formatNumber(1023412123, "###,###")=1,023,412,123
+					</entry>
+					<entry></entry>
+				</row>
+				<row>
+					<entry>
+						<emphasis role="bold">formatNumber</emphasis>
+						(long l, String format)
+					</entry>
+					<entry>입력한 long 값을 포맷에 맞는 문자열 반환</entry>
+					<entry>NumberUtil.formatNumber(1023412123L,
+						"###,###")=1,023,412,123</entry>
+					<entry>since core 1.0.4</entry>
+				</row>
+				<row>
+					<entry>
+						<emphasis role="bold">formatNumber</emphasis>
+						(String str, String format)
+					</entry>
+					<entry>입력한 문자열값을 포맷에 맞는 문자열 반환</entry>
+					<entry>NumberUtil.formatNumber("1234567", "#,##0.000") =
+						"1,234,567.000"</entry>
+					<entry>since core 1.0.4</entry>
+				</row>
+				<row>
+					<entry>
+						<emphasis role="bold">formatNumberByLocale</emphasis>
+						(int intValue, Locale locale)
+					</entry>
+					<entry>특정한 Locale에 맞는 통화 표기를 가져옴</entry>
+					<entry>NumberUtil.formatNumberByLocale(3527900,
+						Locale.KOREA)=￦3,527,900</entry>
+					<entry></entry>
+				</row>
+				<row>
+					<entry>
+						<emphasis role="bold">formatNumberByPoint</emphasis>
+						(double inputValue, int point)
+					</entry>
+					<entry>point 값에 따른 형식으로 입력값을 변환</entry>
+					<entry>NumberUtil.formatNumberByPoint(10231023123.1213, 2) =
+						"0,231,023,123.12"</entry>
+					<entry></entry>
+				</row>
+				<row>
+					<entry>
+						<emphasis role="bold">getRandomNumber</emphasis>
+						<![CDATA[(Class<T> targetClass)]]>
+					</entry>
+					<entry>랜덤한 수 조회</entry>
+					<entry>NumberUtil.getRandomNumber(Integer.class)</entry>
+					<entry></entry>
+				</row>
+				<row>
+					<entry>
+						<emphasis role="bold">getRandomNumber</emphasis>
+						<![CDATA[(Class<T> targetClass, boolean sign)]]>
+					</entry>
+					<entry>랜덤한 수 조회 - 음수인 수 조회할 수 있음</entry>
+					<entry>NumberUtil.getRandomNumber(Integer.class, false)</entry>
+					<entry></entry>
+				</row>
+				<row>
+					<entry>
+						<emphasis role="bold">getRandomNumber</emphasis>
+						<![CDATA[(Class<T> targetClass, int fixedLength)]]>
+					</entry>
+					<entry>지정된 길이만큼의 랜덤한 수 조회</entry>
+					<entry>NumberUtil.getRandomNumber(Integer.class, 10)</entry>
+					<entry></entry>
+				</row>
+				<row>
+					<entry>
+						<emphasis role="bold">getRandomNumber</emphasis>
+						<![CDATA[(Class<T> targetClass, T min, T max)]]>
+					</entry>
+					<entry>최대 최소값 사이의 랜덤한 수 조회</entry>
+					<entry>NumberUtil.getRandomNumber(Integer.class, 10, 100)</entry>
+					<entry></entry>
+				</row>
+				<row>
+					<entry>
+						<emphasis role="bold">hasNumber</emphasis>
+						(String str)
+					</entry>
+					<entry>입력된 문자열에 숫자가 있는지 확인</entry>
+					<entry>NumberUtil.hasNumber("str1ing")=true</entry>
+					<entry></entry>
+				</row>
+				<row>
+					<entry>
+						<emphasis role="bold">integer2string</emphasis>
+						(int intValue)
+					</entry>
+					<entry></entry>
+					<entry></entry>
+					<entry><emphasis role="bold">deprecated</emphasis> since core 1.5.0 <para>integerToString(int intValue) 사용</para></entry>
+				</row>
+				<row>
+					<entry>
+						<emphasis role="bold">isNumber</emphasis>
+						(String str)
+					</entry>
+					<entry>입력받은 문자열이 숫자인지 체크</entry>
+					<entry>NumberUtil.isNumber("12312312")=true</entry>
+					<entry></entry>
+				</row>
+				<row>
+					<entry>
+						<emphasis role="bold">nullToZero</emphasis>
+						(BigDecimal bgint)
+					</entry>
+					<entry>입력받은 숫자가 null이면 ""로 변환</entry>
+					<entry>NumberUtil.nullToZero(null)=""</entry>
+					<entry><emphasis role="bold">deprecated</emphasis> since core 1.5.0 <para>bigDecimalToString(BigDecimal) 사용</para></entry>
+				</row>
+				<row>
+					<entry>
+						<emphasis role="bold">replaceNumber</emphasis>
+						(double source, int target, int replacement)
+					</entry>
+					<entry>입력받은 수에 대해 target 숫자를 찾아서 replacement 숫자로 바꿔준다.</entry>
+					<entry>NumberUtil.replaceNumber(123456.2, 234, 567)=156756.2
+					</entry>
+					<entry></entry>
+				</row>
+				<row>
+					<entry>
+						<emphasis role="bold">string2integer</emphasis>
+						(String str)
+					</entry>
+					<entry></entry>
+					<entry></entry>
+					<entry><emphasis role="bold">deprecated</emphasis> since core 1.5.0 <para>stringToInteger(String str) 사용</para></entry>
+				</row>
+				<row>
+					<entry>
+						<emphasis role="bold">toKorean</emphasis>
+						(char cNumber)
+					</entry>
+					<entry>0-9의 char값을 한글로 변환</entry>
+					<entry>NumberUtil.toKorean(1) = "일"</entry>
+					<entry> <emphasis role="bold">deprecated</emphasis> since core 1.5.0 <para><emphasis role="bold"> 대체메소드 지원하지 않음. </emphasis></para> </entry>
+				</row>
+				<row>
+					<entry>
+						<emphasis role="bold">toKorean</emphasis>
+						(int i)
+					</entry>
+					<entry>0-9의 int값을 한글로 변환</entry>
+					<entry>NumberUtil.toKorean(1) = "일"</entry>
+					<entry><emphasis role="bold">deprecated</emphasis> since core 1.5.0 <para> <emphasis role="bold"> 대체메소드 지원하지 않음. </emphasis></para></entry>
+				</row>
+				<row>
+					<entry>
+						<emphasis role="bold">toKorean</emphasis>
+						(String str)
+					</entry>
+					<entry>"0"-"9"의 문자열을 한글로 변환</entry>
+					<entry>NumberUtil.toKorean("1") = "일"</entry>
+					<entry><emphasis role="bold">deprecated</emphasis> since core 1.5.0 <para><emphasis role="bold"> 대체메소드 지원하지 않음. </emphasis></para></entry>
+				</row>
+				<row>
+					<entry>
+						<emphasis role="bold">toLeftZeroPaddingString</emphasis>
+						(int i, int len)
+					</entry>
+					<entry>integer 값의 길이에 len 만큼 0을 채운 문자열을 반환한다.</entry>
+					<entry>NumberUtil.toLeftZeroPaddingString(12, 3) = "012"</entry>
+					<entry><emphasis role="bold">deprecated</emphasis> since core 1.5.0 <para>intToZeroPadString(int i, int len) 사용</para></entry>
+				</row>
+				
+				<!-- 1.5.0 신규 -->
+				<row>
+					<entry>
+						<emphasis role="bold">bigDecimalToString</emphasis>
+						(BigDecimal bgint)
+					</entry>
+					<entry>입력받은 bigDecimal이 null이면 ""로 변환</entry>
+					<entry>NumberUtil.bigDecimalToString(null) = ""</entry>
+					<entry>since core 1.5.0</entry>
+				</row>
+				
+				<row>
+					<entry>
+						<emphasis role="bold">stringToBigDecimal</emphasis>
+						(String str)
+					</entry>
+					<entry>입력받은 문자열을 bigDecimal로 변환</entry>
+					<entry>NumberUtil.stringToBigDecimal("1") </entry>
+					<entry>since core 1.5.0</entry>
+				</row>
+				
+				<row>
+					<entry>
+						<emphasis role="bold">intToString</emphasis>
+						(int number)
+					</entry>
+					<entry>입력받은 int를 문자열로 변환</entry>
+					<entry>NumberUtil.intToString(1)="1"</entry>
+					<entry>since core 1.5.0</entry>
+				</row>
+				
+				<row>
+					<entry>
+						<emphasis role="bold">stringToInt</emphasis>
+						(String number)
+					</entry>
+					<entry>입력받은 String을 int로 변환 null이거나 "" 인 경우 0반환</entry>
+					<entry>NumberUtil.stringToInt("")=0</entry>
+					<entry>since core 1.5.0</entry>
+				</row>
+				
+				<row>
+					<entry>
+						<emphasis role="bold">stringToInt</emphasis>
+						(String number, int defaultValue)
+					</entry>
+					<entry>입력받은 String을 int로 변환 null이거나 "" 인 경우 defaultValue반환</entry>
+					<entry>NumberUtil.intToString("", -1)=-1</entry>
+					<entry>since core 1.5.0</entry>
+				</row>
+				
+				<row>
+					<entry>
+						<emphasis role="bold">substringToInt</emphasis>
+						(String number, int beginIndex, int size)
+					</entry>
+					<entry>입력한 문자열의 일부분을 int로 변환한다.</entry>
+					<entry>NumberUtil.substringToInt("123456789", 5, 3) = 678</entry>
+					<entry>since core 1.5.0</entry>
+				</row>
+				
+				<row>
+					<entry>
+						<emphasis role="bold">isDigit</emphasis>
+						(String number)
+					</entry>
+					<entry>입력한 문자열이 숫자로만 구성되어 있는지 여부 체크</entry>
+					<entry>NumberUtil.isDigit("1234A")=false</entry>
+					<entry>since core 1.5.0</entry>
+				</row>
+								
+				<row>
+					<entry>
+						<emphasis role="bold">isNotDigit</emphasis>
+						(String number)
+					</entry>
+					<entry>입력한 문자열에 숫자가 아닌 다른 문자가 존재하는지 여부 체크</entry>
+					<entry>NumberUtil.isNotDigit("12345ABC") = true</entry>
+					<entry>since core 1.5.0</entry>
+				</row>
+				
+				<row>
+					<entry>
+						<emphasis role="bold">substringToBigDecimal</emphasis>
+						(String number, int beginIndex, int size)
+					</entry>
+					<entry>입력한 문자열의 일부분을 BigDecimal로 변환한다.</entry>
+					<entry>NumberUtil.subStringToBigDecimal("123456789", 5, 3)</entry>
+					<entry>since core 1.5.0</entry>
+				</row>
+				
+				<row>
+					<entry>
+						<emphasis role="bold">intToZeroPadString</emphasis>
+						(int number, int size)
+					</entry>
+					<entry>integer 값의 길이에 size 만큼 0을 채운 문자열을 반환한다.</entry>
+					<entry>NumberUtil.toLeftZeroPaddingString(12, 3) = "012"</entry>
+					<entry>since core 1.5.0</entry>
+				</row>
+				
+				<row>
+					<entry>
+						<emphasis role="bold">formatNumber</emphasis>
+						(short number, String format)
+					</entry>
+					<entry>short 값을 입력한 형식의 문자열로 변환한다.</entry>
+					<entry>NumberUtil.formatNumber(12345, "###,###") => "12,345"</entry>
+					<entry>since core 1.5.0</entry>
+				</row>
+				
+			</tbody>
+		</tgroup>
+	</informaltable>
+</chapter>

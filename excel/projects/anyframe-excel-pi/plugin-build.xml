@@ -1,0 +1,39 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<plugin name="excel" description="Excel Plugin consists of sample code that provides guidelines on how to use Apache POI that provides Excel Download and Upload etc.">
+  <groupId>org.anyframe.plugin</groupId>
+  <artifactId>anyframe-excel-pi</artifactId>
+  <version>1.1.1-SNAPSHOT</version>
+  <dependent-plugins>
+    <dependent-plugin name="query" version="2.0.0&gt;*&gt;1.4.0"/>
+  </dependent-plugins>
+  <resources>
+    <resource dir="src/main/java" filtered="true" packaged="true">
+      <include name="**/excel/**/*.java"/>
+    </resource>
+    <resource dir="src/main/resources" filtered="false" packaged="false">
+     	<include name="**/excel/*.xml"/>
+        <include name="**/*excel*.xml"/>
+        <include name="**/message/*excel*.properties"/>
+        <exclude name="**/spring/context-message.xml" merged="true"/>
+    </resource>
+    <resource dir="src/test/java" filtered="true" packaged="true">
+      <include name="**/excel/**/*.java"/>
+    </resource>
+    <resource dir="src/main/webapp" filtered="false" packaged="false">
+      <include name="**/excel/**/*.*"/>
+      <exclude name="**/web.xml" merged="true"/>
+      <exclude name="**/anyframe.jsp" merged="true"/>
+    </resource>
+    <resource dir="src/main/webapp/WEB-INF/classes/excel" filtered="false" packaged="false">
+        <include name="**/*.xml"/>
+      </resource>
+    <resource dir="db" filtered="false" packaged="false">
+      <include name="**/*.sql"/>
+    </resource>
+  </resources>
+  <samples>true</samples>
+  <interceptor>
+    <class></class>
+  </interceptor>
+  <essential>false</essential>
+</plugin>

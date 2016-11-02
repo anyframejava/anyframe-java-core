@@ -1,0 +1,47 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<queryservice xmlns="http://www.anyframejava.org/schema/query/mapping" 
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" 
+	xsi:schemaLocation="http://www.anyframejava.org/schema/query/mapping http://www.anyframejava.org/schema/query/mapping/anyframe-query-mapping-1.0.xsd ">
+
+	<queries>
+		<query id="findXPScheduleList" isDynamic="true" mappingStyle="upper">
+			<statement>
+			<!--np-query-findXPScheduleList-START-->
+			SELECT SCHD_ID, USER_ID, SCHD_TITLE, SCHD_CONTENTS, SCHD_STARTDATE, SCHD_ENDDATE, SCHD_PLACE
+			FROM XP_SCHD
+			<!--Velocity-Support-findXPScheduleList-START-->
+			#if ($SEARCH_CONDITION.length() &gt; 0 &amp;&amp; "0" == $SEARCH_CONDITION)
+				WHERE SCHD_TITLE like '%' || :SEARCH_KEYWORD || '%'
+			#end
+			<!--Velocity-Support-findXPScheduleList-END-->
+
+			<!--np-query-findXPScheduleList-END-->
+			</statement>
+		</query>
+		<query id="createXPSchedule" isDynamic="true" mappingStyle="upper">
+			<statement>
+			<!--np-query-createXPSchedule-START-->
+			INSERT INTO XP_SCHD
+			(SCHD_ID, USER_ID, SCHD_TITLE, SCHD_CONTENTS, SCHD_STARTDATE, SCHD_ENDDATE, SCHD_PLACE)
+			VALUES('SCHD-'|| NEXT VALUE FOR XP_SCHD_ID_SEQ, :USER_ID, :SCHD_TITLE, :SCHD_CONTENTS, :SCHD_STARTDATE, :SCHD_ENDDATE, :SCHD_PLACE)		
+
+			<!--np-query-createXPSchedule-END-->
+			</statement>
+		</query>
+		<query id="updateXPSchedule" isDynamic="true" mappingStyle="upper">
+			<statement>
+				UPDATE XP_SCHD
+				SET
+				SCHD_TITLE =:SCHD_TITLE, SCHD_CONTENTS =:SCHD_CONTENTS
+				       , SCHD_STARTDATE =:SCHD_STARTDATE, SCHD_ENDDATE =:SCHD_ENDDATE, SCHD_PLACE =:SCHD_PLACE
+				WHERE SCHD_ID=:SCHD_ID
+			</statement>
+		</query>
+		<query id="removeXPSchedule" isDynamic="true" mappingStyle="upper">
+			<statement>
+				DELETE FROM XP_SCHD
+				WHERE SCHD_ID=:SCHD_ID
+			</statement>
+		</query>
+	</queries>
+</queryservice>

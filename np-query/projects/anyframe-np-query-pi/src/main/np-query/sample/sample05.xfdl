@@ -1,0 +1,131 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<FDL version="1.5">
+  <TypeDefinition url="..\default_typedef.xml"/>
+  <Form id="Sample_validation" classname="SAMPL00050_2_정합성체크" position="absolute" titletext="Validation" onload="form_onload" left="0" top="0" width="1014" height="671">
+    <Layouts>
+      <Layout>
+        <Div id="div_search" taborder="0" left="0" top="0" right="0" height="99" style="border:1 solid #808080ff ;">
+          <Layouts>
+            <Layout>
+              <Combo id="Combo00" taborder="6" left="415" top="16" width="120" height="28" codecolumn="codecolumn" datacolumn="datacolumn">
+                <Dataset id="innerdataset">
+                  <ColumnInfo>
+                    <Column id="codecolumn" size="256"/>
+                    <Column id="datacolumn" size="256"/>
+                  </ColumnInfo>
+                  <Rows>
+                    <Row>
+                      <Col id="codecolumn">1</Col>
+                      <Col id="datacolumn">의뢰</Col>
+                    </Row>
+                    <Row>
+                      <Col id="codecolumn">2</Col>
+                      <Col id="datacolumn">되의뢰</Col>
+                    </Row>
+                  </Rows>
+                </Dataset>
+              </Combo>
+              <Edit id="Edit00" taborder="7" left="146" top="16" width="120" height="28"/>
+              <Button id="Button00" taborder="8" text="조회" left="884" top="12" width="120" height="31" onclick="div_search_Button00_onclick"/>
+              <Static id="Static00" taborder="9" text="환자명" left="14" top="16" width="120" height="28" style="align:right middle;"/>
+              <Static id="Static01" taborder="10" text="환자구분" left="278" top="16" width="120" height="28" style="align:right middle;"/>
+              <Calendar id="Calendar00" taborder="11" left="617" top="16" width="120" height="28"/>
+            </Layout>
+          </Layouts>
+        </Div>
+        <Static id="Static01" taborder="1" text="h20" left="0" top="99" right="0" height="20" style="background:gainsboro;align:center middle;" visible="false"/>
+        <Div id="div_body" taborder="2" left="0" top="119" right="0" bottom="0" style="border:1 solid #808080ff ;">
+          <Layouts>
+            <Layout>
+              <Grid id="Grid00" taborder="0" binddataset="ds_list" useinputpanel="false" left="0" top="0" right="0" bottom="0" autoenter="select">
+                <Formats>
+                  <Format id="default">
+                    <Columns>
+                      <Column size="80"/>
+                      <Column size="80"/>
+                      <Column size="80"/>
+                      <Column size="80"/>
+                      <Column size="80"/>
+                      <Column size="80"/>
+                    </Columns>
+                    <Rows>
+                      <Row size="24" band="head"/>
+                      <Row size="24"/>
+                    </Rows>
+                    <Band id="head">
+                      <Cell text="Column0"/>
+                      <Cell col="1" text="Column1"/>
+                      <Cell col="2" text="Column2"/>
+                      <Cell col="3" text="Column3"/>
+                      <Cell col="4" text="Column4"/>
+                      <Cell col="5" text="Column5"/>
+                    </Band>
+                    <Band id="body">
+                      <Cell edittype="normal" text="bind:Column0"/>
+                      <Cell col="1" edittype="normal" text="bind:Column1"/>
+                      <Cell col="2" edittype="normal" text="bind:Column2"/>
+                      <Cell col="3" edittype="normal" text="bind:Column3"/>
+                      <Cell col="4" edittype="normal" text="bind:Column4"/>
+                      <Cell col="5" edittype="normal" text="bind:Column5"/>
+                    </Band>
+                  </Format>
+                </Formats>
+              </Grid>
+              <Button id="Button00" taborder="1" text="저장" left="884" top="12" width="120" height="31" onclick="div_body_Button00_onclick"/>
+            </Layout>
+          </Layouts>
+        </Div>
+      </Layout>
+    </Layouts>
+    <Objects>
+      <Dataset id="ds_list" firefirstcount="0" firenextcount="0" useclientlayout="false" updatecontrol="true" enableevent="true" loadkeymode="keep" loadfiltermode="keep" reversesubsum="false" canrowposchange="ds_list_canrowposchange" cancolumnchange="ds_list_cancolumnchange">
+        <ColumnInfo>
+          <Column id="Column0" type="STRING" size="256"/>
+          <Column id="Column1" type="STRING" size="256"/>
+          <Column id="Column2" type="STRING" size="256"/>
+          <Column id="Column3" type="STRING" size="256"/>
+          <Column id="Column4" type="STRING" size="256"/>
+          <Column id="Column5" type="STRING" size="256"/>
+        </ColumnInfo>
+        <Rows>
+          <Row/>
+          <Row/>
+        </Rows>
+      </Dataset>
+    </Objects>
+    <Bind>
+      <BindItem id="item13" compid="Div00.Edit11" propid="value" datasetid="ds_list" columnid="Column0"/>
+      <BindItem id="item14" compid="div_00.mae_rsrno" propid="value" datasetid="ds_list" columnid="Column6"/>
+      <BindItem id="item15" compid="div_00.mae_ms" propid="value" datasetid="ds_list" columnid="MS"/>
+      <BindItem id="item16" compid="div_00.mae_hm" propid="value" datasetid="ds_list" columnid="HM"/>
+    </Bind>
+    <Script type="xscript5.0"><![CDATA[include "lib::comForm.xjs";
+include "lib::comValidation.xjs";
+
+//조회
+this.div_search_Button00_onclick = function(obj:Button,  e:nexacro.ClickEventInfo)
+{
+	var valid = 	
+		[
+			{component:this.div_search.Edit00, title:this.div_search.Static00}
+			,{component:this.div_search.Combo00, title:this.div_search.Static01}
+			,{component:this.div_search.Calendar00, title:"조회기간"}
+		];
+		
+	if (!this.gfn_validation(valid)) return false;
+}
+
+//저장
+this.div_body_Button00_onclick = function(obj:Button,  e:nexacro.ClickEventInfo)
+{
+	var valid = 	
+		[
+			{component:this.div_body.Grid00, bindcolumn:"Column0"}
+			,{component:this.div_body.Grid00, bindcolumn:"Column1", title:"환자구분"}
+			,{component:this.div_body.Grid00, bindcolumn:"Column2"}
+		];
+		
+	if (!this.gfn_validation(valid)) return false;	
+}]]></Script>
+  </Form>
+</FDL>

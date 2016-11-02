@@ -1,0 +1,39 @@
+	<section id="jquery_autocomplete_sec001">
+		<title>Autocomplete</title>
+		<para>autocomplete는 사용자가 입력한 prefix를 가지고 자동 완성 기능을 제공하는 UI컴포넌트이다.</para>
+		<para>아래 자바스크립 코드는 게시물 리스트의 검색에 autocomplete 기능을 적용한 내용이다. success 부분과 select 부분의 코드활용을 주목하기 바란다.</para>
+		<programlisting><![CDATA[
+$("#searchKeyword").autocomplete({
+    source: function( request, response ) {
+        $.ajax({
+            type : 'POST',
+            url : "<c:url value='/jqueryMovie.do?method=getMovieTitleList' />",
+            contentType : 'application/x-www-form-urlencoded;charset=UTF-8',
+            //data : jsonData,
+            data: {
+                term: request.term 
+	            },
+	            dataType: 'json',
+	            success : function(data){
+	                    response($.map(data.autoData, function(item) {
+                            return {
+                                      label: item.title,
+                                      value: item.title
+                                   }
+                              }));
+                        },
+                error : function(data) {
+                        alert("[autoComplete error] Sending data to designated url is not working.  Data : " + data);
+                      }
+        });
+});]]></programlisting>
+		<para>다음은 Autocomplete을 적용한 결과이다.</para>
+		<mediaobject>
+			<imageobject>
+				<imagedata fileref="../image/jquery/jquery_autocomplete.png"	align="center" />
+			</imageobject>
+			<textobject>
+				<phrase>Autocomplete 적용 결과</phrase>
+			</textobject>
+		</mediaobject>
+	</section>

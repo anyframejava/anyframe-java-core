@@ -1,0 +1,295 @@
+<chapter id="core_springmvc_internationalization">
+	<title>Internationalization</title>
+
+	<para>
+	    Spring MVC provides various LocaleResolvers for internationalization based on user locale.
+		When a request comes in, the DispatcherServlet looks for a LocaleResolver, and if it finds one it tries to use it to set the locale.
+		Using the RequestContext.getLocale() method, you can always retrieve the locale that was resolved by the LocaleResolver.
+	</para>
+
+	<section id="core_springmvc_internationalization_multilanguage">
+    	<title>Internationalization</title>
+
+    	<para>
+    		Spring MVC has LocaleResolver for internationalization. 
+            When a specific LocaleResolver is not defined, AcceptHeaderLocaleResolver is used as default. 
+            When users select language, you can use CookieLocaleResolver or SessionLocaleResolver. 
+            Spring MVC provides MessageSource to extract message resource to be shown on web application view, 
+            and provides tag library that can show message extracted from MessageSource on view. 
+            The below shows how to use this function.
+    	</para>
+    	<itemizedlist>
+      		<listitem>
+        	<para>Step 1 : Make properties file </para>
+	        <para>
+	        	Create properties file for each language to be shown.
+	        	Can be easily set by using PropertiesEditor eclipse plugin. 
+        		The following is a part of message-user_ko.properties, message-user_en.properties file.
+        	</para>
+
+			<itemizedlist>
+				<listitem>
+	            <para>
+	            	Korean (message-user_ko.properties)
+	            	<programlisting language="java">title.user.form = Enter your information.</programlisting>
+	            </para>
+	          	</listitem>
+	
+	          	<listitem>
+	            <para>
+	            	English, Default (message-user.properties, message-user_en.properties)
+	            	<programlisting language="java">title.user.form = Input your information</programlisting>
+	            </para>
+	          	</listitem>
+			</itemizedlist>
+			</listitem>
+
+      		<listitem>
+        		<para>Step 2 : MessageSource bean definition</para>
+
+        		<para>
+        			The following is a part of context-user.xml file that defines messageSource.
+        			<programlisting language="xml"><![CDATA[<bean id="messageSource"
+   class="org.anyframe.common.context.support.EncodingResourceBundleMessageSource">
+   <property name="]]><emphasis role="bold">basenames</emphasis>"<![CDATA[>
+      <list>
+        <!-- Register properties file name. 
+         Find message.properties file as default when not registered. -->
+         <]]><emphasis role="bold">value</emphasis><![CDATA[>]]><emphasis 
+         role="bold">message-user</emphasis><![CDATA[</]]><emphasis
+              role="bold">value</emphasis><![CDATA[>
+      </list>
+   </property>
+</bean>]]></programlisting>
+				</para>
+			</listitem>
+
+			<listitem>
+				<para>Step 3: Use message in JSP</para>
+
+				<para>
+					The following is a part of userForm.jsp file that has declared tag library provided by Spring to use registered message in JSP.
+					<programlisting
+					language="xml"><![CDATA[<%@ taglib prefix="spring" uri="http://www.springframework.org/tags"%>]]></programlisting>
+				</para>
+
+	        	<para>
+		        	<![CDATA[You can show message by using <spring:message> tag as the following.]]>
+					<programlisting
+					language="xml"><![CDATA[<spring:message code="title.user.form"></spring:message>]]></programlisting>
+				</para>
+
+       	 		<para>spring:message tag property is as follows. </para>
+
+		        <informaltable>
+		          <tgroup cols="2">
+		                <colspec colnum="1" colname="col1" colwidth="2*"/>
+		                <colspec colnum="2" colname="col2" colwidth="8*"/>
+		            <thead>
+		              <row>
+		                <entry align="center">Property</entry>
+		                <entry align="center">Description</entry>
+		              </row>
+		            </thead>
+		            <tbody>
+		              <row>
+		                <entry>arguments</entry>
+		                <entry>Set optional message arguments for this tag, 
+		                as a (comma-)delimited String (each String argument can contain JSP EL), an Object array (used as argument array), 
+		                or a single Object (used as single argument).
+		                </entry>
+		              </row>
+		              <row>
+		                <entry>argumentSeparator</entry>
+		                <entry>The separator character to be used for splitting the arguments string value; defaults to a 'comma' (',').</entry>
+		              </row>
+		              <row>
+		                <entry>code</entry>
+		                <entry>The code (key) to use when looking up the message. If code is not provided, the text attribute will be used.</entry>
+		              </row>
+		              <row>
+		                <entry>htmlEscape</entry>
+		                <entry>Set HTML escaping for this tag, as boolean value. Overrides the default HTML escaping setting for the current page.</entry>
+		              </row>
+		              <row>
+		                <entry>javaScriptEscape</entry>
+		                <entry>Set JavaScript escaping for this tag, as boolean value. Default is false.</entry>
+		              </row>
+		              <row>
+		                <entry>message</entry>
+		                <entry>
+		                	A MessageSourceResolvable argument (direct or through JSP EL). 
+		                	Fits nicely when used in conjunction with Spring's own validation error classes which all implement the MessageSourceResolvable interface. 
+		                	For example, this allows you to iterate over all of the errors in a form, 
+		                	passing each error (using a runtime expression) as the value of this 'message' attribute, 
+		                	thus effecting the easy display of such error messages. 
+		                </entry>
+		              </row>
+		              <row>
+		                <entry>scope</entry>
+		                <entry>The scope to use when exporting the result to a variable. This attribute is only used when var is also set. Possible values are page, request, session and application</entry>
+		              </row>
+		              <row>
+		                <entry>text</entry>
+		                <entry>Default text to output when a message for the given code could not be found. If both text and code are not set, the tag will output null.</entry>
+		              </row>
+		
+		              <row>
+		                <entry>var</entry>		
+		                <entry>The string to use when binding the result to the page, request, session or application scope. 
+		                If not specified, the result gets outputted to the writer (i.e. typically directly to the JSP).</entry>
+		              </row>
+		            </tbody>
+		          </tgroup>
+		        </informaltable>
+			</listitem>
+		</itemizedlist>
+
+		<section id="core_springmvc_internationalization_multilanguage_localeresolver">
+			<title>Locale change using LocaleResolver</title>
+
+			<para>
+				When you wish to change locale using LocaleResolver, 
+				you can inject defined LocaleResolver and change locale through setLocale() method. 
+				Also, you can find out Locale that is currently set in request using resolveLocale(request) method. 
+				<programlisting language="java">@Controller
+public class UserController {
+	@Inject
+    LocaleResolver localeResolver;
+
+    protected ModelAndView changeLocale(HttpServletRequest request
+                            , HttpServletResponse response) throws Exception {
+        //Get locale set in request parameter "locale" by user <![CDATA[(ex> en, ko)]]>
+        Locale locale = new Locale(request.getParameter("locale"));
+        //Set locale in localeResolver
+       <emphasis role="bold"> localeResolver.setLocale(request, response, locale);</emphasis>
+        //Check current locale
+        System.out.println("current locale from locale resolver ====== " + 
+            <emphasis role="bold">localeResolver.resolveLocale(request)</emphasis>);
+        return new ModelAndView("/jsp/result.jsp");
+    }
+
+...</programlisting>
+			</para>
+		</section>
+
+		<section id="core_springmvc_internationalization_multilanguage_localechangeinterceptor">
+			<title>Change Locale using LocaleChangeInterceptor</title>
+
+			<para>
+				You can enable changing of locales by adding the LocaleChangeInterceptor to one of the handler mappings.
+				It will detect a parameter in the request and change the locale. 
+				It calls setLocale() on the LocaleResolver that also exists in the context. 
+				The following example shows that calls to '/userlist.do' resources containing a parameter named 'locale' will now change the locale. 
+				So, for example, a request for the following URL, http://myapp/userList.do?locale=en will change the site language to English.
+      			<programlisting language="xml"><![CDATA[<bean id="]]><emphasis role="bold">localeResolver</emphasis>"
+      class="org.springframework.web.servlet.i18n.<emphasis role="bold">CookieLocaleResolver</emphasis><![CDATA["/>
+      
+<bean id="]]><emphasis role="bold">localeChangeInterceptor</emphasis>"
+      class="org.springframework.web.servlet.i18n.<emphasis role="bold">LocaleChangeInterceptor</emphasis><![CDATA[">
+    <property name="paramName" value="locale"/>
+</bean>
+
+<bean id="urlMapping"
+      class="org.springframework.web.servlet.handler.SimpleUrlHandlerMapping">
+    <property name="interceptors">
+        <list>
+            <ref bean="]]><emphasis role="bold">localeChangeInterceptor</emphasis><![CDATA["/>
+        </list>
+    </property>
+    <property name="mappings">
+        <value>/userlist.do=getUserListController</value>
+    </property>
+</bean>]]></programlisting>
+			</para>
+
+      		<para>
+      		When set as above, application locale is changed to 'English' when there is /list.do?locale=en request.
+      		</para>
+		</section>
+	</section>
+
+	<section id="core_springmvc_internationalization_localeresolver">
+    	<title>LocaleResolver</title>
+
+		<para>
+			With Spring MVC, you can get Locale using LocaleResolver. These LocaleResolvers include the following.
+    	</para>
+
+		<section id="core_springmvc_internationalization_localeresolver_acceptheader">
+		<title>AcceptHeaderLocaleResolver</title>
+	
+			<para>
+				This locale resolver inspects the accept-language header in the request that was sent by the client (e.g., a web browser). 
+				Usually this header field contains the locale of the client's operating system.
+	      		<programlisting language="xml"><![CDATA[<bean id="localeResolver"
+	            class="org.springframework.web.servlet.i18n.]]><emphasis
+	        	role="bold">AcceptHeaderLocaleResolver</emphasis><![CDATA[" />]]></programlisting>
+	        </para>
+	
+	      	<para>It is impossible for AcceptHeaderLocaleResolver to change locale using setLocale() method.</para>
+	    </section>
+
+	    <section id="core_springmvc_internationalization_localeresolver_cookie">
+		<title>CookieLocaleResolver</title>
+	
+			<para>
+				This locale resolver inspects a Cookie that might exist on the client to see if a locale is specified. 
+				If so, it uses the specified locale. 
+				Using the properties of this locale resolver, you can specify the name of the cookie as well as the maximum age. 
+				Find below an example of defining a CookieLocaleResolver.
+			</para>		
+	
+			<programlisting language="xml"><![CDATA[<bean id="localeResolver"
+    class="org.springframework.web.servlet.i18n.]]><emphasis role="bold">CookieLocaleResolver</emphasis><![CDATA[" >
+    <property name="cookieName" value="clientlanguage"/>    
+    <property name="cookieMaxAge" value="100000"/>
+    <property name="cookiePath" value="web/cookie"/>
+</bean>]]></programlisting>
+			<para>The following properties can be set.</para>
+			<informaltable>
+		        <tgroup cols="3">
+		                <colspec colnum="1" colname="col1" colwidth="2*"/>
+		                <colspec colnum="2" colname="col2" colwidth="2*"/>
+		                <colspec colnum="3" colname="col3" colwidth="6*"/>
+		          <thead>
+		            <row>
+		              <entry align="center">Property</entry>
+		              <entry align="center">Default</entry>
+		              <entry align="center">Description</entry>
+		            </row>
+		          </thead>
+		          <tbody>
+		            <row>
+		              <entry>cookieName</entry>
+		              <entry>classname + LOCALE</entry>
+		              <entry>The name of the cookie</entry>
+		            </row>
+		            <row>
+		              <entry>cookieMaxAge</entry>
+		              <entry>Integer.MAX_INT</entry>
+		              <entry>The maximum time a cookie will stay persistent on the client. If -1 is specified, the cookie will not be persisted; it will only be available until the client shuts down his or her browser.</entry>
+		            </row>
+		            <row>
+		              <entry>cookiePath</entry>
+		              <entry>/</entry>
+		              <entry>Limits the visibility of the cookie to a certain part of your site. When cookiePath is specified, the cookie will only be visible to that path and the paths below it.</entry>
+		            </row>
+		          </tbody>
+		        </tgroup>
+			</informaltable>
+    	</section>
+
+		<section id="core_springmvc_internationalization_localeresolver_session">
+		<title>SessionLocaleResolver</title>
+
+			<para>
+				The SessionLocaleResolver allows you to retrieve locales from the session that might be associated with the user's request.
+				<programlisting language="xml"><![CDATA[<bean id="localeResolver"
+    class="org.springframework.web.servlet.i18n.]]><emphasis role="bold">SessionLocaleResolver</emphasis><![CDATA[" />
+]]></programlisting>
+			</para>
+	    </section>    	
+	</section>
+</chapter>
+ 

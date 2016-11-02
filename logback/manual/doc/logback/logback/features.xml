@@ -1,0 +1,139 @@
+<chapter id="logback_logback_features">
+	<title>Features</title>
+	<para> Logback에서 새롭게 제공하는 기능은 다음과 같다. logback.xml과 같은 설정파일만을 수정함으로써 간단하게 기능을 적용할 수 있다.</para>
+	
+	<itemizedlist>
+		<listitem><para>설정파일의 Dynamic Reloading 지원</para></listitem>
+		<listitem><para>설정파일의 조건부 처리 기능</para></listitem>
+		<listitem><para>로그파일에 대한 자동압축, 자동 삭제 기능 제공</para></listitem>
+		<listitem><para>런타임에 설정한 값에 따라 로그를 분리하여 처리할 수 있는 SiftingAppender 제공</para></listitem>
+		<listitem><para>groovy 언어로 설정파일 작성 기능(logback.groovy)</para></listitem>
+		<listitem><para>FileAppender 사용 시 다수의 JVM이 동시에 하나의 파일에 로그를 남길 수 있는 prudent mode를 지원</para></listitem>
+		<listitem><para>다양한 조건에 따른 로깅처리 여부를 결정할 수 있는 Filter 제공</para></listitem>
+	</itemizedlist>
+	<para> 위 기능들 중 중요 기능에 대해서 좀 더 알아보도록 한다.</para>
+	<section id="logback_logback_features_dynamicreloading">
+		<title>Dynamic Reloading</title>
+		<para>
+      		Logback은 자체적으로 설정 파일을 reloading 할 수 있는 기능을 제공한다. 
+      		설정파일의 &lt;configuration&gt; 의 scan 속성과 scanPeriod 속성을 설정함으로써 Dynamic Reoloading을 설정할 수 있다.
+      		scanPeriod 속성을 명시하지 않는 경우 디폴트 값은 1분이 적용된다. 
+      		scanPeriod에 적용할 수 있는 단위는 milliseconds, seconds, minutes, hours가 있고 단위를 생략하는 경우 경우 디폴트 단위는 milliseconds가 적용이 된다.  
+      		<programlisting language="xml"><![CDATA[    <]]><emphasis role="bold">configuration scan="true" scanPeriod="30 seconds"</emphasis><![CDATA[>
+        .....
+    </configuration>]]></programlisting>
+      		주의할 점은 Logback은 로그 수행요청이 있을 경우에 설정파일에 명시한 시간간격을 체크 하여 설정파일을 reload 하므로, 로그 요청이 수행되어야 하고 로그가 호출되는 약간의 시간을 추가로 필요로 한다는 점이다.  
+		</para>
+	</section>
+	
+	<section id="logback_logback_features_conditionalprocessing">
+		<title>Conditional Processing of Configuration Files</title>
+		<para>
+     		Logback은 하나의 설정파일을 다양한 조건에 따라 처리할 수 있는 &lt;if&gt;, &lt;then&gt;, &lt;else&gt; 태그를 제공한다. 
+     		해당 조건 태그들은 중첩해서 사용가능하고 설정파일의 어느위치에도 올 수 있다. 
+     		해당 기능을 사용하기 위해서 &lt;if&gt; 태그의 condition 속성에 expression을 설정해야하는데 expression을 작성하는 방식은 Java언어를 이용하는 방법과, groovy언어를 이용하는 방법이 존재한다. 
+     		Java언어를 사용하기 위해서는 Janino 라이브러리(2.6 버전이상의 경우 Janino, commons-compiler), groovy언어를 사용하기 위해서는 groovy 런타임이 추가 라이브러리로 필요하다.
+     		
+     		<programlisting language="xml"><![CDATA[    <if condition='java or groovy conditional expression'> 
+        <then> 
+            ...
+        </then> 
+        <else>
+            ...
+        </else>
+    </if>]]></programlisting>  		  
+		</para>	
+	</section>
+	
+	<section id="logback_logback_features_archeiving">
+		<title>Archiving</title>
+		<para>
+      		Logback에서는 RollingFileAppender를 사용하는 경우 로깅이 완료된 파일에 대해서 자동으로 압축하는 기능을 지원한다. 
+      		압축기능을 설정하기 위해서는 &lt;fileNamePattern&gt;에 확장자를 zip, gz로 설정하면 압축기능을 설정할 수 있다. 
+      		또한 TimeBasedRollingPolicy를 사용하는 경우 maxhistory 설정을 통해서 보관할 로그파일의 개수를 설정할 수 있고 오래된 파일을 자동으로 삭제해주는 기능을 지원한다.
+      		<programlisting language="xml"><![CDATA[
+    <appender name="file" class="ch.qos.logback.core.rolling.RollingFileAppender"> 
+        <rollingPolicy class="ch.qos.logback.core.rolling.TimeBasedRollingPolicy"> ]]>
+            <emphasis role="bold">
+            &lt;fileNamePattern&gt; someFileName.log.zip (or gz) &lt;&#47;fileNamePattern&gt;&#10;</emphasis>
+            <emphasis role="bold">  &lt;maxHistory&gt;90&lt;&#47;maxHistory&gt;</emphasis><![CDATA[     
+        </rollingPolicy> 
+        ....
+    </appender>]]></programlisting>
+      fileNamePattern을 지정할 때 유의해야 하는 점은 날짜 형식을 파일명 혹은 폴더명으로 사용할 때 해당 OS지원하지 않는 특수문자가 포함되어서는 안된다는 점이다.		 
+		</para>
+	</section>
+	
+	<section id="logback_logback_configuration_pi">
+		<title>Logback Sample Configuration</title>
+		<!-- PI 에 대한 Loback.xml이 들어갈 부분  -->
+		<para>Logback Plugin에 의해 설치된 logback.xml에서 앞서 언급한 새로운 기능들이 적용된 부분에 대해서 알아보고자 한다.</para>
+		<para>
+		다음은 60초 간격으로 해당 설정 파일의 변경여부를 체크하고 변경된 설정파일을 적용하도록 한 설정이다.
+      	<programlisting language="xml"><![CDATA[
+    <]]><emphasis role="bold">configuration scan="true" scanPeriod="60 seconds"</emphasis><![CDATA[>
+        ...
+    </configuration>]]></programlisting>
+	</para>
+	<para>
+		다음은 loggingCondition이라는 property를 이용하여 설정된 값에 따라 appender 설정을 변경하는 설정이다. 
+		해당 appender에서는 로그 메시지와 함께 MDC에 있는 사용자 아이디, IP, 요청 URL 정보를 출력한다. 
+      	<programlisting language="xml"><![CDATA[    <property name="loggingCondition" value="ID"/>
+        <]]><emphasis role="bold">if condition='property("loggingCondition").equals("ID")'</emphasis><![CDATA[>
+            <]]><emphasis role="bold">then</emphasis><![CDATA[>
+                <!-- MDC에 저장된 사용자 아이디 값에 따라 로그를 분리하여 출력할 수 있는 SiftingAppender 설정-->
+                <appender name="file" class="ch.qos.logback.classic.sift.SiftingAppender">
+                    <discriminator>
+                        <key>userId</key>
+                        <defaultValue>guest</defaultValue>
+                    </discriminator>
+                    <sift>
+                        <appender name="id-${userId}" class="ch.qos.logback.core.FileAppender">
+                            <file>userId/${userId}.log</file>
+                            <encoder>
+                                <pattern>[%-5level] %d{yyyy-MM-dd HH:mm:ss} %logger %n%msg%n userId:%X{userId},clientIP:%X{remoteHost},requestURL:%X{requestURL}%n</pattern>
+                            </encoder>
+                        </appender>
+                    </sift>
+                </appender>
+            <]]><emphasis role="bold">/then</emphasis><![CDATA[>
+            <]]><emphasis role="bold">else</emphasis><![CDATA[>
+                <]]><emphasis role="bold">if condition='property("loggingCondition").equals("IP")'</emphasis><![CDATA[>
+                    <then>
+                    <!-- MDC에 저장된 IP값에 따라 로그를 분리하여 출력할 수 있는 SiftingApppender 설정-->
+                    <appender name="file" class="ch.qos.logback.classic.sift.SiftingAppender">
+                        <discriminator>
+                            <key>remoteHost</key>
+                            <defaultValue>unknownHost</defaultValue>
+                        </discriminator>
+                        <sift>
+                            <appender name="ip-${remoteHost}" class="ch.qos.logback.core.FileAppender">
+                                <file>ip/${remoteHost}.log</file>
+                                <encoder>
+                                    <pattern>[%-5level] %d{yyyy-MM-dd HH:mm:ss} %logger %n%msg%n userId:%X{userId},clientIP:%X{remoteHost},requestURL:%X{requestURL}%n</pattern>
+                                </encoder>
+                            </appender>
+                        </sift>
+                    </appender>
+                </then>
+    			
+                <]]><emphasis role="bold">else</emphasis><![CDATA[>
+                    <!-- 프로퍼티가 정의되어있지 않거나 해당 조건에 없는경우 매초 로그를 rolling하는 RollingFileAppender 설정 -->
+                    <appender name="file" class="ch.qos.logback.core.rolling.RollingFileAppender">
+                        <file>currentLog.log</file>
+                        <rollingPolicy class="ch.qos.logback.core.rolling.TimeBasedRollingPolicy">
+                            <fileNamePattern>logs/logFile.%d{yyyy-MM-dd HH.mm.ss}.log.zip</fileNamePattern>
+                            <maxHistory>30</maxHistory>
+                        </rollingPolicy>
+                        <encoder>
+                            <pattern>[%-5level] %d{yyyy-MM-dd HH:mm:ss} %logger %n%msg%n userId:%X{userId},clientIP:%X{remoteHost},requestURL:%X{requestURL}%n</pattern>
+                        </encoder>
+                    </appender>
+                <]]><emphasis role="bold">/else</emphasis><![CDATA[>
+            </if>
+        <]]><emphasis role="bold">/else</emphasis><![CDATA[>
+    </if>]]></programlisting>
+	</para>
+	</section>
+	
+</chapter>

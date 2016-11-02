@@ -1,0 +1,141 @@
+<?xml version="1.0" encoding="utf-8"?>
+
+<!DOCTYPE book PUBLIC "-//OASIS//DTD DocBook XML V4.5//EN" "http://www.oasis-open.org/docbook/xml/4.5/docbookx.dtd"
+[
+<!ENTITY tiles_tilesintegration_viewclass SYSTEM "integration/viewclass.xml">
+<!ENTITY tiles_tilesintegration_tilesconfigurer SYSTEM "integration/configurer.xml">
+<!ENTITY tiles_tilesintegration_tilesdefinition SYSTEM "integration/definition.xml">
+<!ENTITY tiles_apachetiles_features SYSTEM "apache/features.xml">
+<!ENTITY tiles_apachetiles_install SYSTEM "apache/installation.xml">
+<!ENTITY tiles_apachetiles_element SYSTEM "apache/element.xml">
+<!ENTITY tiles_apachetiles_basic SYSTEM "apache/basic.xml">
+<!ENTITY tiles_apachetiles_el SYSTEM "apache/el.xml">
+]
+>
+
+<!--
+		Licensed to the Apache Software Foundation (ASF) under one or more
+		contributor license agreements. See the NOTICE file distributed with
+		this work for additional information regarding copyright ownership.
+		The ASF licenses this file to you under the Apache License, Version
+		2.0 (the "License"); you may not use this file except in compliance
+		with the License. You may obtain a copy of the License at
+
+		http://www.apache.org/licenses/LICENSE-2.0 Unless required by
+		applicable law or agreed to in writing, software distributed under the
+		License is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR
+		CONDITIONS OF ANY KIND, either express or implied. See the License for
+		the specific language governing permissions and limitations under the
+		License.
+-->
+    
+<book lang="en">
+	<title>Anyframe Tiles Plugin</title>
+	
+	<bookinfo>
+		<copyright>
+			<year>2007-2014</year>
+			<holder>Samsung SDS</holder>
+		</copyright>
+		<releaseinfo>Version 1.1.1-SNAPSHOT</releaseinfo>
+
+		<productname>Anyframe Tiles Plugin</productname>
+
+		<authorgroup>
+			<corpauthor></corpauthor>
+		</authorgroup>
+
+		<mediaobject>
+			<imageobject>
+				<!-- logo 변경 -->
+				<imagedata fileref="../image/common/logo_pdf.jpg"/>
+			</imageobject>
+		</mediaobject>
+		<legalnotice>
+			<para>The copyright of this document is the property of Samsung SDS. Permission is granted to use this document for free only for the purpose of open source community activity.
+                The copyright holder should be clearly stated in case this document is copied or distributed, and changed contents should be specified.
+                Permission is not granted for the commercial use of the original document and its modification.      
+                Should there be parts considered to have errors in this document, please register the issue for which we will take proper action.
+			</para>
+		</legalnotice>
+	</bookinfo>
+	
+	<part id="tiles_introduction_part">
+		<title>Introduction</title>
+		<partintro id="tiles_introduction_part_intro">
+			<para>
+				tiles plugin is composed of sample codes to guide the definition of page layout based on Tiles (Apache Tiles 2.2.1) and reference libraries necessary to use these open sources.
+			</para>
+			<para role="introduction_title"><emphasis role="bold">Installation</emphasis></para>
+			<para>Install tiles plugin by entering the following command in the Command window.</para>
+			<programlisting language="java"><![CDATA[mvn anyframe:install -Dname=tiles]]></programlisting>
+			<para>
+				The installation result can be checked by using the installed (mvn anyframe:installed) or the jetty:run (mvn clean jetty:run) commands. 
+			</para>
+			<informaltable>
+				<caption>Dependent Plugins</caption>
+				<tgroup cols="2">
+					<colspec colnum="1" colname="col1" colwidth="5*" />
+					<colspec colnum="2" colname="col2" colwidth="5*" />
+					<thead>
+						<row>
+							<entry align="center">Plugin Name</entry>
+							<entry align="center">Version Range</entry>
+						</row>
+					</thead>
+					<tbody>
+						<row>
+							<entry align="center"><ulink url="http://dev.anyframejava.org/docs.en/anyframe/plugin/essential/core/1.6.1-SNAPSHOT/reference/htmlsingle/core.html">core</ulink></entry>
+							<entry align="center" valign="middle">2.0.0 > * > 1.4.0</entry>
+						</row>
+					</tbody>
+				</tgroup>
+			</informaltable>
+		</partintro>
+	</part>	
+	
+	<part id="tiles_tilesintegration_part">
+		<title>Tiles Integration</title>
+		<partintro>
+			<para>
+    		Spring MVC provides viewClasses that support Tiles1 and Tiles2. This manual will explain how to connect with Tiles2,  
+    		and for the basic contents on viewResolver, refer to the <link linkend="foundation_springmvc_configuration_actionservletxml_viewresolver">View Resolver</link> definition part of Core Plugin >> Spring MVC >> Configuration. 
+    		To connect Spring MVC and Tiles2, JDK1.5 and above, Tiles 2.0.X and above, Commons BeanUtils, Commons Digester, and Commons Logging are needed. 
+    		To connect with Tiles2, the following procedures should be followed.
+    	</para>
+    	
+    	<itemizedlist>
+    		<listitem>
+    			<para>Define Tiles view class</para>
+    		</listitem>
+    		<listitem>
+    			<para>Define TilesConfigurer</para>
+    		</listitem>
+    		<listitem>
+    			<para>Create Tiles definition file</para>
+    		</listitem>
+    	</itemizedlist>
+		</partintro>
+		&tiles_tilesintegration_viewclass;
+		&tiles_tilesintegration_tilesconfigurer;
+		&tiles_tilesintegration_tilesdefinition;
+	</part>
+	
+	<part id="tiles_apachetiles">
+		<title>Apache Tiles</title>
+		<partintro>
+			<para>
+			Apache Tiles is the Template Framework that can simply define page layout when Web Applications are developed. 
+			Tiles complete the page when the components of Tiles defined by developers are executed. 
+			These components of Tiles can be easily defined using Tiles Definition xm. 
+			It can reduce overlapping in page definition and increase reusability. Anyframe version 4.5.0 and above use Apache Tiles version 2.2, 
+			and this chapter will cover Tiles.
+		</para>
+		</partintro>
+		&tiles_apachetiles_features;
+		&tiles_apachetiles_install;
+		&tiles_apachetiles_element;
+		&tiles_apachetiles_basic;
+		&tiles_apachetiles_el; 
+	</part>
+</book>

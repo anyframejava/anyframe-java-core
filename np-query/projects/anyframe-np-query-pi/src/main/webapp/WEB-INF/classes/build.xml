@@ -1,0 +1,52 @@
+<?xml version="1.0"?>
+
+<project name="SPP_WAS_Apps" default="init" basedir=".">
+        
+  <!-- Import file -->    
+  <property file="build.properties"/>
+  <property name="java.src.dir" value="${ITEM_ROOTDIR}/workspace" />
+  <property name="build.dir" value="${ITEM_ROOTDIR}/builds" />
+  <property name="deploy.dir" value="${apps.deploy.dir}/WEB-INF/classes" />
+
+  <echo> ${ant.project.name} 빌드 시작</echo>
+
+  <path id="dev.classpath">
+      <fileset dir="${apps.deploy.dir}/WEB-INF/lib">
+        <include name="*.jar" />
+      </fileset>
+      <fileset dir="${was.home.dir}/lib">
+        <include name="*.jar" />
+      </fileset>
+      <pathelement path="${build.dir}" />
+  </path>
+
+  <target name="init">
+    <echo message="Init Ant" /> 
+  </target>
+  
+  <target name="build.apps" depends="" description="Compile">
+      <delete dir="${build.dir}" />
+      <mkdir  dir="${build.dir}" />   
+      <echo>컴파일 ${ant.project.name}</echo>
+      <javac srcdir="${java.src.dir}" destdir="${build.dir}"
+           includes="**/*.java" debug="true" includeantruntime="false">
+        <classpath refid="dev.classpath" />
+        <compilerarg value="-Xlint:unchecked"/>
+      </javac>   
+  </target>
+    
+  <target name="dev.deploy" depends="build.java" description="DeveloperServ Deploy">
+    <echo>복사 ${was.deploy.dir}/${name}</echo>
+    <sync todir="${deploy.dir}">
+      <fileset dir="${build.dir}">
+          <include name="**/*.*"/>
+      </fileset>
+    </sync>
+  </target>
+
+  <target name="clean" description="Clear BuildDir, DeployDir.">
+      <echo>삭제 ${build.dir}</echo>
+      <delete dir="${build.dir}"></delete>
+  </target>
+
+</project>

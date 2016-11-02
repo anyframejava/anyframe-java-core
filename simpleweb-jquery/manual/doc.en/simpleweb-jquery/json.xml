@@ -1,0 +1,393 @@
+<chapter id="simpleweb_jquery_develop_grid">
+	<title>jqgrid</title>
+		<para>
+			Jqgrid is jQuery Plugin for showing list. 
+			Below is part of list.jsp file showing the list added by installing simpleweb plugin. 
+		</para>
+		<programlisting language="java"><![CDATA[jQuery("#grid").jqGrid( 
+	]]><emphasis role="bold"><![CDATA[url: "<c:url value='/simplejson.do?layout=jqueryLayout&service=simplewebJqueryMovieFinder.getPagingList(searchvo)
+		&viewName=jsonView' />"]]></emphasis><![CDATA[,
+	mtype:'POST',
+	datatype : "json",
+	//column name
+	colNames : [ '<anyframe:message code="movie.genre" />','id','<anyframe:message code="movie.title" />'...],
+	jsonReader: {repeatitems: false},
+	//data entered in each column
+	colModel : [ 
+	{name : 'genre.name', index : 'genre.name', align : 'center'}, {key : true, name : 'movieId', hidden : true}...],
+	width : 780, height : 69,	scroll : false, forceFit:true,	multiselect : true, viewrecords : true,	
+	//number of rows shown
+	rowNum : 3, 
+	sortable : true,
+	
+	//error processing
+	loadError: function(xhr,st,err) {
+		alert('<anyframe:message code="error.moviefinderimpl.getpaginglist" />'); 
+	}, 
+	
+	//cell double click event processing
+	]]><emphasis role="bold"><![CDATA[ondblClickRow: function(rowId) {
+		rowData = jQuery("#grid").getRowData(rowId);
+		jQuery("#getLink").attr("href",
+		   "<c:url value='/simplejsoncommon.do?layout=jqueryLayout&service=simplewebJqueryMovieService.get(movieId)&
+		   tiles=body:/WEB-INF/jsp/simpleweb-jquery/moviefinder/movie/form.jsp&
+		   initdataService=simplewebJqueryGenreService.getDropDownGenreList()&
+		   initdataResult=genreList&movieId=' />" + rowData.movieId);
+		document.getElementById("getLink").focus();
+    }]]></emphasis><![CDATA[
+});]]></programlisting>
+	<para>
+		jqgrid defines the url for list output by the “url” property.   
+		The request is sent in Get method, 
+		so properties needed for SimpleWeb common controller
+		should be sent by setting as the parameter without link tag or submit tag. 
+		In this case, layout, service, and tiles should be developed in the same way as previous tags. 
+		
+		However, for the initial data setting that are valuelist of init tag 
+		and are defined as key, value pair, we send as “initdataResult” and “initdataService” value for the appropriate key.  
+		In case JSON object is used, the returned viewName should be defined as "jsonView."
+		
+	</para>
+	<para>
+		The above code processes cell double click event by using a callback function named ondbClickRow. 
+		Simpleweb Sample Application implements a logic 
+		that shows detailed information of related cell in popup.  
+		Spring JS function cannot be called within jQuery function, 
+		so an arbitrary link named “getLink” is made 
+		to show popup when href property and event occurs. 
+		Next is a part of getLink and Spring JS code defined in JSP. 
+	</para>
+	<programlisting language="java"><![CDATA[<a id="getLink" name="getLink"></a>
+<script type="text/javascript"> 
+ Spring.addDecoration(new Spring.AjaxEventDecoration({
+	   elementId: getLink,
+	   event: "onfocus",
+	   popup: true,
+	   params: {fragments:"body"}
+	   }));
+</script>]]></programlisting>
+	<para>
+		The script code for jqgrid is completed as above.  
+		List is showed by using the below table. 
+	</para>
+	<programlisting language="java"><![CDATA[<table id="grid" class="scroll" cellpadding="0" cellspacing="0"><tr><td/></tr></table>]]></programlisting>
+	<para>
+		The following is a figure of the list implemented in jqgrid.
+	</para>
+	<mediaobject>
+		<imageobject>
+			<imagedata align="center" fileref="../image/simpleweb/simpleweb_json_jqgrid.jpg" />
+		</imageobject>
+	</mediaobject>
+	<para>
+		※ If you try to show too much data at once when developing the list using jqgrid, there may be a long delay or the browser can stop. 
+		So, the data length should be less than 100, and if there is too much data, pager should be used to process paging.
+	</para>
+</chapter>
+<chapter id="simpleweb_jquery_develop_quickpager">
+		<title>quickpager</title>
+		<para>
+			jqgrid provides pager for processing paging. 
+			For pager output similar to pagenavigaor in Anyframe, extend quickpager. 
+			To use quickpager, set paging information in the loadComplete function of the list script and click search button to fire event.  
+			The related jQuery code is as below.
+		</para>
+		<programlisting language="java"><![CDATA[jQuery("#grid").jqGrid( 
+	{
+		...
+		loadComplete : function(xhr) {
+			$("#]]><emphasis role="bold"><![CDATA[pagination]]></emphasis><![CDATA[").quickPager( {
+	    		pageSize: "3",
+	    		pageUnit: "3",
+	    		//id transmitting the page index
+	    		pageIndexId: ]]><emphasis role="bold"><![CDATA["pageIndex"]]></emphasis><![CDATA[,
+	    		//search botton’s id
+	    		searchButtonId: ]]><emphasis role="bold"><![CDATA["searchMovies"]]></emphasis><![CDATA[, 
+	    		currentPage: jQuery("#grid").getGridParam("page"),
+	    		totalCount: jQuery("#grid").getGridParam("records"),
+	    		searchUrl: "#"
+	    		});
+	    }
+		...
+	});
+$("#]]><emphasis role="bold"><![CDATA[searchMovies]]></emphasis><![CDATA[").click( function() {
+	]]><emphasis role="bold"><![CDATA[jQuery("#grid").setGridParam({page:$("#pageIndex").val()});]]></emphasis><![CDATA[
+	jQuery("#grid").setPostData({searchKeyword:$("#searchKeyword").val(), nowPlayingCondition:$("#nowPlayingCondition").val()});
+	jQuery("#grid").setGridParam({
+	url:"<c:url value='/simplejson.do?layout=jqueryLayout&service=simplewebJqueryMovieFinder.getPagingList(searchvo)&viewName=jsonView' />"})
+			.trigger("reloadGrid");
+});]]></programlisting>
+			<para>Mark div area as below in output pagenavigator part when script code is developed as above.</para>
+			<programlisting language="java"><![CDATA[<div id=".]]><emphasis role="bold"><![CDATA[boardNavigation]]></emphasis><![CDATA[">
+	<input type="hidden" id=]]><emphasis role="bold"><![CDATA["pageIndex"]]></emphasis><![CDATA[ name="pageIndex" value="1" />
+	<div id="]]><emphasis role="bold"><![CDATA[pagination]]></emphasis><![CDATA[" class="]]><emphasis role="bold"><![CDATA[pagination]]></emphasis><![CDATA["></div>
+</div>]]></programlisting>
+		<para>The above defined quickpager shows the below pagenavigator.</para>
+		<mediaobject>
+			<imageobject>
+				<imagedata align="center" fileref="../image/simpleweb/simpleweb_json_qp.jpg" />
+			</imageobject>
+		</mediaobject>
+		<note>
+			<title>Pager provided in jqgrid</title>
+			<para>A simple pager is provided for processing paging in jqgrid.  
+			The implementation method is as below.</para>
+			<programlisting language="java"><![CDATA[//pager defined within jqgrid property setting
+pager : jQuery('#pager')
+
+<!-- Definition in outputting part of pager in JSP -->
+<div id="pager" class="scroll" style="text-align: center;"></div>]]></programlisting>
+		
+		<para>The below figure shows pager application.</para>
+		<mediaobject>
+			<imageobject>
+				<imagedata align="center" fileref="../image/simpleweb/simpleweb_json_pager.jpg" />
+			</imageobject>
+		</mediaobject>
+		</note>
+</chapter>
+<chapter id="simpleweb_jquery_develop_autocomplete">
+		<title>autocomplete</title>
+		<para>Autocomplete plugin performs automatic complete function when the prefix is entered by user.</para>
+		<programlisting language="java"><![CDATA[$("#searchKeyword").autocomplete(
+		"<c:url value='/simplejson.do?layout=jqueryLayout&service=simplewebJqueryMovieService.getMovieTitleList(q)
+			&viewName=jsonView' />", {
+		//property definition
+		width : 200,
+		scrollHeight : 200,
+		selectFirst:true,
+		mustMatch:true,
+		matchCase:true,
+		autoFill:true,
+		scroll: true
+});]]></programlisting>
+	<para>
+		As you can see in the above script code, 
+		simpleweb common controller is used, and   
+		the business service that has to be called for automatic completion function is defined. 
+		In this case, autocomplete Plugin sends "q" as key for entered value to Request Parameter. 
+	    So, the argument name should be defined as “q.” 
+	</para>
+	<para>The following is the input box that applies autocomplete.</para>
+	<mediaobject>
+		<imageobject>
+			<imagedata align="center" fileref="../image/simpleweb/simpleweb_json_ac.jpg" />
+		</imageobject>
+	</mediaobject>
+</chapter>
+<chapter id="simpleweb_jquery_develop_jstree">
+		<title>jstree</title>
+		<para>jstree is a component that shows Tree. The basic implementation method is as below.</para>
+		<programlisting language="java"><![CDATA[$("#tree").jstree({
+	   		'plugins' : ["themes","json_data","ui","types","contextmenu","crrm"],  
+	   		'themes' : {...},
+			'json_data' : {
+				'ajax':{
+					"url" : "<c:url value='/simplejquerytree.do' />",
+					"data" : function(n){ return {id: id,	searchKeyword : return_id};}},
+					"success" : function(data){
+						return data.JSTreeNodeList;
+					},
+					...
+				}
+		    }
+		})
+
+<div id="tree" class="demo" style="overflow: auto; height: 445px; width: 280px; border: 1px solid #C9CFDD;">
+	<span>Movie Tree</span>
+</div>]]></programlisting>
+	<para>
+		jstree component also has the url and shows Tree during page loading. 
+		Even in this case, simpleweb is used to set service 
+		and put the viewName as “jsonView.” 
+		The bean definition of “/simplejsontree.do” called above is as the follwing. 
+	</para>
+	<programlisting language="xml"><![CDATA[<bean name="/simplejquerytree.do" class="${package}.simpleweb.jquery.moviefinder.web.MovieTreeController">
+	<property name="beanMethodsRepo" ref="beanMethodsRepo" />
+</bean>	]]></programlisting>
+		<para>
+			MovieTreeController inherits SimpleJSONTreeController internally. 
+			It overrides the setTreeData() method.  
+			To develop controller when showing Tree component using jstree, 
+			refer to <ulink url="http://dev.anyframejava.org/docs.en/anyframe/plugin/optional/simpleweb-jquery/1.0.4-SNAPSHOT/reference/htmlsingle/simpleweb-jquery.html#simpleweb_jquery_controller_simplejsontreecontroller"><emphasis role="bold">SimpleJSONTreeController</emphasis></ulink>. 
+			Also, jstree provides many bind methods to show Tree. 
+			The following is an example of bind method definition. 
+		</para>
+				<programlisting language="java"><![CDATA[$("#tree").jstree({
+	...
+}).bind("remove.jstree", function(e, data) {
+	if(confirm("Are you sure you want to delete this movie?")){
+		data.rslt.obj.each(function() {
+			$.ajax({
+				async : false,
+				type : 'POST',
+				url : "<c:url value='/simplejson.do?layout=jqueryLayout&service=simplewebJqueryMovieService.remove(movieId)&viewName=jsonView'/>",
+				data : {
+					"movieId" : $(data.rslt.obj).attr("id")
+				},
+				error : function() {
+					$.jstree.rollback(data.rlbk);
+				}
+			});
+		});
+	}else{
+		$.jstree.rollback(data.rlbk);
+	}
+}).bind("select_node.jstree", function (e, data) {
+	...
+});]]></programlisting>
+	<para>Below is screen when showing Tree using jstree.</para>
+	<mediaobject>
+		<imageobject>
+			<imagedata align="center" fileref="../image/simpleweb/simpleweb_json_jstree.jpg" />
+		</imageobject>
+	</mediaobject>
+</chapter>
+<chapter id="simpleweb_jquery_develop_tab">
+		<title>ui-tab</title>
+		<para>We can simply apply tab if we use ui plugin of jQuery.</para>
+		<programlisting  language="java"><![CDATA[<script type="text/javascript">
+	$(function() {
+		]]><emphasis role="bold"><![CDATA[$("#tabs").tabs();
+		$("#tabs").hide();
+		$("#tabs").show();]]></emphasis><![CDATA[
+	}
+</script>
+		
+<]]><emphasis role="bold"><![CDATA[div id="tabs"]]></emphasis><![CDATA[>  
+	<ul>
+		<li><a href="#genreTab">Genre Information</a></li>
+		<li><a href="#movieTab">Movie Information</a></li>
+	</ul>  <!-- tab containers --> 
+	<div id="genreTab">
+		<!-- genreTab contents-->
+	</div>
+	<div id="movieTab">
+		<!-- movieTab contents-->
+	</div>
+</div>
+
+]]></programlisting>
+	<para>Below shows applying tab.</para>
+	<mediaobject>
+		<imageobject>
+			<imagedata align="center" fileref="../image/simpleweb/simpleweb_json_tab.jpg" />
+		</imageobject>
+	</mediaobject>
+</chapter>
+<chapter id="simpleweb_jquery_develop_dropdown">
+		<title>dropdown</title>
+		<para>
+			Combobox can be implemented using msDropDown plugin of jQuery. 
+			Implementation can be simply done by using previous HTML just as tab component. 
+		</para>
+		<programlisting  language="java"><![CDATA[<script type="text/javascript">
+	$(function() {
+		]]><emphasis role="bold"><![CDATA[$('#genreId').msDropDown()]]></emphasis><![CDATA[;
+	}
+</script>
+
+<form:select id="]]><emphasis role="bold"><![CDATA[genreId]]></emphasis><![CDATA[" path="genre.genreId"  cssStyle="width:210px;">
+   <form:options items="${genreList}" itemValue="genreId" itemLabel="name"/>
+</form:select>]]></programlisting>
+	<para>Below shows the combobox view applying msDropDown plugin.</para>
+	<mediaobject>
+		<imageobject>
+			<imagedata align="center" fileref="../image/simpleweb/simpleweb_json_combo.jpg" />
+		</imageobject>
+	</mediaobject>
+</chapter>
+	<!--  -->
+<chapter id="simpleweb_jquery_develop_uplodify">
+		<title>uploadify</title>
+		<para>
+			Sample application of sampleweb plugin
+			uses upload.jsp for applying uplodify plugin for file upload.
+			The contents of upload.jsp are as below. 
+		</para>
+		<programlisting  language="java"><![CDATA[<%@ page language="java" autoFlush="true" contentType="text/html;charset=utf-8" pageEncoding="utf-8"%>
+<%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
+
+<script type="text/javascript">
+$(document).ready(function() {
+	$("#uploadify").uploadify({
+		uploader	: "<c:url value='/simpleweb-jquery/jquery/uploadify/uploadify.swf'/>",
+		script		: "]]><emphasis role="bold"><![CDATA[<c:url value='/simpleFile/upload.do'/>]]></emphasis><![CDATA[",
+		cancelImg	: "<c:url value='/simpleweb-jquery/images/cancel.png'/>",
+		queueID		: "fileQueue",
+		fileDataName: "fileData",
+		auto		: false,
+		multi		: false,
+		width		: 81,
+		height		: 24,
+		sizeLimit	: 10000000,
+		buttonImg	: "<c:url value='/simpleweb-jquery/images/uploadBrowse.png'/>",
+		onComplete	: function(event,queueID,fileObj,response,data) {
+			eval("var respJson="+response);
+			$('#hiddenUploadedFiles').val($('#hiddenUploadedFiles').val()+','+respJson.uploadResult.fileNm);
+			$('#fileDir').val(respJson.uploadResult.fileDir);
+			$('#uploadify').uploadifySettings('scriptData', {'fileDir' : $('#fileDir').val()});
+		  }
+	});
+	$("#uploadClearButton").click( function() {
+		jQuery('#uploadify').uploadifyClearQueue();
+	});
+});
+</script>
+
+<table width="150" height="100" border="0" bordercolor="red"> 
+	<tr> 
+		<td>
+			<div id="fileQueue" style="width:176px;height:60px;"></div>  
+			<!-- hidden attributes -->
+			<input type="hidden" id="hiddenUploadedFiles" name="hiddenUploadedFiles" />
+			<input type="hidden" id="filePathsAttrName" name="filePathsAttrName" value="filePaths" />
+			<input type="hidden" id="fileDir" name="fileDir" />
+			<!-- browse/clear button -->
+			<div id="buttons" align="center" style="padding-top:5px"> 
+				<input type="file" id="uploadify" name="uploadify" width="80"/> 
+				<img id="uploadClearButton" 
+				    src="<c:url value='/simpleweb-jquery/images/clear.jpg'/>" width="57" height="24"..." />
+			</div>
+		</td>
+	</tr>
+</table>]]></programlisting>
+	<para>The bean definition for “/simpleFile/upload.do” request defined as script property is as below.</para>
+	<programlisting  language="xml"><![CDATA[<bean name="/simpleFile/upload.do" class="org.anyframe.simpleweb.controller.FileUploadController">
+		<property name="idGenerationService" ref="UUIdGeService" />		
+	</bean>]]></programlisting>
+	<para>
+		As you can see in the above JSP code, 
+		fileData and fileDir are received and processed by 
+	    <ulink url="http://dev.anyframejava.org/docs.en/anyframe/plugin/optional/simpleweb-jquery/1.0.4-SNAPSHOT/reference/htmlsingle/simpleweb-jquery.html#simpleweb_jquery_controller_fileuploadcontroller"><emphasis role="bold">FileUploadController</emphasis></ulink> 
+		and processing results are returned to Model object. 
+		Developer implements file upload of uplodify Plugin using FileUploadController and upload.jsp file, 
+		and includes upload.jsp in the JSP page that implements file upload. 
+		Then, developer defines setProperty of submit tag and sets upload to true.
+	</para>
+	<programlisting  language="java"><![CDATA[<jsp:include page="/WEB-INF/jsp/simpleweb-map/common/upload.jsp" flush="true"/>
+<anyframe:submit id="addlink" form="movieForm" action="/simplemap.do" service="simplewebMovieService.create(movie)" ...>
+    ]]><emphasis role="bold"><![CDATA[<anyframe:setProperty name="upload" value="true" />]]></emphasis><![CDATA[	
+</anyframe:submit>]]></programlisting>
+	<para>
+	The following is UI which 
+	is form.jsp page that includes upload.jsp and is seen through web browser. 
+	Click the browse button to attach file.</para>
+	<mediaobject>
+		<imageobject>
+			<imagedata align="center" fileref="../image/simpleweb/simpleweb_json_upload.jpg" />
+		</imageobject>
+	</mediaobject>
+	<para>Various files can be uploaded when multi property of uploadify() is set as true.</para>
+	<programlisting  language="java"><![CDATA[$("#uploadify").uploadify({
+	..
+	]]><emphasis role="bold"><![CDATA[multi : false]]></emphasis><![CDATA[,
+	...
+})]]></programlisting>
+		<para>
+		To check uploaded image file on JSP, 
+		define the following by using c tag.</para>
+		<programlisting  language="java"><![CDATA[<c:forTokens var="token" items="${movie.filePaths}" delims=",">
+	<img src="<c:url value='${token}'/>" alt="<spring:message code='movie.posterFile'/>" border="0" width="80" height="100" />
+</c:forTokens>]]></programlisting>
+</chapter>

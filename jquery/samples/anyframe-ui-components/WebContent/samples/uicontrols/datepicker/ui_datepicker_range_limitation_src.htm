@@ -1,0 +1,153 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN"
+"http://www.w3.org/TR/html4/loose.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+
+<head>
+<meta http-equiv="content-type" content="text/html; charset=UTF-8" />
+<title>[AnyFrame UI Datepicker] Date and  Sample</title>
+<link href="../../../common/css/smoothness/jquery-ui-1.10.0.custom.css"	rel="stylesheet">
+<script src="../../../common/exlibs/jquery-1.9.0.js"></script>
+<script src="../../../common/exlibs/jquery-ui-1.10.0.custom.js"></script>
+
+<link type="text/css" rel="stylesheet" href="../../../common/css/style.css"/>
+<link type="text/css" rel="stylesheet" href="sub_css/range_limtation.css">
+
+<script type="text/javascript">
+
+	var datepickerRangeLimitView = {
+			
+
+		
+		setMinDate: function(targetSelector, minDate){
+			$( targetSelector ).datepicker( "option", "minDate", minDate );
+		},
+		
+		setMaxDate: function(targetSelector, maxDate){
+			$( targetSelector ).datepicker( "option", "maxDate", maxDate );
+		},
+		
+		setDayNum : function(idValueStr){
+
+				var limitDayNum ="0";
+				
+				switch(idValueStr)
+				{
+				case "TenDays":
+					limitDayNum = "10d";
+				  break;
+				case "OneMonth":
+					limitDayNum = "1m";
+				  break;
+				case "ThreeMonths":
+					limitDayNum = "3m";
+					  break;
+				case "SixMonths":
+					limitDayNum = "6m";
+					  break;
+				case "OneYear":
+					limitDayNum = "1y";
+					  break;
+				default:
+					limitDayNum = "0";
+				};
+			
+			return limitDayNum;
+		}
+	};
+
+	$(document).ready(function() {
+
+		$("#testAbsoluteDatepicker, #testRelativeDatepicker").datepicker({
+																		numberOfMonths : 3
+																		});
+		
+	
+		$("#minSelectDate").datepicker({
+									onSelect : function(selectedDate) {
+													datepickerRangeLimitView
+													.setMinDate("#testAbsoluteDatepicker", selectedDate);
+									}
+		});
+	
+		$("#maxSelectDate").datepicker({
+									onSelect : function(selectedDate) {
+													datepickerRangeLimitView
+													.setMaxDate("#testAbsoluteDatepicker", selectedDate);
+									}
+		});
+	
+		$('input:radio').on('click', function(){
+		
+								var nameValue = $(this).attr("name");
+								var idValue = $(this).attr("id");
+								
+								if(nameValue=="prevDate"){
+									var minDate = "-"
+															+ datepickerRangeLimitView.setDayNum(idValue.substr(4));
+									datepickerRangeLimitView.setMinDate("#testRelativeDatepicker", minDate);
+								}else if(nameValue =="nextDate"){
+									var maxDate = "+"
+															 + datepickerRangeLimitView.setDayNum(idValue.substr(4));
+									datepickerRangeLimitView.setMaxDate("#testRelativeDatepicker", maxDate);
+								};					
+		});
+});
+</script>
+</head>
+
+<body>
+	<div class="title">절대값 선택</div>
+
+	<div>
+		<div class="text-area">최소 선택가능 날짜 :</div>
+		<div class="input-area">
+			<input id="minSelectDate" type="text" size="33" />
+		</div>
+	</div>
+
+	<div>
+		<div class="text-area">최대 선택가능 날짜 :</div>
+		<div class="input-area">
+			<input id="maxSelectDate" type="text" size="33" />
+		</div>
+	</div>
+
+	<div>
+		<div class="text-area">Test Date :</div>
+		<div class="input-area">
+			<input id="testAbsoluteDatepicker" type="text" size="33" />
+		</div>
+	</div>
+
+	<div class="title">상대값 선택</div>
+	<div>
+		<div class="text-area">이전(-) :</div>
+		<div class="input-area" id="prevDate">
+			<input id="prevTenDays" type="radio" name="prevDate" /><label for="prevTenDays">10일</label> 
+			<input id="prevOneMonth" type="radio" name="prevDate" /><label for="prevOneMonth">1개월</label> 
+			<input id="prevThreeMonths" type="radio" name="prevDate" /><label for="prevThreeMonths">3개월</label> 
+			<input id="prevSixMonths" type="radio" name="prevDate" /><label for="prevSixMonths">6개월</label>
+			<input id="prevOneYear" type="radio" name="prevDate" /><label for="prevOneYear">1년</label>
+		</div>
+	</div>
+
+	<div>
+		<div class="text-area">이후(+) :</div>
+		<div class="input-area">
+			<input id="nextTenDays" type="radio" name="nextDate" /><label for="nextTenDays">10일</label> 
+			<input id="nextOneMonth" type="radio" name="nextDate" /><label for="nextOneMonth">1개월</label> 
+			<input	id="nextThreeMonths" type="radio" name="nextDate" /><label for="nextThreeMonths">3개월</label> 
+			<input id="nextSixMonths" type="radio" name="nextDate" /><label for="nextSixMonths">6개월</label>
+			<input id="nextOneYear" type="radio" name="nextDate" /><label for="nextOneYear">1년</label>
+		</div>
+	</div>
+
+	<div>
+		<div class="text-area">Test Date :</div>
+		<div class="input-area">
+			<input id="testRelativeDatepicker" type="text" size="33" />
+		</div>
+	</div>
+
+</body>
+</html>

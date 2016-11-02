@@ -1,0 +1,189 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<!--
+    SQL File Name : mapper_MovieDao2_sql.xml 
+    Description : -->
+<mapper namespace="MovieDao2">
+    <!--
+        SQL Name : org-anyframe-plugin-mybatis-moviefinder-service-impl-MovieDao2-insertMovie () 
+        Description : 		parameterType : org.anyframe.plugin.mybatis.domain.Movie2DVO
+    -->	
+	<insert id="org-anyframe-plugin-mybatis-moviefinder-service-impl-MovieDao2-insertMovie"  parameterType="org.anyframe.plugin.mybatis.domain.Movie2DVO"  >
+		INSERT INTO/*SQL_ID: org-anyframe-plugin-mybatis-moviefinder-service-impl-MovieDao2-insertMovie */
+		 MOVIE (
+			MOVIE_ID		/*  */
+			,GENRE_ID		/*  */
+			,TITLE		/*  */
+			,DIRECTOR		/*  */
+			,ACTORS		/*  */
+			,RUNTIME		/*  */
+			,RELEASE_DATE		/*  */
+			,TICKET_PRICE		/*  */
+			,POSTER_FILE		/*  */
+			,NOW_PLAYING		/*  */
+		)
+		VALUES (
+			#{movieId}
+			,#{genreId}
+			,#{title}
+			,#{director}
+			,#{actors}
+			,#{runtime}
+			,#{releaseDate}
+			,#{ticketPrice}
+			,#{posterFile}
+			,#{nowPlaying}
+		)
+			
+			
+			
+	</insert>
+    <!--
+        SQL Name : org-anyframe-plugin-mybatis-moviefinder-service-impl-MovieDao2-updateMovie () 
+        Description : 		parameterType : org.anyframe.plugin.mybatis.domain.Movie2DVO
+    -->	
+	<update id="org-anyframe-plugin-mybatis-moviefinder-service-impl-MovieDao2-updateMovie"  parameterType="org.anyframe.plugin.mybatis.domain.Movie2DVO"  >
+		UPDATE/*SQL_ID: org-anyframe-plugin-mybatis-moviefinder-service-impl-MovieDao2-updateMovie */
+		 MOVIE
+		SET MOVIE_ID = #{movieId} 		/*  */
+			,GENRE_ID = #{genreId} 		/*  */
+			,TITLE = #{title} 		/*  */
+			,DIRECTOR = #{director} 		/*  */
+			,ACTORS = #{actors} 		/*  */
+			,RUNTIME = #{runtime} 		/*  */
+			,RELEASE_DATE = #{releaseDate} 		/*  */
+			,TICKET_PRICE = #{ticketPrice} 		/*  */
+			,POSTER_FILE = #{posterFile} 		/*  */
+			,NOW_PLAYING = #{nowPlaying} 		/*  */
+		WHERE MOVIE_ID = #{movieId}
+			
+			
+			
+	</update>
+    <!--
+        SQL Name : org-anyframe-plugin-mybatis-moviefinder-service-impl-MovieDao2-deleteMovie () 
+        Description : 		parameterType : org.anyframe.plugin.mybatis.domain.Movie2DVO
+    -->	
+	<delete id="org-anyframe-plugin-mybatis-moviefinder-service-impl-MovieDao2-deleteMovie"  parameterType="org.anyframe.plugin.mybatis.domain.Movie2DVO"  >
+		DELETE/*SQL_ID: org-anyframe-plugin-mybatis-moviefinder-service-impl-MovieDao2-deleteMovie */
+		FROM MOVIE
+		WHERE MOVIE_ID = #{movieId}
+			
+			
+			
+	</delete>
+	<resultMap id="org-anyframe-plugin-mybatis-moviefinder-service-impl-MovieDao2-selectOneMovie-result" type="org.anyframe.plugin.mybatis.domain.Movie2DVO">
+		<result property="movieId" column="MOVIE_ID"/>
+		<result property="title" column="TITLE"/>
+		<result property="director" column="DIRECTOR"/>
+		<result property="genreId" column="GENRE_ID"/>
+		<result property="name" column="NAME"/>
+		<result property="releaseDate" column="RELEASE_DATE"/>
+		<result property="ticketPrice" column="TICKET_PRICE"/>
+		<result property="actors" column="ACTORS"/>
+		<result property="runtime" column="RUNTIME"/>
+		<result property="nowPlaying" column="NOW_PLAYING"/>
+		<result property="posterFile" column="POSTER_FILE"/>
+	</resultMap>
+	
+    <!--
+        SQL Name : org-anyframe-plugin-mybatis-moviefinder-service-impl-MovieDao2-selectOneMovie () 
+        Description : 		parameterType : org.anyframe.plugin.mybatis.domain.Movie2DVO
+		resultMap : org-anyframe-plugin-mybatis-moviefinder-service-impl-MovieDao2-selectOneMovie-result
+    -->
+	<select id="org-anyframe-plugin-mybatis-moviefinder-service-impl-MovieDao2-selectOneMovie"  parameterType="org.anyframe.plugin.mybatis.domain.Movie2DVO"  resultMap="org-anyframe-plugin-mybatis-moviefinder-service-impl-MovieDao2-selectOneMovie-result" useCache="true" flushCache="false">
+		SELECT /*SQL_ID: org-anyframe-plugin-mybatis-moviefinder-service-impl-MovieDao2-selectOneMovie */
+				movie.movie_id, movie.title, movie.director, movie.genre_id, genre.name, movie.release_date,
+				movie.ticket_price, movie.actors, movie.runtime, movie.now_playing, movie.poster_file
+				FROM MOVIE movie, GENRE genre
+				WHERE movie.genre_id = genre.genre_id AND movie_id = #{movieId}
+			
+			
+			
+	</select>
+	<resultMap id="org-anyframe-plugin-mybatis-moviefinder-service-impl-MovieDao2-listMovie-result" type="org.anyframe.plugin.mybatis.domain.Movie2DVO">
+		<result property="movieId" column="MOVIE_ID"/>
+		<result property="genreId" column="GENRE_ID"/>
+		<result property="title" column="TITLE"/>
+		<result property="director" column="DIRECTOR"/>
+		<result property="actors" column="ACTORS"/>
+		<result property="runtime" column="RUNTIME"/>
+		<result property="releaseDate" column="RELEASE_DATE"/>
+		<result property="ticketPrice" column="TICKET_PRICE"/>
+		<result property="posterFile" column="POSTER_FILE"/>
+		<result property="nowPlaying" column="NOW_PLAYING"/>
+	</resultMap>
+	
+    <!--
+        SQL Name : org-anyframe-plugin-mybatis-moviefinder-service-impl-MovieDao2-listMovie () 
+        Description : 		parameterType : org.anyframe.plugin.mybatis.domain.Movie2DVO
+		resultMap : org-anyframe-plugin-mybatis-moviefinder-service-impl-MovieDao2-listMovie-result
+    -->
+	<select id="org-anyframe-plugin-mybatis-moviefinder-service-impl-MovieDao2-listMovie"  parameterType="org.anyframe.plugin.mybatis.domain.Movie2DVO"  resultMap="org-anyframe-plugin-mybatis-moviefinder-service-impl-MovieDao2-listMovie-result" useCache="true" flushCache="false">
+		SELECT /*SQL_ID: org-anyframe-plugin-mybatis-moviefinder-service-impl-MovieDao2-listMovie */
+		MOVIE_ID		/*  */
+			,GENRE_ID		/*  */
+			,TITLE		/*  */
+			,DIRECTOR		/*  */
+			,ACTORS		/*  */
+			,RUNTIME		/*  */
+			,RELEASE_DATE		/*  */
+			,TICKET_PRICE		/*  */
+			,POSTER_FILE		/*  */
+			,NOW_PLAYING		/*  */
+		FROM
+			MOVIE
+		WHERE MOVIE_ID = #{movieId}
+			
+			
+			
+	</select>
+	<resultMap id="org-anyframe-plugin-mybatis-moviefinder-service-impl-MovieDao2-selectCountMovie-result" type="org.anyframe.plugin.mybatis.domain.Movie2DVO">
+		<result property="c1" column="C1"/>
+	</resultMap>
+	
+    <!--
+        SQL Name : org-anyframe-plugin-mybatis-moviefinder-service-impl-MovieDao2-selectCountMovie () 
+        Description : 		parameterType : org.anyframe.plugin.mybatis.domain.Movie2DVO
+		resultMap : org-anyframe-plugin-mybatis-moviefinder-service-impl-MovieDao2-selectCountMovie-result
+    -->
+	<select id="org-anyframe-plugin-mybatis-moviefinder-service-impl-MovieDao2-selectCountMovie"  parameterType="org.anyframe.plugin.mybatis.domain.Movie2DVO"  resultMap="org-anyframe-plugin-mybatis-moviefinder-service-impl-MovieDao2-selectCountMovie-result" useCache="true" flushCache="false">
+		SELECT /*SQL_ID: org-anyframe-plugin-mybatis-moviefinder-service-impl-MovieDao2-selectCountMovie */
+					count(*)
+		FROM
+			MOVIE
+		WHERE MOVIE_ID = #{movieId}
+			
+			
+			
+	</select>
+	<resultMap id="org-anyframe-plugin-mybatis-moviefinder-service-impl-MovieDao2-pagingMovie-result" type="org.anyframe.plugin.mybatis.domain.Movie2DVO">
+		<result property="movieId" column="MOVIE_ID"/>
+		<result property="title" column="TITLE"/>
+		<result property="director" column="DIRECTOR"/>
+		<result property="genreId" column="GENRE_ID"/>
+		<result property="name" column="NAME"/>
+		<result property="releaseDate" column="RELEASE_DATE"/>
+		<result property="ticketPrice" column="TICKET_PRICE"/>
+		<result property="actors" column="ACTORS"/>
+		<result property="runtime" column="RUNTIME"/>
+		<result property="nowPlaying" column="NOW_PLAYING"/>
+		<result property="posterFile" column="POSTER_FILE"/>
+	</resultMap>
+	
+    <!--
+        SQL Name : org-anyframe-plugin-mybatis-moviefinder-service-impl-MovieDao2-pagingMovie () 
+        Description : 		parameterType : org.anyframe.plugin.mybatis.domain.Movie2DVO
+		resultMap : org-anyframe-plugin-mybatis-moviefinder-service-impl-MovieDao2-pagingMovie-result
+    -->
+	<select id="org-anyframe-plugin-mybatis-moviefinder-service-impl-MovieDao2-pagingMovie"  parameterType="org.anyframe.plugin.mybatis.domain.Movie2DVO"  resultMap="org-anyframe-plugin-mybatis-moviefinder-service-impl-MovieDao2-pagingMovie-result" useCache="true" flushCache="false">
+		SELECT /*SQL_ID: org-anyframe-plugin-mybatis-moviefinder-service-impl-MovieDao2-pagingMovie */
+				movie.movie_id, movie.title, movie.director, movie.genre_id, genre.name, 
+				movie.release_date, movie.ticket_price, movie.actors, movie.runtime, movie.now_playing, movie.poster_file 
+		 FROM MOVIE movie, GENRE genre
+		WHERE movie.genre_id = genre.genre_id		
+			AND title like #{title}
+			AND movie.now_playing = #{nowPlaying}
+			
+	</select>
+</mapper>

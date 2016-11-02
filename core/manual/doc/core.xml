@@ -1,0 +1,448 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+
+<!DOCTYPE book PUBLIC "-//OASIS//DTD DocBook XML V4.5//EN" "http://www.oasis-open.org/docbook/xml/4.5/docbookx.dtd"
+[
+<!ENTITY core_spring_annotation SYSTEM "core/spring/annotation.xml">
+<!ENTITY core_spring_aop SYSTEM "core/spring/aop.xml">
+<!ENTITY core_spring_beandefinitionprofiles SYSTEM "core/spring/beandefinitionprofiles.xml">
+<!ENTITY core_spring_spel SYSTEM "core/spring/spel.xml">
+<!ENTITY core_spring_datasource SYSTEM "core/spring/datasource.xml">
+<!ENTITY core_spring_ioc SYSTEM "core/spring/ioc.xml">
+<!ENTITY core_spring_transaction SYSTEM "core/spring/transaction.xml">
+<!ENTITY core_spring_javaconfig SYSTEM "core/spring/javaconfig.xml">
+<!ENTITY core_springmvc_architecture SYSTEM "core/springmvc/architecture.xml">
+<!ENTITY core_springmvc_configuration SYSTEM "core/springmvc/configuration.xml">
+<!ENTITY core_springmvc_controller SYSTEM "core/springmvc/controller.xml">
+<!ENTITY core_springmvc_view SYSTEM "core/springmvc/view.xml">
+<!ENTITY core_springmvc_fileupload SYSTEM "core/springmvc/fileupload.xml">
+<!ENTITY core_springmvc_internationalization SYSTEM "core/springmvc/internationalization.xml">
+<!ENTITY core_springmvc_exceptionhandling SYSTEM "core/springmvc/exceptionhandling.xml">
+<!ENTITY core_springmvc_springintegration SYSTEM "core/springmvc/springintegration.xml">
+<!ENTITY core_springmvc_validation SYSTEM "core/springmvc/validation.xml">
+<!ENTITY core_springmvc_conversion SYSTEM "core/springmvc/conversion.xml">
+<!ENTITY core_springmvcextensions SYSTEM "core/springmvcextensions.xml">
+<!ENTITY core_springmvcextensions_configuration SYSTEM "core/springmvcextensions/configuration.xml">
+<!ENTITY core_springmvcextensions_taglibrary SYSTEM "core/springmvcextensions/taglibrary.xml">
+<!ENTITY core_logging_configuration SYSTEM "core/logging/configuration.xml">
+<!ENTITY core_logging_logging SYSTEM "core/logging/logging.xml">
+<!ENTITY core_logging_resources SYSTEM "core/logging/resources.xml">
+<!ENTITY core_test_testservice SYSTEM "core/test/testservice.xml">
+<!ENTITY core_test_testcontroller SYSTEM "core/test/testcontroller.xml">
+<!ENTITY core_test_resources SYSTEM "core/test/resources.xml">
+<!ENTITY core_encoding_messagesource SYSTEM "core/messagesource/encodingmessagesource.xml">
+<!ENTITY core-db_messagesource SYSTEM "core/messagesource/dbmessagesource.xml">
+<!ENTITY core_aggregating_messagesource SYSTEM "core/messagesource/aggregatingmessagesource.xml">
+<!ENTITY core_properties_implementation SYSTEM "core/properties/implementation.xml">
+<!ENTITY core_properties_sample SYSTEM "core/properties/sample.xml">
+<!ENTITY core_properties_dynamic SYSTEM "core/properties/dynamic.xml">
+<!ENTITY core_properties_resources SYSTEM "core/properties/resources.xml">
+<!ENTITY core_servlet3_configuration SYSTEM "core/servlet3/configuration.xml">
+<!ENTITY core_servlet3_eod SYSTEM "core/servlet3/eod.xml">
+<!ENTITY core_servlet3_pluggability SYSTEM "core/servlet3/pluggability.xml">
+<!ENTITY core_servlet3_async SYSTEM "core/servlet3/async.xml">
+<!ENTITY core_servlet3_security SYSTEM "core/servlet3/security.xml">
+]
+>
+
+<!--
+		Licensed to the Apache Software Foundation (ASF) under one or more
+		contributor license agreements. See the NOTICE file distributed with
+		this work for additional information regarding copyright ownership.
+		The ASF licenses this file to you under the Apache License, Version
+		2.0 (the "License"); you may not use this file except in compliance
+		with the License. You may obtain a copy of the License at
+
+		http://www.apache.org/licenses/LICENSE-2.0 Unless required by
+		applicable law or agreed to in writing, software distributed under the
+		License is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR
+		CONDITIONS OF ANY KIND, either express or implied. See the License for
+		the specific language governing permissions and limitations under the
+		License.
+-->
+    
+<book lang="ko">
+	<title>Anyframe Core Plugin</title>
+	
+	<bookinfo>
+		<copyright>
+			<year>2007-2014</year>
+			<holder>삼성SDS</holder>
+		</copyright>
+		<releaseinfo>Version 1.6.1-SNAPSHOT</releaseinfo>
+
+		<productname>Anyframe Core Plugin</productname>
+		
+		<authorgroup>
+			<corpauthor></corpauthor>
+		</authorgroup>
+		
+		<mediaobject>
+			<imageobject>
+				<imagedata fileref="../image/common/logo_pdf.jpg"/>
+			</imageobject>
+			<textobject>
+				<phrase>Anyframe Java Logo</phrase>
+			</textobject>
+		</mediaobject>
+		<legalnotice>
+			<para>
+				본 문서의 저작권은 삼성SDS에 있으며 Anyframe 오픈소스 커뮤니티 활동의 목적하에서 자유로운 이용이 가능합니다.
+				본 문서를 복제, 배포할 경우에는 저작권자를 명시하여 주시기 바라며 본 문서를 변경하실 경우에는 원문과 변경된 내용을 표시하여 주시기 바랍니다. 
+				원문과 변경된 문서에 대한 상업적 용도의 활용은 허용되지 않습니다. 본 문서에 오류가 있다고 판단될 경우 이슈로 등록해 주시면 적절한 조치를 취하도록 하겠습니다.
+			</para>
+		</legalnotice>
+	</bookinfo>
+ 
+	<part id="core_introduction_part">
+		<title>Introduction</title>
+		<partintro id="core_introduction_partintro">
+			<para>
+				Core Plugin은 Anyframe에서 제공하는 모든 Plugin의 기반이 되는 기본 Plugin으로 웹 어플리케이션 개발에 기본적으로 필요한 오픈소스들과 Core Service의 활용 방법을 
+				가이드하기 위한 샘플 코드와 이 오픈소스들을 활용하는데 필요한 참조 라이브러리들로 구성되어 있다. 
+     			<itemizedlist>
+     				<listitem>
+     					<para>
+     						비즈니스 레이어와 프리젠테이션 레이어는 기본적으로 <ulink url="http://www.springsource.org">Spring, SpringMVC</ulink>를 
+     						활용하여 구성되어 있으며 데이터 접근 레이어는 Spring JdbcTemplate을 활용한다.
+     					</para>
+     				</listitem>
+     				<listitem>
+     					<para>
+     						어플리케이션 개발시 공통적으로 요구되는 DB 연동, Logging 등의 기능을 수행하기 위해 오픈소스 
+     						<ulink url="http://commons.apache.org/dbcp/">Commons DBCP</ulink>, <ulink url="http://logging.apache.org/log4j/">Log4j</ulink>를 
+     						활용한다.
+     					</para>
+     				</listitem>
+     				<listitem>
+     					<para>
+     						이 외에도 String, Date, Number, Digest, Validation 관련 Utility, 잦은 변경이 요구되는 설정 정보를 외부에서 관리하고 어플리케이션을 통해 해당 
+     						정보에 접근할 수 있도록 지원하는 Properties, 프리젠테이션 레이어 개발의 편의 증진을 위한 Custom Tag Library 등을 제공하는 Core 서비스를 활용한다.	
+     					</para>
+     				</listitem>
+     			</itemizedlist>
+			</para>	
+			<para role="introduction_title"><emphasis role="bold">Installation</emphasis></para>
+			<para>Command 창에서 다음과 같이 명령어를 입력하여 core plugin을 설치한다.</para>
+			<programlisting language="java"><![CDATA[mvn anyframe:install -Dname=core]]></programlisting>
+			<para>
+				installed(mvn anyframe:installed) 혹은 jetty:run(mvn clean jetty:run) command를 이용하여 설치 결과를 확인해볼 수 있다. 
+			</para>
+			<informaltable>
+				<caption>Dependent Plugins</caption>
+				<tgroup cols="2">
+					<colspec colnum="1" colname="col1" colwidth="5*" />
+					<colspec colnum="2" colname="col2" colwidth="5*" />
+					<thead>
+						<row>
+							<entry align="center">Plugin Name</entry>
+							<entry align="center">Version Range</entry>
+						</row>
+					</thead>
+					<tbody>
+						<row>
+							<entry align="center"><link linkend="core_spring_datasource">datasource</link></entry>
+							<entry align="center" valign="middle">2.0.0 &gt; *</entry>
+						</row>
+						<row>
+							<entry align="center"><link linkend="core_logging_part">logging</link></entry>
+							<entry align="center" valign="middle">2.0.0 &gt; *</entry>
+						</row>
+						<row>
+							<entry align="center"><link linkend="core_spring_part">spring</link></entry>
+							<entry align="center" valign="middle">2.0.0 &gt; *</entry>
+						</row>
+					</tbody>
+				</tgroup>
+			</informaltable>
+		</partintro>
+	</part>
+ 	 
+	<part id="core_spring_part">
+		<title>Spring</title>
+		<partintro id="core_spring_partintro">
+			<para>
+				Spring은 객체의 라이프 사이클을 관리하고 객체들간의 의존 관계를 최소화할 수 있는 Lightweight
+				컨테이너를 제공한다. 다음은 Spring Lightweight 컨테이너의 주요 특징이다.
+			</para>
+			<itemizedlist>
+				<listitem>
+					<para>POJO 기반 개발 지원</para>
+						<para>
+							설계 결과물에 컨테이너 의존적인 코드를 추가하지 않아도 순수 POJO 기반으로 어플리케이션 개발이 가능하도록
+							지원하다. 즉, Lightweight 컨테이너 기반 개발시 프레임워크로 인한 기본 설계와 상세 설계가 이중으로
+							진행되거나, 개발시 설계 모델과 구현체가 불일치되는 것을 방지할 수 있다.
+						</para>
+				</listitem>
+				<listitem>
+					<para>Dependency Resolution 지원</para>
+					<para>
+						어플리케이션 구성 모듈간 의존 관계를 처리하기 위한 방법을 제공한다. 특정 모듈의 코드 내에서 참조할 모듈을
+						직접적으로 생성하여 참조함으로써 참조 모듈간에 tightly-coupled 되지 않도록 하기 위해, 대부분의 Lightweight
+						컨테이너들과 마찬가지로 DI(Dependency Injection)을 지원하며, 이외에 DL(Dependency Lookup)도 가능하다.
+					</para>
+				</listitem>
+				<listitem>
+					<para>Aspect Oriented Programming 지원</para>
+					<para>
+						AOP는 어플리케이션 전체에 걸쳐 사용되나 쉽게 분리된 모듈로 작성하기 힘든 로깅, 인증, 권한체크, DB
+						연동, 트랜잭션, 락킹, 에러처리 등과 같은 공통 기능을 재사용 가능하도록 컴포넌트화 할 수 있는 기법이다. 
+						AOP에서는 이러한 공통 기능을 Crosscutting Concerns, 해당 어플리케이션이 제공하는 비즈니스 기능을 Core
+						Concerns라고 지칭한다. 즉, Core Concerns 모듈 내에 필요한 Crosscutting Concerns를 직접 추가하는 대신에
+						AOP에서는 Weaving이라는 작업을 통해 Core Concerns 모듈의 코드를 직접 건드리지 않고도 Core Concerns 모듈의
+						사이 사이에 필요한 Crosscutting Concerns 코드가 엮어져 동작되도록 한다. 이를 통해 AOP는 기존의 작성된 코드들을
+						수정하지 않고도 필요한 Crosscutting Concerns 기능을 효과적으로 적용해 낼 수도 있게 되는 것이다.
+					</para>
+				</listitem>
+				<listitem>
+					<para>Life-cycle 관리</para>
+					<para>
+						Lightweight 컨테이너는 정의된 모듈의 Life-cycle을 관리하여 해당 모듈들을 초기화시키고
+						종료시키는 역할을 수행함으로써 개발자가 비즈니스 로직에 집중하여 개발할 수 있게 된다. 
+					</para>
+				</listitem>
+				<listitem>
+					<para>신규 기능 추가 용이</para>
+					<para>
+						XML 또는 Annotation 기반의 설정을 통해서 간단하게 컨테이너 기반 위에 신규 기능을 추가할 수 있도록 지원한다.
+					</para>
+				</listitem>
+			</itemizedlist>
+			<para>
+				여기에서는 Spring Lightweight 컨테이너를 통해 지원되는 주요 기능들에 대해 살펴볼 것이다. 이와 함께 클라이언트
+				어플리케이션과 원격 어플리케이션에서 제공하는 서비스 간의 의사 소통을 위한 Spring Remoting 기법에 대해서도 알아보자.
+			</para>	
+		</partintro>
+		&core_spring_ioc;
+		&core_spring_annotation;
+		&core_spring_beandefinitionprofiles;
+		&core_spring_javaconfig;
+		&core_spring_aop;
+		&core_spring_spel;
+		&core_spring_datasource;
+		&core_spring_transaction;					
+	</part>
+	
+	<part id="core_springmvc_part">
+		<title>Spring MVC</title>
+		<partintro id="core_springmvc_partintro">
+			<para>
+				Spring MVC는 MVC(Model, View, Controller) 패턴 기반의 웹 프레임워크이다. 
+				또한 Spring MVC는 Controller, Handler Mappings, ModelAndView, View Resolver, View 등의 구성 요소를 가지며, 
+				모든 요청을 받아 요청을 처리할 Controller에게 전달해 주는 Front Controller로 DispatchServlet을 사용한다. 
+				실제로 요청을 처리하는 Controller(Request Handler)는 특정 인터페이스를 구현하거나 특정 클래스를 상속받지 않고도, 
+				@Controller와 @RequestMapping만을 사용하여 구현이 가능하기 때문에 이전 보다 다양한 형식으로 개발할 수 있다.
+				또한 Spring 3.x 부터 소개된 @PathVariable, @RequestBody, @ResponseBody 등의 Annotation 및 
+				여러가지 새로운 특징들을 기반으로 RESTful 웹 어플리케이션을 구축할 수 있다.
+			</para>
+			<para>
+				Spring MVC에서는 어떤 Framework API에도 종속되지 않은 POJO를 입력 폼 데이터를 전달하기 위한 객체로 사용할 수 있다.
+				또한 Spring MVC은 서버에서 처리된 정보를 보여주기 위한 View를 결정하는 방식이 유연하기 때문에,
+				일반 JSP 뿐만 아니라 Tiles, Velocity 등 다양한 View 기술과 쉽게 연계가 가능하다.
+			</para>
+			<para>Spring MVC 웹 프레임워크는 다음과 같은 특징을 가진다.
+				<itemizedlist>
+					<listitem><para>역할 분리가 명확하다. controller, validator, command 객체, 폼 객체, model 객체, DispatcherServlet, handler mapping, view resolver 등의 각각의 역할은 해당 역할 만을 전문으로 수행하는 객체들이 담당한다.</para></listitem>
+					<listitem><para>어플리케이션 내의 JavaBean들과 프레임워크에 관련된 설정이 쉽고 간단하다.</para></listitem>
+					<listitem><para>Business 객체를 Framework에 종속된 API를 사용하여 확장하지 않고도 command 또는 폼 객체로 재사용할 수 있다.</para></listitem>
+					<listitem><para>Application 레벨에서 데이터를 바인딩 하고 validation 에러를 체크할 수 있도록 데이터 바인딩 및 검증을 customizing 할 수 있다.</para></listitem>
+					<listitem><para>간단한 URL 기반 설정으로 다양한 handler mapping과 view resolution을 customizing 할 수 있다.</para></listitem>
+					<listitem><para>모델이 맵으로 구성되기 때문에 여러 view 기술과의 연계가 쉽다.</para></listitem>
+					<listitem><para>데이터 바인딩이나 테마 사용을 위한 spring 태그를 제공한다.</para></listitem>
+					<listitem><para>JSP의 입력 폼을 보다 쉽게 만들 수 있는 form 태그를 제공한다.</para></listitem>
+				</itemizedlist>
+			</para>
+		</partintro>
+		&core_springmvc_architecture;
+		&core_springmvc_configuration;
+		&core_springmvc_controller;
+		&core_springmvc_view;
+		&core_springmvc_validation;
+		&core_springmvc_conversion;
+		&core_springmvc_fileupload;
+		&core_springmvc_internationalization;
+		&core_springmvc_exceptionhandling;
+		&core_springmvc_springintegration;		
+	</part>
+	
+	<part id="core_springmvcextensions_part">
+		<title>Spring MVC Extensions</title>
+		<partintro id="core_springmvcextensions_partintro">
+			<para>
+				Anyframe 에서는 개발자들이 보다 프리젠테이션 레이어 개발을 쉽게 할 수 있도록 anyframe namespace와 @Enable* 어노테이션 그리고 Custom tag library를 제공한다.
+		  		Custom tag library에는 페이지 네비게이션을 JSP단의 java 코드 없이 태그로 개발할 수 있는 Page
+		  		Navigator 태그가 있다.				
+			</para>
+		</partintro>
+		&core_springmvcextensions_configuration;
+		&core_springmvcextensions_taglibrary;
+	</part>	
+	
+	<part id="core_idgen">
+		<title>Id Generation</title>
+		<partintro id="core_idgen_partintro">
+			<para>
+				<ulink url="http://dev.anyframejava.org/docs/anyframe/plugin/optional/idgen/1.6.1-SNAPSHOT/reference/htmlsingle/idgen.html">Idgen Plugin 매뉴얼</ulink>을 참조한다.			
+			</para>			
+		</partintro>
+	</part>	
+	
+	<part id="core_logging_part">
+		<title>Logging</title>
+		<partintro id="core_logging_partintro">
+		<para>
+				개발자가 Log을 출력하기 위해 일반적으로 사용하는 방식은 System.out.println()이다. 그러나 이 방식은 간편한
+		  		반면에 다음과 같은 이유로 권장하지 않는다.
+		  	</para>
+		
+			<itemizedlist>
+		    	<listitem>
+		    		<para>
+		    			System.out.println에 대한 호출은 disk I/O동안 동기화(synchronized)처리가 되므로
+						시스템의 throughput을 떨어뜨린다.
+		    		</para>
+		    	</listitem>
+		
+		    	<listitem>
+		      		<para>
+		      			기본적으로 stack trace 결과는 콘솔에 남는다. 하지만 시스템 운영중 콘솔을 통해 Exception을 추적하는
+		      			것은 바람직하지 못하다.
+		      		</para>
+				</listitem>
+		
+		    	<listitem>
+		      		<para>
+		      			운영시스템에서 시스템 관리자가 System.out과 system.errs에 대하여 ‘[&gt;null]’(NT의 경우)
+		      			혹은 dev/null(Unix의 경우)와 같이 매핑을 할 경우 Exception 로그에 대한 출력이 나타나지 않을 수도 있다.
+		      			또한 NT 서비스로 실행될 경우 콘솔 자체가 안보일 수 도 있다.
+		      		</para>
+		    	</listitem>
+		
+		    	<listitem>
+		      		<para>
+		      			콘솔 로그를 출력 파일로 리다이렉트 할 지라도, JavaEE App Server가 재 시작할 때 파일이 overwrite될
+		     			 수도 있다.
+		     		</para>
+		    	</listitem>
+		
+		    	<listitem>
+		      		<para>
+		      			개발/테스팅 시점에만 System.out.println을 사용하고 운영으로 이관하기 전에 삭제하는 것은 좋은 방법이
+		      			아니다. 운영시의 코드가 테스트시의 코드와 다르게 동작할 수 있기 때문이다.
+		      		</para>
+				</listitem>
+			</itemizedlist>
+		
+		  	<para>
+		  		따라서, 테스팅 코드와 운영 코드를 동일하게 가져가면서 로깅을 선언적으로 관리할 수 있고, 운영시 성능 오버헤드를 
+		  		최소화할 수 있는 메커니즘이 필요하다. 이런 기능을 위해 Anyframe Framework은 <ulink
+		  		url="http://logging.apache.org/log4j/">Log4j </ulink>를 이용하여 로그를 남길 수 있는 방법을 가이드하고자 한다.
+		  	</para>
+		</partintro>
+		&core_logging_configuration;
+		&core_logging_logging;
+		&core_logging_resources;	
+	</part>	
+	
+	<part id="core_test_part">
+		<title>Test</title>
+		<partintro id="core_test_partintro">
+			<para>
+				Spring 기반의 웹어플리케이션을 개발할 때, Spring Framework와 JUnit4에서 제공하는 Annotation을 사용하여
+				Testcase를 사용하여 코드를 검증할 수 있다.
+			</para>
+		</partintro>
+		&core_test_testservice;
+		&core_test_testcontroller;
+		&core_test_resources;
+	</part>
+ 
+	<part id="core_messagesource_part">
+		<title>Message Source</title>
+		<partintro id="core_messagesource_partintro">
+			<para>
+				MessageResource Bundle 내에 정의된 텍스트 형태의 정보를 사용자 Locale에 맞게 찾아줌으로써 어플리케이션의 국제화를 지원하기 위해서는 
+				MessageSource를 이용할 수 있다.
+				Anyframe에서는 파일 기반의 MessageResource Bundle과 DB 기반의 MessageResource Bundle 사용을 지원하고 있다. 또한, 정의된 MessageSource가 다수일 경우,
+				각 MessageSource가 관리하는 여러 MessageResource들로부터 원하는 Message를 찾을 수도 있다.
+			</para>			
+		</partintro>
+		&core_encoding_messagesource;
+		&core-db_messagesource;
+		&core_aggregating_messagesource;
+	</part>		
+	
+	<part id="core_query_part">
+		<title>Query Service</title>
+		<partintro id="core_query_partintro">
+			<para>
+				<ulink url="http://dev.anyframejava.org/docs/anyframe/plugin/optional/query/1.6.1-SNAPSHOT/reference/htmlsingle/query.html">Query Plugin 매뉴얼</ulink>을 참조한다.
+			</para> 
+		</partintro>
+	</part>		
+	
+	<part id="core_properties_part">
+		<title>Properties Service</title>
+		<partintro id="core_properties_partintro">
+			<para>
+				외부 파일이나 환경 정보에 구성되어 있는 key, value의 쌍을 내부적으로 가지고 있으며, 어플리케이션이 이 특정 key에 대한 value에 접근할 수 있도록 해주는 서비스이다. 
+				이 서비스는 주로 시스템의 설치 환경에 관련된 정보나, 잦은 정보의 변경이 요구되는 경우 외부에서 그 정보를 관리하게 함으로써 시스템의 가변성을 향상시킨다. EJB 컴포넌트의 
+				경우는 이미 이러한 정보를 관리할 수 있는 내부적인 기능을 제공하고 있으므로 서비스 내에서는 별도로 이 기능을 사용할 필요는 없다. 			
+			</para>
+			<para>
+				다음은 Anyframe 에서 제공하는 Properties 서비스에 대한 구현체이다.
+				(Core Plugin으로 생성된 샘플 어플리케이션에서는 PropertiesService 대신 SpEL을 활용하여 Property 정보를 처리하고 있다. 그러나 Property File에 대한 
+				인코딩 처리 및 Dynamic Reload 기능 등이 필요할 경우 활용할 수 있다.)
+			</para>
+		</partintro>
+		&core_properties_implementation;
+		&core_properties_sample;
+		&core_properties_dynamic;
+		&core_properties_resources;
+	</part>
+	
+	<part id="core_servlet3_part">
+		<title>Servlet 3.0</title>
+		<partintro id="core_servlet3_partintro">
+			<para>
+				서블릿 3.0 은 JSR-315 스펙의 일부로
+				<ulink url="http://jcp.org/aboutJava/communityprocess/final/jsr315/">Java Community Process</ulink>
+				정의되었으며 2.5 버전이후 나온 메이저 버전의 변경이다. 최근의 웹 어플리케이션 개발 스타일을 반영한 여러가지 feature들을 담고 있으며 개발 편의성 향상에 중점을 두고 있다.
+			</para>
+			<para>
+				서블릿 3.0 스펙의 주요한 feature는 다음과 같다.
+			</para>
+			<itemizedlist>
+				<listitem>
+					<para>Ease Of Development</para>
+						<para>
+							서블릿 3.0 스펙에서는 어노테이션 지원, 지너릭 지원등을 통해 개발 편의성을 높일 수 있도록 하였다.
+						</para>
+				</listitem>
+				<listitem>
+					<para>Pluggability</para>
+					<para>
+						web.xml 을 모듈화 할 수 있게 해주는 Pluggability 기능이 추가 되었다.
+					</para>
+				</listitem>
+				<listitem>
+					<para>Asynchronous support</para>
+					<para>
+						HTTP Request에 대한 비동기 처리 기능이 추가 되었다.
+					</para>
+				</listitem>
+				<listitem>
+					<para>Security</para>
+					<para>
+						어노테이션을 이용하여 자원에 대한 접근 제어를 할 수 있는 기능이 추가 되었다. 
+					</para>
+				</listitem>
+			</itemizedlist>
+		</partintro>
+		&core_servlet3_configuration;
+		&core_servlet3_eod;
+		&core_servlet3_pluggability;
+		&core_servlet3_async;
+		&core_servlet3_security;
+	</part>		
+		
+</book>

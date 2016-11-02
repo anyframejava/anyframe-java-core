@@ -1,0 +1,213 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN"
+"http://www.w3.org/TR/html4/loose.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+
+<head>
+<meta http-equiv="content-type" content="text/html; charset=UTF-8" />
+<title>[AnyFrame UI Button] Basic Sample</title>
+<link href="../../../common/css/smoothness/jquery-ui-1.10.0.custom.css"	rel="stylesheet">
+<script src="../../../common/exlibs/jquery-1.9.0.js"></script>
+<script src="../../../common/exlibs/jquery-ui-1.10.0.custom.js"></script>
+
+<link type="text/css" rel="stylesheet" href="../../../common/css/style.css"/>
+<link type="text/css" rel="stylesheet" href="sub_css/basic.css">
+
+<script type="text/javascript">
+
+	var ENV = {
+		ID_INPUT_TYPE : "#inputType",
+		ID_INPUT_FOCUS : "#inputFocus",
+		ID_INPUT_TEXT : "#inputText",
+		ID_INPUT_TEXT_COLOR : "#inputTextColor",
+		ID_INPUT_BG_COLOR : "#inputBgColor",
+		ID_INPUT_BORDER_COLOR : "#inputBorderColor",
+		ID_INPUT_BORDER_STYLE : "#inputBorderStyle",
+		SELECT_SET_RADIO_TYPE : "input:radio[name='inputText']",
+		SELECT_CHECKBOX_FOCUS : "input:checkbox[name='inputFocus']",
+		SELECT_TEXT_CHG : "input:text[name='textChange']",
+		SELECT_TEXT_CHG_BTN : "input:button[name='textChangeBtn']",
+		SELECT_SET_CLASS: ".select-area",
+		SELECT_SET_STYLE : ".input-style"
+	};
+	
+	var mainView = {
+			
+		init : function() {			
+			this.setInputType();
+			this.setInputFocus();
+			for(var i=0; i<4; i++){
+				this.setInputStyle(i);
+			};
+		},
+		
+		
+		setInputType : function() {
+			var checked = $(ENV.SELECT_SET_RADIO_TYPE+":checked");
+			var type = checked.prop("value");
+			
+			if(type == "textarea"){
+				$(ENV.ID_INPUT_TYPE).parent().append("<textarea>textarea 태그사용</textarea>");
+				$(ENV.ID_INPUT_TYPE).hide();
+			}else {
+				$(ENV.ID_INPUT_TYPE).show();
+				$("textarea").hide();
+				$(ENV.ID_INPUT_TYPE).prop("type", type);
+			};
+		},
+		
+		setInputFocus : function(){
+			var initVal = $(ENV.ID_INPUT_FOCUS).val();
+				checked = $(ENV.SELECT_CHECKBOX_FOCUS +":checked");
+			
+				$(ENV.ID_INPUT_FOCUS).focusin(function() {
+					if($(ENV.SELECT_CHECKBOX_FOCUS).is(":checked")) {
+						$(this).removeAttr("value");
+					}
+				}).focusout(function() {
+					$(this).prop("value", initVal);
+				});
+		},
+		
+		setInputStyle : function(index){
+			
+			var css = ["color", "background-color", "border-color", "border-style"];
+			var target = [ENV.ID_INPUT_TEXT_COLOR, ENV.ID_INPUT_BG_COLOR, ENV.ID_INPUT_BORDER_COLOR, ENV.ID_INPUT_BORDER_STYLE];
+			var checked = $(ENV.SELECT_SET_STYLE).eq(index).find("input:radio:checked");	
+			$(target[index]).css(css[index], checked.val());
+		}
+
+	};
+
+	$(document).ready(	function() {
+		
+		mainView.init();
+		
+		$(ENV.SELECT_SET_RADIO_TYPE).on("click", function(){
+			mainView.setInputType();
+		});
+		
+		$(ENV.SELECT_CHECKBOX_FOCUS).on("click", function(){
+				mainView.setInputFocus();
+		});
+
+		$(ENV.SELECT_TEXT_CHG_BTN).button().on("click", function(){
+			$(ENV.ID_INPUT_TEXT).prop("value", $(ENV.SELECT_TEXT_CHG).val());
+		});
+
+		$(ENV.SELECT_SET_STYLE).each( function(index){
+			$(this).find("input:radio").on("click", function(){
+				mainView.setInputStyle(index);
+			});
+		});
+		
+		
+
+	});
+</script>
+
+</head>
+
+<body>
+
+	<div class="title">입력창 Type</div>
+
+	<div>
+		<div class="text-area">타입 :</div>
+		<div class="select-area">
+			<input type="radio"  name="inputText" value="text" checked />text 
+			<input type="radio"  name="inputText" value="password" />password 
+			<input type="radio"  name="inputText" value="hidden" />hidden 
+			<input type="radio"  name="inputText" value="textarea" />textarea
+		</div>
+		<div id="inputArea" class="input-area">
+			<input id="inputType" type="text" value="입력창 Type"/>
+		</div>
+	</div>
+
+
+	<div class="title">입력창 가이드 텍스트</div>
+
+	<!--   가이드 텍스트 클릭시, show/hide -->
+	<div>
+		<div class="text-area">focus 처리 :</div>
+		<div class="select-area">
+			<input type="checkbox" name="inputFocus" />focus시, 자동으로 가이드 텍스트 삭제
+		</div>
+		<div class="input-area">
+			<input id="inputFocus" type="text" value="가이드 텍스트 Focus">
+		</div>
+	</div>
+
+	<!--   가이드형식으로 보여질 텍스트 조작 -->
+	<div>
+		<div class="text-area">텍스트 변경 :</div>
+		<div class="select-area">
+			<input type="text" name="textChange" value="테스트.." /> 
+			<input type="button" name="textChangeBtn" value="apply">
+		</div>
+		<div class="input-area">
+			<input id="inputText" type="text" name="text" value="가이드 텍스트 변경">
+		</div>
+	</div>
+
+	<div class="title">입력창 내부 스타일</div>
+
+	<!--   입력창 스타일:  텍스트 칼라 조작 -->
+	<div>
+		<div class="text-area">텍스트색 :</div>
+		<div class="select-area input-style">
+			<input type="radio"  name="textColor" value="red" />red 
+			<input type="radio"  name="textColor" value="yellow" />yellow 
+			<input type="radio"  name="textColor" value="blue" checked/>blue
+		</div>
+		<div class="input-area">
+			<input id="inputTextColor" type="text" value="입력창 텍스트색 변경">
+		</div>
+	</div>
+
+	<!--   입력창 스타일: 입력창 배경색 조작 -->
+	<div>
+		<div class="text-area">배경색 :</div>
+		<div class="select-area input-style">
+			<input type="radio"  name="bgColor" value="red" />red 
+			<input type="radio"  name="bgColor" value="yellow" checked/>yellow 
+			<input type="radio"  name="bgColor" value="blue" />blue
+		</div>
+		<div class="input-area">
+			<input id="inputBgColor" type="text" value="입력창 배경색 변경">
+		</div>
+	</div>
+
+
+
+	<!--   입력창 스타일: 입력창 테두리 색 조작 -->
+	<div>
+		<div class="text-area">테두리 색:</div>
+		<div class="select-area input-style">
+			<input type="radio"  name="borderColor" value="red" />red 
+			<input type="radio"  name="borderColor" value="yellow" />yellow 
+			<input type="radio"  name="borderColor" value="blue" checked/>blue
+		</div>
+		<div class="input-area">
+			<input id="inputBorderColor" type="text" value="입력창 테두리색 변경">
+		</div>
+	</div>
+
+	<!--   입력창 스타일: 입력창 테두리 스타일 조작 -->
+	<div>
+		<div class="text-area">테두리 스타일 :</div>
+		<div class="select-area input-style">
+			<input type="radio"  name="borderStyle" value="solid" />solid 
+			<input type="radio" name="borderStyle" value="inset" />inset 
+			<input type="radio" name="borderStyle" value="dotted" checked/>dotted 
+			<input type="radio" name="borderStyle" value="hidden" />hidden
+		</div>
+		<div class="input-area">
+			<input id="inputBorderStyle" type="text" value="입력창 테두리 스타일 변경">
+		</div>
+	</div>
+
+</body>
+
+</html>
+

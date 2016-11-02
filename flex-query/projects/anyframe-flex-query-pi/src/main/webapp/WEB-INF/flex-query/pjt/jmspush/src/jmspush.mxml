@@ -1,0 +1,163 @@
+<?xml version="1.0" encoding="utf-8"?>
+<s:Application xmlns:fx="http://ns.adobe.com/mxml/2009" 
+			   xmlns:s="library://ns.adobe.com/flex/spark" 
+			   xmlns:mx="library://ns.adobe.com/flex/mx" 
+			   creationComplete="init()">
+	<fx:Script>
+		<![CDATA[
+			import mx.collections.ArrayCollection;
+			import mx.formatters.NumberBase;
+			import mx.messaging.messages.IMessage;
+			
+			[Bindable]
+			private var jmsMessageData:ArrayCollection = new ArrayCollection;
+			
+			[Bindable]
+			private var formData:Object = new Object;
+			
+			private var count:int = 0;
+			
+			private function init():void
+			{
+				 
+				for( var i:int = 0 ; i < 30 ; i ++ ) {
+					var data:Object = new Object;
+					data["date"] = "00/00/00";
+					data["open"] = 0;
+					data["high"] = 0;
+					data["low"] = 0;
+					data["close"] = 0;
+					jmsMessageData.addItemAt(data, i);
+				}
+				
+				consumer.subscribe();
+			}
+			
+			
+			private function messageHandler(message:IMessage):void
+			{
+				
+				var msg:Object = message.body as Object;
+				
+				jmsMessageData.removeItemAt(0);
+				jmsMessageData.addItemAt(msg, 29);
+
+				formData = msg;
+			}
+		]]>
+	</fx:Script>	
+	
+	<fx:Declarations>
+		<!-- Place non-visual elements (e.g., services, value objects) here -->
+		<mx:ChannelSet id="cs">
+			<mx:StreamingAMFChannel url="./../../messagebroker/streamingamf"/>
+			<mx:AMFChannel url="./../../messagebroker/amflongpolling"/>
+			<mx:AMFChannel url="./../../messagebroker/amfpolling"/>
+		</mx:ChannelSet>
+		
+		<mx:Consumer id="consumer" destination="jmsMsgDestination" channelSet="{cs}" message="messageHandler(event.message)"/>
+		
+		<mx:SolidColor id="up" color="red" alpha=".8"/>
+		<mx:SolidColor id="down" color="blue" alpha=".8"/>
+		
+		<mx:Stroke id = "wick" color="black" weight="2"/>
+		<mx:Stroke id = "box" color="black" weight="2"/>
+		<mx:Stroke id= "line" color="black" alpha=".5"/>
+		<mx:Stroke id= "column" color="#E11414" alpha=".5"/>
+		
+		<mx:LinearAxis id="priceVAxis" title="Price" />
+		<mx:LinearAxis id="amountVAxis" title="Trading Amount"/>
+		
+		<mx:NumberFormatter id="numberFormatter"/>
+		
+		<mx:SeriesInterpolate id="interpolate" elementOffset="10"/>
+		
+		<mx:CurrencyFormatter id="cf"/>
+		
+	</fx:Declarations>
+	
+	<s:layout>
+		<s:VerticalLayout gap="0" horizontalAlign="center"/>
+	</s:layout>
+		
+	<mx:Panel title="JMS CandlestickChart" width="100%" height="70%" layout="horizontal" >
+		<mx:CandlestickChart id="candlestickChart" 
+							 height="100%" 
+							 width="90%"
+							 paddingRight="5" 
+							 paddingLeft="5" 
+							 showDataTips="true"
+							 dataProvider="{jmsMessageData}"
+							 verticalAxis="{priceVAxis}" >
+			<mx:series>
+				<mx:CandlestickSeries 
+					openField="open" 
+					lowField="low" 
+					highField="high" 
+					closeField="close" 
+					fill="{up}" 
+					declineFill="{down}" 
+					stroke="{wick}" 
+					boxStroke="{box}" 
+					xField="date" showDataEffect="{interpolate}"/>
+			</mx:series>
+			<mx:horizontalAxis>
+				<mx:CategoryAxis categoryField="date" />
+			</mx:horizontalAxis>
+		</mx:CandlestickChart>
+		
+		<mx:Form width="10%" 
+				 height="100%">
+			<mx:FormItem label="날짜" textAlign="right">
+				<mx:Label id="today" enabled="false" text="{formData['date']}"/>
+			</mx:FormItem>
+			<mx:FormItem label="시가" textAlign="right">
+				<mx:Label id="openPrice" text="{numberFormatter.format(formData['open'])+'원'}"/>
+			</mx:FormItem>
+			<mx:FormItem label="고가" textAlign="right">
+				<mx:Label id="highPrice" color="red"
+						  text="{numberFormatter.format(formData['high'])+'원'}"/>
+			</mx:FormItem>
+			<mx:FormItem label="저가" textAlign="right">
+				<mx:Label id="lowPrice" color="blue" text="{numberFormatter.format(formData['low'])+'원'}"
+						  textAlign="right"/>
+			</mx:FormItem>
+			<mx:FormItem label="종가" textAlign="right">
+				<mx:Label id="closePrice" text="{numberFormatter.format(formData['close'])+'원'}"
+						  textAlign="right"/>
+			</mx:FormItem>
+			<mx:FormItem label="52주 최고" color="red">
+				<mx:Label id="maxPrice" color="red" text="{numberFormatter.format(formData['max'])+'원'}"
+						  textAlign="right"/>
+			</mx:FormItem>
+			<mx:FormItem label="52주 최저" color="blue">
+				<mx:Label id="minPrice" color="blue" text="{numberFormatter.format(formData['min'])+'원'}"
+						  textAlign="right"/>
+			</mx:FormItem>
+		</mx:Form>
+	</mx:Panel>
+	<mx:Panel width="100%" height="30%" title="JMS ColumnChat" layout="horizontal">
+		<mx:ColumnChart id="amountChart" 
+					  width="90%" 
+					  height="100%" 
+					  paddingRight="5" 
+					  paddingLeft="5" 
+					  showDataTips="true"
+					  dataProvider="{jmsMessageData}"
+					  verticalAxis="{amountVAxis}">
+			<mx:series>
+				<mx:ColumnSeries yField="tradingVolumn"  showDataEffect="{interpolate}" stroke="{column}"/>
+			</mx:series>
+			<mx:horizontalAxis>
+				<mx:CategoryAxis categoryField="date" />
+			</mx:horizontalAxis>
+		</mx:ColumnChart>
+		
+		<mx:Form width="10%" 
+				 height="100%">
+			<mx:FormItem label="거래량" textAlign="right">
+				<mx:Label id="tradingVolumn" enabled="false" text="{numberFormatter.format(formData['tradingVolumn'])+'주'}" />
+			</mx:FormItem>
+		</mx:Form>
+	</mx:Panel>
+</s:Application>

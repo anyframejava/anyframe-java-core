@@ -1,0 +1,86 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<configuration scan="true" scanPeriod="60 seconds">
+
+	<property name="loggingCondition" value="ID"/>
+	
+	<appender name="console" class="ch.qos.logback.core.ConsoleAppender">
+		<encoder>
+			<pattern>[%-5level] %d{yyyy-MM-dd HH:mm:ss} %logger %n%msg%n
+			</pattern>
+		</encoder>
+	</appender>
+	
+	<!--  for mvc exception logging -->
+	<logger name="controller.logs" level="WARN" additivity="false">
+		<appender-ref ref="console" />
+	</logger>
+	
+    <if condition='property("loggingCondition").equals("ID")'>
+    	<then>
+    		<!-- separate logging using user ID-->
+    		<appender name="file" class="ch.qos.logback.classic.sift.SiftingAppender">
+    			<discriminator>
+    				<key>userId</key>
+    				<defaultValue>guest</defaultValue>
+    			</discriminator>
+    			<sift>
+    				<appender name="id-${userId}" class="ch.qos.logback.core.FileAppender">
+    					<file>logs/userId/${userId}.log</file>
+    					<encoder>
+    						<pattern>[%-5level] %d{yyyy-MM-dd HH:mm:ss} %logger %n%msg%n userId:%X{userId},clientIP:%X{remoteHost},requestURL:%X{requestURL}%n</pattern>
+    					</encoder>
+    				</appender>
+    			</sift>
+    		</appender>
+    	</then>
+    	
+    	<else>
+    		<if condition='property("loggingCondition").equals("IP")'>
+    			<then>
+    				<!-- separate logging using client IP-->
+    				<appender name="file" class="ch.qos.logback.classic.sift.SiftingAppender">
+    					<discriminator>
+    						<key>remoteHost</key>
+    						<defaultValue>unknownHost</defaultValue>
+    					</discriminator>
+    					<sift>
+    						<appender name="ip-${remoteHost}" class="ch.qos.logback.core.FileAppender">
+    							<file>logs/ip/${remoteHost}.log</file>
+    							<encoder>
+    								<pattern>[%-5level] %d{yyyy-MM-dd HH:mm:ss} %logger %n%msg%n userId:%X{userId},clientIP:%X{remoteHost},requestURL:%X{requestURL}%n</pattern>
+    							</encoder>
+    						</appender>
+    					</sift>
+    				</appender>
+    			</then>
+    			
+    			<else>
+    				<!-- default daily rolling -->
+					<appender name="file" class="ch.qos.logback.core.rolling.RollingFileAppender">
+						<file>currentLog.log</file>
+						<rollingPolicy class="ch.qos.logback.core.rolling.TimeBasedRollingPolicy">
+							<fileNamePattern>logs/daily/logFile.%d{yyyy-MM-dd HH.mm.ss}.log.zip</fileNamePattern>
+							<maxHistory>30</maxHistory>
+						</rollingPolicy>
+						<encoder>
+							<pattern>[%-5level] %d{yyyy-MM-dd HH:mm:ss} %logger %n%msg%n userId:%X{userId},clientIP:%X{remoteHost},requestURL:%X{requestURL}%n</pattern>
+						</encoder>
+					</appender>
+    			</else>
+    		</if>
+    	</else>
+    </if>
+
+<!--Add new configuration here-->
+    
+	<!-- default pi logger -->
+	<logger name="org.anyframe.plugin" level="INFO" additivity="false">
+		<appender-ref ref="file" />
+		<appender-ref ref="console" />
+	</logger>
+
+	<root level="ERROR">
+		<appender-ref ref="console"/>
+	</root>
+
+</configuration>

@@ -1,0 +1,1055 @@
+<chapter id="struts_configuration">
+	<title>Configuration</title>
+	
+		<para>
+			<![CDATA[Struts를 사용하기 위해서는 기본적인 환경 설정이 필요하다. 먼저 웹 어플리케이션의 배포지시자인 web.xml 파일에
+  			<servlet>설정 등이 필요하고 Struts의 Controller가 어떤 Action을 실행할 것인지 어떤 화면으로 이동할
+  			것인지 등에 대한 설정 정보를 설정하는 struts-config.xml이 필요하다. 본 문서에서는 Struts를 사용해 웹 어플리케이션을
+  			개발하기 위한 최소 조건과 Struts에서 많이 사용하는 기능에 대한 환경 설정에 대해서 중점적으로 다루겠다.]]>
+  		</para>
+
+	<section id="struts_configuration_web">
+	<title>web.xml</title>
+
+		<para>
+			웹 어플리케이션의 배포 지시자(Deployment Descriptor)로 Java EE 환경에서 웹 어플리케이션이 어떻게
+    		배포되어야 하는지를 기술하는 파일이다. XML 구문으로 기술되며 웹 어플리케이션 root 바로 아래 서브 디렉토리인 WEB-INF에
+    		위치한다. 본 문서에서는 ActionServlet을 확장한 Anyframe의 DefaultActionServlet을 사용 할 경우
+    		web.xml 작성법을 중심으로 설명하겠다.
+    	</para>
+
+    	<para>
+    		ActionServlet에 대한 내용은 <ulink url="http://struts.apache.org/1.3.10/userGuide/configuration.html">Apache
+			Struts User Guide</ulink>를 참조하기 바란다.
+		</para>
+
+    	<itemizedlist>
+      		<listitem>
+        		<para>servlet, servlet-mapping 설정</para>
+      		</listitem>
+      		<listitem>
+        		<para>taglib 설정</para>
+      		</listitem>
+    	</itemizedlist>
+
+		<section id="struts_configuration_web_servlet">
+		<title>servlet, servlet-mapping 설정</title>
+
+			<section id="struts_configuration_web_servlet_servlet">
+			<title><![CDATA[<servlet>설정]]></title>
+	
+				<itemizedlist>
+					<listitem>
+						<para>
+							<![CDATA[org.apache.struts.action.ActionServlet 또는 서브 클래스를
+							<servlet-class>에 등록]]>
+						</para>
+	          		</listitem>
+			        <listitem>
+	            		<para>해당 Servlet을 통해 로드되어 할 Struts 속성 정의 파일 목록 정의</para>
+	          		</listitem>
+			        <listitem>
+	        		    <para>Servlet 초기화에 필요한 속성 정의</para>
+	          		</listitem>
+	        	</itemizedlist>
+	
+				<para>
+					<![CDATA[다음은 <servlet>하위에 <init-param>으로 정의할 수 있는 초기화
+	        		파라미터들이다.]]>
+	        	</para>
+	
+		        <informaltable>
+		          <caption>servlet 태그 하위에 param으로 정의 할 수 있는 파라미터</caption>
+		          <tgroup cols="2">
+		          <colspec colnum="1" colname="col1" colwidth="2*"/>
+					<colspec colnum="2" colname="col2" colwidth="6*"/>
+					<thead>
+						<row>
+							<entry align="center">Name</entry>
+							<entry align="center">Purpose / Default Value</entry>
+						</row>
+					</thead>
+		            <tbody>
+		              <row>
+		                <entry>config</entry>
+		                <entry>
+		                	Default application의 struts 설정 파일이 있는 상대(module-relative)경로를 나타낸다.
+		                	Default value는 /WEB-INF/struts-config.xml이다.
+		                </entry>
+		              </row>
+		              <row>
+		                <entry>config/sub1</entry>
+		                <entry>
+		                	<![CDATA[Sub-application을 사용할 때, config/와 sub-application의 prefix를 사용하여 기술한다.
+		                	예로, hello라는 prefix를 가진 sub-application이 있다면, config/hello라는 이름으로
+		                	<init-param>을 기술해야 한다. 또한, sub-application이 여러 개 있다면 그 각각에 대해서
+		                	<init-param>을 기술해야 한다. (여기서, config와 config/sub1, config/sub2 등을 각각
+		                	하나의 module이라고 부른다.)]]>
+		                </entry>
+		              </row>
+		              <row>
+		                <entry>convertNull</entry>
+		                <entry>
+		                	강제로 forms의 property 값들을 null로 populate한다. 예를 들어,
+		                	convertNull 값이 true이면, java.lang.Integer type의 property들은 디폴트
+		                	값으로 0이 아닌 null이 셋팅된다. convertNull의 디폴트 값은 false이다.
+		                </entry>
+		              </row>
+		
+		              <row>
+		                <entry>chainConfig</entry>
+		                <entry>
+		                	action에서 definition명으로 forwarding할 때 설정을 해야 한다. Struts
+		                	1.3에서 새롭게 추가된 내용이므로 Struts Tiles를 이용할 시 주의해야 한다. 디폴트 값은
+		                	org/apache/struts/chain/chain-config.xml이다.
+		                </entry>
+		              </row>
+		              <row>
+		                <entry>configFactory</entry>
+		                <entry>
+		                	ModuleConfig interface의 implementation을 생성하기 위한
+		                	ModuleConfigFactory의 Java class name이다. (Struts 1.3 이상)
+		                </entry>
+		              </row>
+		              <row>
+		                <entry>debug</entry>
+		                <entry>
+		                	Servlet의 Logging 수준을 결정한다. 디폴트 값은 0이고, 0~6 사이의 수를 넣을 수
+		                	있다. 6이 가장 많은 양의 logging 정보를 출력할 것이다.
+		                </entry>
+		              </row>
+		            </tbody>
+		          </tgroup>
+		        </informaltable>
+			</section>
+
+			<section id="struts_configuration_web_servlet_servletmapping">
+	        <title><![CDATA[<servlet-mapping>설정]]></title>
+	
+				<itemizedlist>
+	          		<listitem>
+	            		<para><![CDATA[Request의 URL 패턴을 <servlet>과 매핑]]></para>
+	          </listitem>
+	        </itemizedlist>
+	      </section>
+
+	      <section id="struts_configuration_web_servlet_samples">
+	        <title>Samples</title>
+	
+	        	<para>
+	        		<![CDATA[다음은 Struts를 기반으로 구성된 웹 어플리케이션의 web.xml 파일에서 <servlet>,
+	        		<servlet-mapping>을 설정한 예제이다.]]>
+	        	</para>
+	
+		        <para>
+		        	*.do URL 패턴의 request에 대하여 front controller 서블릿인 ActionServlet이 처리하도록 
+		        	설정되어 있으며, 초기화 파라미터로 해당 웹 어플리케이션에서 사용하는 struts-config 설정 파일이
+		        	복수개로 등록되어 있다.(','로 복수개 설정) convertNull의 초기화 파라미터 설정도 확인할 수 있다.
+		        	load-on-startup 설정은 서블릿 엔진이 시작될 때 로드될 우선 순위를 지정한 값이다.
+	        		<programlisting language="xml"><![CDATA[<servlet>
+    <servlet-name>action</servlet-name>
+    <servlet-class>org.apache.struts.action.ActionServlet</servlet-class>
+        <init-param>
+        <param-name>config</param-name>
+        <param-value>
+            /config/struts/struts-config.xml,
+            /config/struts/struts-config-login.xml
+        </param-value>
+    </init-param>
+    <init-param>
+        <param-name>debug</param-name>
+        <param-value>3</param-value>
+    </init-param>
+    <init-param>
+        <param-name>convertNull</param-name>
+        <param-value>true</param-value>
+    </init-param>
+    <load-on-startup>0</load-on-startup>
+</servlet>
+	
+<servlet-mapping>
+    <servlet-name>action</servlet-name>
+    <url-pattern>*.do</url-pattern>
+</servlet-mapping>]]></programlisting>
+				</para>
+			</section>
+		</section>
+
+		<section id="struts_configuration_web_taglib">
+		<title>taglib 설정</title>
+
+			<section id="struts_configuration_web_taglib_jsp">
+			<title>JSP에서의 설정</title>
+	
+				<para>
+					Struts 1.3에서는 Servlet 2.3과 2.4 모두 tag library의 설정이 간단해 졌다. struts-taglib.jar파일을
+					/WEB-INF/lib에 복사한 후 아래 sample과 같이 사용할 tag에 대한 정의를 JSP에 추가하면 된다.
+				</para>
+			</section>
+	
+			<section id="struts_configuration_web_taglib_samples">
+			<title>Samples</title>
+	
+				<para>
+					다음은 'bean', 'html', 'logic' tag library를 사용하는 경우 JSP에 어떻게 정의해야
+	       			하는지를 보여주는 예제이다. 
+	     			<programlisting
+	     			language="xml"><![CDATA[<%@ taglib uri="http://struts.apache.org/tags-bean" prefix="bean"%>
+<%@ taglib uri="http://struts.apache.org/tags-html" prefix="html"%>
+<%@ taglib uri="http://struts.apache.org/tags-logic" prefix="logic"%>]]></programlisting>
+				</para>
+			</section>
+		</section>
+	</section>
+
+	<section id="struts_configuration_strutsconfig">
+    <title>struts-config.xml</title>
+
+    	<para>
+    		Struts 기반의 웹 어플리케이션을 위한 배포 지시자로 Model, View, Controller를 함께 연결시켜 주는
+    		주된 설정 파일이다. 본 문서에서는 자주 사용하는 attribute들에 대해서만 소개하고 자세한 내용은<ulink
+    		url="http://struts.apache.org/1.3.10/userGuide/configuration.html#struts-config">Apache
+    		Struts User Guide</ulink> 와 struts-config online <ulink
+    		url="http://struts.apache.org/1.3.10/struts-core/dtddoc/struts-config_1_3.dtd.html">DTDDoc</ulink>
+    		를 참고한다.
+    	</para>
+    	<itemizedlist>
+      		<listitem>
+        		<para>코드에서 설정 정보 분리</para>
+      		</listitem>
+      		<listitem>
+        		<para>Struts DTD : struts-config_1_3.dtd를 준수</para>
+      		</listitem>
+      		<listitem>
+        		<para>Action, ActionForm, JSP 간의 매핑 정보 저장</para>
+      		</listitem>
+      		<listitem>
+        		<para>하나 이상의 configuration file 사용 가능</para>
+      		</listitem>
+      		<listitem>
+        		<para>서브 모듈 별 설정 파일 정의 가능</para>
+      		</listitem>
+      		<listitem>
+      			<para>Struts configuration 파일의 설정 요소</para>	
+      		</listitem>
+    	</itemizedlist>
+
+    	
+
+		<section id="struts_configuration_strutsconfig_controller">
+      	<title>controller</title>
+
+			<section id="struts_configuration_strutsconfig_controller_setting">
+    	    <title><![CDATA[<controller>설정]]></title>
+
+				<itemizedlist>
+					<listitem>
+	         		   <para>Request를 받은 ActionServlet은 실제 처리를 RequestProcessor에게 위임함</para>
+	          		</listitem>
+	          		<listitem>
+	            		<para>각각의 sub-application에 대한 controller를 다르게 설정하여 모듈별로 분리할 수 있음</para>
+	          		</listitem>
+	          		<listitem>
+	            		<para><![CDATA[org.apache.struts.action.RequestProcessor 또는 서브 클래스를<controller>에 등록]]></para>
+	          		</listitem>
+	        	</itemizedlist>
+	
+	        	<para><![CDATA[다음은 <controller>의 attribute들이다.]]></para>
+
+		        <informaltable>
+		          <caption>controller 태그 속성</caption>
+		          <tgroup cols="2">
+		          <colspec colnum="1" colname="col1" colwidth="2*"/>
+				  <colspec colnum="2" colname="col2" colwidth="8*"/>
+		            <thead>
+		              <row>
+		                <entry align="center">Name</entry>
+		
+		                <entry align="center">Description</entry>
+		              </row>
+		            </thead>
+		            <tbody>
+		              <row>
+		                <entry>bufferSize</entry>
+		                <entry>
+		                	파일 업로드 시 사용하는 입력 버퍼의 크기.
+		                	이 속성은 선택적으로 사용할 수 있다. 디폴트 값 : 4096
+		                </entry>
+		              </row>
+		              <row>
+		                <entry>className</entry>
+		                <entry>
+		                	컨트롤러 정보를 포함한 Config 빈을 구현하는 클래스의 full name.
+		                	org.apache.struts.config.ControllerConfig를 상속받은 클래스이어야 한다. 디폴트
+		                	값 : org.apache.struts.config.ControllerConfig
+		                </entry>
+		              </row>
+		              <row>
+		                <entry>contentType</entry>
+		                <entry>
+		                	Response 결과를 보낼 때 사용하는 컨텐트 타입. 이 속성은 선택적으로 사용. 이 속성에
+		                	지정한 값이 있더라도 액션이나 JSP 페이지에서 지정한 컨텐트 타입이 우선한다. 디폴트 값 :
+		                	text/html
+		                </entry>	
+		              </row>
+		              <row>
+		                <entry>forwardPattern</entry>
+		                <entry>
+		                  <itemizedlist>
+		                    <para>
+		                    	<![CDATA[/로 시작하는 (contextRelative 속성이 false일 경우)
+		                    	context-relative URL과 <forward>의 'path'속성이 어떻게
+		                    	매핑되는지에 대한 대체 패턴. 이 값은 아래 항목의 조합으로 이루어진다.]]>
+		                    </para>
+		                    <listitem>
+		                      <para>$M – Module의 prefix값으로 대체</para>
+		                    </listitem>
+		                    <listitem>
+		                      <para><![CDATA[$P – 선택된 <forward>의 'path' 속성값으로 대체]]></para>
+		                    </listitem>
+		                    <listitem>
+		                      <para>$$ - URL 에서 $ 표시 그대로 표현됨</para>
+		                    </listitem>
+		                    <listitem>
+		                      <para>$x(x는 위에 정의되지 않은 다른 문자) – 추후 사용을 위해 예약됨</para>
+		                    </listitem>
+		                    <para>디폴트 값 : $M$P</para>
+		                  </itemizedlist>
+		                </entry>
+		              </row>
+		              <row>
+		                <entry>inputForward</entry>
+		                <entry>
+		                	<![CDATA[<action>의 input attribute를 최종 URL로 사용할 forward 또는
+		                	global-forward의 이름이길 원하면 true로 설정한다. false 이면 sub application의
+		                	상대경로로 간주한다. 디폴트 값 : false]]>
+		                </entry>
+		              </row>
+		              <row>
+		                <entry>locale</entry>
+		                <entry>사용자의 locale정보를 사용자 세션에 저장할지 여부 디폴트 값 : true</entry>
+		              </row>
+		              <row>
+		                <entry>maxFileSize</entry>
+		                <entry>파일 업로드 시 파일의 최대 용량으로 K,M,G 단위를 붙여 사용한다. 디폴트 값 :
+		                250M</entry>
+		              </row>
+		              <row>
+		                <entry>multipartClass</entry>
+		                <entry>
+		                	Multipart 요청에 대한 처리를 담당하는 클래스의 전체 이름. 파일 업로드 시 사용. 디폴트 값 :
+		                	org.apache.struts.upload.CommonsMultipartRequestHandler
+		                </entry>
+		              </row>
+		              <row>
+		                <entry>nocache</entry>
+		                <entry>
+		                	Response에서 HTTP 헤더를 'nocache'로 설정 할 지에 대한 Boolean 값.
+		                	Optional 디폴트 값 : false
+		                </entry>
+		              </row>
+		              <row>
+		                <entry>pagePattern</entry>	
+		                <entry>
+		                  <itemizedlist>
+		                    <para>
+		                    	커스텀 태그를 사용하는 페이지의 page 속성이 컨텍스트 상대 URL 경로에 매핑 방법에 대한
+		                    	대체 패턴. 이 속성의 값은 아래 항목들로 구성된다.
+		                    </para>
+		                    <listitem>
+		                      <para>$M – Module 접두어에 의한 대체</para>
+		                    </listitem>
+		                    <listitem>
+		                      <para>$P – 선택한 forward 요소의 path 속성에 의한 대체</para>
+		                    </listitem>
+		                    <listitem>
+		                      <para>$$ - URL 에서 $ 표시 그대로 표현됨</para>
+		                    </listitem>
+		                    <listitem>
+		                      <para>$x(x는 위에 정의되지 않은 다른 문자) – 추후 사용을 위해 예약됨</para>
+		                    </listitem>
+		                    <para>디폴트 값 : $M$P</para>
+		                  </itemizedlist>
+		                </entry>
+		              </row>
+		              <row>
+		                <entry>processorClass</entry>
+		                <entry>
+		                	사용자의 요청을 처리할 클래스의 full name. 여기에 지정한 클래스는
+		                	org.apache.struts.action.RequestProcessor 클래스의 하위 클래스가 된다. 디폴트
+		                	값 : org.apache.struts.chain.ComposableRequestProcessor
+		                </entry>
+		              </row>
+		              <row>
+		                <entry>tempDir</entry>
+		                <entry>
+		                	파일 업로드 시 사용할 임시 디렉터리. Optional 디폴트 값 : Servlet
+		                	container가 제공하는 디렉터리
+		                </entry>
+		              </row>
+		            </tbody>
+		          </tgroup>
+		        </informaltable>
+      		</section>
+
+			<section id="struts_configuration_strutsconfig_controller_samples">
+			<title>Samples</title>
+
+		        <para>
+		        	다음은 struts-config.xml 파일에서 controller 설정에 대한 예제이다.
+		        	<programlisting language="xml"><![CDATA[<controller
+        contentType="text/html;charset=utf-8" locale="true" nocache="true"
+        processorClass="org.apache.struts.action.RequestProcessor"/>]]></programlisting>
+        		</para>
+      		</section>
+		</section>
+
+		<section id="struts_configuration_strutsconfig_messageresources">
+		<title>message-resources</title>
+
+      		<section id="struts_configuration_strutsconfig_messageresources_setting">
+        	<title><![CDATA[<message-resources>설정]]></title>
+
+        		<itemizedlist>
+          			<listitem>
+            			<para>메시지 리소스 번들과 관련된 사항들을 정의</para>
+          			</listitem>
+			        <listitem>
+            			<para>국제화 지원(I18N)</para>
+          			</listitem>
+          			<listitem>
+            			<para><![CDATA[Application에 여러 개의 <message-resources>를 등록해 사용 할 수 있음]]></para>
+         			</listitem>
+			        <listitem>
+            			<para>개별 Module은 각각이 사용하는 resource bundle을 정의할 수 있음</para>
+          			</listitem>
+          			<listitem>
+            			<para>Application에 여러 개의 resource bundle을 사용하려고 할 때는 key값을 설정해 줘야함</para>
+          			</listitem>
+        		</itemizedlist>
+
+		        <para><![CDATA[다음은 <message-resources>의 attribute들이다.]]></para>
+
+		        <informaltable>
+		          <caption>message-resources 태그 속성</caption>
+		          <tgroup cols="2">
+		          <colspec colnum="1" colname="col1" colwidth="2*"/>
+					<colspec colnum="2" colname="col2" colwidth="8*"/>
+		            <thead>
+		              <row>
+		                <entry align="center">Name</entry>
+		                <entry align="center">Description</entry>
+		              </row>
+		            </thead>
+		            <tbody>
+		              <row>
+		                <entry>className</entry>
+		                <entry>
+		                	message-resources의 정보를 포함하는 설정 빈을 구현하는 클래스 이름. 여기에 지정한
+		                	클래스는 org.apache.struts.config.MessageResourcesConfig 클래스의 하위
+		                	클래스여야 한다.
+		                	Optional. 디폴트 값 : org.apache.struts.config.MessageResourcesConfig
+		                </entry>
+		              </row>
+		              <row>
+		                <entry>factory</entry>
+		                <entry>
+		                	사용할 MessageResourcesFactory 클래스의 이름. 디폴트 값 :
+		                	org.apache.struts.util.PropertyMessageResourcesFactory
+		                </entry>
+		              </row>
+		              <row>
+		                <entry>key</entry>
+		                <entry>
+		                	메시지 리소스 번들이 저장될 ServletContext 속성. 이 속성은 optional. 디폴트
+		                	값 : org.apache.struts.action.MESSAGE
+		                </entry>
+		              </row>
+		              <row>
+		                <entry>null</entry>
+		                <entry>
+		                	정의되지 않은 메시지 키가 사용된 경우 이를 MessageResources의 하위 클래스에서 어떻게
+		                	처리할지 나타내는 Boolean 값. false로 설정하면 null이 아닌 "???keyname???" 과 같은
+		                	문자열을 되돌려준다. 디폴트 값 : true</entry>
+		              </row>
+		              <row>
+		                <entry>parameter</entry>
+		                <entry>
+		                	리소스 번들의 이름. 예를 들어, 리소스 번들 이름이 ApplicationResources.
+		                	이 속성의 값은 ApplicationResources가 된다. 이 속성은 반드시 정의해야 한다.
+		                	만일 리소스 번들이 패키지화되어 있다면 해당 패키지의 이름을 포함한 전체 이름을 지정해야 한다.
+		                </entry>
+		              </row>
+		            </tbody>
+		          </tgroup>
+		        </informaltable>
+			</section>
+	
+			<section id="struts_configuration_strutsconfig_messageresources_samples">
+        	<title>Samples</title>
+
+        		<para>
+        			다음은struts-config.xml 파일에서 message-resources 설정에 대한 예제이다.
+        			<programlisting language="xml"><![CDATA[<message-resources
+        parameter="message.message-productmgmt"/>]]></programlisting>
+        		</para>
+      		</section>
+		</section>
+
+		<section id="struts_configuration_strutsconfig_plugin">
+		<title>plug-in</title>
+
+			<section id="struts_configuration_strutsconfig_plugin_setting">
+        	<title><![CDATA[<plug-in>설정]]></title>
+
+        		<itemizedlist>
+          			<listitem>
+            			<para>Struts Application 이 구동 시에 동적인 자원을 처리하게 해주는 강력한 기능임</para>
+          			</listitem>
+
+					<listitem>
+						<para>
+							org.apache.struts.action.PlugIn 인터페이스를 구현하는 자바 클래스를 생성한 후 설정
+            				파일에 plug-in 요소를 추가하여 사용 가능
+            			</para>
+          			</listitem>
+			        <listitem>
+            			<para>plug-in 에 대한 예 : validator, tiles 등</para>
+          			</listitem>
+        		</itemizedlist>
+
+        		<para><![CDATA[다음은 <plug-in>의 attribute이다.]]></para>
+
+		        <informaltable>
+		          <caption>plug-in 태그 속성</caption>
+		          <tgroup cols="2">
+		          <colspec colnum="1" colname="col1" colwidth="2*"/>
+				  <colspec colnum="2" colname="col2" colwidth="8*"/>
+		            <thead>
+		              <row>
+		                <entry align="center">Name</entry>
+		                <entry align="center">Description</entry>
+		              </row>
+		            </thead>
+		            <tbody>
+		              <row>
+		                <entry>className</entry>
+		                <entry>
+			                Plug-In 클래스의 전체 이름을 나타내며, 해당 클래스는 반드시
+			                org.apache.struts.action.PlugIn 인터페이스를 구현해야 한다.
+			            </entry>
+		              </row>
+		            </tbody>
+		          </tgroup>
+		        </informaltable>
+			</section>
+
+			<section id="struts_configuration_strutsconfig_plugin_samples">
+        	<title>Samples</title>
+
+        		<para>
+        			다음은 struts-config.xml 파일에서 plug-in 설정에 대한 예제이다.
+        			<programlisting language="xml"><![CDATA[<plug-in
+        className="org.apache.struts.tiles.TilesPlugin"> 
+    <set-property property="definitions-config" value="/WEB-INF/struts-tiles-defs.xml"/>
+</plug-in>]]></programlisting>
+				</para>
+      		</section>
+		</section>
+
+		<section id="struts_configuration_strutsconfig_formbeans">
+		<title>form-beans</title>
+
+			<section id="struts_configuration_strutsconfig_formbeans_setting">
+        	<title><![CDATA[<form-beans>설정]]></title>
+
+		        <itemizedlist>
+       				<listitem>
+	            		<para>Action 수행에 사용되는 form bean의 정보 설정</para>
+          			</listitem>
+
+    			    <listitem>
+            			<para><![CDATA[<form-beans>하위에 여러 개의 <form-bean> 구성 가능]]></para>
+          			</listitem>
+
+          			<listitem>
+            			<para><![CDATA[<form-bean>은 하위에 여러 개의 <form-property>를 가질 수 있음]]></para>
+          			</listitem>
+        		</itemizedlist>
+
+        		<para><![CDATA[다음은 <form-bean>의 attribute들이다.]]></para>
+
+		        <informaltable>
+		          <caption>form-bean 태그 속성</caption>
+		          <tgroup cols="2">
+		          <colspec colnum="1" colname="col1" colwidth="2*"/>
+				  <colspec colnum="2" colname="col2" colwidth="8*"/>
+		            <thead>
+		              <row>
+		                <entry align="center">Name</entry>
+		                <entry align="center">Description</entry>
+		              </row>
+		            </thead>
+		            <tbody>
+		              <row>
+		                <entry>className</entry>
+		                <entry>
+			                Form bean들의 configuration 정보를 담고 있을 객체이다.반드시
+			                org.apache.struts.config.FormBeanConfig를 상속 받은 클래스여야 한다.
+			               	 디폴트 값  : org.apache.struts.config.FormBeanConfig
+			           	</entry>
+		              </row>
+		              <row>
+		                <entry>dynamic</entry>
+		                <entry>
+			                Form bean의 type attribute가 org.apache.struts.action.DynaActionForm이거나
+			                org.apache.struts.action.DynaActionForm을 상속 받아 구현한 클래스이면,
+			              	 이 attribute는 true여야 한다. 디폴트 값 : false
+			            </entry>
+		              </row>
+		              <row>
+		                <entry>name</entry>
+		                <entry>
+		                	이 form bean의 이름이고, 다른 form bean들과 구분될 수 있는 identifier이다. [required]</entry>
+		              </row>
+		              <row>
+		                <entry>type</entry>
+		                <entry>
+		                	이 form bean의 구현 클래스를 나타낸다. 이 클래스는 ActionForm의 서브클래스여야 한다. [required]</entry>
+		              </row>
+		            </tbody>
+		          </tgroup>
+		        </informaltable>
+
+       			<para><![CDATA[다음은 <form-property>의 attribute들이다. ]]>
+		       	<informaltable>
+					<caption>form-property 태그 속성</caption>
+		            <tgroup cols="2">
+		            <colspec colnum="1" colname="col1" colwidth="2*"/>
+					<colspec colnum="2" colname="col2" colwidth="8*"/>
+		              <thead>
+		                <row>
+		                  <entry align="center">Name</entry>
+		                  <entry align="center">Description</entry>
+		                </row>
+		              </thead>
+		              <tbody>
+		                <row>
+		                  <entry>className</entry>
+		                  <entry>
+			          			Form property들의 configuration 정보를 담고 있을 객체이다. 반드시
+			                	org.apache.struts.config.FormPropertyConfig 또는 이를 상속 받은
+			     				클래스여야 한다. 디폴트 값 : org.apache.struts.config.FormPropertyConfig
+			     		  </entry>
+		                </row>
+		                <row>
+		                  <entry>initial</entry>
+		                  <entry>이 property의 initial 값을 나타내고, 문자로 표현된다.</entry>
+		                </row>
+		                <row>
+		                  <entry>name</entry>
+		                  <entry>Form bean이 사용하는 이 property의 이름이다. [required]</entry>
+		                </row>
+		                <row>
+		                  <entry>size</entry>
+		                  <entry>
+			                  Form property의 type attribute가 array일 경우에, 그 array
+			                  elements의 개수를 나타낸다.
+			              </entry>
+		                </row>
+		                <row>
+		                  <entry>type</entry>
+		                  <entry>
+		                    <itemizedlist>
+		                      <para>
+			                      Form bean이 사용하는 이 property의 type이다. 다음은
+			                      DynaActionForm에서 지원하는 type이다.
+			                  </para>
+		                      <listitem>
+		                        <para>java.math.BigDecimal</para>
+		                      </listitem>
+		                      <listitem>
+		                        <para>java.math.BigInteger</para>
+		                      </listitem>
+		                      <listitem>
+		                        <para>boolean</para>
+		                      </listitem>
+		                      <listitem>
+		                        <para>byte</para>
+		                      </listitem>
+		                      <listitem>
+		                        <para>char</para>
+		                      </listitem>
+		                      <listitem>
+		                        <para>java.lang.Class</para>
+		                      </listitem>
+		                      <listitem>
+		                        <para>double, int, long, short</para>
+		                      </listitem>
+		                      <listitem>
+		                        <para>java.lang.String</para>
+		                      </listitem>
+		                      <listitem>
+		                        <para>java.sql.Data</para>
+		                      </listitem>
+		                      <listitem>
+		                        <para>java.sql.Time</para>
+		                      </listitem>
+		                      <listitem>
+		                        <para>java.sql.Timestamp</para>
+		                      </listitem>
+		                    </itemizedlist>
+		                  </entry>
+		                </row>
+		              </tbody>
+		            </tgroup>
+		    	</informaltable>
+		    	</para>
+      		</section>
+
+			<section id="struts_configuration_strutsconfig_formbeans_samples">
+			<title>Samples</title>
+
+				<para>
+	      		  	다음은 struts-config.xml 파일에서 form-beans 설정에 대한 예제이다.
+	        		<programlisting language="xml"><![CDATA[<form-beans>
+    <form-bean
+        name="productForm"
+        type="org.anyframe.struts.sample.sales.web.form.ProductForm">
+    </form-bean>
+    <form-bean 
+        name="employeeForm"
+        type="org.apache.struts.action.DynaActionForm">
+        <form-property name="name" type="java.lang.String"/>
+        <form-property name="age" type="int"/>
+        <form-property name="department" type="java.lang.String" initial="2"/>
+        <form-property name="flavorIDs" type="java.lang.String[]"/>
+    </form-bean>
+</form-beans>]]></programlisting>
+				</para>
+      		</section>
+
+			<section id="struts_configuration_strutsconfig_formbeans_dynaactionform">
+        	<title>DynaActionForm</title>
+
+        		<para>
+        			Struts 어플리케이션에서 각 Form에 대한 별개의 실재하는 ActionForm 클래스를 관리하는 것은 많은
+        			시간을 요한다. DynaActionForm을 사용하게 되면, 위의 두 번째 form-bean 설정과 같이
+        			struts-config.xml 상에 bean의 프로퍼티, 타입, 디폴트 값을 나열함으로써 ActionForm을 직접 작성하지
+        			않아도 된다. 하지만 설정이 복잡하며 성능이 저하되는 문제점이 존재한다.
+        		</para>
+      		</section>
+    	</section>
+
+    	<section id="struts_configuration_strutsconfig_actionmapping">
+      	<title>action-mappings</title>
+
+      		<section id="struts_configuration_strutsconfig_actionmapping_setting">
+        		<title><![CDATA[<action-mappings>설정]]></title>
+
+        			<itemizedlist>
+          				<listitem>
+            				<para>컨트롤러가 요청을 받았을 때 어떤 Action 인스턴스를 실행할 것인가에 대한 설정 정보</para>
+          				</listitem>
+          				<listitem>
+            				<para><![CDATA[<action-mappings>하위에 <action>을 이용해서 여러 개의 action 설정 가능]]></para>
+          				</listitem>
+          				<listitem>
+            				<para><![CDATA[<action> : 특정 request URI와 대응하는 Action 매핑 정의]]></para>
+          				</listitem>
+        			</itemizedlist>
+      		</section>
+
+      		<section id="struts_configuration_strutsconfig_actionmapping_attribute">
+        	<title><![CDATA[<action>의 주요 attribute]]></title>
+
+        		<itemizedlist>
+          			<listitem>
+            			<para>path : 확장자를 제외한 "/"로 시작하는 경로명</para>
+          			</listitem>
+          			<listitem>
+            			<para>type : action클래스의 이름</para>
+          			</listitem>
+          			<listitem>
+            			<para>scope : form bean이 저장되어 있는 context의 scope</para>
+          			</listitem>
+          			<listitem>
+            			<para>name : action과 연결된 form bean의 name</para>
+          			</listitem>
+          			<listitem>
+            			<para>role : Action 객체에 접근할 수 있는 권한을 설정</para>
+          			</listitem>
+          			<listitem>
+            			<para>
+            				input : form bean에서 validation error가 발생한 경우 되돌아 가거나 상황을 표시할
+            				수 있는 경로
+            			</para>
+          			</listitem>
+        		</itemizedlist>
+        		<para><![CDATA[다음은 <action>의 attribute들이다.]]> 
+		        <informaltable>
+		        	<caption>action 태그 속성</caption>
+		            <tgroup cols="2">
+		            <colspec colnum="1" colname="col1" colwidth="2*"/>
+					<colspec colnum="2" colname="col2" colwidth="10*"/>
+		              <thead>
+		                <row>
+		                  <entry align="center">Name</entry>
+		
+		                  <entry align="center">Description</entry>
+		                </row>
+		              </thead>
+		
+		              <tbody>
+		                <row>
+		                  <entry>attribute</entry>
+		                  <entry>
+		                  	Form bean에 접근하기 위한, request-scope 또는 session-scope
+		                  	attribute의 name 값이다. 사용할 form bean을 다른 attribute의 이름으로 사용하고자
+		                  	할 때 사용한다. Form bean이 name attribute에 기술되어 있을 때에만 기술될 수 있다.
+		                  </entry>
+		                </row>
+		                <row>
+		                  <entry>className</entry>
+		                  <entry>
+		                  	Action들의 configuration 정보를 담고 있을 객체이다. 반드시
+		                  	org.apache.struts.config.ActionMapping 또는 이를 상속 받은 클래스여야 한다.
+		                  	디폴트 값 : org.apache.struts.config.ActionMapping
+		                  </entry>
+		                </row>
+		                <row>
+		                  <entry>forward</entry>
+		                  <entry>
+		                  	요청된 request를 Action 클래스 대신하여 수행할 resource(*.do, *.jsp
+		                  	등)의 상대(module-relative) 경로를 나타낸다. [required: 반드시 forward,
+		                  	include, type attribute 중의 하나만 기술되어야 한다.]
+		                  </entry>
+		                </row>
+		                <row>
+		                  <entry>include</entry>
+		                  <entry>
+		                  	요청된 request를 Action 클래스 대신하여 수행할 resource(*.do, *.jsp
+		                  	등)의 상대(module-relative) 경로를 나타낸다. [required: 반드시 forward,
+		                  	include, type attribute 중의 하나만 기술되어야 한다.]
+		                  </entry>
+		                </row>
+		                <row>
+		                  <entry>input</entry>
+		                  <entry>
+		                  	Form bean에서 validation error가 발생했을 때, 이를 나타낼
+		                  	resource(*.do, *.jsp 등)의 상대(module-relative) 경로를 가리킨다. Form
+		                  	bean이 name attribute에 기술되어 있을 때에만 기술될 수 있다. [required: form
+		                  	bean이 name attribute에 기술되어 있고 validation error들을 리턴할 경우]
+		                  </entry>
+		                </row>		
+		                <row>
+		                  <entry>name</entry>
+		                  <entry>이 action 매핑 사용하는 form bean의 이름을 나타낸다.</entry>
+		                </row>
+		                <row>
+		                  <entry>path</entry>
+		                  <entry>
+		                  	Submit된 request의 상대(module-relative)경로를 나타낸다. 이
+		                  	attribute는 반드시 "/"으로 시작해야 하고, filename의 확장자 없이 기술되어야 한다. 예를
+		                  	들어, "/main.do"은 적절한 path attribute의 기술 방법이 아니다. 왜냐하면 이미 do라는
+		                  	확장자가 action 매핑에 사용되고 있는 것을 알고 있기 때문에, "/main"이라고만 기술하는 것이
+		                  	옳다. [required]
+		                  </entry>
+		                </row>
+		                <row>
+		                  <entry>parameter</entry>
+		                  <entry>
+		                  	Action 객체에 특별한 어떤 값을 넘겨주기 위한 설정 parameter이다. 현 Action
+		                  	클래스에서는 이 attribute를 이용하지 않고 있기 때문에, 값을 넣는다 해도 처리되지 않는다.
+		                  	만약 이 attribute를 사용하고자 하면, Action 클래스의 서브클래스를 만들어 구현해야 한다.
+		                  </entry>
+		                </row>
+		                <row>
+		                  <entry>prefix</entry>
+		                  <entry>
+		                  	Request parameter name을 form bean property name에 매치시키는 데 사용되는 prefix를 나타낸다.
+		                  	Form bean이 name attribute에 기술되어 있을 때에만 설정할 수 있다.
+		                  </entry>
+		                </row>
+		                <row>
+		                  <entry>roles</entry>
+		                  <entry>
+		                  	Action 객체에 접근할 수 있는 권한을 설정한다. 여러 role 이름들은 콤마(,)로 구분하여 쓸 수 있다.
+		                  	예를 들어, "admin, master, user"라고 써주면 admin, master, user의 세 가지 권한 중 어느 한가지
+		                  	권한이라도 가진 사용자는 이 action을 사용할 수 있게 된다.
+		                  </entry>
+		                </row>
+		                <row>
+		                  <entry>scope</entry>
+		                  <entry>
+		                  	이 action이 사용하는 form bean이 저장되어 있는 context의 scope를 나타낸다.
+		                   	request 또는 session. 디폴트 값 : session
+		                  </entry>
+		                </row>
+		                <row>
+		                  <entry>suffix</entry>
+		                  <entry>
+		                  	Request parameter name을 form bean property name에 매치시키는 데 사용되는 suffix를 나타낸다.
+		                  	Form bean이 name attribute에 기술되어 있을 때에만 설정할 수 있다.
+		                  </entry>
+		                </row>
+		                <row>
+		                  <entry>type</entry>
+		                  <entry>
+		                  	요청된 request를 수행할 Action 클래스를 나타낸다. 이 클래스는
+		                  	org.apache.struts.action.Action의 서브클래스여야 한다. [required: 반드시
+		                  	forward, include, type attribute 중의 하나만 기술되어야 한다.]
+		                  </entry>
+		                </row>
+		                <row>
+		                  <entry>unknown</entry>
+		                  <entry>
+		                  	설정 파일에 정의되지 않은 request를 처리하는 default action 매핑인지 여부를
+		                  	나타낸다. 요청된 request를 수행할 action 매핑 객체가 없을 경우에, unknown이 true로
+		                  	설정된 action 매핑 객체에게 이 request를 넘겨 처리하게 한다. 각각의 module마다
+		                  	unknown이 true인 action 매핑은 하나만 있을 수 있다. 디폴트 값 : false
+		                  </entry>
+		                </row>
+		                <row>
+		                  <entry>validate</entry>
+		                  <entry>
+		                  	Form bean에서 validation을 수행할지 여부를 나타낸다. 이 값이 true이면,
+		                  	form bean의 validate 메소드가 실행된다. 디폴트 값 : true
+		                  </entry>
+		                </row>
+		                <row>
+		                  <entry>cancellable</entry>
+		                  <entry>
+		                  	<![CDATA[Struts 1.3에 추가된 attribute로 Struts 1.2.9에서
+		                  	<set-property>로 설정했던 것이 1.3부터 바뀌었다. Cancel Process를
+		                  	사용하기 위해서 설정해야 한다.]]>
+		                  </entry>
+		                </row>
+		              </tbody>
+		            </tgroup>
+		        </informaltable>
+	  			</para>
+      		</section>
+
+			<section id="struts_configuration_strutsconfig_actionmapping_samples">
+			<title>Samples</title>
+
+				<para>
+					다음은 struts-config-login.xml 파일에서 action-mappings 설정에 대한 예제이다.
+        			<programlisting language="xml"><![CDATA[<action-mappings>
+    <action
+        path="/login"
+        type="org.anyframe.sample.struts.action.LoginAction"
+        name="userForm"
+        scope="request"
+        input="/basic/login.jsp">
+    <exception key="error.password.mismatch" path="/basic/login.jsp"  
+            type="javax.security.auth.login.FailedLoginException" />
+    <forward name="success" path="/basic/main.jsp" />
+    </action>
+	...
+</action-mappings>]]></programlisting>
+				</para>
+
+        		<para>
+        			'/login.do' 의 request에 대해 LoginAction 이 처리하도록 매핑되어 있으며, 이 때
+        			action에 연결된 form bean은 UserForm 이다. request scope 동안 form bean 이 유지되며
+        			forward 경로는 Action클래스에서 "success"라는 이름으로 forward name을 세팅 했기 때문에
+        			/basic/main.jsp로 forwarding한다. exception 발생 시 /basic/login.jsp로 돌려진다.
+        		</para>
+
+        		<para>
+        			<![CDATA[<action>의 작성은 개발자가 반드시 숙지해야할 부분으로, request의 처리를 담당하는
+        			Action을 매핑하고 페이지 네비게이션을 제어하는 등 웹 어플리케이션 개발의 중요한 작업이다.]]>
+        		</para>
+			</section>
+		</section>
+
+		<section id="struts_configuration_strutsconfig_globalfowards">
+      	<title>global-forwards</title>
+
+      		<section id="struts_configuration_strutsconfig_globalfowards_setting">
+        	<title><![CDATA[<global-forwards> 설정]]></title>
+
+        		<itemizedlist>
+          			<listitem>
+            			<para>실제 forward 또는 redirect 할 수 있는 URI를 논리적인 이름으로 맵핑</para>
+          			</listitem>
+          			<listitem>
+            			<para><![CDATA[<global-forwards>하위에 <forward>를 이용해서 여러 개의 URI 매핑 설정]]></para>
+          			</listitem>
+          			<listitem>
+            			<para>
+            				<![CDATA[하나의 <forward>는 하나의 논리적인 이름을 module-relative 또는
+            				context-relative URI 경로로 매핑함 (URI 경로를 직접 사용하는 것 보다 logic 내부적으로 정해진
+            				이름을 사용함으로써, view로부터 controller와 model을 분리)]]>
+            			</para>
+          			</listitem>
+          			<listitem>
+            			<para>모든 action에서 사용할 수 있는 global level의 forward를 정의</para>
+          			</listitem>
+        		</itemizedlist>
+        		<para>forward 의 우선순위</para>
+        		<para>
+        			<![CDATA[<forward>은 전역(global) level과 action level 에서 정의될 수 있는데
+        			action level 에서 선언된 것이 더 우선순위가 높다. 다음은 <forward>의 attribute들이다.]]>
+        		</para>
+
+		        <informaltable>
+		          <caption>forward 태그 속성</caption>
+		          <tgroup cols="2">
+		          <colspec colnum="1" colname="col1" colwidth="2*"/>
+				<colspec colnum="2" colname="col2" colwidth="8*"/>
+		            <thead>
+		              <row>
+		                <entry align="center">Name</entry>
+		                <entry align="center">Description</entry>
+		              </row>
+		            </thead>
+		            <tbody>
+		              <row>
+		                <entry>className</entry>
+		                <entry>
+		                	Forward들의 configuration 정보를 담고 있을 객체이다.
+		                	org.apache.struts.config.ActionForward 또는 이를 상속 받은 클래스여야 한다.
+		                	디폴트 값 : org.apache.struts.config.ActionForward
+		                </entry>
+		              </row>
+		              <row>
+		                <entry>name</entry>
+		                <entry>현재 forward의 이름이고, 다른 forward들과 구분될 수 있는 identifier이다. [required]</entry>
+		              </row>
+		              <row>
+		                <entry>path</entry>
+		                <entry>
+		                	Forward 또는 redirect할 resource(*.do, *.jsp 등)의 상대(module-relative or
+		                	context-relative)경로를 나타낸다. [required]
+		                </entry>
+		              </row>
+		              <row>
+		                <entry>redirect</entry>
+		                <entry>
+		                	RequestProcessor가 이 forward에 대해 redirect할 필요가 있을 때,
+		                	true로 설정한다. 디폴트 값 : false
+		                </entry>
+		              </row>
+		            </tbody>
+		          </tgroup>
+		        </informaltable>
+			</section>
+
+     		<section id="struts_configuration_strutsconfig_globalfowards_samples">
+      		<title>Samples</title>
+
+        		<para>다음은 struts-config.xml 파일에서 global-forwards 설정에 대한 예제이다.</para>
+
+        		<para>
+          			<programlisting language="xml"><![CDATA[<global-forwards>
+    <forward name="login" path="/login.jsp"/>
+    <forward name="main" path="/main.do" redirect="true"/>
+</global-forwards>]]></programlisting>
+				</para>
+			</section>
+		</section>
+	</section>
+</chapter>

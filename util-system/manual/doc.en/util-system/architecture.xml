@@ -1,0 +1,96 @@
+<chapter id="utilsystem_architecture">
+	<title> Architecture</title>
+	<section id="utilsystem_architecture_sigar">
+		<title> SigarAccessor Architecture</title>
+		<para>
+			Anyframe provides SigarAccessor to simplify the initial environment setup of SIGAR that uses JNI library.
+		</para>
+		<para>The following diagram is Anyframe System Architecture for using Sigar.</para>
+		<mediaobject>
+	      <imageobject>
+	        <imagedata align="center" fileref="../image/util-system/util-system-architecture-sigar.jpg" />
+	      </imageobject>
+	    </mediaobject>
+    	<para>SIGAR (System Information Gatherer and Reporter) is an open source (Apache License, Version 2.0) library that supports various platforms/languages
+    	 and is a command-line tool to accessing OS and hardware level information in Java, Perl, and .Net.</para>
+    	 <para>
+			SIGAR is a core sub-project of Hyperic HQ, which is a System Management/Monitoring Tool Suite,
+			and was made at first to overcome the difficulty in easily accessing and measuring the low-level hardware/OS information on the Java platform.
+			Hyperic has been acquired by SpringSource, and the license policy has been recently changed to Apache License, thus eliminating limitations in its use.
+			Based on JNI (Java Native Interface), it implements system processing differing according to platforms through quick low-level processing using Native library, 
+			and through Java JNI Binding is flexibly integrated into the Java environment.
+		</para>
+		<para>Major functions provided by SIGAR are as follows.</para>
+    	<itemizedlist>
+      		<listitem>
+        		<para>system memory, SWAP, cpu, load average, uptime</para>
+      		</listitem>
+      		<listitem>
+        		<para>memory information for each process, identification and authentication information, condition, arguments, environment</para>
+      		</listitem>
+      		<listitem>
+        		<para>file system information</para>
+      		</listitem>
+      		<listitem>
+        		<para>network information and setup</para>
+      		</listitem>
+      		<listitem>
+        		<para>TCP and UDP connection table information</para>
+      		</listitem>
+      		<listitem>
+        		<para>network route table information</para>
+      		</listitem>
+    	</itemizedlist>
+        <para>Fore easy usage of various functions of Sigar, Anyframe provides SigarAccessor and enables easy access to system, network, and file information.
+        	The functions of SigarAccessor are as follows.
+        </para>
+	    <itemizedlist>
+      		<listitem>
+        		<para>initialization of Sigar running environment</para>
+      		</listitem>
+      		<listitem>
+        		<para>basic system resource gathering and initialization</para>
+      		</listitem>
+      		<listitem>
+        		<para>update of resources changed in real time</para>
+      		</listitem>
+    	</itemizedlist>
+	</section>
+
+	<section id="utilsystem_architecture_filemonitor">
+		<title>File Monitor Architecture</title>
+		<para>
+			Anyframe provides the function of regularly monitoring the events of file changes within directories by generating FileWatcherThread provided by Sigar through a utility called FileMonitor.
+			The information on added/modified/deleted files within the monitored directories is logged using log4j.(Various targets such as console, file and DB can be set up depending on Appender assignment.)
+		</para>
+		<para>The following diagram is Anyframe system architecture for FileMonitor.</para>
+		<mediaobject>
+	      <imageobject>
+	        <imagedata align="center"  fileref="../image/util-system/util-system-architecture-filemonitor.jpg" />
+	      </imageobject>
+	    </mediaobject>
+	</section>
+
+	<section id="utilsystem_architecture_zip">
+		<title>Zip Architecture</title>
+		<para>Anyframe supports compression/decompression of files such as zip, tar and tar.gz using the Apache Commons Compress function. </para>
+		<para>The following diagram is Anyframe system architecture for file compression/decompression.</para>
+		<mediaobject>
+	      <imageobject>
+	        <imagedata align="center"  fileref="../image/util-system/util-system-architecture-zip.jpg" />
+	      </imageobject>
+	    </mediaobject>
+	</section>
+
+	<section id="utilsystem_architecture_shellscript">
+		<title>Shell Script Architecture</title>
+		<para>Anyframe provides the function to support flexibly Shell Script implementation and processing of the results in the Java environment. </para>
+		<para>The following diagram is Anyframe system architecture for implementing Shell Script.</para>
+		<mediaobject>
+	      <imageobject>
+	        <imagedata align="center"  fileref="../image/util-system/util-system-architecture-shellscript.jpg" />
+	      </imageobject>
+	    </mediaobject>
+	</section>
+
+</chapter>

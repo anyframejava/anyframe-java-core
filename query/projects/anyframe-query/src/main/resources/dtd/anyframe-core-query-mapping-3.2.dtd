@@ -1,0 +1,156 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+
+<!--
+	Query Mapping XML DTD for Anyframe Java Core Framework
+	v 3.1.0
+	
+	Created by Jihwan Rhie on 2008-08-12.
+	Copyright (c) 2007, 2008 Samsung SDS Co., Ltd. All rights reserved.
+	This document is governed by Anyframe engineers, Samsung SDS.
+-->
+
+<!--
+	TYPICAL INVOCATION: 
+	# <?xml version="1.0" encoding="UTF-8"?>
+	# <!DOCTYPE queryservice PUBLIC
+	#    "-//ANYFRAME//DTD QUERYSERVICE//EN"
+	#    "http://www.anyframejava.org/dtd/anyframe-core-query-mapping-3.1.dtd">
+	
+	PURPOSE:
+		This Query XML DTD is for Anyframe Java 3 persistence services
+		such as Query Service and Extended Query Service.
+	
+	DEPENDENCIES:
+		None.
+	
+	CHANGE HISTORY:
+		For recent changes, see the Subversion and JIRA log.
+		#2008-08-12: Jihwan: Added service/category determinants for DBIO tool
+		#2008-08-04: Jonghoon: Added isCamelCase attribute
+		#2008-06-19: Initial public release
+		#2008-03-10: Soyon: Initial release
+	
+	MAINTAINERS:
+		Rhie, Jihwan
+		Samsung SDS Co., Ltd.
+		jihwan.rhie@samsung.com
+		phone: +82 2 6484 1070
+		fax:   +82 2 6484 0903
+		
+		Kim, Joonil
+		Samsung SDS Co., Ltd.
+		joon1k.kim@samsung.com
+		phone: +82 2 6484 0813
+		fax:   +82 2 6484 0903
+-->
+
+<!--
+	ENTITIES which are used in this DTD
+	
+	CHANGE HISTORY:
+	#2008-08-12: Jihwan: Added "service.type" entity for service determinant attribute
+-->
+<!ENTITY % version "CDATA #FIXED &#34;6.2&#34;">
+<!ENTITY % service.type "queryService | extendedQueryService">
+
+<!--
+	ELEMENT TYPE: Root
+	ELEMENT NAME: "queryservice"
+	
+	CHANGE HISTORY:
+-->
+<!ELEMENT queryservice (
+	table-mapping?,
+	queries?
+	)>
+
+
+<!--
+	ELEMENT TYPE: Child
+	ELEMENT NAME: "table-mapping"
+	ELEMENT OCCURRENCE: None or one, Optional
+	
+	CHANGE HISTORY:
+-->
+<!ELEMENT table-mapping (
+	table*
+	)>
+	
+	<!-- "table-mapping > table" element -->
+	<!ELEMENT table (
+		field-mapping+,
+		primary-key
+		)>
+		<!ATTLIST table name CDATA #REQUIRED>
+		<!ATTLIST table class CDATA #REQUIRED>
+		
+		<!-- "table-mapping > table > field-mapping" element -->
+		<!ELEMENT field-mapping (
+			dbms-column,
+			class-attribute
+			)>
+			
+		<!-- "table-mapping > table > primary-key" element -->
+		<!ELEMENT primary-key (
+			dbms-column+
+			)>
+			
+			<!-- "table-mapping > table > field-mapping/primary-key > dbms-column" element -->
+			<!ELEMENT dbms-column (#PCDATA)>
+			
+			<!-- "table-mapping > table > field-mapping > class-attribute" element -->
+			<!ELEMENT class-attribute (#PCDATA)>
+
+
+<!--
+	ELEMENT TYPE: Child
+	ELEMENT NAME: "queries"
+	ELEMENT OCCURRENCE: None or one, Optional
+
+	CHANGE HISTORY:
+	#2008-08-12: Jihwan: Added servicetype/category determinant attributes for DBIO tool
+	                     These attributes don't affect Core Framework functionality.
+	#2008-08-04: Jonghoon: Added isCamelCase attribute
+-->
+<!ELEMENT queries (
+	query*
+	)>
+	
+	<!-- "queries > query" element -->
+	<!ELEMENT query (
+		statement,
+		param*,
+		result?,
+		lobStatement?
+		)>
+		<!ATTLIST query id ID #REQUIRED>
+		<!ATTLIST query isDynamic CDATA #IMPLIED>
+		<!ATTLIST query isCamelCase CDATA #IMPLIED>
+		<!ATTLIST query servicetype (%service.type;) #IMPLIED>
+		<!ATTLIST query category CDATA #IMPLIED>
+		<!ATTLIST query mappingStyle (camel|lower|upper|none) "camel">
+		
+		<!-- "queries > query > statement" element -->
+		<!ELEMENT statement (#PCDATA)>
+		
+		<!-- "queries > query > param" element -->
+		<!ELEMENT param EMPTY>
+			<!ATTLIST param type CDATA #REQUIRED>
+			<!ATTLIST param binding CDATA #IMPLIED>
+			<!ATTLIST param name CDATA #IMPLIED>
+		
+		<!-- "queries > query > lobStatement" element -->
+		<!ELEMENT lobStatement (statement, param*)>
+		
+		<!-- "queries > query > result" element -->
+		<!ELEMENT result (
+			result-mapping*
+			)>
+			<!ATTLIST result length CDATA #IMPLIED>
+			<!ATTLIST result class CDATA #IMPLIED>
+			<!ATTLIST result mapper CDATA #IMPLIED>
+		
+			<!-- "queries > query > result > result-mapping" element -->
+			<!ELEMENT result-mapping EMPTY>
+				<!ATTLIST result-mapping column CDATA #REQUIRED>
+				<!ATTLIST result-mapping attribute CDATA #REQUIRED>

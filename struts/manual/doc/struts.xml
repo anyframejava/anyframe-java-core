@@ -1,0 +1,199 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+
+<!DOCTYPE book PUBLIC "-//OASIS//DTD DocBook XML V4.5//EN" "http://www.oasis-open.org/docbook/xml/4.5/docbookx.dtd"
+[
+<!ENTITY struts_architecture SYSTEM "struts/architecture.xml">
+<!ENTITY struts_configuration SYSTEM "struts/configuration.xml">
+<!ENTITY struts_controller SYSTEM "struts/controller.xml">
+<!ENTITY struts_view SYSTEM "struts/view.xml">
+<!ENTITY struts_internationalization SYSTEM "struts/internationalization.xml">
+<!ENTITY struts_validator SYSTEM "struts/validator.xml">
+<!ENTITY struts_exceptionhandling SYSTEM "struts/exceptionhandling.xml">
+<!ENTITY struts_resources SYSTEM "struts/resources.xml">
+<!ENTITY struts_extensions SYSTEM "struts-extensions.xml">
+<!ENTITY struts_extensions_controller SYSTEM "struts-extensions/controller.xml">
+<!ENTITY struts_extensions_view SYSTEM "struts-extensions/view.xml">
+<!ENTITY struts_extensions_doublesubmission SYSTEM "struts-extensions/doublesubmission.xml">
+<!ENTITY struts_extensions_exceptionhandling SYSTEM "struts-extensions/exceptionhandling.xml">
+<!ENTITY struts_extensions_authandauthorization SYSTEM "struts-extensions/authandauthorization.xml">
+<!ENTITY struts_extensions_springintegration SYSTEM "struts-extensions/springintegration.xml">
+<!ENTITY struts_extensions_resources SYSTEM "struts-extensions/resources.xml">
+]
+>
+
+<!--
+		Licensed to the Apache Software Foundation (ASF) under one or more
+		contributor license agreements. See the NOTICE file distributed with
+		this work for additional information regarding copyright ownership.
+		The ASF licenses this file to you under the Apache License, Version
+		2.0 (the "License"); you may not use this file except in compliance
+		with the License. You may obtain a copy of the License at
+
+		http://www.apache.org/licenses/LICENSE-2.0 Unless required by
+		applicable law or agreed to in writing, software distributed under the
+		License is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR
+		CONDITIONS OF ANY KIND, either express or implied. See the License for
+		the specific language governing permissions and limitations under the
+		License.
+-->
+    
+<book lang="ko">
+	<title>Anyframe Struts Plugin</title>
+	
+	<bookinfo>
+		<copyright>
+			<year>2007-2012</year>
+			<holder>삼성SDS</holder>
+		</copyright>
+		<releaseinfo>Version 1.0.4-SNAPSHOT</releaseinfo>
+
+		<productname>Anyframe Struts Plugin</productname>
+
+		<authorgroup>
+			<corpauthor></corpauthor>
+		</authorgroup>
+
+		<mediaobject>
+			<imageobject>
+				<!-- logo 변경 -->
+				<imagedata fileref="../image/common/logo_pdf.jpg" />
+			</imageobject>
+			<textobject>
+				<phrase>Anyframe Java 로고</phrase>
+			</textobject>
+		</mediaobject>
+		<legalnotice>
+			<para>본 문서의 저작권은 삼성SDS에 있으며 Anyframe 오픈소스 커뮤니티 활동의 목적하에서 자유로운 이용이 가능합니다.
+			본 문서를 복제, 배포할 경우에는 저작권자를 명시하여 주시기 바라며 본 문서를 변경하실 경우에는 원문과 변경된 내용을 표시하여 주시기 바랍니다. 
+			원문과 변경된 문서에 대한 상업적 용도의 활용은 허용되지 않습니다. 본 문서에 오류가 있다고 판단될 경우 이슈로 등록해 주시면 적절한 조치를 취하도록 하겠습니다.
+			</para>
+		</legalnotice>
+	</bookinfo>
+	<part id="struts_introduction_part">
+		<title>Introduction</title>
+		<partintro id="struts_introduction_part_intro">
+			<para>
+				Struts plugin은 Java EE 어플리케이션 개발 시 Web framework로 많이 사용되고 있는 <ulink url="http://struts.apache.org/">Apache Struts</ulink>와 
+				Spring 간의 연계 방법을 가이드하기 위한 샘플 코드와 이 오픈 소스들을 활용하는데 필요한 참조 라이브러리들로 구성되어 있다.
+			</para>
+			<para role="introduction_title">
+				<emphasis role="bold">Installation</emphasis>
+			</para>
+			<para>Command 창에서 다음과 같이 명령어를 입력하여 struts plugin을 설치한다.</para>
+			<programlisting language="java"><![CDATA[mvn anyframe:install -Dname=struts]]></programlisting>
+			<para>
+				installed(mvn anyframe:installed) 혹은 jetty:run(mvn clean
+				jetty:run) command를 이용하여 설치 결과를 확인해볼 수 있다. 
+			</para>
+			<informaltable>
+				<caption>Dependent Plugins</caption>
+				<tgroup cols="2">
+					<colspec colnum="1" colname="col1" colwidth="5*" />
+					<colspec colnum="2" colname="col2" colwidth="5*" />
+					<thead>
+						<row>
+							<entry align="center">Plugin Name</entry>
+							<entry align="center">Version Range</entry>
+						</row>
+					</thead>
+					<tbody>
+						<row>
+							<entry align="center">
+								<ulink
+									url="http://dev.anyframejava.org/docs/anyframe/plugin/optional/query/1.5.0-SNAPSHOT/reference/htmlsingle/query.html">Query</ulink>
+							</entry>
+							<entry align="center" valign="middle">2.0.0 > * > 1.4.0</entry>
+						</row>
+					</tbody>
+				</tgroup>
+			</informaltable>
+			<para>
+			</para>
+		</partintro>
+	</part>
+	
+	<part id="struts_overview_part">
+		<title>Struts</title>
+		<partintro id="struts_overview_part_intro">
+			<para>
+				Apache Struts Framework는 Java web application을 개발하기 위한 open-source framework이다.
+				Struts는 software application의 separate concerns중 하나인 Model-View-Controller(MVC) architecture를
+				기반으로 web application을 개발할 수 있도록 도와주고 있다. Struts에서는 Controller를 ActionServlet형태로
+				제공하고, JSP Taglib를 사용하여 View 레이어를 구현하도록 가이드하고 있다. 또한 Spring Framework의
+				Web Struts에서는(spring-webmvc-struts.jar), Spring Framework을 기반으로 비즈니스 레이어를 구성할 경우
+				Struts의 WebApplicationContext에 Spring Bean으로 등록된 비즈니스 레이어의 인터페이스에 접근할 수 있는 환경을 제공한다. 
+			</para>
+			
+			<para>
+				Struts의 특징은 다음과 같다.
+		  		<itemizedlist>
+				    <listitem>
+						<para><emphasis role="bold">MVC architecture를 따르고 있기 때문에 역할 분리가 명백하다.</emphasis></para>
+						<para>
+		 					Model과 View를 연결하는 Controller인, ActionServlet은 입력된 HTTP Request에 따라
+		 					Action클래스를 실행하고, Action클래스는 Model에 해당하는 비즈니스 레이어나
+		 					Database관련 로직을 수행한다. 그리고 Model과 View사이의 data 전달을 위한
+		 					ActionForm 클래스를 활용할 수 있다. 
+		 				</para>
+		    		</listitem>
+		 		   	<listitem>
+						<para><emphasis role="bold">JSP로 구현하는 View 개발을 편리하게 도와주는 Taglib를 제공한다.</emphasis></para>
+						<para>
+		 					Struts에서 기본으로 제공하는 Taglib에는 Bean, HTML, Logic, Nested가 있다.
+		 				</para>
+		    		</listitem>
+		    		<listitem>
+		      			<para><emphasis role="bold">Configuration 설정으로 Exception Handling이 가능하다.</emphasis></para>
+		      			<para>
+		 					struts-config.xml파일의 exception handling을 이용하여 Exception종류에 따른
+		 					Exception page를 간편하게 설정할 수 있다.
+		 				</para>
+		    		</listitem>
+		    		<listitem>
+		      			<para><emphasis role="bold">QConfiguration 설정으로 권한처리가 가능하다.</emphasis></para>
+		      			<para>
+		 					특정 URL에 권한을 부여하여 허가된 사용자만이 해당 URL에 접근이 가능하도록 설정할 수 있다. 
+		 				</para>
+		    		</listitem>
+		    		<listitem>
+		      			<para><emphasis role="bold">Controller에서 Validation Check가 가능하다.</emphasis></para>
+		      			<para>
+		 					사용자의 입력값을 View가 아닌 Controller에서 Validation Check를 할 수 있다. 
+		 				</para>
+		   			</listitem>
+		   			<listitem>
+		      			<para><emphasis role="bold">MessageResource를 이용한 국제화(I18N)기능을 지원한다.</emphasis></para>
+		      			<para>사용자 Locale정보에 따라 다양한 언어로 web page 출력이 가능하다</para>
+		   			</listitem>
+		   				
+		  		</itemizedlist>
+	  		</para>
+		</partintro>
+		&struts_architecture;
+		&struts_configuration;
+		&struts_controller;
+		&struts_view;
+		&struts_internationalization;
+		&struts_validator;
+		&struts_exceptionhandling;
+	</part>			
+	
+	<part id="struts_extensions_overview_part">
+		<title>Struts Extensions</title>
+		<partintro id="struts_extensions_overview_part_intro">
+			<para>
+				Struts Extensions은 Apache Struts Framework를 실제 프로젝트에서 보다 편리하게 사용하기 위해 추가적인 기능들을 제공한다.
+				Role기반의 인증 및 관리 기능 등이 추가 된 Struts의 TilesRequestProcessor를 확장한 DefaultRequestProcessor,
+				선언적인 Synchronized Token 처리 기능 등이 추가된 AbstractActionSupport 외에 다양한 Controller클래스와
+				Exception 처리를 위한 DefaultExceptionHandler 등을 제공하고 있다. 그 밖에 Ria Solution인 MiPlatform을
+				이용해 화면 개발 시 공통적인 로직을 담당하고 있는 AnyframeMiPAction클래스가 포함되어 있다.
+			</para>
+		</partintro>
+		&struts_extensions_controller;
+		&struts_extensions_view;
+		&struts_extensions_doublesubmission;
+		&struts_extensions_exceptionhandling;
+		&struts_extensions_authandauthorization;
+		&struts_extensions_springintegration;
+	</part>	
+</book>

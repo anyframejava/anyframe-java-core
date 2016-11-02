@@ -1,0 +1,46 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:aop="http://www.springframework.org/schema/aop"
+	xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-3.2.xsd
+	http://www.springframework.org/schema/aop http://www.springframework.org/schema/aop/spring-aop-3.2.xsd">
+
+	<bean id="injectionPatternPostProcessor" class="org.anyframe.jdbc.support.impl.DefaultInjectionPatternPostProcessor">
+		<property name="warningPatterns">
+			<list>
+				<value>-{2,}</value>	<!-- check sql comment pattern -->
+				<value>'?1'?\s*=\s*'?1'?</value>	<!-- check 1 = 1 pattern - ex. '1' = '1' , 1= 1, '1'='1' -->
+			</list>
+		</property>
+		<property name="replacePatterns">
+			<map>
+				<entry key=";" value="" />	<!-- delete query statement delimiter -->
+				<entry key="-{2,}" value="-" />	<!-- ex. sql comment (dash) changing - (one dash) -->
+				<entry key="(?:or|OR)\s+'?1'?\s*=\s*'?1'?" value="" />	<!-- ex. delete always true text pattern - or '1'='1' -->
+			</map>
+		</property>
+	</bean>
+
+	<bean id="completeQueryPostProcessor" class="org.anyframe.jdbc.support.impl.DefaultCompleteQueryPostProcessor" />
+
+	<bean id="p6InjectionPatternFactory" class="org.anyframe.jdbc.support.p6spy.injection.P6InjectionPatternFactory">
+		<constructor-arg name="injectionPatternPostProcessor" ref="injectionPatternPostProcessor" />
+	</bean>
+
+	<bean id="p6CompleteQueryFactory" class="org.anyframe.jdbc.support.p6spy.logging.P6CompleteQueryFactory">
+		<constructor-arg name="completeQueryPostProcessor" ref="completeQueryPostProcessor" />
+	</bean>
+
+	<bean id="jdbcAspect" class="org.anyframe.jdbc.support.aspect.JdbcAspect">
+		<property name="factories">
+			<list>
+				<ref bean="p6InjectionPatternFactory" />
+				<ref bean="p6CompleteQueryFactory" />
+			</list>
+		</property>
+	</bean>
+
+	<aop:config>
+		<aop:pointcut id="jdbcPointcut" expression="execution(* *..*DataSource.*(..))" />
+		<aop:advisor advice-ref="jdbcAspect" pointcut-ref="jdbcPointcut" />
+	</aop:config>
+
+</beans>

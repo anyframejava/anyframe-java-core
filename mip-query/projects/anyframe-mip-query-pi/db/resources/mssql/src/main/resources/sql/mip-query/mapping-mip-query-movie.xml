@@ -1,0 +1,9 @@
+			<!--mip-query-findMovieList-START-->
+				SELECT 
+					MOVIE_ID, TITLE, DIRECTOR, GENRE_ID, ACTORS, RUNTIME, RELEASE_DATE, TICKET_PRICE, NOW_PLAYING, POSTER_FILE
+				FROM MOVIE
+				WHERE 		
+					TITLE like '%' + :SEARCH_TITLE + '%'
+					AND	NOW_PLAYING = :SEARCH_NOW_PLAYING 
+				ORDER BY RELEASE_DATE DESC
+			<!--mip-query-findMovieList-END-->

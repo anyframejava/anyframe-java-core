@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE sqlMap PUBLIC "-//ibatis.apache.org//DTD SQL Map 2.0//EN"
+"http://ibatis.apache.org/dtd/sql-map-2.dtd">
+
+ <sqlMap namespace="Genre">
+  
+    <typeAlias alias="Genre" type="org.anyframe.plugin.ibatis2.domain.Genre"/>
+    
+    <resultMap  id="genreResult" class="Genre">
+       <result property="genreId" column="genre_id" />	    
+       <result property="name" column="name" />	    
+    </resultMap>
+      
+    <select id="getGenreList" resultMap="genreResult">
+	    SELECT genre_id, name FROM genre ORDER BY name
+    </select>
+
+   <select id="getGenre" resultMap="genreResult">
+	    SELECT genre.genre_id, genre.name
+	    FROM   MOVIE movie, GENRE genre
+	    WHERE  movie.movie_id =  #movieId# and movie.genre_id=genre.genre_id
+    </select>
+</sqlMap>
+

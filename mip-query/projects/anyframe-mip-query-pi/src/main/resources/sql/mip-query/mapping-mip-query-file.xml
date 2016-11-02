@@ -1,0 +1,38 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<queryservice xmlns="http://www.anyframejava.org/schema/query/mapping" 
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" 
+	xsi:schemaLocation="http://www.anyframejava.org/schema/query/mapping http://www.anyframejava.org/schema/query/mapping/anyframe-query-mapping-1.0.xsd ">
+
+	<queries>
+		<query id="findBoardFileList" isDynamic="true" mappingStyle="upper">
+			<statement>
+				SELECT
+				ID, NAME, REF_ID, FILE_SIZE
+				FROM MIP_ATTACHED
+				WHERE REF_ID = :POST_ID
+				ORDER BY ID DESC
+			</statement>
+		</query>
+		<query id="createBoardFile" isDynamic="true" mappingStyle="upper">
+			<statement>
+				INSERT INTO MIP_ATTACHED
+				(ID, NAME, REF_ID, FILE_SIZE)
+				VALUES (:ID, :NAME, :REF_ID, :FILE_SIZE)
+			</statement>
+		</query>
+		<query id="updateBoardFile" isDynamic="true" mappingStyle="upper">
+			<statement>
+				UPDATE MIP_ATTACHED
+				SET
+				NAME = :NAME, REF_ID = :REF_ID, FILE_SIZE = :FILE_SIZE
+				WHERE ID = :ID
+			</statement>
+		</query>
+		<query id="removeBoardFile" isDynamic="true" mappingStyle="upper">
+			<statement>
+				DELETE FROM MIP_ATTACHED
+				WHERE ID = :ID
+			</statement>
+		</query>
+	</queries>
+</queryservice>

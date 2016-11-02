@@ -1,0 +1,152 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<!--
+    SQL File Name : mapper_GenreDao2_sql.xml 
+    Description : -->
+<mapper namespace="GenreDao2">
+    <!--
+        SQL Name : org-anyframe-plugin-mybatis-moviefinder-service-impl-GenreDao2-insertGenre () 
+        Description : 		parameterType : org.anyframe.plugin.mybatis.domain.Genre2DVO
+    -->	
+	<insert id="org-anyframe-plugin-mybatis-moviefinder-service-impl-GenreDao2-insertGenre"  parameterType="org.anyframe.plugin.mybatis.domain.Genre2DVO"  >
+		INSERT INTO/*SQL_ID: org-anyframe-plugin-mybatis-moviefinder-service-impl-GenreDao2-insertGenre */
+		 GENRE (
+			GENRE_ID		/*  */
+			,NAME		/*  */
+		)
+		VALUES (
+			#{genreId}
+			,#{name}
+		)
+			
+			
+			
+			
+			
+			
+			
+	</insert>
+    <!--
+        SQL Name : org-anyframe-plugin-mybatis-moviefinder-service-impl-GenreDao2-updateGenre () 
+        Description : 		parameterType : org.anyframe.plugin.mybatis.domain.Genre2DVO
+    -->	
+	<update id="org-anyframe-plugin-mybatis-moviefinder-service-impl-GenreDao2-updateGenre"  parameterType="org.anyframe.plugin.mybatis.domain.Genre2DVO"  >
+		UPDATE/*SQL_ID: org-anyframe-plugin-mybatis-moviefinder-service-impl-GenreDao2-updateGenre */
+		 GENRE
+		SET GENRE_ID = #{genreId} 		/*  */
+			,NAME = #{name} 		/*  */
+		WHERE GENRE_ID = #{genreId}
+			
+			
+			
+			
+			
+			
+			
+	</update>
+    <!--
+        SQL Name : org-anyframe-plugin-mybatis-moviefinder-service-impl-GenreDao2-deleteGenre () 
+        Description : 		parameterType : org.anyframe.plugin.mybatis.domain.Genre2DVO
+    -->	
+	<delete id="org-anyframe-plugin-mybatis-moviefinder-service-impl-GenreDao2-deleteGenre"  parameterType="org.anyframe.plugin.mybatis.domain.Genre2DVO"  >
+		DELETE/*SQL_ID: org-anyframe-plugin-mybatis-moviefinder-service-impl-GenreDao2-deleteGenre */
+		FROM GENRE
+		WHERE GENRE_ID = #{genreId}
+			
+			
+			
+			
+			
+			
+			
+	</delete>
+	<resultMap id="org-anyframe-plugin-mybatis-moviefinder-service-impl-GenreDao2-selectOneGenre-result" type="org.anyframe.plugin.mybatis.domain.Genre2DVO">
+		<result property="genreId" column="GENRE_ID"/>
+		<result property="name" column="NAME"/>
+	</resultMap>
+	
+    <!--
+        SQL Name : org-anyframe-plugin-mybatis-moviefinder-service-impl-GenreDao2-selectOneGenre () 
+        Description : 		parameterType : org.anyframe.plugin.mybatis.domain.Genre2DVO
+		resultMap : org-anyframe-plugin-mybatis-moviefinder-service-impl-GenreDao2-selectOneGenre-result
+    -->
+	<select id="org-anyframe-plugin-mybatis-moviefinder-service-impl-GenreDao2-selectOneGenre"  parameterType="org.anyframe.plugin.mybatis.domain.Genre2DVO"  resultMap="org-anyframe-plugin-mybatis-moviefinder-service-impl-GenreDao2-selectOneGenre-result" useCache="true" flushCache="false">
+		SELECT /*SQL_ID: org-anyframe-plugin-mybatis-moviefinder-service-impl-GenreDao2-selectOneGenre */
+		GENRE_ID		/*  */
+			,NAME		/*  */
+		FROM
+			GENRE
+		WHERE GENRE_ID = #{genreId}
+			
+			
+			
+			
+			
+			
+			
+	</select>
+	<resultMap id="org-anyframe-plugin-mybatis-moviefinder-service-impl-GenreDao2-listGenre-result" type="org.anyframe.plugin.mybatis.domain.Genre2DVO">
+		<result property="genreId" column="GENRE_ID"/>
+		<result property="name" column="NAME"/>
+	</resultMap>
+	
+    <!--
+        SQL Name : org-anyframe-plugin-mybatis-moviefinder-service-impl-GenreDao2-listGenre () 
+        Description : 		parameterType : org.anyframe.plugin.mybatis.domain.Genre2DVO
+		resultMap : org-anyframe-plugin-mybatis-moviefinder-service-impl-GenreDao2-listGenre-result
+    -->
+	<select id="org-anyframe-plugin-mybatis-moviefinder-service-impl-GenreDao2-listGenre"  parameterType="org.anyframe.plugin.mybatis.domain.Genre2DVO"  resultMap="org-anyframe-plugin-mybatis-moviefinder-service-impl-GenreDao2-listGenre-result" useCache="true" flushCache="false">
+		SELECT /*SQL_ID: org-anyframe-plugin-mybatis-moviefinder-service-impl-GenreDao2-listGenre */
+		GENRE_ID		/*  */
+			,NAME		/*  */
+		FROM
+			GENRE
+		WHERE GENRE_ID = #{genreId}
+			
+			
+			
+			
+			
+			
+	</select>
+	<resultMap id="org-anyframe-plugin-mybatis-moviefinder-service-impl-GenreDao2-selectCountGenre-result" type="org.anyframe.plugin.mybatis.domain.Genre2DVO">
+		<result property="c1" column="C1"/>
+	</resultMap>
+	
+    <!--
+        SQL Name : org-anyframe-plugin-mybatis-moviefinder-service-impl-GenreDao2-selectCountGenre () 
+        Description : 		parameterType : org.anyframe.plugin.mybatis.domain.Genre2DVO
+		resultMap : org-anyframe-plugin-mybatis-moviefinder-service-impl-GenreDao2-selectCountGenre-result
+    -->
+	<select id="org-anyframe-plugin-mybatis-moviefinder-service-impl-GenreDao2-selectCountGenre"  parameterType="org.anyframe.plugin.mybatis.domain.Genre2DVO"  resultMap="org-anyframe-plugin-mybatis-moviefinder-service-impl-GenreDao2-selectCountGenre-result" useCache="true" flushCache="false">
+		SELECT /*SQL_ID: org-anyframe-plugin-mybatis-moviefinder-service-impl-GenreDao2-selectCountGenre */
+					COUNT(*)
+		FROM
+			GENRE
+		WHERE GENRE_ID = #{genreId}
+			
+			
+			
+			
+			
+			
+	</select>
+	<resultMap id="org-anyframe-plugin-mybatis-moviefinder-service-impl-GenreDao2-pagingGenre-result" type="org.anyframe.plugin.mybatis.domain.Genre2DVO">
+		<result property="genreId" column="GENRE_ID"/>
+		<result property="name" column="NAME"/>
+	</resultMap>
+	
+    <!--
+        SQL Name : org-anyframe-plugin-mybatis-moviefinder-service-impl-GenreDao2-pagingGenre () 
+        Description : 		parameterType : org.anyframe.plugin.mybatis.domain.Genre2DVO
+		resultMap : org-anyframe-plugin-mybatis-moviefinder-service-impl-GenreDao2-pagingGenre-result
+    -->
+	<select id="org-anyframe-plugin-mybatis-moviefinder-service-impl-GenreDao2-pagingGenre"  parameterType="org.anyframe.plugin.mybatis.domain.Genre2DVO"  resultMap="org-anyframe-plugin-mybatis-moviefinder-service-impl-GenreDao2-pagingGenre-result" useCache="true" flushCache="false">
+		SELECT /*SQL_ID: org-anyframe-plugin-mybatis-moviefinder-service-impl-GenreDao2-pagingGenre */
+		GENRE_ID		/*  */
+			,NAME		/*  */
+		FROM
+			GENRE
+		WHERE GENRE_ID = #{genreId}
+	</select>
+</mapper>

@@ -1,0 +1,967 @@
+<chapter id="util_dateutil">
+	<title>DateUtil의 활용</title>
+	<para>
+		Joda Time 을 사용하여 날짜, 시간 및 요일 계산, 유효성 체크와 포맷 변경 등의 기능을 제공한다.
+	</para>
+	<para>다음은 DateUtil이 가지고 있는 메소드에 대한 설명이다.</para>
+	<informaltable>
+		<caption>DateUtil 메소드</caption>
+		<tgroup cols="4">
+			<colspec colnum="1" colname="col1" colwidth="2*" />
+			<colspec colnum="2" colname="col2" colwidth="3*" />
+			<colspec colnum="3" colname="col3" colwidth="4*" />
+			<colspec colnum="4" colname="col4" colwidth="1*" />
+			<thead>
+				<row>
+					<entry align="center">Method</entry>
+					<entry align="center">Description</entry>
+					<entry align="center">Example</entry>
+					<entry align="center">Remarks</entry>
+				</row>
+			</thead>
+			<tbody>
+				<row>
+					<entry>
+						<emphasis role="bold">getCurrentDateTimeString</emphasis>()
+					</entry>
+					<entry></entry>
+					<entry></entry>
+					<entry><emphasis role="bold">deprecated</emphasis> since core 1.5.0 
+					<para>getCurrentDateTime() 사용 </para>  </entry>
+				</row>
+				<row>
+					<entry>
+						<emphasis role="bold">getCurrentDateTimeString</emphasis>(String str)
+					</entry>
+					<entry></entry>
+					<entry></entry>
+					<entry><emphasis role="bold">deprecated</emphasis> since core 1.5.0 <para> getCurrentDateTime(String pattern) 사용 </para> </entry>
+				</row>
+				<row>
+					<entry>
+						<emphasis role="bold">getThisMonth</emphasis>
+						()
+					</entry>
+					<entry>현재 달과 연도를 문자열로 반환</entry>
+					<entry>DateUtil.getThisMonth()</entry>
+					<entry></entry>
+				</row>
+				<row>
+					<entry>
+						<emphasis role="bold">getThisYear</emphasis>
+						()
+					</entry>
+					<entry>현재 연도를 문자열로 반환</entry>
+					<entry>DateUtil.getthisYear()</entry>
+					<entry></entry>
+				</row>
+				<row>
+					<entry>
+						<emphasis role="bold">getDayOfWeek</emphasis>
+						(String str)
+					</entry>
+					<entry>입력받은 일자의 요일 반환</entry>
+					<entry>DateUtil.getDayOfWeek()</entry>
+					<entry></entry>
+				</row>
+				<row>
+					<entry>
+						<emphasis role="bold">getDayOfWeek</emphasis>
+						(String str, Boolean abbreviation, Locale locale)
+					</entry>
+					<entry>입력받은 일자의 요일 반환 - Locale 정보를 받아 해당하는 언어에 대해서 약어로 보여주거나 전체 요일
+						형태로 보여준다.</entry>
+					<entry>DateUtil.getDayOfWeek("2011-02-04", true, Locale.US) = "Fri"
+					</entry>
+					<entry></entry>
+				</row>
+				<row>
+					<entry>
+						<emphasis role="bold">getDays</emphasis>
+						(Calendar cal1, Calendar cal2)
+					</entry>
+					<entry>입력받은 두 날짜 사이의 일자 계산</entry>
+					<entry>DateUtil.getDays(new GregorianCalendar(2010, 10, 14), new
+						GregorianCalendar(2010, 11, 28))=44</entry>
+					<entry></entry>
+				</row>
+				<row>
+					<entry>
+						<emphasis role="bold">getDays</emphasis>
+						(String startDate, String endDate)
+					</entry>
+					<entry>입력받은 두 날짜 사이의 일자 계산</entry>
+					<entry>DateUtil.getDays("2010-11-24", "2010-12-30")=36</entry>
+					<entry></entry>
+				</row>
+				<row>
+					<entry>
+						<emphasis role="bold">getDays</emphasis>
+						(String startDate, String endDate, String pattern)
+					</entry>
+					<entry>입력받은 형식의 두날짜 사이의 일자 계산</entry>
+					<entry>DateUtil.getDays("2010-11-24", "2010-12-30",
+						"yyyy-MM-dd")=36</entry>
+					<entry></entry>
+				</row>
+				<row>
+					<entry>
+						<emphasis role="bold">equals</emphasis>
+						(Date date1, String date2)
+					</entry>
+					<entry>입력받은 두 일자가 같은지 여부</entry>
+					<entry>DateUtil.equals(new Date(1292252400000l), "2010-12-14")=true
+					</entry>
+					<entry></entry>
+				</row>
+				<row>
+					<entry>
+						<emphasis role="bold">equals</emphasis>
+						(Date date1, String date2, String date2format)
+					</entry>
+					<entry>입력받은 두 일자가 같은지 여부</entry>
+					<entry>DateUtil.equals(new Date(1292252400000l), "2010/12/14",
+						"yyyy/MM/dd")=true</entry>
+					<entry></entry>
+				</row>
+				<row>
+					<entry>
+						<emphasis role="bold">equals</emphasis>
+						(Date date1, Date date2)
+					</entry>
+					<entry>입력받은 두 일자가 같은지 여부</entry>
+					<entry>DateUtil.equals( new Date(1292252400000l), new
+						Date(1292252400000l))=true</entry>
+					<entry></entry>
+				</row>
+				<row>
+					<entry>
+						<emphasis role="bold">greaterThan</emphasis>
+						(Date date1, String date2)
+					</entry>
+					<entry>입력받은 두 일자의 배치비교</entry>
+					<entry>DateUtil.greaterThan(new Date(1292311593000l),
+						"2010-12-02")=true</entry>
+					<entry></entry>
+				</row>
+				<row>
+					<entry>
+						<emphasis role="bold">greaterThan</emphasis>
+						(Date date1, String date2, String date2format)
+					</entry>
+					<entry>입력받은 두 일자의 배치비교</entry>
+					<entry>DateUtil.greaterThan(new Date(1292311593000l), "2010/12/02",
+						"yyyy/MM/dd")=true</entry>
+					<entry></entry>
+				</row>
+				<row>
+					<entry>
+						<emphasis role="bold">greaterThan</emphasis>
+						(Date date1, Date date2)
+					</entry>
+					<entry>입력받은 두 일자의 배치비교</entry>
+					<entry>DateUtil.greaterThan(new Date(1292311593000l), new
+						Date(1292252400000l)) =true</entry>
+					<entry></entry>
+				</row>
+				<row>
+					<entry>
+						<emphasis role="bold">greaterThan</emphasis>
+						(Timestamp timestamp1, Timestamp timestamp2)
+					</entry>
+					<entry>입력받은 두 java.sql.Timestamp 비교</entry>
+					<entry>DateUtil.greaterThan(new Timestamp(1292311593000l), new
+						Timestamp(1292311503000l))</entry>
+					<entry>since core 1.0.4</entry>
+				</row>
+				<row>
+					<entry>
+						<emphasis role="bold">greaterThan</emphasis>
+						(Timestamp timestamp1, String timestamp2)
+					</entry>
+					<entry>입력받은 java.sql.Timestamp과 문자열과 비교</entry>
+					<entry>DateUtil.greaterThan(new Timestamp(1292311593000l),
+						"2012-05-21")</entry>
+					<entry>since core 1.0.4</entry>
+				</row>
+				<row>
+					<entry>
+						<emphasis role="bold">greaterThan</emphasis>
+						(Timestamp timestamp1, String timestamp2, String
+						timestamp2pattern)
+					</entry>
+					<entry>입력받은 java.sql.Timestamp timestamp2pattern의 형식의 문자열 비교
+					</entry>
+					<entry>DateUtil.greaterThan(new Timestamp(1292311593000l),
+						"2012-05-21", "yyyy-MM-dd")</entry>
+					<entry>since core 1.0.4</entry>
+				</row>
+				<row>
+					<entry>
+						<emphasis role="bold">getEndDate</emphasis>
+						(String startDay, int intervalDays)
+					</entry>
+					<entry>입력받은 날짜에서 intervalDays 만큼 더한 날짜 반환</entry>
+					<entry>DateUtil.getEndDate("2011-01-01", 8)=2011-01-09</entry>
+					<entry></entry>
+				</row>
+				<row>
+					<entry>
+						<emphasis role="bold">addDays</emphasis>
+						(String str, int days)
+					</entry>
+					<entry>입력받은 일자에 대해서 해당 일만큼 더한 일자 반환. 마이너스 일자는 입력받은 일자보다 이전의 일자로
+						계산해서 반환</entry>
+					<entry>DateUtil.addDays("2010-12-18", 30)=2011-01-17</entry>
+					<entry></entry>
+				</row>
+				<row>
+					<entry>
+						<emphasis role="bold">addMonths</emphasis>
+						(String str, int months)
+					</entry>
+					<entry>입력받은 일자에 대해서 해당 개월수만큼 더한 일자 반환. 마이너스 개월수는 입력받은 일자보다 이전 일자로
+						계산해서 반환</entry>
+					<entry>DateUtil.addMonths("2010-12-18", 2)=2011-02-18</entry>
+					<entry></entry>
+				</row>
+				<row>
+					<entry>
+						<emphasis role="bold">addYears</emphasis>
+						(String str, int years)
+					</entry>
+					<entry>입력받은 일자에 대해서 해당 년수만큼 더한 일자 반환. 마이너스 년수는 입력받은 일자보다 이전 일자로
+						계산해서 반환</entry>
+					<entry>DateUtil.addYears("2010-12-18", 2)=2012-12-18</entry>
+					<entry></entry>
+				</row>
+				<row>
+					<entry>
+						<emphasis role="bold">addYearMonthDay</emphasis>
+						(String str, int years, int months, int days)
+					</entry>
+					<entry>입력된 일자에 대해서 년,월,일만큼 가감해서 계산한 일자 반환</entry>
+					<entry>DateUtil.addYearMonthDay ("2010-04-18", 2, 4, 3)=2012-08-21
+					</entry>
+					<entry></entry>
+				</row>
+				<row>
+					<entry>
+						<emphasis role="bold">getFirstDateOfMonthString</emphasis>
+						(String str)
+					</entry>
+					<entry></entry>
+					<entry></entry>
+					<entry><emphasis role="bold">deprecated</emphasis> since core 1.5.0 <para>getFirstDateOfMonth(String str) 사용</para> </entry>
+				</row>
+				<row>
+					<entry>
+						<emphasis role="bold">getLastDateOfMonthString</emphasis>
+						(String str)
+					</entry>
+					<entry></entry>
+					<entry></entry>
+					<entry><emphasis role="bold">deprecated</emphasis> since core 1.5.0 <para>getLastDateOfMonth(String str) 사용</para></entry>
+				</row>
+				<row>
+					<entry>
+						<emphasis role="bold">getFirstDateOfPrevMonthString</emphasis>
+						(String str)
+					</entry>
+					<entry></entry>
+					<entry></entry>
+					<entry><emphasis role="bold">deprecated</emphasis> since core 1.5.0 <para>getFirstDateOfPrevMonth(String str) 사용</para></entry>
+				</row>
+				<row>
+					<entry>
+						<emphasis role="bold">getLastDateOfPrevMonthString</emphasis>
+						(String str)
+					</entry>
+					<entry></entry>
+					<entry></entry>
+					<entry><emphasis role="bold">deprecated</emphasis> since core 1.5.0 <para>getLastDateOfPrevMonth(String str) 사용</para> </entry>
+				</row>
+				<row>
+					<entry>
+						<emphasis role="bold">isDate</emphasis>
+						(String str)
+					</entry>
+					<entry>입력된 일자가 유효한 일자인지 체크</entry>
+					<entry>DateUtil.isDate("2010-12-01")=true</entry>
+					<entry></entry>
+				</row>
+				<row>
+					<entry>
+						<emphasis role="bold">isDate</emphasis>
+						(String str, String pattern)
+					</entry>
+					<entry>입력된 일자가 패턴에 맞는 유효한 일자인지 체크</entry>
+					<entry>DateUtil.isDate("2010/12/01", "yyyy/MM/dd")=true</entry>
+					<entry></entry>
+				</row>
+				<row>
+					<entry>
+						<emphasis role="bold">isTime</emphasis>
+						(String str)
+					</entry>
+					<entry>입력된 시간이유효한 시간인지 체크</entry>
+					<entry>DateUtil.isTime("11:56")=true</entry>
+					<entry></entry>
+				</row>
+				<row>
+					<entry>
+						<emphasis role="bold">isTime</emphasis>
+						(String str, String pattern)
+					</entry>
+					<entry>입력된 시간이 패턴에 맞는 유효한 시간인지 체크</entry>
+					<entry>DateUtil.isTime("13:56:24", "HH:mm:ss")=true</entry>
+					<entry></entry>
+				</row>
+				<row>
+					<entry>
+						<emphasis role="bold">string2Date</emphasis>
+						(String str)
+					</entry>
+					<entry></entry>
+					<entry></entry>
+					<entry><emphasis role="bold">deprecated</emphasis> since core 1.5.0 <para>stringToDate(String date) 사용</para></entry>
+				</row>
+				<row>
+					<entry>
+						<emphasis role="bold">string2Date</emphasis>
+						(String str, String pattern)
+					</entry>
+					<entry></entry>
+					<entry></entry>
+					<entry><emphasis role="bold">deprecated</emphasis> since core 1.5.0 <para>stringToDate(String date, String pattern) 사용</para></entry>
+				</row>
+				<row>
+					<entry>
+						<emphasis role="bold">date2String</emphasis>
+						(Date date)
+					</entry>
+					<entry></entry>
+					<entry>
+					</entry>
+					<entry><emphasis role="bold">deprecated</emphasis> since core 1.5.0 <para>dateToString(Date date) 사용</para></entry>
+				</row>
+				<row>
+					<entry>
+						<emphasis role="bold">date2String</emphasis>
+						(Date date, String pattern)
+					</entry>
+					<entry></entry>
+					<entry></entry>
+					<entry><emphasis role="bold">deprecated</emphasis> since core 1.5.0 <para>dateToString(Date date) 사용</para></entry>
+				</row>
+				
+				<row>
+					<entry>
+						<emphasis role="bold">string2String</emphasis>
+						(String str, String basePattern, String wantedPattern)
+					</entry>
+					<entry></entry>
+					<entry></entry>
+					<entry><emphasis role="bold">deprecated</emphasis> since core 1.5.0 <para>convertStringDateFormat(String str, String basePattern, String wantedPattern) 사용</para> </entry>
+				</row>
+				
+				<row>
+					<entry>
+						<emphasis role="bold">getRandomDate</emphasis>
+						()
+					</entry>
+					<entry>1900~2100 사이의 랜덤한 일자 반환</entry>
+					<entry>DateUtil.getRandomDate()</entry>
+					<entry></entry>
+				</row>
+				<row>
+					<entry>
+						<emphasis role="bold">string2SQLDate</emphasis>
+						(String str)
+					</entry>
+					<entry></entry>
+					<entry></entry>
+					<entry><emphasis role="bold">deprecated</emphasis> since core 1.5.0 <para>stringToSQLDate(String str) 사용</para></entry>
+				</row>
+				
+				<row>
+					<entry>
+						<emphasis role="bold">string2SQLDate</emphasis>
+						(String str, String pattern)
+					</entry>
+					<entry></entry>
+					<entry></entry>
+					<entry><emphasis role="bold">deprecated</emphasis> since core 1.5.0 <para>stringToSQLDate(String str, String pattern) 사용</para></entry>
+				</row>
+				
+				<row>
+					<entry>
+						<emphasis role="bold">string2Timestamp</emphasis>
+						(String str)
+					</entry>
+					<entry></entry>
+					<entry></entry>
+					<entry><emphasis role="bold">deprecated</emphasis> since core 1.5.0 <para>stringToTimestamp(String str) 사용</para></entry>
+				</row>
+				
+				<row>
+					<entry>
+						<emphasis role="bold">string2Timestamp</emphasis>
+						(String str, String pattern)
+					</entry>
+					<entry></entry>
+					<entry></entry>
+					<entry><emphasis role="bold">deprecated</emphasis> since core 1.5.0 <para>stringToTimestamp(String str, String pattern) 사용</para></entry>
+				</row>
+				
+				<row>
+					<entry>
+						<emphasis role="bold">timestamp2String</emphasis>
+						(Timestamp date)
+					</entry>
+					<entry></entry>
+					<entry></entry>
+					<entry><emphasis role="bold">deprecated</emphasis> since core 1.5.0 <para>timestampToString(Timestamp date) 사용</para></entry>
+				</row>
+				
+				<row>
+					<entry>
+						<emphasis role="bold">timestamp2String</emphasis>
+						(Timestamp date, String pattern)
+					</entry>
+					<entry></entry>
+					<entry></entry>
+					<entry><emphasis role="bold">deprecated</emphasis> since core 1.5.0 <para>timestampToString(Timestamp date, String pattern) 사용</para></entry>
+				</row>
+				
+				<row>
+					<entry>
+						<emphasis role="bold">string2Calender</emphasis>
+						(String str)
+					</entry>
+					<entry></entry>
+					<entry></entry>
+					<entry><emphasis role="bold">deprecated</emphasis> since core 1.5.0 <para>stringToCalendar(String str) 사용</para></entry>
+				</row>
+				
+				<row>
+					<entry>
+						<emphasis role="bold">calendar2String</emphasis>
+						(Calendar calendar)
+					</entry>
+					<entry></entry>
+					<entry></entry>
+					<entry><emphasis role="bold">deprecated</emphasis> since core 1.5.0 <para>calendarToString(Calendar calendar) 사용</para></entry>
+				</row>
+				
+				<row>
+					<entry>
+						<emphasis role="bold">getMinutes</emphasis>
+						(Calendar cal1, Calendar cal2)
+					</entry>
+					<entry>입력된 두 일자 사이의 분을 계산</entry>
+					<entry>DateUtil.getMinutes(new GregorianCalendar(2010, 11, 14, 12,
+						34, 12), new GregorianCalendar(2010, 11, 14, 13, 32, 12))=58
+					</entry>
+					<entry></entry>
+				</row>
+				
+				<row>
+					<entry>
+						<emphasis role="bold">getMinutes</emphasis>
+						(String date1, String date2)
+					</entry>
+					<entry>입력된 두 일자 사이의 분을 계산</entry>
+					<entry>DateUtil.getMinutes("20111010120015", "20111010123015")=38
+					</entry>
+					<entry></entry>
+				</row>
+				<row>
+					<entry>
+						<emphasis role="bold">getYesterday</emphasis>
+						()
+					</entry>
+					<entry>어제 일자 반환</entry>
+					<entry>DateUtil.getYesterday()</entry>
+					<entry></entry>
+				</row>
+				<row>
+					<entry>
+						<emphasis role="bold">getYesterday</emphasis>
+						(String pattern)
+					</entry>
+					<entry>포맷에 맞는 어제 일자 반환</entry>
+					<entry>DateUtil.getYesterday("yyyy.MM.dd")</entry>
+					<entry></entry>
+				</row>
+				<row>
+					<entry>
+						<emphasis role="bold">getCalendar</emphasis>
+						()
+					</entry>
+					<entry>한국 시간대에 맞는java.util.Calendar 타입의 일자 반환</entry>
+					<entry>DateUtil.getCalendar()</entry>
+					<entry></entry>
+				</row>
+				<row>
+					<entry>
+						<emphasis role="bold">getDates</emphasis>
+						(String startDay, String endDay)
+					</entry>
+					<entry>두 일자 사이의 일자 목록 반환</entry>
+					<entry>DateUtil.getDates("2010-12-14", "2010-12-20")</entry>
+					<entry></entry>
+				</row>
+				<row>
+					<entry>
+						<emphasis role="bold">getDates</emphasis>
+						(String startDay, String endDay, String format)
+					</entry>
+					<entry>두 일자 사이의 일자 목록 반환</entry>
+					<entry>DateUtil.getDates("2010/12/14", "2010/12/20", "yyyy/MM/dd")
+					</entry>
+					<entry></entry>
+				</row>
+				<row>
+					<entry>
+						<emphasis role="bold">getCurrentDateString</emphasis>
+						()
+					</entry>
+					<entry></entry>
+					<entry></entry>
+					<entry><emphasis role="bold">deprecated</emphasis> since core 1.5.0 <para>getCurrentDate() 사용</para>  </entry>
+				</row>
+				
+				<row>
+					<entry>
+						<emphasis role="bold">getCurrentDateString</emphasis>
+						(String pattern)
+					</entry>
+					<entry></entry>
+					<entry></entry>
+					<entry><emphasis role="bold">deprecated</emphasis> since core 1.5.0 <para>getCurrentDate(String pattern) 사용</para> </entry>
+				</row>
+				<row>
+					<entry>
+						<emphasis role="bold">getCurrentDate</emphasis>
+						()
+					</entry>
+					<entry>현재 일자를 java.sql.Date 타입으로 반환</entry>
+					<entry>DateUtil.getCurrentDate()</entry>
+					<entry><emphasis role="bold"> deleted </emphasis> since core 1.5.0 <para>getCurrentSQLDate() 사용</para></entry>
+				</row>
+				<row>
+					<entry>
+						<emphasis role="bold">getCurrentTime</emphasis>
+						()
+					</entry>
+					<entry>현재 시각을 java.sql.Time 타입으로 반환</entry>
+					<entry>DateUtil.getCurrentTime()</entry>
+					<entry><emphasis role="bold">deleted </emphasis> since core 1.5.0 <para>getCurrentSQLTime() 사용</para></entry>
+				</row>
+				<row>
+					<entry>
+						<emphasis role="bold">getCurrentTimeString</emphasis>
+						()
+					</entry>
+					<entry></entry>
+					<entry></entry>
+					<entry><emphasis role="bold">deprecated</emphasis> since core 1.5.0 <para>getCurrentTime() 사용 </para></entry>
+				</row>
+				<row>
+					<entry>
+						<emphasis role="bold">getCurrentTimestamp</emphasis>
+						()
+					</entry>
+					<entry>현재 시각을 java.sql.Timestamp 타입으로 반환</entry>
+					<entry>DateUtil.getCurrentTimeStamp()</entry>
+					<entry><emphasis role="bold">deleted </emphasis>since core 1.5.0 <para>getCurrentSQLTimestamp() 사용</para></entry>
+				</row>
+				<row>
+					<entry>
+						<emphasis role="bold">getCurrentTimestampString</emphasis>
+						()
+					</entry>
+					<entry></entry>
+					<entry></entry>
+					<entry><emphasis role="bold">deprecated</emphasis> since core 1.5.0 <para>getCurrentTimestampString() 사용</para></entry>
+				</row>
+				<row>
+					<entry>
+						<emphasis role="bold">replaceYear</emphasis>
+						(Date date, int year)
+					</entry>
+					<entry>입력한 일자의 연도 값을 변경하여 반환</entry>
+					<entry>DateUtil.replaceYear(new Date(). 2012)</entry>
+					<entry>since core 1.0.4</entry>
+				</row>
+				<row>
+					<entry>
+						<emphasis role="bold">getDate</emphasis>
+						(int year, int month, int day, int hourOfDay, int minute, int
+						second)
+					</entry>
+					<entry>입력한 년,월,일,시,분,초의 값을 가지는 Date를 반환</entry>
+					<entry>DateUtil.getDate(2012,2,3,4,10,10)</entry>
+					<entry>since core 1.0.4</entry>
+				</row>
+				<row>
+					<entry>
+						<emphasis role="bold">getLastDayOfMonth</emphasis>
+						(String inputDate)
+					</entry>
+					<entry>입력한 일자의 달의 마지막날을 반환</entry>
+					<entry>DateUtil.getLastdayOfMonth("2012-05-21")</entry>
+					<entry>since core 1.0.4</entry>
+				</row>
+				<row>
+					<entry>
+						<emphasis role="bold">isLastDateOfMonth</emphasis>
+						(String inputDate)
+					</entry>
+					<entry>입력한 일자가 달의 마지막날인지 여부</entry>
+					<entry>DateUtil.isLastdayOfMonth("2012-05-21")</entry>
+					<entry>since core 1.0.4</entry>
+				</row>
+				<row>
+					<entry>
+						<emphasis role="bold">getLastDayOfMonthInt</emphasis>
+						(String ymd)
+					</entry>
+					<entry>입력한 일자의 달의 마지막날을 반환</entry>
+					<entry>DateUtil.getLastdayOfMonthInt("2012-05-21")</entry>
+					<entry>since core 1.0.4</entry>
+				</row>
+				<row>
+					<entry>
+						<emphasis role="bold">isLeapYear</emphasis>
+						(String inputDate)
+					</entry>
+					<entry>입력한 일자가 윤년인지 여부</entry>
+					<entry>DateUtil.isLeafYear("2012-05-31")</entry>
+					<entry>since core 1.0.4</entry>
+				</row>
+				<row>
+					<entry>
+						<emphasis role="bold">isLeapYear</emphasis>
+						(int year)
+					</entry>
+					<entry>입력한 년도가 윤년인지 여부</entry>
+					<entry>DateUtil.isLeafYear(2012)</entry>
+					<entry>since core 1.0.4</entry>
+				</row>
+				<row>
+					<entry>
+						<emphasis role="bold">getCurrentHour</emphasis>
+						()
+					</entry>
+					<entry></entry>
+					<entry></entry>
+					<entry><emphasis role="bold">deprecated</emphasis> since core 1.0.4</entry>
+				</row>
+				<row>
+					<entry>
+						<emphasis role="bold">getCurrentDateTime</emphasis>
+						()
+					</entry>
+					<entry>현재일시를 문자열로 반환</entry>
+					<entry>DateUtil.getCurrentDateTime()</entry>
+					<entry>at core 1.0.4 deprecated <para> since core 1.5.0 변경된 명명규칙 적용에 따른 <emphasis role="bold"> deprecated 해제 </emphasis></para></entry>
+				</row>
+				<row>
+					<entry>
+						<emphasis role="bold">getCurrentDay</emphasis>
+						()
+					</entry>
+					<entry></entry>
+					<entry></entry>
+					<entry><emphasis role="bold">deprecated</emphasis> since core 1.0.4 <para>getCurrentDateString() 사용</para></entry>
+				</row>
+				<row>
+					<entry>
+						<emphasis role="bold">getCurrentTime</emphasis>
+						(String pattern)
+					</entry>
+					<entry></entry>
+					<entry></entry>
+					<entry><emphasis role="bold">deprecated</emphasis> since core 1.0.4</entry>
+				</row>
+				<row>
+					<entry>
+						<emphasis role="bold">getCurrentDay</emphasis>
+						(String pattern)
+					</entry>
+					<entry></entry>
+					<entry></entry>
+					<entry><emphasis role="bold">deprecated</emphasis> since core 1.0.4</entry>
+				</row>
+				<row>
+					<entry>
+						<emphasis role="bold">getTimeStamp</emphasis>
+						()
+					</entry>
+					<entry></entry>
+					<entry></entry>
+					<entry><emphasis role="bold">deprecated</emphasis> since core 1.0.4 getCurrentTimestamp() 사용</entry>
+				</row>
+				<row>
+					<entry>
+						<emphasis role="bold">getDefaultDatePattern</emphasis>
+						()
+					</entry>
+					<entry></entry>
+					<entry></entry>
+					<entry><emphasis role="bold">deprecated</emphasis> since core 1.0.4</entry>
+				</row>
+				<row>
+					<entry>
+						<emphasis role="bold">getFirstDateOfMonth</emphasis>
+						(String str)
+					</entry>
+					<entry>입력일 기준 이달 첫번째 일자 반환</entry>
+					<entry>DateUtil.getFirstDateOfMonth ("2010-12-18")=2010-12-01</entry>
+					<entry>at core 1.0.4 deprecated <para> since core 1.5.0 변경된 명명규칙 적용에 따른 <emphasis role="bold"> deprecated 해제 </emphasis> </para> </entry>
+				</row>
+				<row>
+					<entry>
+						<emphasis role="bold">getLastDateOfMonth</emphasis>
+						(String str)
+					</entry>
+					<entry>입력일 기준 이달 마지막 일자 반환</entry>
+					<entry>DateUtil.getLastDateOfMonth ("2010-11-20")=2010-11-30 </entry>
+					<entry>at core 1.0.4 deprecated <para> since core 1.5.0 변경된 명명규칙 적용에 따른 <emphasis role="bold"> deprecated 해제 </emphasis> </para></entry>
+				</row>
+				<row>
+					<entry>
+						<emphasis role="bold">getFirstDateOfPrevMonth</emphasis>
+						(String str)
+					</entry>
+					<entry>입력일 기준 전달의 첫번째 일자 반환</entry>
+					<entry>DateUtil.getFirstDateOfPrevMonth ("2010-11-20")=2010-10-01</entry>
+					<entry>at core 1.0.4 deprecated<para> since core 1.5.0 변경된 명명규칙 적용에 따른 <emphasis role="bold"> deprecated 해제 </emphasis> </para></entry>
+				</row>
+				
+				<row>
+					<entry>
+						<emphasis role="bold">getLastDateOfPrevMonth</emphasis>
+						(String str)
+					</entry>
+					<entry>입력일 기준 전달의 마지막 일자 반환</entry>
+					<entry>DateUtil.getLastDateOfPrevMonth ("2010-11-20")=2010-10-31</entry>
+					<entry>at core 1.0.4 deprecated<para> since core 1.5.0 변경된 명명규칙 적용에 따른 <emphasis role="bold"> deprecated 해제 </emphasis> </para></entry>
+				</row>
+				
+				<!-- 1.5.0 신규 메소드 -->
+				<row>
+					<entry>
+						<emphasis role="bold">convertDateFormat</emphasis>
+						(String date, String basePattern, String wantedPattern)
+					</entry>
+					<entry>입력된 문자열의 날짜 형식을 변환한여 반환한다.</entry>
+					<entry>DateUtil.convertDateFormat("20101214", "yyyyMMdd", "yyyy-MM-dd") = "2010-12-14"</entry>
+					<entry>since core 1.5.0</entry>
+				</row>
+				
+				<row>
+					<entry>
+						<emphasis role="bold">stringToDate</emphasis>
+						(String date)
+					</entry>
+					<entry>문자열을 java.util.Date 타입으로 변경</entry>
+					<entry>DateUtil.stringToDate("2010-12-14")</entry>
+					<entry>since core 1.5.0</entry>
+				</row>
+				
+				<row>
+					<entry>
+						<emphasis role="bold">stringToDate</emphasis>
+						(String date, String pattern)
+					</entry>
+					<entry>특정 날짜 패턴의 문자열을 java.util.Date 타입으로 변경</entry>
+					<entry>DateUtil.stringToDate("2010-12-14 16:26:33", "yyyy-MM-dd HH:mm:ss")</entry>
+					<entry>since core 1.5.0</entry>
+				</row>
+				
+				<row>
+					<entry>
+						<emphasis role="bold">dateToString</emphasis>
+						(Date date)
+					</entry>
+					<entry>java.util.Date 타입을 문자열로 변경</entry>
+					<entry>DateUtil.dateToString(new Date(1292311593557l))=2010-12-14 </entry>
+					<entry>since core 1.5.0</entry>
+				</row>
+				
+				<row>
+					<entry>
+						<emphasis role="bold">dateToString</emphasis>
+						(Date date, String pattern)
+					</entry>
+					<entry>java.util.Date 타입을 입력된 패턴에 맞는 문자열로 변경</entry>
+					<entry>DateUtil.dateToString(new Date(1292311593557l, "yyyy/MM/dd")=2010/12/14</entry>
+					<entry>since core 1.5.0</entry>
+				</row>
+				
+				<row>
+					<entry>
+						<emphasis role="bold">stringToSQLDate</emphasis>
+						(String date)
+					</entry>
+					<entry>문자열을 java.sql.Date 타입으로 변환</entry>
+					<entry>DateUtil.stringToSQLDate("2010-12-14")</entry>
+					<entry>since core 1.5.0</entry>
+				</row>
+				
+				<row>
+					<entry>
+						<emphasis role="bold">stringToSQLDate</emphasis>
+						(String date, String pattern)
+					</entry>
+					<entry>패턴에 맞게 들어온 문자열을 java.sql.Date 타입으로 변환</entry>
+					<entry>DateUtil.stringToSQLDate("2010/12/14", "yyyy/MM/dd")</entry>
+					<entry>since core 1.5.0</entry>
+				</row>
+				
+				<row>
+					<entry>
+						<emphasis role="bold">stringToTimestamp</emphasis>
+						(String date)
+					</entry>
+					<entry>문자열을 java.sql.Timestamp 타입으로 변환</entry>
+					<entry>DateUtil.string2Timestamp("2010-12-14")</entry>
+					<entry>since core 1.5.0</entry>
+				</row>
+				
+				<row>
+					<entry>
+						<emphasis role="bold">stringToTimestamp</emphasis>
+						(String date, String pattern)
+					</entry>
+					<entry>패턴에 맞게 들어온 문자열을 java.sql.Timestamp 타입으로 변환</entry>
+					<entry>DateUtil.string2SQLDate("2010/12/14", "yyyy/MM/dd")</entry>
+					<entry>since core 1.5.0</entry>
+				</row>
+				
+				<row>
+					<entry>
+						<emphasis role="bold">timestampToString</emphasis>
+						(Timestamp date)
+					</entry>
+					<entry>java.sql.Timestamp 타입의 일자를 문자열로 변환</entry>
+					<entry>DateUtil.timestamp2String(new Timestamp(1292311593000l)) </entry>
+					<entry>since core 1.5.0</entry>
+				</row>
+				<row>
+					<entry>
+						<emphasis role="bold">timestampToString</emphasis>
+						(Timestamp date, String pattern)
+					</entry>
+					<entry>java.sql.Timestamp 타입의 일자를 패턴에 맞는 문자열로 변환</entry>
+					<entry>DateUtil.timestamp2String(new Timestamp(1292311593000l), "yyyy/MM/dd HH/mm")=2010/12/14 16/26</entry>
+					<entry>since core 1.5.0</entry>
+				</row>
+				
+				<row>
+					<entry>
+						<emphasis role="bold">stringToCalendar</emphasis>
+						(String date)
+					</entry>
+					<entry>문자열을 java.util.Calendar 타입으로 변환</entry>
+					<entry>DateUtil.string2Calender("20101214123412")</entry>
+					<entry>since core 1.5.0</entry>
+				</row>
+				
+				<row>
+					<entry>
+						<emphasis role="bold">calendarToString</emphasis>
+						(Calendar calendar)
+					</entry>
+					<entry>java.util.Calendar타입의 일자를 문자열로 변환</entry>
+					<entry>DateUtil.calendar2String(new GregorianCalendar(2010, 11, 14, 12, 34, 12))=20101214123412000</entry>
+					<entry>since core 1.5.0</entry>
+				</row>
+				
+				<row>
+					<entry>
+						<emphasis role="bold">getCurrentSQLDate</emphasis>
+						()
+					</entry>
+					<entry>현재 일자를 java.sql.Date 타입으로 반환</entry>
+					<entry>DateUtil.getCurrentSQLDate()</entry>
+					<entry>since core 1.5.0</entry>
+				</row>
+				
+				<row>
+					<entry>
+						<emphasis role="bold">getCurrentSQLTime</emphasis>
+						()
+					</entry>
+					<entry>현재 시각을 java.sql.Times 타입으로 반환</entry>
+					<entry>DateUtil.getCurrentSQLTime()</entry>
+					<entry>since core 1.5.0</entry>
+				</row>
+				
+				<row>
+					<entry>
+						<emphasis role="bold">getCurrentSQLTimestamp</emphasis>
+						()
+					</entry>
+					<entry>현재 시각을 java.sql.Timestamp 타입으로 반환</entry>
+					<entry>DateUtil.getCurrentSQLTimestamp()</entry>
+					<entry>since core 1.5.0</entry>
+				</row>
+								
+				<row>
+					<entry>
+						<emphasis role="bold">getCurrentDate</emphasis>
+						()
+					</entry>
+					<entry>현재 일자를 문자열로 반환</entry>
+					<entry>DateUtil.getCurrentDate()</entry>
+					<entry>since core 1.5.0</entry>
+				</row>
+				
+				<row>
+					<entry>
+						<emphasis role="bold">getCurrentDate</emphasis>
+						(String pattern)
+					</entry>
+					<entry>현재 일자를 입력한 형식의 문자열로 반환</entry>
+					<entry>DateUtil.getCurrentDate("yyyyMMdd")</entry>
+					<entry>since core 1.5.0</entry>
+				</row>
+				
+				<row>
+					<entry>
+						<emphasis role="bold">getCurrentTime</emphasis>
+						()
+					</entry>
+					<entry>현재 시각을 문자열로 반환</entry>
+					<entry>DateUtil.getCurrentTime()</entry>
+					<entry>since core 1.5.0</entry>
+				</row>
+				
+				<row>
+					<entry>
+						<emphasis role="bold">getCurrentDateTime</emphasis>
+						(String pattern)
+					</entry>
+					<entry>현재일시를 지정한 형식의 문자열로 반환</entry>
+					<entry>DateUtil.getCurrentDateTime("yyyy-MM-dd")</entry>
+					<entry>since core 1.5.0</entry>
+				</row>
+				
+				<row>
+					<entry>
+						<emphasis role="bold">getCurrentTimestamp</emphasis>
+						()
+					</entry>
+					<entry>현재 Timestamp값을 문자열로 반환</entry>
+					<entry>DateUtil.getCurrentTimeStampString()</entry>
+					<entry>since core 1.5.0</entry>
+				</row>
+				
+			</tbody>
+		</tgroup>
+	</informaltable>
+</chapter>

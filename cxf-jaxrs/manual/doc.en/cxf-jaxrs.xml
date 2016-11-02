@@ -1,0 +1,115 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+
+<!DOCTYPE book PUBLIC "-//OASIS//DTD DocBook XML V4.5//EN" "http://www.oasis-open.org/docbook/xml/4.5/docbookx.dtd"
+[
+<!ENTITY cxf_jaxrs_overview SYSTEM "cxf-jaxrs/overview.xml">
+<!ENTITY cxf_jaxrs SYSTEM "cxf-jaxrs/jaxrs.xml">
+<!ENTITY cxf_wasconfiguration SYSTEM "cxf-jaxrs/wasconfiguration.xml">
+<!ENTITY cxf_jaxrs_resources SYSTEM "cxf-jaxrs/resources.xml">
+]
+>
+
+<!--
+		Licensed to the Apache Software Foundation (ASF) under one or more
+		contributor license agreements. See the NOTICE file distributed with
+		this work for additional information regarding copyright ownership.
+		The ASF licenses this file to you under the Apache License, Version
+		2.0 (the "License"); you may not use this file except in compliance
+		with the License. You may obtain a copy of the License at
+
+		http://www.apache.org/licenses/LICENSE-2.0 Unless required by
+		applicable law or agreed to in writing, software distributed under the
+		License is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR
+		CONDITIONS OF ANY KIND, either express or implied. See the License for
+		the specific language governing permissions and limitations under the
+		License.
+-->
+    
+<book lang="en">
+	<title>Anyframe CXF JAX-RS Plugin</title>
+	
+	<bookinfo>
+		<copyright>
+			<year>2007-2014</year>
+			<holder>Samsung SDS</holder>
+		</copyright>
+		<releaseinfo>Version 1.1.1-SNAPSHOT</releaseinfo>
+
+		<productname>Anyframe CXF JAX-RS Plugin</productname>
+
+		<authorgroup>
+			<corpauthor></corpauthor>
+		</authorgroup>
+
+		<mediaobject>
+			<imageobject>
+				<!-- logo 변경 -->
+				<imagedata fileref="../image/common/logo_pdf.jpg"/>
+			</imageobject>
+		</mediaobject>
+		<legalnotice>
+			<para>
+            The copyright of this document is the property of Samsung SDS. 
+			Permission is granted to use this document for free only for the purpose of open source community activity. 
+			The copyright holder should be clearly stated in case this document is copied or distributed, and changed contents should be specified. 
+			Permission is not granted for the commercial use of the modification of the original document. 
+			Should there be parts considered to have errors in this document, please register the issue for which we will take proper action.
+			</para>
+		</legalnotice>
+	</bookinfo>
+	
+	<part id="cxf_jaxrs_introduction_part">
+		<title>Introduction</title>
+		<partintro id="cxf_jaxrs_introduction_part_intro">
+			<para>
+				There are various open source frameworks often used for implementation of web services including Apache CXF, Apache Axis/Axis2 and Spring Web Services.  
+				The cxf-jaxrs plugin is composed of sample codes to guide how to use JAX-RS (JSR-311) Frontend of <ulink url="http://cxf.apache.org/">Apache CXF</ulink> among them and reference libraries needed to use the open source. 
+				
+			</para>
+			<para role="introduction_title"><emphasis role="bold">Installation</emphasis></para>
+			<para>Install cxf-jaxrs plugin by entering the following command in the Command window.</para>
+			<programlisting language="java"><![CDATA[mvn anyframe:install -Dname=cxf-jaxrs]]></programlisting>
+			<para>
+				Check the installation result using the installed (mvn anyframe:installed) or the jetty:run (mvn clean jetty:run) commands. 
+			</para>
+			<para role="introduction_title"><emphasis role="bold">Dependent Plugins</emphasis></para>
+			<informaltable>
+				<tgroup cols="2">
+					<colspec colnum="1" colname="col1" colwidth="5*" />
+					<colspec colnum="2" colname="col2" colwidth="5*" />
+					<thead>
+						<row>
+							<entry align="center">Plugin Name</entry>
+							<entry align="center">Version Range</entry>
+						</row>
+					</thead>
+					<tbody>
+						<row>
+							<entry align="center"><ulink url="http://dev.anyframejava.org/docs.en/anyframe/plugin/optional/query/1.6.1-SNAPSHOT/reference/htmlsingle/query.html">query</ulink></entry>
+							<entry align="center" valign="middle">2.0.0 > * > 1.4.0</entry>
+						</row>
+						<row>
+							<entry align="center"><ulink url="http://dev.anyframejava.org/docs.en/anyframe/plugin/optional/cxf/1.1.1-SNAPSHOT/reference/htmlsingle/cxf.html">cxf</ulink></entry>
+							<entry align="center" valign="middle">2.0.0 > * > 1.0.3</entry>
+						</row>
+					</tbody>
+				</tgroup>
+			</informaltable>
+		</partintro>
+	</part>		
+	
+	<part id="cxf_jaxrs_overview_part">
+		<title>RESTful Services</title>
+		<partintro id="cxf_jaxrs_overview_intro">
+			<para>
+				Anyframe supports Web Service using <emphasis role="bold">Apache CXF 2.3.0 version</emphasis>, 
+				and provides REST architecture style Web Service on HTTP protocol along with SOAP protocol based Web Service. 
+				Refer to Anyframe CXF-JAXWS Plugin manual for SOAP protocol based Web Service.
+			</para>				  
+		</partintro>
+		&cxf_jaxrs_overview;
+		&cxf_jaxrs;
+		&cxf_wasconfiguration;
+		&cxf_jaxrs_resources;		
+	</part>	
+</book>

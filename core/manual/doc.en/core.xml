@@ -1,0 +1,560 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+
+<!DOCTYPE book PUBLIC "-//OASIS//DTD DocBook XML V4.5//EN" "http://www.oasis-open.org/docbook/xml/4.5/docbookx.dtd"
+[
+<!ENTITY core_spring_annotation SYSTEM "core/spring/annotation.xml">
+<!ENTITY core_spring_aop SYSTEM "core/spring/aop.xml">
+<!ENTITY core_spring_spel SYSTEM "core/spring/spel.xml">
+<!ENTITY core_spring_datasource SYSTEM "core/spring/datasource.xml">
+<!ENTITY core_spring_ioc SYSTEM "core/spring/ioc.xml">
+<!ENTITY core_spring_transaction SYSTEM "core/spring/transaction.xml">
+<!ENTITY core_spring_javaconfig SYSTEM "core/spring/javaconfig.xml">
+<!ENTITY core_springmvc_architecture SYSTEM "core/springmvc/architecture.xml">
+<!ENTITY core_springmvc_configuration SYSTEM "core/springmvc/configuration.xml">
+<!ENTITY core_springmvc_controller SYSTEM "core/springmvc/controller.xml">
+<!ENTITY core_springmvc_view SYSTEM "core/springmvc/view.xml">
+<!ENTITY core_springmvc_fileupload SYSTEM "core/springmvc/fileupload.xml">
+<!ENTITY core_springmvc_internationalization SYSTEM "core/springmvc/internationalization.xml">
+<!ENTITY core_springmvc_exceptionhandling SYSTEM "core/springmvc/exceptionhandling.xml">
+<!ENTITY core_springmvc_springintegration SYSTEM "core/springmvc/springintegration.xml">
+<!ENTITY core_springmvc_validation SYSTEM "core/springmvc/validation.xml">
+<!ENTITY core_springmvc_conversion SYSTEM "core/springmvc/conversion.xml">
+<!ENTITY core_springmvcextensions SYSTEM "core/springmvcextensions.xml">
+<!ENTITY core_springmvcextensions_configuration SYSTEM "core/springmvcextensions/configuration.xml">
+<!ENTITY core_springmvcextensions_taglibrary SYSTEM "core/springmvcextensions/taglibrary.xml">
+<!ENTITY core_logging_configuration SYSTEM "core/logging/configuration.xml">
+<!ENTITY core_logging_logging SYSTEM "core/logging/logging.xml">
+<!ENTITY core_logging_resources SYSTEM "core/logging/resources.xml">
+<!ENTITY core_encoding_messagesource SYSTEM "core/messagesource/encodingmessagesource.xml">
+<!ENTITY core-db_messagesource SYSTEM "core/messagesource/dbmessagesource.xml">
+<!ENTITY core_aggregating_messagesource SYSTEM "core/messagesource/aggregatingmessagesource.xml">
+<!ENTITY core_properties_implementation SYSTEM "core/properties/implementation.xml">
+<!ENTITY core_properties_sample SYSTEM "core/properties/sample.xml">
+<!ENTITY core_properties_dynamic SYSTEM "core/properties/dynamic.xml">
+<!ENTITY core_properties_resources SYSTEM "core/properties/resources.xml">
+]
+>
+
+<!--
+		Licensed to the Apache Software Foundation (ASF) under one or more
+		contributor license agreements. See the NOTICE file distributed with
+		this work for additional information regarding copyright ownership.
+		The ASF licenses this file to you under the Apache License, Version
+		2.0 (the "License"); you may not use this file except in compliance
+		with the License. You may obtain a copy of the License at
+
+		http://www.apache.org/licenses/LICENSE-2.0 Unless required by
+		applicable law or agreed to in writing, software distributed under the
+		License is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR
+		CONDITIONS OF ANY KIND, either express or implied. See the License for
+		the specific language governing permissions and limitations under the
+		License.
+-->
+    
+<book lang="en">
+	<title>Anyframe Core Plugin</title>
+	
+	<bookinfo>
+		<copyright>
+			<year>2007-2014</year>
+			<holder>Samsung SDS</holder>
+		</copyright>
+		<releaseinfo>Version 1.6.1-SNAPSHOT</releaseinfo>
+
+		<productname>Anyframe Core Plugin</productname>
+		
+		<authorgroup>
+			<corpauthor></corpauthor>
+		</authorgroup>
+		
+		<mediaobject>
+			<imageobject>
+				<imagedata fileref="../image/common/logo_pdf.jpg"/>
+			</imageobject>
+		</mediaobject>
+		<legalnotice>
+			<para>
+				
+				
+			
+			    The copyright of this document is the property of Samsung SDS.
+			    Permission is granted to use this document for free only for the purpose of open source community activity. 
+			    The copyright holder should be clearly stated in case this document is copied or distributed, 
+			    and changed contents should be specified. 
+			    Permission is not granted for the commercial use of the modification of the original document.  
+			    Should there be parts considered to have errors in this document, 
+			    please register the issue for which we will take proper action.
+
+				
+			</para>
+		</legalnotice>
+	</bookinfo>
+ 
+	<part id="core_introduction_part">
+		<title>Introduction</title>
+		<partintro id="core_introduction_partintro">
+			<para>
+				Core Plugin is a basic plugin which is the basis of all the other plugins provided by Anyframe and is composed of sample codes to guide open sources basically needed for web application development and use of Core Service, and reference libraries necessary to use these open sources.				 
+     			<itemizedlist>
+     				<listitem>
+     					<para>
+     						The business layer and the presentation layer are composed using basically <ulink url="http://www.springsource.org">Spring, SpringMVC</ulink>
+     						, and the data access layer uses Spring JdbcTemplate.
+     					</para>
+     				</listitem>
+     				<listitem>
+     					<para>
+     						It uses open sources such as <ulink url="http://commons.apache.org/dbcp/">Commons DBCP</ulink>, and <ulink url="http://logging.apache.org/log4j/">Log4j</ulink> to execute the functions such as DB connection and Logging, which are commonly required when applications are developed. 
+     					</para>
+     				</listitem>
+     				<listitem>
+     					<para>
+     						It also uses Core Service that provides the utilities related to String, Date, Number, Digest and Validation, the properties that support external administration of configuration information that needs frequent changes externally and access to the information through applications,  
+     						and Custom Tag Library for convenient development of presentation layers.	
+     					</para>
+     				</listitem>
+     			</itemizedlist>
+			</para>	
+			<para role="introduction_title"><emphasis role="bold">Installation</emphasis></para>
+			<para>Install the core plugin by entering the following command in the Command window.</para>
+			<programlisting language="java"><![CDATA[mvn anyframe:install -Dname=core]]></programlisting>
+			<para>
+				The installation result can be check through the installed (mvn anyframe:installed) or the jetty:run(mvn clean jetty:run) commands. 
+			</para>
+			<para role="introduction_title"><emphasis role="bold">Dependent Plugins</emphasis></para>
+			<informaltable>
+				<tgroup cols="2">
+					<colspec colnum="1" colname="col1" colwidth="5*" />
+					<colspec colnum="2" colname="col2" colwidth="5*" />
+					<thead>
+						<row>
+							<entry align="center">Plugin Name</entry>
+							<entry align="center">Version Range</entry>
+						</row>
+					</thead>
+					<tbody>
+						<row>
+							<entry align="center"><link linkend="core_spring_datasource">datasource</link></entry>
+							<entry align="center" valign="middle">2.0.0 &gt; *</entry>
+						</row>
+						<row>
+							<entry align="center"><link linkend="core_logging_part">logging</link></entry>
+							<entry align="center" valign="middle">2.0.0 &gt; *</entry>
+						</row>
+						<row>
+							<entry align="center"><link linkend="core_spring_part">spring</link></entry>
+							<entry align="center" valign="middle">2.0.0 &gt; *</entry>
+						</row>
+					</tbody>
+				</tgroup>
+			</informaltable>
+			<para role="introduction_title"><emphasis role="bold">Notes for Each WAS (Wep Application Server)</emphasis></para>
+			<para>
+			This document adopted Jetty and Tomcat as WAS to execute the sample application sample generated by installing the Plugin.
+			The sample application generated by installing a Plugin does not belong to a specific WAS. Therefore, it is also possible to execute it by deploying in a different WAS such as WebLogic and JEUS after packaging through execution of commands such as mvn clean compile war:war. 
+			Yet, since some library versions referred to by sample applications are not supported by the relevant WAS, the following measures should be noted.
+			<itemizedlist>
+     			<listitem>
+     				<para>WebLogic</para>
+     				<para>
+     					When the sample application is deployed and tested in the WebLogic server listed below, if Internet Explorer 8 is used as a web browser,  
+     					there can be a problem of not being able to maintain Session when localhost is used in URL as in 'http://localhost:8080/myproject'.
+     					In this case, it is recommended to use IP such as http://127.0.0.1:8080/myproject as a test URL.
+     				</para>
+     				<itemizedlist>
+     					<listitem>
+     						<para>10.1 : Since JPA 1.0 library is included as the standard library in WebLogic 10.1 that supports JavaEE 5, 
+     							the following problem can occur.
+     						</para>
+     						<para>
+	     						The sample project generated by installing Core Plugin uses Hibernate Validator 4.1.0 library to execute the Model Validation function based on JSR-303 Annotation,  
+	     						 and this library refers to JPA 2.0 library. 
+     							Since WebLogic 10.1 provides PersistenceProvider based on JPA 1.0 library, the java.lang.AbstractMethodError at javax.persistence.Persistence$1.isLoaded error occurs when the Model Validation function is used. 
+     						</para>
+	     					<para>
+	     						Since it is not very much effective to adjust prefer-web-inf-classes to true in weblogic.xml, the problem can be avoided using the following method.
+	     					</para> 
+		     				<itemizedlist>
+		     					<listitem>
+		     						 <para>
+		     						 	Delete the hibernate-jpa-2.0-api-1.0.0.Final.jar file in WEB-INF/lib within the sample project folder and instead deploy the javax.persistence_2.0.1.vxxx.jar file. 
+		     						 	This jar file can be downloaded from the <ulink url="http://www.eclipse.org/eclipselink/">EclipseLink(Eclipse Persistence Services Project, http://www.eclipse.org/eclipselink/) 
+		     						 	</ulink> site. The JAR file can be checked by downloading and decompressing the EclipseLink 2.x version Installer Zip file.
+		     						 </para>     					
+		     					</listitem>
+		     					<listitem>
+		     						 <para>Copy the javax.persistence_2.0.1.vxxx.jar and antlr-2.7.7.jar files in the [WebLogic Installation Home]/common/lib directory.</para>
+		     					</listitem>
+		     					<listitem>
+		     						<para>Define the PRE_CLASSPATH property of the setDomainEnv.cmd(or setDomainEnv.sh) file in the [User Domain Home]/bin folder as follows.</para>
+     								<programlisting language="java"><![CDATA[set PRE_CLASSPATH=%WL_HOME%\common\lib\antlr-2.7.7.jar;%WL_HOME%\common
+\lib\javax.persistence_2.0.1.vxxx.jar
+
+(UNIX sh : set PRE_CLASSPATH="${WL_HOME}/common/lib/antlr-2.7.6.jar:
+${WL_HOME}/common/lib/javax.persistence_2.0.1.vxxx.jar")]]></programlisting>
+		     					</listitem>
+		     				</itemizedlist>	     					  						
+     					</listitem> 
+     					<listitem>
+     						<para>10.3.3 : Since JPA 1.0 library is included as the standard in WebLogic 10.3.3 that supports JavaEE 6, 
+     							the following problem can occur.
+     						</para>
+   							<para>
+	     						The sample project generated by installing Core Plugin uses Hibernate Validator 4.1.0 library to execute the Model Validation function based on JSR-303 Annotation, 
+	     						 and this library refers to JPA 2.0 library. 
+    							Since WebLogic 10.3.3 provides PersistenceProvider based on JPA 1.0 library, the java.lang.AbstractMethodError at javax.persistence.Persistence$1.isLoaded error occurs  
+    							when the Model Validation function is used.     							
+   							</para>
+	     					<para>
+	     						The problem can be avoided with the following method.
+	     					</para>	     					
+		    				<itemizedlist>
+		     					<listitem>
+		     						<para>Generate EAR Folder. For example, if the project named myproject is handled using ear, two folders can be formed as follows.</para>
+		     							<programlisting language="xml"><![CDATA[myproject.ear/ META-INF
+             / myproject]]></programlisting>     						  
+		     					</listitem>     				
+		     					<listitem>
+		     						<para>Deploy application.xml in the META-INF folder. Refer to the following as an example.</para>
+		     						<programlisting language="xml"><![CDATA[<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE application PUBLIC "-//Sun Microsystems,Inc.//DTD J2EE Application 1.3//EN"
+   "http://java.sun.com/dtd/application_1_3.dtd">
+<application>
+    <display-name>Myproject</display-name>
+    <module>
+        <web>
+            <web-uri>myproject</web-uri>
+            <context-root>myproject</context-root>
+        </web>
+    </module>
+</application>]]></programlisting>     						 
+		     					</listitem>    
+		     					<listitem>
+		     						 <para>
+		     						 	Deploy the weblogic-application.xml file in the META-INF folder. Set the libraries in the WEB-INF/lib folder to have priority in reference for javax.persistence package.   
+		     						 	Refer to the following as an example.
+		     						 </para>
+		     						<programlisting language="xml"><![CDATA[<?xml version="1.0" encoding="UTF-8"?>
+<weblogic-application>
+    <prefer-application-packages>
+	    <package-name>javax.persistence.*</package-name>
+    </prefer-application-packages>
+</weblogic-application>]]></programlisting>     						 
+		     					</listitem>      		
+		     					<listitem>
+		     						 <para>
+		     						 	Deploy the weblogic.xml file in WEB-INF within the myproject folder. Set the libraries and class files within the web application to have priority in reference. 
+		     						 	Refer to the following as an example.
+		     						 </para>
+		     						<programlisting language="xml"><![CDATA[<?xml version="1.0" encoding="ISO-8859-1"?>
+<weblogic-web-app>
+  	 <container-descriptor>
+	     <prefer-web-inf-classes>true</prefer-web-inf-classes>
+	 </container-descriptor>
+</weblogic-web-app>]]></programlisting>     						 
+		     					</listitem>     								
+		     					<listitem>
+		     						 <para>
+		     						 	Delete hibernate-jpa-2.0-api-1.0.0.Final.jar file in WEB-INF/lib in the sample project folder and instead deploy javax.persistence_2.0.1.vxxx.jar file. 
+		     						 	This jar file can be downloaded from the <ulink url="http://www.eclipse.org/eclipselink/">EclipseLink(Eclipse Persistence Services Project, http://www.eclipse.org/eclipselink/)</ulink> site.
+		     						 	The JAR file can be checked after downloading and decompressing the EclipseLink 2.x version Installer Zip file.
+		     						 </para>
+		     					</listitem>       					 	     					
+		     				</itemizedlist>	     					    						
+     					</listitem>     					    					
+     				</itemizedlist>
+  					<para>
+  						When the sample application is executed based on WebLogic, there can appear a warning message beginning with "SLF4J: Class path contains multiple SLF4J bindings." 
+  						even though there is one slf4j-log4j-x.x.x.jar file within the WEB-INF/lib folder of the application.
+  						This is <ulink url="http://bugzilla.slf4j.org/show_bug.cgi?id=138">a known bug existing within SLF4J</ulink>, but since it does not affect the execution of the application,
+  						it can be ignored.
+  					</para>
+     			</listitem>
+     			<listitem>
+     				<para>JEUS</para>
+     				<itemizedlist>
+     					<listitem>
+     						<para>6.0 : The sample project generated by installing Core Plugin forms a domain class using JSR-303 Annotation to execute the Model Validation function.
+		     					It uses Hibernate Validator 4.0.2.GA library using JSR-303 Provider, and this library refers to the library of JPA 2.0.
+		     					Since JEUS 6.0 includes JPA 1.0 library and requires JPA library when starting WAS, the following process is needed.
+     						</para>
+		     				<itemizedlist>
+		     					<listitem>
+		     						 <para>Delete javax.persistence in javaee.jar file within [JEUS Installation Home]/lib/system folder</para>
+		     					</listitem>
+		     					<listitem>
+		     						<para>Delete toplink-*.jar file within [JEUS Installation Home]/lib/system folder </para>
+		     					</listitem>
+		     					<listitem>
+		     						<para>Copy [sample project]/src/main/webapp/WEB-INF/lib/hibernate-jpa-2.0-api-1.0.0.Final.jar file within [JEUS Installation Home]/lib/system folder</para>
+		     					</listitem>
+		     				</itemizedlist>     						
+     					</listitem>
+     				</itemizedlist>
+     			</listitem>     			
+     		</itemizedlist>
+		</para>			
+		</partintro>
+	</part>
+ 	 
+	<part id="core_spring_part">
+		<title>Spring</title>
+		<partintro id="core_spring_partintro">
+			<para>
+			Spring provides lightweight container which manages the life-cycle of object and minimize the dependence among objects.
+			The following is the main characteristics of Spring Lightweight container.
+				
+			</para>
+			<itemizedlist>
+				<listitem>
+					<para>POJO-based development support</para>
+						<para>
+							Without the need of adding container-dependent code to design output, POJO-based application can be developed.
+							In other words, when developing lightweight container, 
+							it is possible to prevent framework-induced dual process of basic design and detailed design
+							or discrepancy between design model and implementation.
+							
+						</para>
+				</listitem>
+				<listitem>
+					<para>Dependency Resolution Support</para>
+					<para>
+						This provides the method to manage the dependency among application composition modules. 
+						This directly creates reference module in a specific module code 
+						in order to prevent the situation that reference modules are tightly-coupled.
+						Like most lightweight containers, this provides DI(Dependency Injection)support, and DL(Dependency Lookup) is also possible.
+					
+					</para>
+				</listitem>
+				<listitem>
+					<para>Aspect Oriented Programming Support</para>
+					<para>
+						AOP is a component method which enables the reuse of common functions such as
+						logging, authentication, authorization check, DB integration, transaction, locking, error handling, etc.
+						which are widely used in the entire application but hard to develop in separate modules.
+						In AOP, such common functions are named 'crosscutting concerns' and business functions provided by the relevant application
+						are called 'core concerns'. In other words, instead of directly adding crosscutting concerns necessary for crosscutting concerns module,
+						AOP enables crosscutting concerns code to run which are needed among core concerns module
+						without the need of directly touching core concerns module code, through the process called 'weaving'.
+						Through this process, AOP can effectively apply crosscutting concerns functions necessary without modifying
+						the existing codes.
+					
+						
+					</para>
+				</listitem>
+				<listitem>
+					<para>Life-cycle management</para>
+					<para>
+						Lightweight container manages the life-cycle of defined module and performs the role of initializing/finalizing the
+						relevant modules, thereby enables developers to develop focusing on business logic. 
+						
+					</para>
+				</listitem>
+				<listitem>
+					<para> Easy to add new functions</para>
+					<para>
+						Through XML- or annotation-based setting, this enables the convenient addition of new functions based on container.
+						
+					</para>
+				</listitem>
+			</itemizedlist>
+			<para>
+				In the part, let's take a look at main functions provided by Spring Ligjhtweight container.
+				In addition, you will also learn Spring Reomting method for comminicating services between client application and remote application.
+				
+			
+			</para>	
+		</partintro>
+		&core_spring_ioc;
+		&core_spring_annotation;
+		&core_spring_javaconfig;
+		&core_spring_aop;
+		&core_spring_spel;
+		&core_spring_datasource;
+		&core_spring_transaction;				
+	</part>
+	
+	<part id="core_springmvc_part">
+		<title>Spring MVC</title>
+		<partintro id="core_springmvc_partintro">
+			<para>
+				Spring MVC is a MVC(Model, View, Controller)pattern-based web framework.
+				Spring MVC consists of Controller, Handler Mappings, ModelAndView, View Resolver, View, etc. and 
+				uses DispatchServlet
+				as a front controller which conveys all the request to controller.
+				As the controller that handles request can implement using @Controller and @RequestMapping only
+				even without implementing specific interface or inheriting special class, more vaious form can be developed.
+				In addition, based on various new annotations and functions of  @PathVariable, @RequestBody, @ResponseBody which were introduced from 
+				Spring 3.x,  RESTful web application can be developed.
+			</para>
+			<para>
+				Spring MVC can use POJO which is not suject to any Framework API as an object to convey input form data.
+				In addition, as Spring MVC is flexible in deciding view showing the data processed in the server,
+				technical integration is possible not only with general JSP but also with Tiles, Velocity,etc.
+				
+			</para>
+			<para>   Spring MVC web framework has the following charateristics. 
+				<itemizedlist>
+					<listitem><para> Clear role split. 
+					Each role of ontroller, validator, command object,form object, model object, DispatcherServlet, 
+					handler mapping, view resolver,etc. is handled by objects specialized in the relevant role.
+					</para></listitem>
+					<listitem><para>Easy and simple setting of JavaBean and frameowrk in application.
+					</para></listitem>
+					<listitem><para>Withought extending business object using framework-subject API, reuse in command or form object is possible.
+					</para></listitem>
+					<listitem><para>Can customize data binding or validation for data bining and validation error check in the application level.
+					</para></listitem>
+					<listitem><para>Provides Spring tag for data binding or theme use.
+					</para></listitem>
+					<listitem><para>Provides form tag which enables easier usage of JSP input form.
+					</para></listitem>
+				</itemizedlist>
+			</para>
+		</partintro>
+		&core_springmvc_architecture;
+		&core_springmvc_configuration;
+		&core_springmvc_controller;
+		&core_springmvc_view;
+		&core_springmvc_validation;
+		&core_springmvc_conversion;
+		&core_springmvc_fileupload;
+		&core_springmvc_internationalization;
+		&core_springmvc_exceptionhandling;
+		&core_springmvc_springintegration;			
+	</part>
+	
+	<part id="core_springmvcextensions_part">
+		<title>Spring MVC Extensions</title>
+		<partintro id="core_springmvcextensions_partintro">
+			<para>
+				Anyframe provides anyframe namespace and Custom tag library for developers to develop presentation layer more easily.
+				Custom tag library includes Anyframe message tag, extended for the message in Korean that encoded the message tag of Spring using utf-8/euc-kr,
+				and Page Navigator tag which can develop Page Navigation without java code of JSP.				
+			</para>
+		</partintro>
+		&core_springmvcextensions_configuration;
+		&core_springmvcextensions_taglibrary;
+	</part>	
+	
+	<part id="core_idgen">
+		<title>Id Generation</title>
+		<partintro id="core_idgen_partintro">
+			<para>
+				Refer to <ulink url="http://dev.anyframejava.org/docs.en/anyframe/plugin/optional/idgen/1.0.2/reference/htmlsingle/idgen.html">Idgen Plugin manual</ulink>.			
+			</para>			
+		</partintro>
+	</part>	
+	
+	<part id="core_logging_part">
+		<title>Logging</title>
+		<partintro id="core_logging_partintro">
+			<para>
+				The method that developers use to print a log is System.out.println().
+				Despite the convenience, however, this method is not recommended for the following reasons.
+			
+		  	</para>
+		
+			<itemizedlist>
+		    	<listitem>
+		    		<para>
+		    			As calling System.out.println is synchronized during disk I/O, system throughput decreases.
+		    			
+		    		</para>
+		    	</listitem>
+		
+		    	<listitem>
+		      		<para>
+		      			Basically, stack trace result remains in the console.
+		      			However, tracking exceptiion through console during system operation is not recommended.
+		      		
+		      		</para>
+				</listitem>
+		
+		    	<listitem>
+		      		<para>
+		      			In case of mapping of  ‘[&gt;null]’(in the case of NT) for System.out and system.errs or dev/null(in the case of Unix)
+		      			in the O/S, exception log may not be printed.
+		      			In addition, in the case of execution in NT service, console itself may not be seen.
+		      			
+		      		</para>
+		    	</listitem>
+		
+		    	<listitem>
+		      		<para>
+		      			Even if console log is redirected as output file, file can be overwritten when JavaEE App Server is restarted.
+		      			
+		     		</para>
+		    	</listitem>
+		
+		    	<listitem>
+		      		<para>
+		      			It is not recommended to use System.out.println only when developing/testing 
+		      			and deleting them before tranferring to operation, because the operation code and test code may not be same.
+		      			
+		      		</para>
+				</listitem>
+			</itemizedlist>
+		
+		  	<para>
+		  		Therefore, mechanism is needed to manage logging declaratively and minimize function overhead during operation
+		  		while making testing code and operation code consistent.
+		  		For this function, Anyframe Framework provides how to leave a log using <ulink
+		  		url="http://logging.apache.org/log4j/">Log4j </ulink>.
+		  	
+		  	</para>
+		</partintro>
+		&core_logging_configuration;
+		&core_logging_logging;
+		&core_logging_resources;	
+	</part>	
+	
+ 
+	<part id="core_messagesource_part">
+		<title>Message Source</title>
+		<partintro id="core_messagesource_partintro">
+			<para>
+			MessageSource can be used to support globalization of applications by retrieving the information in the text type defined in MessageResource Bundle in line with the Locale of the user.  
+			Anyframe supports the use of file-based MessageResource Bundle and DB-based MessageResource Bundle. 
+			Also, when there are several MessageSources defined, a wanted message can be found from the MessageResources that each MessageSource manages.
+			
+			</para>			
+		</partintro>
+		&core_encoding_messagesource;
+		&core-db_messagesource;
+		&core_aggregating_messagesource;
+	</part>		
+	
+	<part id="core_query_part">
+		<title>Query Service</title>
+		<partintro id="core_query_partintro">
+			<para>
+				Refer to <ulink url="http://dev.anyframejava.org/docs.en/anyframe/plugin/optional/query/1.1.1/reference/htmlsingle/query.html">Query Plugin manual</ulink>.
+			</para> 
+		</partintro>
+	</part>	
+	
+	<part id="core_properties_part">
+		<title>Properties Service</title>
+		<partintro id="core_properties_partintro">
+			<para>
+				Properties Service internally has a pair of key and value composed in external file or environment information
+				and enables application to access the value of this specific key.
+				This service enhances the flexibility of systm by managing relevant data externally when
+				the information on system setting envirohment or frequent modificatin of information is needed.
+				In the case of EJB component, internal functions to manage such information are provided, therefore 
+				there is no need to use this funtion in the service.
+			</para>
+			<para>
+			The following is implementation of Properties service provided by Anyframe. 
+		(Sample application created due to Foundation Plugin handles property information using SpEL instead of PropertiesService. 
+		However, when encoding handling of property file or Dynamic Reload function, etc. are needed, PropertiesService can be used.)
+			</para>
+		</partintro>
+		&core_properties_implementation;
+		&core_properties_sample;
+		&core_properties_dynamic;
+		&core_properties_resources;			
+	</part>		
+		
+</book>

@@ -1,0 +1,128 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+
+<!DOCTYPE book PUBLIC "-//OASIS//DTD DocBook XML V4.5//EN" "http://www.oasis-open.org/docbook/xml/4.5/docbookx.dtd"
+[
+<!ENTITY secured_resource SYSTEM "iam/securedresource.xml">
+]
+>
+
+<!--
+		Licensed to the Apache Software Foundation (ASF) under one or more
+		contributor license agreements. See the NOTICE file distributed with
+		this work for additional information regarding copyright ownership.
+		The ASF licenses this file to you under the Apache License, Version
+		2.0 (the "License"); you may not use this file except in compliance
+		with the License. You may obtain a copy of the License at
+
+		http://www.apache.org/licenses/LICENSE-2.0 Unless required by
+		applicable law or agreed to in writing, software distributed under the
+		License is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR
+		CONDITIONS OF ANY KIND, either express or implied. See the License for
+		the specific language governing permissions and limitations under the
+		License.
+-->
+    
+<book lang="ko">
+	<title>Anyframe IAM Plugin</title>
+	
+	<bookinfo>
+		<copyright>
+			<year>2007-2012</year>
+			<holder>삼성SDS</holder>
+		</copyright>
+		<releaseinfo>Version 1.0.4-SNAPSHOT</releaseinfo>
+
+		<productname>Anyframe IAM Plugin</productname>
+
+		<authorgroup>
+			<corpauthor></corpauthor>
+		</authorgroup>
+
+		<mediaobject>
+			<imageobject>
+				<!-- logo 변경 -->
+				<imagedata align="center" fileref="../image/common/logo_pdf.jpg"/>
+			</imageobject>
+			<textobject>
+				<phrase>Anyframe Java Logo</phrase>
+			</textobject>	
+		</mediaobject>
+		<legalnotice>
+			<para>본 문서의 저작권은 삼성SDS에 있으며 Anyframe 오픈소스 커뮤니티 활동의 목적하에서 자유로운 이용이 가능합니다.
+			본 문서를 복제, 배포할 경우에는 저작권자를 명시하여 주시기 바라며 본 문서를 변경하실 경우에는 원문과 변경된 내용을 표시하여 주시기 바랍니다. 
+			원문과 변경된 문서에 대한 상업적 용도의 활용은 허용되지 않습니다. 본 문서에 오류가 있다고 판단될 경우 이슈로 등록해 주시면 적절한 조치를 취하도록 하겠습니다.
+			</para>
+		</legalnotice>
+	</bookinfo>
+		
+	<part id="iam_introdiction_part">
+		<title>Introduction</title>
+		<partintro id="iam_introdiction_part_intro">
+			<para>
+				IAM Plugin은 <ulink url="http://static.springsource.org/spring-security/site/index.html">Spring Security</ulink>를 기반으로 
+				사용자 인증 및 권한 관리 기능을 제공하는 <ulink url="http://anyframejava.org/project/iam">Anyframe IAM</ulink>의 
+				기본 활용 방법을 가이드하기 위한 샘플 코드와 이 오픈소스들을 활용하는데 필요한 참조 라이브러리들로 구성되어 있다.
+			</para>
+			<para role="introduction_title"><emphasis role="bold">Installation</emphasis></para>
+			<para>
+				Command 창에서 다음과 같이 명령어를 입력하여 IAM plugin을 설치한다.
+			</para>
+			<programlisting language="java"><![CDATA[mvn anyframe:install -Dname=iam]]></programlisting>
+			<para>
+				installed(mvn anyframe:installed) 혹은 jetty:run(mvn clean jetty:run) command를 이용하여 설치 결과를 확인해볼 수 있다.
+			</para>
+			<informaltable>
+				<caption>Dependent Plugins</caption>
+				<tgroup cols="2">
+					<colspec colnum="1" colname="col1" colwidth="5*" />
+					<colspec colnum="2" colname="col2" colwidth="5*" />
+					<thead>
+						<row>
+							<entry align="center">Plugin Name</entry>
+							<entry align="center">Version Range</entry>
+						</row>
+					</thead>
+					<tbody>
+						<row>
+							<entry align="center"><ulink url="http://dev.anyframejava.org/docs/anyframe/plugin/optional/query/1.5.0-SNAPSHOT/reference/htmlsingle/query.html">Query</ulink></entry>
+							<entry align="center" valign="middle">2.0.0 > * > 1.4.0</entry>
+						</row>
+						<row>
+							<entry align="center"><ulink url="http://dev.anyframejava.org/docs/anyframe/plugin/optional/idgen/1.5.0-SNAPSHOT/reference/htmlsingle/idgen.html">Idgen</ulink></entry>
+							<entry align="center" valign="middle">1.4.0 &lt;= *</entry>
+						</row>						
+					</tbody>
+				</tgroup>
+			</informaltable>
+			<para role="introduction_title"><emphasis role="bold">WAS(Web Application Server)별 유의사항</emphasis></para>
+			<para>
+	     		다음은 IAM Plugin이 설치된 샘플 어플리케이션에 대한 WAS별 유의사항이다.
+	     	</para>	
+	     	<itemizedlist>
+     			<listitem>
+     				<para>JEUS</para>
+					<itemizedlist>
+		     			<listitem>
+		     				<para>
+		     					6.0 : IAM Plugin 설치로 생성된 샘플 어플리케이션에서 활용하는 Spring Security 라이브러리와의 호환을 위해 
+		     					JEUS 6.0 최신 패치가 설치되어 있어야 한다.
+		     				</para>    				
+		     			</listitem>
+		     		</itemizedlist>     				
+     			</listitem>
+     		</itemizedlist>	
+		</partintro>
+	</part>			
+		
+	<part id="iam_secured_resource_part">
+		<title>Secured Resource</title>
+		<partintro id="iam_secured_resource_part_intro">
+			<para>
+				IAM은 WebURL, Service Method, Pointcut 등에 대한 권한 관리 기능을 제공하며, 이러한 대상 항목들을 Secured Resource 라고 한다. 
+				IAM Plugin 예제를 통하여 WebURL 형태로 보호되는 자원에 대해서 알아보도록 한다.
+			</para>
+		</partintro>
+		&secured_resource;
+	</part>			
+
+</book>

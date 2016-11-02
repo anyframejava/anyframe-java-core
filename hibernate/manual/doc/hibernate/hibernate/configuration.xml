@@ -1,0 +1,625 @@
+<chapter id="hibernate_hibernate_configuration">
+	<title>Configuration</title>
+
+    <para>
+    	Hibernate은 실행 속성을 포함하고 있는 hibernate.cfg.xml (또는 hibernate.properties)을 기반으로 하여 동작하도록 구성되어 
+    	있다. 본 페이지에서는 hibernate.cfg.xml 파일의 주요 구성 요소와 속성 정의 방법에 대해 살펴보기로 한다. 
+    	먼저, hibernate.cfg.xml 파일은 가장 상위에 <![CDATA[<hibernate-configuration>]]> 태그를 포함하고 있으며 
+    	<![CDATA[<hibernate-configuration>]]> 태그  내에 <![CDATA[<security>와 <session-factory>]]>를 포함할 수 있다. 
+    	<![CDATA[<session-factory>]]>는 Hibernate SessionFactory가 DB 정보와 Hibernate Mapping XML 정보를 기반으로 
+    	Session을 생성하여 전달하는데 필요한 정보를 정의하기 위한 태그이다. <![CDATA[<session-factory>]]> 내에는 다양한 속성 
+    	정의가 가능하나 본 페이지에서는 그 중 일부 속성에 대해서만 다루기로 한다. Hibernate Configuration에 대한 자세한 내용은 
+    	<ulink url="http://docs.jboss.org/hibernate/core/3.6/reference/en-US/html_single/#session-configuration">Hibernate
+    	Documentation Chapter 3. Configuration</ulink> 원본을 참고하도록 한다.
+    </para>
+
+ 	<section id="hibernate_hibernate_configuration_datasource">
+		<title>DataSource 속성 정의</title>
+
+      	<para>다음 속성들을 통해 Hibernate는 특정 DB에 접근하여 데이터 액세스 처리가 가능하다.</para>
+
+		<informaltable>
+			<caption>hibernate.cfg.xml 파일 - DataSource 속성 목록</caption>
+        	<tgroup cols="3">
+ 				<colspec colnum="1" colname="col1" colwidth="1*"/>
+				<colspec colnum="2" colname="col2" colwidth="4*"/>
+				<colspec colnum="3" colname="col3" colwidth="5*"/>
+          		<thead>
+					<row>
+						<entry align="center">구분</entry>
+		
+						<entry align="center">Name</entry>
+		
+						<entry align="center">Description</entry>
+					</row>
+	          	</thead>
+	
+	          	<tbody>
+	            	<row>
+	              		<entry>JDBC</entry>
+	
+	              		<entry>hibernate.connection.driver_class</entry>
+	
+	              		<entry>접근 대상이 되는 DB의 Driver 클래스명을 정의하기 위한 속성</entry>
+	            	</row>
+	
+	            	<row>
+	              		<entry>JDBC</entry>
+	
+	              		<entry>hibernate.connection.url</entry>
+	
+	              		<entry>접근 대상이 되는 DB의 URL을 정의하기 위한 속성</entry>
+	            	</row>
+	
+	            	<row>
+	              		<entry>JDBC</entry>
+	
+	              		<entry>hibernate.connection.username</entry>
+	
+	              		<entry>DB에 접근할 때 사용할 사용자명을 정의하기 위한 속성</entry>
+	            	</row>
+	
+	            	<row>
+						<entry>JDBC</entry>
+	
+	              		<entry>hibernate.connection.password</entry>
+	
+	              		<entry>DB에 접근할 때 사용할 패스워드를 정의하기 위한 속성</entry>
+	            	</row>
+	
+	            	<row>
+	              		<entry>JDBC</entry>
+	
+	              		<entry>hibernate.connection.pool_size</entry>
+	
+	              		<entry>
+	              			Connection Pool에 생성할 최대 Connection 크기를 정의하기 위한 속성. Hibernate는 자체적으로 기본 
+	              			Connection Pool을 사용할 수 있으나 운영 시스템 용도로 개발된 것이 아니어서 다양한 기능을 제공하지 못하고 
+	              			안정적이지 못하다. 따라서 DBCP나 C3P0 등과 같은 Connection Pool 구현체를 채택하여 Connecction을 관리하는 
+	              			것이 좋다.
+	              		</entry>
+	            	</row>
+	
+	            	<row>
+	              		<entry>J2EE</entry>
+	
+	              		<entry>hibernate.connection.datasource</entry>
+	
+	              		<entry>JNDI를 통해 연결할 DataSource의 JNDI 명을 정의하기 위한 속성</entry>
+	            	</row>
+	
+	            	<row>
+	              		<entry>J2EE</entry>
+	
+	              		<entry>hibernate.jndi.url</entry>
+	
+	              		<entry>JNDI Provider URL을 정의하기 위한 속성</entry>
+	            	</row>
+	
+	            	<row>
+						<entry>J2EE</entry>
+		
+						<entry>hibernate.jndi.class</entry>
+		
+						<entry>JNDI InitialContextFactory 클래스명을 정의하기 위한 속성</entry>
+					</row>
+	
+					<row>
+						<entry>J2EE</entry>
+	
+						<entry>hibernate.connection.username</entry>
+	
+						<entry>DB에 접근할 때 사용할 사용자명을 정의하기 위한 속성</entry>
+					</row>
+	
+					<row>
+						<entry>J2EE</entry>
+	
+						<entry>hibernate.connection.password</entry>
+	
+						<entry>DB에 접근할 때 사용할 패스워드를 정의하기 위한 속성</entry>
+					</row>
+				</tbody>
+			</tgroup>
+		</informaltable>
+
+      	<para>
+      		다음은 위에서 언급한 속성들을 포함하고 있는 hibernate.cfg.xml 파일의 일부이다.
+            <programlisting language="xml"><![CDATA[<session-factory>
+    <property name="hibernate.connection.driver_class">net.sf.log4jdbc.DriverSpy</property>
+    <property name="hibernate.connection.url">
+            jdbc:log4jdbc:oracle:thin:@localhost:1521:xe</property>
+    <property name="hibernate.connection.username">user</property>
+    <property name="hibernate.connection.password">password</property>
+    ...
+</session-factory>]]></programlisting>
+		</para>
+	</section>
+
+    <section id="hibernate_hibernate_configuration_sql">
+		<title>Generated SQL 속성 정의</title>
+
+		<informaltable>
+			<caption>hibernate.cfg.xml 파일 - Generated SQL 속성 목록</caption>
+        	<tgroup cols="2">
+				<colspec colnum="1" colname="col1" colwidth="3*"/>
+				<colspec colnum="2" colname="col2" colwidth="7*"/>
+				<thead>
+            		<row>
+						<entry align="center">Name</entry>
+			
+						<entry align="center">Description</entry>
+					</row>
+          		</thead>
+
+          		<tbody>
+            		<row>
+              			<entry>hibernate.dialect</entry>
+
+              			<entry>
+              				Hibernate 기반 개발시 DB에 특화된 SQL을 구성하지 않더라도 DB에 따라 알맞은 SQL을
+              				생성할 수 있다. 이를 위해서 Dialect 클래스를 사용한다. hibernate.dialect는 Dialect
+             		 		클래스명을 정의하기 위한 속성
+             		 	</entry>
+            		</row>
+
+            		<row>
+              			<entry>hibernate.default_schema</entry>
+
+              			<entry>
+              				Hibernate에서 SQL을 생성할 때 특정 테이블에 대해 별도 정의된 Schema가 없는 경우
+              				적용할 DB Schema 명을 정의하기 위한 속성
+              			</entry>
+            		</row>
+
+            		<row>
+              			<entry>hibernate.default_catalog</entry>
+
+              			<entry>
+              				Hibernate에서 SQL을 생성할 때 특정 테이블에 대해 별도 정의된 Catalog가 없는 경우
+              				적용할 DB Catalog 명을 정의하기 위한 속성
+              			</entry>
+            		</row>
+          		</tbody>
+        	</tgroup>
+		</informaltable>
+
+      	<para>
+      		다음은 위에서 언급한 속성들을 포함하고 있는 hibernate.cfg.xml 파일의 일부이다.
+            <programlisting language="xml"><![CDATA[<session-factory>
+    ...
+    <property name="hibernate.default_schema">ATHENA</property>
+    <property name="hibernate.dialect">org.hibernate.dialect.Oracle10gDialect</property>
+    ...
+</session-factory>]]></programlisting>
+		</para>
+
+      	<para>
+      		다음은 Hibernate에서 제공하는 주요 Dialect 클래스 목록이다.
+      	</para>
+
+      	<informaltable>
+      		<caption>Hibernate에서 제공하는 주요 Dialect 목록</caption>
+			<tgroup cols="2">
+         		<colspec colnum="1" colname="col1" colwidth="3*"/>
+				<colspec colnum="2" colname="col2" colwidth="7*"/>
+          		<thead>
+            		<row>
+              			<entry align="center">DB 종류</entry>
+
+              			<entry align="center">Dialect 클래스</entry>
+            		</row>
+          		</thead>
+
+          		<tbody>
+		            <row>
+						<entry>DB2</entry>
+
+              			<entry>org.hibernate.dialect.DB2Dialect</entry>
+            		</row>
+
+            		<row>
+              			<entry>HSQLDB</entry>
+
+              			<entry>org.hibernate.dialect.HSQLDialect</entry>
+            		</row>
+
+            		<row>
+              			<entry>Informix</entry>
+
+              			<entry>org.hibernate.dialect.InformixDialect</entry>
+            		</row>
+
+            		<row>
+              			<entry>MySQL 5.x</entry>
+
+              			<entry>org.hibernate.dialect.MySQL5Dialect</entry>
+            		</row>
+
+            		<row>
+              			<entry>MySQL 4.x, 3.x</entry>
+
+              			<entry>org.hibernate.dialect.MySQLDialect</entry>
+            		</row>
+
+            		<row>
+              			<entry>Oracle 10g</entry>
+
+              			<entry>org.hibernate.dialect.Oracle10gDialect</entry>
+            		</row>
+
+            		<row>
+              			<entry>Oracle 9i/10i</entry>
+
+              			<entry>org.hibernate.dialect.Oracle9iDialect</entry>
+            		</row>
+
+            		<row>
+              			<entry>Oracle (모든 버전)</entry>
+
+              			<entry>org.hibernate.dialect.OracleDialect</entry>
+            		</row>
+
+            		<row>
+              			<entry>SAP DB</entry>
+
+              			<entry>org.hibernate.dialect.SAPDBDialect</entry>
+            		</row>
+
+            		<row>
+              			<entry>SQL Server 2000</entry>
+
+              			<entry>org.hibernate.dialect.SQLServerDialect</entry>
+            		</row>
+
+            		<row>
+						<entry>Sybase 11.9.2</entry>
+
+              			<entry>org.hibernate.dialect.Sybase11Dialect</entry>
+            		</row>
+
+            		<row>
+              			<entry>Sybase Anywhere</entry>
+
+              			<entry>org.hibernate.dialect.SybaseAnywhereDialect</entry>
+            		</row>
+          		</tbody>
+        	</tgroup>
+      	</informaltable>
+    </section>
+
+    <section id="hibernate_hibernate_configuration_cache">
+		<title>Cache 속성 정의</title>
+
+      	<informaltable>
+      		<caption>hibernate.cfg.xml 파일 - Cache 속성 목록</caption>
+			<tgroup cols="2">
+          		<thead>
+            		<row>
+              			<entry align="center">Name</entry>
+
+              			<entry align="center">Description</entry>
+            		</row>
+          		</thead>
+
+          		<tbody>
+            		<row>
+              			<entry>hibernate.cache.provider_class</entry>
+
+              			<entry>Cache 기능을 구현하고 있는 구현체의 클래스명을 정의하기 위한 속성</entry>
+            		</row>
+
+            		<row>
+              			<entry>hibernate.cache.use_second_level_cache</entry>
+
+              			<entry>2nd Level Cache를 적용할지 여부를 정의하기 위한 속성 (true|false)</entry>
+            		</row>
+
+            		<row>
+              			<entry>hibernate.cache.use_query_cache</entry>
+
+              			<entry>Hibernate Query를 Caching할지 여부를 정의하기 위한 속성 (true|false)</entry>
+            		</row>
+          		</tbody>
+        	</tgroup>
+      	</informaltable>
+
+      	<para>
+      		다음은 위에서 언급한 속성들을 포함하고 있는 hibernate.cfg.xml 파일의 일부이다. 2nd Level Cache를 적용하고, 
+      		Cache Provider로 EhCacheProvider를 사용한 예이다. 
+            <programlisting language="xml"><![CDATA[<session-factory>
+    ...				
+    <property name="hibernate.cache.provider_class">org.hibernate.cache.EhCacheProvider</property>
+    <property name="hibernate.cache.use_second_level_cache">true</property>
+    ...     
+</session-factory>]]></programlisting></para>
+    </section>
+
+    <section id="hibernate_hibernate_configuration_logging">
+		<title>Logging 속성 정의</title>
+
+		<informaltable>
+			<caption>hibernate.cfg.xml 파일 - Logging 속성 목록</caption>
+        	<tgroup cols="2">
+        		<colspec colnum="1" colname="col1" colwidth="2*"/>
+				<colspec colnum="2" colname="col2" colwidth="3*"/>
+	          	<thead>
+	            	<row>
+	 					<entry align="center">Name</entry>
+	
+	              		<entry align="center">Description</entry>
+	            	</row>
+	          	</thead>
+	
+	          	<tbody>
+	            	<row>
+						<entry>hibernate.show_sql</entry>
+		
+		              	<entry>Hibernate을 통해 생성된 SQL을 콘솔에 남길 것인지 여부를 정의하는 속성(true|false)</entry>
+	            	</row>
+	
+	            	<row>
+						<entry>hibernate.format_sql</entry>
+	
+	              		<entry>
+	              			hibernate.show_sql=true인 경우 해당 SQL문의 포맷을 정돈하여 콘솔에 남길 것인지 여부를 정의하는 속성 (true|false)
+	              		</entry>
+	            	</row>
+	
+	            	<row>
+	              		<entry>hibernate.use_sql_comments</entry>
+	
+	              		<entry>
+	              			Hibernate을 통해 생성된 SQL을 콘솔에 남길 때 Comments도 같이 남길 것인지 여부를 정의하는 속성 (true|false)
+	              		</entry>
+	            	</row>
+				</tbody>
+			</tgroup>
+		</informaltable>
+
+      	<para>
+      		위에서 언급한 hibernate.show_sql, hibernate.format_sql 속성을 정의하였을 경우 Hibernate를 통해 생성된 SQL문은 
+      		다음과 같은 형태로 콘솔에 남게 된다. <programlisting><![CDATA[Hibernate: 
+    insert into
+        PUBLIC.COUNTRY(COUNTRY_ID, COUNTRY_NAME, COUNTRY_CODE) 
+            values(?, ?, ?)]]></programlisting>
+        </para>
+
+		<para>
+			Hibernate 기본 Logging은 생성된 SQL 문을 확인할 때에는 유용하나 전달된 인자값을 확인할 수가 없어서 개발시 불편할 것이다. 
+			Hibernate에서는 기본 SQL Logging 외에도 Jakarta commons-logging API를 사용하여 로그를 처리하고 있어서, logging을 
+			위한 속성 파일을 정의하고 다음과 같은 로그 카테고리 목록을 활용하면 개발시 로그를 통해 좀 더 유용한 정보를 얻어낼 수 있을 
+			것이다.
+		</para>
+
+		<informaltable>
+			<caption>로깅시 활용 가능한 로그 카테고리 목록</caption>
+			<tgroup cols="2">
+          		<thead>
+            		<row>
+              			<entry align="center">카테고리</entry>
+
+              			<entry align="center">설명</entry>
+            		</row>
+          		</thead>
+
+          		<tbody>
+            		<row>
+              			<entry>org.hibernate.SQL</entry>
+
+              			<entry>실행되는 모든 DML 쿼리 Logging</entry>
+            		</row>
+
+       		   	  	<row>
+						<entry>org.hibernate.type</entry>
+
+              			<entry>모든 JDBC 인자 Logging</entry>
+            		</row>
+
+            		<row>
+              			<entry>org.hibernate.tool.hbm2ddl</entry>
+
+              			<entry>실행되는 모든 DDL 쿼리 Logging</entry>
+            		</row>
+
+           	 		<row>
+              			<entry>org.hibernate.pretty</entry>
+
+              			<entry>Flush 수행시 세션에 저장된 모든 개체(최대 20개)의 상태를 Logging</entry>
+            		</row>
+
+            		<row>
+              			<entry>org.hibernate.cache</entry>
+
+              			<entry>2nd Level Cache 수행 내역을 Logging</entry>
+            		</row>
+
+            		<row>
+              			<entry>org.hibernate.transaction</entry>
+
+              			<entry>트랜잭션 수행 내역을 Logging</entry>
+            		</row>
+
+            		<row>
+              			<entry>org.hibernate.jdbc</entry>
+
+              			<entry>모든 JDBC 자원 요청을 Logging</entry>
+            		</row>
+
+            		<row>
+              			<entry>org.hibernate.hql.ast.AST</entry>
+
+              			<entry>쿼리를 파싱하는 동안 HQL과 SQL AST를 Logging</entry>
+            		</row>
+
+            		<row>
+              			<entry>org.hibernate.secure</entry>
+
+              			<entry>모든 JAAS 인증 요청을 Logging</entry>
+            		</row>
+          		</tbody>
+        	</tgroup>
+		</informaltable>
+
+      	<para>
+      		다음은 hibernate.cfg.xml 파일 내의 hibernate.show_sql 설정과 무관하게, log4j.xml 파일 내에 org.hibernate.SQL, 
+			rg.hibernate.type Logger의 로그 레벨을 DEBUG로 정의하였을 경우 HibernateBasicCRUD.java 실행으로 인해 콘솔에 남은 
+			SQL문의 일부이다.
+            <programlisting><emphasis role="bold"><![CDATA[1. log4j.xml]]></emphasis>
+
+<![CDATA[<log4j:configuration xmlns:log4j="http://jakarta.apache.org/log4j/">
+    ...
+    <logger name="org.hibernate.SQL">
+        <level value="DEBUG" />
+    </logger>
+    <logger name="org.hibernate.type">
+        <level value="DEBUG" />
+    </logger>	
+    ...	
+</log4j:configuration>]]>
+
+<emphasis role="bold">2. Console - Hibernate Log</emphasis>
+
+<![CDATA[DEBUG: org.hibernate.SQL - 
+    insert into
+        PUBLIC.COUNTRY(COUNTRY_ID, COUNTRY_NAME, COUNTRY_CODE) 
+            values(?, ?, ?)
+DEBUG: org.hibernate.type.StringType - binding 'KR' to parameter: 1
+DEBUG: org.hibernate.type.StringType - binding 'Korea' to parameter: 2
+DEBUG: org.hibernate.type.StringType - binding 'COUNTRY-0001' to parameter: 3]]></programlisting>
+		</para>
+
+      	<para>
+      		위에서 언급한 2가지 방법 외에도 <ulink url="http://code.google.com/p/log4jdbc/">Log4jdbc(http://log4jdbc.
+      		sourceforge.net/)</ulink> 라는 오픈소스를 활용하면 다음과 같이 SQL문에 입력 인자가 대체된 형태의 SQL문을 로그를 통해 
+      		확인할 수도 있다. Log4jdbc를 활용한 Query Logging 방법에 대해서 자세히 알고 싶은 경우 <ulink url="http://dev.anyframejava.org/docs/anyframe/plugin/optional/logging-sql/1.1.1-SNAPSHOT/reference/htmlsingle/logging-sql.html">여기</ulink>를 참조하도록 한다. 
+            <programlisting><![CDATA[DEBUG: jdbc.sqlonly -  org.hibernate.jdbc.BatchingBatcher.doExecuteBatch
+         (BatchingBatcher.java:48)
+1. batching 1 statements:
+    1: insert into PUBLIC.COUNTRY (COUNTRY_ID, COUNTRY_NAME, COUNTRY_CODE) 
+        values ('KR', 'Korea', 'COUNTRY-0001')]]></programlisting>
+        </para>
+	</section>
+
+	<section id="hibernate_hibernate_configuration_other">
+		<title>기타 속성 정의</title>
+
+		<informaltable>
+			<caption>hibernate.cfg.xml 파일 - 기타 속성 목록</caption>
+			<tgroup cols="2">
+				<colspec colnum="1" colname="col1" colwidth="3*"/>
+				<colspec colnum="2" colname="col2" colwidth="7*"/>
+          		<thead>
+            		<row>
+              			<entry align="center">Name</entry>
+
+              			<entry align="center">Description</entry>
+            		</row>	
+          		</thead>
+
+          		<tbody>
+            		<row>
+						<entry>hibernate.hbm2ddl.auto</entry>
+
+              			<entry>
+              				Hibernate Mapping XML File (*.hbm.xml)을 기반으로 DDL을 자동으로 검증,생성 또는 수정할지 여부를 
+              				정의하기 위한 속성 (validate|update|create|create-drop)
+              			</entry>
+            		</row>
+
+            		<row>
+              			<entry>hibernate.jdbc.batch_size</entry>
+
+              			<entry>
+              				Hibernate는 일반적으로 실행해야 할 SQL들에 대해 일괄적으로 batch 처리를 수행하는데 이때 batch로 
+              				처리할 SQL의 개수를 정의하기 위한 속성
+              			</entry>
+            		</row>
+          		</tbody>
+        	</tgroup>
+		</informaltable>
+
+		<para>
+			hibernate.hbm2ddl.auto 속성을 정의한 경우 별도 DDL 없이도 정의된 Hibernate Mapping XML 파일을 기반으로 해당 DB에 
+			관련된 테이블을 생성, 수정, 검증 등을 수행하게 된다. 다음은 hibernate.hbm2ddl.auto=create로 정의한 hibernate.cfg.
+			xml 과 이를 기반으로 해당 DB에 관련 테이블을 생성하면서 실행된 DDL의 일부이다. 
+            <programlisting language="xml"><emphasis role="bold"><![CDATA[1. hibernate.cfg.xml]]></emphasis>
+
+<![CDATA[<session-factory>
+    ...				
+    <property name="hbm2ddl.auto">create</property>
+   	...     
+</session-factory>]]>
+
+<emphasis role="bold">2. Console - Hibernate Log</emphasis>
+
+<![CDATA[...	
+DEBUG: jdbc.sqlonly -  
+        org.hibernate.tool.hbm2ddl.SchemaExport.execute(SchemaExport.java:308)
+1. {WARNING: Statement used to run SQL} create table MOVIE_CATEGORY 
+    (CATEGORY_ID varchar(9) not null, MOVIE_ID varchar(255) not null, 
+            primary key (MOVIE_ID, CATEGORY_ID))
+DEBUG: jdbc.sqlonly -  
+        org.hibernate.tool.hbm2ddl.SchemaExport.execute(SchemaExport.java:308)
+1. {WARNING: Statement used to run SQL} create table PUBLIC.CATEGORY 
+    (CATEGORY_ID varchar(9) not null, CATEGORY_NAME varchar(50) not null, 
+            CATEGORY_DESC varchar(100), primary key (CATEGORY_ID))
+DEBUG: jdbc.sqlonly -  
+        org.hibernate.tool.hbm2ddl.SchemaExport.execute(SchemaExport.java:308)
+1. {WARNING: Statement used to run SQL} create table PUBLIC.COUNTRY 
+    (COUNTRY_CODE varchar(12) not null, COUNTRY_ID varchar(2) not null, 
+            COUNTRY_NAME varchar(50) not null, primary key (COUNTRY_CODE))
+DEBUG: jdbc.sqlonly -  
+        org.hibernate.tool.hbm2ddl.SchemaExport.execute(SchemaExport.java:308)
+1. {WARNING: Statement used to run SQL} create table PUBLIC.MOVIE 
+    (MOVIE_ID varchar(255) not null, COUNTRY_CODE varchar(12), TITLE varchar(100) not null, 
+        DIRECTOR varchar(10) not null, RELEASE_DATE date, primary key (MOVIE_ID))
+...]]></programlisting>
+		</para>
+
+      	<para>
+      		다음은 hibernate.jdbc.batch_size=10으로 정의한 hibernate.cfg.xml 과 이를 기반으로  하는 HibernateMultiDataSave 의
+      		실행 결과의 일부이다. HibernateMultiDataSave 코드의 session.flush() 부분을 breakpoint로 지정하고, DEBUG 모드로 
+      		실행시켜 보면서 batch 처리가 제대로 이루어지는지 확인해 보자. 
+            <programlisting><emphasis role="bold"><![CDATA[DEBUG: jdbc.sqlonly -  
+        org.hibernate.jdbc.BatchingBatcher.doExecuteBatch(BatchingBatcher.java:48)]]></emphasis>
+<emphasis role="bold">1. batching 10 statements:</emphasis>
+
+ <![CDATA[1:  insert into PUBLIC.COUNTRY (COUNTRY_ID, COUNTRY_NAME, COUNTRY_CODE) 
+        values ('KR0', 'Korea0', 'COUNTRY-0000') 
+ 2:  insert into PUBLIC.COUNTRY (COUNTRY_ID, COUNTRY_NAME, COUNTRY_CODE) 
+        values ('KR1', 'Korea1', 'COUNTRY-0001') 
+ 3:  insert into PUBLIC.COUNTRY (COUNTRY_ID, COUNTRY_NAME, COUNTRY_CODE) 
+        values ('KR2', 'Korea2', 'COUNTRY-0002') 
+ 4:  insert into PUBLIC.COUNTRY (COUNTRY_ID, COUNTRY_NAME, COUNTRY_CODE) 
+        values ('KR3', 'Korea3', 'COUNTRY-0003') 
+ 5:  insert into PUBLIC.COUNTRY (COUNTRY_ID, COUNTRY_NAME, COUNTRY_CODE) 
+        values ('KR4', 'Korea4', 'COUNTRY-0004') 
+ 6:  insert into PUBLIC.COUNTRY (COUNTRY_ID, COUNTRY_NAME, COUNTRY_CODE) 
+        values ('KR5', 'Korea5', 'COUNTRY-0005') 
+ 7:  insert into PUBLIC.COUNTRY (COUNTRY_ID, COUNTRY_NAME, COUNTRY_CODE) 
+        values ('KR6', 'Korea6', 'COUNTRY-0006') 
+ 8:  insert into PUBLIC.COUNTRY (COUNTRY_ID, COUNTRY_NAME, COUNTRY_CODE) 
+        values ('KR7', 'Korea7', 'COUNTRY-0007') 
+ 9:  insert into PUBLIC.COUNTRY (COUNTRY_ID, COUNTRY_NAME, COUNTRY_CODE) 
+        values ('KR8', 'Korea8', 'COUNTRY-0008') 
+10:  insert into PUBLIC.COUNTRY (COUNTRY_ID, COUNTRY_NAME, COUNTRY_CODE) 
+        values ('KR9', 'Korea9', 'COUNTRY-0009') ]]></programlisting></para>
+	</section>
+
+    <section id="hibernate_hibernate_configuration_mapping">
+		<title>매핑 파일 정의</title>
+
+      	<para>
+      		Hibernate를 통해 관리되어야 할 Mapping XML File 목록을 정의하기 위한 속성이며, 다음과 같이 정의할 수 있다. 
+            <programlisting language="xml"><![CDATA[<session-factory>
+	...				
+    <mapping resource="anyframe/sample/model/bidirection/Category.hbm.xml"/>
+    <mapping resource="anyframe/sample/model/bidirection/Country.hbm.xml"/>
+    <mapping resource="anyframe/sample/model/bidirection/Movie.hbm.xml"/>
+   	...     
+</session-factory>]]></programlisting>
+		</para>
+    </section>
+ </chapter>
+

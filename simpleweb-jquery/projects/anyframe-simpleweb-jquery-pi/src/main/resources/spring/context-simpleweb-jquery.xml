@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-3.2.xsd">
+	<bean name="idGenServiceJqueryMovie" class="org.anyframe.idgen.impl.TableIdGenServiceImpl" destroy-method="destroy">
+		<property name="dataSource" ref="dataSource" />
+		<property name="strategy" ref="tableIdMixPrefix" />
+		<property name="blockSize" value="1"/>
+		<property name="table" value="JQUERY_IDS"/>
+		<property name="key" value="JQUERY_MOVIE"/>
+	</bean>
+</beans>

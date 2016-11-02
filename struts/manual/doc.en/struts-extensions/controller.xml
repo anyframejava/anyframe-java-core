@@ -1,0 +1,436 @@
+<chapter id="struts_extensions_controller">
+	<title>Controller</title>
+
+	<para>
+		Controller of Struts is mainly composed of ActionServlet,
+		RequestProcessor, and Action class.
+		Anyframe provides basic functions of Struts Controller and extended functions
+		such as business service connection, logging, authentication and authorization handling, and exception handling.
+		The details of each are as follows.
+  	</para>
+
+	<section id="struts_extensions_controller_defaultactionservlet">
+    	<title>DefaultActionServlet</title>
+
+    	<para>
+    		<![CDATA[<servlet-class> is defined as org.anyframe.struts.action.DefaultActionServlet 
+			extended from org.apache.struts.action.ActionServlet. 
+			<init-param> can set basic functions provided by ActionServlet, and Character Encoding.
+			Character Encoding property extended from DefaulActionServlet,
+			is for setting Character Encoding to apply to when reading defined Message Resource Bundle.
+			The following is a part of web.xml which has set DefaultActionServlet as <servlet>.]]> 
+    		<programlisting language="xml"><![CDATA[<servlet>
+    <servlet-name>action</servlet-name>
+    <servlet-class>
+        org.anyframe.struts.action.DefaultActionServlet
+    </servlet-class>
+    <init-param>
+        <param-name>config</param-name>
+            <param-value>
+            /config/struts/struts-config.xml,
+            /config/struts/struts-config-login.xml,
+            /config/struts/struts-config-dispatch.xml,
+            /config/struts/struts-config-token.xml,
+            /config/struts/struts-config-exception.xml,
+            /config/struts/struts-config-authorization.xml
+        </param-value>
+    </init-param>
+    <init-param>
+        <param-name>character-encoding</param-name>
+        <param-value>utf-8</param-value>
+    </init-param>
+    <init-param>
+        <param-name>debug</param-name>
+        <param-value>3</param-value>
+    </init-param>
+    <init-param>
+        <param-name>detail</param-name>
+        <param-value>3</param-value>
+    </init-param>
+    <init-param>
+        <param-name>convertNull</param-name>
+        <param-value>true</param-value>
+    </init-param>
+    <load-on-startup>0</load-on-startup>
+</servlet>]]></programlisting>
+		</para>
+	</section>
+
+	<section id="struts_extensions_controller_defaultrequestprocessor">
+		<title>DefaultRequestProcessor</title>
+
+		<para>
+			org.anyframe.struts.tiles.DefaultRequestProcessor extends
+			TilesRequestProcessor of Struts.
+			Therefore, when setting	DefaultRequestProcessor as a controller in Struts configuration file,
+			TilesPlugin must be registered as plug-in. 
+			To see how to register TilesPlugin in plug-in, refer to
+			<link linkend="struts_view_tiles_installation">Tiles installation</link> of Struts Tiles.
+			<![CDATA[ The following is a part of struts-config.xml which defines DefaultRequestProcessor in <controller>.]]>
+    		
+    		<programlisting language="xml"><![CDATA[<controller contentType="text/html;charset=utf-8" locale="true" 
+    		processorClass="]]><emphasis
+    		role="bold">org.anyframe.struts.tiles.DefaultRequestProcessor</emphasis><![CDATA["/>]]></programlisting>
+    	</para>
+
+		<section id="struts_extensions_controller_defaultrequestprocessor_function">
+			<title>Function of DefaultRequestProcessor</title>
+
+			<itemizedlist>
+				<listitem>
+					<para>Role-based authentication and authorization management</para>
+				</listitem>
+				<listitem>
+					<para>Apply character-encoding value which was set in web.xml.</para>
+				</listitem>
+	    	    <listitem>
+	    		      <para>Save locale information as a key value named org.apache.struts.action.LOCALE in Session.</para>
+	       		</listitem>
+			</itemizedlist>
+	
+	      	<para>
+	      		The following is a part of logic implementing processRoles method in DefaultRequestProcessor 
+	      		which performs authentication and authorization handling.
+      			<programlisting language="java">protected boolean <emphasis
+            	role="bold">processRoles</emphasis><![CDATA[(HttpServletRequest request,
+                        HttpServletResponse response, ActionMapping mapping)
+                                throws IOException, ServletException {
+    // [public] Is this action protected by role requirements?
+    String roles[] = mapping.getRoleNames();
+    if ((roles == null) || (roles.length < 1)) {
+        return (true);
+    }
+	
+    Subject _subject = null;
+	
+    HttpSession session = request.getSession();
+    _subject = (Subject) session.getAttribute("subject");
+	
+    if (_subject == null) {
+        log.debug("#AuthenticationException is encounted");
+	    
+    ExceptionConfig config = mapping.findException(AuthenticationException.class);
+	    
+    if(config == null ){
+        mapping.findException(Exception.class);
+    }
+	    
+    AuthenticationException ae = new AuthenticationException(config.getKey(), request
+	            .getRequestURI());
+	//  ...
+]]></programlisting>
+			</para>
+
+			<para>
+			    <![CDATA[As	shown in the source code above, when role is given to specific
+				action mapping information in Struts configuration file, check user	authentication information.
+				If not authenticated, throw	AuthenticationException.
+				Exception message key is same with the key of AuthenticationException defined in <exception> of Struts
+				configuration file, and if not defined, it is same with the key of java.lang.Exception.
+				The following is a part of struts-config-exception.xml file and an
+				example of registering AuthenticationException as Global Level Exception.]]>
+	      		
+	      		<programlisting language="xml"><![CDATA[<global-exceptions>
+     <exception key="common.msg.authentication.error" 
+                    path="/WEB-INF/jsp/struts/common/error.jsp"
+                    type="org.anyframe.struts.util.AuthenticationException" 
+                    handler="org.anyframe.struts.action.DefaultExceptionHandler" />
+</global-exceptions>]]></programlisting>
+			</para>
+			<para>
+				In the message properties file where message resource is registered, for
+				common.msg.authentication.error message key,
+				<programlisting language="java"><emphasis
+				role="bold">common.msg.authentication.error</emphasis>=Authentication Fail 
+        - You are not logon or Session expired. Please try re-logon. - {0}.
+common.msg.authorization.error=You can not access this page. - {0}.
+..</programlisting>
+	is the assumption of message file registration.
+			</para>
+		</section>
+	</section>
+
+	<section id="struts_extensions_controller_abstractactionsupport">
+    	<title>AbstractActionSupport</title>
+
+    	<para>org.anyframe.struts.action.AbstractActionSupport class provides the following main functions.</para>
+
+	    <itemizedlist>
+    		<listitem>
+        		<para>Providing easy integration with Spring-based Anyframe service</para>
+      		</listitem>
+		    <listitem>
+        		<para>Handling declarative Synchronized Token</para>
+      		</listitem>
+     		<listitem>
+		        <para>Handling Common Exception</para>
+      		</listitem>
+    	</itemizedlist>
+	    <para>
+	    	Therefore, Action class each inherits AbstractActionSupport and overrides process method. 
+			Process method implements logic integrating client request with business layer.
+			AbstractActionSupport execute method that implements such main functions are implemented as follows.
+    		
+    		<programlisting language="java">public ActionForward execute(ActionMapping mapping, ActionForm form,
+                                HttpServletRequest request, HttpServletResponse response)
+                                                            throws Exception {
+
+    ActionForward forward = null;
+
+    try {
+        <emphasis role="bold">preProcess</emphasis>(mapping, form, request, response);
+        
+        getLogger().debug(this.getClass().getName() + ".process() Started!");
+        forward = <emphasis role="bold">process</emphasis>(mapping, form, request, response);
+        getLogger().debug(this.getClass().getName() + ".process() Ended!");
+        forward = <emphasis role="bold">postProcess</emphasis>(mapping, form, request, response, forward);
+    } catch (InvalidTokenException tokenException) {
+        forward = <emphasis role="bold">processInvalidTokenException</emphasis>(mapping, form, request,
+                            response, tokenException);
+    } catch (RuntimeException uncheckedException) {
+        forward = <emphasis role="bold">processUnCheckedException</emphasis>(mapping, form, request,
+                            response, uncheckedException);
+    } catch (Exception checkedException) {
+        getLogger().debug("\n Action Support Exception catch!!");
+        forward = <emphasis role="bold">processCheckedException</emphasis>(mapping, form, request, response,
+                            checkedException);
+    } finally {
+        forward = <emphasis role="bold">processFinally</emphasis>(mapping, form, request, response, forward);
+    }
+    return forward;
+}</programlisting>
+		</para>
+
+    	<para>
+    		The following are methods implemented in AbstractActionSupport class, 
+    		and called by appropriate order so that execute method logic is executed.
+    	</para>
+
+    	<itemizedlist>
+      		<listitem>
+        		<para>
+        			preProcess : Method which is called before performing process method in Action class 
+        			which inherited AbstractActionSupport class.
+					This method validates Token based on mapping information (validateToken, resetToken). 
+					When preCondition for this Action is needed, override this method.
+        		</para>
+      		</listitem>
+      		<listitem>
+        		<para>
+        			process : Abstract method. Therefore, it must be implemented in Action class which has inherited AbstractActionSupport. 
+        			In process method, put in logic that handles client request by integrating with business layer.
+        		</para>
+      		</listitem>
+		    <listitem>
+        		<para>
+        			postProcess : As a method which is called after performing
+					Action class process method that has inherited AbstractActionSupport,
+					it creates Token based on Action mapping information (saveToken).
+					When postCondition is needed to perform action, override this method.
+        		</para>
+ 		    </listitem>
+      		<listitem>
+		  		<para>
+		  			processInvalidTokenException : When using Synchronized Token, this contains processing logic for invalid Token. 
+		  			It creates ActionMesage that says " The request is not valid." and throws InvalidTokenException.
+		  		</para>
+      		</listitem>
+		    <listitem>
+        		<para>
+        			processUnCheckedException : When RunTimeException occurs in executing preProcess(), process(), postProcess(), throw Exception.
+					When UnCheckedException occurs, override this method if a special handling logic is needed.
+					
+        		</para>
+      		</listitem>
+		    <listitem>
+        		<para>
+        			processCheckedException : When Exception occurs in performing preProcess(), process(), postProcess(), throw Exception.
+					When CheckedException occurs, override this method if a special handling logic is needed.
+        		</para>
+      		</listitem>
+		    <listitem>
+        		<para>
+        			processFinally : Method which is called at the finally phrase of execute method in AbstractActionSupport class.
+                    When special handling logic is needed in finally phrase, override this method.
+        		</para>
+      		</listitem>
+    	</itemizedlist>
+	    <para>
+		    On top of the basic functions provided by AbstractActionSupport mentioned above,
+			when common functions are needed for each Action class to handle, 
+			create class which has inherited AbstractActionSupport 
+			and add	necessary functions to the class. Each Action class must inherit AbstractActionSupport.
+    	</para>
+	
+	    <section id="struts_extensions_controller_abstractactionsupport_actionsample">
+      		<title>Action Sample</title>
+
+      		<para>
+      			The following is LoginAction.java which has inherited AbstractActionSupport.
+				
+      			<programlisting language="java">public class LoginAction extends <emphasis
+	            role="bold">AbstractActionSupport</emphasis> {
+	
+    public Log <emphasis role="bold">getLogger</emphasis>() throws Exception {
+        return LogFactory.getLog(this.getClass().getName());
+    }
+	
+    public ActionForward process(ActionMapping mapping, ActionForm form,
+                HttpServletRequest request, HttpServletResponse response)
+                    throws Exception {
+        AuthenticationService authenticationService = 
+                (AuthenticationService) getService("authenticationService");
+
+        UserForm userForm = (UserForm) form;
+        UserVO userVO = new UserVO();
+        BeanUtils.copyProperties(userVO, userForm);
+
+        Subject subject = authenticationService.authenticate(userVO);
+
+        HttpSession session = request.getSession();
+
+        session.setAttribute("subject", subject);
+        return (mapping.findForward("success"));
+    }
+}</programlisting>
+			</para>
+
+      		<para>
+      			The source code above is overriding getLogger method of AbstractActionSupport
+				to use individual Logger in LoginAction class.
+      		</para>
+    	</section>
+  	</section>
+
+	<section id="struts_extensions_controller_defaultdispathaction">
+    	<title>DefaultDispathActionSupport</title>
+
+    	<para>
+    		org.anyframe.web.struts.action.DefaultDispathActionSupport is a
+			class that has inherited the above-mentioned AbstractActionSupport, 
+			and provides the same functions as those of	DispatchAction which are basically provided in Struts.
+    	</para>
+	
+	    <section id="struts_extensions_controller_defaultdispathaction_sample">
+      		<title>Action Sample</title>
+
+      		<para>
+      			The following is ProductAction.java which has inherited DefaultDispatchActionSupport.
+      			<programlisting language="java">public class ProductAction extends <emphasis
+            	role="bold">DefaultDispatchActionSupport</emphasis> {
+
+    public ActionForward get(ActionMapping mapping, ActionForm form,
+            HttpServletRequest request, HttpServletResponse response)
+            throws Exception {
+            
+        // TODO : Logic related to single item search function
+			
+        return mapping.findForward("success_get");
+			
+	}
+
+    public ActionForward list(ActionMapping mapping, ActionForm form,
+            HttpServletRequest request, HttpServletResponse response)
+            throws Exception {
+		
+        // TODO : Logic related to list search function
+		
+        return mapping.findForward("success_list");
+    }
+}</programlisting>
+			</para>
+
+			<para>
+				As Action class that has inherited DefaultDispatchActionSupport is DispatchAction,
+				unlike developing Action class that has inherited AbstractActionSupport, 
+				it can define several methods in one Action.
+      		</para>
+		</section>
+	</section>
+
+	<section id="struts_extensions_controller_defaultforwardaction">
+    	<title>DefaultForwardAction</title>
+
+    	<para>
+    		org.anyframe.web.struts.common.action.DefaultForwardAction performs the same functions as ForwardAction basically provided by Struts. 
+    		But, the difference is that DefaultForwardAction has inherited AbstractActionSupport, 
+    		so it can perform functions such as	common	Exception handling and Synchronized Token handling.
+			Below is a part of struts-config-dispatch.xml file which defines Action	mapping using DefaultForwardAction.
+			If the request URL is dispatchActionView.do, it	will go to /extensions/dispatch.jsp page through DefaultForwardAction.	
+    		<programlisting language="xml"><![CDATA[<action path="/dispatchActionView"
+    		type="org.anyframe.web.struts.common.action.DefaultForwardAction" parameter="/extensions/dispatch.jsp" />]]></programlisting>
+    	</para>
+	</section>
+
+	<section id="struts_extensions_controller_anyframemipaction">
+    	<title>AnyframeMiPAction</title>
+
+    	<para>
+    		When using MiPlatform which is an X-Internet solution in composing presentation layer, 
+    		org.anyframe.struts.action.mip.AnyframeMiPAction class is provided to handle MiPlatform data in unique format more easily. 
+    		Developers must inherit AnyframeMiPAction and develop individual Action, and implement process method.
+    	</para>
+
+    	<para>process method has the following input parameter regarding MiPlatform.</para>
+
+	    <informaltable>
+	      <tgroup cols="3">
+	      <colspec colnum="1" colname="col1" colwidth="1*"/>
+			<colspec colnum="2" colname="col2" colwidth="1*" />
+			 <colspec colnum="3" colname="col3" colwidth="4*"/>
+				<thead>
+				<row>
+					<entry align="center">Type</entry>
+					<entry align="center">Parameter Name</entry>
+					<entry align="center">Description</entry>
+				</row>
+			</thead>
+	        <tbody>
+	          <row>
+	            <entry>VariableList</entry>
+	            <entry>inVl</entry>
+	            <entry>Including parameters which were transferred in Get method from Client</entry>
+	          </row>
+	          <row>
+	            <entry>VariableList</entry>
+	            <entry>outVl</entry>
+	            <entry>VariableList transferred to Client</entry>
+	          </row>
+	          <row>
+	            <entry>DatasetList</entry>
+	            <entry>inDl</entry>
+	            <entry>Including Dataset XML transmitted in Post method from Client</entry>
+	          </row>
+	          <row>
+	            <entry>DatasetList</entry>
+	            <entry>outDl</entry>
+	            <entry>Setting Dataset XML transmitted to Client</entry>
+	          </row>
+	        </tbody>
+	      </tgroup>
+	    </informaltable>
+
+		<section id="struts_extensions_controller_anyframemipaction_sampleaction">
+			<title>Sample Action</title>
+
+			<para>
+				The following is a part of class which has inherited AnyframeMiPAction.
+				This executes business service within process method and returns the result value.
+      			<programlisting language="java">public void process(ActionMapping mapping, PlatformRequest request,
+        VariableList inVl, DatasetList inDl, VariableList outVl,
+            DatasetList outDl) throws Exception {
+    this.inVl = inVl;
+    this.inDl = inDl;
+    this.outVl = outVl;
+    this.outDl = outDl;
+
+    MiPUserService userService = (MiPUserService)getService("userService");
+    Dataset ds = userService.getUserList(inVl);
+    outDl.addDataset("ds_access",ds);
+
+    //  ...
+}</programlisting>
+			</para>
+    </section>
+  </section>
+</chapter>

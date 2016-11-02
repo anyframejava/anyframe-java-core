@@ -1,0 +1,1292 @@
+<chapter id="core_springmvc_controller">
+	<title>Controller</title>
+  	<para>
+  		MVC에서 C에 해당하는 컨트롤러는 사용자의 요청을 받아서 어플리케이션에 정의된 적절한 Service를 수행한 후, 
+  		그 결과를 다시 View를 통해 사용자에게 보여줄 수 있는 Model 데이터로 변환하는 역할을 담당한다.
+  		Spring에서는 이러한 컨트롤러를 특정 API에 종속되지 않고 사용자가 자유롭게 작성할 수 있는 추상적인 구현 방법을 제공하고 있다.
+  	</para>
+  	<para>
+  		Spring 2.5에서부터 @RequestMapping, @RequestParam, @ModelAttribute 등을 이용한 Annotation 기반의 컨트롤러 개발 방식을 소개했다.
+  		Annotation을 사용하여 SpringMVC기반의 컨트롤러를 작성하면, 특정 인터페이스를 상속받거나 특정 클래스를 상속받지 않아도 된다. 
+		또한 Servlet API와도 독립적으로 작성할 수 있다는 장점이 있다. (단, annotation은 JAVA 5 이상에서만 사용가능함에 유의하도록 한다.)
+		
+		<note>
+			<title>Spring MVC controller hierarchy deprecated</title>
+			<para>
+				기존에 Spring에서 제공하던 AbstractFormController등의 Form 관련 Class 계층은 Spring 3 부터는 더이상 지원하지 않는다.  
+				Spring MVC에서는 @Controller, @RequestMapping 등의 Annotation을 기반으로 컨트롤러를 개발하도록 가이드하고 있다.
+			</para>
+		</note>
+  	</para>
+
+	<section id="core_springmvc_controller_componentscan">
+    	<title>Configuration</title>
+
+    	<para>
+    		컨트롤러 역할을 수행하는 클래스를 정의하기 위해서는 Spring에서 제공하는 Stereotype Annotation 중 @Controller를 사용한다.
+    		이렇게 정의된 컨트롤러 클래스는 XML 설정 파일에 명시적으로 Bean으로 정의하여 Spring Container에 등록할 수도 있지만, 
+    		자동으로 검색 및 등록이 가능하게 할 수도 있다. Spring에서는 이를 Autodetection이라고 한다. 
+    		<emphasis role="bold">Stereotype Annotation이 적용된 클래스들에 대한 Autodetection이 이루어 지도록 하기 위해서는 <![CDATA[<context:component-scan/>]]> 을 속성 정의 XML에
+    		추가</emphasis>해 주어야 한다. <![CDATA[<context:component-scan/>]]>에 대한 자세한 내용은 
+    		본 매뉴얼 >> Spring >> <link linkend="core_spring_annotation">Annotation</link>을 참고하기 바란다.
+    	</para>
+    	
+    	<section id="core_springmvc_controller_componentscan_filter">
+			<title>Using Filters to customize scanning</title>
+			<para>
+				<![CDATA[<context:component-scan/>]]>은 해당 클래스패스 내에 @Component, @Service, @Repository, @Controller가
+	        	 적용된 클래스를 모두 찾아서 Spring 컨테이너가 관리하는 컴포넌트로 등록하도록 하는 설정이다. 
+	        	 이와 같은 디폴트 동작 방식으로 Autodetection 기능 이용 시, 비즈니스와 프레젠테이션 레이어 간 Bean 정의 XML을 분리하여 관리하면서  
+				<![CDATA[<context:component-scan/>]]>을 중복으로 설정하는 경우 다음과 같은 문제가 발생할 수 있다.
+			</para>
+			<itemizedlist>
+				<listitem>
+					<para>Autodetection 중복 설정으로 인해 야기되는 문제점</para>
+	            	<itemizedlist>
+	              		<listitem>
+							<para>
+	             		  	 	Stereotype Annotation이 적용된 클래스가 비즈니스 레이어의 Root WebApplicationContext와 프레젠테이션 레이어
+	             		  	 	의 WebApplicationContext에 중복하여 등록된다.
+	                		</para>
+	              		</listitem>
+	
+	              		<listitem>
+							<para>
+	               				 비즈니스 레이어의 Root WebApplicationContext와 프레젠테이션 레이어의 WebApplicationContext는 Parent Container - Child Container 관계로 구성된다.
+	               				 Container가 계층 구조를 가질 때, 사용하고자 하는 Bean 검색 순서는 현재 자기 Container가 먼저이고, Bean이 없을 경우 Parent Container가 그 다음이다. 
+	               		 	</para>
+	              		</listitem>
+	
+	              		<listitem>
+	                		<para>
+	                			일반적으로 AOP 설정은 비즈니스 레이어에서 관리한다.
+	                			따라서 Proxy 기반의 Spring AOP는 비즈니스 레이어의 Root WebApplicationContext에 등록된 Bean에만 적용되고, 
+	                			프레젠테이션 레이어의 WebApplicationContext에 중복으로 등록된 Bean에는 적용되지 않는다.
+	                		</para>
+	              		</listitem>
+	
+	              		<listitem>
+	                		<para>
+	                			결과적으로 프레젠테이션 레이어의 WebApplicationContext에서는 Proxy 기반의 Spring AOP가 적용되지 않은 Bean을 먼저 참조하게 되어
+	                			Spring AOP를 사용하여 설정한 기능들이 동작하지 않는 문제점이 발생한다.
+	                		</para>
+	              		</listitem>
+	            	</itemizedlist>
+	            	<para>
+	            		다음은 위의 내용을 그림으로 나타낸 것이다.
+		            	<mediaobject>
+		            		<imageobject>
+		            			<imagedata align="center" fileref="../image/core/springmvc/doublebean.png"/>
+		            		</imageobject>
+		            		<textobject>
+		            			<phrase>
+		            				Autodetection 중복 설정으로 인해 야기되는 문제점을 표현한 그림이다. Stereotype Annotation이 적용된 클래스가 비즈니스 레이어의 Root 
+		            				WebApplicationContext와 프레젠테이션 레이어의 WebApplicationContext에 중복하여 등록되고, 이 떄, 비즈니스 레이어의 Root WebApplicationContext와 
+		            				프레젠테이션 레이어의 WebApplicationContext는 Parent Container - Child Container 관계로 구성된다.
+		            				비즈니스 레이어에서먄 관리되는 AOP 설정은 비즈니스 레이어의 Root WebApplicationContext에 등록된 Bean에만 적용되고, 프레젠테이션 레이어의 
+		            				WebApplicationContext에 중복으로 등록된 Bean에는 적용되지 않는다.
+		            				결과적으로 프레젠테이션 레이어의 WebApplicationContext에서는 Proxy 기반의 Spring AOP가 적용되지 않은 Bean을 먼저 참조하게 되어
+	                				Spring AOP를 사용하여 설정한 기능들이 동작하지 않는 문제점이 발생함을 표현하고 있다.
+		            			</phrase>
+		            		</textobject>
+		            	</mediaobject>
+					</para>
+	            	<para>
+	            		이와 같은 문제를 방지하기 위해서 비즈니스 레이어(Root WebApplicationContext)에서 관리되어야하는 Bean과 
+	            		프레젠테이션 레이어(Child WebApplicationContext)에서 관리되어야하는 Bean을 구분할 필요가 있다.
+	            	</para>
+		
+	            	<para>
+	            		다음은 프레젠테이션 레이어에서 <emphasis role="bold">@Controller annotation이 적용된 클래스만 
+	            		WebApplication Context에 등록</emphasis>하는common-servlet.xml  파일의 설정 예이다.
+						<programlisting language="xml"><emphasis role="bold"><![CDATA[<!-- use-default-filters="false"로 설정하고
+include-filter를 사용했기 때문에 이 WebApplicationContext에는 @Contoller가 적용된 클래스만 등록된다. -->]]></emphasis>
+<![CDATA[<context:component-scan base-package="org.anyframe.sample.springmvc" ]]><emphasis role="bold">use-default-filters="false"</emphasis><![CDATA[>]]>
+    <emphasis role="bold"><![CDATA[<context:include-filter type="annotation" expression="org.springframework.stereotype.Controller"/>]]></emphasis>
+<![CDATA[</context:component-scan>]]></programlisting>
+					</para>
+	
+            		<para>
+						위의 예와 같이 <![CDATA[<context:component-scan>]]>하위에 <![CDATA[<context:include-filter>]]>
+						나 <![CDATA[<context:exclude-filter>]]>를 추가하면 컨테이너에 의해 검색될 대상의 범위를 조정할 수 있다. 
+						filter에 대한 자세한 내용은 본 매뉴얼 >> Spring >> <link linkend="core_spring_annotation">Annotation</link> 을 참고 바란다.
+	            	</para>
+				</listitem>
+			</itemizedlist>
+		</section>
+	</section>
+
+	<section id="core_springmvc_controller_implementation">
+		<title>컨트롤러 구현</title>
+
+		<para>
+			앞에서 설명했듯이, Spring MVC에서는 요청을 처리하는 컨트롤러를 특정 인터페이스 구현하거나 특정 클래스 상속받아서 구현하지 않아도 된다.
+			@Controller, @RequestMapping 등의 Annotation만을 이용하여 다양한 형태의 컨트롤러를 만들 수 있다.
+			본 문서에서는 Spring MVC에서 제공하는 Annotation을 사용하여 컨트롤러를 작성하는 방법에 대해서 알아본다.
+		</para>
+
+		<itemizedlist>
+			<listitem>
+				<para>@Controller : 컨트롤러 클래스 정의</para>
+			</listitem>
+
+			<listitem>
+				<para>@RequestMapping : 처리할 HTTP Request URL과 컨트롤러 클래스 또는 메소드 매핑</para>
+			</listitem>
+
+			<listitem>
+				<para>@RequestParam : HTTP Request에 포함된 파라미터 참조 시 사용</para>
+			</listitem>
+			
+			<listitem>
+				<para>@RequestHeader : HTTP Request의 Header 값 참조 시 사용</para>
+			</listitem>
+			
+			<listitem>
+				<para>@CookieValue : HTTP Cookie 값 참조 시 사용</para>
+			</listitem>
+
+			<listitem>
+				<para>
+					@ModelAttribute : HTTP Request에 포함된 파라미터를 Model 객체로 바인딩함,
+					@ModelAttribute의 'name'으로 정의한 Model객체를 다음 View에서 사용 가능
+				</para>
+			</listitem>
+
+			<listitem>
+				<para>@SessionAttributes : Session에 저장할 Model attribute를 정의</para>
+			</listitem>
+			<listitem>
+				<para>@RequestBody/@ResponseBody : 핸들러 메소드가 HTTP Request와 Response의 Body 메세지 전체를 직접 접근할 경우에 사용 가능.
+				(HttpEntity 객체를 이용하여 HTTP Request나 Response의 Body 메세지나 Header 값을 처리할 수도 있다.)</para>
+			</listitem>
+			<listitem>
+				<para>@RestController : @Controller 와 @ResponseBody 를 합친 동작을 하는 Annotation. Stereotype Annotation으로, 
+				componenet scan을 통해 bean으로 등록해서 사용 할 수 있다.
+				</para>
+			</listitem>
+		</itemizedlist>
+
+		<section id="core_springmvc_controller_implementation_controller">
+			<title>@Controller</title>
+
+			<para>
+				특정 클래스에 @Controller annotation을 적용하면 다른 클래스를 상속받거나 Servlet API를
+				사용하지 않아도 해당 클래스가 컨트롤러 역할을 수행하도록 정의할 수 있다.
+			</para>
+
+			<para>
+				다음은 @Controller를 사용하여 작성한 MovieController 클래스 파일의 일부이다.
+                <programlisting language="java">@Controller
+public class MovieController {
+    // 중략
+}</programlisting>
+			</para>
+		</section>
+
+		<section id="core_springmvc_controller_implementation_requestmapping">
+			<title>@RequestMapping</title>
+
+			<para>
+				@RequestMapping annotation은 컨트롤러 클래스나 메소드가 특정 HTTP Request URL을 처리하도록
+				매핑하기 위해서 사용한다. 그래서 클래스 선언부에 @RequestMapping을 적용할 수도 있고(이하 Type-Level),
+				클래스의 메소드에 @RequestMapping을 적용할 수도 있다(이하 Method-Level).				
+				예를 들어, Type-Level에 @RequestMapping("/movies")라고 정의하고, Method-Level에 @RequestMapping("/new") 라고 정의하면 
+				@RequestMapping("/new")라고 정의한 메소드가 처리하는 URL 경로는 "/movies/new" 가 된다.
+				@RequestMapping은 "/movies/*.do"와 같은 Ant 스타일 경로 패턴도 지원한다. 
+				@RequestMapping에는 URL 경로 외에도 HTTP method나 Request 파라미터 등을 추가하여 처리할 URL의 범위를 줄일 수 있다.
+			</para>
+			<para>
+				또한, Spring 3 부터 REST 스타일의 Web Application 개발을 위해서 URI templates을 지원하기 시작했다. 
+				Spring 3에서 추가된 REST 관련 기능들과 REST Style 웹 어플리케이션 개발에 대한 자세한 내용은
+				본 매뉴얼 <ulink url="http://dev.anyframejava.org/docs/anyframe/plugin/optional/springrest/1.1.1-SNAPSHOT/reference/htmlsingle/springrest.html#springrest_restsupport_part">Spring REST Plugin</ulink>을 
+				참고하기 바란다.
+			</para>
+			<para>다음은 @RequestMapping을 사용하여 처리할 URL을 매핑한 코드예이다.    
+                <programlisting language="java">@Controller
+<emphasis role="bold">@RequestMapping("/coreMovie.do")</emphasis>
+public class MovieController {
+    <emphasis role="bold">@RequestMapping(params="method=get")</emphasis>
+    public String get(@RequestParam("movieId") String movieId, Model model) throws Exception {
+        Movie movie = this.movieService.get(movieId);
+        //...
+        model.addAttribute(movie);
+        return "coreViewMovie";
+    }
+}</programlisting>
+			</para>
+			
+			<para>@RequestMapping annotation에는 다음과 같은 상세 속성 정보를 부여하여 처리할 URL의 범위를 한정지을 수 있다.</para>
+			<para>
+				<informaltable>
+					<caption>@RequestMapping 속성 목록</caption>
+					<tgroup cols="2">
+						<colspec colnum="1" colname="col1" colwidth="2*" />
+						<colspec colnum="2" colname="col2" colwidth="8*" />
+
+						<thead>
+							<row>
+								<entry align="center">name</entry>
+								<entry align="center">Description</entry>
+							</row>
+						</thead>
+
+						<tbody>
+							<row>
+								<entry>
+									<emphasis role="bold">value </emphasis>
+								</entry>
+	
+								<entry>
+									<para>"value='/getMovie.do'"와 같은 형식의 매핑 URL 값이다. 디폴트 속성이기 때문에
+									value만 정의하는 경우에는 'value='은 생략할 수 있다.</para>
+									<para>URL Pattern의 배열 형태로 입력 받으며, OR 조건으로 처리한다.</para>
+									<para>예 : @RequestMapping(value={"/addMovie.do", "/updateMovie.do" }) 
+									이와 같은 경우 "/addMovie.do", "/updateMovie.do" 두 URL 모두 처리한다.</para>
+								</entry>
+							</row>
+
+							<row>
+								<entry>
+									<emphasis role="bold">method </emphasis>
+								</entry>
+
+								<entry>
+								<para>
+									GET, POST, HEAD 등으로 표현되는 HTTP Request method에 따라 requestMapping을 할 수 있다. 
+									'method=RequestMethod.GET' 형식으로 사용한다. method 값을 정의하지 않는 경우 모든 HTTP 
+									Request method에 대해서 처리한다. 
+								</para>
+								<para>HTTP Request method의 배열 형태로 입력 받으며, OR 조건으로 처리한다.</para>
+								<para>
+									예 : @RequestMapping(method = {RequestMethod.POST, RequestMethod.GET})
+									이 경우, POST, GET 두 메소드 타입을 모두 처리한다. 또, value 값은 클래스 선언에 정의한 @RequestMapping의 value 값을 상속받는다.
+								</para>
+								</entry>
+							</row>
+
+							<row>
+								<entry>
+									<emphasis role="bold">params </emphasis>
+								</entry>
+
+								<entry>
+									<para>
+									HTTP Request로 들어오는 파라미터 표현이다.'params={"param1=a",
+									"param2", "!myParam"}' 로 다양하게 표현 가능하다.</para>
+									<para>
+										HTTP Request에 포함된 parameter의 배열 형태로 입력 받으며, AND 조건으로 처리한다.
+									</para>
+									<para>
+									예 : @RequestMapping(params = {"param1=a", "param2", "!myParam"})
+									위의 경우 HTTP Request에 param1과 param2 파라미터가 
+									존재해야하고 param1의 값은 'a'이어야하며, myParam이라는 파라미터는 존재하지 않아야한다. 
+									또한, value 값은 클래스 선언에 정의한 @RequestMapping의 value 값을 상속받는다.
+									</para>
+								</entry>
+							</row>
+							<row>
+								<entry>
+									<emphasis role="bold">headers </emphasis>
+								</entry>
+
+								<entry>
+								<para>
+									HTTP Request의 헤더 값이다.'headers="someHeader=someValue"', 'headers="someHeader"', 'headers="!someHeader"' 로 다양하게 표현 가능하다.
+									Accept나 Content-Type 같은 헤더에 대해서 media type 표현 시 '*' 도 지원한다. 
+								</para>
+									HTTP Request의 헤더값을 배열로 입력 받으며, AND 조건으로 처리된다. 단, 이때 Accept와 Content-type 조건은 제외된다.
+									자세한 내용은 아래의 consumes, produces 부분을 참고한다.
+								<para>
+									예 : @RequestMapping(value="/movie.do", headers="Content-type=text/*") 의 경우 
+									HTTP Request에 Content-Type 헤더 값이 "text/html", "text/plain" 모두 매칭이 된다.
+									또한, Type-Level, Method-Level에서 모두 사용할 수 있는데, Type-Level에 정의된 경우, 
+									하위의 모든 핸들러 메소드에서도 Type-Level에서 정의한 헤더값 제한이 적용된다.
+								</para>
+								</entry>
+							</row>
+							<row>
+								<entry>
+									<emphasis role="bold">consumes </emphasis>
+								</entry>
+
+								<entry>
+								<para>
+									Spring 3.1에서부터 제공하는 기능으로, 
+									HTTP Request의 헤더 값 중에서 'Content-Type'으로 정의된 media type 표현식의 배열을 입력값으로 받으며, OR 조건으로 처리된다.
+								</para>
+								<para>
+									예 : @RequestMapping(consumes={"text/plain", "application/*"}) 의 경우 
+									HTTP Request에 Content-Type 헤더 값이 "text/plain", "application/*" 모두 매칭이 된다.
+								</para>
+								<para>
+									또한, headers에 대한 입력값으로 Content-Type을 입력한 경우 내부적으로 consumes에 대한 입력값으로 처리된다.
+								</para>
+								<para>
+									예 : @RequestMapping(headers="Content-Type=text/*", consumes="application/*") 의 경우
+									HTTP Request에 Content-Type 헤더 값이 "text/*", "application/*"인 경우 모두 매칭이 된다.
+								</para>
+								</entry>
+							</row>
+							<row>
+								<entry>
+									<emphasis role="bold">produces </emphasis>
+								</entry>
+
+								<entry>
+								<para>
+									Spring 3.1에서부터 제공하는 기능으로, 
+									HTTP Request의 헤더 값 중에서 'Accept'로 정의된 MediaType 표현식의 배열을 입력값으로 받으며, OR 조건으로 처리된다.
+								</para>
+								<para>
+									예 : @RequestMapping(produces={"text/html", "application/*"}) 의 경우
+									HTTP Request에 Accept 헤더 값이 "text/html", "application/*" 모든 경우 매칭이 된다.
+								</para>
+								<para>
+									또한, @RequestMapping 의 header 입력값 중 'Accept'를 입력한 경우 내부적으로 produces에 대한 입력값으로 처리된다.
+								</para>
+								<para>
+									예 : @RequestMapping(headers="Accept=text/*", produces="application/*") 의 경우
+									HTTP Request에 Accept 헤더 값이 "text/*", "application/*" 인 경우 모두 매칭이 된다.
+								</para>
+								</entry>
+							</row>
+						</tbody>
+					</tgroup>
+				</informaltable>
+			</para>	
+
+			<para>
+				@RequestMapping은 구현하는 컨트롤러 종류에 따라 아래와 같은 방식으로 사용할 수 있다.
+			</para>
+
+			<itemizedlist>
+				<listitem>
+					<para>Form 컨트롤러 구현</para>
+				</listitem>
+
+				<listitem>
+					<para>Multi-action 컨트롤러 구현</para>
+				</listitem>
+			</itemizedlist>
+
+			<para>
+				기존에 SimpleFormController와 같은 컨트롤러 클래스를 상속받아서 컨트롤러를 작성할 때는, 상위클래스에 정의된
+				 메소드를 override하여 구현하기 때문에 입력 argument 타입과 return 타입이 이미 정해져있다.
+				이에 반해 <emphasis role="bold">@RequestMapping을 적용하여 작성하는 핸들러
+				 메소드는 다양한 argument 타입과 return 타입을 사용할 수 있다.</emphasis>
+			</para>
+
+			<section id="core_spring_controller_request_form">
+				<title>Form 컨트롤러 구현</title>
+
+				<itemizedlist>
+					<listitem>
+						<para>클래스 선언부에 @RequestMapping을 사용하여 처리할 Request URL Mapping</para>
+					</listitem>
+
+					<listitem>
+						<para>
+							메소드에는 @RequestMapping의 'method', 'params'와 같은 상세 속성 정보를 정의하여 Request URL의 
+							Mapping을 세분화
+						</para>
+					</listitem>
+				</itemizedlist>
+
+				<para>
+					위와 같이 작성하면 기존에 SimpleFormController를 상속받아 작성하였던 폼을 처리하는 컨트롤러를 구현할 수 있다.
+					다음은 폼 처리 컨트롤러를 작성한 EditMovieController 의 예이다.
+                    <programlisting language="java">@Controller
+<emphasis role="bold">@RequestMapping("/coreMovie.do")</emphasis>
+public class EditMovieController {
+
+    <emphasis role="bold">@RequestMapping(method = RequestMethod.GET)</emphasis>
+    public String createView() {
+        // 중략
+        return coreViewMovie;
+    }
+    
+    <emphasis role="bold">@RequestMapping(method = RequestMethod.POST)</emphasis>
+    public String addMovie(HttpServletRequest request, @ModelAttribute("movie"),
+            Movie movie, BindingResult result, SessionStatus status) throws Exception {
+        // 중략
+        return "redirect:/coreMovieFinder.do";
+    }
+}</programlisting>
+				</para>
+			</section>
+		
+			<section id="core_spring_controller_request_muliti">
+				<title>Multi-action 컨트롤러 구현</title>
+
+				<para>
+					@RequestMapping annotation을 사용하여 여러 HTTP Request를 처리할 수 있는
+					Multi-action 컨트롤러를 구현할 수 있다.
+				</para>
+
+				<itemizedlist>
+					<listitem>
+						<para>메소드에 처리할 Request URL을 Mapping한 @RequestMapping을 정의</para>
+					</listitem>
+				</itemizedlist>
+
+				<para>
+					다음은 Multi-action 컨트롤러를 구현한 MovieController 의 예이다.
+                    <programlisting language="java">@Controller
+public class MovieController {
+
+    <emphasis role="bold">@RequestMapping("/deleteMovie.do")</emphasis>
+    public ModelAndView delete(@RequestParam("movieId") String movieId) {
+        // 중략
+        return "redirect:/coreMovieFinder.do";
+    }
+
+    <emphasis role="bold">@RequestMapping("/getMovie.do")</emphasis>
+    public String get(@RequestParam("movieId") String movieId, ModelMap model) {
+        // 중략
+        model.addAttribute(movie);
+
+        return "coreViewMovie";
+    }
+}</programlisting>
+				</para>				
+			</section>
+
+			<section id="core_spring_controller_request_argument">
+				<title>Supported argument types</title>
+
+				<para>
+					@RequestMapping을 사용하여 작성하는 핸들러 메소드는 다음과 같은 타입의 입력 argument를 순서에 관계없이 
+					정의할 수 있다. 단, validation results를 입력 argument로 받을 경우에는 해당 command 객체 바로 다음에 
+					위치해야한다.
+				</para>
+
+				<itemizedlist>
+					<listitem>
+						<para>
+							<emphasis role="bold">Servlet API의 Request와 Response 객체</emphasis>
+						</para>
+
+						<para>
+							ServletRequest 또는 HttpServletRequest 등을 메소드 내부에서 직접 사용해야 하는 경우
+                            <programlisting language="java">@RequestMapping(params = "param=add")
+public String addMovie(<emphasis role="bold">HttpServletRequest request</emphasis>,
+        Movie movie, BindingResult result, SessionStatus status)
+		throws Exception {
+    // 중략
+    String message = messageSource.getMessage(
+                                    "movie.error.exist", new String[] {movie.getMovieId()},
+                                    localeResolver.resolveLocale(<emphasis role="bold">request</emphasis>));
+}</programlisting>
+						</para>
+					</listitem>
+
+					<listitem>
+						<para>
+							<emphasis role="bold">Servlet API의 Session</emphasis>
+						</para>
+
+						<para>
+							HttpSession 객체를 메소드 내부에서 사용하는 경우 예 : user 정보와 같은 global session attribute를
+							사용할 때 <programlisting language="java">@RequestMapping("/login.do")
+protected ModelAndView handleRequestInternal( <emphasis role="bold">HttpSession session</emphasis>,
+            @RequestParam("userId") String userId) throws Exception {
+    <emphasis role="bold">session.setAttribute("userId", userId</emphasis>);
+    return new ModelAndView("/index.jsp");
+}</programlisting>
+							<note>
+								<title>RequestMappingHandlerAdapter의 'synchronizeOnSession' 속성</title>
+								<para>Servlet 환경에서 Session 접근은 thread-safe하지 않기 때문에, 
+								Session에 저장된 정보에 여러개의 thread가 동시에 접근하여 변경할 가능성이 있는 경우
+								반드시 RequestMappingHandlerAdapter의 "synchronizeOnSession" 속성을 "true"로 셋팅하도록 한다.
+								</para>
+							</note>
+						</para>
+					</listitem>
+
+					<listitem>
+						<para>
+							<emphasis role="bold">java.util.Locale</emphasis>
+						</para>
+
+						<para>
+							현재 request의 locale을 사용할 경우 <programlisting language="java">@RequestMapping(params = "param=add")
+public String addMovie(<emphasis role="bold">Locale locale,</emphasis>Movie movie, BindingResult result,
+        SessionStatus status) throws Exception {
+    // 중략
+    String message = messageSource.getMessage(
+                     "movie.error.exist", new String[] {movie.getMovieId()}, 
+                     <emphasis role="bold">locale</emphasis>);
+}</programlisting>
+						</para>
+					</listitem>
+
+					<listitem>
+						<para>
+							<emphasis role="bold">java.io.InputStream 또는 java.io.Reader</emphasis>
+						</para>
+
+						<para>
+							Request의 content를 직접 처리할 경우 (Servlet API가 제공하는 raw InputStream/Reader)
+                            <programlisting language="java">@RequestMapping(params = "param=add")
+public String addMovie(<emphasis role="bold">InputStream is</emphasis>, Movie movie, BindingResult result
+                       SessionStatus status) throws Exception {
+    // 중략
+    for(int totalRead = 0; totalRead <![CDATA[<]]> totalBytes; totalRead += readBytes) {
+        readBytes = <emphasis role="bold">is.read(binArray, totalRead, totalBytes - totalRead</emphasis>);
+        // 중략
+    }
+    // 중략
+}</programlisting>
+						</para>
+					</listitem>
+
+					<listitem>
+						<para>
+							<emphasis role="bold">java.io.OutputStream 또는 java.io.Writer </emphasis>
+						</para>
+
+						<para>
+							Response의 content를 직접 처리할 경우 (Servlet API가 제공하는 raw OutputStream/Writer)
+                            <programlisting language="java">@RequestMapping(params = "param=add")
+public String addMovie(<emphasis role="bold">OutputStream os</emphasis>, Movie movie, BindingResult result, 
+                                                         SessionStatus status) throws Exception {
+    // 중략
+    ByteArrayOutputStream outStream = new ByteArrayOutputStream();
+    byte[] content = outStream.toByteArray();
+    <emphasis role="bold">os.write(content)</emphasis>;
+    <emphasis role="bold">os.flush()</emphasis>;
+    // 중략
+}</programlisting>
+						</para>
+					</listitem>
+					
+					<listitem>
+						<para>
+							<emphasis role="bold">@PathVariable annotation이 적용된 argument</emphasis>
+						</para>
+
+						<para>URI template 내의 변수를 핸들러 메소드에서 접근할 경우</para>
+						<para>@PathVariable에 대한 자세한 사용 방법은 본 매뉴얼 >> Spring REST Plugin >> <ulink url="http://dev.anyframejava.org/docs/anyframe/plugin/optional/springrest/1.1.1-SNAPSHOT/reference/htmlsingle/springrest.html#springrest_restsupport_uritemplate">URI Template</ulink> 참고</para>
+                        <programlisting language="java">@RequestMapping(<emphasis role="bold">value = "/movies/{movieId}/edit"</emphasis>, method = RequestMethod.GET)
+public String get(<emphasis role="bold">@PathVariable String movieId</emphasis>, Model model)
+        throws Exception {
+    Movie movie = this.movieService.get(movieId);
+    // 중략
+    model.addAttribute(movie);
+    return "restwebViewMovie";
+}</programlisting>	
+					</listitem>
+
+					<listitem>
+						<para>
+							<emphasis role="bold">@RequestParam annotation이 적용된 argument</emphasis>
+						</para>
+
+						<para>
+							ServletRequest.getParameter(java.lang.String name)와 같은 역할 수행
+                            <programlisting language="java">@RequestMapping(params = "method=remove")
+public String remove(<emphasis role="bold">@RequestParam("movieId") String movieId</emphasis>)
+		throws Exception {
+    this.movieService.remove(movieId);
+    return "redirect:/coreMovieFinder.do?method=list";
+}
+</programlisting>
+						</para>
+					</listitem>
+					
+					<listitem>
+						<para>
+							<emphasis role="bold">@RequestHeader annotation이 적용된 argument</emphasis>
+						</para>
+
+						<para>
+							@RequestHeader를 사용하면 Servlet Request HTTP 헤더 값을 핸들러 메소드에서 사용 가능
+                            <programlisting language="java">@RequestMapping("/displayHeaderInfo")
+@ResponseBody
+public String displayHeaderInfo(@CookieValue("JSESSIONID") String cookie,
+		<emphasis role="bold">@RequestHeader("Accept-Encoding") String encoding</emphasis>,
+		@RequestHeader("Accept") String accept) {
+    StringBuilder sf = new StringBuilder();
+    sf.append("JSESSIONID : " + cookie);
+    sf.append("\n");
+    sf.append("Accept-Encoding : " + encoding);
+    sf.append("\n");
+    sf.append("Accept : " + accept);
+     
+    return sf.toString();
+}</programlisting>
+						</para>
+					</listitem>
+					
+					<listitem>
+						<para>
+							<emphasis role="bold">@RequestBody annotation이 적용된 argument</emphasis>
+						</para>
+
+						<para>
+							<para>@RequestBody를 사용하면 HTTP Request Body를 핸들러 매소드에서 직접 사용 가능</para>
+							<para>HTTP Request Body가 HttpMessageConverter에 의해서 선언한 메소드 argument 타입으로 변환되어 전달됨</para>
+                            <programlisting language="java">@RequestMapping(value = "/movies/add", method = RequestMethod.POST)
+@ResponseBody
+public String add(<emphasis role="bold">@RequestBody Movie movie</emphasis>) throws Exception {
+    this.movieService.createMovie(movie);		
+    return "/movies/" + movie.getMovieId() + "/edit";
+}</programlisting>
+						</para>
+					</listitem>
+					
+					<listitem>
+						<para>
+							<emphasis role="bold"><![CDATA[HttpEntity<?>]]> 객체</emphasis>
+						</para>
+
+						<para>
+							Servlet request HTTP Header와 Body를 핸들러 메소드에서 접근하기 위해 사용 가능.
+							Request 스트림은 HttpMessageConverter를 통해 entity body로 변환됨.
+						</para>
+					</listitem>
+
+					<listitem>
+						<para>
+							<emphasis role="bold">
+								java.util.Map 또는
+								org.springframework.ui.Model 또는
+								org.springframework.ui.ModelMap
+							</emphasis>
+						</para>
+
+						<para>
+							Web View로 데이터를 전달해야 하는 경우 위 타입의 argument를 정의하고, 메소드 내부에서
+							View로 전달할 데이터를 추가함
+						</para>
+
+                        <programlisting language="java">@RequestMapping("/getMovie.do")
+public String getMovie(@RequestParam("movieId") String movieId, <emphasis role="bold">Map map</emphasis>) {
+    Movie movie = movieService.getMovie(movieId);
+    <emphasis role="bold">map.put("movie", movie);</emphasis>
+    return "/WEB-INF/jsp/annotation/sales/movie/viewMovie.jsp";
+}</programlisting>
+
+                        <programlisting language="java">@RequestMapping("/getMovie.do")
+public String getMovie(@RequestParam("movieId") String movieId, <emphasis role="bold">Model</emphasis> model) {
+    Movie movie = movieService.getMovie(movieId);
+    <emphasis role="bold">model.addAttribute("movie", movie);</emphasis>
+    return "/WEB-INF/jsp/annotation/sales/movie/viewMovie.jsp";
+}</programlisting>
+
+					    <programlisting language="java">@RequestMapping("/getMovie.do")
+public String getMovie(@RequestParam("movieId") String movieId, <emphasis role="bold"> ModelMap modelMap</emphasis>) {
+    Movie movie = movieService.getMovie(movieId);
+    <emphasis role="bold">modelMap.addAttribute("movie", movie);</emphasis>
+    return "/WEB-INF/jsp/annotation/sales/movie/viewMovie.jsp";
+}</programlisting>
+					</listitem>
+
+					<listitem>
+						<para>
+							<emphasis role="bold">Command 또는 Form 객체</emphasis>
+						</para>
+
+						<para>
+							HTTP Request로 전달된 parameter를 binding한 객체로, 다음 View에서 사용 가능하고 @SessionAttributes를
+							통해 session에 저장되어 관리될 수 있음. @ModelAttribute annotation을 이용하여 사용자 임의로 이름 부여 가능.
+                            <programlisting language="java">@RequestMapping("/addMovie.do")
+public String updateMovie(<emphasis role="bold">Movie movie</emphasis>, SessionStatus status) throws Exception {
+    // 여기서 'movie'가 Command(또는 Form) 객체이다.
+    return "/listMovie.do";
+}</programlisting>
+						</para>
+
+                        <programlisting language="java">@RequestMapping(params="method=update")
+	public String update(<emphasis role="bold">@ModelAttribute("updatedMovie") Movie movie</emphasis>, SessionStatus status) throws Exception {
+    // 여기서 'updatedMovie'라는 이름의 'movie'객체가 Command(/form) 객체이다.
+    // 중략
+    return "redirect:/coreMovieFinder.do?method=list";
+}</programlisting>
+					</listitem>
+
+					<listitem>
+						<para>
+							<emphasis role="bold">
+								org.springframework.validation.Errors 또는
+								org.springframework.validation.BindingResult
+							</emphasis>
+						</para>
+
+						<para>
+							바로 이전의 입력파라미터인 Command 또는 Form 객체의 validation 결과 값을 저장하는 객체로, <emphasis role="bold">해당
+							Command 또는 Form 객체 바로 다음에 위치해야 함에 유의</emphasis>
+                            <programlisting language="java">@RequestMapping(params = "method=create")
+public String create(
+        @RequestParam(value="realPosterFile", required=false) MultipartFile posterFile,
+        @Valid Movie movie, <emphasis role="bold">BindingResult results</emphasis>, SessionStatus status)
+            throws Exception {
+    if (results.hasErrors()) {
+        return "coreViewMovie";
+    }
+    
+    // 중략
+    return "redirect:/coreMovieFinder.do?method=list";
+}</programlisting>
+						</para>
+					</listitem>
+
+					<listitem>
+						<para>
+							<emphasis role="bold">org.springframework.web.bind.support.SessionStatus</emphasis>
+						</para>
+
+						<para>
+							Form 처리가 완료되었을 때 status를 처리하기 위해서 argument로 설정. SessionStatus.setComplete()를 호출
+							하면 컨트롤러 클래스에 @SessionAttributes로 정의된 Model객체를 session에서 지우도록 이벤트 발생
+                            <programlisting language="java">@RequestMapping(params = "method=create")
+public String create(
+        @RequestParam(value="realPosterFile",required=false) MultipartFile posterFile,
+        @Valid Movie movie, BindingResult results, <emphasis role="bold">SessionStatus status</emphasis>)
+            throws Exception {
+    // 중략
+    this.movieService.create(movie);
+    <emphasis role="bold">status.setComplete()</emphasis>;
+    return "redirect:/coreMovieFinder.do?method=list";
+}</programlisting>
+						</para>
+					</listitem>
+				</itemizedlist>
+			</section>
+
+			<section id="core_spring_controller_request_return">
+				<title>Supported return types</title>
+
+				<para>@RequestMapping을 이용한 핸들러 메소드는 다음과 같은 리턴타입을 가질 수 있다.</para>
+
+				<itemizedlist>
+					<listitem>
+						<para>
+							<emphasis role="bold">ModelAndView 객체</emphasis>
+						</para>
+
+						<para>
+							View와 Model 정보를 모두 포함한 객체를 리턴하는 경우.
+                            <programlisting language="java">@RequestMapping(params="param=addView")
+public <emphasis role="bold">ModelAndView</emphasis> addMovieView() {
+    ModelAndView mnv = new ModelAndView("/WEB-INF/jsp/annotation/sales/movie/movieForm.jsp");
+    mnv.addObject("movie", new Movie());
+    <emphasis role="bold">return mnv</emphasis>;
+}</programlisting>
+						</para>
+					</listitem>
+
+					<listitem>
+						<para>
+							<emphasis role="bold">Map</emphasis>
+						</para>
+
+						<para>Web View로 전달할 데이터만 리턴하는 경우.</para>
+						<para>
+                            <programlisting language="java">@RequestMapping("/movieList.do")
+public <emphasis role="bold">Map</emphasis> getMovieList() {
+    List movieList = movieService.getMovieList();
+    <emphasis role="bold">ModelMap map = new ModelMap(movieList)</emphasis>;//movieList가 "movieList"라는 이름으로 저장됨.
+    return map;
+}</programlisting>
+						</para>
+
+						<para>
+							여기서 View에 대한 정보를 명시적으로 리턴하지는 않았지만, 내부적으로 View 이름은 
+							RequestToViewNameTranslator에 의해서 입력된 HTTP Request를 이용하여 생성된다. 예를 들어
+							<ulink
+							url="http://static.springsource.org/spring/docs/4.0.x/javadoc-api/org/springframework/web/servlet/view/DefaultRequestToViewNameTranslator.html">DefaultRequestToViewNameTranslator</ulink>
+							는 입력된 HTTP Request URI를 변환하여 View 이름을 다음과 같이 생성한다.
+                            <programlisting language="java">http://localhost:8080/anyframe-sample/display.do
+    -> 생성된 View 이름 : 'display'
+http://localhost:8080/anyframe-sample/admin/index.do 
+    -> 생성된 View 이름 : 'admin/index'</programlisting>
+						</para>
+	
+						<para>
+							위와 같이 자동으로 생성되는 View 이름에 'jsp/'와 같이 prefix를 붙이거나 '.jsp' 같은 확장자를
+							덧붙이고자 할 때는 아래와 같이 속정 정의 XML(xxx-servlet.xml)에 추가하면 된다.
+                                <programlisting language="java"><![CDATA[<bean id="viewNameTranslator"
+          class="org.springframework.web.servlet.view.DefaultRequestToViewNameTranslator">
+    <property name="prefix" value="jsp/"/>
+    <property name="suffix" value=".jsp"/>
+</bean>]]></programlisting>
+						</para>
+					</listitem>
+
+					<listitem>
+						<para>
+							<emphasis role="bold">Model</emphasis>
+						</para>
+
+						<para>
+							Web View로 전달할 데이터만 리턴하는 경우
+							<ulink 
+							url="http://static.springsource.org/spring/docs/4.0.x/javadoc-api/org/springframework/ui/Model.html">Model
+							</ulink>은 Java-5 이상에서 사용할 수 있는 인터페이스이다. 기본적으로 ModelMap과 같은 기능을 제공한다. Model
+							인터페이스의 구현클래스에는
+							<ulink
+							url="http://static.springsource.org/spring/docs/4.0.x/javadoc-api/org/springframework/validation/support/BindingAwareModelMap.html">BindingAwareModelMap
+							</ulink> 와
+							<ulink
+							url="http://static.springsource.org/spring/docs/4.0.x/javadoc-api/org/springframework/ui/ExtendedModelMap.html">ExtendedModelMap
+							</ulink> 이 있다. View 이름은 위에서 설명한 바와 같이 RequestToViewNameTranslator에 의해 내부적으로
+							생성된다.
+                            <programlisting language="java">@RequestMapping("/movieList.do")
+public <emphasis role="bold">Model</emphasis> getMovieList() {
+    List movieList = movieService.getMovieList();
+    <emphasis role="bold">ExtendedModelMap map = new ExtendedModelMap();</emphasis>
+    <emphasis role="bold">map.addAttribute("movieList",movieList);</emphasis>
+    return map;
+}</programlisting>
+						</para>
+					</listitem>
+
+					<listitem>
+						<para>
+							<emphasis role="bold">String</emphasis>
+						</para>
+
+						<para>
+							View 이름만 리턴하는 경우.
+                            <programlisting language="java">@RequestMapping(value = {"/addMovie.do", "/updateMovie.do" })
+public <emphasis role="bold">String </emphasis>updateMovie(Movie movie, SessionStatus status) 
+        throws Exception {
+    // 중략
+    <emphasis role="bold">return"/listMovie.do</emphasis>";
+}</programlisting>
+						</para>
+					</listitem>
+
+					<listitem>
+						<para>
+							<emphasis role="bold">void</emphasis>
+						</para>
+
+						<para>
+							메소드 내부에서 직접 HTTP Response를 직접 처리하는 경우. 
+							또는 View 이름이 RequestToViewNameTranslator에 의해 내부적으로 생성되는 경우
+                            <programlisting language="java"> @RequestMapping("/addView.do")
+public <emphasis role="bold">void</emphasis> addView(HttpServletResponse response) {
+    // 중략
+    //<emphasis role="bold">response 직접 처리</emphasis>
+}</programlisting>
+						
+
+							<programlisting language="java"> @RequestMapping("/addView.do")
+public <emphasis role="bold">void</emphasis> addView() {
+    // 중략
+    // View 이름이 DefaultRequestToViewNameTranslator에 의해서 내부적으로 'addView'로 결정됨.
+}</programlisting>
+						</para>
+					</listitem>
+					
+					<listitem>
+						<para>
+							<emphasis role="bold">@ResponseBody</emphasis>
+						</para>
+
+						<para>
+							핸들러 메소드의 리턴 객체를 Response HTTP Body로 바로 보내는 경우.
+							HttpMessageConverter를 통해서 리턴 객체가 변환되어 Response로 전달됨.							
+                            <programlisting language="java">@RequestMapping(value = "/welcome", method = RequestMethod.GET)
+<emphasis role="bold">@ResponseBody</emphasis>
+public String welcome() {
+    return "Welcome!";
+}</programlisting>
+						</para>
+					</listitem>
+					
+					<listitem>
+						<para>
+							<emphasis role="bold"><![CDATA[HttpEntity<?> 또는 ResponseEntity<?>]]></emphasis>
+						</para>
+
+						<para>
+							Response HTTP의 Body와 Header를 핸들러 메소드에서 접근하기 위해 사용 가능.
+							HttpEntity나 ResponseEntity의 Body는 HttpMessageConverter를 통해 response 스트림으로 변환됨.							
+                            <programlisting language="java">@RequestMapping(value = "/welcome", method = RequestMethod.GET)
+<emphasis role="bold">@ResponseBody</emphasis>
+public String welcome() {
+    return "Welcome!";
+}</programlisting>
+						</para>
+					</listitem>
+				</itemizedlist>
+			</section>
+		</section>
+
+		<section id="core_springmvc_controller_implementation_requestparam">
+			<title>@RequestParam</title>
+
+			<para>
+				@RequestParam annotation은 HTTP Request parameter를 컨트롤러 메소드의 argument로 바인딩하는데 사용되며
+				<ulink
+					url="http://java.sun.com/j2ee/1.4/docs/api/javax/servlet/ServletRequest.html#getParameter(java.lang.String)">ServletRequest.getParameter(java.lang.String
+					name)
+				</ulink> 와 같은 역할을 한다. 다음은 @RequestParam annotation의 사용 예이다.
+                <programlisting language="java">@RequestMapping("/updateMovie.do")
+public String updateMovie(<emphasis role="bold">@RequestParam("movieId") String movieId,         
+        @RequestParam("sellAmount") int sellAmount, @RequestParam("realImageFile") MultipartFile picturefile</emphasis>) {
+    // 중략
+    return "/listMovie.do";
+}</programlisting>
+			</para>
+
+			<para>
+				@RequestParam을 적용한 파라미터는 반드시 HTTP Request에 존재해야 한다. 그렇지 않은 경우 다음과 같이
+				org.springframework.web.bind.MissingServletRequestParameterException이
+				발생한다.
+                <programlisting language="java"> <emphasis role="bold">org.springframework.web.bind.MissingServletRequestParameterException:
+				</emphasis>
+Required java.lang.String parameter 'movieId' is not present</programlisting>
+			</para>
+
+			<para>
+				그러나 아래와 같이 @RequestParam의 required 속성을 false로 설정할 경우 HTTP Request에 파라미터가 존재하지 않아도 
+				Exception이 발생하지 않는다.
+                <programlisting language="java">@RequestMapping("/deleteMovie.do")
+public String deleteMovie(@RequestParam(value="movieId", <emphasis role="bold">required="false"</emphasis>) String movieId){
+    // 중략
+}</programlisting>
+			</para>
+			
+			<para>
+				또한 defaultValue 속성을 이용하여 해당 파라미터가 존재하지 않을 경우 사용할 디폴트 값을 정의할 수 있다.
+			</para>
+			<programlisting language="java">@RequestMapping("/movies.do")
+public String findMovies(@RequestParam(value="pageIndex", <emphasis role="bold">defaultValue = "1"</emphasis>) int pageIndex,
+            Movies movies, BindingResult result, Model model) {
+    // 중략
+}</programlisting>
+		</section>
+		
+		<section id="core_springmvc_controller_implementation_requestbody">
+			<title>@RequestBody</title>
+
+			<para>
+				@RequestBody annotation은 HTTP Request Body를 컨트롤러 메소드의 argument로 바인딩하는데 사용된다. 
+				다음은 @RequestBody annotation의 사용 예이다.
+                <programlisting language="java">@RequestMapping(value = "/movies/add", method = RequestMethod.POST)
+@ResponseBody
+public String add(<emphasis role="bold">@RequestBody Movie movie</emphasis>) throws Exception {
+    // 중략
+}</programlisting>
+			</para>
+
+			<para>
+				Request Body의 내용을 메소드의 argument 객체로 전달하기 위해서는 HttpMessageConverter에 의해서 변환이 이루어져야만 한다.
+				HttpMessageConverter는 HTTP Request body와 객체간, 그리고 객체와 HTTP Response body간의 변환을 담당한다.
+				Spring 3 부터 AnnotationMethodHandlerAdapter가 @RequestBody를 지원하고, 다음의 HttpMessageConverter 들을 디폴트로 등록하도록 기능이 확장되었다.
+				<itemizedlist>
+					<listitem>
+						<para>ByteArrayHttpMessageConverter : byte 배열로 변환</para>
+					</listitem>
+					<listitem>
+						<para>StringHttpMessageConverter : String으로 변환</para>
+					</listitem>
+					<listitem>
+						<para>FormHttpMessageConverter : Form 데이터와 <![CDATA[MultiValueMap<String, String>]]> 간의 변환</para>
+					</listitem>
+					<listitem>
+						<para>SourceHttpMessageConverter : javax.xml.transform.Source로 변환</para>
+					</listitem>
+					<listitem>
+						<para>
+							MarshallingHttpMessageConverter : org.springframework.oxm 패키지에서 제공하는 Marshaller와 Unmarshaller를 사용하여 객체와 XML간 변환
+						</para>
+					</listitem>
+					<listitem>
+						<para>
+							MappingJacksonHttpMessageConverter : Jackson 라이브러리의 ObjectMapper를 사용해서 객체와 JSON 간의 변환
+						</para>
+					</listitem>
+				</itemizedlist>
+				
+				위와 같은 MessageConverter들이 어플리케이션에서 사용되려면 AnnotationMethodHandlerAdapter에 설정되어 있어야한다.
+				AnnotationMethodHandlerAdapter에 <emphasis role="bold">"messageConverters" 속성을 이용</emphasis>하여 설정할 수도 있지만, 
+				앞서 언급했던 <emphasis role="bold"><![CDATA[<mvc:annotation-driven />]]></emphasis>만 정의하면 디폴트로 자동으로 등록해준다.
+				MessageConverter에 대한 더 자세한 내용은 본 매뉴얼 >> Spring REST Plugin >> <ulink url="http://dev.anyframejava.org/docs/anyframe/plugin/optional/springrest/1.1.1-SNAPSHOT/reference/htmlsingle/springrest.html#springrest_restsupport_httpmessageconversion">HTTP Message Conversion</ulink>을 참고하기 바란다.
+			</para>
+		</section>
+		
+		<section id="core_springmvc_controller_implementation_responsebody">
+			<title>@ResponseBody</title>
+
+			<para>
+				@ResponseBody annotation은 핸들러 메소드가 리턴 값을 HTTP Response를 통해서 바로 전달할 경우에 사용할 수 있다.
+				@ResponseBody가 적용되면 Model과 View를 리턴하여 ViewResolver를 통해 View를 찾는 등의 과정들은 거치지 않게 된다.
+			</para>
+			<para>  
+				다음은 @ResponseBody annotation의 사용 예이다.
+               <programlisting language="java">@RequestMapping(value = "/welcome", method = RequestMethod.GET)
+<emphasis role="bold">@ResponseBody</emphasis>
+public String welcome() {
+    return "Welcome!";
+}</programlisting>
+			</para>
+
+			<para>
+				위에서 설명했던 @RequestBody에서와 같이, 핸들러 메소드의 리턴값은 HttpMessageConverter를 통해 HTTP Response Body로 
+				변환된다.
+			</para>
+		</section>
+
+		<section id="core_springmvc_controller_implementation_restcontroller">
+			<title>@RestController</title>
+
+			<para>
+				@RestController Annotation은 @Controller Annotation과 @ResponseBody Annotation을 합친 동작을 수행한다.
+				@Controller와 마찬가지로 Stereotype annotation으로 component scan 이후 bean으로 등록해서 사용할 수 있다.
+				또한 @RestController로 선언한 메소드의 모든 리턴 값을 HTTP Response를 통해서 바로 전달하게 되며, 따라서
+				ViewResolver를 통해 View를 찾는 등의 과정을 거치지 않게 된다. 
+			</para>
+			<para>  
+				다음은 @RestController의 사용 예이다.
+               <programlisting language="java"><emphasis role="bold">@RestController</emphasis>
+@RequestMapping("/restmovies")
+public class RestMovieController {
+
+	@Inject
+	@Named("springrestMovieService")
+	private MovieService movieService;
+	
+	/**
+	 * Generate response
+	 * 
+	 * @param movieId
+	 * @return return Movie object, Response Status : 200 OK
+	 * @throws Exception
+	 */
+	@RequestMapping(value = "/{movieId}", method = RequestMethod.GET)
+	public Movie get(@PathVariable String movieId) throws Exception {
+		Movie movie = this.movieService.get(movieId);
+		
+		if (movie == null) {
+			throw new NotFoundException("Resource Not Found with movieId "
+					+ movieId);
+		}
+		
+		return movie;
+	}
+</programlisting>
+			</para>
+
+			<para>
+				위에서 설명했던 @ResponseBody에서와 같이, 핸들러 메소드의 리턴값은 HttpMessageConverter를 통해 HTTP Response Body로 
+				변환된다.
+			</para>
+		</section>
+		
+		<section id="core_springmvc_controller_implementation_httpentity">
+			<title><![CDATA[HttpEntity<?>]]></title>
+
+			<para>
+				HttpEntity는 @RequestBody/@ResponseBody 같이 Request/Response Body 메세지를 처리할 수 있을 뿐만아니라, 
+				HTTP Header 값도 함께 다룰 수 있다.
+				일반적으로 RestTemplate을 사용한 REST 클라이언트를 구현할 때, 편리하게 사용될 수 있다.
+               <programlisting language="java">@RequestMapping("/handle")
+public HttpEntity<![CDATA[<String>]]> handle() {
+    HttpHeaders responseHeaders = new HttpHeaders();
+    responseHeaders.set("MyResponseHeader", "MyValue");
+    return new ResponseEntity<![CDATA[<String>]]>("Hello World", responseHeaders);
+}</programlisting>
+			</para>
+
+			<para>
+				HttpEntity를 사용할 경우에도 역시 Request/Response Body 변환을 위해 HttpMessageConverter가 사용된다.
+			</para>
+		</section>
+
+		<section id="core_springmvc_controller_implementation_modelattribute">
+			<title>@ModelAttribute</title>
+			<para>@ModelAttribute는 컨트롤러에서 다음과 같이 두 가지 방법으로 사용할 수 있다.</para>
+
+			<itemizedlist>
+				<listitem>
+					<para>
+						<emphasis role="bold">메소드 자체에 정의</emphasis>
+					</para>
+
+					<para>
+						입력 폼 페이지에서 출력해 줄 reference data를 전달하고자 할 때.
+						기존 <ulink
+							url="http://static.springsource.org/spring/docs/3.0.x/javadoc-api/org/springframework/web/servlet/mvc/SimpleFormController.html">
+							SimpleFormController</ulink>의 referenceData() 메소드와 같은 역할
+					</para>
+				</listitem>
+
+				<listitem>
+					<para>
+						<emphasis role="bold">메소드의 입력 argument에 정의</emphasis>
+					</para>
+
+					<para>메소드의 argument로 입력된 Command 객체에 이름을 부여하고자 할 때.</para>
+				</listitem>
+			</itemizedlist>
+
+			<para>
+				다음은 위에서 설명한 두가지 방법으로 @ModelAttribute를 사용한 예이다.
+                <programlisting language="java">@Controller
+@RequestMapping("/movie.do") 
+public class MovieController {
+    // 중략
+    // 메소드 자체에 정의
+    <emphasis role="bold">@ModelAttribute("genreList")</emphasis>
+	public Collection<![CDATA[<Genre>]]> populateGenreList() throws Exception {
+		return this.genreService.getDropDownGenreList();
+	}
+
+    // 메소드의 입력 argument에 정의
+    @RequestMapping(params="method=add")
+    public String add(<emphasis role="bold">@ModelAttribute("updatedMovie") Movie movie</emphasis>
+                                , BindingResult result, SessionStatus status) throws Exception {
+        // 중략
+    }
+}</programlisting>
+			</para>
+		</section>
+
+		<section id="core_springmvc_controller_implementation_sessionattribute">
+			<title>@SessionAttributes</title>
+
+			<para>
+				@SessionAttributes는 Session에 저장하여 관리할 Model Attribute를 정의할 때 사용한다. 
+				Session에 저장하고자 하는 Model Attribute의 이름이나 타입을 @SessionAttributes의 속성에 정의해준다.
+			</para>
+
+			<para>
+				다음은 @SessionAttributes를 사용하여 Session에 저장하여 관리할 Model을 이름으로 정의한 예이다. 타입으로 정의할 경우 'types'라는 속성을 이용한다.
+                <programlisting language="java">@Controller
+@RequestMapping("/movie.do")
+<emphasis role="bold">@SessionAttributes(value={"movie","genre"})</emphasis>
+public class MovieController {
+	// 중략
+}</programlisting>
+			</para>
+		</section>
+		
+		<section id="core_springmvc_controller_implementation_cookievalue">
+			<title>@CookieValue</title>
+
+			<para>
+				HTTP Cookie에 저장된 값을 핸들러 메소드에서 사용할 수 있도록 해주는 Annotation이다.
+			</para>
+
+			<para>
+				다음은 @CookieValue 사용하여 Cookie 값을 가져와 출력해보는 코드이다.
+                <programlisting language="java">@RequestMapping("/displayHeaderInfo")
+@ResponseBody
+public String displayHeaderInfo(<emphasis role="bold">@CookieValue("JSESSIONID") String cookie</emphasis>,
+		<emphasis role="bold">@RequestHeader("Accept-Encoding") String encoding</emphasis>,
+		@RequestHeader("Accept") String accept) {
+    StringBuilder sf = new StringBuilder();
+    sf.append("JSESSIONID : " + cookie);
+    sf.append("\n");
+    sf.append("Accept-Encoding : " + encoding);
+    sf.append("\n");
+    sf.append("Accept : " + accept);
+     
+    return sf.toString();
+}</programlisting>
+			</para>
+		</section>
+		
+		<section id="core_springmvc_controller_implementation_reqeustheader">
+			<title>@RequestHeader</title>
+
+			<para>HTTP Header에 저장된 값을 핸들러 메소드에서 사용할 수 있도록 해주는 Annotation이다.</para>
+			<para>위 @CookieValue 예제 코드에서 @RequestHeader가 사용된 모습을 확인할 수 있다.</para>
+		</section>
+  	</section>
+
+	<section id="core_springmvc_controller_double">
+		<title>Double Form Submission 방지</title>
+
+    	<para>
+	    	입력 폼 페이지에서 사용자가 새로 고침 버튼을 클릭하거나, 폼을 Submit하는 버튼을 여러번 클릭할 경우
+	    	같은 입력 폼 정보가 서버로 여러번 등록되는 문제가 발생할 수 있다.
+	    	이 장에서는 이러한 Double Form Submission을 어떻게 방지할 수 있는지를 알아보도록 하자. 
+	    </para>
+	    
+	    <para>Double Form Submission 방지는 다음과 같은 원리로 구현된다.</para>
+	    
+	    <itemizedlist>
+	    	<listitem>
+				<para>
+					<emphasis role="bold">반드시 RequestMappingHandlerAdapter의 synchronizeOnSession 속성을 true로 설정</emphasis>
+                    <programlisting language="xml"><![CDATA[<bean id="requestMappingHandlerAdapter"
+        class="org.springframework.web.servlet.mvc.method.annotation.RequestMappingHandlerAdapter">
+    ]]><emphasis role="bold"><![CDATA[<property name="synchronizeOnSession" value="true" />]]></emphasis>
+<![CDATA[</bean>]]></programlisting>
+				</para>
+	        </listitem>
+	        
+	    	<listitem>
+	    		<para>
+	    			<emphasis role="bold">Double submission을 방지하고자 하는 Form 객체를 model로 저장</emphasis>
+	          	</para>
+	          	
+	          	<para>
+	          		다음 예제와 같이 ModelAndView, ModelMap 등을 이용하여 저장한다. 
+	          		<programlisting language="java">@RequestMapping(params = "param=addView")
+public ModelAndView addMovieView() {
+    ModelAndView mnv = 
+        new ModelAndView("/WEB-INF/jsp/annotation/sales/movie/movieForm.jsp");
+    <emphasis role="bold">mnv.addObject</emphasis>("<emphasis role="bold">movie</emphasis>", <emphasis
+                role="bold">new Movie())</emphasis>;
+    return mnv;
+}</programlisting>
+				</para>          
+			</listitem>
+
+        	<listitem>
+				<para>
+					<emphasis role="bold">저장한 model을 @SessionAttributes로 정의</emphasis>
+				</para>
+
+				<para>
+	         	 	다음 예제와 같이 컨트롤러 클래스 선언부에 @SessionAttributes("movie")로 정의한다.
+					<programlisting language="java">@Controller
+@RequestMapping("/movie.do")
+<emphasis role="bold">@SessionAttributes</emphasis>("<emphasis role="bold">movie")</emphasis>
+public class EditMovieController {
+    // 중략
+}</programlisting>
+				</para>
+	        </listitem>
+	
+	        <listitem>
+				<para>
+					<emphasis role="bold">컨트롤러 메소드에서 폼 처리 완료 후 Session status 변경</emphasis>
+				</para>
+				
+				<programlisting language="java">@RequestMapping(params = "param=add")
+public String addMovie(HttpServletRequest request, Movie movie, BindingResult result
+        , <emphasis role="bold">SessionStatus status</emphasis>) throws Exception {
+    movieService.addMovie(movie);
+    <emphasis role="bold">status.setComplete</emphasis>();
+    return "/listMovie.do";    
+}</programlisting>
+			</listitem>
+
+        	<listitem>
+				<para>
+					<emphasis role="bold">status.setComplete()는 session에서 저장된 model을 삭제하는 이벤트 발생</emphasis>
+				</para>
+	        </listitem>
+	
+	        <listitem>
+				<para>
+					<emphasis role="bold">따라서, 이후에 다시 submit 요청이 온 경우 session에 저장된 model이 삭제되었기 때문에 아래와
+					 같이 org.springframework.web.HttpSessionRequiredException발생</emphasis>
+				</para>
+
+                   <programlisting language="java">org.springframework.web.HttpSessionRequiredException: 
+       Session attribute 'dept' required - not found in session</programlisting>
+        	</listitem>
+        
+		</itemizedlist>
+	</section>
+</chapter>

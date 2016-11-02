@@ -1,0 +1,341 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<FDL version="1.4">
+  <TypeDefinition url="..\default_typedef.xml"/>
+  <Form id="SAMPLE001" classname="SAMPLE001" inheritanceid="" position="absolute 0 0 765 540" titletext="Grid+Form" onload="SAMPLE001_onload" style="background:#f2f2efff;" onbeforeclose="SAMPLE001_onbeforeclose">
+    <Layouts>
+      <Layout>
+        <Div id="Div00" taborder="1" text="Div00" position="absolute 0 0 765 40">
+          <Layouts>
+            <Layout>
+              <Static id="stTitle" text="global.domain.movielist" position="absolute 18 10 219 32" style="border:0px solid #b1b5b9b3 ; "/>
+              <Button id="btAddCategory" taborder="4" text="global.domain.add" onclick="btAddCategory_onclick" position="absolute 542 7 615 32"/>
+              <Button id="btDeleteCategory" taborder="5" text="global.domain.delete" onclick="btDeleteCategory_onclick" position="absolute 617 7 690 32"/>
+              <Button id="btSaveAll" taborder="6" text="global.domain.save" onclick="btSaveAll_onclick" position="absolute 692 7 765 32"/>
+            </Layout>
+          </Layouts>
+        </Div>
+        <Static id="Static00" position="absolute 2 10 16 32" style="background:URL('image::bullet_WF_Lev1.png') left middle; " text=""/>
+        <Div id="divSearch" taborder="2" style="background:#fff0f5ff; border:1 solid #906d3bff ; " text="search" position="absolute 0 40 765 80">
+          <Layouts>
+            <Layout>
+              <Static id="stSearchTitle" text="global.domain.movietitle" position="absolute 2 9 57 31"/>
+              <Combo id="cmbNowPlaying" taborder="3" value="Y" innerdataset="@dsCmbNowPlaying" codecolumn="CODE" datacolumn="DATA" index="0" position="absolute 295 9 403 31"/>
+              <Edit id="edtSearchTitle" taborder="4" onkeydown="divSearch_edtSearchTitle_onkeydown" position="absolute 52 9 196 31"/>
+              <Button id="btDoSearch" taborder="5" onclick="divSearch_btDoSearch_onclick" position="absolute 405 9 429 31" style="background:URL('image::btn_TP_SearchDrop_N.png') left middle; cursor:hand; "/>
+              <Static id="stNowPlaying" text="global.domain.nowplaying" position="absolute 221 9 298 31"/>
+            </Layout>
+          </Layouts>
+        </Div>
+        <Div id="divGrd" taborder="3" text="divGrid" position="absolute 0 82 765 304">
+          <Layouts>
+            <Layout>
+              <Grid id="grdMovie" taborder="0" binddataset="dsGrdMovie" useinputpanel="false" autofittype="col" position="absolute 0 0 765 222" onheadclick="divGrd_grdMovie_onheadclick">
+                <Formats>
+                  <Format id="default">
+                    <Columns>
+                      <Column size="28"/>
+                      <Column size="204"/>
+                      <Column size="137"/>
+                      <Column size="80"/>
+                      <Column size="100"/>
+                      <Column size="80"/>
+                      <Column size="80"/>
+                    </Columns>
+                    <Rows>
+                      <Row size="24" band="head"/>
+                      <Row size="24"/>
+                    </Rows>
+                    <Band id="head">
+                      <Cell displaytype="checkbox" edittype="checkbox" text="0"/>
+                      <Cell col="1" text="global.domain.movietitle"/>
+                      <Cell col="2" text="global.domain.director"/>
+                      <Cell col="3" text="global.domain.genre"/>
+                      <Cell col="4" text="global.domain.actors"/>
+                      <Cell col="5" text="global.domain.releasedate"/>
+                      <Cell col="6" text="global.domain.ticketprice"/>
+                    </Band>
+                    <Band id="body">
+                      <Cell displaytype="checkbox" edittype="checkbox" text="bind:_chk"/>
+                      <Cell col="1" edittype="none" style="align:left;" text="bind:TITLE"/>
+                      <Cell col="2" edittype="none" style="align:left;" text="bind:DIRECTOR"/>
+                      <Cell col="3" displaytype="combo" style="align:left;" text="bind:GENRE_ID" combodataset="dsGrdGenre" combocodecol="GENRE_ID" combodatacol="NAME"/>
+                      <Cell col="4" edittype="none" style="align:left;" text="bind:ACTORS"/>
+                      <Cell col="5" text="bind:RELEASE_DATE"/>
+                      <Cell col="6" style="align:right;padding:0 1 0 0;" text="bind:TICKET_PRICE"/>
+                    </Band>
+                  </Format>
+                </Formats>
+              </Grid>
+            </Layout>
+          </Layouts>
+        </Div>
+        <Div id="divMovieForm" taborder="4" text="divMovieForm" position="absolute 0 338 765 540">
+          <Layouts>
+            <Layout>
+              <Static id="stTitle" text="global.domain.title" position="absolute 0 1 85 27" style="background:#edeee6ff; border:1 solid #c6c6c5ff ; "/>
+              <Static id="stDirector" text="global.domain.director" position="absolute 0 26 85 52" style="background:#edeee6ff; border:1 solid #c6c6c5ff ; "/>
+              <Static id="stActors" text="global.domain.actors" position="absolute 0 76 85 102" style="background:#edeee6ff; border:1 solid #c6c6c5ff ; "/>
+              <Static id="stReleaseDate" text="global.domain.releasedate" position="absolute 0 126 85 152" style="background:#edeee6ff; border:1 solid #c6c6c5ff ; "/>
+              <Static id="stGenre" text="global.domain.genre" position="absolute 0 51 85 77" style="background:#edeee6ff; border:1 solid #c6c6c5ff ; "/>
+              <Static id="stRuntime" text="global.domain.runtime" position="absolute 0 101 85 127" style="background:#edeee6ff; border:1 solid #c6c6c5ff ; "/>
+              <Static id="stTicketPrice" text="global.domain.ticketprice" position="absolute 0 151 85 177" style="background:#edeee6ff; border:1 solid #c6c6c5ff ; "/>
+              <Static id="stNowPlaying" text="global.domain.nowplaying" position="absolute 0 176 85 202" style="background:#edeee6ff; border:1 solid #c6c6c5ff ; "/>
+              <Static id="Static00" position="absolute 84 1 765 27" style="background:#ffffffff; border:1 solid #c6c6c5ff ; align:center middle; " text=""/>
+              <Edit id="edtTitle" taborder="16" position="absolute 86 3 334 25"/>
+              <Static id="Static01" position="absolute 84 26 765 52" style="background:#ffffffff; border:1 solid #c6c6c5ff ; align:center middle; " text=""/>
+              <Edit id="edtDIrector" taborder="17" position="absolute 86 29 334 51"/>
+              <Static id="Static02" position="absolute 84 51 765 77" style="background:#ffffffff; border:1 solid #c6c6c5ff ; align:center middle; " text=""/>
+              <Combo id="cmbGenreId" taborder="18" innerdataset="@dsGrdGenre" codecolumn="GENRE_ID" datacolumn="NAME" position="absolute 86 53 334 75"/>
+              <Static id="Static03" position="absolute 84 76 765 102" style="background:#ffffffff; border:1 solid #c6c6c5ff ; align:center middle; " text=""/>
+              <Edit id="edtActors" taborder="19" position="absolute 86 78 334 100"/>
+              <Static id="Static04" position="absolute 84 101 765 127" style="background:#ffffffff; border:1 solid #c6c6c5ff ; align:center middle; " text=""/>
+              <MaskEdit id="mskRuntime" taborder="20" position="absolute 86 103 334 125" type="string" mask="###"/>
+              <Static id="Static05" position="absolute 84 126 765 152" style="background:#ffffffff; border:1 solid #c6c6c5ff ; align:center middle; " text=""/>
+              <Calendar id="calReleaseDate" taborder="21" dateformat="yyyy-MM-dd" position="absolute 86 128 334 150" style="align:left middle; "/>
+              <Static id="Static06" position="absolute 84 151 765 177" style="background:#ffffffff; border:1 solid #c6c6c5ff ; align:center middle; " text=""/>
+              <MaskEdit id="mskTicketPrice" taborder="22" mask="," position="absolute 86 153 334 175"/>
+              <Static id="Static07" position="absolute 84 176 765 202" style="background:#ffffffff; border:1 solid #c6c6c5ff ; align:center middle; " text=""/>
+              <CheckBox id="chkNowPlaying" taborder="23" text="global.domain.cmbnowplaying" value="N" truevalue="Y" falsevalue="N" position="absolute 86 178 334 200"/>
+            </Layout>
+          </Layouts>
+        </Div>
+      </Layout>
+    </Layouts>
+    <Objects>
+      <Dataset id="dsGrdMovie" firefirstcount="0" firenextcount="0" useclientlayout="false" updatecontrol="true" enableevent="true" loadkeymode="keep" loadfiltermode="keep" reversesubsum="false">
+        <ColumnInfo>
+          <Column id="_chk" type="STRING" size="1"/>
+          <Column id="MOVIE_ID" type="STRING" size="8"/>
+          <Column id="TITLE" type="STRING" size="50"/>
+          <Column id="DIRECTOR" type="STRING" size="50"/>
+          <Column id="GENRE_ID" type="STRING" size="5"/>
+          <Column id="ACTORS" type="STRING" size="100"/>
+          <Column id="RUNTIME" type="INT" size="3"/>
+          <Column id="RELEASE_DATE" type="DATE" size="256"/>
+          <Column id="TICKET_PRICE" type="INT" size="6"/>
+          <Column id="NOW_PLAYING" type="STRING" size="1"/>
+          <Column id="POSTER_FILE" type="STRING" size="1000"/>
+        </ColumnInfo>
+      </Dataset>
+      <Dataset id="dsSearch" firefirstcount="0" firenextcount="0" useclientlayout="false" updatecontrol="true" enableevent="true" loadkeymode="keep" loadfiltermode="keep" reversesubsum="false">
+        <ColumnInfo>
+          <Column id="SEARCH_TITLE" type="STRING" size="256"/>
+          <Column id="SEARCH_NOW_PLAYING" type="STRING" size="256"/>
+        </ColumnInfo>
+        <Rows>
+          <Row>
+            <Col id="SEARCH_TITLE"/>
+            <Col id="SEARCH_NOW_PLAYING"/>
+          </Row>
+        </Rows>
+      </Dataset>
+      <Dataset id="dsGrdGenre" firefirstcount="0" firenextcount="0" useclientlayout="false" updatecontrol="true" enableevent="true" loadkeymode="keep" loadfiltermode="keep" reversesubsum="false">
+        <ColumnInfo>
+          <Column id="GENRE_ID" type="STRING" size="5"/>
+          <Column id="NAME" type="STRING" size="50"/>
+        </ColumnInfo>
+      </Dataset>
+      <Dataset id="dsCmbNowPlaying" firefirstcount="0" firenextcount="0" useclientlayout="false" updatecontrol="true" enableevent="true" loadkeymode="keep" loadfiltermode="keep" reversesubsum="false">
+        <ColumnInfo>
+          <Column id="CODE" type="STRING" size="256"/>
+          <Column id="DATA" type="STRING" size="256"/>
+        </ColumnInfo>
+        <Rows>
+          <Row>
+            <Col id="CODE">Y</Col>
+            <Col id="DATA"/>
+          </Row>
+          <Row>
+            <Col id="CODE">N</Col>
+            <Col id="DATA"/>
+          </Row>
+        </Rows>
+      </Dataset>
+      <Dataset id="dsGrdMovieValid" firefirstcount="0" firenextcount="0" useclientlayout="false" updatecontrol="true" enableevent="true" loadkeymode="keep" loadfiltermode="keep" reversesubsum="false">
+        <ColumnInfo>
+          <Column id="_chk" type="STRING" size="1"/>
+          <Column id="MOVIE_ID" type="STRING" size="8"/>
+          <Column id="TITLE" type="STRING" size="50"/>
+          <Column id="DIRECTOR" type="STRING" size="50"/>
+          <Column id="GENRE_ID" type="STRING" size="5"/>
+          <Column id="ACTORS" type="STRING" size="100"/>
+          <Column id="RUNTIME" type="STRING" size="3"/>
+          <Column id="RELEASE_DATE" type="STRING" size="256"/>
+          <Column id="TICKET_PRICE" type="STRING" size="6"/>
+          <Column id="NOW_PLAYING" type="STRING" size="1"/>
+          <Column id="POSTER_FILE" type="STRING" size="1000"/>
+        </ColumnInfo>
+        <Rows>
+          <Row>
+            <Col id="_chk"/>
+            <Col id="MOVIE_ID"/>
+            <Col id="TITLE">title:movietitle,required:true,maxlength:50</Col>
+            <Col id="DIRECTOR">title:director,required:true,minlength:1,maxlength:50</Col>
+            <Col id="GENRE_ID"/>
+            <Col id="ACTORS">title:actors,required:true,minlength:5,maxlength:100</Col>
+            <Col id="POSTER_FILE"/>
+            <Col id="NOW_PLAYING"/>
+            <Col id="TICKET_PRICE">title:ticketprice,maxlength:4,minlength:3</Col>
+            <Col id="RELEASE_DATE"/>
+            <Col id="RUNTIME">title:runtime,minlength:2,maxlength:3</Col>
+          </Row>
+        </Rows>
+      </Dataset>
+      <Dataset id="dsTransaction" firefirstcount="0" firenextcount="0" useclientlayout="false" updatecontrol="true" enableevent="true" loadkeymode="keep" loadfiltermode="keep" reversesubsum="false">
+        <ColumnInfo>
+          <Column id="SVC_ID" type="STRING" size="100"/>
+          <Column id="IN_DATASET_LIST" type="STRING" size="256"/>
+          <Column id="OUT_DATASET_LIST" type="STRING" size="256"/>
+          <Column id="URL" type="STRING" size="512"/>
+          <Column id="CALLBACK" type="STRING" size="100"/>
+          <Column id="SYNC_YN" type="STRING" size="1"/>
+        </ColumnInfo>
+        <Rows>
+          <Row>
+            <Col id="SVC_ID">getListMovie</Col>
+            <Col id="IN_DATASET_LIST">dsSearch=dsSearch</Col>
+            <Col id="OUT_DATASET_LIST">dsGrdMovie=dsGrdMovie</Col>
+            <Col id="URL">xplatformMovie.do?method=getList</Col>
+            <Col id="SYNC_YN"/>
+            <Col id="CALLBACK"/>
+          </Row>
+          <Row>
+            <Col id="SVC_ID">saveAllMovie</Col>
+            <Col id="IN_DATASET_LIST">dsGrdMovie=dsGrdMovie:U</Col>
+            <Col id="OUT_DATASET_LIST"/>
+            <Col id="URL">xplatformMovie.do?method=saveAll</Col>
+            <Col id="CALLBACK"/>
+            <Col id="SYNC_YN"/>
+          </Row>
+          <Row>
+            <Col id="SVC_ID">getListGenre</Col>
+            <Col id="IN_DATASET_LIST"/>
+            <Col id="OUT_DATASET_LIST">dsGrdGenre=dsGrdGenre</Col>
+            <Col id="URL">xplatformGenre.do?method=getList</Col>
+            <Col id="CALLBACK"/>
+            <Col id="SYNC_YN"/>
+          </Row>
+        </Rows>
+      </Dataset>
+    </Objects>
+    <Bind>
+      <BindItem id="item0" compid="divMovieForm.edtTitle" propid="value" datasetid="dsGrdMovie" columnid="TITLE"/>
+      <BindItem id="item1" compid="divMovieForm.edtDIrector" propid="value" datasetid="dsGrdMovie" columnid="DIRECTOR"/>
+      <BindItem id="item2" compid="divMovieForm.cmbGenreId" propid="value" datasetid="dsGrdMovie" columnid="GENRE_ID"/>
+      <BindItem id="item3" compid="divMovieForm.mskRuntime" propid="value" datasetid="dsGrdMovie" columnid="RUNTIME"/>
+      <BindItem id="item4" compid="divMovieForm.calReleaseDate" propid="value" datasetid="dsGrdMovie" columnid="RELEASE_DATE"/>
+      <BindItem id="item5" compid="divMovieForm.mskTicketPrice" propid="value" datasetid="dsGrdMovie" columnid="TICKET_PRICE"/>
+      <BindItem id="item6" compid="divMovieForm.chkNowPlaying" propid="value" datasetid="dsGrdMovie" columnid="NOW_PLAYING"/>
+      <BindItem id="item7" compid="divMovieForm.edtActors" propid="value" datasetid="dsGrdMovie" columnid="ACTORS"/>
+      <BindItem id="item8" compid="divSearch.edtSearchTitle" propid="value" datasetid="dsSearch" columnid="SEARCH_TITLE"/>
+      <BindItem id="item9" compid="divSearch.cmbNowPlaying" propid="value" datasetid="dsSearch" columnid="SEARCH_NOW_PLAYING"/>
+    </Bind>
+    <Script type="xscript4.0"><![CDATA[include "lib::commonScript.xjs";
+
+function SAMPLE001_onload(obj:Form, e:LoadEventInfo)
+{
+	// 검색 조건 combo box 국제화 처리
+	dsCmbNowPlaying.setColumn(0, "DATA", gfnGetMessage("global.domain.cmbnowplaying"));
+	dsCmbNowPlaying.setColumn(1, "DATA", gfnGetMessage("global.domain.cmbnotplaying"));
+	divSearch.cmbNowPlaying.index = 0;
+	
+	// 각 컴포넌트 타이틀 국제화 처리
+	gfnSetTitle();
+	divSearch_btDoSearch_onclick();
+
+	gfnSetTitle();
+}
+
+// "검색" 버튼 클릭 이벤트 처리
+function divSearch_btDoSearch_onclick(obj:Button,  e:ClickEventInfo)
+{
+	if(gfnIsNull(divSearch.edtSearchTitle.text)){
+		dsSearch.setColumn(0, "SEARCH_TITLE", "");
+	}
+
+	if(gfnIsNull(divSearch.cmbNowPlaying.value)){
+		dsSearch.setColumn(0, "SEARCH_NOW_PLAYING", "Y");
+	}
+	
+	if(gfnDsGetUpdate(dsGrdMovie)){
+		var resultValue = gfnConfirm("msg.before.search", "YN");
+		
+		if(resultValue == "N") {
+			return;
+		} else if(resultValue == "Y") {
+	
+			// Grid 데이터 및 combo box 데이터 송신
+			gfnTransaction("getListGenre");	
+			gfnTransaction("getListMovie");	
+		}
+	} else {
+		// Grid 데이터 및 combo box 데이터 송신
+		gfnTransaction("getListGenre");	
+		gfnTransaction("getListMovie");	
+	}
+}
+
+// 추가 버튼 클릭 이벤트
+function btAddCategory_onclick(obj:Button,  e:ClickEventInfo)
+{
+	var nRow = dsGrdMovie.addRow();
+	dsGrdMovie.setColumn(nRow, "RELEASE_DATE", gfnToday());
+	dsGrdMovie.setColumn(nRow, "NOW_PLAYING", "Y");
+	
+	divMovieForm.cmbGenreId.index = 0;
+}
+
+// 삭제 버튼 클릭 이벤트
+function btDeleteCategory_onclick(obj:Button,  e:ClickEventInfo)
+{
+	gfnCheckedRowDelete(dsGrdMovie);
+}
+
+// Grid Header 클릭 이벤트
+function divGrd_grdMovie_onheadclick(obj:Grid, e:GridClickEventInfo)
+{
+	// Grid sort
+	gfnGridSort(obj, e);
+	
+	// 체크박스 모두선택/해제 기능
+	gfnSetGridCheckAll(obj, e);
+}
+
+// 저장 버튼 클릭 이벤트
+function btSaveAll_onclick(obj:Button,  e:ClickEventInfo)
+{
+	if(gfnDsCheckValid(dsGrdMovie)){
+		gfnTransaction("saveAllMovie");
+	}
+}
+
+// Form을 닫기 전 변경 내용이 있는 경우 알림 창 생성
+function SAMPLE001_onbeforeclose(obj:Form, e:CloseEventInfo)
+{
+	if(gfnDsGetUpdate(dsGrdMovie)){
+		var resultValue = gfnConfirm("msg.before.movepage", "YN");
+		
+		if(resultValue == "N") {
+			return;
+		} else if(resultValue == "Y") {
+			btSaveAll_onclick();
+		}
+	}
+}
+
+// gfnService 실행 후 Callback 처리
+function fnCallback(strServiceId, strErrorCode, strErrorMsg){
+	if(strErrorCode == -1){
+		gfnAlertMsg(strErrorMsg, "ERR");
+	} else {
+		if(strServiceId == "saveAllMovie"){
+			gfnAlertMsg("msg.save.success");
+			divSearch_btDoSearch_onclick();
+		}
+	}
+}
+
+
+]]></Script>
+  </Form>
+</FDL>

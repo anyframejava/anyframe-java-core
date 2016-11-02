@@ -1,0 +1,630 @@
+<chapter id="hibernate_hibernate_configuration">
+	<title>Configuration</title>
+
+    <para>
+    	Hibernate is composed so that it is run based on hibernate.cfg.xml (or hibernate.properties) that includes execution property. 
+    	In this page, we will look into how to define the main components and properties of hibernate.cfg.xml file. 
+    	First, hibernate.cfg.xml includes <![CDATA[<hibernate-configuration>]]>, 
+    	and can include <![CDATA[<security> and <session-factory>]]> in <![CDATA[<hibernate-configuration>]]> tag. 
+    	<![CDATA[<session-factory>]]> is a tag that defines information necessary for 
+    	Hibernate SessionFactory to create and transfer Session based on DB information and Hibernate Mapping XML information. 
+    	Various properties can be defined in <![CDATA[<session-factory>]]>. In this page, we will look into a few of them. 
+    	For more information on Hibernate Configuration, 
+    	refer to <ulink url="http://www.redhat.com/docs/en-US/JBoss_Hibernate/3.2.4.sp01.cp03/html-single/Reference_Guide/index.html#Configuration">Hibernate
+    	Documentation Chapter 3. Configuration</ulink>.
+    </para>
+
+ 	<section id="hibernate_hibernate_configuration_datasource">
+		<title>DataSource property definition</title>
+
+      	<para>Hibernate can access specific DB and handle data access through the following properties.</para>
+
+		<informaltable>
+        	<tgroup cols="3">
+ 				<colspec colnum="1" colname="col1" colwidth="1*"/>
+				<colspec colnum="2" colname="col2" colwidth="4*"/>
+				<colspec colnum="3" colname="col3" colwidth="5*"/>
+          		<thead>
+					<row>
+						<entry align="center">Classification</entry>
+		
+						<entry align="center">Name</entry>
+		
+						<entry align="center">Description</entry>
+					</row>
+	          	</thead>
+	
+	          	<tbody>
+	            	<row>
+	              		<entry>JDBC</entry>
+	
+	              		<entry>hibernate.connection.driver_class</entry>
+	
+	              		<entry>Property to define Driver class name of DB to be accessed</entry>
+	            	</row>
+	
+	            	<row>
+	              		<entry>JDBC</entry>
+	
+	              		<entry>hibernate.connection.url</entry>
+	
+	              		<entry>Property to define URL of DB to be accessed</entry>
+	            	</row>
+	
+	            	<row>
+	              		<entry>JDBC</entry>
+	
+	              		<entry>hibernate.connection.username</entry>
+	
+	              		<entry>Property to define user name for accessing DB</entry>
+	            	</row>
+	
+	            	<row>
+						<entry>JDBC</entry>
+	
+	              		<entry>hibernate.connection.password</entry>
+	
+	              		<entry>Property to define password to be used when accessing DB</entry>
+	            	</row>
+	
+	            	<row>
+	              		<entry>JDBC</entry>
+	
+	              		<entry>hibernate.connection.pool_size</entry>
+	
+	              		<entry>
+	              			Property that defines maximum Connection size to create Connection Pool. 
+	              			Hibernate can internally use basic Connection Pool. 
+	              			However, it is not developed for operation system use, 
+	              			so it does not provide various functions nor is stable. 
+	              			Therefore, it is recommendable to choose Connection Pool implementation such as DBCP or C3P0 to manage Connection.
+	              		</entry>
+	            	</row>
+	
+	            	<row>
+	              		<entry>J2EE</entry>
+	
+	              		<entry>hibernate.connection.datasource</entry>
+	
+	              		<entry>Property to define JNDI name of DataSource to connect through JNDI</entry>
+	            	</row>
+	
+	            	<row>
+	              		<entry>J2EE</entry>
+	
+	              		<entry>hibernate.jndi.url</entry>
+	
+	              		<entry>Property to define JNDI Provider URL</entry>
+	            	</row>
+	
+	            	<row>
+						<entry>J2EE</entry>
+		
+						<entry>hibernate.jndi.class</entry>
+		
+						<entry>Property to define JNDI InitialContextFactory class name</entry>
+					</row>
+	
+					<row>
+						<entry>J2EE</entry>
+	
+						<entry>hibernate.connection.username</entry>
+	
+						<entry>Property to define user name for accessing DB</entry>
+					</row>
+	
+					<row>
+						<entry>J2EE</entry>
+	
+						<entry>hibernate.connection.password</entry>
+	
+						<entry>Property to define password to use when accessing DB</entry>
+					</row>
+				</tbody>
+			</tgroup>
+		</informaltable>
+
+      	<para>
+      		The following is a part of hibernate.cfg.xml file that includes the properties mentioned above.
+            <programlisting language="xml"><![CDATA[<session-factory>
+    <property name="hibernate.connection.driver_class">net.sf.log4jdbc.DriverSpy</property>
+    <property name="hibernate.connection.url">
+            jdbc:log4jdbc:oracle:thin:@localhost:1521:xe</property>
+    <property name="hibernate.connection.username">user</property>
+    <property name="hibernate.connection.password">password</property>
+    ...
+</session-factory>]]></programlisting>
+		</para>
+	</section>
+
+    <section id="hibernate_hibernate_configuration_sql">
+		<title>Generated SQL property definition</title>
+
+		<informaltable>
+        	<tgroup cols="2">
+				<colspec colnum="1" colname="col1" colwidth="3*"/>
+				<colspec colnum="2" colname="col2" colwidth="7*"/>
+				<thead>
+            		<row>
+						<entry align="center">Name</entry>
+			
+						<entry align="center">Description</entry>
+					</row>
+          		</thead>
+
+          		<tbody>
+            		<row>
+              			<entry>hibernate.dialect</entry>
+
+              			<entry>
+              				When developing Hibernate base, you can create SQL according to DB without composing SQL specialized to DB. 
+             		 	    To do this, use Dialect class. 
+             		 	    hibernate.dialect is property to define Dialect class name.
+             		 	</entry>
+            		</row>
+
+            		<row>
+              			<entry>hibernate.default_schema</entry>
+
+              			<entry>
+              				Property to define name of DB Schema to be applied 
+              				when Hibernate does not have Schema defined for specific table when developing SQL.
+              			</entry>
+            		</row>
+
+            		<row>
+              			<entry>hibernate.default_catalog</entry>
+
+              			<entry>
+              				Property to define name of DB Catalog to be applied when 
+              				Hibernate does not have Catalog defined for specific table when developing SQL.
+              			</entry>
+            		</row>
+          		</tbody>
+        	</tgroup>
+		</informaltable>
+
+      	<para>
+      		The following is a part of hibernate.cfg.xml file that includes the properties mentioned above. 
+            <programlisting language="xml"><![CDATA[<session-factory>
+    ...
+    <property name="hibernate.default_schema">ATHENA</property>
+    <property name="hibernate.dialect">org.hibernate.dialect.Oracle10gDialect</property>
+    ...
+</session-factory>]]></programlisting>
+		</para>
+
+      	<para>
+      		The following is a list of main Dialect class provided by Hibernate.
+      	</para>
+
+      	<informaltable>
+			<tgroup cols="2">
+         		<colspec colnum="1" colname="col1" colwidth="3*"/>
+				<colspec colnum="2" colname="col2" colwidth="7*"/>
+          		<thead>
+            		<row>
+              			<entry align="center">DB type</entry>
+
+              			<entry align="center">Dialect class</entry>
+            		</row>
+          		</thead>
+
+          		<tbody>
+		            <row>
+						<entry>DB2</entry>
+
+              			<entry>org.hibernate.dialect.DB2Dialect</entry>
+            		</row>
+
+            		<row>
+              			<entry>HSQLDB</entry>
+
+              			<entry>org.hibernate.dialect.HSQLDialect</entry>
+            		</row>
+
+            		<row>
+              			<entry>Informix</entry>
+
+              			<entry>org.hibernate.dialect.InformixDialect</entry>
+            		</row>
+
+            		<row>
+              			<entry>MySQL 5.x</entry>
+
+              			<entry>org.hibernate.dialect.MySQL5Dialect</entry>
+            		</row>
+
+            		<row>
+              			<entry>MySQL 4.x, 3.x</entry>
+
+              			<entry>org.hibernate.dialect.MySQLDialect</entry>
+            		</row>
+
+            		<row>
+              			<entry>Oracle 10g</entry>
+
+              			<entry>org.hibernate.dialect.Oracle10gDialect</entry>
+            		</row>
+
+            		<row>
+              			<entry>Oracle 9i/10i</entry>
+
+              			<entry>org.hibernate.dialect.Oracle9iDialect</entry>
+            		</row>
+
+            		<row>
+              			<entry>Oracle (all versions)</entry>
+
+              			<entry>org.hibernate.dialect.OracleDialect</entry>
+            		</row>
+
+            		<row>
+              			<entry>SAP DB</entry>
+
+              			<entry>org.hibernate.dialect.SAPDBDialect</entry>
+            		</row>
+
+            		<row>
+              			<entry>SQL Server 2000</entry>
+
+              			<entry>org.hibernate.dialect.SQLServerDialect</entry>
+            		</row>
+
+            		<row>
+						<entry>Sybase 11.9.2</entry>
+
+              			<entry>org.hibernate.dialect.Sybase11Dialect</entry>
+            		</row>
+
+            		<row>
+              			<entry>Sybase Anywhere</entry>
+
+              			<entry>org.hibernate.dialect.SybaseAnywhereDialect</entry>
+            		</row>
+          		</tbody>
+        	</tgroup>
+      	</informaltable>
+    </section>
+
+    <section id="hibernate_hibernate_configuration_cache">
+		<title>Cache property definition</title>
+
+      	<informaltable>
+			<tgroup cols="2">
+          		<thead>
+            		<row>
+              			<entry align="center">Name</entry>
+
+              			<entry align="center">Description</entry>
+            		</row>
+          		</thead>
+
+          		<tbody>
+            		<row>
+              			<entry>hibernate.cache.provider_class</entry>
+
+              			<entry>Property to define class name of implementation that implements Cache function.</entry>
+            		</row>
+
+            		<row>
+              			<entry>hibernate.cache.use_second_level_cache</entry>
+
+              			<entry>Property that defines whether to apply 2nd Level Cache (true|false)</entry>
+            		</row>
+
+            		<row>
+              			<entry>hibernate.cache.use_query_cache</entry>
+
+              			<entry>Property that defines whether to cache Hibernate Query (true|false)</entry>
+            		</row>
+          		</tbody>
+        	</tgroup>
+      	</informaltable>
+
+      	<para>
+      		The following is a part of hibernate.cfg.xml file that includes the properties mentioned above. 
+      		This is an example of applying 2nd Level Cache and using EhCacheProvider with Cache Provider.
+            <programlisting language="xml"><![CDATA[<session-factory>
+    ...				
+    <property name="hibernate.cache.provider_class">org.hibernate.cache.EhCacheProvider</property>
+    <property name="hibernate.cache.use_second_level_cache">true</property>
+    ...     
+</session-factory>]]></programlisting></para>
+    </section>
+
+    <section id="hibernate_hibernate_configuration_logging">
+		<title>Logging property definition</title>
+
+		<informaltable>
+        	<tgroup cols="2">
+        		<colspec colnum="1" colname="col1" colwidth="2*"/>
+				<colspec colnum="2" colname="col2" colwidth="3*"/>
+	          	<thead>
+	            	<row>
+	 					<entry align="center">Name</entry>
+	
+	              		<entry align="center">Description</entry>
+	            	</row>
+	          	</thead>
+	
+	          	<tbody>
+	            	<row>
+						<entry>hibernate.show_sql</entry>
+		
+		              	<entry>
+		              	Property that defines whether SQL created through Hibernate should be recorded in console (true|false)
+		              	</entry>
+	            	</row>
+	
+	            	<row>
+						<entry>hibernate.format_sql</entry>
+	
+	              		<entry>
+	              			Property that defines whether SQL statement format should be arranged and recorded 
+	              			in case of hibernate.show_sql=true (true|false)
+	              		</entry>
+	            	</row>
+	
+	            	<row>
+	              		<entry>hibernate.use_sql_comments</entry>
+	
+	              		<entry>
+	              			Property that defines whether to record Comments along with SQL console created with Hibernate (true|false)
+	              		</entry>
+	            	</row>
+				</tbody>
+			</tgroup>
+		</informaltable>
+
+      	<para>
+      		When defining hibernate.show_sql and hibernate.format_sql mentioned above, 
+      		SQL statement created through Hibernate is recorded in console in the following format.
+      		<programlisting><![CDATA[Hibernate: 
+    insert into
+        PUBLIC.COUNTRY(COUNTRY_ID, COUNTRY_NAME, COUNTRY_CODE) 
+            values(?, ?, ?)]]></programlisting>
+        </para>
+
+		<para>
+			Hibernate basic Logging is useful when checking created SQL statement, 
+			but inconvenient during development because the passed argument value cannot be checked. 
+			Hibernate handles log using not only basic SQL Logging but also Jakarta commons-logging API, 
+			so if you define property file for logging and use the following log category list, 
+			you can get more useful information from log during development.
+		</para>
+
+		<informaltable>
+			<tgroup cols="2">
+          		<thead>
+            		<row>
+              			<entry align="center">Category</entry>
+
+              			<entry align="center">Description</entry>
+            		</row>
+          		</thead>
+
+          		<tbody>
+            		<row>
+              			<entry>org.hibernate.SQL</entry>
+
+              			<entry>Logging all DML query being executed</entry>
+            		</row>
+
+       		   	  	<row>
+						<entry>org.hibernate.type</entry>
+
+              			<entry>Logging all JDBC arguments</entry>
+            		</row>
+
+            		<row>
+              			<entry>org.hibernate.tool.hbm2ddl</entry>
+
+              			<entry>Logging all DDL query being executed</entry>
+            		</row>
+
+           	 		<row>
+              			<entry>org.hibernate.pretty</entry>
+
+              			<entry>Logging all object status (maximum 20) saved in session when executing Flush</entry>
+            		</row>
+
+            		<row>
+              			<entry>org.hibernate.cache</entry>
+
+              			<entry>Logging 2nd Level Cache execution log</entry>
+            		</row>
+
+            		<row>
+              			<entry>org.hibernate.transaction</entry>
+
+              			<entry>Logging transaction execution log</entry>
+            		</row>
+
+            		<row>
+              			<entry>org.hibernate.jdbc</entry>
+
+              			<entry>Logging all JDBC resource request</entry>
+            		</row>
+
+            		<row>
+              			<entry>org.hibernate.hql.ast.AST</entry>
+
+              			<entry>Logging HQL and SQL AST during query parsing</entry>
+            		</row>
+
+            		<row>
+              			<entry>org.hibernate.secure</entry>
+
+              			<entry>Logging all JAAS authentication requests</entry>
+            		</row>
+          		</tbody>
+        	</tgroup>
+		</informaltable>
+
+      	<para>
+      		The following is a part of SQL statement recorded in console due to HibernateBasicCRUD.java execution 
+			when defining org.hibernate.SQL and rg.hibernate.type Logger log level as DEBUG in log4j.xml 
+			regardless of hibernate.show_sql setting in hibernate.cfg.xml file.
+            <programlisting><emphasis role="bold"><![CDATA[1. log4j.xml]]></emphasis>
+
+<![CDATA[<log4j:configuration xmlns:log4j="http://jakarta.apache.org/log4j/">
+    ...
+    <logger name="org.hibernate.SQL">
+        <level value="DEBUG" />
+    </logger>
+    <logger name="org.hibernate.type">
+        <level value="DEBUG" />
+    </logger>	
+    ...	
+</log4j:configuration>]]>
+
+<emphasis role="bold">2. Console - Hibernate Log</emphasis>
+
+<![CDATA[DEBUG: org.hibernate.SQL - 
+    insert into
+        PUBLIC.COUNTRY(COUNTRY_ID, COUNTRY_NAME, COUNTRY_CODE) 
+            values(?, ?, ?)
+DEBUG: org.hibernate.type.StringType - binding 'KR' to parameter: 1
+DEBUG: org.hibernate.type.StringType - binding 'Korea' to parameter: 2
+DEBUG: org.hibernate.type.StringType - binding 'COUNTRY-0001' to parameter: 3]]></programlisting>
+		</para>
+
+      	<para>
+      	    When using open source named <ulink url="http://code.google.com/p/log4jdbc/">Log4jdbc(http://log4jdbc.
+      		sourceforge.net/)</ulink> other than the two ways mentioned above, 
+      		you can check SQL statement in a format that substitutes input parameter in SQL statement as the following. 
+      		For more information on Query Logging using Log4jdbc, 
+      		refer to <ulink url="http://dev.anyframejava.org/docs.en/anyframe/plugin/optional/logging-sql/1.1.1-SNAPSHOT/reference/htmlsingle/logging-sql.html">Here</ulink>.
+            
+            <programlisting><![CDATA[DEBUG: jdbc.sqlonly -  org.hibernate.jdbc.BatchingBatcher.doExecuteBatch
+         (BatchingBatcher.java:48)
+1. batching 1 statements:
+    1: insert into PUBLIC.COUNTRY (COUNTRY_ID, COUNTRY_NAME, COUNTRY_CODE) 
+        values ('KR', 'Korea', 'COUNTRY-0001')]]></programlisting>
+        </para>
+	</section>
+
+	<section id="hibernate_hibernate_configuration_other">
+		<title>Other property definition</title>
+
+		<informaltable>
+			<tgroup cols="2">
+				<colspec colnum="1" colname="col1" colwidth="3*"/>
+				<colspec colnum="2" colname="col2" colwidth="7*"/>
+          		<thead>
+            		<row>
+              			<entry align="center">Name</entry>
+
+              			<entry align="center">Description</entry>
+            		</row>	
+          		</thead>
+
+          		<tbody>
+            		<row>
+						<entry>hibernate.hbm2ddl.auto</entry>
+
+              			<entry>
+              				Property to define whether to automatically verify, create or modify DDl based on Hibernate Mapping XML File (*.hbm.xml) 
+              				(validate|update|create|create-drop)
+              			</entry>
+            		</row>
+
+            		<row>
+              			<entry>hibernate.jdbc.batch_size</entry>
+
+              			<entry>
+              				Property to define the number of SQLs to be handled as batch 
+              				when Hibernate executes batch handling on SQLs that should be generally executed.
+              			</entry>
+            		</row>
+          		</tbody>
+        	</tgroup>
+		</informaltable>
+
+		<para>
+			When defining hibernate.hbm2ddl.auto property, 
+			table of related DB based on Hibernate Mapping XML file defined without special DDL, is created, modified, verified, etc. 
+			The following is a part of hibernate.cfg.xml defined as hibernate.hbm2ddl.auto=create, 
+			and DDL executed when creating table of related DB based on this.
+            <programlisting language="xml"><emphasis role="bold"><![CDATA[1. hibernate.cfg.xml]]></emphasis>
+
+<![CDATA[<session-factory>
+    ...				
+    <property name="hbm2ddl.auto">create</property>
+   	...     
+</session-factory>]]>
+
+<emphasis role="bold">2. Console - Hibernate Log</emphasis>
+
+<![CDATA[...	
+DEBUG: jdbc.sqlonly -  
+        org.hibernate.tool.hbm2ddl.SchemaExport.execute(SchemaExport.java:308)
+1. {WARNING: Statement used to run SQL} create table MOVIE_CATEGORY 
+    (CATEGORY_ID varchar(9) not null, MOVIE_ID varchar(255) not null, 
+            primary key (MOVIE_ID, CATEGORY_ID))
+DEBUG: jdbc.sqlonly -  
+        org.hibernate.tool.hbm2ddl.SchemaExport.execute(SchemaExport.java:308)
+1. {WARNING: Statement used to run SQL} create table PUBLIC.CATEGORY 
+    (CATEGORY_ID varchar(9) not null, CATEGORY_NAME varchar(50) not null, 
+            CATEGORY_DESC varchar(100), primary key (CATEGORY_ID))
+DEBUG: jdbc.sqlonly -  
+        org.hibernate.tool.hbm2ddl.SchemaExport.execute(SchemaExport.java:308)
+1. {WARNING: Statement used to run SQL} create table PUBLIC.COUNTRY 
+    (COUNTRY_CODE varchar(12) not null, COUNTRY_ID varchar(2) not null, 
+            COUNTRY_NAME varchar(50) not null, primary key (COUNTRY_CODE))
+DEBUG: jdbc.sqlonly -  
+        org.hibernate.tool.hbm2ddl.SchemaExport.execute(SchemaExport.java:308)
+1. {WARNING: Statement used to run SQL} create table PUBLIC.MOVIE 
+    (MOVIE_ID varchar(255) not null, COUNTRY_CODE varchar(12), TITLE varchar(100) not null, 
+        DIRECTOR varchar(10) not null, RELEASE_DATE date, primary key (MOVIE_ID))
+...]]></programlisting>
+		</para>
+
+      	<para>
+      		The following is a part of the execution result of hibernate.cfg.xml which is defined as hibernate.jdbc.batch_size=10 
+      		and HibernateMultiDataSave based on this definition. 
+      		Define session.flush() part of HibernateMultiDataSave code as breakpoint and execute DEBUG mode 
+      		to check if batch handling is performing properly. 
+            <programlisting><emphasis role="bold"><![CDATA[DEBUG: jdbc.sqlonly -  
+        org.hibernate.jdbc.BatchingBatcher.doExecuteBatch(BatchingBatcher.java:48)]]></emphasis>
+<emphasis role="bold">1. batching 10 statements:</emphasis>
+
+ <![CDATA[1:  insert into PUBLIC.COUNTRY (COUNTRY_ID, COUNTRY_NAME, COUNTRY_CODE) 
+        values ('KR0', 'Korea0', 'COUNTRY-0000') 
+ 2:  insert into PUBLIC.COUNTRY (COUNTRY_ID, COUNTRY_NAME, COUNTRY_CODE) 
+        values ('KR1', 'Korea1', 'COUNTRY-0001') 
+ 3:  insert into PUBLIC.COUNTRY (COUNTRY_ID, COUNTRY_NAME, COUNTRY_CODE) 
+        values ('KR2', 'Korea2', 'COUNTRY-0002') 
+ 4:  insert into PUBLIC.COUNTRY (COUNTRY_ID, COUNTRY_NAME, COUNTRY_CODE) 
+        values ('KR3', 'Korea3', 'COUNTRY-0003') 
+ 5:  insert into PUBLIC.COUNTRY (COUNTRY_ID, COUNTRY_NAME, COUNTRY_CODE) 
+        values ('KR4', 'Korea4', 'COUNTRY-0004') 
+ 6:  insert into PUBLIC.COUNTRY (COUNTRY_ID, COUNTRY_NAME, COUNTRY_CODE) 
+        values ('KR5', 'Korea5', 'COUNTRY-0005') 
+ 7:  insert into PUBLIC.COUNTRY (COUNTRY_ID, COUNTRY_NAME, COUNTRY_CODE) 
+        values ('KR6', 'Korea6', 'COUNTRY-0006') 
+ 8:  insert into PUBLIC.COUNTRY (COUNTRY_ID, COUNTRY_NAME, COUNTRY_CODE) 
+        values ('KR7', 'Korea7', 'COUNTRY-0007') 
+ 9:  insert into PUBLIC.COUNTRY (COUNTRY_ID, COUNTRY_NAME, COUNTRY_CODE) 
+        values ('KR8', 'Korea8', 'COUNTRY-0008') 
+10:  insert into PUBLIC.COUNTRY (COUNTRY_ID, COUNTRY_NAME, COUNTRY_CODE) 
+        values ('KR9', 'Korea9', 'COUNTRY-0009') ]]></programlisting></para>
+	</section>
+
+    <section id="hibernate_hibernate_configuration_mapping">
+		<title>Mapping file definition</title>
+
+      	<para>
+      		Property that defines the list of Mapping XML File to be managed through Hibernate. Can be defined as follows.
+            <programlisting language="xml"><![CDATA[<session-factory>
+	...				
+    <mapping resource="anyframe/sample/model/bidirection/Category.hbm.xml"/>
+    <mapping resource="anyframe/sample/model/bidirection/Country.hbm.xml"/>
+    <mapping resource="anyframe/sample/model/bidirection/Movie.hbm.xml"/>
+   	...     
+</session-factory>]]></programlisting>
+		</para>
+    </section>
+ </chapter>
+

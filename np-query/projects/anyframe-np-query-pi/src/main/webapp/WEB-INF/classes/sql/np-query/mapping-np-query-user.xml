@@ -1,0 +1,82 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<queryservice xmlns="http://www.anyframejava.org/schema/query/mapping" 
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" 
+	xsi:schemaLocation="http://www.anyframejava.org/schema/query/mapping http://www.anyframejava.org/schema/query/mapping/anyframe-query-mapping-1.0.xsd ">
+
+	<queries>
+		<query id="findXPUserList" isDynamic="true" mappingStyle="upper">
+			<statement>
+			<!--np-query-findXPUserList-START-->
+			SELECT USER_ID, USER_NAME, EN_NAME, COMP_PHONE, PHONE, CELL_PHONE, COMPANY
+			       , JOB_POSITION, ASSIGNMENT, OFFICER_YN , FAX, ZIP_CODE, ADDRESS
+			       , COMP_ZIP_CODE, COMP_ADDRESS, EMAIL, DEPT_ID, PASSWORD
+			FROM XP_USER
+			<!--Velocity-Support-findXPUserList-START-->
+			#if ($SEARCH_CONDITION.length() &gt; 0 &amp;&amp; "0" == $SEARCH_CONDITION)
+				WHERE USER_NAME like '%' || :SEARCH_KEYWORD || '%'
+			#elseif ($SEARCH_CONDITION.length() &gt; 0 &amp;&amp; "1" == $SEARCH_CONDITION)
+			    WHERE USER_ID like '%' || :SEARCH_KEYWORD || '%'
+			#end
+			<!--Velocity-Support-findXPUserList-END-->
+			ORDER BY USER_ID		
+
+			<!--np-query-findXPUserList-END-->
+			</statement>
+		</query>
+		<query id="createXPUser" isDynamic="true" mappingStyle="upper">
+			<statement>
+			<!--np-query-createXPUser-START-->
+			INSERT INTO XP_USER
+			(USER_ID, USER_NAME, EN_NAME, COMP_PHONE, PHONE, CELL_PHONE, COMPANY, 
+			JOB_POSITION, ASSIGNMENT, OFFICER_YN , FAX, ZIP_CODE, ADDRESS, 
+			COMP_ZIP_CODE, COMP_ADDRESS, EMAIL, DEPT_ID, PASSWORD, FIRST_HALF_VOLUNTEER_WORK, SECOND_HALF_VOLUNTEER_WORK)
+			VALUES('USER-'||Xp_User_Id_Seq.Nextval,:USER_NAME, :EN_NAME, :COMP_PHONE, :PHONE, :CELL_PHONE, :COMPANY
+			       , :JOB_POSITION, :ASSIGNMENT, :OFFICER_YN, :FAX, :ZIP_CODE, :ADDRESS
+			       , :COMP_ZIP_CODE, :COMP_ADDRESS, :EMAIL, :DEPT_ID, :PASSWORD, 0, 0)		
+
+			<!--np-query-createXPUser-END-->
+			</statement>
+		</query>
+		<query id="updateXPUser" isDynamic="true" mappingStyle="upper">
+			<statement>
+				UPDATE XP_USER
+				SET
+				USER_NAME =:USER_NAME, EN_NAME =:EN_NAME, COMP_PHONE =:COMP_PHONE, PHONE =:PHONE, CELL_PHONE =:CELL_PHONE, COMPANY =:COMPANY
+				       , JOB_POSITION =:JOB_POSITION, ASSIGNMENT =:ASSIGNMENT, OFFICER_YN =:OFFICER_YN, FAX =:FAX, ZIP_CODE =:ZIP_CODE, ADDRESS =:ADDRESS
+				       , COMP_ZIP_CODE =:COMP_ZIP_CODE, COMP_ADDRESS =:COMP_ADDRESS, EMAIL =:EMAIL, DEPT_ID =:DEPT_ID, PASSWORD = :PASSWORD
+				WHERE USER_ID=:USER_ID
+			</statement>
+		</query>
+		<query id="removeXPUser" isDynamic="true" mappingStyle="upper">
+			<statement>
+				DELETE FROM XP_USER
+				WHERE USER_ID=:USER_ID
+			</statement>
+		</query>
+		<query id="findXPUserListByDept" isDynamic="true" mappingStyle="upper">
+			<statement>
+				SELECT USER_ID, USER_NAME, EN_NAME, COMP_PHONE, PHONE, CELL_PHONE, COMPANY
+				       , JOB_POSITION, ASSIGNMENT, OFFICER_YN , FAX, ZIP_CODE, ADDRESS
+				       , COMP_ZIP_CODE, COMP_ADDRESS, EMAIL, DEPT_ID, PASSWORD
+				FROM XP_USER
+				WHERE DEPT_ID = :DEPT_ID
+			</statement>
+		</query>
+		<query id="findXPUserAuthentication" isDynamic="true" mappingStyle="upper">
+			<statement>
+				SELECT USER_ID, PASSWORD, USER_NAME, EN_NAME, COMP_PHONE, PHONE, CELL_PHONE, COMPANY, 
+					JOB_POSITION, ASSIGNMENT, OFFICER_YN, FAX, ZIP_CODE, ADDRESS, COMP_ZIP_CODE, 
+					COMP_ADDRESS, EMAIL, DEPT_ID 
+				FROM XP_USER 
+				WHERE USER_ID = :USER_ID AND PASSWORD = :PASSWORD
+			</statement>
+		</query>
+		<query id="findXPUserWorkingYear" isDynamic="true" mappingStyle="upper">
+			<statement>
+				SELECT USER_ID, USER_NAME, COMPANY, JOB_POSITION, DEPT_ID, FIRST_HALF_VOLUNTEER_WORK, SECOND_HALF_VOLUNTEER_WORK 
+				FROM XP_USER 
+				ORDER BY DEPT_ID
+			</statement>
+		</query>
+	</queries>
+</queryservice>

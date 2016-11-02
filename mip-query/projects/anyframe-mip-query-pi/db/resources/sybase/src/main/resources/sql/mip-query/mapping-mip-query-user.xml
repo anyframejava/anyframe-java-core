@@ -1,0 +1,24 @@
+		<!--mip-query-findUserList-START-->
+			SELECT USER_ID, USER_NAME, EN_NAME, COMP_PHONE, PHONE, CELL_PHONE, COMPANY
+			       , JOB_POSITION, ASSIGNMENT, OFFICER_YN , FAX, ZIP_CODE, ADDRESS
+			       , COMP_ZIP_CODE, COMP_ADDRESS, EMAIL, DEPT_ID, PASSWORD
+			FROM MIP_USER
+			<!--Velocity-Support-findUserList-START-->
+			#if ($SEARCH_CONDITION.length() &gt; 0 &amp;&amp; "0" == $SEARCH_CONDITION)
+				WHERE USER_NAME like '%' || :SEARCH_KEYWORD || '%'
+			#elseif ($SEARCH_CONDITION.length() &gt; 0 &amp;&amp; "1" == $SEARCH_CONDITION)
+			    WHERE USER_ID like '%' || :SEARCH_KEYWORD || '%'
+			#end
+			<!--Velocity-Support-findUserList-END-->
+			ORDER BY USER_ID		
+		<!--mip-query-findUserList-END-->
+		<!--mip-query-createUser-START-->
+			INSERT INTO MIP_USER
+			(USER_ID, USER_NAME, EN_NAME, COMP_PHONE, PHONE, CELL_PHONE, COMPANY
+			       , JOB_POSITION, ASSIGNMENT, OFFICER_YN , FAX, ZIP_CODE, ADDRESS
+			       , COMP_ZIP_CODE, COMP_ADDRESS, EMAIL, DEPT_ID, PASSWORD)
+			VALUES('USER-'|| USER_ID_SEQ.NEXTVAL ,:USER_NAME, :EN_NAME, :COMP_PHONE, :PHONE, :CELL_PHONE, :COMPANY
+			       , :JOB_POSITION, :ASSIGNMENT, :OFFICER_YN, :FAX, :ZIP_CODE, :ADDRESS
+			       , :COMP_ZIP_CODE, :COMP_ADDRESS, :EMAIL, :DEPT_ID, :PASSWORD)		
+		<!--mip-query-createUser-END-->
+		

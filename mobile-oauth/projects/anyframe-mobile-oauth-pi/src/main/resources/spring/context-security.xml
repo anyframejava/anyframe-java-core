@@ -1,0 +1,34 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+ xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:context="http://www.springframework.org/schema/context"
+ xmlns:mvc="http://www.springframework.org/schema/mvc" xmlns:security="http://www.springframework.org/schema/security"
+ xmlns:oauth2="http://www.springframework.org/schema/security/oauth2" xmlns:util="http://www.springframework.org/schema/util"
+	xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-4.0.xsd
+						http://www.springframework.org/schema/context http://www.springframework.org/schema/context/spring-context-4.0.xsd
+						http://www.springframework.org/schema/mvc http://www.springframework.org/schema/mvc/spring-mvc-4.0.xsd
+						http://www.springframework.org/schema/security http://www.springframework.org/schema/security/spring-security.xsd
+						http://www.springframework.org/schema/util http://www.springframework.org/schema/util/spring-util-4.0.xsd
+						http://www.springframework.org/schema/security/oauth2 http://www.springframework.org/schema/security/spring-security-oauth2.xsd">
+						
+	<bean id="authenticationManager" class="org.anyframe.plugin.common.auth.MovieAuthenticationManager"/>
+	
+	<bean id="authenticationEntryPoint" class="org.anyframe.plugin.common.auth.MovieAuthenticationEntryPoint"/>
+	
+	<bean id="authenticationTokenCheckFilter" class="org.anyframe.plugin.common.auth.AuthenticationTokenCheckFilter">
+		<property name="auth2ServerUrl" value="#{contextProperties.oauth2serverurl}"/>
+		<property name="auth2ClientId" value="#{contextProperties.oauth2clientid}"/>
+		<property name="auth2ClientSecret" value="#{contextProperties.oauth2clientsecret}"/>
+	</bean>
+	
+	<security:http auto-config="false" use-expressions="true" create-session="stateless" entry-point-ref="authenticationEntryPoint" authentication-manager-ref="authenticationManager">
+		<security:custom-filter ref="authenticationTokenCheckFilter" position="FORM_LOGIN_FILTER"/>
+		<!-- ****************** TO DO ************************ -->
+		<!-- 첫번째 intercept-url pattern 내용을  LOGIN URL 넣어줄 것        -->
+		<security:intercept-url pattern="/service/users/create" access="permitAll" method="POST" />
+		<security:intercept-url pattern="/service/users/remove" access="permitAll" method="POST" />
+		<!-- 두번째 intercept-url access 내용을 authenticated로 넣어줄 것 -->
+		<security:intercept-url pattern="/**" access="authenticated"/>
+ 		<!-- ************************************************* -->
+ 	</security:http>
+	
+</beans>

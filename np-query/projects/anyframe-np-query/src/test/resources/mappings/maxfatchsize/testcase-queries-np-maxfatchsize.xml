@@ -1,0 +1,31 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<queryservice xmlns="http://www.anyframejava.org/schema/query/mapping" 
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" 
+	xsi:schemaLocation="http://www.anyframejava.org/schema/query/mapping http://www.anyframejava.org/schema/query/mapping/anyframe-query-mapping-1.0.xsd ">
+	
+	<queries>
+		<query id="createNPMaxfatchSizeQueryService" isDynamic="true">
+			<statement>
+				<![CDATA[
+				INSERT INTO TB_NP_CUSTOMER 
+				(SSNO, NAME, ADDRESS)
+				 VALUES(:SSNO, :NAME, :ADDRESS)
+				]]>
+			</statement>
+		</query>
+		<query id="findCustomerWithDynamicMaxFetchSize" isDynamic="true" maxFetchSize="1">
+			<statement>
+				<![CDATA[
+				select * from TB_NP_CUSTOMER where SSNO like :SSNO
+				]]>
+			</statement>
+		</query>
+		<query id="findCustomerWithDynamic" isDynamic="true">
+			<statement>
+				<![CDATA[
+				select * from TB_NP_CUSTOMER where SSNO like :SSNO
+				]]>
+			</statement>
+		</query>
+	</queries>
+</queryservice>

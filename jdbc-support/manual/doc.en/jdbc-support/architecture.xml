@@ -1,0 +1,71 @@
+<chapter id="jdbcsupport_injectionandlogging_architecture">
+		<title>Architecture</title>
+
+
+		<section id="jdbcsupport_injectionandlogging_architecture_base">
+        	<title>Architecture</title>
+        	
+        	<para>dataSource  - AOP Method Interceptor - JdbcAspect (p6spy connection wrapping)</para>
+        	
+        	<para>InjectionPatternPostProcessor / CompleteQueryPostProcessor- registered as Spring bean and and conduct DI on jdbcAspect. </para>
+        	
+        	<para>
+        		P6Factory provides P6Connection and P6PreparedStatement applying InjectionPatternPostProcessor and CompleteQueryPostProcessor 
+        		features regarding getConnection and getPreparedStatement taking place at user jdbc.app. 
+        	</para>
+        	
+        	<para>
+        		According to JDBC usage types, points on connection.prepareStatement(sql) and preparedStatement.execute(sql)can process 
+        		InjectionPattern and CompleteQuery (by delivering them with logging or other methods)
+        	</para>
+        	
+			<para>P6Spy Connection Wrapping</para>
+        	<itemizedlist>
+          		<listitem>
+            		<para>P6Factory Extension </para>
+            	</listitem>
+            	<listitem>
+            		<para>P6Connection Extension </para>
+            	</listitem>
+            	<listitem>	
+            		<para>P6 Statement/PreparedStatement/CallableStatement Extension </para>
+          		</listitem>
+        	</itemizedlist>
+		</section>
+
+
+
+		<section id="jdbcsupport_injectionandlogging_architecture_injection">
+        	<title>InjectionPatternPostProcessor</title>
+
+        	<para>
+        		Whether SQL Injection pattern exists is detected and warning regarding this is processed. return void
+        		<programlisting language="java"><![CDATA[public void warningPattern(String sql)]]></programlisting>
+        	</para>
+        	
+        	<para>
+        		After replacing Injection pattern, modified sql statement is returned.
+        		<programlisting language="java"><![CDATA[public String replacePattern(String sql)]]></programlisting>
+        	</para>
+        	
+        	<para>
+        		Various warning/replace patterns are set in the format of regular expression. By defining these patterns as property of bean 
+        		setup file, warn logging and sql replace are handles for matching. 
+   				cf.) If the above Interface is matched, implementation can be freely modified depending on site characters. 
+        	</para>
+      	</section>
+      	
+		<section id="jdbcsupport_injectionandlogging_architecture_completequery">
+        	<title>CompleteQueryPostProcessor</title>
+
+        	<para>
+        		CompleteQuery is reprocessed (ex. SQL Logging).
+        		<programlisting language="java"><![CDATA[public void processCompleteQuery(String sql)]]></programlisting>
+        	</para>
+
+        	<para>
+        		Default execution means that CompleteQuery logs via commons logging. 
+				cf.) If the above Interface is matched, implementation can be freely modified depending on site characters. 
+        	</para>
+      	</section>
+</chapter>

@@ -1,0 +1,171 @@
+<chapter id="util_threadlocalutil">
+	<title>ThreadLocalUtil의 활용</title>
+	<para>
+		ThreadLocal을 Map과 유사한 인터페이스로 사용할 수 있는 기능을 제공한다.
+	</para>
+	<para>다음은 ThreadLocal이 가지고 있는 메소드에 대한 설명이다.</para>
+	<informaltable>
+		<caption>ThreadLocal 메소드</caption>
+		<tgroup cols="4">
+			<colspec colnum="1" colname="col1" colwidth="2*" />
+			<colspec colnum="2" colname="col2" colwidth="3*" />
+			<colspec colnum="3" colname="col3" colwidth="4*" />
+			<colspec colnum="4" colname="col4" colwidth="1*" />
+			<thead>
+				<row>
+					<entry align="center">Method</entry>
+					<entry align="center">Description</entry>
+					<entry align="center">Example</entry>
+					<entry align="center">Remarks</entry>
+				</row>
+			</thead>
+			<tbody>
+				<row>
+					<entry><emphasis role="bold">getThreadLocal</emphasis>()</entry>
+					<entry>ThreadLocal에 저장된 Map객체를 반환한다.</entry>
+					<entry>ThreadLocalUtil.getThreadLocal()</entry>
+					<entry><emphasis role="bold">deprecated</emphasis> since core 1.5.0
+					<para>getAll() 사용</para>
+					</entry>
+				</row>
+				<row>
+					<entry><emphasis role="bold">getAll</emphasis>()</entry>
+					<entry>ThreadLocal에 저장된 Map객체를 반환한다.</entry>
+					<entry>ThreadLocalUtil.getAll()</entry>
+					<entry>since core 1.5.0</entry>
+				</row>
+				<row>
+					<entry><emphasis role="bold">getAll</emphasis>(boolean isInheritable)</entry>
+					<entry>ThreadLocal에 저장된 Map객체를 반환한다. isInheritable 값이 true일 경우, InheritableThreadLocal을 이용한다.</entry>
+					<entry>ThreadLocalUtil.getAll(true)</entry>
+					<entry>since core 1.5.0</entry>
+				</row>
+				<row>
+					<entry><emphasis role="bold">add</emphasis>(Object key, Object value)</entry>
+					<entry>ThreadLocal에 해당 key와 value를 가진 항목을 추가한다.</entry>
+					<entry>ThreadLocalUtil.add("key", "value")</entry>
+					<entry></entry>
+				</row>
+				<row>
+					<entry><emphasis role="bold">add</emphasis>(Object key, Object value, boolean isInheritable)</entry>
+					<entry>ThreadLocal에 해당 key와 value를 가진 항목을 추가한다. isInheritable 값이 true일 경우, InheritableThreadLocal을 이용한다.</entry>
+					<entry>ThreadLocalUtil.add("key", "value", true)</entry>
+					<entry>since core 1.5.0</entry>
+				</row>
+				<row>
+					<entry><emphasis role="bold">get</emphasis>(Object key)</entry>
+					<entry>해당 키를 가진 항목의 값을 반환한다.</entry>
+					<entry>ThreadLocalUtil.get("key")</entry>
+					<entry></entry>
+				</row>
+				<row>
+					<entry><emphasis role="bold">get</emphasis>(Object key, boolean isInheritable)</entry>
+					<entry>해당 키를 가진 항목의 값을 반환한다. isInheritable 값이 true일 경우, InheritableThreadLocal을 이용한다.</entry>
+					<entry>ThreadLocalUtil.get("key", true)</entry>
+					<entry>since core 1.5.0</entry>
+				</row>
+				<row>
+					<entry><emphasis role="bold">isExist</emphasis>(Object key)</entry>
+					<entry>해당 키를 가진 항목이 존재하는지 여부를 판단한다.</entry>
+					<entry>ThreadLocalUtil.isExist("key")</entry>
+					<entry></entry>
+				</row>
+				<row>
+					<entry><emphasis role="bold">isExist</emphasis>(Object key, boolean isInheritable)</entry>
+					<entry>해당 키를 가진 항목이 존재하는지 여부를 판단한다. isInheritable 값이 true일 경우, InheritableThreadLocal을 이용한다.</entry>
+					<entry>ThreadLocalUtil.isExist("key", true)</entry>
+					<entry>since core 1.5.0</entry>
+				</row>
+				<row>
+					<entry><emphasis role="bold">clearSharedInfo</emphasis>()</entry>
+					<entry>ThreadLocal에 저장된 모든 정보를 제거한다.</entry>
+					<entry>ThreadLocalUtil.clearSharedInfo()</entry>
+					<entry><emphasis role="bold">deprecated</emphasis> since core 1.5.0
+					<para>clear() 사용</para></entry>
+				</row>
+				<row>
+					<entry><emphasis role="bold">clear</emphasis>()</entry>
+					<entry>ThreadLocal에 저장된 모든 정보를 제거한다. InheritableThreadLocal을 이용한 경우, 
+						부모 Thread에서 clear() 함수를 호출해도 자식 Thread의 값은 지워지지 않는다. 그 반대의 상황도 마찬가지로 동작한다.</entry>
+					<entry>ThreadLocalUtil.clear()</entry>
+					<entry>since core 1.5.0</entry>
+				</row>
+				<row>
+					<entry><emphasis role="bold">getThreadLocalKeys</emphasis>()</entry>
+					<entry>ThreadLocal에 저장된 모든 항목의 키값을 배열로 반환한다.</entry>
+					<entry>ThreadLocalUtil.getThreadLocalKeys()</entry>
+					<entry></entry>
+				</row>
+				<row>
+					<entry><emphasis role="bold">getThreadLocalKeys</emphasis>(boolean isInheritable)</entry>
+					<entry>ThreadLocal에 저장된 모든 항목의 키값을 배열로 반환한다. isInheritable값이 true일 경우, InheritableThreadLocal을 이용한다.</entry>
+					<entry>ThreadLocalUtil.getThreadLocalKeys(true)</entry>
+					<entry>since core 1.5.0</entry>
+				</row>
+				<row>
+					<entry><emphasis role="bold">size</emphasis>()</entry>
+					<entry>ThreadLocal에 저장된 항목의 개수를 반환한다.</entry>
+					<entry>ThreadLocalUtil.size()</entry>
+					<entry></entry>
+				</row>
+				<row>
+					<entry><emphasis role="bold">size</emphasis>(boolean isInheritable)</entry>
+					<entry>ThreadLocal에 저장된 항목의 개수를 반환한다. isInheritable값이 true일 경우, InheritableThreadLocal을 이용한다.</entry>
+					<entry>ThreadLocalUtil.size()</entry>
+					<entry>since core 1.5.0</entry>
+				</row>
+				<row>
+					<entry><emphasis role="bold">getThreadLocalValues</emphasis>()</entry>
+					<entry>ThreadLocal에 저장된 모든 항목의 값을 배열로 반환한다.</entry>
+					<entry>ThreadLocalUtil.getThreadLocalValues()</entry>
+					<entry></entry>
+				</row>
+				<row>
+					<entry><emphasis role="bold">getThreadLocalValues</emphasis>(boolean isInheritable)</entry>
+					<entry>ThreadLocal에 저장된 모든 항목의 값을 배열로 반환한다. isInheritable값이 true일 경우, InheritableThreadLocal을 이용한다.</entry>
+					<entry>ThreadLocalUtil.getThreadLocalValues()</entry>
+					<entry>since core 1.5.0</entry>
+				</row>
+				<row>
+					<entry><emphasis role="bold">toPrintString</emphasis>()</entry>
+					<entry></entry>
+					<entry></entry>
+					<entry><emphasis role="bold">deprecated</emphasis> since core 1.5.0</entry>
+				</row>
+				<row>
+					<entry><emphasis role="bold">printThreadLocal</emphasis>()</entry>
+					<entry>ThreadLocal에 있는 항목을 콘솔로 출력한다.</entry>
+					<entry>ThreadLocalUtil.printThreadLocal()</entry>
+					<entry><emphasis role="bold">deprecated</emphasis> since core 1.5.0 
+						<para>getValueToString() 사용</para></entry>
+				</row>
+				<row>
+					<entry><emphasis role="bold">getValuesToString</emphasis>()</entry>
+					<entry>ThreadLocal에 있는 항목을 String으로 반환한다.</entry>
+					<entry>ThreadLocalUtil.getValuesToString()</entry>
+					<entry>since core 1.5.0</entry>
+				</row>
+				<row>
+					<entry><emphasis role="bold">getValuesToString</emphasis>(boolean isInheritable)</entry>
+					<entry>ThreadLocal에 있는 항목을 String으로 반환한다. isInheritable 값이 true일 경우, InheritableThreadLocal을 이용한다.</entry>
+					<entry>ThreadLocalUtil.getValuesToString()</entry>
+					<entry>since core 1.5.0</entry>
+				</row>
+			</tbody>
+		</tgroup>
+	</informaltable>
+		
+	<important>
+		<title>InheritableThreadLocal 사용 시 유의 사항</title>
+		<para>
+			<ulink url="http://download.java.net/jdk7/archive/b123/docs/api/java/lang/InheritableThreadLocal.html">
+			InheritableThreadLocal
+			</ulink>은 부모 Thread로부터 값을 제공받아 자식 Thread에서 그 값을 사용하기 위해 제공되는 클래스이다. 현재 Thread에서 새로운 Thread를 생성 했을 때
+			InheritableThreadLocal 영역에 저장된 값을 새로 생성된 Thread로 복사해주게 된다.
+			Anyframe에서 제공하는 ThreadLocalUtil을 사용할 경우 내부적으로 Map객체를 ThreadLocal 영역에 생성해서 사용하도록 구현 되어 있다.
+			<emphasis role="bold">이 경우 InheritableThreadLocal을 이용하여 자식 Thread에서 값을 변경하게 되면, 다른 Thread에도 영향을 미치게 된다.</emphasis>
+			이는 자식 Thread가 생성될 때, 부모 Thread의 InheritableThreadLocal에 저장되어 있는 Map객체의 주소값(call by reference)을
+			자식 Thread로 복사하기 때문이다.
+		</para>
+	</important>	
+</chapter>

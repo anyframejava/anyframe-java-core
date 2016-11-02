@@ -1,0 +1,1469 @@
+<chapter id="cxf_overview">
+	<title>Overview</title>
+	<section id = "cxf_overview_concept">
+    	<title>Web Services 개념</title>
+
+		<section id = "cxf_overview_concept_architecture">
+      		<title>Architecture</title>
+
+      		<para>
+      			기본적으로 웹 서비스(Web Services)는 3가지 역할(Service Provider, Service Broker, Service Consumer)로 구성된
+      			 아키텍처 모델에 따라 구현된 기술이다.
+      		</para>
+
+      		<mediaobject>
+        		<imageobject>
+          			<imagedata align="center"
+						fileref="../image/cxf/webservicearch.jpg" />
+        		</imageobject>
+        		<textobject>
+				  	<phrase>웹서비스를 구성하는 주요 구성 요소와 관계를 나타내는 그림이다. 웹서비스는 3가지 역할(Service Provider, Service Broker, Service Consumer)로 구성된다.
+				  	서비스 제공자(Service Provider)는 자신의 비즈니스 정보 및 제공할 서비스 정보, 그리고 이를 이용할 수 있는 방법 등에 대한 정보를 WSDL 파일로 작성한다.
+				  	그리고 자신의 서비스 WSDL을 UDDI 레지스트리에 등록한다. 이때 등록되는 서비스는 UUID에 기반한 고유 ID를 부여받게 된다.
+				  	서비스 요청자(Service Consumer)는 UDDI 레지스트리에서 분류 및 식별 체계와 같은 여러 검색 조건을 통해 필요한 서비스를 검색하여 찾는다. 해당 서비스가 찾아지면, 
+				  	그 서비스에 대한 WSDL 파일을 받게 된다. 그리고 WSDL 정보를 이용해 Service Provider와 연결하여 서비스를 제공받게 된다. 
+				  	이때 실행 결과는 SOAP을 이용한 XML 문서 형태로 받는다.
+				  	</phrase>
+				</textobject>
+      		</mediaobject>
+
+      		<itemizedlist>
+        		<listitem>
+          			<para>
+          				<emphasis role="bold">웹 서비스의 3가지 역할 </emphasis>
+          			</para>
+
+					<informaltable>
+						<caption>웹 서비스의 역할 목록</caption>
+            			<tgroup cols="2">
+              				<colspec colname="col1" colnum="1" colwidth="3*" />
+
+              				<colspec colname="col2" colnum="2" colwidth="7*" />
+
+              				<thead>
+                				<row>
+                  					<entry align="center">Role</entry>
+
+                  						<entry align="center">설명</entry>
+                				</row>
+              				</thead>
+
+							<tbody>
+                				<row>
+                  					<entry>Service Provider</entry>
+
+                  					<entry>특정 서비스 스펙을 구현한 서비스를 제공한다.</entry>
+                				</row>
+
+                				<row>
+                  					<entry>Service Broker (Service Registry)</entry>
+
+                  					<entry>
+                  						서비스 등록 및 검색, 저장, 관리를 통해 Service Provider가 제공하는 서비스를
+                  						Service Consumer에게 연결한다.
+                  					</entry>
+                				</row>
+
+								<row>
+                  					<entry>Service Consumer (Service Requester)</entry>
+
+                  					<entry>
+                  						Service Broker를 통해 특정 서비스를 찾고, Service Provider에게 해당
+                  						서비스를 요청하고 사용한다.
+                  					</entry>
+                				</row>
+              				</tbody>
+            			</tgroup>
+					</informaltable>
+				</listitem>
+
+				<listitem>
+          			<para><emphasis role="bold">웹 서비스 시나리오 </emphasis></para>
+
+          			<informaltable>
+          				<caption>웹 서비스 시나리오 목록</caption>
+            			<tgroup cols="3">
+              				<colspec colname="col1" colnum="1" colwidth="1*" />
+
+              				<colspec colname="col2" colnum="2" colwidth="3*" />
+
+              				<colspec colname="col3" colnum="3" colwidth="6*" />
+
+              				<thead>
+	                			<row>
+	                  				<entry align="center">순서</entry>
+	
+	                  				<entry align="center">Role</entry>
+	
+	                  				<entry align="center">설명</entry>
+	                			</row>
+	              			</thead>
+
+	              			<tbody>
+	                			<row>
+	                  				<entry align="center">1</entry>
+	
+	                  				<entry>서비스 제공자(Service Provider)</entry>
+	
+	                  				<entry>
+	                  					자신의 비즈니스 정보 및 제공할 서비스 정보, 그리고 이를 이용할 수 있는 방법 등에 대한
+	                  					정보를 WSDL 파일로 작성한다.
+	                  				</entry>
+	                			</row>
+	
+	                			<row>
+	                  				<entry align="center">2</entry>
+	
+	                  				<entry>서비스 제공자(Service Provider)</entry>
+	
+	                  				<entry>
+	                  					자신의 서비스 WSDL을 UDDI 레지스트리에 등록한다. 이때 등록되는 서비스는 UUID에
+	                  					기반한 고유 ID를 부여받게 된다.
+	                  				</entry>
+	                			</row>
+	
+	                			<row>
+	                  				<entry align="center">3</entry>
+	
+	                  				<entry>서비스 요청자(Service Consumer)</entry>
+	
+	                  				<entry>
+	                  					UDDI 레지스트리에서 분류 및 식별 체계와 같은 여러 검색 조건을 통해 필요한 서비스를
+	                 					 검색하여 찾는다. 해당 서비스가 찾아지면, 그 서비스에 대한 WSDL 파일을 받게 된다.</entry>
+	                			</row>
+	
+	                			<row>
+	                  				<entry align="center">4</entry>
+	
+	                  				<entry>서비스 요청자(Service Consumer)</entry>
+	
+	                  				<entry>
+	       		           				WSDL 정보를 이용해 Service Provider와 연결하여 서비스를 제공받게 된다. 이때
+	                 		 			실행 결과는 SOAP을 이용한 XML 문서 형태로 받는다.
+	                 		 		</entry>
+	                			</row>
+	              			</tbody>
+	            		</tgroup>
+	          		</informaltable>
+				</listitem>
+
+        		<listitem>
+          			<para>
+          				<emphasis role="bold">웹 서비스의 3가지 기본 기술요소 </emphasis>
+          			</para>
+
+          			<informaltable>
+          				<caption>웹 서비스의 3가지 기본 기술요소</caption>
+            			<tgroup cols="2">
+              				<colspec colname="col1" colnum="1" colwidth="2*" />
+
+              				<colspec colname="col2" colnum="2" colwidth="8*" />
+
+              				<thead>
+                				<row>
+                  					<entry align="center">기술요소</entry>
+
+                  					<entry align="center">설명</entry>
+                				</row>
+              				</thead>
+
+              				<tbody>
+                				<row>
+                  					<entry align="center"><emphasis role="bold">WSDL</emphasis></entry>
+
+                  					<entry>웹 서비스를 표현하고 기술하는 언어 (서비스 표현)</entry>
+                				</row>
+
+                				<row>
+                  					<entry align="center"><emphasis role="bold">SOAP</emphasis></entry>
+
+                  					<entry>
+                  						웹 서비스에서 사용되는 보편적이며 확장성 있는 메시지 프로토콜 (데이터 통신 프로토콜)
+                  					</entry>
+                				</row>
+
+                				<row>
+                  					<entry align="center"><emphasis role="bold">UDDI</emphasis></entry>
+
+                  					<entry>필요한 서비스를 찾을 수 있는 웹 서비스 레지스트리 (서비스 등록, 검색)</entry>
+                				</row>
+              				</tbody>
+            			</tgroup>
+          			</informaltable>
+        		</listitem>
+			</itemizedlist>
+		</section>
+
+		<section id = "cxf_overview_concept_soap">
+			<title>SOAP(Simple Object Access Protocol)</title>
+
+      		<para>
+      			SOAP(Simple Object Access Protocol)은 HTTP, HTTPS, SMTP등을 사용하여 <emphasis role="bold">XML 기반의 SOAP 
+      			메시지</emphasis>를 컴퓨터 네트워크 상에서 교환하는 형태의 프로토콜로써 <emphasis role="bold">웹 서비스의 기본적인
+      			 메시지 전송 수단</emphasis> 이다. XML-RPC와 WDDX에서 envelope/header/body로 이루어진 구조, 전송(transport), 
+      			 상호 중립성(interaction neutrality)의 개념을 도입하였다.
+      		</para>
+
+      		<itemizedlist>
+        		<listitem>
+          			<para><emphasis role="bold">SOAP 메시지 구조 </emphasis></para>
+
+          			<para>
+          				SOAP 메시지는 루트 요소로 Envelope를 가지며, SOAP Header와 Body를 하위 요소로 가지고 있다. SOAP의 메시지 
+          				구조는 XML을 근간으로 Header와 Body를 조합하는 디자인 패턴으로 설계되었고, Body(필수사항)에는 전송될 메시
+          				지의 내용을 기술한다. (Header는 선택사항)
+          			</para>
+
+          			<mediaobject>
+            			<imageobject>
+              				<imagedata align="center"
+								fileref="../image/cxf/soap.jpg" />
+            			</imageobject>
+            			<textobject>
+            				<phrase>SOAP 메시지는 루트 요소로 Envelope를 가지며, SOAP Header와 Body를 하위 요소로 가지고 있다.</phrase>
+            			</textobject>
+          			</mediaobject>
+        		</listitem>
+
+				<listitem>
+          			<para><emphasis role="bold">SOAP 특징 </emphasis></para>
+
+ 					<informaltable>
+ 						<caption>SOAP 특징</caption>
+            			<tgroup cols="2">
+              				<colspec colname="col1" colnum="1" colwidth="2*" />
+
+              				<colspec colname="col2" colnum="2" colwidth="8*" />
+
+              				<thead>
+                				<row>
+                  					<entry align="center">장점</entry>
+
+                  					<entry align="center">설명</entry>
+                				</row>
+              				</thead>
+
+              				<tbody>
+                				<row>
+                  					<entry align="center">1</entry>
+
+                  					<entry>
+                  						SOAP은 기본적으로 HTTP 기반 위에서 동작하기 때문에, HTTP와 같이 프록시와 방화벽에
+                  						구애받지 않고 쉽게 통신 가능하다.
+                  					</entry>
+                				</row>
+
+                				<row>
+                  					<entry align="center">2</entry>
+
+                  					<entry>
+                  						SOAP은 표준 전송 프로토콜인 HTTP 이외의 다른 전송 프로토콜들을 사용할 수 있다.
+                  					</entry>
+                				</row>
+
+                				<row>
+                  					<entry align="center">3</entry>
+
+                  					<entry>플랫폼 및 프로그래밍 언어에 독립적이다.</entry>
+                				</row>
+
+                				<row>
+                  					<entry align="center">4</entry>
+
+                  					<entry>
+                  						간단하고 확장 가능하며, (멀티파트 MIME 구조를 사용하여) 첨부를 통합하는 SOAP XML
+										 메시지를 지원한다.
+									</entry>
+                				</row>
+              				</tbody>
+            			</tgroup>
+					</informaltable>
+			
+					<para></para>
+          			<informaltable>
+          				<caption>SOAP 단점</caption>
+            			<tgroup cols="2">
+              				<colspec colname="col1" colnum="1" colwidth="2*" />
+
+              				<colspec colname="col2" colnum="2" colwidth="8*" />
+
+              				<thead>
+                				<row>
+                  					<entry align="center">단점</entry>
+	
+                  					<entry align="center">설명</entry>
+                				</row>
+              				</thead>
+
+              				<tbody>
+                				<row>
+                  					<entry align="center">1</entry>
+
+                  					<entry>
+                  						XML 포맷은 태그 형태로 구성되기 때문에 CORBA와 같은 미들웨어 기술과 비교해서 상대적으로
+                 						 느리다. (최근 네트워크 속도의 비약적인 발전과 성능 최적화 기술의 발전으로 대부분 해결됨)
+                 					</entry>
+                				</row>
+              				</tbody>
+            			</tgroup>
+          			</informaltable>
+				</listitem>
+			</itemizedlist>
+		</section>
+
+    	<section id = "cxf_overview_concept_wsdl">
+			<title>WSDL(Web Services Description Language)</title>
+
+      		<para>
+      			WSDL(Web Services Description Language)이란, 웹 서비스로 제공되는 서비스에 대한 정보를 기술하기 위한 XML 기반의 
+      			마크업 언어이다.
+      		</para>
+
+      		<para>
+      			즉, 원하는 서비스가 어디(Where)에 존재하며, 웹서비스로 무엇(What)을 할 수 있고, 또 이를 실행하기 위해서는 어떻게
+      			(How) 해야 하는가를 XML 형식으로 기술하여 제공하는 웹 서비스 기술 언어이다.
+      		</para>
+
+      		<itemizedlist>
+				<listitem>
+          			<para><emphasis role="bold">WSDL 문서 구조 </emphasis></para>
+
+          			<para>
+          				<![CDATA[<definitions></definitions>]]>를 루트로 하여 추상적 정의(types/message/portType)와
+          				구체적 정의(binding/service)로 나뉜다. 추상적 정의와 구체적 정의를 분리하여 기술함으로써, 서로 다른 
+          				서비스 구현시 서비스의 추상적 정의를 재사용할 수 있다.
+          			</para>
+
+          			<mediaobject>
+            			<imageobject>
+              				<imagedata align="center"
+								fileref="../image/cxf/wsdl2.jpg" />
+            			</imageobject>
+            			<textobject>
+            				<phrase>WSDL 문서 구조는 추상적 정의(types/message/portType)와 구체적 정의(binding/service)로 나뉜다.</phrase>
+            			</textobject>
+          			</mediaobject>
+        		</listitem>
+
+        		<listitem>
+          			<para><emphasis role="bold">WSDL 문서 구조 상세 </emphasis></para>
+
+          			<para>
+          				WSDL의 주요 기술 내용에는 웹 서비스의 이름과 URI 정보, SOAP 메시지의 인코딩 방법, SOAP 메시지 전송을 위한 
+          				프로토콜 정보, 웹 서비스를 이용하는데 필요한 인터페이스 정보가 있다. WSDL의 구성 요소를 상세히 살펴보면
+         				 아래와 같다.
+         			</para>
+
+          			<mediaobject>
+            			<imageobject>
+              				<imagedata align="center"
+								fileref="../image/cxf/wsdl.jpg" />
+						</imageobject>
+						<textobject>
+            				<phrase>WSDL의 주요 기술 내용에는 데이터 타입 선언부, 메소드 인자와 리턴값 선언부, 인터페이스와 메소드 선언부, 네트워크 프로토콜과 portType 매핑, 
+            				Endpoint의 물리적 위치 정의 등이 있다.
+          					</phrase>
+            			</textobject>
+					</mediaobject>
+
+          			<para>
+          				WSDL 상세 구성 요소에 대한 설명은 다음과 같다.
+          			</para>
+
+					<informaltable>
+						<caption>WSDL 상세 구성 요소</caption>
+            			<tgroup cols="2">
+              				<colspec colname="col1" colnum="1" colwidth="2*" />
+
+              				<colspec colname="col2" colnum="2" colwidth="8*" />
+
+              				<thead>
+                				<row>
+                  					<entry align="center">요소</entry>
+
+                  					<entry align="center">설명</entry>
+                				</row>
+              				</thead>
+
+              				<tbody>
+                				<row>
+                  					<entry><![CDATA[<service>]]></entry>
+
+                  					<entry>
+                  						Endpoint(실제 웹 서비스로 구현된 어플리케이션)의 물리적 위치를 정의하고 각 바인딩에
+                  						대한 포트 주소를 기술한다.
+                  					</entry>
+                				</row>
+
+                				<row>
+                  					<entry><![CDATA[<port>]]></entry>
+
+                  					<entry>
+                  						binding 정보와 address location을 정의한다.(WSDL 2.0에서는 <![CDATA[<endpoint>]]>
+                  						로 변경됨)
+                  					</entry>
+                				</row>
+
+                				<row>
+                  					<entry><![CDATA[<binding>]]></entry>
+
+                  					<entry>
+                  						portType과 네트워크 프로토콜 매핑 정보를 정의한다. 즉, 어떤 통신 프로토콜을 통해서
+                 						 통신을 할 것인지를 정의한다.
+                 					</entry>
+                				</row>
+
+                				<row>
+                  					<entry><![CDATA[<portType>]]></entry>
+
+                  					<entry>
+                  						인터페이스의 메소드들을 정의한다. Interface(WSDL 2.0에서 <![CDATA[<interface>]]>로 변경됨)
+                  					</entry>
+                				</row>
+
+                				<row>
+                  					<entry><![CDATA[<operation>]]></entry>
+
+                  					<entry>
+                  						서비스의 메소드에서 사용되는 요청(Request)/ 응답(Response) 메시지 정의
+                  					</entry>
+                				</row>
+
+                				<row>
+                  					<entry><![CDATA[<message>]]></entry>
+
+                  					<entry>
+                  						서비스가 사용하는 메시지를 정의한다. 메소드의 인자와 리턴 값을 선언한다. (WSDL 2.0에서는
+                  						<![CDATA[<types>]]>를 통해 XML 스키마 타입을 사용하여 기술)
+                  					</entry>
+                				</row>
+
+                				<row>
+                  					<entry><![CDATA[<types>]]></entry>
+
+                  					<entry>문서에서 사용되고 있는 데이터 타입을 정의한다.</entry>
+                				</row>
+              				</tbody>
+            			</tgroup>
+          			</informaltable>
+        		</listitem>
+      		</itemizedlist>
+    	</section>
+
+    	<section id = "cxf_overview_concept_standard">
+			<title>기술 표준</title>
+
+			<para>
+				웹 서비스는 SOAP, WSDL, UDDI를 중심으로 한 기본 기술 표준을 제공하며 서비스의 품질을 높이기 위해 보안,
+      			트랜잭션 처리, 신뢰성 있는 메시지 처리 등에 대한 다양한 확장 표준을 제공한다.
+      		</para>
+
+      		<mediaobject>
+        		<imageobject>
+          			<imagedata align="center"
+						fileref="../image/cxf/wsstandard.jpg" />
+				</imageobject>
+				<textobject>
+					<phrase>웹 서비스는 SOAP, WSDL, UDDI를 중심으로 한 기본 기술 표준을 제공하며 서비스의 품질을 높이기 위해 보안,
+      				트랜잭션 처리, 신뢰성 있는 메시지 처리 등에 대한 다양한 확장 표준을 제공한다.</phrase>
+				</textobject>
+			</mediaobject>
+
+      		<itemizedlist>
+        		<listitem>
+          			<para><emphasis role="bold">Security </emphasis></para>
+
+					<informaltable>
+						<caption>웹 서비스 확장 표준 (Security) 목록</caption>
+            			<tgroup cols="2">
+              				<colspec colname="col1" colnum="1" colwidth="3*" />
+
+              				<colspec colname="col2" colnum="2" colwidth="7*" />
+
+              				<thead>
+                				<row>
+                  					<entry align="center">표준</entry>
+
+                  					<entry align="center">설명</entry>
+                				</row>
+              				</thead>
+
+              				<tbody>
+                				<row>
+                  					<entry>WS-Security</entry>
+
+                  					<entry>
+                  						무결성(Integrity)과 기밀성(Confidentiality), 인증(Authentication) 등을 강화하기 
+                  						위한 SOAP 메시지 확장 메커니즘 규정. 크게는 WS-Policy, WS-Trust, WS-SecureConversation,
+                  						WS-Federation, WS-Authorization을 포함한다.
+                  					</entry>
+                				</row>
+
+                				<row>
+                  					<entry>WS-Trust</entry>
+
+                  					<entry>
+                  						상호간에 웹 서비스가 안전하게 작동할 수 있도록 하기 위한 신용 관계의 유지 및 해지를 설정하는
+                 						 신뢰 모델에 대한 표준이다.
+                 					</entry>
+                				</row>
+
+                				<row>
+                  					<entry>WS-SecureConversation</entry>
+
+                  					<entry>
+                  						메시지 교환시 보안이 어떤 방식으로 관리되는지를 명시한 security context에 대한
+                  						관리 표준이다.
+                  					</entry>
+                				</row>
+							</tbody>
+						</tgroup>
+					</informaltable>
+				</listitem>
+
+				<listitem>
+          			<para><emphasis role="bold">Transaction </emphasis></para>
+
+          			<informaltable>
+          				<caption>웹 서비스 확장 표준 (Transaction) 목록</caption>
+            			<tgroup cols="2">
+              				<colspec colname="col1" colnum="1" colwidth="3*" />
+
+              				<colspec colname="col2" colnum="2" colwidth="7*" />
+
+              				<thead>
+                				<row>
+                  					<entry align="center">표준</entry>
+
+                  					<entry align="center">설명</entry>
+                				</row>
+              				</thead>
+
+              				<tbody>
+                				<row>
+                  					<entry>WS-Coordination</entry>
+
+                  					<entry>
+                  						분산되어 있는 다양한 웹 서비스들이 트랜잭션에 참여할 수 있도록 액티비티를 생성 및 관리,
+                  						조정, 완료하는 메커니즘에 대한 표준 (Coordination Framework)이다.
+                  					</entry>
+                				</row>
+
+                				<row>
+                  					<entry>WS-Transaction</entry>
+
+                  					<entry>Atomic 또는 Business 트랜잭션 프로토콜에 대한 표준 (Coordination Protocols)이다.</entry>
+                				</row>
+              				</tbody>
+						</tgroup>
+					</informaltable>
+				</listitem>
+
+				<listitem>
+          			<para><emphasis role="bold">Reliable Messaging </emphasis></para>
+
+          			<informaltable>
+          				<caption>웹 서비스 확장 표준 (Reliable Messaging) 목록</caption>
+            			<tgroup cols="2">
+              				<colspec colname="col1" colnum="1" colwidth="3*" />
+
+              				<colspec colname="col2" colnum="2" colwidth="7*" />
+
+              				<thead>
+              	  				<row>
+                  					<entry align="center">표준</entry>
+
+                  					<entry align="center">설명</entry>
+                				</row>
+              				</thead>
+
+              				<tbody>
+                				<row>
+                  					<entry>WS-ReliableMessaging</entry>
+
+                  					<entry>
+                  						목적지까지 메시지가 확실하게 도착하는 메시징 신뢰도를 보장하기 위해, 분산된 웹 서비스들 간에
+                  						주고 받는 ACK (acknowledge) 메시지 등을 정의하는 표준이다.
+                  					</entry>
+                				</row>
+
+                				<row>
+                  					<entry>WS-Addressing</entry>
+
+                  					<entry>웹 서비스 간 메시지를 전달하는 메커니즘을 제공하는 표준이다.</entry>
+                				</row>
+              				</tbody>
+            			</tgroup>
+          			</informaltable>
+				</listitem>
+			</itemizedlist>
+		</section>
+	</section>
+
+	<section id = "cxf_overview_realization">
+    	<title>구현 기술</title>
+
+    	<para>
+    		Java로 Web Services를 작성하는 방법을 제공하는 자바 API로는 JAX-RPC와 JAX-WS가 있으며, 이외에 여러 가지 구현 기술들이 
+    		요구된다.
+    	</para>
+
+    	<section id = "cxf_overview_realization_comp">
+      		<title>JAX-RPC vs. JAX-WS</title>
+
+      		<para>
+      			JAX-WS 2.0이 JAX-RPC 1.1의 차후 버전으로 Web Services 구현 시 사용되는 표준 자바 API이다.
+      		</para>
+
+      		<para>
+      			* JAX-WS : Java API for XML-Based Web Services
+      		</para>
+
+      		<para>
+      			* JAX-RPC : Java API for XML-Based RPC(Remote Procedure call)
+      		</para>
+
+      		<itemizedlist>
+        		<listitem>
+          			<para>
+          				<emphasis role="bold">JAX-RPC와 JAX-WS 비교표 </emphasis>
+          			</para>
+
+          			<para>
+          				JAX-RPC 1.1의 다음 버전인 JAX-RPC 2.0이 나오면서, RPC라는 용어 대신 메시지 지향 웹서비스인 WS로 대체되어 
+          				JAX-WS 2.0으로 불리게 되었다.
+          			</para>
+
+          			<informaltable>
+          				<caption>JAX-RPC와 JAX-WS 비교</caption>
+            			<tgroup cols="3">
+             	 			<colspec colname="col1" colnum="1" colwidth="2*" />
+
+              				<colspec colname="col2" colnum="2" colwidth="4*" />
+
+              				<colspec colname="col3" colnum="3" colwidth="4*" />
+
+              				<thead>
+                				<row>
+                  					<entry/>
+
+                  					<entry align="center">JAX-RPC 1.1</entry>
+
+                  					<entry align="center">JAX-WS 2.0</entry>
+                				</row>
+              				</thead>
+
+              				<tbody>
+                				<row>
+                  					<entry>
+                    					<emphasis role="bold">Java 환경</emphasis>
+                  					</entry>
+
+                  					<entry>JDK 1.4/ J2EE 1.4 환경에서 사용되는 Web Services API</entry>
+
+                  					<entry>
+                  						Java EE 5/Java SE 6 환경(탑재)에서 사용되는 Web Services API
+                  					</entry>
+                				</row>
+
+                				<row>
+                  					<entry>
+                    					<emphasis role="bold">SOAP</emphasis>
+                  					</entry>
+
+                  					<entry>SOAP 1.1</entry>
+
+                  					<entry>SOAP 1.1, SOAP 1.2</entry>
+                				</row>
+
+                				<row>
+                  					<entry>
+                    					<emphasis role="bold">XML/HTTP</emphasis>
+                  					</entry>
+
+                  					<entry>HTTP 바인딩 지원 안함 (SOAP 바인딩만 지원)</entry>
+
+                  					<entry>HTTP 바인딩 지원 (SOAP없이 HTTP를 통해 XML 전송)</entry>
+                				</row>
+
+                				<row>
+                  					<entry>
+                    					<emphasis role="bold">WS-I Basic Profile</emphasis>
+                  					</entry>
+
+                  					<entry>WS-I Basic Profile 1.0</entry>
+
+                  					<entry>WS-I Basic Profile 1.1</entry>
+                				</row>
+
+                				<row>
+                  					<entry>
+                    					<emphasis role="bold">데이터 매핑 모델</emphasis>
+                  					</entry>
+
+                  					<entry>
+                  						고유의 데이터 매핑 모델이 있음 (스키마 유형의 90% 커버) 커버되지 않는 것들은
+                  						javax.xml.soap.SOAPElement로 매핑
+                  					</entry>
+
+                  					<entry>JAXB (모든 XML 스키마를 100% 매핑함)</entry>
+                				</row>
+
+                				<row>
+                  					<entry>
+                    					<emphasis role="bold">인터페이스 매핑 모델</emphasis>
+                  					</entry>
+
+                  					<entry>지원 안함</entry>
+
+                  					<entry>Java 5.0 기능 사용 및 비동기식 기능 도입</entry>
+                				</row>
+
+                				<row>
+                  					<entry>
+                    					<emphasis role="bold">동적 프로그래밍 모델</emphasis>
+                  					</entry>
+
+                  					<entry>지원 안함</entry>
+
+                  					<entry>메시지 지향 및 동적 비동기식 기능 도입</entry>
+                				</row>
+
+                				<row>
+                  					<entry>
+                    					<emphasis role="bold">MTOM</emphasis>
+                  					</entry>
+
+                  					<entry>지원 안함</entry>
+
+                  					<entry>JAXB를 통한 새로운 Attachment 스펙인 MTOM에 대한 지원을 추가</entry>
+                				</row>
+
+                				<row>
+                  					<entry>
+                    					<emphasis role="bold">핸들러 모델</emphasis>
+                  					</entry>
+
+                  					<entry>SAAJ 1.2에 기반</entry>
+
+                  					<entry>SAAJ 1.3에 기반</entry>
+                				</row>
+              				</tbody>
+            			</tgroup>
+          			</informaltable>
+        		</listitem>
+
+        		<listitem>
+          			<para>
+          				<emphasis role="bold">JAX-RPC 1.1을 사용해야 하는 경우</emphasis>
+          			</para>
+
+					<informaltable>
+						<caption>JAX-RPC 1.1을 사용해야 하는 경우</caption>
+            			<tgroup cols="2">
+              				<colspec colname="col1" colnum="1" colwidth="2*" />
+
+              				<colspec colname="col2" colnum="2" colwidth="8*" />
+
+              				<thead>
+                				<row>
+                  					<entry align="center">Case</entry>
+
+                  					<entry align="center">설명</entry>
+                				</row>
+              				</thead>
+
+              				<tbody>
+                				<row>
+                  					<entry align="center">1</entry>
+
+                  					<entry>JDK 1.4를 계속 사용해야 하는 경우</entry>
+                				</row>
+
+                				<row>
+                  					<entry align="center">2</entry>
+
+                  					<entry>
+                  						SOAP 인코딩 메시지를 보내거나 RPC/encoded 스타일의 WSDL을 보내야 하는  경우
+                  					</entry>
+                				</row>
+              				</tbody>
+           	 			</tgroup>
+ 					</informaltable>
+				</listitem>
+
+				<listitem>
+          			<para>
+          				<emphasis role="bold">JAX-WS 2.0을 사용하는 경우 </emphasis>
+          			</para>
+
+					<para>
+						Layered Programming Model을 제공한다. 상위계층은 Annotation을 활용한 쉬운 개발이 가능하게 하며, 하위계층
+						의 경우 API 기반의 섬세한 조정이 가능하다.
+					</para>
+
+          			<informaltable>
+          				<caption>JAX-WS 2.0을 사용하는 경우</caption>
+            			<tgroup cols="2">
+              				<colspec colname="col1" colnum="1" colwidth="2*" />
+
+              				<colspec colname="col2" colnum="2" colwidth="8*" />
+
+              				<thead>
+                				<row>
+                  					<entry align="center">Case</entry>
+
+                  					<entry align="center">설명</entry>
+                				</row>
+              				</thead>
+
+              				<tbody>
+                				<row>
+                  					<entry align="center">1</entry>
+
+                  					<entry>새로운 메시지 지향 API를 사용해야 할 경우</entry>
+                				</row>
+
+                				<row>
+                  					<entry align="center">2</entry>
+
+                  					<entry>MTOM을 사용하여 첨부 데이터를 보내야 하는 경우</entry>
+                				</row>
+
+                				<row>
+                  					<entry align="center">3</entry>
+
+                  					<entry>JAXB를 통해 XML 스키마를 더욱 잘 지원하기 위한 경우</entry>
+                				</row>
+
+                				<row>
+                  					<entry align="center">4</entry>
+
+                  					<entry>웹 서비스 클라이언트에 비동기식 프로그래밍 모델을 사용하고 싶을 경우</entry>
+                				</row>
+
+               	 				<row>
+                  					<entry align="center">5</entry>
+
+                  					<entry>SOAP 1.2 메시지를 처리할 수 있는 클라이언트와 서비스가 있어야 하는 경우</entry>
+                				</row>
+
+                				<row>
+                  					<entry align="center">6</entry>
+
+                  					<entry>웹 서비스에서 SOAP을 배제하고 XML/HTTP 바인딩만 사용하고 싶을 경우</entry>
+                				</row>
+              				</tbody>
+            			</tgroup>
+          			</informaltable>
+				</listitem>
+
+				<listitem>
+          			<para><emphasis role="bold">JAX-RPC 단점 </emphasis></para>
+
+          			<para>구버전인 JAX-RPC에는 다음과 같이 몇가지 단점이 존재한다.</para>
+
+          			<informaltable>
+          				<caption>JAX-RPC 단점</caption>
+            			<tgroup cols="2">
+              				<colspec colname="col1" colnum="1" colwidth="2*" />
+
+              				<colspec colname="col2" colnum="2" colwidth="8*" />
+
+              				<thead>
+                				<row>
+                  					<entry align="center">단점</entry>
+
+                  					<entry align="center">설명</entry>
+                				</row>
+              				</thead>
+
+              				<tbody>
+                				<row>
+                  					<entry align="center">1</entry>
+
+                  					<entry>제한된 XML Schema를 지원한다.</entry>
+                				</row>
+
+                				<row>
+                  					<entry align="center">2</entry>
+
+                  					<entry>Java와 WSDL간의 매핑 지원이 부족하다.</entry>
+                				</row>
+
+                				<row>
+                  					<entry align="center">3</entry>
+
+                  					<entry>어플리케이션 이식성이 낮다.</entry>
+                				</row>
+
+                				<row>
+                  					<entry align="center">4</entry>
+
+                  					<entry>런타임(Runtime) 크기가 비대하다.</entry>
+                				</row>
+
+                				<row>
+                  					<entry align="center">5</entry>
+
+                  					<entry>개발 방법이 매우 복잡하다.</entry>
+                				</row>
+              				</tbody>
+            			</tgroup>
+          			</informaltable>
+        		</listitem>
+      		</itemizedlist>
+		</section>
+
+		<section id = "cxf_overview_realization_xml">
+      		<title>XML Schema</title>
+
+      		<para>
+      			XML 문서의 구조와 컨텐츠를 정의하는 파일을 가리키는 일반적인 용어로 DTD와 마찬가지로 문서의 구조를 정의하며,
+      			문법, 어휘, 구조, 데이터 타입 등을 규정하는 모든 규칙들을 제공한다.
+      		</para>
+
+      		<para>
+      			* XML Schema Definition (XSD) : XML Schema를 작성하기 위한 XML Schema language
+      		</para>
+
+      		<itemizedlist>
+        		<listitem>
+          			<para><emphasis role="bold">XML Schema vs. DTD </emphasis></para>
+
+          			<para>
+          				DTD의 문제점을 해결하기 위한 목적으로 XML Schema가 나왔다. XML Schema는 DTD보다 더 표현력이 풍부하고,
+          				정확한 자료 구조를 제공하는 새로운 구조 정의 언어로, Web Services는 XML Schema를 사용한다.
+          			</para>
+
+					<informaltable>
+						<caption>XML Schema와 DTD 비교</caption>
+            			<tgroup cols="2">
+              				<thead>
+                				<row>
+                  					<entry align="center">XML Schema</entry>
+
+                  					<entry align="center">DTD</entry>
+                				</row>
+              				</thead>
+
+              				<tbody>
+                				<row>
+                  					<entry>XML 문법으로 작성</entry>
+
+                  					<entry>XML 문법 아님 (EBNF 문법 사용)</entry>
+                				</row>
+
+                				<row>
+                  					<entry>namespace 지원</entry>
+
+                  					<entry>namespace 지원 안함</entry>
+                				</row>
+
+                				<row>
+                  					<entry>다양한 데이터 타입 지원, 데이터 타입 확장 가능</entry>
+
+                  					<entry>제한적인 데이터 타입</entry>
+                				</row>
+
+                				<row>
+                  					<entry>상속과 같은 객체 지향 개념 지원</entry>
+
+                  					<entry>객체 지향 개념 없음</entry>
+                				</row>
+
+                				<row>
+                  					<entry>개방적 컨텐츠 모델</entry>
+
+                  					<entry>폐쇄적 컨텐츠 모델</entry>
+                				</row>
+              				</tbody>
+            			</tgroup>
+ 					</informaltable>
+				</listitem>
+
+				<listitem>
+          			<para>
+          				<emphasis role="bold">XML Schema element 정의 </emphasis>
+          			</para>
+
+                    <programlisting language="xml"><![CDATA[<element name="element 명"  type="데이터형" ref=""  form=""  
+        minOccurs="" maxOccurs=""  default=""  fixed="" > ]]></programlisting>
+
+          			<para>각 속성 값에 대한 설명은 다음과 같다.</para>
+
+          			<informaltable>
+          				<caption>XML Schema element 속성 목록</caption>
+            			<tgroup cols="2">
+              				<colspec colname="col1" colnum="1" colwidth="2*" />
+
+              				<colspec colname="col2" colnum="2" colwidth="8*" />
+
+              				<thead>
+                				<row>
+                  					<entry align="center">속성</entry>
+
+                  					<entry align="center">설명</entry>
+                				</row>
+              				</thead>
+
+              				<tbody>
+                				<row>
+                  					<entry>name</entry>
+
+                  					<entry>element의 명칭</entry>
+                				</row>
+
+                				<row>
+                  					<entry>type</entry>
+
+                  					<entry>element의 데이터 타입</entry>
+                				</row>
+
+                				<row>
+                  					<entry>ref</entry>
+
+                  					<entry>전역 element 선언을 참조하기 위해 사용</entry>
+                				</row>
+
+                				<row>
+                  					<entry>minOccurs</entry>
+
+                  					<entry>element의 최소 반복 횟수, default 값은 1</entry>
+                				</row>
+
+                				<row>
+                  					<entry>maxOccurs</entry>
+
+                  					<entry>element의 최대 반복 횟수, default 값은 1</entry>
+                				</row>
+
+                				<row>
+                  					<entry>default</entry>
+
+                  					<entry>element의 값이 정의되지 않았을 때 할당되는 기본값</entry>
+                				</row>
+
+                				<row>
+                  					<entry>fixed</entry>
+
+                  					<entry>element에 들어갈 고정값</entry>
+                				</row>
+              				</tbody>
+            			</tgroup>
+          			</informaltable>
+        		</listitem>
+
+				<listitem>
+          			<para>
+          				<emphasis role="bold">XML Schema attribute 정의</emphasis>
+          			</para>
+
+                    <programlisting language="xml"><![CDATA[<attribute name="" type="" ref="" form="" use="" default="" fixed="">]]></programlisting>
+
+          			<para>
+          				각 속성 값에 대한 설명은 다음과 같다.
+          			</para>
+
+          			<informaltable>
+          				<caption>XML Schema attribute 속성 목록</caption>
+            			<tgroup cols="2">
+              				<colspec colname="col1" colnum="1" colwidth="2*" />
+
+              				<colspec colname="col2" colnum="2" colwidth="8*" />
+
+              				<thead>
+                				<row>
+                  					<entry align="center">속성</entry>
+
+                  					<entry align="center">설명</entry>
+                				</row>
+              				</thead>
+
+              				<tbody>
+                				<row>
+                  					<entry>name</entry>
+
+                  					<entry>attribute의 명칭</entry>
+                				</row>
+
+                				<row>
+                  					<entry>type</entry>
+
+                  					<entry>attribute의 데이터 타입</entry>
+               	 				</row>
+
+                				<row>
+                  					<entry>ref</entry>
+
+                  					<entry>전역 attribute 선언을 참조하기 위해 사용</entry>
+                				</row>
+
+                				<row>
+                  					<entry>form</entry>
+
+                  					<entry>한정된 이름인지의 여부 (qualified/unqualified)</entry>
+                				</row>
+
+                				<row>
+                  					<entry>use</entry>
+
+                  					<entry>사용 조건 (optional/prohibited/required)</entry>
+                				</row>
+
+                				<row>
+                  					<entry>default</entry>
+
+                  					<entry>attribute의 값이 정의되지 않았을 때 할당되는 기본값</entry>
+                				</row>
+
+                				<row>
+                  					<entry>fixed</entry>
+
+                  					<entry>attribute에 들어갈 고정값</entry>
+                				</row>
+              				</tbody>
+            			</tgroup>
+					</informaltable>
+				</listitem>
+			</itemizedlist>
+		</section>
+
+		<section id = "cxf_overview_realization_other">
+			<title>기타 구현 기술</title>
+
+      		<itemizedlist>
+        		<listitem>
+          			<para>
+          				<emphasis role="bold">JAXB(Java Architecture for XML Binding)</emphasis>
+          			</para>
+
+          			<para>
+          				XML 스키마를 자바 클래스로 바인딩하기 위한 자바 API로 크게 2가지 기능을 제공한다. 그 기능은 바로 자바  객체를 
+          				XML로 마샬링(marshalling)하는 기능과 반대로 XML에서 자바 객체로 언마샬링(unmarshalling)하는  기능이다. 
+          				더욱 자세한 내용은 <ulink url="http://java.sun.com/developer/technicalArticles/WebServices/jaxb/">
+          				여기</ulink> 를 참고하도록 한다.
+          			</para>
+        		</listitem>
+
+        		<listitem>
+          			<para>
+          				<emphasis role="bold">MTOM(Message Transmission Optimization Mechanism) </emphasis>
+          			</para>
+
+          			<para>
+          				SOAP 메시지와 함께 큰 바이너리 첨부 파일을 원시 바이트로 전송하여 메시지 크기를 줄이는 메커니즘으로
+         				 바이너리 데이터를 포함한 XML에 대한 메시지 전송을 최적화시킨다. 더욱 자세한 내용은 
+         				 <ulink url="http://www.w3.org/TR/soap12-mtom/">여기</ulink> 를 참고하도록 한다.
+         			</para>
+        		</listitem>
+
+        		<listitem>
+          			<para>
+          				<emphasis role="bold">SAAJ(SOAP with Attachments API for Java)</emphasis>
+          			</para>
+
+          			<para>
+          				SOAP 메시지를 생성하고 파일 첨부하고 전송하는 방법을 제공하는 자바 API이다. 더욱 자세한 내용은
+          				<ulink url="http://java.sun.com/webservices/saaj/docs.html">여기</ulink> 를 참고하도록 한다.
+          			</para>
+        		</listitem>
+      		</itemizedlist>
+		</section>
+	</section>
+
+	<section id = "cxf_overview_framework">
+    	<title>Web Services Framework</title>
+
+    	<para>
+    		많이 사용되는 웹 서비스 오픈 소스 프레임워크로는 Apache CXF, Apache Axis/Axis2, Spring Web Services 등이 존재하며 
+    		여러 프레임워크 중 사용하고자 하는 목적에 적합한 웹 서비스 프레임워크를 선정한다. Anyframe에서는 Apache CXF를 선정하였다.
+    	</para>
+
+    	<section id = "cxf_overview_framework_type">
+      		<title>Web Services Framework 종류</title>
+
+      		<para>
+      			Web Service 구현 스타일은 크게 Contract-Last와 Contract-First가 있다. Contract-Last 스타일은 Java 소스 코드를 
+      			먼저 작성한 후에 WSDL을 자동생성하여 구현하는 방식(Code-First라고 불리기도 함)이고, Contract-First 스타일은 WSDL 
+      			파일을 먼저 작성한 후 Java 소스 코드를 작성하는 방식이다.
+      		</para>
+
+      		<para>
+      			Web Services Open Source Framework에는 여러 가지가 있는데 이 중 현재 가장 많이 쓰이고 있는 4가지에 대해서 소개한다.
+      		</para>
+
+      		<itemizedlist>
+        		<listitem>
+          			<para><emphasis role="bold">Apache CXF </emphasis></para>
+
+          			<para>
+          				Contract-First 스타일과 Contract-Last 스타일 모두를 지원한다. 자세한 내용은 <ulink url="http://cxf.apache.org/">
+          				http://cxf.apache.org/</ulink> 를 참조한다.
+          			</para>
+        		</listitem>
+
+        		<listitem>
+          			<para><emphasis role="bold">Apache Axis </emphasis></para>
+
+          			<para>
+          				Axis2의 구버전으로 웹 서비스 개발 방식이 복잡하다. 자세한 내용은 <ulink url="http://ws.apache.org/axis/">
+          				http://ws.apache.org/axis/</ulink> 를 참조한다.
+          			</para>
+        		</listitem>
+
+        		<listitem>
+          			<para><emphasis role="bold">Apache Axis2 </emphasis></para>
+
+          			<para>
+          				Apache Axis의 업그레이드 버전으로 구조 등이 새롭게 변경되었다. 기능적인 면에서 Apache CXF와 유사하다. 
+          				자세한 내용은 <ulink url="http://ws.apache.org/axis2/">http://ws.apache.org/axis2/</ulink>
+          				를 참조한다.
+          			</para>
+        		</listitem>
+
+        		<listitem>
+          			<para>
+          				<emphasis role="bold">Spring Web Services </emphasis>
+          			</para>
+
+          			<para>
+          				Contract-First 스타일의 웹 서비스 개발 방식만 지원한다. 자세한 내용은 
+          				<ulink url="http://static.springsource.org/spring-ws/site/">http://static.springsource.org/spring-ws/site/</ulink>
+          				를 참조한다.
+          			</para>
+        		</listitem>
+      		</itemizedlist>
+    	</section>
+
+		<section id = "cxf_overview_framework_apachecxf">
+      		<title>Apache CXF 특징</title>
+
+      		<para>
+      			여러가지 Web Services Framework 중 Apache CXF를 선정하게 된 이유는 다음과 같은 특징 때문이다.
+      		</para>
+
+      		<informaltable>
+      			<caption>Apache CXF 특징</caption>
+        		<tgroup cols="2">
+          			<colspec colname="col1" colnum="1" colwidth="3*" />
+
+          			<colspec colname="col2" colnum="2" colwidth="7*" />
+
+          			<thead>
+            			<row>
+              				<entry align="center">특징</entry>
+
+              				<entry align="center">설명</entry>
+            			</row>
+          			</thead>
+
+          			<tbody>
+            			<row>
+              				<entry>JAX-WS 지원</entry>
+
+              				<entry>CXF에서는 JAX-WS API를 구현하고 있어서 웹 서비스 구현을 쉽게 하고 있다.</entry>
+            			</row>
+
+            			<row>
+              				<entry>Spring Integration</entry>
+
+              				<entry>
+              					CXF는 Spring 2.X 이상을 지원하며 endpoint 설정이나 client injection 등 Spring과의 통합을 용이
+              					하게 한다.
+              				</entry>
+            			</row>
+
+            			<row>
+              				<entry>Aegis Databinding</entry>
+
+              				<entry>
+              					CXF는 JAXB, Aegis Databinding을 모두 지원한다. JAXB의 경우와 다르게 Annotation 방식으로 사용할 
+              					필요가 없으며, List/Map/Date 등의 다양한 데이터 타입 사용이 매우 쉽다. 
+              					Anyframe에서는 표준 방식인 JAXB Databinding을 채택하여 사용하도록 권고하고 있으므로 Aegis Databinding에 관한 상세한 내용은 매뉴얼에서 언급하고 있지 않다.
+              				</entry>
+            			</row>
+
+            			<row>
+              				<entry>RESTful services</entry>
+
+              				<entry>Annotation 설정 방식으로 RESTful 서비스 구현을 용이하게 한다. Apache CXF를 이용하여 RESTful services를 개발하는 방법에 대한 자세한 내용은 Anyframe CXF-JAXRS Plugin 매뉴얼을 참고하도록 한다.</entry>
+            			</row>
+
+            			<row>
+              				<entry>WS-* Support</entry>
+
+              				<entry>
+              					CXF는 다양한 웹 서비스 스펙(WS-Addressing, WS-Policy, WS-ReliableMessaging, WS-Security)을 지원한다.
+              				</entry>
+            			</row>
+
+            			<row>
+              				<entry>Apache Licensed</entry>
+
+              				<entry>아파치 라이센스 사용으로 활용에 자유롭다.</entry>
+            			</row>
+
+            			<row>
+              				<entry>Celtix와 X-Fire 프로젝트의 합작품</entry>
+
+              				<entry>기능 보강 및 사용 편의성 면에서 새롭게 재구성된 부분이 많이 존재한다.</entry>
+           	 			</row>
+
+            			<row>
+              				<entry>웹 서비스 표준 지원</entry>
+
+              				<entry>
+              					SOAP, the Basic Profile, WSDL, WS-Addressing, WS-Policy, WS-ReliableMessaging, WS-Security
+              				</entry>
+            			</row>
+
+            			<row>
+              				<entry>Frontend 모델 제공</entry>
+
+              				<entry>JAX-WS Frontend와 Simple Frontend를 제공한다. 
+              				Anyframe에서는 표준 API인 JAX-WS를 사용하는 JAX-WS Frontend 모델을 채택하여 사용하도록 권고하고 있으므로 
+					    	Simple Frontend에 관한 상세한 내용은 매뉴얼에서 언급하고 있지 않다. </entry>
+            			</row>
+
+            			<row>
+              				<entry>사용 편의성</entry>
+
+              				<entry>간단한 API 사용으로 서비스 구현 가능, Tool(ANT Task 등)을 제공한다.</entry>
+            			</row>
+
+            			<row>
+              				<entry>바이너리와 기존 프로토콜 지원</entry>
+
+              				<entry>
+              					XML/비-XML 타입 바인딩(JSON, CORBA)을 제공, 여러 전송 프로토콜을 지원할 수 있는 조립식 아키텍처를
+              					 제공한다.
+              				</entry>
+            			</row>
+
+            			<row>
+              				<entry>비동기 방식 호출 가능</entry>
+
+              				<entry>비동기 방식의 호출이 가능(Asynchronous Invocation Model 제공)하다.</entry>
+            			</row>
+
+            			<row>
+              				<entry>JDK 1.5 이상 지원</entry>
+
+              				<entry>Annotation 기능 등 여러 가지 이유 때문에 JDK 1.5 이상만 지원한다.</entry>
+            			</row>
+          			</tbody>
+        		</tgroup>
+      		</informaltable>
+    	</section>
+	</section>
+
+  	<section id = "cxf_overview_tools">
+    	<title>Tools </title>
+
+    	<para>
+    		Apache CXF에서 여러가지 Tool을 제공함으로써 웹 서비스 구현 시 개발 편의성을 높여주고 있다. 아래에 언급된 Tool 이외에 
+    		Eclipse Plugin과 Maven Plugin 형태의 Tool도 제공되고 있다. Apache CXF를 
+    		<ulink url="http://cxf.apache.org/download.html">다운로드 페이지</ulink> 에서 Binary distribution을 내려 받고 압축을 풀면 루트 폴더 하위의 bin 폴더 
+    		내에 Tool이 존재한다. 자세한 사항은 <ulink url="http://cwiki.apache.org/CXF20DOC/tools.html">이곳</ulink> 을
+    		참고하도록 한다. 
+    	</para>
+
+    	<informaltable>
+    		<caption>Apache CXF에서 제공하는 Tool 목록</caption>
+      		<tgroup cols="2">
+      			<colspec colname="col1" colnum="1" colwidth="3*" />
+
+          		<colspec colname="col2" colnum="2" colwidth="7*" />
+        		<thead>
+          			<row>
+            			<entry align="center">tool</entry>
+
+            			<entry align="center">설명</entry>
+          			</row>
+        		</thead>
+
+        		<tbody>
+          			<row>
+            			<entry>Ant Tasks</entry>
+
+            			<entry>wsdl2java, java2ws를 위한 ant task를 제공한다.</entry>
+          			</row>
+
+          			<row>
+            			<entry>Java to WS</entry>
+
+            			<entry>
+            				SEI 클래스와 관련 타입 클래스들로부터 WSDL document, wrapper bean 클래스, server/client side 
+            				소스 코드들을 생성한다.(CXF 2.1)
+            			</entry>
+          			</row>
+
+          			<row>
+            			<entry>Java to WSDL</entry>
+
+            			<entry>
+            				SEI 클래스와 관련 타입 클래스들로부터 WSDL document를 생성한다.(CXF 2.0.x)
+            			</entry>
+          			</row>
+
+          			<row>
+            			<entry>Maven Integration and Plugin</entry>
+
+            			<entry>
+            				관련 라이브러리를 배포해주는 Maven Repository들과 함께 빌드 툴로써 Maven을 사용할 수 있도록 Maven Plugin
+            				을 제공한다.
+            			</entry>
+          			</row>
+
+          			<row>
+            			<entry>XSD to WSDL</entry>
+
+            			<entry>XSD(Schema 파일)를 통해서 WSDL document를 생성한다.</entry>
+          			</row>
+
+          			<row>
+            			<entry>WSDL to Java</entry>
+
+            			<entry>
+            				WSDL document로부터 서비스 구현에 필요한 annotation으로 작성된 Java 소스 코드와 어플리케이션을 빌드할 
+            				수 있는 ANT 기반 XML 파일을 생성한다.
+            			</entry>
+          			</row>
+
+          			<row>
+            			<entry>WSDL to Service</entry>
+
+            			<entry>
+            				WSDL document로부터 HTTP 혹은 JMS 서비스 정의를 갖는 새로운 WSDL document를  생성한다.
+            			</entry>
+          			</row>
+
+          			<row>
+            			<entry>WSDL to SOAP</entry>
+
+            			<entry>
+            				WSDL document로부터 SOAP binding 정보를 갖는 새로운 WSDL document를 생성한다.
+            			</entry>
+          			</row>
+
+          			<row>
+            			<entry>WSDL to XML</entry>
+
+            			<entry>
+            				WSDL document로부터 XML binding 정보를 갖는 새로운 WSDL document를 생성한다.
+            			</entry>
+          			</row>
+
+          			<row>
+            			<entry>WSDLValidator</entry>
+
+            			<entry>
+            				WSDL document나 WSDL URL이 well-formed document이고 Schema에 맞게 작성된 것인지 확인해주는 일을 한다.
+            			</entry>
+          			</row>
+       	 		</tbody>
+      		</tgroup>
+    	</informaltable>
+  	</section>
+</chapter>

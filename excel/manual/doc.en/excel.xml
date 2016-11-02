@@ -1,0 +1,104 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+
+<!DOCTYPE book PUBLIC "-//OASIS//DTD DocBook XML V4.5//EN" "http://www.oasis-open.org/docbook/xml/4.5/docbookx.dtd"
+[
+<!ENTITY excel_sheet_config SYSTEM "excel/sheet_config.xml">
+<!ENTITY excel_download SYSTEM "excel/excel_download.xml">
+<!ENTITY excel_upload SYSTEM "excel/excel_upload.xml">
+]
+>
+
+<!--
+		Licensed to the Apache Software Foundation (ASF) under one or more
+		contributor license agreements. See the NOTICE file distributed with
+		this work for additional information regarding copyright ownership.
+		The ASF licenses this file to you under the Apache License, Version
+		2.0 (the "License"); you may not use this file except in compliance
+		with the License. You may obtain a copy of the License at
+
+		http://www.apache.org/licenses/LICENSE-2.0 Unless required by
+		applicable law or agreed to in writing, software distributed under the
+		License is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR
+		CONDITIONS OF ANY KIND, either express or implied. See the License for
+		the specific language governing permissions and limitations under the
+		License.
+-->
+    
+<book lang="en">
+	<title>Anyframe Excel Plugin</title>
+	
+	<bookinfo>
+		<copyright>
+			<year>2007-2014</year>
+			<holder>Samsung SDS</holder>
+		</copyright>
+		<releaseinfo>Version 1.1.1-SNAPSHOT</releaseinfo>
+
+		<productname>Anyframe Excel Plugin</productname>
+
+		<authorgroup>
+			<corpauthor></corpauthor>
+		</authorgroup>
+
+		<mediaobject>
+			<imageobject>
+				<!-- logo 변경 -->
+				<imagedata fileref="../image/common/logo_pdf.jpg"/>
+			</imageobject>
+		</mediaobject>
+		<legalnotice>
+			<para>The copyright of this document is owned by Samsung SDS. This document can be used freely only for the purpose of open source community activities.
+                The copyright holder should be clearly stated in case this document is copied or distributed, and any changed content should be specified.
+                Commercial use of the original document and the modified document is not allowed. Should there be parts considered to have errors in this document, please register the issue for which we will take proper action.
+			</para>
+		</legalnotice>
+	</bookinfo>
+	
+	<part id="excel_installation_part">
+		<title>Introduction</title>
+		<partintro id="excel_installation_part_intro">
+			<para>
+			Anyframe excel plugin is composed of related libraries and samples to upload and download Microsoft Excel files using Query Service.
+			</para>
+			<para role="introduction_title"><emphasis role="bold">Installation</emphasis></para>
+			<para>Install the excel plugin by entering the following command in the Command window.</para>
+			<programlisting language="java"><![CDATA[mvn anyframe:install -Dname=excel]]></programlisting>
+			<para>
+				The installation result can be checked by using the installed (mvn anyframe:installed) or the jetty:run (mvn clean jetty:run) commands. 
+			</para>
+			<para role="introduction_title"><emphasis role="bold">Dependent Plugins</emphasis></para>
+			<informaltable>
+				<tgroup cols="2">
+					<colspec colnum="1" colname="col1" colwidth="5*" />
+					<colspec colnum="2" colname="col2" colwidth="5*" />
+					<thead>
+						<row>
+							<entry align="center">Plugin Name</entry>
+							<entry align="center">Version Range</entry>
+						</row>
+					</thead>
+					<tbody>
+						<row>
+							<entry align="center"><ulink url="http://dev.anyframejava.org/docs.en/anyframe/plugin/optional/query/1.6.1-SNAPSHOT/reference/htmlsingle/query.html">query</ulink></entry>
+							<entry align="center" valign="middle">2.0.0 > * > 1.4.0</entry>
+						</row>
+					</tbody>
+				</tgroup>
+			</informaltable>
+		</partintro>
+	</part>	
+	
+	<part id="excel_integration_part">
+		<title>Excel</title>
+		<partintro id="excel_integration_part_intro">
+			<para>
+			Apache POI (Poor Obfuscation Implementation) - the JAVA API for Microsoft Documents is one of the projects of Apache Software Foundation to develop OLE2-based file types of Microsoft into JAVA.
+			Anyframe excel plugin is composed of libraries and samples to download the search result of using HSSF, a sub-project of POI, and Query Service in an Excel file 
+			and to store the data of the Excel files in Database.
+			</para>
+		</partintro>
+		&excel_sheet_config;
+		&excel_download;
+		&excel_upload;
+	</part>
+</book>

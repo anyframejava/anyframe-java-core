@@ -1,0 +1,185 @@
+<?xml version="1.0" encoding="utf-8"?>
+<mx:Panel xmlns:fx="http://ns.adobe.com/mxml/2009"
+		  xmlns:s="library://ns.adobe.com/flex/spark"
+		  xmlns:mx="library://ns.adobe.com/flex/mx"
+		  xmlns:brd="anyframe.samples.domain.*"
+		  width="440" height="380" backgroundColor="#8D8585" creationComplete="create()"
+		  horizontalScrollPolicy="off" initialize="initValHandler(event)" layout="vertical"
+		  paddingBottom="5" paddingLeft="5" paddingRight="5" paddingTop="5"
+		  color="#FFFFFF" titleBackgroundSkin="@Embed('../../assets/images/bg_title.png')" 
+		  title="사용자 상세정보" verticalScrollPolicy="off">
+	
+	<fx:Metadata>
+        [Event(name="userUpdate", type="DetailEvent")]
+    </fx:Metadata>
+	
+	<fx:Script>
+		<![CDATA[
+			import mx.validators.ZipCodeValidatorDomainType;
+			import mx.events.ValidationResultEvent;
+			import mx.controls.List;
+			import mx.events.FlexEvent;
+			import mx.controls.Alert;
+			import mx.collections.ArrayCollection;
+			import mx.events.ListEvent;
+			import samples.domain.User;
+			import mx.rpc.events.ResultEvent;
+			import mx.managers.PopUpManager; 
+			import samples.domain.Community;
+			import samples.domain.SearchVO;
+			import samples.event.UserEvent;
+			
+			private var validators:Array;
+			[Bindable]
+			public var deptList:ArrayCollection;
+
+			[Bindable]
+			public var userInfo:User;
+			
+			private function initValHandler(event:Event):void{
+				validators = [valUserName];
+			}
+			private function create():void{
+//				if( userInfo.deptName != null ){
+//					comboDept.text = userInfo.deptName;
+//				}
+			}
+			
+			private function confirm():void{
+				var results:Array = Validator.validateAll(validators);
+				
+				if ( results.length > 0 ){
+					var message:String = "입력 형식에 맞지 않는 필드가 있습니다.\n";
+					
+					for ( var i:uint = 0 ; i < results.length ; i++ ){
+						message += results[i].target.source.id +  "\n";
+					}
+					Alert.show(message);
+					
+				}else{
+					userInfo.userName = formUserName.text;
+					userInfo.password = formPassword.text;
+					userInfo.enName = formEnName.text;
+					userInfo.phone = formPhone.text;
+					userInfo.cellPhone = formCellPhone.text;
+					userInfo.zipCode = formZipCode.text;
+					userInfo.address = formAddress.text;
+					userInfo.company = formCompany.text;
+					userInfo.jobPosition = formJobPosition.text;
+					userInfo.assignment = formAssignment.text;
+					userInfo.fax = formFax.text;
+					userInfo.email = formEmail.text;
+					userInfo.compZipCode = formCompZipCode.text;
+					userInfo.compAddress = formCompAddress.text;
+					dispatchEvent( new UserEvent ( UserEvent.UPDATE, userInfo ) );
+					PopUpManager.removePopUp(this);
+				}
+			}
+			
+			private function close():void{
+				PopUpManager.removePopUp(this);
+			}
+			
+			private function getDeptListResultHandler(event:ResultEvent):void{
+				deptList = event.result as ArrayCollection;
+			}
+			
+			private function comboChange():void{
+				userInfo.deptId = comboDept.selectedItem.deptId;
+				userInfo.deptName = comboDept.selectedItem.deptName;
+			}			
+			
+			private function invalidHandler(event:ValidationResultEvent):void{
+				formUserName.setStyle("color", 0xFF0000);
+			}
+		]]>
+	</fx:Script>
+	
+	<fx:Declarations>
+		<!-- Place non-visual elements (e.g., services, value objects) here -->
+		<mx:Validator id="valUserName"  source="{formUserName}" property="text" requiredFieldError="이름을 입력 하세요!" trigger="{btnConfirm}" triggerEvent="click"/>
+		
+	</fx:Declarations>
+	
+	<mx:TabNavigator id="tn" width="100%" height="100%" paddingBottom="5"
+					 color="#000000" paddingLeft="5" paddingRight="5" paddingTop="5">
+	<mx:VBox id="standardTab" width="100%" height="100%" label="기본정보" paddingBottom="5"
+			 color="#000000" paddingLeft="5" paddingRight="5" paddingTop="5">
+		<mx:Form width="100%" height="100%" paddingBottom="5" paddingLeft="5" paddingRight="5"
+				 paddingTop="5">
+			<mx:FormItem label="ID" width="100%">
+				<mx:TextInput id="formUserId" text="{userInfo.userId}" editable="false" width="100%"/> 
+			</mx:FormItem>
+			
+			<mx:FormItem label="이름" width="100%">
+				<mx:TextInput id="formUserName" text="{userInfo.userName}" maxChars="20" width="100%"/> 
+			</mx:FormItem>
+			
+			<mx:FormItem label="password" width="100%">
+				<mx:TextInput id="formPassword" text="{userInfo.password}" maxChars="16" width="100%"/>   
+			</mx:FormItem>
+			
+			<mx:FormItem label="영문이름" width="100%">
+				<mx:TextInput id="formEnName" text="{userInfo.enName}" maxChars="20" width="100%"/> 
+			</mx:FormItem>
+			<mx:FormItem label="우편번호" width="100%">
+				<mx:TextInput id="formZipCode" text="{userInfo.zipCode}" width="100%"/> 
+			</mx:FormItem>
+			
+			<mx:FormItem label="상세주소" width="100%">
+				<mx:TextInput id="formAddress" text="{userInfo.address}" width="100%"/> 
+			</mx:FormItem>
+			<mx:FormItem label="자택전화" width="100%">
+				<mx:TextInput id="formPhone" text="{userInfo.phone}" width="100%"/> 
+			</mx:FormItem>
+			
+			<mx:FormItem label="이동전화" width="100%">
+				<mx:TextInput id="formCellPhone" text="{userInfo.cellPhone}" width="100%"/> 
+			</mx:FormItem>
+		</mx:Form>
+		
+	</mx:VBox>
+	<mx:VBox id="extTab" label="추가정보" width="100%" height="100%"  color="#000000" >
+		<mx:Form width="100%" height="100%" paddingBottom="0" paddingLeft="5" paddingRight="5"
+				 paddingTop="0">
+			<mx:FormItem label="회사" width="100%">
+				<mx:TextInput id="formCompany" text="{userInfo.company}" width="100%"/>
+			</mx:FormItem>
+			
+			<mx:FormItem label="부서" width="100%">
+				<mx:ComboBox id="comboDept" text="{userInfo.deptName}" editable="false" labelField="deptName" dataProvider="{deptList}" 
+							 change="comboChange()" width="100%"/> 
+			</mx:FormItem>
+			
+			<mx:FormItem label="직급" width="100%">
+				<mx:TextInput id="formJobPosition" text="{userInfo.jobPosition}" width="100%"/>   
+			</mx:FormItem>
+			
+			<mx:FormItem label="담당업무" width="100%">
+				<mx:TextInput id="formAssignment" text="{userInfo.assignment}" width="100%"/> 
+			</mx:FormItem>
+			
+			<mx:FormItem label="팩스번호" width="100%">
+				<mx:TextInput id="formFax" text="{userInfo.fax}" width="100%"/> 
+			</mx:FormItem>
+			
+			<mx:FormItem label="전자우편" width="100%">
+				<mx:TextInput id="formEmail" text="{userInfo.email}" width="100%"/> 
+			</mx:FormItem>
+			
+			<mx:FormItem label="우편번호" width="100%">
+				<mx:TextInput id="formCompZipCode" text="{userInfo.compZipCode}" width="100%"/> 
+			</mx:FormItem>
+			
+			<mx:FormItem label="상세주소" width="100%">
+				<mx:TextInput id="formCompAddress" text="{userInfo.compAddress}" width="100%"/> 
+			</mx:FormItem>
+		</mx:Form>
+		
+	</mx:VBox>
+	</mx:TabNavigator>
+	<mx:ControlBar horizontalAlign="center" height="43" color="#000000" >
+        <mx:Button id="btnConfirm" label="임시저장" click="confirm()"/>
+        <mx:Button id="btnClose" label="취소" click="close()"/>
+    </mx:ControlBar>
+</mx:Panel>

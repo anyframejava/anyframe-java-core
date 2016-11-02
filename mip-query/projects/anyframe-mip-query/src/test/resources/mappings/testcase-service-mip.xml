@@ -1,0 +1,58 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE queryservice PUBLIC "-//ANYFRAME//DTD QUERYSERVICE//EN"
+"http://www.anyframejava.org/dtd/anyframe-query-mapping-1.0.dtd">
+<queryservice>
+	<queries>
+		<query id="findBoardList" isDynamic="true" mappingStyle="upper">
+			<statement>
+			<![CDATA[
+				SELECT 
+				BOARD_NO, BOARD_TITLE, CONTENTS, REG_ID, REG_DATE
+				FROM TEST_BOARD
+				#if ($SEARCH_CONDITION == "BOARD_NO") 				    
+					WHERE BOARD_NO = :SEARCH_KEYWORD
+				#elseif($SEARCH_CONDITION == "BOARD_TITLE")
+				    WHERE BOARD_TITLE like '%' || :SEARCH_KEYWORD || '%'
+				#end
+				]]>
+			</statement>
+		</query>
+		<query id="createBoard" isDynamic="true">
+			<statement>
+			<![CDATA[
+				INSERT INTO TEST_BOARD
+				(BOARD_NO, BOARD_TITLE, CONTENTS, REG_ID, REG_DATE)
+				VALUES (:BOARD_NO, :BOARD_TITLE, :CONTENTS, :REG_ID, :REG_DATE)
+				]]>
+			</statement>
+		</query>
+		<query id="updateBoard" isDynamic="true">
+			<statement>
+			<![CDATA[
+				UPDATE TEST_BOARD
+				SET
+				BOARD_TITLE = :BOARD_TITLE, CONTENTS = :CONTENTS, REG_ID =:REG_ID, REG_DATE = :REG_DATE
+				WHERE BOARD_NO = :BOARD_NO
+				]]>
+			</statement>
+		</query>
+		<query id="removeBoard" isDynamic="true">
+			<statement>
+			<![CDATA[
+				DELETE FROM TEST_BOARD 
+				WHERE BOARD_NO = :BOARD_NO
+				]]>
+			</statement>
+		</query>
+		<query id="findBoardByPk" isDynamic="true" mappingStyle="upper">
+			<statement>
+			<![CDATA[
+				SELECT 
+				TITLE, CONTENTS, REG_ID, REG_DATE, COMMUNITY_ID, POST_ID
+				FROM MIP_BOARD
+				WHERE POST_ID = :POST_ID
+				]]>
+			</statement>
+		</query>
+	</queries>
+</queryservice>

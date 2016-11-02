@@ -1,0 +1,185 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
+<html>
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+<title>Menu Sample - 동적구성</title>
+
+<link href="../../../common/css/smoothness/jquery-ui-1.10.0.custom.css" rel="stylesheet">
+<script src="../../../common/exlibs/jquery-1.9.0.js"></script>
+<script src="../../../common/exlibs/jquery-ui-1.10.0.custom.js"></script>
+
+<style type="text/css">
+
+	body {
+		font-size: 14px;
+	}
+
+	.ui-menu {
+		font-size : 12px;
+		width: 150px;
+	}
+	
+	#action > button {
+		margin-right: 30px;
+		width: 150px;
+		font-size : 12px;
+	}
+	
+</style>
+ 
+
+<script type="text/javascript">
+
+	var ENV = {
+		ID_VMENU : '#vmenu',
+		ID_DMENU : '#dmenu',
+		ID_BUTTON_REBUILD_TYPE1 : '#rebuild',
+		ID_BUTTON_REBUILD_TYPE2 : '#rebuild2',
+		ID_BUTTON_CHANGE_ICON: '#changeicon'		
+	};
+	
+	var mainView = {
+			
+			_iconArry : [ "", "", "ui-icon-triangle-1-e" ],
+			_curicon : 0,
+			_orgLabel : "",
+			
+			init : function()
+			{
+				$['ui']['menu'].prototype['delay'] = 100;				
+				this._iconArry[this._curicon] = ( $(ENV.ID_VMENU).menu('option', 'icons') ).submenu;
+				
+				this._orgLabel = $(ENV.ID_BUTTON_CHANGE_ICON).button('option', 'label');
+				$(ENV.ID_BUTTON_CHANGE_ICON).button('option', 'label', this._makeNumberLabel(this._curicon));
+			},
+			
+			rebuild_menu_from_dom_tree : function() 
+			{
+				$(ENV.ID_VMENU).html( $(ENV.ID_DMENU).html() );
+				$(ENV.ID_VMENU).menu( "refresh" );
+			},
+			
+			rebuild_menu_from_dynamic : function()
+			{
+				var dynamic_html = "";
+				
+				dynamic_html += "<li><a href='#'>Type2 동적구성 A</a></li>\n" +
+								"<li><a href='#'>Type2 동적구성 B</a>\n" +
+								"	<ul>\n" +
+								"		<li><a href='#'>Type2 자식 A</a></li>\n" +
+								"		<li><a href='#'>Type2 자식 B</a></li>\n" +
+								"		<li><a href='#'>Type2 자식 C</a></li>\n" +
+								"	</ul>\n" +
+								"</li>\n";
+				
+				$(ENV.ID_VMENU).html( dynamic_html );
+				$(ENV.ID_VMENU).menu( 'refresh' );
+			},
+			
+			change_menu_icon : function()
+			{
+				this._curicon = (this._curicon == (this._iconArry.length - 1)) ? 0 : (this._curicon + 1);
+			
+				$(ENV.ID_VMENU).menu( 'option', 'icons', { submenu: this._iconArry[this._curicon] } );
+				$(ENV.ID_VMENU).menu( 'refresh' );
+				
+				$(ENV.ID_BUTTON_CHANGE_ICON).button('option', 'label', this._makeNumberLabel(this._curicon));
+			},
+			
+			_makeNumberLabel : function(num)
+			{
+				return ( this._orgLabel + " (Type " + num  + ")");
+			}
+			
+	};
+
+
+	$(document).ready(function() {
+		
+		$('button').button();
+		
+		$(ENV.ID_VMENU).menu( { position: { my: "left top", at: "right+2 top+2" } } );
+		
+		$(ENV.ID_BUTTON_REBUILD_TYPE1).click(function() {
+			mainView.rebuild_menu_from_dom_tree();
+		});
+		
+		$(ENV.ID_BUTTON_REBUILD_TYPE2).click(function() {
+			mainView.rebuild_menu_from_dynamic();
+		})
+		
+		$(ENV.ID_BUTTON_CHANGE_ICON).click(function() {
+			mainView.change_menu_icon();
+		})
+		
+		mainView.init();
+
+	});
+	
+</script>
+
+</head>
+<body>
+
+<div id="action" style="display:inline-block;margin-bottom:20px">
+	<button id="rebuild">메뉴 재 구성 Type 1</button>
+	<button id="rebuild2">메뉴 재 구성 Type 2</button>
+	<button id="changeicon">아이콘 변경</button>
+</div>
+
+<div>
+	<ul id="vmenu">
+		<li><a href="#">Level1 메뉴 A</a>
+			<ul>
+				<li><a href="#">Level2 메뉴 A</a></li>
+				<li><a href="#">Level2 메뉴 B</a>
+					<ul>
+						<li><a href="#">Level3 메뉴 A</a></li>
+						<li><a href="#">Level3 메뉴 B</a></li>					
+					</ul>
+				</li>
+				<li><a href="#">Level2 메뉴 C</a>
+					<ul>
+						<li><a href="#">Level3 메뉴 A</a></li>
+						<li><a href="#">Level3 메뉴 B</a></li>					
+					</ul>			
+				</li>
+			</ul>
+		</li>
+		<li><a href="#">Level1 메뉴 B</a>
+			<ul>
+				<li><a href="#">Level2 메뉴 A</a></li>
+				<li><a href="#">Level2 메뉴 B</a>
+					<ul>
+						<li><a href="#">Level3 메뉴 A</a></li>
+						<li><a href="#">Level3 메뉴 B</a></li>					
+					</ul>
+				</li>
+				<li><a href="#">Level2 메뉴 C</a>
+					<ul>
+						<li><a href="#">Level3 메뉴 A</a></li>
+						<li><a href="#">Level3 메뉴 B</a></li>					
+					</ul>			
+				</li>
+			</ul>
+		</li>
+		<li><a href="#">Level1 메뉴 C</a></li>
+		<li><a href="#">Level1 메뉴 D</a></li>
+	</ul>	
+</div>
+
+<div style="display:none">
+	<ul id="dmenu">
+		<li><a href="#">Level1 동적구성 A</a>
+			<ul>
+				<li><a href="#">Level2 동적구성 A</a></li>
+				<li><a href="#">Level2 동적구성 B</a></li>
+			</ul>
+		</li>
+		<li><a href="">Level1 동적구성 B</a></li>
+		<li><a href="">Level1 동적구성 C</a></li>
+	</ul>	
+</div>
+
+</body>
+</html>

@@ -1,0 +1,184 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<FDL version="1.5">
+  <TypeDefinition url="..\default_typedef.xml"/>
+  <Form id="sample004" classname="sample004" left="0" top="0" width="1014" height="671" titletext="Comm Code" onload="form_onload">
+    <Layouts>
+      <Layout>
+        <Div id="div_search" taborder="3" left="0" top="0" right="0" height="99" style="border:1 solid #808080ff ;">
+          <Layouts>
+            <Layout>
+              <Combo id="Combo00" taborder="0" text="Combo00" left="15" top="12" width="150" height="33"/>
+              <Combo id="Combo01" taborder="1" text="Combo00" left="175" top="12" width="150" height="33"/>
+              <Combo id="Combo02" taborder="2" text="Combo00" left="335" top="12" width="150" height="33"/>
+              <Combo id="Combo03" taborder="3" text="Combo00" left="495" top="12" width="150" height="33"/>
+              <Radio id="Radio00" taborder="4" left="16" top="54" width="328" height="34"/>
+              <Radio id="Radio01" taborder="5" left="400" top="54" width="344" height="34"/>
+            </Layout>
+          </Layouts>
+        </Div>
+        <Static id="Static01" taborder="4" text="h20" left="0" top="99" right="0" height="20" style="background:gainsboro;align:center middle;" visible="false"/>
+        <Div id="div_body" taborder="5" left="0" top="119" right="0" bottom="0" style="border:1 solid #808080ff ;">
+          <Layouts>
+            <Layout>
+              <Grid id="Grid00" taborder="0" useinputpanel="false" left="20" top="24" right="20" bottom="20" binddataset="ds_list" autoenter="select" oncellclick="div_body_Grid00_oncellclick">
+                <Formats>
+                  <Format id="default">
+                    <Columns>
+                      <Col size="80"/>
+                      <Col size="80"/>
+                      <Col size="80"/>
+                      <Col size="80"/>
+                      <Col size="80"/>
+                      <Col size="80"/>
+                    </Columns>
+                    <Rows>
+                      <Row band="head" size="24"/>
+                      <Row band="body" size="24"/>
+                    </Rows>
+                    <Band id="head">
+                      <Cell col="0" disptype="normal" text="Column0"/>
+                      <Cell col="1" disptype="normal" text="Column1"/>
+                      <Cell col="2" disptype="normal" text="Column2"/>
+                      <Cell col="3" disptype="normal" text="Column3"/>
+                      <Cell col="4" disptype="normal" text="Column4"/>
+                      <Cell col="5" disptype="normal" text="Column5"/>
+                    </Band>
+                    <Band id="body">
+                      <Cell col="0" disptype="normal" text="bind:Column0"/>
+                      <Cell col="1" disptype="normal" text="bind:Column1"/>
+                      <Cell col="2" disptype="normal" text="bind:Column2"/>
+                      <Cell col="3" disptype="normal" text="bind:Column3"/>
+                      <Cell col="4" disptype="normal" text="bind:Column4"/>
+                      <Cell col="5" disptype="normal" text="bind:Column5"/>
+                    </Band>
+                  </Format>
+                </Formats>
+              </Grid>
+            </Layout>
+          </Layouts>
+        </Div>
+      </Layout>
+    </Layouts>
+    <Objects>
+      <Dataset id="ds_list" firefirstcount="0" firenextcount="0" useclientlayout="false" updatecontrol="true" enableevent="true" loadkeymode="keep" loadfiltermode="keep" reversesubsum="false" oncolumnchanged="ds_list_oncolumnchanged">
+        <ColumnInfo>
+          <Column id="Column0" type="STRING" size="256"/>
+          <Column id="Column1" type="STRING" size="256"/>
+          <Column id="Column2" type="STRING" size="256"/>
+          <Column id="Column3" type="STRING" size="256"/>
+          <Column id="Column4" type="STRING" size="256"/>
+          <Column id="Column5" type="STRING" size="256"/>
+        </ColumnInfo>
+        <Rows>
+          <Row>
+            <Col id="Column0">S</Col>
+            <Col id="Column1">S</Col>
+            <Col id="Column2">P</Col>
+            <Col id="Column3">P</Col>
+          </Row>
+          <Row>
+            <Col id="Column0">R</Col>
+            <Col id="Column1">R</Col>
+            <Col id="Column2">S</Col>
+            <Col id="Column3">S</Col>
+          </Row>
+          <Row>
+            <Col id="Column0">I</Col>
+            <Col id="Column1">I</Col>
+            <Col id="Column2">P</Col>
+            <Col id="Column3">P</Col>
+          </Row>
+          <Row>
+            <Col id="Column0">R</Col>
+            <Col id="Column1">R</Col>
+            <Col id="Column2">S</Col>
+            <Col id="Column3">S</Col>
+          </Row>
+        </Rows>
+      </Dataset>
+    </Objects>
+    <Script type="xscript5.0"><![CDATA[/**************************************************************************************************
+ * 01. 업무구분				: 
+ * 02. 화 면 명				: 
+ * 03. 화면설명				:  
+ * 04. 관련 화면 및 서비스	: 
+ * 05. 관련 테이블명			: 
+ * 06. 작 성 자				: 
+ * 07. 작 성 일				: 
+ * 08. 수정이력
+ **************************************************************************************************
+ *    수정일            이름        사유
+ **************************************************************************************************
+ *    
+ *************************************************************************************************/
+
+//-------------------------------------------------------------------------------------------------
+// 1. 공통함수 include
+//-------------------------------------------------------------------------------------------------
+include "lib::comForm.xjs";
+
+//-------------------------------------------------------------------------------------------------
+// Form 전역변수 선언
+//-------------------------------------------------------------------------------------------------
+
+
+//-------------------------------------------------------------------------------------------------
+// 2. Form 함수 정의
+//-------------------------------------------------------------------------------------------------
+this.form_onload = function(obj:Form, e:nexacro.LoadEventInfo)
+{
+	// Form Load 시 필수로 호출
+	//this.gfn_formOnLoad(obj);
+
+	//화면 초기설정
+	this.fn_init();
+}
+
+//초기설정
+this.fn_init = function()
+{
+	//공통코드 설정	
+    var codeParam = [
+		//Combo
+		{group:"PATIENT_TYPE", dataset:"ds_type00", component:this.div_search.Combo00}
+		,{group:"PATIENT_TYPE", dataset:"ds_type01", component:this.div_search.Combo01, selecttype:"A"}
+		,{group:"PATIENT_TYPE", dataset:"ds_type02", component:this.div_search.Combo02, selecttype:"S"}
+		,{group:"PATIENT_TYPE", dataset:"ds_type03", component:this.div_search.Combo03, selecttype:"N"}
+		
+		//Radio
+		,{group:"PATIENT_TYPE", dataset:"ds_type04", component:this.div_search.Radio00, selecttype:"A"}
+		,{group:"PATIENT_TYPE", dataset:"ds_type05", component:this.div_search.Radio01, selecttype:"S"} 
+		
+		//Grid
+		,{group:"PATIENT_TYPE", dataset:"ds_type06", component:this.div_body.Grid00, bindcolumn:"Column0"}
+		,{group:"PATIENT_TYPE", dataset:"ds_type07", component:this.div_body.Grid00, bindcolumn:"Column1", edittype:false}
+		,{group:"PROGRESS_TYPE", dataset:"ds_type08", component:this.div_body.Grid00, bindcolumn:"Column2"}
+		,{group:"PROGRESS_TYPE", dataset:"ds_type09", component:this.div_body.Grid00, bindcolumn:"Column3", edittype:false}
+		
+		//Dataset만 생성
+		,{code:"PATIENT_TYPE", innerdataset:"ds_type"}
+    ];
+    
+	this.gfn_getCommonCode(codeParam);		
+}
+
+//-------------------------------------------------------------------------------------------------
+// 3. Transaction 함수 정의
+//-------------------------------------------------------------------------------------------------
+
+//-------------------------------------------------------------------------------------------------
+// 4. User 함수 정의
+//-------------------------------------------------------------------------------------------------
+
+//-------------------------------------------------------------------------------------------------
+// 5. Event 함수 정의
+//------------------------------------------------------------------------------------------------
+
+this.div_body_Grid00_oncellclick = function(obj:Grid, e:nexacro.GridClickEventInfo)
+{
+// 	if(e.cell == 2)
+// 	obj.dropdownCombo();
+}
+]]></Script>
+  </Form>
+</FDL>

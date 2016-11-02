@@ -1,0 +1,53 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<web-app id="WebApp_ID" version="2.4"
+	xmlns="http://java.sun.com/xml/ns/j2ee"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://java.sun.com/xml/ns/j2ee http://java.sun.com/xml/ns/j2ee/web-app_2_4.xsd">
+	<display-name>Anyframe</display-name>
+	<!-- Action Servlet Configuration -->
+	<servlet>
+    	<servlet-name>action</servlet-name>
+        <servlet-class>org.anyframe.action.DefaultActionServlet</servlet-class>  
+    	
+        <init-param>
+          <param-name>definitions-debug</param-name>
+          <param-value>0</param-value>
+        </init-param>
+        <init-param>
+          <param-name>definitions-parser-details</param-name>
+          <param-value>0</param-value>
+        </init-param>
+        <init-param>
+          <param-name>definitions-parser-validate</param-name>
+          <param-value>true</param-value>
+        </init-param>
+        
+        <init-param>
+            <param-name>config</param-name>
+            <param-value>/WEB-INF/anyframe-struts-config.xml</param-value>
+        </init-param>
+
+        <init-param>
+            <param-name>detail</param-name>
+            <param-value>3</param-value>            
+        </init-param>
+        <init-param>
+            <param-name>character-encoding</param-name>
+            <param-value>EUC-KR</param-value>            
+        </init-param>
+        
+        <load-on-startup>1</load-on-startup>
+  	</servlet>
+
+	<!-- Action Servlet Mapping -->
+	<servlet-mapping>
+    	<servlet-name>action</servlet-name>
+    	<url-pattern>*.do</url-pattern>
+  	</servlet-mapping>	
+  	
+ 	<session-config>
+		<session-timeout>
+		 20
+		</session-timeout>
+	</session-config>  	
+</web-app> 

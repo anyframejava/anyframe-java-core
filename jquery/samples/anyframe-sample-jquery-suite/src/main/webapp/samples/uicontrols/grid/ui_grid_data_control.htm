@@ -1,0 +1,168 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN"
+"http://www.w3.org/TR/html4/loose.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+ 
+ <!-- Start of head-->
+<head>
+<meta http-equiv="content-type" content="text/html; charset=UTF-8" />
+<title>Grid 데이타 처리 </title>
+
+
+<!-- include required common files  ----------------------------------------------------->
+<script type="text/javascript" src="../../../common/exlibs/jquery-1.9.0.js" ></script>
+
+<script type="text/javascript" src="../../../common/exlibs/highlighter/scripts/shCore.js" ></script>
+<script type="text/javascript" src="../../../common/exlibs/highlighter/scripts/shBrushJScript.js" ></script>
+
+<script type="text/javascript" src="../../../common/js/template_common.js" ></script>
+
+<!--  stylesheet  -->
+<link type="text/css" rel="stylesheet" href="../../../common/exlibs/highlighter/styles/shCore.css"/>
+<link type="text/css" rel="stylesheet" href="../../../common/exlibs/highlighter/styles/shCoreDefault.css"/>
+<link rel="stylesheet" type="text/css" href="../../../common/css/style.css" /> 
+
+
+<!-- scripts to support sample page  ----------------------------------------------------->
+<script type="text/javascript">
+
+$(function() {
+	$("#common").load("../../../common/basicinfo.htm");												//common : basic informations	
+})
+
+
+$(function() {
+	JTemplate.load("ui_grid_data_control_src.htm");					//{TODO} source url 수정
+	JTemplate.loadDemo2("ui_grid_data_control_src.htm", {height:"600px"});			//{TODO} source url 수정, show visaul demo sample
+}); 
+	
+</script> 
+</head>
+<!-- End of head -->
+
+<!-- Start of body -->
+ <body >
+
+<!-- HEADER BAR -------------------------------------------------------------->
+	<div class="content-title">Grid - Grid</div>
+
+    
+<!-- START OF PAGE ... -------------------------------------------------------->       
+	<div id="page">
+		<p class="header-title">Grid 데이타 처리</p>
+		<p class="header-desc">: Grid 에서 사용되는 데이타의 로딩 및 추가, 삭제, 수정 등의 예를 보여준다.</p>
+          
+      
+<!-- DEMO ----------------------------------------------------------------------->
+		<div class="demo">
+			<h3 >Demo</h3>
+			<div id="visualExample"></div>
+		</div>
+        
+<!-- DEMO DESCRIPTION ----------------------------------------------------->
+		<div class="desc">
+			<h3>Demo Description</h3>
+			<hr>
+			<p class="desc-overall">
+			데이타를 조회 및 수정하기 위해서는 먼저 json 파일을 로딩하여 Grid 데이타를 구성하여야 한다.
+			</p>
+			<ul class="desc-hypl">
+				<li>json 파일을 로딩하여, Grid 데이타를 보여준다.</li>
+				<li>선택된 row 의 정보를 가져오고, 특정 컬럼값을 조회한다.</li>
+				<li>row 단위의 data 추가 및 삭제를 구현한다. (Add Row, Delete Row)</li>
+				<li>선택된 row 의 Cell 단위 값을 변경한다. (Update Cell Data)</li>
+			</ul>
+			<p class="desc-overall">
+			컬럼 값 수정 시, 키(Key) 값이 되는 "id" 컬럼은 제외하여 구성한다.
+			</p>
+		</div>
+             
+<!-- CODE ------------------------------------------------------------------------>
+		<div class="code">
+			<h3>Code Source</h3>
+			<pre id="codeExample" class="brush: js"></pre>
+        </div>
+
+
+<!-- CODE DESCRIPTION ------------------------------------------------------>
+		<div class="desc">
+			<h3>Code Description</h3>
+			<hr>
+			<p class="desc-title">json 데이타</p>
+			<div class="code-block">
+<pre>
+{
+ "rows" : [
+   {"id":"1", "date":"2013-02-01", "name":"client1", "balance":120000, "deposit":20000, "notes":"note0"},
+   {"id":"2", "date":"2013-02-01", "name":"client2", "balance":120000, "deposit":20000, "notes":"note0"},
+    ...
+   ]
+}
+</pre>
+			</div>
+			
+			<p class="desc-title">RowId (Key 정보)</p>			
+			<p class="desc-overall">
+			Grid 는 내부적으로 각 row 에 대한 정보를 처리하기 위해 내부적으로, "rowid" 에 해당하는 property 값을 갖고 있다. <br>
+			이는 기본적으로는 입력된 데이타 중 "id" 라는 컬럼이 존재하면, 그 값을 rowid 로 사용하며 그 외에는 내부적으로 정해진 rule 에 맞게 값을 구성하게 된다. <br><br>
+			
+			따라서, <strong>개발자가 직접 해당 값을 control 해 주지 않는다면, "rowid" 에 해당하는 값은 순차적 또는 연속성을 갖지 않는 형태로 변경될 여지가 있어 주의가 요구된다.</strong>	<br><br>
+			
+			본 데모에서는, "id" 컬럼을 rowid 값과 매핑될 수 있도록 구성하였고, Row 추가 시에는 순차적으로 해당 값을 유일하게 유지하도록 구성하였다.
+			<span class="code-line">#110 ~ #114</span>    
+			</p>
+			<div class="code-block">
+			<pre>
+function getNewRowId() 
+	{ 
+		owner._maxrowid++; 
+		return owner._maxrowid; 
+	}			
+</pre>
+			</div>
+			
+			<p class="desc-title">선택된 rowid 얻기</p>
+			<span class="code-line">#146</span>
+			<div class="code-block">
+<pre>
+return this._grid.jqGrid('getGridParam', 'selrow');
+</pre>			
+			</div>
+			<p class="desc-overall">
+			"getGridParam" 함수를 이용하고, 입력값으로 "selrow" 지정하면, 현재 선택된<strong>(마지막으로 선택된)</strong> row 의 id 값을 얻을 수 있다. <br>
+			추가적으로, "multiselect" Option 이 적용 시, "selrow" 대신에 "selarrrow" 를 지정하여 선택된 row 들의 id 값을 Array 형태로 전달 받을 수 있다. 
+			</p>
+			
+			<p class="desc-title">Row 추가</p>
+			<span class="code-line">#108</span>
+			<div class="code-block">
+<pre>
+this._grid.jqGrid('addRowData', newrowid, newrow, addpos, selrow);
+</pre>			
+			</div>
+			<p class="desc-overall">
+			"addpos" 는 추가될 Row 의 위치를 지정한다. 기본값은 "first" 로 Grid 의 첫번째에 추가된다. <br>
+			선택 가능한 값은 다음과 같다. "first", "last", "before", "after".
+			</p>
+		</div>
+      
+<!-- RELATED LINKS ----------------------------------------------------->
+		<div class="related">
+            <h3>Related Links</h3>
+            <ul class="desc-hypl">
+				<li>
+					<span>Grid Doc</span>
+					<a href="http://www.trirand.com/jqgridwiki/doku.php?id=wiki:jqgriddocs"></a>
+				</li>
+				<li>
+					<span>Grid Data처리</span>
+					<a href="http://www.trirand.com/jqgridwiki/doku.php?id=wiki:retrieving_data"></a>
+				</li>
+            </ul>            
+		</div>
+</div>      
+<!-- End of Page-->
+
+</body>
+<!-- End of body-->
+
+</html>

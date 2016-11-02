@@ -1,0 +1,2750 @@
+<chapter id="core_spring_ioc">
+	<title>IoC(Inversion of Control)</title>
+	<para>
+		Anyframe은 Spring 기반에서 다양한 best-of-breed 오픈 소스를 통합 및 확장하여 구성한 어플리케이션 프레임워크를 포함하고 
+		있다. Anyframe 5.6.0 이후부터는 Spring Framework 4.0을 기반으로 하고 있다.
+	</para>
+	
+	<para>
+		Spring Framework가 가지는 가장 핵심적인 기능이 IoC이다. IoC 개념은 과거에도 많은 곳에서 사용된 개념이지만
+		최근 Spring Framework과 같은 Lightweight Container 개념이 등장하면서 많은 개발자들에게 관심의 대상이 되고
+		있다. IoC 개념은 Spring Framework 뿐만 아니라 컨테이너 기능을 가지는 모든 영역에서 사용되고 있는 개념이므로 반드시
+		이해할 필요가 있다.
+	</para>
+
+	<itemizedlist>
+		<listitem>
+			<para>
+				<emphasis role="bold">IoC(Inversion of Control)개념</emphasis>
+			</para>
+
+			<para>
+				IoC는 Inversion of Control의 약자이다. 우리나라 말로 직역해 보면 "역제어"라고 할 수 있다.
+				제어의 역전 현상이 무엇인지 살펴본다. 기존에 자바 기반으로 어플리케이션을 개발할 때 자바 객체를 생성하고 서로간의 의존
+				관계를 연결시키는 작업에 대한 제어권은 보통 개발되는 어플리케이션에 있었다. 그러나 Servlet, EJB 등을 사용하는
+				경우Servlet Container, EJB Container에게 제어권이 넘어가서 객체의 생명주기(Life Cycle)를 Container들이 전담하게
+				된다. 이처럼 IoC에서 이야기하는 제어권의 역전이란 객체의 생성에서부터 생명주기의 관리까지 모든 객체에 대한 제어권이 
+				바뀌었다는 것을 의미한다. Spring Framework도 객체에 대한 생성 및 생명주기를 관리할 수 있는 기능을 제공하고 있다. 
+				즉, IoC Container 기능을 제공하고 있다.
+	 		</para>
+
+			<para>Inversion of Control(이하 IoC)이란?</para>
+
+			<itemizedlist>
+				<listitem>
+					<para>
+						Component dependency resolution, configuration 및 lifecycle을 해결하기 위한 Design Pattern
+					</para>
+				</listitem>
+				<listitem>
+					<para>
+						DIP(Dependency Inversion Principle) 또는 Hollywood Principle
+						(Don't call us we will call you)라는 용어로도 사용
+					</para>
+				</listitem>
+				<listitem>
+					<para>
+						특정 작업을 수행하기 위해 필요한 다른 컴포넌트들을 직접 생성하거나 획득하기 보다는 이러한 의존성들을 외부에
+						정의하고 컨테이너에 의해 공급받는 방법으로 동작
+	        		</para>
+				</listitem>
+			</itemizedlist>
+
+			<mediaobject>
+				<imageobject>
+					<imagedata align="center" fileref="../image/core/spring/ioc.jpg" />
+				</imageobject>
+				<textobject>
+					<phrase>IoC가 아닌 경우와 IoC인 경우를 비교하는 그림으로써 IoC가 아닌 경우 특정 작업을 수행하기 위해 필요한 다른 컴포넌트들을 직접 생성하고 있고,
+					IoC인 경우 컨테이너에 의해 필요한 컴포넌트들을 공급받음을 나타내고 있다.
+					</phrase>
+				</textobject>
+			</mediaobject>		
+			
+			<para>이러한 IoC는 다음과 같은 장점을 가지고 있다.</para>
+
+			<itemizedlist>
+				<listitem>
+					<para>클래스 / 컴포넌트의 재사용성 증가</para>
+				</listitem>
+
+				<listitem>
+					<para>단위 테스트 용이</para>
+				</listitem>
+
+				<listitem>
+					<para>Assemble과 configure를 통한 시스템 구축 용이</para>
+				</listitem>
+      		</itemizedlist>
+    	</listitem>
+  	</itemizedlist>
+    
+    <itemizedlist>
+		<listitem>
+			<para>
+				<emphasis role="bold">IoC와 Dependency Injection간의 관계</emphasis>
+			</para>
+
+			<para>
+				Spring Framework의 가장 큰 장점으로 IoC Container 기능이 부각되어 있으나, IoC 기능은 Spring Framework이 
+				탄생하기 훨씬 이전부터 사용되던 개념이었다. 그러므로 "IoC 기능을 Spring Framework의 장점이라고 이야기하는 것은
+				적합하지 않다."고 반론을 제기하면서 "새로운 개념을 사용하는 것이 적합하다."고 주장한 사람이 Martin Fowler이다. 
+				Lightweight 컨테이너들이 이야기하는 IoC를 Dependency Injection이라는 용어로 사용하는 것이 더 적합하다고 
+				이야기하고 있다. Martin Flowler의 이 같은 구분 이후 IoC 개념을 개발자들마다 다양한 방식으로 분류하고 있으나 
+				다음 그림과 같이 IoC와 Dependency Injection 간의 관계를 분류하는 것이 일반적이다.
+      		</para>
+      
+      		<mediaobject>
+				<imageobject>
+					<imagedata align="center"
+						fileref="../image/core/spring/ioc-dependencyinjection.jpg" />
+				</imageobject>
+				<textobject>
+					<phrase>Inversion of Control을 Dependency Lookup과 Dependency Injection으로 구분할 수 있으며 Dependency Injection은
+					Setter Injection과 Constructor Injection으로 구분됨을 나타내는 그림이다.</phrase>
+				</textobject>
+			</mediaobject>
+			<para></para>
+			<itemizedlist>
+				<listitem>
+				
+					<para>
+						<emphasis role="bold">Dependency Lookup</emphasis>
+					</para>
+
+					<para>
+						저장소에 저장되어 있는 Bean에 접근하기 위하여 Container에서 제공하는 API를 이용하여 사용하고자
+					          하는 Bean을 Lookup 하는 것을 말한다. 따라서, Bean을 개발자가 직접 Lookup하여 사용함으로써
+						Container에서 제공하는 API와 의존관계 발생하게 된다.
+          			</para>
+          			
+          			<itemizedlist>
+						<listitem>
+							<para>
+								<emphasis role="bold">객체 관리 저장소(Repository)</emphasis>
+							</para>
+
+							<para>
+								모든 IoC Container는 각 Container에서 관리해야 하는 객체들을 관리하기 위한 별도의 
+								저장소(Repository)를 가진다. Servlet Container는 web.xml에서 Servlet을 관리하고
+								있으며, EJB Container는 ejb-jar.xml에 설정되어 있는 정보들이 JNDI 저장소에 저장되어
+								관리되고 있다. 이처럼 Spring Framework도 POJO들을 관리하기 위하여 별도의 저장소로 XML 파일을
+								가지게 된다.
+							</para>
+						</listitem>
+					</itemizedlist>
+					
+					<itemizedlist>
+            			<listitem>
+              				<para>
+              					<emphasis role="bold">Dependency Lookup 예시</emphasis>
+              				</para>
+
+              				<para>
+              					구현 클래스는 다음과 같이 작성한다.
+              				</para>
+                            <programlisting language="java">public class IoCServiceImpl1 implements IoCService1, 
+        <emphasis role="bold">ApplicationContextAware</emphasis> {
+    public void setApplicationContext (ApplicationContext context) {
+        IoCService2 iocService2 = <emphasis role="bold">(IoCService2)context.getBean("IoCService2")</emphasis>;
+    }
+}</programlisting>
+                             
+                             <para>
+                             	속성 정의 파일은 다음과 같이 작성한다.
+                             </para>
+      
+                             <programlisting language="xml"><![CDATA[<bean id="IoCService1" class="….IoCServiceImpl1">
+    중략...
+</bean>
+<bean id=]]><emphasis role="bold">"IoCService2"</emphasis> <![CDATA[class="….IoCServiceImpl2">
+    중략...
+</bean>]]></programlisting>
+                        </listitem>
+                    </itemizedlist>
+                </listitem>
+            </itemizedlist>
+
+			<itemizedlist>
+				<listitem>
+					<para>
+						<emphasis role="bold">Dependency Injection (DI)</emphasis>
+					</para>
+
+					<para>
+						각 클래스 사이의 의존관계를 빈 설정(Bean Definition)정보를 바탕으로 컨테이너가 자동적으로 연결해주는 것을
+						 말한다. 컨테이너가 의존관계를 자동적으로 연결시켜주기 때문에 개발자들이 컨테이너 API를 이용하여 의존관계에
+						 관여할 필요가 없게 되므로 컨테이너 API에 종속되는 것을 줄일 수 있다. 개발자들은 단지 빈 설정파일(저장소 관리 
+						 파일)에서 의존관계가 필요하다는 정보를 추가하기만 하면 된다. 
+						 또한 Dependency Injection은 Setter Injection과 Constructor Injection 형태로 구분한다.
+          			</para>
+
+					<itemizedlist>
+						<listitem>
+							<para>
+								<emphasis role="bold">Dependency Injection 예시</emphasis>
+							</para>
+
+							<para>
+								구현 클래스는 다음과 같이 작성한다.
+							</para>
+      
+                            <programlisting language="java">public class IoCServiceImpl implements IoCService {	
+    <emphasis role="bold">public void setDependencyBean(DepBean dependencyBean) {</emphasis>
+        <emphasis role="bold">this.dependencyBean = dependencyBean;</emphasis>
+    <emphasis role="bold">}</emphasis>
+     중략... 
+}</programlisting>
+                            
+                            <para>
+                            	속성 정의 파일은 다음과 같이 작성한다.
+                            </para>
+      
+                            <programlisting language="xml"><![CDATA[<bean id="IoCService" class="….IoCServiceImpl">
+    <]]><emphasis role="bold">property name="dependencyBean" ref="depBean"/</emphasis><![CDATA[>
+</bean>]]></programlisting>
+                        </listitem>
+                    </itemizedlist>
+                </listitem>
+            </itemizedlist>
+      
+      		<itemizedlist>
+				<listitem>
+					<para>
+						<emphasis role="bold">Dependency Lookup과 Dependency Injection의 차이점</emphasis>
+					</para>
+
+					<para>
+						Bean을 개발자가 직접 Lookup하여 사용하는 것을 Dependency Lookup이라고 하고, Dependency Injection은
+						이와 달리 각 계층 사이, 각 클래스 사이에 필요로 하는 의존관계가 있다면 이 같은 의존관계를 Container가 자동적
+						으로 연결시켜주는 것을 말한다. Dependency Lookup을 사용할 경우 Bean을 Lookup하기 위하여 Container에서 
+						제공하는 API와 의존관계가 발생한다. 이처럼 Container API와 많은 의존관계를 가지면 가질수록 어플리케이션이
+						Container에 대하여 가지는 종속성은 증가할 수 밖에 없다. 따라서 가능한 Dependency Lookup을 사용하지 않는 것
+						이 Container와의 종속성을 줄일 수 있게 된다.Container와의 종속성을 줄이기 위한 방법으로는 이후에 다루게 될 
+						<link linkend="core_spring_ioc_dependencies_injection">Dependency Injection</link>
+						을 통하여 가능하게 된다.
+					</para>
+				</listitem>
+			</itemizedlist>
+   		 </listitem>
+  	</itemizedlist>
+
+	<section id="core_spring_ioc_basic">
+		<title>Basic</title>
+
+		<para>
+			Spring Framework는 기본적으로 어플리케이션의 비즈니스 서비스를 구동시키고 관리하는 Spring
+			Container와 이러한 Container에 의해 관리되는 Bean으로 구성된다. Bean은 Container를 통해서
+			인스턴스화되는 객체이며 Container에 의해 다른 Bean들과 Wiring(엮기)되고 관리된다.
+    	</para>
+    	
+    	<section id="core_spring_ioc_basic_bean">
+      		<title>Container와 Bean</title>
+
+      		<para>
+      			Bean은 Spring Framework에서 어플리케이션의 중요 부분을 형성하고 Spring IoC Container에
+      			의해 관리된다.
+      		</para>
+
+			<itemizedlist>
+				<listitem>
+					<para>
+						Bean 설정, 생성, Life Cycle 관리
+					</para>
+				</listitem>
+
+				<listitem>
+					<para>
+						Bean Wiring(엮기) - Bean들과 각각에 대한 Dependency 관계는 Spring IoC
+						Container에 의해 사용되는 설정 메타데이터로 반영
+					</para>
+
+					<mediaobject>
+						<imageobject>
+							<imagedata align="center" fileref="../image/core/spring/ioc-basic.jpg" />
+						</imageobject>
+						<textobject>
+							<phrase>Bean Wiring을 나타내는 그림으로써 Bean들과 각각에 대한 Dependency 관계는 Spring IoC
+							Container에 의해 사용되는 설정 메타데이터에 의해 정의된다.</phrase>
+						</textobject>
+					</mediaobject>
+				</listitem>
+			</itemizedlist>
+		</section>
+
+		<section id="core_spring_ioc_basic_container">
+			<title>Container</title>
+
+			<para>
+				Spring IoC Container는 다음 두 가지 유형의 Container를 제공한다.
+			</para>
+
+			<itemizedlist>
+				<listitem>
+					<para>
+						<emphasis role="bold">BeanFactory</emphasis>
+					</para>
+
+					<informaltable>
+					    <caption>BeanFactory 역할</caption>
+						<tgroup cols="1">
+							<thead>
+								<row>
+									<entry align="center">설 명</entry>
+								</row>
+							</thead>
+
+							<tbody>
+								<row>
+									<entry>Bean의 생성과 소멸 담당</entry>
+								</row>
+
+								<row>
+									<entry>Bean 생성 시 필요한 속성 설정</entry>
+								</row>
+
+								<row>
+									<entry>Bean의 Life Cycle에 관련된 메소드 호출</entry>
+								</row>
+
+								<row>
+									<entry>
+										다수의 BeanFactory 인터페이스 구현 클래스를 제공하며 이중 가장 유용한 것은
+										XmlBeanFactory임</entry>
+								</row>
+							</tbody>
+						</tgroup>
+					</informaltable>
+				</listitem>
+			</itemizedlist>
+
+			<itemizedlist>
+				<listitem>
+					<para>
+						<emphasis role="bold">ApplicationContext</emphasis>
+					</para>
+
+					<informaltable>
+					    <caption>ApplicationContext 역할</caption>
+						<tgroup cols="1">
+							<thead>
+								<row>
+									<entry align="center">설 명</entry>
+								</row>
+							</thead>
+		
+							<tbody>
+								<row>
+									<entry>BeanFactory의 모든 기능 제공</entry>
+								</row>
+		
+								<row>
+									<entry>ResourceBundle 파일을 이용한 국제화(I18N) 지원</entry>
+								</row>
+		
+								<row>
+									<entry>다양한 Resource 로딩 방법 제공</entry>
+								</row>
+		
+								<row>
+									<entry>이벤트 핸들링</entry>
+								</row>
+		
+								<row>
+									<entry>Context 시작 시 모든 Singleton Bean을 미리 로딩(preloading)
+										       시킴-> 초기에 설정 및 환경에 대한 에러 발견 가능함</entry>
+								</row>
+		
+								<row>
+									<entry>다수의 ApplicationContext 구현 클래스 제공(XmlWebApplicationContext,
+											FileSystemXmlApplicationContext,ClassPathXmlApplicationContext)</entry>
+								</row>
+							</tbody>
+						</tgroup>
+					</informaltable>
+					
+					<para>
+					org.springframework.beans 와 org.springframework.context 패키지가
+		          	Spring Framework의 IoC Container를 위한 기본을 제공한다. BeanFactory는 객체를 관리하는
+				          고급 설정 기법을 제공하고 ApplicationContext는 Spring의 AOP기능, 메시지 자원 핸들링, 이벤트
+				          위임, 웹 어플리케이션에서 사용하기 위한 WebApplicationContext와 같은 특정
+		          	ApplicationContext 통합과 같은 기능을 추가 제공한다. 즉, BeanFactory가 설정 프레임워크와 기본
+				          기능을 제공하는 반면 ApplicationContext는 BeanFactory의 모든 기능 뿐 아니라 전사적 중심의 기능이
+				          추가되어 있다. ApplicationContext가 제공하는 부가 기능과는 별개로, ApplicationContext와
+		          	BeanFactory의 또 다른 차이점은 Singleton Bean을 로딩하는 방법에 있다. BeanFactory는
+		          	getBean() 메소드가 호출될 때까지 Bean의 생성을 미룬다. 즉 BeanFactory는 모든 Bean을 늦게
+		          	로딩(Lazy loading)한다. ApplicationContext는 Context를 시작시킬 때 모든 Singleton
+		          	Bean을 미리 로딩함으로써, 그 Bean이 필요할 때 즉시 사용될 수 있도록 보장해준다. 즉, 어플리케이션 동작 시
+		          	Bean이 생성되기를 기다릴 필요가 없게 된다.
+		          </para>
+		        </listitem>
+			</itemizedlist>
+
+			<section id="core_spring_ioc_basic_container_beanfactory">
+				<title>BeanFactory</title>
+
+				<para>
+					Bean을 포함하고 관리하는 책임을 지는 Spring IoC Container의 실제 표현이다.가장 공통적으로 사용되는 
+					BeanFactory의 구현체인 XmlBeanFactory 클래스는 XML 형태로 어플리케이션과 객체간의 참조 관계를 조합하는 
+					객체를 정의함으로써 XML 설정 메타데이터를 기반으로 완전히 설정된 시스템이나 어플리케이션을 생성한다.
+					또한 아래의 예와 같이 XmlBeanFactory는 XML 파일에 기술되어 있는 정의를 바탕으로 Bean을 Loading해준다.
+				    (생성자에org.springframework.core.io.Resource타입의 객체 넘겨줌)
+		        </para>
+
+                <programlisting language="java">BeanFactory factory = new <emphasis role="bold">XmlBeanFactory</emphasis>(new FileInputStream("beans.xml"));</programlisting>
+
+				<para>
+					org.springframework.beans.factory.BeanFactory인터페이스에 관한 API는  
+					<ulink url="http://static.springsource.org/spring/docs/4.0.x/javadoc-api/org/springframework/beans/factory/BeanFactory.html">
+					여기</ulink>를 참고한다.
+				</para>
+
+				<informaltable>
+					<caption>Resource 구현체 목록</caption>
+					<tgroup cols="2">
+						<thead>
+							<row>
+								<entry align="center">Resource Implementation</entry>
+		
+								<entry align="center">Purpose</entry>
+							</row>
+						</thead>
+		
+						<tbody>
+							<row>
+								<entry align="left">org.springframework.core.io.ByteArrayResource</entry>
+		
+								<entry align="left">Defines a resource whose content is given
+									by an array of bytes</entry>
+							</row>
+		
+							<row>
+								<entry align="left">org.springframework.core.io.ClassPathResource</entry>
+		
+								<entry align="left">Defines a resource that is to be retrieved
+									from the classpath</entry>
+							</row>
+		
+							<row>
+								<entry align="left">org.springframework.core.io.DescriptiveResource
+								</entry>
+		
+								<entry align="left">Defines a resource that holds a resource
+									description but no actual readable resource</entry>
+							</row>
+		
+							<row>
+								<entry align="left">org.springframework.core.io.FileSystemResource</entry>
+		
+								<entry align="left">Defines a resource that is to be retrieved
+									from the file system</entry>
+							</row>
+		
+							<row>
+								<entry align="left">org.springframework.core.io.InputStreamResource</entry>
+		
+								<entry align="left">Defines a resource that is to be retrieved
+									from an input stream</entry>
+							</row>
+		
+							<row>
+								<entry align="left">org.springframework.web.portlet.context.
+									PortletContextResource</entry>
+		
+								<entry align="left">Defines a resource that is available in a
+									portlet context</entry>
+							</row>
+		
+							<row>
+								<entry align="left">org.springframework.web.context.support.
+									ServletContextResource</entry>
+		
+								<entry align="left">Defines a resource that is available in a
+									servlet context</entry>
+							</row>
+		
+							<row>
+								<entry align="left">org.springframework.core.io.UrlResource</entry>
+		
+								<entry align="left">Defines a resource that is to be retrieved
+									from a given URL</entry>
+							</row>
+						</tbody>
+					</tgroup>
+				</informaltable>
+			</section>
+			
+			<section id="core_spring_ioc_basic_container_context">
+        		<title>ApplicationContext</title>
+
+        		<para>
+        			다음은 org.springframework.context.ApplicationContext 인터페이스의 대략적인 구조이다.
+        		</para>
+
+		        <mediaobject>
+        		  <imageobject>
+            		<imagedata align="center"
+                       fileref="../image/core/spring/ioc-basic-applicationcontext.jpg" />
+			      </imageobject>
+			       <textobject>
+			      	<phrase>org.springframework.context.ApplicationContext 인터페이스의 대략적인 구조를 나타내는 그림으로써 ApplicationContext는
+			      	ApplicationEventPublisher, ResourceLoader, MessageSource, ListableBeanFactory 인터페이스를 구현하고 있음을 표현하고 있다.</phrase>
+			      </textobject>
+			    </mediaobject>
+			
+			    <para>
+					자주 사용되는 ApplicationContext의 구현 클래스는 아래와 같다.
+			    </para>
+			
+				<itemizedlist>
+			      <listitem>
+			        <para>
+			         	XmlWebApplicationContext - 웹 기반의 Spring 어플리케이션을 작성할 때 내부적으로 사용
+			        </para>
+			      </listitem>
+			
+			      <listitem>
+			        <para>
+			            FileSystemXmlApplicationContext - 파일 시스템에 위치한 XML 설정 파일을
+			                               읽어들이는 ApplicationContext
+			        </para>
+			      </listitem>
+			
+			      <listitem>
+			        <para>
+			           FileSystemXmlApplicationContext - 파일 시스템에 위치한 XML 설정 파일을 
+			                              읽어들이는 ApplicationContext
+			        </para>
+			      </listitem>
+				</itemizedlist>
+				
+				<para>
+	                ApplicationContext 구현 클래스를 아래와 같이 사용할 수 있다.
+	                <programlisting language="java">ApplicationContext context = new <emphasis role="bold">FileSystemXmlApplicationContext</emphasis>("c:/beans.xml”);</programlisting>
+	                <programlisting language="java">ApplicationContext context = new <emphasis role="bold">ClassPathXmlApplicationContext</emphasis>("beans.xml”);</programlisting>
+                </para>
+			</section>
+			
+			<section id="core_spring_ioc_basic_container_metadata">
+        		<title>설정 메타데이터</title>
+
+        		<para>
+        			Container에 의해 "인스턴스화, 설정, 그리고 조합[어플리케이션내 객체를]"하기 위한 설정 방법에 대해 알아
+		        	보기로 하자. 대부분은 간단하고 직관적인 XML 형태로 제공되며 XML 기반의 설정 메타데이터를 사용하여 Bean을
+		        	 정의하도록한다. 다음은 XML 기반의 설정 메타데이터의 기본 구조 예제이다. 
+                    <programlisting language="xml"><![CDATA[<beans xmlns="http://www.springframework.org/schema/beans"
+        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+        xsi:schemaLocation="http://www.springframework.org/schema/beans 
+        http://www.springframework.org/schema/beans/spring-beans-3.1.xsd">
+    <bean id="…" class="…">
+    <!-- collaborators and configuration for this bean go here -->
+    </bean>
+    <!-- more bean definitions go here -->
+</beans>]]></programlisting>
+		        </para>
+		        
+		        <para>
+		        	XML 기반의 메타데이터 정의는 설정 메타데이터의 가장 많이 사용되는 형태이다. XML 외에 Java
+        			Properties 파일을 이용하거나 프로그램으로 처리(Spring의 Public API를 사용하여)함으로써, 설정
+		    	          메타데이터를 제공할 수 있다. Spring IoC Container 자체는 설정 메타데이터의 형태로부터 분리될 수 있기
+		        	때문이다.
+				</para>
+      		</section>
+      		
+      		<section id="core_spring_ioc_basic_container_instance">
+        		<title>Spring IoC Container 인스턴스화 시키는 예제</title>
+					<orderedlist numeration="arabic" inheritnum="inherit">
+						<listitem>
+							<para>
+							    BeanFactory 사용한 예제
+							</para>
+                                <programlisting language="java">Resource resource = new FileSystemResource("beans.xml");
+BeanFactory factory = new XmlBeanFactory(resource); </programlisting>
+                                <programlisting language="java">ClassPathResource resource = new ClassPathResource("beans.xml");
+BeanFactory factory = new XmlBeanFactory(resource);</programlisting>
+		                </listitem>
+		                <listitem>
+			                <para>
+			                    ApplicationContext 사용한 예제
+			                </para>
+			                    <programlisting language="java">ApplicationContext context = 
+        new ClassPathXmlApplicationContext(new String ("beans.xml"));
+// of course, an ApplicationContext is just a BeanFactory
+BeanFactory factory = (BeanFactory) context;</programlisting>
+		                </listitem>
+	                </orderedlist>	
+            	</section>
+			
+			<section id="core_spring_ioc_basic_container_xml">
+        		<title>XML 기반 설정 메타데이터 조합</title>
+
+        		<para>
+        			XML 기반 설정 메타데이터는 다중 XML파일로 분리하여 정의할 수 있다. 여기서 주의할 점은
+        			<![CDATA[<import>]]>를 <![CDATA[<bean>]]> 이전에 두어야만 하는 것이다.
+                        <programlisting language="xml"><![CDATA[<beans>
+    <]]><emphasis role="bold">import resource="services.xml"/</emphasis><![CDATA[>
+    <]]><emphasis role="bold">import resource="resources/messageSource.xml"/</emphasis><![CDATA[>
+    <]]><emphasis role="bold">import resource="/resources/themeSource.xml"/</emphasis><![CDATA[>
+
+    <bean id="bean1" class="…"/>
+    <bean id="bean2" class="…"/>
+</beans>]]></programlisting>
+                </para>
+                
+                <para>
+                	위의 예제에서 외부 Bean정의는 3개의 파일(services.xml, messageSource.xml, 과 themeSource.xml)로부터 
+                	로드된다. 모든 위치 경로는 import를 수행하는 XML 파일에 상대적이다. 그래서 이 경우에 messageSource.xml 과 
+                	themeSource.xml이 import 대상 XML 파일의 위치 아래의 resources 에 두어야 하는 반면에 services.xml은 import를
+                	수행하는 파일과 같은 디렉토리나 클래스패스 경로 내에 두어야만 한다. 이 예제처럼 /는 실제로 무시된다. import된 파일
+                	의 내용은 <![CDATA[<beans>]]>를 가장상위 레벨에 포함하는 스키마나 DTD에 따라 완전히 유효한 XML Bean 정의 파일
+                	이어야만 한다.
+        		</para>
+      		</section>
+    	</section>
+    	
+    	<section id="core_spring_ioc_basic_beans">
+      		<title>Beans</title>
+
+			<section id="core_spring_ioc_basic_beans_bean">
+        		<title>Bean</title>
+
+        			<para>
+        				Spring IoC Container에 의해 관리되는 객체로 Container에 제공된 설정 메타데이터 내
+        				정의(대개 XML <![CDATA[<bean>]]> 형태로)에 의해 생성되며 실제로 아래 표로 나타낸 주요 메타데이터 정보를
+        				포함하는 BeanDefinition 객체로 표현한다.
+        			</para>
+
+					<informaltable>
+						<caption>주요 메타데이터 속성 목록</caption>
+						<tgroup cols="2">
+							<colspec colnum="1" colname="col1" colwidth="3*" />
+							<colspec colnum="2" colname="col2" colwidth="7*" />
+						<thead>
+							<row>
+								<entry align="center">주요 메타데이터속성</entry>
+								<entry align="center">설명</entry>
+							</row>
+						</thead>
+
+						<tbody>
+							<row>
+								<entry align="left">id</entry>
+
+								<entry align="left">Bean의 구분을 위한 정보로 해당 bean에 접근하기 위한 Key임</entry>
+							</row>
+	
+							<row>
+								<entry align="left">class</entry>
+
+								<entry align="left">정의된 Bean의 실제 구현클래스로 항상 full name으로 작성</entry>
+							</row>
+
+							<row>
+								<entry align="left">scope</entry>
+
+								<entry align="left">
+									정의된 Bean의 인스턴스 생성 유형 정의. singleton,
+									prototype, request, session, globalSession 중 선택. Default는
+									singleton이며, 보다 자세한 Bean Scope에 대해서는 본 매뉴얼의 Extensions
+									<link linkend="core_spring_ioc_extensions_scope">Bean
+									Scope</link>
+									을 참고하도록 한다.
+								</entry>
+							</row>
+
+							<row>
+								<entry align="left">init-method</entry>
+	
+								<entry align="left">해당 bean이 초기화된 후 context에 저장되기 전 호출되는 초기화 메소드 정의
+								</entry>
+							</row>
+
+							<row>
+								<entry align="left">desrtoy-method</entry>
+
+								<entry align="left">해당 bean 제거 시 호출되는 메소드 정의</entry>
+							</row>
+
+							<row>
+								<entry align="left">factory-method</entry>
+
+								<entry align="left">해당 bean 생성 시 생성자를 사용하지 않고 특정 factory
+								 method를 호출하여 생성 시 정의</entry>
+							</row>
+
+							<row>
+								<entry align="left">lazy-init</entry>
+
+								<entry align="left">true/false 값을 가지며 해당 bean이 호출되기 전에 초기화 시킬지
+								여부를 결정함. Default는 false이며 true인 경우, 해당 bean이 호출되는 시점에
+								초기화됨</entry>
+							</row>
+						</tbody>
+					</tgroup>
+				</informaltable>
+			</section>
+
+			<section id="core_spring_ioc_basic_beans_id">
+				<title>Bean 명명하기</title>
+
+				<para>
+					Bean 정의 시 Bean들을 구분하기 위해 'id' 혹은 'name' 속성을 사용하는데 'id'를 사용하는 경우,
+					하나의 Bean은 Container내에서 Unique한 id를 가지도록 한다. 일반적으로 Bean을 명명할때 인스턴스
+					필드명에 대한 표준 Java 규칙을 사용한다. Bean 이름은 소문자로 시작하고 camel-cased(첫 번째 단어는 소문자로
+					 시작하고 두 번째 단어는 대문자로 시작)된다. 이러한 이름의 예제는 ‘genreService', 'movieDao',
+					'movieFinderController' 등이다. Bean을 명명하는 일관적인 방법을 적용하는 것은 설정을 좀 더 읽기 쉽고 이해하기
+					쉽도록 만들어준다. 이러한 명명표준을 적용하는 것은 어려운 일이 아니다. Spring AOP를 사용한다면 특정 Bean
+					이름과 관련된 Bean의 세트에 advice를 적용할 때 용이해질 수 있다.
+				</para>
+			</section>
+
+			<section id="core_spring_ioc_basic_beans_instantiation">
+				<title>Bean 인스턴스화</title>
+
+				<itemizedlist>
+					<listitem>
+						<para>
+							<emphasis role="bold">생성자를 이용한 인스턴스화</emphasis>
+						</para>
+
+						<para>
+							특정 인터페이스를 구현하거나 특정 형태로 코딩 할 필요가 없다.
+					        <programlisting language="xml"><![CDATA[<bean id="sampleBean" class="sample.SampleBean"/>
+<bean name="anotherSample" class="sample.SampleBeanTwo"/>]]></programlisting>
+				        </para>
+			        </listitem>
+		        </itemizedlist>
+
+				<itemizedlist>
+					<listitem>
+						<para>
+							<emphasis role="bold">static factory 메소드를 사용한 인스턴스화</emphasis>
+						</para>
+
+						<para>
+							Bean 객체가 factory 메소드를 호출하여 생성되는 것으로, 반환 객체의 타입을 명시하지 않고
+							factory 메소드를 포함하는 클래스를 정의하고 있음에 주의한다. 아래 예제에서 createInstance()
+							메소드는 static 메소드이어야 한다.
+                            <programlisting language="xml"><![CDATA[<bean id="sampleBean" class="sample.SampleBean2" 
+    factory-method="createInstance"/>]]></programlisting>
+						</para>
+					</listitem>
+				</itemizedlist>
+
+				<itemizedlist>
+					<listitem>
+						<para>
+							<emphasis role="bold">인스턴스 factory 메소드를 사용한 인스턴스화</emphasis>
+						</para>
+
+						<para>
+							'class' 속성을 정의하지 않고 'factory-bean' 속성에 factory메소드를 포함하는 Bean을 정의한다.
+                            <programlisting language="xml"><![CDATA[<!-- the factory bean, which contains a method 
+called createInstance() --><bean id="myFactoryBean" class="…"/>
+<!-- the bean to be created via the factory bean -->
+<bean id="sampleBean"
+    ]]><emphasis role="bold">factory-bean</emphasis><![CDATA[="myFactoryBean"
+    ]]><emphasis role="bold">factory-method</emphasis><![CDATA[="createInstance"/>
+    중략...]]></programlisting>
+				        </para>
+					</listitem>
+				</itemizedlist>
+			</section>
+		</section>
+    	
+		<section id="core_spring_ioc_basic_refer">
+			<title>How to refer to Beans</title>
+
+			<para>비즈니스 레이어와 프리젠테이션 레이어에서 Spring Bean에 접근하는 방법에는 여러 가지가 있다.</para>
+
+			<section id="core_spring_ioc_basic_refer_business">
+        		<title>비즈니스 레이어</title>
+
+        		<para>비즈니스 레이어에서 사용하고자 하는 Spring Bean에 접근하는 방법은 크게 2가지 형태로 구분할 수 있다.
+        			  Dependency Lookup과 Dependency Injection 방식이 그것이다.
+        		</para>
+
+        		<itemizedlist>
+          			<listitem>
+            			<para><emphasis role="bold">Dependency Lookup</emphasis></para>
+
+			            <para>
+							저장소에 저장되어 있는 Bean에 접근하기 위하여 사용하고자 하는 Bean을 Lookup 한다. 이때
+							Bean을 개발자가 직접 Lookup하여 사용함으로써 Container에서 제공하는 API와 의존관계가 발생한다.
+							Spring IoC 컨테이너 Dependency Lookup에 대한 자세한 사항은 본 매뉴얼의 <link linkend="core_spring_ioc">IoC</link> 를 참고한다.
+				        </para>
+
+	            		<para>
+	            		 	구현 클래스는 다음과 같이 작성한다. 
+                            <programlisting language="java">public class IoCServiceImpl1 implements IoCService1, 
+        <emphasis role="bold">ApplicationContextAware</emphasis> {
+    public void setApplicationContext (ApplicationContext context) {
+        IoCService2 iocService2 = <emphasis role="bold">(IoCService2)context.getBean("IoCService2");</emphasis>
+    }
+}</programlisting>
+			        	</para>
+
+                   	 	<para>
+							속성 정의 파일은 다음과 같이 작성한다. 
+                            <programlisting language="xml"><![CDATA[<bean id="IoCService1" class="….IoCServiceImpl1">
+    중략...
+</bean>
+<bean id=]]><emphasis role="bold">"IoCService2"</emphasis><![CDATA[ class="….IoCServiceImpl2">
+    중략...
+</bean>]]></programlisting>
+						</para>
+          			</listitem>
+        		</itemizedlist>
+
+        		<itemizedlist>
+        	 	 	<listitem>
+        	 	   		<para>
+							<emphasis role="bold">Dependency Injection</emphasis>
+        	 	   		</para>
+
+           				<para>
+			           		각 클래스 사이에 필요로 하는 의존 관계가 있는 경우, 의존관계를 Container가 자동적으로 연결시켜
+			           		줌으로써 Container에서 제공하는 API와 의존관계가 없다. Spring IoC 컨테이너 Dependency
+			            	Injection에 대한 자세한 사항은 본 매뉴얼의  <link linkend="core_spring_ioc_dependencies">
+			            	Dependencies</link>를 참고한다.
+		            	</para>
+
+		            	<para>
+		            		구현 클래스는 다음과 같이 작성한다. 이 예제에서는 Setter Injection 방식을 보여주고 있다.
+            	            <programlisting language="java">public class IoCServiceImpl implements IoCService {
+    <emphasis role="bold">public void setDependencyBean(DepBean dependencyBean) {</emphasis>
+        <emphasis role="bold">this.dependencyBean = dependencyBean;</emphasis>
+    <emphasis role="bold">}</emphasis>
+    중략... 
+}</programlisting>
+					        </para>
+
+            			<para>
+            		 		속성 정의 파일은 다음과 같이 작성한다. 
+            	            <programlisting language="xml"><![CDATA[<bean id="IoCService" class="….IoCServiceImpl">
+    <]]><emphasis role="bold">property name="dependencyBean" ref="depBean"/</emphasis><![CDATA[>
+</bean>]]></programlisting>
+				        </para>
+					</listitem>
+				</itemizedlist>
+			</section>
+    	
+			<section id="core_spring_ioc_basic_refer_presentation">
+				<title>프리젠테이션 레이어</title>
+
+				<para>
+					프리젠테이션 레이어에서 Spring Bean에 접근하는 방법은 비즈니스 레이어와 마찬가지로 Dependency Lookup과
+					Dependency Injection 방식 2가지 중 선택할 수 있는데 이때 사용하는 Web Framework이 무엇인지에 따라 사용 
+					가능한 방식이 제한될 수 있으므로 주의하도록 한다. Web Framework 사용과 관련된 설정 방법은 <link linkend=
+					"core_springmvc_part"> Spring MVC</link>를 참조하도록 한다.
+				</para>
+
+				<itemizedlist>
+					<listitem>
+						<para>
+							<emphasis role="bold">Dependency Lookup (Struts)</emphasis>
+						</para>
+
+						<para>
+							Web Framework으로 Struts를 사용하는 경우, Struts Action 내에서 Spring의 Web ApplicationContext를
+							얻어내어 Spring Bean을 Lookup하도록 한다. Spring에서 제공해주는 ActionSupport 클래스의 
+							getWebApplicationContext() 메소드를 이용하여 ApplicationContext를 얻는다.
+			            </para>
+
+						<para>
+							Action 클래스는 다음과 같이 작성한다. 이 예제는 Anyframe 을 이용하여 작성된 코드로 Anyframe 의 
+							DefaultActionSupport을 상속한 UpdateMovieAction 클래스의 일부이다. movieService Bean을 
+							사용하고 있으며 이때 Bean의 id 값이 Action 클래스에 명시되어야 함에 유의하도록 한다.
+                            <programlisting language="java">public class UpdateMovieAction extends <emphasis role="bold">DefaultActionSupport</emphasis> {
+    public ActionForward process(ActionMapping mapping, ActionForm form,
+    HttpServletRequest req, HttpServletResponse res) throws Exception {
+        ApplicationContext ctx = <emphasis role="bold">getWebApplicationContext()</emphasis>;
+        MovieService movieService = (MovieServiceImpl) <emphasis role="bold">ctx.getBean</emphasis> ("movieServiceImpl");
+        중략...
+     }
+}</programlisting>
+						</para>
+
+						<para>
+							속성 정의 파일은 다음과 같이 작성한다.
+                            <programlisting language="xml"><![CDATA[<bean id=]]><emphasis 
+    role="bold">"movieServiceImpl"</emphasis>
+    <![CDATA[class="org.anyframe.plugin.core.moviefinder.service.impl.MovieServiceImpl">
+    중략...
+</bean>]]></programlisting>
+                        </para>
+					</listitem>
+				</itemizedlist>
+
+				<itemizedlist>
+					<listitem>
+						<para>
+							<emphasis role="bold">Dependency Injection (Spring MVC)</emphasis>
+						</para>
+
+						<para>
+							Web Framework으로 Spring MVC를 사용하는 경우, Controller 클래스 내에서
+							Dependency Injection 방식을 이용하여 Spring Bean을 참조할 수 있다.
+            			</para>
+
+						<para>
+							Controller 클래스는 다음과 같이 작성한다. 이 예제는 Anyframe 을 이용하여 작성된
+							MovieController 클래스의 일부이다. 
+							movieService Bean을 사용하고 있으며 이때 Bean의 id 값이 Spring MVC 속성 정의
+							파일에서 정의되고 있다.
+                            <programlisting language="java">public class MovieController {
+    <emphasis role="bold">private MovieService movieService;</emphasis>;
+
+    <emphasis role="bold">public void setMovieService(MovieService movieService) {</emphasis>
+        <emphasis role="bold">this.movieService = movieService;</emphasis>
+    }
+    중략...
+
+    public ModelAndView list(HttpServletRequest request,
+    HttpServletResponse response) throws Exception {
+        Movie movie = new Movie();
+        bind(request, movie);
+        Page resultPage = <emphasis role="bold">movieService.getPagingList(movie);</emphasis>
+    중략...
+    }
+}</programlisting>
+			            </para>
+
+						<para>
+							속성 정의 파일은 다음과 같이 작성한다.
+                            <programlisting language="xml"><![CDATA[<bean name="/coreMovie.do"
+        class="org.anyframe.plugin.core.moviefinder.web.MovieController">
+    <]]><emphasis role="bold">property name="movieService" ref="coreMovieService"/</emphasis><![CDATA[>
+    <property name="genreService" ref="coreGenreService"/>
+</bean>]]></programlisting>
+						</para>
+					</listitem>
+				</itemizedlist>
+
+				<itemizedlist>
+					<listitem>
+						<para>
+							<emphasis role="bold">Dependency Lookup (Spring MVC)</emphasis>
+						</para>
+
+						<para>
+							Web Framework으로 Spring MVC를 사용하는 경우, Controller 클래스가 아닌 일반
+							클래스에서 Dependency Lookup 방식으로 Spring Bean을 참조할 수 있다. 웹에서 Spring 설정
+							파일을 읽어들인 후, WebApplicationContext를 생성하고 이것을 해당 웹 어플리케이션의
+							ServletContext에 저장하므로 ServletContext에 접근 가능하다면 일반 클래스에서도
+							WebApplicationContext를 얻어낼 수 있게 된다.
+			            </para>
+
+						<para>
+							일반 클래스에서 다음과 같이 작성한다.
+                        <programlisting language="java"><emphasis role="bold">WebApplicationContext ctx = 
+    </emphasis><emphasis role="bold"> WebApplicationContextUtils.getWebApplicationContext(servletContext);</emphasis>
+MovieService movieService = (MovieServiceImpl)<emphasis role="bold">ctx.getBean</emphasis>("movieServiceImpl");
+    중략...</programlisting>
+						</para>
+
+						<para>
+			        		속성 정의 파일은 다음과 같이 작성한다.
+				            <programlisting language="xml"><![CDATA[<bean id=]]><emphasis role="bold">"movieServiceImpl"</emphasis>
+        <![CDATA[class="org.anyframe.plugin.core.moviefinder.service.impl.MovieServiceImpl">
+    중략...
+</bean>]]></programlisting>
+						</para>
+					</listitem>
+				</itemizedlist>
+			</section>
+    	</section>
+  	</section>
+
+	<section id="core_spring_ioc_dependencies">
+    	<title>Dependencies</title>
+
+    	<para>
+    		전형적인 기업용 어플리케이션은 한 개의 객체(또는 Spring내 Bean)로 만들어지지는 않는다. 가장 간단한
+	    	어플리케이션조차도 함께 작동하는 소량의 객체를 가진다는 것을 의심할 필요가 없을 것이다. 이 장에서는 독립적인 많은 수의
+	    	Bean들이  객체가 몇 가지 목표(대개 최종사용자가 원하는 것을 수행하는 어플리케이션)를 달성하기 위해 함께 작동하는 방법에
+	    	대해 알아보기로한다.
+		</para>
+
+		<section id="core_spring_ioc_dependencies_injection">
+      		<title>Dependency Injection(DI)</title>
+
+      		<para>
+      			각 클래스 사이의 의존관계를 빈 설정(Bean Definition)정보를 바탕으로 컨테이너가 자동적으로 연결해주는 것을
+		      	말한다. 컨테이너가 의존관계를 자동적으로 연결시켜주기 때문에 개발자들이 컨테이너 API를 이용하여 의존관계에 관여할
+		      	필요가 없게 되어 컨테이너 API에 종속되는 것을 줄일 수 있고 개발자들은 단지 Bean 설정파일(저장소 관리 파일)에서 의존 
+		      	관계가 필요하다는 정보를 추가하기만 하면 된다. 이는 Setter Injection과 Constructor Injection 형태로 구분한다.
+	  		</para>
+
+      		<section id="core_spring_ioc_dependencies_injection_setter">
+        		<title>Setter Injection</title>
+
+        		<para>
+        			setter 메소드 구현을 통해 초기화 시 Container로부터 의존 관계에 놓인 특정 리소스를 할당받는 방법으로
+        			인자가 없는 생성자나 인자가 없는 static factory 메소드가 Bean을 인스턴스화하기 위해 호출된 후 Bean의
+        			setter 메소드를 호출하여 실제화된다. 다음은 구현 클래스인 MovieServiceImpl.java 의
+        			Setter Injection 부분이다. 
+        	        <programlisting language="java"><![CDATA[public class MovieServiceImpl implements MovieService {
+    public void ]]><emphasis role="bold">set</emphasis><![CDATA[MovieDao(MovieDao movieDao) {
+        this.movieDao = movieDao;
+    }
+    중략... 
+}]]></programlisting>		
+            	</para>
+
+        		<para>
+        			다음은 Setter Injcetion 속성 정의 파일인 context-core.xml 의 일부이다. 
+        	        <programlisting language="xml"><![CDATA[<bean id="coreMovieService"
+        class="org.anyframe.plugin.core.moviefinder.service.impl.MovieServiceImpl">
+    <]]><emphasis role="bold">property name="movieDao" ref="coreMovieDao"</emphasis><![CDATA[ />
+</bean>
+	
+<bean id="coreMovieDao" 
+        class="org.anyframe.plugin.core.moviefinder.service.impl.MovieDao">
+</bean>]]></programlisting>
+				</para>
+      		</section>
+
+      		<section id="core_spring_ioc_dependencies_injection_constructor">
+        		<title>Constructor Injection</title>
+
+       			<para>
+	       			Constructor 구현을 통해 초기화 시 Container로부터 의존 관계에 놓인 특정 리소스를 할당받는
+			     	방법으로 각각의 협력자를 표시하는 다수의 인자를 가진 생성자를 호출하여 실제화된다. 추가적으로, Bean을 생성하기
+			     	위한 특정 인자를 가진 static factory 메소드를 호출하는 것은 대부분 동등하게 간주될 수 있다. 다음은 구현 클래스인
+	        	    MovieServiceImpl.java 의 Constructor Injection 부분이다.
+        	        <programlisting language="java"><![CDATA[public class MovieServiceImpl implements MovieService {
+    MovieDao movieDao;
+    ]]><emphasis role="bold">public MovieServiceImpl(MovieDao movieDao) {</emphasis>
+        <![CDATA[super(movieDao);
+        ]]><emphasis role="bold">this.movieDao = movieDao;</emphasis><![CDATA[}
+        중략...
+}]]></programlisting>
+				</para>
+
+        		<para>
+        			다음은 Constructor Injcetion 속성정의 파일인 context-core.xml 의 일부이다. 
+        	        <programlisting language="xml"><![CDATA[<bean id="coreMovieService" 
+    class="org.anyframe.plugin.core.moviefinder.service.impl.MovieServiceImpl">
+    <]]><emphasis role="bold">constructor-arg ref="coreMovieDao"/</emphasis><![CDATA[>
+</bean>
+        
+<bean id="coreMovieDao" 
+        class="org.anyframe.plugin.core.moviefinder.service.impl.MovieDao">
+    중략...
+</bean>]]></programlisting>
+				</para>
+
+        		<para>
+        			type 속성 정의를 이용하면, Constructor의 argument에 대한 클래스 타입을 명시적으로 정의할 수도  있다. 
+        	        <programlisting language="xml"><![CDATA[<bean id="coreMovieService" 
+    class="org.anyframe.plugin.core.moviefinder.service.impl.MovieServiceImpl">
+    <constructor-arg ]]><emphasis role="bold">type="org.anyframe.plugin.core.moviefinder.service.BeanA"</emphasis><![CDATA[ ref="beanA"/>
+    <constructor-arg ]]><emphasis role="bold">type="org.anyframe.plugin.core.moviefinder.service.BeanB"</emphasis><![CDATA[ ref="beanB"/>
+</bean>]]></programlisting>
+				</para>
+
+        		<para>
+        			Constructor의 argument 개수가 2개 이상이고, 동일한 클래스 타입의 argument가 존재할 경우
+        			모호함을 없애기 위해, index 속성 정의를 통해 argument의 순서대로 할당할 값을 정의할 수 있다.
+        	        <programlisting language="xml"><![CDATA[<bean id="coreMovieService"
+    class="org.anyframe.plugin.core.moviefinder.service.impl.MovieServiceImpl">
+    <constructor-arg index="0" ref="beanA" /> 
+    <constructor-arg index="1" ref="beanB" /> 
+</bean>]]></programlisting>
+				</para>
+      		</section>
+      		
+			<section id="core_spring_ioc_dependencies_injection_compare">
+        		<title>Setter Injection vs. Constructor Injection</title>
+
+        		<informaltable>
+        			<caption>Setter Injection과 Constructor Injection 비교</caption>
+					<tgroup cols="2">
+						<thead>
+							<row>
+								<entry align="center">Setter Injection 장점</entry>
+
+								<entry align="center">Constructor Injection 장점</entry>
+							</row>
+						</thead>
+
+						<tbody>
+							<row>
+								<entry>- 생성자 Parameter 목록이 길어 지는 것 방지</entry>
+
+								<entry align="left">- 강한 의존성 계약 강제</entry>
+							</row>
+
+							<row>
+								<entry>- 생성자의 수가 많아 지는 것 방지</entry>
+
+								<entry align="left">- Setter 메소드 과다 사용 억제</entry>
+							</row>
+
+							<row>
+								<entry>- Circular dependencies 방지</entry>
+
+								<entry align="left">
+									- 불필요한 Setter 메소드를 제거함으로써 실수로 속성 값을 변경하는 일을 
+								                사전에 방지</entry>
+							</row>
+						</tbody>
+					</tgroup>
+        		</informaltable>
+
+       		 	<itemizedlist>
+          			<listitem>
+            			<para><emphasis role="bold">Circular dependencies</emphasis></para>
+
+            			<para>
+            				Constructor Injection 사용 시 주의해야 한다. 다음과 같이 두 개의 서로 다른 Bean이
+            				생성자 Argument로 서로의 Bean을 참조하는 경우가 그 예이다. 
+            	            <programlisting language="xml"><![CDATA[<bean id="beanFirst" class="test.BeanFirst">
+    <constructor-arg ref="beanSecond" />
+</bean>
+
+<bean id="beanSecond" class="test.BeanSecond">
+    <constructor-arg ref="beanFirst" />
+</bean>]]></programlisting>
+						</para>
+          			</listitem>
+        		</itemizedlist>
+			</section>
+
+      		<section id="core_spring_ioc_dependencies_injection_factor">
+       	 		<title>생성자 인자 분석</title>
+
+        		<para>생성자 인자 분석 시 사용되는 방법에는 타입 대응과 인덱스가 있다.</para>
+
+        		<itemizedlist>
+          			<listitem>
+            			<para><emphasis role="bold">생성자의 인자 타입 대응(match)</emphasis></para>
+
+            			<para>
+            				'type' 속성을 사용하여 생성자의 인자 타입을 명확하게 명시함으로써 간단한 타입으로의 타입 매치를 
+            				사용할 수 있다. 
+            	            <programlisting language="xml"><![CDATA[<bean id="sampleBean" class="sample.SampleBean">
+    <constructor-arg ]]><emphasis role="bold">type="int"</emphasis><![CDATA[><value>7500000</value></constructor-arg>
+    <constructor-arg ]]><emphasis role="bold">type="java.lang.String"</emphasis><![CDATA[><value>42</value></constructor-arg>
+</bean>]]></programlisting>
+						</para>
+          			</listitem>
+        		</itemizedlist>
+
+        		<itemizedlist>
+          			<listitem>
+            			<para><emphasis role="bold">생성자의 인자 인덱스</emphasis></para>
+
+            			<para>
+            				생성자의 인자는 index 속성을 사용하여 명확하게 명시된 인덱스를 가질 수 있다. 또한 인덱스를 명시하는
+			           		것은 생성자의 인자들이 같은 타입을 가질 경우 발생하는 모호함의 문제도 해결한다. (인덱스는 0 부터 시작된다
+			           		는 것에 주의하여야 한다.)
+            	            <programlisting language="xml"><![CDATA[<bean id="sampleBean" class="sample.SampleBean">
+    <constructor-arg ]]><emphasis role="bold">index="0"</emphasis><![CDATA[ value="7500000"/>
+    <constructor-arg ]]><emphasis role="bold">index="1"</emphasis><![CDATA[ value="42"/>
+</bean>]]></programlisting>
+						</para>
+          			</listitem>
+        		</itemizedlist>
+      		</section>
+      		<section id="core_spring_ioc_dependencies_xml_shortcut_with_the_c-namespace">
+       	 		<title>c-namespace 기반의 XML 단축표현</title>
+        		<para>Spring 3.1 버전부터 소개된 c-namespace를 이용하면, 중첩하여 표현된 복잡한 constructor-arg 요소를 축약된 형태의 생성자 인자 속성으로 간단히 나타낼 수 있다.
+       	            <programlisting language="xml"><![CDATA[<beans xmlns="http://www.springframework.org/schema/beans"
+  xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+  ]]><emphasis role="bold">xmlns:c="http://www.springframework.org/schema/c"</emphasis><![CDATA[
+  xsi:schemaLocation="http://www.springframework.org/schema/beans
+      http://www.springframework.org/schema/beans/spring-beans.xsd">
+      
+  <bean id="bar" class="x.y.Bar"/>
+  <bean id="baz" class="x.y.Baz"/>
+
+  <-- 'traditional' declaration -->      
+  <bean id="foo" class="x.y.Foo">
+      <constructor-arg ref="bar"/>
+      <constructor-arg ref="baz"/>
+      <constructor-arg value="foo@bar.com"/>
+  </bean>
+
+  <-- 'c-namespace' declaration -->
+  <bean id="foo" class="x.y.Foo" ]]><emphasis role="bold">c:bar-ref="bar" c:baz-ref="baz" c:email="foo@bar.com"</emphasis><![CDATA[>
+
+</beans>]]></programlisting>    		
+        		</para>
+      			<para>간혹 생성자의 인자값을 알 수 없는 경우 (일반적으로 디버깅 정보없이 컴파일된 bytecode의 경우), 다음과 같이 대안으로 인자의 순번을 이용할 수 있다.
+       	            <programlisting language="xml"><![CDATA[<-- 'c-namespace' index declaration -->
+<bean id="foo" class="x.y.Foo" ]]><emphasis role="bold">c:_0-ref="bar" c:_1-ref="baz"</emphasis><![CDATA[>]]></programlisting>
+					<note>
+						<para>
+							XML 문법의 제약사항으로 인하여, XML의 속성명은 숫자로 시작할 수 없다. 따라서 순번을 이용하는 경우에는 _(언더바) 문자를 XML 속성명 앞에 표기하여야 한다.				
+						</para>
+					</note>    		
+        		</para>
+      			<para>실제 상황에서, 생성자 분석 메커니즘은 굳이 순번을 이용할 필요가 없을 정도로 상당히 효율적이다. 따라서 설정시 생성자의 순번 대신 인자명을 기술하는 방식을 권장한다.</para>
+
+			</section>
+    	</section>
+
+		<section id="core_spring_ioc_dependencies_property">
+			<title>Bean Property와 생성자 인자</title>
+
+			<para>
+				Bean Property와 생성자의 인자는 다른 관리 Bean(협력자), 또는 인라인으로 정의된 값을 참조할 수 있다.
+				Spring의 XML-기반의 설정 메타데이터는 이러한 목적을 위한 <![CDATA[<property>]]>
+				와 <![CDATA[<constructor-arg>]]> 내에서 많은 수의 하위 태그를 지원한다.
+			</para>
+
+			<itemizedlist>
+				<listitem>
+					<para>
+						<emphasis role="bold">Primitive Type - 순수값 지원</emphasis>
+					</para>
+
+					<para>
+						<![CDATA[<value>]]>는
+						사람이 읽을 수 있는 문자열 표현처럼 Property나 생성자의 인자를 명시한다.
+					    <programlisting language="xml"><![CDATA[<bean id="myDataSource" destroy-method="close">
+    <property name="driverClassName">
+        <]]><emphasis role="bold">value</emphasis><![CDATA[>]]><emphasis
+		    role="bold">com.mysql.jdbc.Driver</emphasis><![CDATA[<]]><emphasis
+		role="bold">/value</emphasis><![CDATA[>
+    </property>
+</bean>]]></programlisting>
+					</para>
+				</listitem>
+			</itemizedlist>
+
+			<itemizedlist>
+				<listitem>
+					<para>
+						<emphasis role="bold"> <![CDATA[<ref>]]>
+							요소
+						</emphasis>
+					</para>
+
+					<para>
+						다른 bean에 대한 참조인 <![CDATA[<ref>]]>는  <![CDATA[<constructor-arg>]]>
+						또는 <![CDATA[<property>]]>
+						내부에 허용되는 마지막 요소이다. 이것은 Container에 의해 관리되는 다른 Bean을
+						참조하기 위해 Property의 값을 셋팅하는데 사용된다. 모든 참조는 궁극적으로 다른 객체에 대한 참조이지만 다른
+						객체의 id/name을 명시하는 방법은 3가지가 있다. <![CDATA[<ref>]]>의 bean 속성을 사용하여 대상 bean을
+                                                                명시하는 것이 가장 일반적인 형태이고 같은 Container(같은 XML파일이든 아니든)나 부모 Container 내에서 
+                                                                어떠한 Bean에 대한 참조를 생성하는 것을 허용할 것이다. 'bean' 속성의 값은 대상 bean의 'id' 속성이나
+						'name' 속성의 값 중 하나가 될 것이다.
+					</para>
+
+					<itemizedlist>
+						<listitem>
+							<para>
+								타 Bean 참조
+							    <programlisting language="xml"><![CDATA[<!-- ‘bean’ 속성 값은 타 Bean의 ‘id’ 속성 혹은 ‘name’ 속성이다. -->
+<ref bean="someBean"/>]]></programlisting>
+							</para>
+
+							<para>
+							    <programlisting language="xml"><![CDATA[<!-- ‘local’ 속성 값은 동일 XML 파일 내 타 Bean의 ‘id’ 속성이다. -->
+<ref local="someBean"/>]]></programlisting>
+							</para>
+						</listitem>
+
+						<listitem>
+							<para>
+								parent context에 존재하는 타 Bean 참조(parent 속성 사용)
+							    <programlisting language="xml"><![CDATA[<!-- in the parent context -->
+<bean id="]]><emphasis role="bold">accountService</emphasis><![CDATA[" 
+        class="com.foo.SimpleAccountService">
+    <!-- insert dependencies as required as here -->	
+</bean>]]></programlisting>
+							</para>
+
+							<para>
+							    <programlisting language="xml"><![CDATA[<!-- in the child (descendant) context -->
+<bean id="movieService" class="com.foo.SimpleMovieService">
+    <]]><emphasis role="bold">ref parent="accountService"</emphasis><![CDATA[/>
+</bean>]]></programlisting>
+							</para>
+						</listitem>
+					</itemizedlist>
+				</listitem>
+			</itemizedlist>
+
+			<itemizedlist>
+				<listitem>
+					<para>
+						<emphasis role="bold">inner Bean</emphasis>
+					</para>
+
+					<para>
+						<![CDATA[<property>]]> 나 <![CDATA[<constructor-arg>]]> 내부의 <![CDATA[<bean>]]>
+						은 inner bean이라 불리는 것을 정의하기 위해 사용된다. inner bean 정의시 언급된 id나 name,
+						scope값은 Container에 의해 무시되기 때문에 id나 name값을 명시하지 않는 것이 가장 좋다.
+						inner bean은 언제나 익명이고 prototype 형태로 동작한다.
+					    <programlisting language="xml"><![CDATA[<bean id="outer" class="…">
+    <!-- instead of using a reference to a target bean, simply define the target inline -->
+    <property name="target">
+        <]]><emphasis role="bold">bean class="com.mycompany.Person"</emphasis><![CDATA[> 
+            <!-- this is the inner bean -->
+            <property name="name" value="Fiona Apple"/>
+            <property name="age" value="25"/>
+        <]]><emphasis role="bold">/bean</emphasis><![CDATA[>
+    </property>
+</bean>]]></programlisting>
+					</para>
+				</listitem>
+			</itemizedlist>
+
+			<itemizedlist>
+				<listitem>
+				
+					<para>
+						<emphasis role="bold">Collection</emphasis>
+					</para>
+
+					<para> 
+						<![CDATA[<list> , <set> , <map>과 <props>]]>은 Java Collection의 List, Set, Map and Properties의 
+						타입으로 매핑된다. 또한 객체 Array 타입의 경우에도 콤마(,)를 이용하여 값을 설정할 수 있다(ex. String]).
+					    <programlisting language="xml"><![CDATA[<bean id="moreComplexObject" class="sample.ComplexObject">
+    <!-- results in a setAdminEmails(]]><emphasis role="bold">java.util.Properties</emphasis><![CDATA[) call -->
+    <property name="adminEmails">
+        <props>
+            <prop key="administrator">administrator@somecompany.org</prop>
+        </props>
+    </property>
+
+    <!-- results in a setSomeList(]]><emphasis role="bold">java.util.List</emphasis><![CDATA[) call -->
+    <property name="someList"> 
+        <list>
+            <value>a list element followed by a reference</value>
+                <ref bean="myDataSource" />
+        </list>
+    </property>
+
+    <!-- results in a setSomeMap(]]><emphasis role="bold">java.util.Map</emphasis><![CDATA[) call -->
+    <property name="someMap">
+        <map>
+            <entry>
+                <key>
+                    <value>entry key</value>
+                </key>
+                    <value>entry value</value>
+             </entry>
+        </map>
+    </property>
+
+    <!-- results in a setSomeSet(]]><emphasis role="bold">java.util.Set</emphasis><![CDATA[) call -->
+    <property name="someSet">
+        <set>
+            <value>just some string</value>
+                <ref bean="myDataSource" />
+        </set>
+    </property>
+
+    <!-- results in a setSomeArray(]]><emphasis role="bold">String[]</emphasis><![CDATA[) call -->
+    <property name="someArray" value="str1,str2,str3,str4"/>  
+</bean>]]></programlisting>
+					</para>
+				</listitem>
+			</itemizedlist>
+
+			<itemizedlist>
+				<listitem>
+					<para>
+						<emphasis role="bold">Collection 병합</emphasis>
+					</para>
+
+					<para>
+						부모역할을 하는  <![CDATA[<list> , <map> , <set> 또는 <props>]]>를
+						정의하고 이를 상속받는  <![CDATA[<list> , <map> , <set> 또는 <props>]]>를
+						정의하는 것이 가능하다.
+						예를 들면, 자식 collection의 값은 부모 collection내 명시된 값과 자식 collection내 명시된 값을
+						 병합하여 얻어진다.
+					</para>
+
+					<para>
+						예제설명) child Bean의 adminEmails Property의  <![CDATA[<props>]]>에서
+						<emphasis role="bold">merge=true</emphasis>속성을
+						사용하면, child Bean이 Container에 의해 실질적으로 분석되고 인스턴스화 될때,
+						부모의 adminEmails collection과 자식의 adminEmails collection이 병합된 형태의 adminEmails collection
+						을 가지게 된다. 이 병합 행위는  <![CDATA[<list> , <map>, 그리고 <set>]]> collection 타입에 유사하게
+						적용된다. 단,  <![CDATA[<list>]]>의 경우, 이 의미는 List collection 타입과 관련된다. 
+						이를테면, value의 ordered collection의 개념은 유지관리된다. 부모값은 모든 자식 목록의 값에 선행한다. 
+						Map, Set, Properties collection 타입의 경우, Container에 의해 내부적으로 사용되는 Map, Set 그리고 
+						Properties 객체 타입에 관련된 collection 타입의 영향을 받는다.
+					    <programlisting language="xml"><![CDATA[<beans>
+    <bean id="parent" abstract="true" class="sample.ComplexObject">
+        <property name="adminEmails">
+            <props>
+                <prop key="administrator">administrator@somecompany.com</prop>
+                <prop key="support">support@somecompany.com</prop>
+            </props>
+        </property>
+    </bean>
+    <bean id="child" ]]><emphasis role="bold">parent="parent"</emphasis><![CDATA[>
+        <property name="adminEmails">
+        <!-- the merge is specified on the *child* collection definition -->
+            <props ]]><emphasis role="bold">merge="true"</emphasis><![CDATA[>
+                <prop key="sales">sales@somecompany.com</prop>
+                <prop key="support">support@somecompany.co.uk</prop>
+            </props>
+        </property>
+    </bean>
+<beans>]]></programlisting>
+					</para>
+
+					<para>
+						위 설정 결과 adminEmails Collection은 다음과 같이 구성된다.
+					</para>
+					
+					<para>
+						administrator=administrator@somecompany.com
+						sales=sales@somecompany.com 
+						support=support@somecompany.co.uk
+					</para>
+				</listitem>
+			</itemizedlist>
+
+			<itemizedlist>
+				<listitem>
+					<para>
+						<emphasis role="bold"> <![CDATA[<null> 요소]]></emphasis>
+					</para>
+
+					<para> 
+						<![CDATA[<null>]]>은 null 값을 다루기 위해 사용된다.
+                        <programlisting language="xml"><![CDATA[<bean class="SampleBean">
+    <property name="email"><]]><emphasis role="bold">null/</emphasis><![CDATA[></property>
+</bean>]]></programlisting>
+					</para>
+
+					<para>
+						위코드는 Java Code의 sampleBean.setEmail(null)과 동일하다. 다음과 같이 정의한
+						경우에는 Java Code의 sampleBean.setEmail("")과 동일하다.
+					    <programlisting language="xml"><![CDATA[<bean class="SampleBean">
+    <property name="email"><]]><emphasis role="bold">value</emphasis><![CDATA[><]]><emphasis
+	    role="bold">/value</emphasis><![CDATA[></property>
+</bean>]]></programlisting>
+					</para>
+				</listitem>
+			</itemizedlist>
+			
+			<section id="core_spring_ioc_dependencies_property_short">
+        		<title>XML 기반의 설정 메타데이터 간략화</title>
+
+        		<para>
+        			value나 Bean 참조를 위해 필요한 공통사항이다. 완전한 형태의  <![CDATA[<value>]]> 와
+        			<![CDATA[<ref>]]>를 사용하는 것보다 간략화한 몇 가지 형태를 사용할 수 있다.  <![CDATA[<property>]]>,
+         			<![CDATA[<constructor-arg>]]>, 그리고  <![CDATA[<entry>]]> 모두 완전한 형태의  <![CDATA[<value>]]>
+        			요소 대신에 'value' 속성을 지원한다. 예를 들어 코드1이 코드2의 형태로 간략화 될 수 있다.
+        	        <programlisting language="xml"><![CDATA[<!-- 코드 1 -->
+<property name="myProperty"><]]><emphasis role="bold">value</emphasis><![CDATA[>]]><emphasis
+        role="bold">hello</emphasis><![CDATA[<]]><emphasis role="bold">/value</emphasis><![CDATA[></property>]]></programlisting>
+         		</para>
+
+        		<para>
+                    <programlisting language="xml"><![CDATA[<!-- 코드 2 -->
+<property name="myProperty" ]]><emphasis role="bold">value="hello"/</emphasis><![CDATA[> ]]></programlisting>
+				</para>
+      		</section>
+
+      		<section id="core_spring_ioc_dependencies_property_compound">
+        		<title>혼합된 Property 명(Compound Property) - shortcut 기능 제공</title>
+
+       			<para>
+       				복합적인 형태의 Property 정의가 가능하다. 마지막 Property명을 제외한 나머지 Property는
+        			null이 아니어야 함에 유의하도록 한다.
+        		</para>
+
+        		<mediaobject>
+          			<imageobject>
+           				<imagedata align="center"
+                       		fileref="../image/core/spring/ioc-property.jpg" />
+          			</imageobject>
+          			<textobject>
+          				<phrase>Fred라는 객체가 Bob이라는 객체를 포함하고 있고, Bob이라는 객체가 Sammy라는 객체를 포함하고 있는 경우 
+          				Fred가 Null이거나 Bob이 Null일 때 NullPointerException이 발생함을 표현하는 그림이다.</phrase>
+          			</textobject>
+        		</mediaobject>
+
+        		<para>
+                    <programlisting language="xml"><![CDATA[<bean id="foo" class="foo.Bar">
+    <property name="fred.bob.sammy" value="123" />
+</bean>]]></programlisting>
+					위 예제에서 foo bean은 bob Property를 가지는 fred
+		        	Property를 가진다. 그리고 bob Property는 sammy Property를 가지고 마지막 sammy
+		        	Property는 123값으로 셋팅된다. 이렇게 되도록 하기 위해서는 foo의 fred Property, 그리고 fred의
+		        	bob Property는 bean이 생성된 후에 null이 아니어야만 한다. 그렇지 않으면
+		        	NullPointerException이 던져질 것이다.
+        		</para>
+      		</section>
+    	</section>
+    	
+    	<section id="core_spring_ioc_dependencies_depends">
+      		<title>depends-on 속성 사용</title>
+
+      		<para>
+      			'depends-on' 속성은 Bean 이전에 초기화되어야 하는 하나 이상의 Bean을 명시적으로 강제하기 위해
+      			사용된다. 다음은 depends-on 속성이 설정되어 있는 context-core.xml 파일의 일부이다. 
+      	        <programlisting language="xml"><![CDATA[<bean id="coreMovieService"
+    class="org.anyframe.plugin.core.moviefinder.service.impl.MovieServiceImpl" 
+    autowire="byType" ]]><emphasis role="bold">depends-on="coreMovieDao"</emphasis><![CDATA[>
+</bean>]]></programlisting>
+	  		</para>
+
+      		<para>
+      			다중 bean에 의존성을 표시할 필요가 있다면 아래의 예와 같이 콤마, 공백 그리고 세미콜론과 같은 모든 유효한 
+				구분자를 사용하여 'depends-on'속성의 값으로 bean 이름 목록을 정의할 수 있다. 그러나 이 ‘depends-on’ 
+				속성을 사용하게 될 상황은 매우 드물다. 
+                <programlisting language="xml"><![CDATA[<bean id="beanOne" class="SampleBean" ]]><emphasis
+    role="bold">depends-on="manager,accountDao"</emphasis><![CDATA[>
+    <property name="manager" ref="manager" />
+</bean>
+
+<bean id="manager" class="ManagerBean" />
+<bean id="accountDao" class="x.y.jdbc.JdbcAccountDao" />]]></programlisting>
+	  		</para>
+
+      		<para>
+      			위의 예제는 beanOne Bean이 생성되기 이전에 manager Bean이 생성되어 특정 서버를 구동시켜놓거나 특정
+		     	 리소스에 대한 작업을 수행해놓고 있어야 beanOne Bean이 정상적으로 동작하므로 강제적으로 manager Bean을
+		      	초기화시킨다.
+	  		</para>
+    	</section>
+
+    	<section id="core_spring_ioc_dependencies_instantiation">
+      		<title>Lazy Instantiation</title>
+
+      		<para>
+      			기본적으로 Spring IoC Container가 Start될 때 singleton Bean에 대해서는 모두 인스턴스화한다.
+      		</para>
+
+      		<para>
+      			- 특정 singleton Bean을 Container가 Start될 때 인스턴스화 시키지 않고 처음 Bean 요청이
+      			들어왔을 때 인스턴스화 시키고자 하면 ‘lazy-init’ 속성을 설정한다. 다음은 Lazy Instantiation 속성이
+      			설정되어 있는 파일인 context-core.xml 파일의 일부이다.
+      	        <programlisting language="xml"><![CDATA[<bean id="coreMovieDao" 
+    class="org.anyframe.plugin.core.moviefinder.service.impl.MovieDaoImpl" lazy-init="true"/>
+<bean id="coreMovieService" 
+        class="org.anyframe.plugin.core.moviefinder.service.impl.MovieServiceImpl"/>]]></programlisting>
+      		</para>
+
+      		<para>
+      			- 모든 Bean들에 대해서 기본적으로 Lazy 인스턴스화 시키고자 하면 ‘default-lazy-init’ 속성을
+      			설정하면 된다. 
+      	        <programlisting language="xml"><![CDATA[<beans ]]><emphasis role="bold">default-lazy-init="true"</emphasis><![CDATA[>
+    <!-- no beans will be eagerly pre-instantiated -->
+</beans>]]></programlisting>
+	  		</para>
+    	</section>
+
+    	<section id="core_spring_ioc_dependencies_autowiring">
+			<title>Autowiring</title>
+
+      		<para>
+      			Spring IoC Container는 Bean들 사이의 관계를 autowire 할 수 있다. 이것은
+		      	BeanFactory의 내용을 조사함으로써 Spring이 자동적으로 협력자(다른 bean)를 분석하는 것이 가능하다는 것을
+		      	의미한다. autowiring을 사용하면 명백하게 많은 양의 타이핑을 줄이고 Property나 생성자의 인자를 명시할 필요를
+		      	줄이거나 제거하는 것이 가능해진다. XML-기반의 설정 메타데이터를 사용할 때, Bean정의를 위한 autowire 모드는
+		       	<![CDATA[<bean>]]>의 autowire 속성을 사용하면 된다.  <![CDATA[<bean>]]>의 autowire 속성에 정의할 수 있는
+		      	값은 다음과 같다.
+		    </para>
+
+			<informaltable>
+				<caption>autowire 속성값 목록</caption>
+        		<tgroup cols="2">
+               		<colspec colnum="1" colname="col1" colwidth="2*"/>
+					<colspec colnum="2" colname="col2" colwidth="8*"/>
+			
+          			<thead>
+	            		<row>
+	              			<entry align="center">속성</entry>
+	
+	              			<entry align="center">설명</entry>
+	            		</row>
+	          		</thead>
+	
+	          		<tbody>
+	            		<row>
+	              			<entry>no</entry>
+	
+	              			<entry>[기본 설정] Autowiring 기능 사용 안 함</entry>
+	            		</row>
+	
+	            		<row>
+	              			<entry>byName</entry>
+	
+	              			<entry>Property 명과 동일한 id나 name을 가진 Bean을 찾아 Autowiring 기능 적용</entry>
+	            		</row>
+	
+	            		<row>
+	              			<entry>byType</entry>
+	
+	              			<entry>해당 Property 타입의 Bean이 하나 존재한다면 Autowiring되나 하나 이상 존재 시
+	              				UnsatisfiedDependencyException 발생됨. 만약 대응되는 Bean이 없다면 Property 셋팅 안됨</entry>
+	            		</row>
+	
+	            		<row>
+	              			<entry>constructor</entry>
+	
+	              			<entry>이것은 byType과 유사하지만 생성자의 인자에 적용됨. BeanFactory내 생성자의 인자 타입과
+	              			맞는 Bean이 정확하게 하나가 아닐 경우 UnsatisfiedDependencyException
+	              			발생됨</entry>
+	            		</row>
+	
+	            		<row>
+	              			<entry>autodetect</entry>
+	
+	              			<entry>constructor 모드 수행 후 byType 모드가 수행됨</entry>
+	            		</row>
+	
+	            		<row>
+	              			<entry>default</entry>
+	
+	              			<entry> <![CDATA[<beans>]]>의 default-autowire 속성에 설정한 autowire 모드가 해당
+	              					Bean에 적용됨</entry>
+	            		</row>
+	          		</tbody>
+	        	</tgroup>
+			</informaltable>
+
+      		<para>다음은 Autowiring 속성이 설정되어 있는 context-core.xml 파일의 일부이다.</para>
+
+            <para>
+                <programlisting language="xml"><![CDATA[<bean id="coreMovieService"
+    class="org.anyframe.plugin.core.moviefinder.servicce.impl.MovieServiceImpl" 
+    ]]><emphasis role="bold">autowire="byType"</emphasis><![CDATA[ depends-on="coreMovieDao">
+</bean>]]></programlisting>
+	  		</para>
+      		
+      		<section id="core_spring_ioc_dependencies_autowiring_pros">
+        		<title>장점</title>
+
+        		<itemizedlist>
+          			<listitem>
+            			<para>Property나 생성자의 인자를 XML에 설정할 필요 없음</para>
+          			</listitem>
+
+          			<listitem>
+            			<para>XML 파일 크기 줄어듬</para>
+         		 	</listitem>
+
+          			<listitem>
+			            <para>참조 관계에 있는 타 Bean들의 변경 및 추가 시 XML 파일의 변경이 최소화됨</para>
+			        </listitem>
+
+          			<listitem>
+						<para>동일한 이름의 Bean을 XML에 중복 정의하여 사용하는 혼동을 없애 줌</para>
+					</listitem>
+        		</itemizedlist>
+      		</section>
+
+      		<section id="core_spring_ioc_dependencies_autowiring_cons">
+        		<title>단점</title>
+
+        		<itemizedlist>
+          			<listitem>
+            			<para>Bean들의 관계가 명시적으로 문서화되지 않음으로써 기대되지 않는 결과를 가지지 않게 주의해야 함</para>
+          			</listitem>
+
+          			<listitem>
+            			<para>타입에 의한 Autowiring은 잠재적인 모호함을 가져올 수 있음</para>
+          			</listitem>
+        		</itemizedlist>
+
+        		<para>
+        			* Autowiring 대상에서 특정 Bean을 제외하려면 autowire-candidate 속성을 false로 설정해주어야 한다. 
+        	        <programlisting language="xml"><![CDATA[<bean id="bean" class="sample.TestBean” ]]><emphasis
+    role="bold">autowire-candidate="false"</emphasis><![CDATA[ />]]></programlisting>
+        		</para>
+      		</section>
+    	</section>
+    	
+		<section id="core_spring_ioc_dependencies_check">
+			<title>Dependency Check</title>
+
+			<para>
+				해당 Bean에 설정된 모든 Property들(Primitive Type/Collection 및 Bean 참조)이
+				제대로 설정되었는지 확인한다.
+      		</para>
+
+			<itemizedlist>
+				<listitem>
+					<para>
+						<emphasis role="bold"> <![CDATA[<bean>]]>의
+							dependency-check 속성 설정
+						</emphasis>
+					</para>
+	
+					<informaltable>
+						<caption>dependency-check 속성값 목록</caption>
+						<tgroup cols="2">
+							<colspec colnum="1" colname="col1" colwidth="2*" />
+							<colspec colnum="2" colname="col2" colwidth="8*" />
+							<thead>
+								<row>
+									<entry align="center">모드</entry>
+		
+									<entry align="center">설명</entry>
+								</row>
+							</thead>
+		
+							<tbody>
+								<row>
+									<entry>
+										<emphasis role="bold">none</emphasis>
+									</entry>
+		
+									<entry>
+										[기본 설정] 의존성 확인 안 함. 참조관계의 Bean이 존재하지 않는 경우 Property 설정 안 함
+									</entry>
+								</row>
+		
+								<row>
+									<entry>
+										<emphasis role="bold">simple</emphasis>
+									</entry>
+		
+									<entry>Primitive Type과 collection을 위해 의존성 확인 수행</entry>
+								</row>
+		
+								<row>
+									<entry>
+										<emphasis role="bold">object</emphasis>
+									</entry>
+		
+									<entry>참조관계의 Bean을 위해 의존성 확인 수행</entry>
+								</row>
+		
+								<row>
+									<entry>
+										<emphasis role="bold">all</emphasis>
+									</entry>
+		
+									<entry>simple과 object 모드를 모두 수행</entry>
+								</row>
+							</tbody>
+						</tgroup>
+					</informaltable>
+		
+					<para>
+						다음은 Dependency Check의 속성 정의 예시이다.
+		                <programlisting language="xml"><![CDATA[<bean id="coreMovieService" 
+    class="org.anyframe.plugin.….MovieServiceImpl" ]]><emphasis role="bold">dependency-check="object"</emphasis><![CDATA[>
+    property name="coreMovieDao" ref="coreMovieDao" />
+</bean>]]></programlisting>
+					</para>
+		
+					<para>
+						또한 다음과 같은 방법으로 모든 Bean들에 대해서 동일하게 Dependency Check 여부를 설정할 수 있다.
+						<programlisting language="xml"><![CDATA[<]]><emphasis role="bold">beans default-dependency-check="none"</emphasis><![CDATA[>
+    <!-- no beans will be eagerly pre-instantiated -->
+</beans>]]></programlisting>
+					</para>
+				</listitem>
+			</itemizedlist>
+		</section>
+  	</section>
+
+	<section id="core_spring_ioc_mi">
+		<title>Method Injection</title>
+
+		<para>
+			Dependency Injection의 방법인 setter injection과 constructor injection을 사용할 경우, Singleton Bean은 참조하는 
+			Bean들을 Singleton 형태로 유지하게 된다. 그런데 특별한 경우에는 Singleton Bean이 Non Singleton Bean(즉, Prototype
+			Bean)과 Dependency 관계를 가질 수 있다. 이 같은 상황이 발생할 때 Lookup Method Injection을 사용하여 해결하는 것이 가능
+			하다. 동일한 상황에서 BeanFactoryAware를 구현하여 해결하는 방법도 존재하나 Spring Container API에 종속적으로 Bean
+			코드가 변경되므로 바람직한 해결 방법이 아니다.
+    	</para>
+
+		<itemizedlist>
+			<listitem>
+				<para>Lookup Method Injection</para>
+			</listitem>
+
+			<listitem>
+				<para>Method Replacement</para>
+			</listitem>
+		</itemizedlist>
+
+		<section id="core_spring_ioc_mi_lookup">
+			<title>Lookup Method Injection</title>
+
+			<para>Singleton Bean이 Prototype Bean을 참조해야 할 경우  <![CDATA[<lookup-method>]]>를
+				설정한다. 다음은 Lookup Method Injection을 이용하여 참조 관계를 정의한
+				context-core.xml 의 일부이다.
+                <programlisting language="xml"><![CDATA[<bean id="coreMovieService"
+    class="org.anyframe.plugin.core.moviefinder.service.impl.MovieServiceImpl">
+    <!-- method injection -->
+    <]]><emphasis role="bold">lookup-method</emphasis><![CDATA[ name="getMovieDao" bean="coreMovieDao"/> 		
+</bean>
+
+<!-- change scope from singleton to prototype (non singleton) -->
+<bean id="coreMovieDao" 
+        class="org.anyframe.plugin.core.moviefinder.service.impl.MovieDao" ]]><emphasis
+        role="bold">scope="prototype"</emphasis><![CDATA[/>]]></programlisting>
+			</para>
+
+			<para>
+				해당 lookup 메소드는 다음과 같이 MovieDao 리턴하는 형태로 메소드를 구현하도록 한다.
+				<programlisting language="java">public class MovieServiceImpl … {
+    public <emphasis role="bold">MovieDao</emphasis> getMovieDao(){
+        // do nothing - this method will be overrided by Spring Container
+        return null;
+    }
+    중략...
+}</programlisting>
+			</para>
+		</section>
+
+		<section id="foundaiton_spring_ioc_mi_replacement">
+			<title>Method Replacement</title>
+
+			<para>
+				이미 존재하는 기존의 메소드를 수정하지 않은 상태에서 메소드의 기능을 변경하고자 할 때
+       			<![CDATA[<replaced-method>]]>를 이용한다. 사용 예제는 다음과 같다.
+			</para>
+
+			<itemizedlist>
+				<listitem>
+					<para>구현 클래스</para>
+
+					<para>
+                        Spring Framework에서 제공하는 MethodReplacer 인터페이스를 구현한 클래스를 생성하고,
+                        reimplement 메소드 내에 로직을 구성한다.
+                        <programlisting language="java">import org.springframework.beans.factory.support.MethodReplacer;
+public class SayHelloMethodReplacer <emphasis role="bold">implements MethodReplacer</emphasis>{
+    public Object <emphasis role="bold">reimplement</emphasis> (Object target, Method method, Object[] args)
+        throws Throwable {
+        중략...</programlisting>
+					</para>
+				</listitem>
+			</itemizedlist>
+
+			<itemizedlist>
+				<listitem>
+					<para>
+						속성 정의 파일
+                        <programlisting language="xml"><![CDATA[<bean id="beanFirst" class="test.BeanFirst"/>          
+<bean id="beanSecond" class=" test.BeanSecond">
+    <]]><emphasis role="bold">replaced-method name="sayHello" replacer="methodReplacer"</emphasis><![CDATA[>
+        <]]><emphasis role="bold">arg-type</emphasis><![CDATA[>]]><emphasis
+        role="bold">String</emphasis><![CDATA[<]]><emphasis role="bold">/arg-type</emphasis><![CDATA[>
+    </replaced-method>
+</bean>
+<bean ]]><emphasis role="bold">id="methodReplacer" class="test.SayHelloMethodReplacer"</emphasis><![CDATA[/>]]></programlisting>
+					</para>
+
+					<para>
+					 	위 속성 정의 파일에서는 BeanSecond 클래스의 sayHello 메소드 실행 시점에, 앞서 정의한
+						MethodReplacer가 적용되도록 정의하고 있음을 알 수 있다.
+         			</para>
+				</listitem>
+			</itemizedlist>
+		</section>
+	</section>
+
+	<section id="core_spring_ioc_extensions">
+		<title>Bean과 Container의 확장</title>
+
+		<para>
+			Spring Framework의 Container는 기본적으로 확장이 되도록 설계되어 있다. 모든 어플리케이션
+			개발자들이 확장하여 사용할 필요는 없고 확장할 필요성이 있는 경우에 확장하여 사용하도록 한다. 
+			다음 각각의 항목 별로 기본적으로 제공되는 내용과 확장하여 사용할 수 있는 내용을 설명한다.
+		</para>
+
+		<itemizedlist>
+			<listitem>
+				<para>Bean Scope</para>
+			</listitem>
+
+			<listitem>
+				<para>Bean Life Cycle</para>
+			</listitem>
+
+			<listitem>
+				<para>Bean 상속</para>
+			</listitem>
+
+			<listitem>
+				<para>Container 확장</para>
+			</listitem>
+
+			<listitem>
+				<para>ApplicationContext 활용</para>
+			</listitem>
+		</itemizedlist>
+
+		<section id="core_spring_ioc_extensions_scope">
+			<title>Bean Scope</title>
+
+			<para>
+				Spring Framework에서 지원하는 5가지 Scope에 따라 Bean의 인스턴스 생성 메커니즘이 결정된다.
+				서비스 Scope은 설계, 개발 단계에서 결정하기 어려우므로, 기본적으로는 Default Scope인 Singleton으로
+				개발하고, 추후 해당 서비스의 성격에 따라 Scope을 정의하는 것이 좋다.
+	  		</para>
+
+			<itemizedlist>
+				<listitem>
+					<para> <![CDATA[<bean>]]>의
+						scope 속성값
+					</para>
+
+					<informaltable>
+						<caption>scope 속성값 목록</caption>
+						<tgroup cols="2">
+							<colspec colnum="1" colname="col1" colwidth="2*" />
+							<colspec colnum="2" colname="col2" colwidth="8*" />
+							<thead>
+								<row>
+									<entry align="center">속성</entry>
+
+									<entry align="center">설명</entry>
+								</row>
+							</thead>
+
+							<tbody>
+								<row>
+									<entry>
+										<emphasis role="bold">singleton</emphasis>
+									</entry>
+
+									<entry>
+										[기본 설정] Spring IoC Container 내에서 Bean 정의 당 하나의 Bean 객체 생성
+									</entry>
+								</row>
+
+								<row>
+									<entry>
+										<emphasis role="bold">prototype</emphasis>
+									</entry>
+	
+									<entry>매번 같은 Type의 새로운 Bean 객체 생성</entry>
+								</row>
+	
+								<row>
+									<entry>
+										<emphasis role="bold">request</emphasis>
+									</entry>
+	
+									<entry>WebApplicationContext 유형의 Container 사용 시, Http
+										request 당 하나의 Bean 객체 생성</entry>
+								</row>
+	
+								<row>
+									<entry>
+										<emphasis role="bold">session</emphasis>
+									</entry>
+	
+									<entry>
+										WebApplicationContext 유형의 Container 사용 시, Http
+										session 당 하나의 Bean 객체 생성
+									</entry>
+								</row>
+	
+								<row>
+									<entry>
+										<emphasis role="bold">globalSession</emphasis>
+									</entry>
+	
+									<entry>
+										WebApplicationContext 유형의 Container 사용 시, portlet
+										context 내에서만 유효하며 global Http session 당 하나의 Bean 객체
+										생성
+									</entry>
+								</row>
+							</tbody>
+						</tgroup>
+					</informaltable>
+	
+					<para>
+						이 외에도, custom scope을 통해 신규 Scope에 대해 정의할 수 있다.
+					</para>
+				</listitem>
+			</itemizedlist>
+
+			<section id="core_spring_ioc_extensions_scope_singleton">
+				<title>Singleton</title>
+
+				<mediaobject>
+					<imageobject>
+						<imagedata align="center" fileref="../image/core/spring/ioc-singleton.jpg" />
+					</imageobject>
+					<textobject>
+						<phrase>Singleton Scope을 나타내는 그림으로써, Singleton Scope은 여러 개의 요청에 대해 동일한 Bean 인스턴스가 Injection되어 사용됨을 표현하고 있다.</phrase>
+					</textobject>
+				</mediaobject>
+
+				<para>
+					Singleton Scope은 기본 Scope으로 여러 개의 요청에 대해 하나의 Bean 인스턴스를 생성하여
+					제공한다. 따라서 Client Request마다 유지해야 하는 Data가 있다면, Singleton Scope의 서비스는
+					적합하지 않다. 다음은 Singleton Scope의 속성 정의 예시이다.
+                    <programlisting language="xml"><![CDATA[<bean id="coreMovieService" 
+        class="org.anyframe.plugin.core.moviefinder.service.impl.MovieServiceImpl" 
+        scope="singleton”>
+    <property name="coreMovieDao" ref="coreMovieDao" />
+</bean>
+<bean id="coreMovieDao" 
+        class="org.anyframe.plugin.core.moviefinder.service.impl.MovieDao”>
+    중략...
+</bean>]]></programlisting>
+				</para>
+
+				<para>
+					위와 같이 singleton scope을 정의 할 수 있지만 scope의 기본 설정값이 singleton이므로
+					따로 정의해야 할 필요가 없다.
+        		</para>
+			</section>
+
+			<section id="core_spring_ioc_extensions_scope_prototype">
+				<title>Prototype</title>
+
+				<mediaobject>
+					<imageobject>
+						<imagedata align="center" fileref="../image/core/spring/ioc-prototype.jpg" />
+					</imageobject>
+					<textobject>
+						<phrase>>Prototype Scope을 나타내는 그림으로써, Prototype Scope은 매번 요청시마다 새로운 인스턴스가 생성되어 Injection됨을 표현하고 있다.</phrase>
+					</textobject>
+				</mediaobject>
+
+				<para>
+					Prototype Scope은 요청시마다 Bean 인스턴스를 생성하여 제공한다. 따라서 여러 Client가 동시에
+					한 Bean 인스턴스에 접근할 수 없다. 다음은 Prototype Scope의 속성 정의 예시이다.
+				    <programlisting language="xml"><![CDATA[<bean id="coreMovieService" 
+        class="org.anyframe.plugin.core.moviefinder.service.impl.MovieServieImpl"
+        scope="prototype”>
+    <property name="coreMovieDao" ref="coreMovieDao" />
+</bean>]]></programlisting>
+				</para>
+
+				<para>
+					※ 일반적으로 인스턴스의 Singleton 여부를 판단하기 위해서 전역변수의 존재 여부를 이용한다. 즉, 전역변수가 
+					존재하지 않은 인스턴스의 경우에는 Singleton, 전역변수가 존재하는 경우에는 Prototype 으로 정의할 수 있다. 
+					그러나 해당 전역변수가 read-only인지 writable 가능한지에 따라서  이 같은 구분은 변경될 수 있다. 따라서 인스턴스를 Singleton으로 생성할지 Prototype으로 생성할지에 대한 여부에 
+					 대해서는  개발자들이 해당 Scope의 인스턴스가 메모리에서 어떻게 사용되는지를 이해하는 것이 가장 좋다.
+				</para>
+
+				<itemizedlist>
+					<listitem>
+						<para>Singleton</para>
+	
+						<para>
+							- Shared objects with no state
+						</para>
+	
+						<para>
+							- Shared object with read-only state
+						</para>
+	
+						<para>
+							- Shared object with shared state : 이 경우에는 Synchronization을
+							적절하게 사용하여 동시성을 제어하도록 해야 한다.
+						</para>
+	
+						<para>
+							- High throughput objects with writable state : 일반적으로 Object
+							Pooling과 같은 기능을 사용하는 것을 예로 들 수 있다. 인스턴스를 생성하는데 많은 비용이 발생하거나 무수히
+							 많은 인스턴스를 관리할 필요가 있는 경우에는 Object Pooling을 사용하고 Pooling 대상이 되는 인스턴스는
+							Singleton으로 사용할 수 있다. 이 경우에도 Writable State에 변경이 발생할 때 Synchronization을 
+							적절하게 사용해야 한다.
+	            		</para>
+					</listitem>
+				</itemizedlist>
+
+				<itemizedlist>
+					<listitem>
+						<para>Prototype</para>
+	
+						<para>- Objects with writable state</para>
+	
+						<para>- Objects with private state</para>
+					</listitem>
+				</itemizedlist>
+			</section>
+
+			<section id="core_spring_ioc_extensions_scope_other">
+				<title>Other Scopes</title>
+
+				<para>
+					request, session, globalSession Scope 사용 시 주의 사항은 다음과 같다.
+				</para>
+
+				<itemizedlist>
+					<listitem>
+						<para>
+							Web 기반의 ApplicationContext 사용시에만 이 Scope들을 사용할 수 있으며 그 외의 경우
+							사용하게 되면 IllegalStateException이 발생한다.
+            			</para>
+					</listitem>
+
+					<listitem>
+						<para>
+							Scope이 다른 Bean에서 참조하는 경우 Bean 정의 시<![CDATA[<aop:scoped-proxy/>]]>와
+							함께 작성해야 한다.(아래의 예시 참고)
+						</para>
+
+						<para>
+							moviePreferences Bean은 scope이 session이지만 coreMovieService Bean의 scope이
+							singleton(default가 singleton)이기 때문에 문제가 발생한다. 즉, 매 세션마다 moviePreferences 
+							객체를 만들어줘야 하지만 coreMovieService Bean에 의해 MoviePreferences 객체가 한 번만
+							생성되기 때문에 원하던 대로 동작하지 못하는 것이다. 따라서 매 세션 마다 새로운 객체를 만들어서 줄 Proxy를
+							만들기 위해서 <![CDATA[<aop:scoped-proxy/>]]>를 사용하도록 한다.
+						    <programlisting language="xml"><![CDATA[<!-- a HTTP Session-scoped bean exposed as a proxy -->
+<bean id="moviePreferences"
+        class="org.anyframe.plugin.core.moviefinder.service.impl.MoviePreferences" ]]>
+        <emphasis role="bold">scope="session"</emphasis><![CDATA[>
+    <!-- this next element effects the proxying of the surrounding bean -->
+    <]]><emphasis role="bold">aop:scoped-proxy/</emphasis><![CDATA[>
+</bean>
+<!-- a singleton-scoped bean injected with a proxy to the above bean -->
+<bean id="coreMovieService" 
+        class="org.anyframe.plugin.core.moviefinder.service.impl.MovieServiceImpl">
+    <!-- a reference to the proxied 'moviePreferences' bean -->
+    <]]><emphasis role="bold">property name="moviePreferences" ref="moviePreferences"</emphasis><![CDATA[/>
+</bean>]]></programlisting>
+						</para>
+					</listitem>
+				</itemizedlist>
+			</section>
+
+			<section id="core_spring_ioc_extensions_scope_custom">
+				<title>Custom</title>
+
+				<para>
+					신규 Scope을 정의하기 위한 클래스를 생성하고, org.springframework.beans.factory.config.Scope 
+					인터페이스를 implements한다. 또한 CustomScopeConfigurer를 이용하여 신규 정의한 Custom Scope을 등록하여 
+					Custom Scope를 사용할 수 있도록 한다.
+        		</para>
+
+				<para>
+					해당 프로젝트에 적합한 Scope을 아래의 예시와 같이 직접 정의할 수 있다.
+				    <programlisting language="xml"><![CDATA[<!-- 신규 Scope 정의를 위한 클래스를 정의하고, 
+org.springframework.beans.factory.config.Scope 인터페이스를 implement한다.-->
+<bean class=]]><emphasis role="bold">"org.springframework.beans.factory.config.CustomScopeConfigurer"</emphasis><![CDATA[>
+<!-- CustomScopeConfigurer를 이용하여 Custom Scope 등록  -->
+    <property name="scopes">
+        <map>
+            <]]><emphasis role="bold">entry key="thread"</emphasis><![CDATA[>
+            <]]><emphasis role="bold">bean class="com.foo.ThreadScope"/</emphasis><![CDATA[>
+            <]]><emphasis role="bold">/entry</emphasis><![CDATA[>
+        </map>
+    </property>
+</bean>
+
+<!-- Custom Scope 사용 -->
+<bean id="bar" class="x.y.Bar" ]]><emphasis role="bold">scope="thread"</emphasis><![CDATA[>
+    <property name="name" value="Rick"/>
+    <aop:scoped-proxy/>
+</bean>]]></programlisting>
+				</para>
+			</section>
+		</section>
+    	
+    	<section id="core_spring_ioc_extensions_lifecycle">
+      		<title>Bean Life Cycle</title>
+
+      		<para>
+      			Bean의 Life Cycle은 다음 그림에서와 같이 Initialization, Activation,
+      			Destruction으로 구성된다.</para>
+
+      		<mediaobject>
+        		<imageobject>
+          			<imagedata align="center"
+                     	fileref="../image/core/spring/ioc-lifecycle.jpg" />
+        		</imageobject>
+        		<textobject>
+        			<phrase>Spring Bean의 LifeCycle은 Initializaion ->Activation -> Destruction으로 구성되어 있음을 나타내는 그림</phrase>
+        		</textobject>
+      		</mediaobject>
+
+			<section id="core_spring_ioc_extensions_lifecycle_initial">
+        		<title>Initialization</title>
+
+        		<para>
+        			Spring Container는 아래 그림에서 보여지는 여러 과정을 통해 구동된다. Spring Bean 클래스가
+        			아래 그림에서 보여지는 각각의 인터페이스들을 구현하였을 때 각각의 메소드들이 호출된다.
+        		</para>
+
+        		<mediaobject>
+          			<imageobject>
+            			<imagedata align="center"
+                       		fileref="../image/core/spring/ioc-initialization.jpg" />
+          			</imageobject>
+          			<textobject>
+          				<phrase>Spring Container가 구동되는 여러 과정을 표현하고 있는 그림이다. BeanFactory를 통해 Bean 설정 파일을 찾고, 해당 Bean을 생성한 이후에 
+          				Bean들의 참조 관계를 처리한다. 그리고 BeanNameAware, BeanFactoryAware, InitializaingBean 등과 같은 인터페이스를 구현한 Bean의 경우 인터페이스
+          				구현 메소드를 실행시켜주는 순서로 동작하게 됨을 표현하고 있다.</phrase>
+          			</textobject>
+        		</mediaobject>
+
+        		<para>
+        			Spring Framework에서 지원하는 Life Cycle 메소드를 그대로 사용할 경우 특정한 인터페이스를
+		        	구현해야 하므로, 해당 코드가 Spring Framework에 의존적일 수 있게 된다. 즉, 위 그림에서 제시하고 있는
+		        	Life Cycle 메소드를 사용하기 위해서는 Spring Bean 클래스에서 해당 Life Cycle 인터페이스 클래스를
+		        	구현해줘야 한다. 예를 들어, ApplicationContextAware 인터페이스 클래스를 구현한 Spring Bean에서는
+		        	setApplicationContext(ApplicationContext context) 메소드를 작성하고, Spring
+		        	Bean 내부에서 ApplicationContext를 이용하여 ApplicationContext에서 제공하는 메소드를 호출할 수 있다. 
+                    <programlisting language="java">public class IoCServiceImpl1 implements IoCService1, 
+    <emphasis role="bold">ApplicationContextAware</emphasis> {
+    public void setApplicationContext (ApplicationContext context){
+        IoCService2 iocService2 = <emphasis role="bold">(IoCService2)context.getBean("IoCService2")</emphasis>;
+    }
+}</programlisting>
+				</para>
+
+        		<para>
+        			또다른 예로 MessageSourceAware 인터페이스 클래스의 경우, Spring Container에 정의된
+			        MessageSource를 얻기 위해 사용될수 있다. MessageSourceAware 인터페이스 클래스를 구현한 Spring
+			        Bean에서 setMessages(MessageSource messages) 메소드를 작성하여 MessageSource에 접근할 수 있다. 
+	                <programlisting language="java">public class IoCServiceImpl1 implements IoCService1, <emphasis role="bold">MessageSourceAware</emphasis> {
+    private MessageSource messageSource;
+    public void setMessageSource(MessageSource messageSource) {
+        this.messageSource = messageSource;
+    }
+}</programlisting>
+				</para>
+
+        		<para>
+        			이와는 달리 Bean 속성(init-method, destroy-method) 정의를 통해 특정 인터페이스에 대한
+        			구현없이 별도 Life Cycle 메소드를 정의할 수도 있다. 다음은 init-method 속성이 정의된
+        			context-core.xml 의 일부이다.         
+                    <programlisting language="xml"><![CDATA[<bean id="coreMovieService"
+        class="org.anyframe.plugin.core.moviefinder.service.impl.MovieServiceImpl" 
+        ]]><emphasis role="bold">init-method="movieInitialize"</emphasis><![CDATA[ destroy-method="movieDestroy" parent="parent">
+</bean>]]></programlisting>
+				</para>
+
+        		<para>
+        			모든 Bean에 대한 초기화 method 설정은  <![CDATA[<beans>]]>의 default-init-method
+        			속성을 이용하도록 한다.
+        		</para>
+      		</section>
+
+      		<section id="core_spring_ioc_extensions_lifecycle_destruction">
+        		<title>Destruction</title>
+
+        		<para>Destruction 단계에서는 BeanFactory와 ApplicationContext가 동일하게 동작한다.</para>
+
+        		<mediaobject>
+					<imageobject>
+						<imagedata align="center"
+							fileref="../image/core/spring/ioc-destruction.jpg" />
+						</imageobject>
+						<textobject>
+							<phrase>Spring Container 종료 시점에 수행되는 절차를 표현한 그림으로써 대상 Bean이 DisposableBean 인터페이스를 구현하고 있는 경우
+							destroy 메소드를 실행하고, 대상 Bean의 속성 정의시 destroy-method 속성값을 정의하였다면 해당 메소드를 실행해주는 형태로 동작함을 표현하고 있다.</phrase>
+						</textobject>
+				</mediaobject>
+
+        		<para>
+        			다음은 destroy-method 속성이 정의된 context-core.xml 의 일부이다. 
+                    <programlisting language="xml"><![CDATA[<bean id="coreMovieService"
+        class="org.anyframe.plguin.core.moviefinder.service.impl.MovieServiceImpl" 
+        init-method="movieInitialize" ]]><emphasis role="bold">destroy-method="movieDestroy"
+        </emphasis><![CDATA[parent="parent">
+</bean>]]></programlisting>
+				</para>
+
+        		<para>
+        			모든 Bean의 소멸자 method 설정은  <![CDATA[<beans>]]>의 default-destroy-method 속성을 이용한다.
+        		</para>
+      		</section>
+    	</section>
+
+    	<section id="core_spring_ioc_extensions_inheritance">
+      		<title>Bean 상속</title>
+
+      		<para>
+      			Bean 정의는 여러 속성 정보들, 생성자 인자, Property 값을 포함하여 많은 양의 설정 정보를 포함한다. 자식
+		      	Bean은 부모 정의로부터 설정 정보를 상속하여 정의한다. 그러므로 값을 오버라이드하거나 다른 것을 추가할 수 있다. 
+		      	상속 관계를 이용하여 Bean을 정의하는 것은 XML 파일의 양을 줄일 수 있으므로 템플릿 형태의 부모 Bean을 정의하는 것은 
+		      	유용하다. XML 기반의 속성 정의시 자식 Bean은 부모 Bean을 명시하기 위해 'parent' 속성을 사용해야 한다.
+		    </para>
+
+      		<itemizedlist>
+        		<listitem>
+          			<para>부모 Bean 정의</para>
+
+          			<para>
+          				특수 설정 없이 부모 Bean으로 사용이 가능하며 class 속성 값을 설정하지 않은 경우, 반드시
+			          	abstract 속성 값을 "true"로 설정한다. abstract 속성 값이 "true"인 경우 Bean의 인스턴스화가
+			          	불가능하다.
+			        </para>
+        		</listitem>
+      		</itemizedlist>
+
+      		<itemizedlist>
+		        <listitem>
+		          <para>자식 Bean 정의</para>
+		
+		          <para>parent 속성 값에 부모 Bean의 id 혹은 name을 설정한다.</para>
+		    	</listitem>
+		    </itemizedlist>
+
+      		<para>
+      			다음은 Bean 상속이 표현되어 있는 context-core.xml 의 일부이다.
+      	        <programlisting language="xml"><![CDATA[<!-- register parent bean that has a dependency with coreMovieDao bean -->
+<bean ]]><emphasis role="bold">id="parent"</emphasis><![CDATA[ abstract="true">
+    <property name="coreMovieDao" ref="coreMovieDao" />	
+</bean>
+
+<bean id="coreMovieService" 
+        class="org.anyframe.plugin.core.moviefinder.service.impl.MovieServiceImpl" 
+        init-method="movieInitialize" destroy-method="movieDestroy" 
+        parent="parent">
+</bean>]]></programlisting>
+	  		</para>
+    	</section>
+
+    	<section id="core_spring_ioc_extensions_container">
+      		<title>Container 확장</title>
+
+      		<section id="core_spring_ioc_extensions_container_postprocess">
+        		<title>Bean 후처리</title>
+
+        		<para>
+        			Bean의 LifeCycle 중 Initialization 단계에서 Bean 초기화 시점 전후에 수행되는 것을 <emphasis role="bold">
+        			Bean 후처리</emphasis>라고 하며, BeanPostProcessor를 구현하면 기능을 확장할 수 있다. ApplicationContext 
+        			유형의 Container 사용 시에는 XML 파일에 BeanPostProcessor 인터페이스를 구현한 클래스를 등록만 시키면
+        			Container가 해당 클래스를 BeanPostProcessor로 인식하여 각각의 Bean을 초기화하기 전과 후에 후처리 메소드를
+        			호출해준다. 그러나 BeanFactory 유형의 Container를 사용하고 있다면 BeanFactory의 addBeanPostProcessor()
+        		           메소드를 이용하여 프로그램 상에서 등록해야 한다. 예시는 다음과 같다.
+        	        <programlisting language="java">public class InstantiationTracingBeanPostProcessor 
+    <emphasis role="bold">implements BeanPostProcessor</emphasis> {
+    // simply return the instantiated bean as-is
+    public Object <emphasis role="bold">postProcessBeforeInitialization</emphasis>(Object bean, String beanName) 
+        throws BeansException {
+        return bean; // we could potentially return any object reference here
+    }
+  
+    public Object <emphasis role="bold">postProcessAfterInitialization</emphasis>(Object bean, String beanName) 
+        throws BeansException {
+        System.out.println("Bean '" + beanName + "' created : " + bean.toString());
+        return bean;
+    }
+}  
+</programlisting>
+				</para>
+
+				<para>
+                   <programlisting language="xml"><![CDATA[<bean class=]]><emphasis
+                   role="bold">"scripting.InstantiationTracingBeanPostProcessor"</emphasis><![CDATA[/>]]></programlisting>
+        	    </para>
+			</section>
+
+			<section id="core_spring_ioc_extensions_container_factory">
+        		<title>BeanFactory 후처리</title>
+
+        	<para>
+        		BeanFactoryPostProcessor를 구현하여 BeanFactory 후처리 기능을 확장할 수 있다. 
+        		모든 Bean에 대한 정의가 로딩된 후, BeanPostProcessor Bean을 포함한 어떤 Bean이라도 인스턴스화되기 이전에
+		        Spring Container에 의해 BeanFactoryPostProcessor의 postProcessBeanFactory() 메소드가 호출된다. 
+		                     따라서, BeanFactoryPostProcessor 인터페이스를 구현한 클래스 내에서 postProcessBeanFactory 메소드를 작성하고,
+		        Bean으로 정의하면 된다.
+	        	예시는 다음과 같다.
+        	</para>
+
+            <para>
+                <programlisting language="java">public class BeanCounterBeanFactoryPostProcessor
+    <emphasis role="bold">implements BeanFactoryPostProcessor</emphasis> {
+    public void <emphasis role="bold">postProcessBeanFactory</emphasis>(ConfigurableListableBeanFactory factory) 
+        throws BeansException {
+        중략...
+    }
+}</programlisting>
+			    <programlisting language="xml"><![CDATA[<bean class=]]><emphasis role="bold">"test.BeanCounterBeanFactoryPostProcessor"</emphasis><![CDATA[/>]]></programlisting>
+              	BeanFactoryPostProcessor는 BeanFactory 유형의 Container와 함께 사용될 수 없다. 
+              	유용한 BeanFactoryPostProcessor 구현 클래스는 PropertyPlaceholderConfigurer와 CustomEditorConfigurer이다.
+        	</para>
+
+        	<para>
+        		다음은 PropertyPlaceholderConfigurer와 CustomEditorConfigurer에 대한 사용 예이다.
+        	</para>
+
+        	<itemizedlist>
+				<listitem>
+            		<para><emphasis role="bold">설정 정보의 외부화</emphasis></para>
+
+            		<para>
+            			PropertyPlaceholderConfigurer를 사용하여 하나 이상의 외부 Property 파일로부터
+		            	속성들을 로딩하고 그 속성들을 이용하여 Bean 정의 XML 파일에서의 위치소유자(placeholder) 변수들을
+		            	채운다.
+		            </para>
+
+            		<para>
+		            	다음은 설정 정보 외부화를 위해 PropertyPlaceholderConfigurer 클래스를 Bean으로
+		            	등록하고 있는 context-core.xml 의 속성 정의
+		            	부분이다.
+            	        <programlisting language="xml"><![CDATA[<!-- set file locations --> 
+<bean id="configurer" class="org.springframework.beans.factory.config.]]><emphasis role="bold">PropertyPlaceholderConfigurer</emphasis><![CDATA[">
+    <property name="locations">
+        <list>
+            <value>]]><emphasis role="bold">MovieConfigurer.properties</emphasis><![CDATA[</value>
+        </list>
+    </property>
+</bean>
+ 
+<bean id="coreMoiveService" 
+        class="org.anyframe.plugin.core.moviefinder.service.impl.MovieServiceImpl">
+    <property name="coreMovieDao" ref="coreMovieDao" />
+    <!-- set movieTitle value using key name in properties file -->
+    <property name="movieTitle" value=]]><emphasis role="bold">"${movie.title}"</emphasis><![CDATA[></property>
+</bean>]]></programlisting>
+					</para>
+
+            		<para>
+            			위에서 외부 파일로 정의된 movieConfigurer.properties 의 내용은 다음과 같다.
+                        <programlisting language="java">movie.title=Shrek   </programlisting>
+             		</para>
+          		</listitem>
+        	</itemizedlist>
+
+        	<itemizedlist>
+				<listitem>
+            		<para>
+            			<emphasis role="bold">PropertyEditor 확장</emphasis>
+            		</para>
+
+            		<para>
+            			CustomEditorConfigurer를 사용하여 java.beans.PropertyEditor의 커스텀
+		            	구현 클래스를 등록하여 특성 값을 다른 특성 타입으로 번역할 수 있도록 한다. 확장한 PropertyEditor
+		            	클래스를 속성 정의 파일에 등록 후 PropertyEditor로 사용한다. 
+            	        <programlisting language="xml"><![CDATA[<bean id="customEditorConfigurer"          
+        class="org.springframework.beans.factory.config.]]><emphasis role="bold">CustomEditorConfigurer</emphasis><![CDATA[">
+    <property name="customEditors">
+        <map>
+            <entry key="com.springinaction.knight.PhoneNumber">
+            <bean id="phoneEditor"          
+	            class="com.springinaction.springcleaning.]]><emphasis role="bold">PhoneNumberEditor</emphasis><![CDATA[" />
+            </entry>
+        </map>
+    </property>
+</bean>]]></programlisting>
+			        </para>
+
+            		<para>
+                        <programlisting language="xml"><![CDATA[<bean id="knight" class="com.springinaction.knight.KnightOnCall">
+    <property name="url" value="http://www.knightoncall.com" />
+    <property name=]]><emphasis role="bold">"phoneNumber"</emphasis><![CDATA[ value="940-555-1234" />
+</bean>]]></programlisting>
+					</para>
+          		</listitem>
+        	</itemizedlist>
+      	</section>
+    </section>
+
+    <section id="core_spring_ioc_extensions_application">
+		<title>ApplicationContext 활용</title>
+
+		<section id="core_spring_ioc_extensions_application_message">
+        	<title>MessageSource를 활용한 국제화(I18N) 지원</title>
+
+        	<para>
+	        	ApplicationContext 인터페이스는 MessageSource라고 불리는 인터페이스를 확장해서
+	       		 메시징(국제화 지원)기능을 제공하며 HierarchicalMessageSource와 함께 구조적인 메시지를 분석하는 능력을
+	        	가진다. MessageSourceAware인터페이스를 구현하는 Bean은 ApplicationContext의
+	        	messageSource Bean을 사용할 수 있다.
+	        </para>
+
+        	<para>
+        		다음은 context-common.xml 의 messageSource 속성 정의 부분이다. 
+        	    <programlisting language="xml"><![CDATA[<bean id=]]><emphasis role="bold">"messageSource"
+        </emphasis><![CDATA[ class="org.springframework.context.support.ResourceBundleMessageSource">
+    <property name=]]><emphasis role="bold">"basenames"</emphasis><![CDATA[>
+        <list><value>]]><emphasis role="bold">message/message-moviemgmt</emphasis><![CDATA[</value></list>
+    </property>
+</bean>]]></programlisting>
+			</para>
+
+	        <para>
+	        	Resource Bundle 파일은 국제화 지원을 위해 Locale별 파일로 구성하며 위에서 참조하는 properties 파일은 다음과 같다. 
+        	   <programlisting language="java">errors.required={0} is a required field.  </programlisting>
+        	</para>
+
+ 			<para>
+	        	또한 messageSource를 얻는 부분은 다음과 같이 구현되어 있다. 
+        	    <programlisting language="java">new String(messageSource.getMessage("errors.required", new Object[] {"TITLE"},
+    Locale.KOREA).getBytes("8859_1"), "euc-kr")</programlisting>
+        	</para>
+
+	        <para>
+	        	messageSource 부분을 테스트 할수있는 파일을 수행시키면 다음과 같은	message를 확인할 수 있다. 
+        	    <programlisting language="java">"TITLE" 필드는 반드시 필요하다.</programlisting>
+        	</para>
+      	</section>
+
+      	<section id="core_spring_ioc_extensions_application_event">
+			<title>Event</title>
+
+        	<para>
+	        	ApplicationContext는 어플리케이션이 구동하는 동안 다수의 이벤트를 발생시킬 수 있으므로,
+	        	Listener를 Bean으로 등록하게 되면, Container는 해당하는 Event가 발생하면 관련 Listener의
+	        	onApplicationEvent() 메소드를 호출한다.
+	        </para>
+
+	        <itemizedlist>
+	          <listitem>
+	            <para><emphasis role="bold">Built-in Events</emphasis></para>
+	
+	            <informaltable>
+	            	<caption>Built-in Event 목록</caption>
+	              <tgroup cols="2">
+	              	<colspec colnum="1" colname="col1" colwidth="3*"/>
+					<colspec colnum="2" colname="col2" colwidth="7*"/>
+	                <thead>
+	                  <row>
+	                    <entry align="center">이벤트</entry>
+	
+	                    <entry align="center">설명</entry>
+	                  </row>
+	                </thead>
+	
+	                <tbody>
+	                  <row>
+	                    <entry align="left">
+	                      <emphasis role="bold">ContextRefreshedEvent</emphasis>
+	                    </entry>
+	
+	                    <entry align="left">ApplicationContext가 초기화되거나
+	                    	갱신(refresh)될 때 발생하는 이벤트 - 여기서 초기화는 모든 Bean이 로드되고 Singleton
+	                    	Bean들은 미리 인스턴스화되며 ApplicationContext는 사용할 준비가 된다는 것을
+	                    	의미함</entry>
+	                  </row>
+	
+	                  <row>
+	                    <entry align="left">
+	                      <emphasis role="bold">ContextClosedEvent</emphasis>
+	                    </entry>
+	
+	                    <entry align="left">
+	                    	ApplicationContext의 close()메소드를 사용하여
+	                    	ApplicationContext가 종료될 때 발생하는 이벤트 - 여기서 종료는 Singleton
+	                    	Bean들이 소멸(destroy)되는 것을 의미함
+	                    </entry>
+	                  </row>
+	
+	                  <row>
+	                    <entry align="left">
+	                      <emphasis role="bold">RequestHandledEvent</emphasis>
+	                    </entry>
+	
+	                    <entry align="left">
+	                    	HTTP Request가 처리되었을 때
+	                    	WebApplicationContext 내에서 발생하는 이벤트 - 이 이벤트는 Spring의
+	                    	DispatcherServlet을 사용하는 웹 어플리케이션에서만 적용 가능함
+	                    </entry>
+	                  </row>
+	                </tbody>
+	              </tgroup>
+	            </informaltable>
+
+            	<para>
+            		ApplicationListener를 구현한 Listener의 예시는 다음과 같다.
+            	    <programlisting language="java">public class RefreshListener implements <emphasis role="bold">ApplicationListener</emphasis> {
+    public void <emphasis role="bold">onApplicationEvent(ApplicationEvent evt)</emphasis> {
+        if (evt instanceof ContextRefreshedEvent) { 
+             중략...
+        }
+    }
+}</programlisting>
+				</para>
+
+            	<para>
+            		앞서 구현한 RefreshListener 클래스에 대한 속성 정의 예시는 다음과 같다.
+            		<programlisting language="xml"><![CDATA[<bean id="refreshListener" class="sample.RefreshListener"/>]]></programlisting>
+            	</para>
+          	</listitem>
+		</itemizedlist>
+
+        <itemizedlist>
+          <listitem>
+            <para><emphasis role="bold">Custom Event 발생</emphasis></para>
+
+            <para>
+            	사용자 정의 Event를 직접 발생시키고 해당 Event 발생 시 처리될 수 있도록 Listener를
+            	등록하는 것도 가능하다. Event Listening을 하기 위해서는 Listener 등록이 필요하다. 
+            	다음은 Listener Bean을 등록하는 context-core.xml 파일의 일부이다. 
+                <programlisting language="xml"><![CDATA[<bean id="movieEventListener" 
+    class="org.anyframe.plugin.core.moviefinder.service.impl.MovieEventListener"/>]]></programlisting>
+            </para>
+
+            <para>
+            	다음은 Custom Event인 MovieEvent를 처리하고 있음을 알 수 있다. 
+            	<programlisting language="java">public class movieEventListener <emphasis role="bold">implements ApplicationListener</emphasis> {
+    public void <emphasis role="bold">onApplicationEvent</emphasis>(ApplicationEvent evt) {
+        if (evt instanceof <emphasis role="bold">MovieEvent</emphasis>) {
+            MovieEvent event = (MovieEvent)evt;
+            System.out.println("Received in MovieEventListener : " + 
+                event.getMovieMessage());
+        }
+    }
+}</programlisting>
+			</para>
+
+            <para>
+            	다음은 Custom Event인 MovieEvent를 발생시키는 부분이다. 
+            	<programlisting language="java">this.ctx.publishEvent(new MovieEvent(this,"new movie is added successfully."));</programlisting>
+            </para>
+          </listitem>
+        </itemizedlist>
+      </section>
+
+      <section id="core_spring_ioc_extensions_application_comp">
+		<title>BeanFactory와 ApplicationContext 특징 비교</title>
+
+		<informaltable>
+			<caption>BeanFactory와 ApplicationContext 특징 비교</caption>
+			<tgroup cols="3">
+				<colspec colnum="1" colname="col1" colwidth="5*"/>
+					<colspec colnum="2" colname="col2" colwidth="2*"/>
+					<colspec colnum="3" colname="col3" colwidth="3*"/>
+		            <thead>
+		              <row>
+		                <entry align="center">Feature</entry>
+		
+		                <entry align="center">BeanFactory</entry>
+		
+		                <entry align="center">ApplicationContext</entry>
+		              </row>
+		            </thead>
+		
+		            <tbody>
+		              <row>
+		                <entry>Bean instantiation/wiring</entry>
+		
+		                <entry align="center">Yes</entry>
+		
+		                <entry align="center">Yes</entry>
+		              </row>
+		
+		              <row>
+		                <entry>Automatic BeanPostProcessor registration</entry>
+		
+		                <entry align="center">No</entry>
+		
+		                <entry align="center">Yes</entry>
+		              </row>
+		
+		              <row>
+		                <entry>Automatic BeanFactoryPostProcessor registration</entry>
+		
+		                <entry align="center">No</entry>
+		
+		                <entry align="center">Yes</entry>
+		              </row>
+		
+		              <row>
+		                <entry>Convenient MessageSource access (for i18n)</entry>
+		
+		                <entry align="center">No</entry>
+		
+		                <entry align="center">Yes</entry>
+		              </row>
+		
+		              <row>
+		                <entry>ApplicationEvent publication</entry>
+		
+		                <entry align="center">No</entry>
+		
+		                <entry align="center">Yes</entry>
+		              </row>
+		            </tbody>
+				</tgroup>
+			</informaltable>
+	
+	        <para>
+	        	대부분의 전형적인 어플리케이션 구축 시에는 ApplicationContext 사용을 권장한다.
+	        </para>
+	      </section>
+	    </section>
+	</section>
+
+
+	<section id="core_spring_ioc_xmlschema">
+    	<title>XML 스키마 기반 설정</title>
+
+    	<para>
+    		XML 스키마에 기초하여 새로운 XML 설정 문법이 나오고 있으며 점점 더 쉽게 XML을 설정할 수 있도록 Spring
+    		Framework은 진화하고 있다. 또한 XML 스키마를 확장하여 사용할 수도 있다.
+    	</para>
+
+    	<itemizedlist>
+			<listitem>
+		        <para><emphasis role="bold">기본으로 제공되는 XML 스키마</emphasis></para>
+		
+		        <para>Spring Framework에서 기본으로 제공하는 XML 스키마의 종류는 다음과 같다.</para>
+		
+		        <para>[util, jee, lang, jms, tx, aop, context, tool, beans] (각각의 사용법은
+		        	  <ulink url="http://static.springsource.org/spring/docs/4.0.x/spring-framework-reference/html/xsd-config.html">
+		        	  Spring 매뉴얼 사이트</ulink> 를 참고하도록 한다.)
+		        </para>
+      		</listitem>
+    	</itemizedlist>
+
+    	<itemizedlist>
+			<listitem>
+				<para>
+					<emphasis role="bold">XML 스키마 확장 가능</emphasis>
+				</para>
+
+				<para>
+					어플리케이션 개발 시 어플리케이션 도메인을 좀더 잘 표현할 자체적인 도메인 속성의 설정 태그를 정의할 수 있다.
+				</para>
+
+				<para>
+					확장한 스키마를 실제 XML 파일에 적용하여 사용하는 방법은
+					<ulink url="http://static.springsource.org/spring/docs/4.0.x/spring-framework-reference/html/extensible-xml.html">
+					Spring 매뉴얼 사이트</ulink>를 참고하도록 한다.
+				</para>
+			</listitem>
+	    </itemizedlist>
+
+    	<itemizedlist>
+      		<listitem>
+        		<para><emphasis role="bold">XML 스키마 참조 방법</emphasis></para>
+
+        		<para>
+        			xmlns:~를 이용하여 사용하고자 하는 namespace를 정의하고, 해당 namespace의 XML 스키마를
+        			정의한 XSD 파일의 location을 정의한다. 
+        	        <programlisting language="xml"><![CDATA[<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+    xmlns:util="http://www.springframework.org/schema/util"
+    xmlns:jee="http://www.springframework.org/schema/jee"
+    xmlns:lang="http://www.springframework.org/schema/lang"
+    xmlns:jms="http://www.springframework.org/schema/jms"
+    ]]><emphasis role="bold">xmlns:aop="http://www.springframework.org/schema/aop"</emphasis>
+    <![CDATA[xmlns:tx="http://www.springframework.org/schema/tx"
+    xmlns:context="http://www.springframework.org/schema/context"
+    xsi:schemaLocation="http://www.springframework.org/schema/beans 
+        http://www.springframework.org/schema/beans/spring-beans-4.0.xsd
+        http://www.springframework.org/schema/util 
+        http://www.springframework.org/schema/util/spring-util-4.0.xsd
+        http://www.springframework.org/schema/jee 
+        http://www.springframework.org/schema/jee/spring-jee-4.0.xsd
+        http://www.springframework.org/schema/lang 
+        http://www.springframework.org/schema/lang/spring-lang-4.0.xsd
+        http://www.springframework.org/schema/jms 
+        http://www.springframework.org/schema/jms/spring-jms-4.0.xsd
+        ]]><emphasis role="bold">http://www.springframework.org/schema/aop
+        http://www.springframework.org/schema/aop/spring-aop-4.0.xsd</emphasis>
+        <![CDATA[http://www.springframework.org/schema/tx 
+        http://www.springframework.org/schema/tx/spring-tx-4.0.xsd
+        http://www.springframework.org/schema/context 
+        http://www.springframework.org/schema/context/spring-context-4.0.xsd">
+        <!-- <bean/> definitions here -->
+</beans>]]></programlisting>
+				</para>
+      		</listitem>
+    	</itemizedlist>
+
+    	<itemizedlist>
+      		<listitem>
+        		<para><emphasis role="bold">XML 설정에 대한 부담시 Annotation 활용 제안</emphasis></para>
+
+        		<para>XML 기반에서 Bean을 정의하는 방식 외에 Annotation을 활용하면 XML 설정에 대한 부담을 덜 수 있다.</para>
+	      	</listitem>
+		</itemizedlist>
+	</section>	
+
+</chapter>

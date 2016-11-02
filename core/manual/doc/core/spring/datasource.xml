@@ -1,0 +1,735 @@
+<chapter id="core_spring_datasource">
+	<title>DataSource</title>
+
+  	<para>
+  		주어진 Database에 연결하기 위한 Connection(javax.sql.Connection) 객체를 생성하는 서비스이다.
+  		Anyframe 에서는 Connection Provider별로 Connection 객체를 얻어내기 위한 로직을 구현하고 있는
+ 		다음의 DataSource 구현체들을 그대로 사용하고자 한다.</para>
+
+	<section id="core_spring_datasource_JDBCDataSource">
+    	<title>JDBCDataSource Configuration</title>
+
+    	<para>
+    		<emphasis role="bold">Description copied from class: 
+    			<ulink url="http://static.springsource.org/spring/docs/4.0.x/javadoc-api/org/springframework/jdbc/datasource/SimpleDriverDataSource.html">SimpleDriverDataSource
+    			</ulink></emphasis></para>
+
+		<para>
+			JDBC driver를 이용하여 Database Connection을 생성한다. 모든 getConnection() call에 대해 새로운 connection을 
+			리턴한다. 실제 운영 환경에서는 JDBCDataSource의 사용은 추천하지 않으며, <link linkend="core_spring_datasource_DBCPDataSource">DBCPDataSource</link> 나,
+    		<link linkend="core_spring_datasource_C3P0DataSource">C3P0DataSource</link> 가 사용된다.
+    	</para>
+
+		<informaltable>
+		    <caption>JDBCDataSource 속성 목록</caption>
+			<tgroup cols="4">
+				<colspec colnum="1" colname="col1" colwidth="2*"/>
+        		<colspec colnum="2" colname="col2" colwidth="5*"/>
+				<colspec colnum="3" colname="col3" colwidth="1*"/>
+				<colspec colnum="4" colname="col4" colwidth="2*"/>
+				<thead>
+					<row>
+						<entry align="center">Property Name</entry>
+
+            			<entry align="center">Description</entry>
+
+            			<entry align="center">Required</entry>
+
+            			<entry align="center">Default Value</entry>
+          			</row>
+        		</thead>
+	
+				<tbody>
+					<row>
+	            		<entry>url</entry>
+	
+	            		<entry>DataBase에 access하기 위한 JDBC URL</entry>
+	
+	            		<entry align="center">Y</entry>
+	
+	            		<entry align="center">N/A</entry>
+					</row>
+	
+	          		<row>
+	            		<entry>driverClass</entry>
+	
+	            		<entry>JDBC driver class name을 설정한다.</entry>
+	
+	            		<entry align="center">Y</entry>
+	
+	            		<entry align="center">N/A</entry>
+	          		</row>
+	
+	          		<row>
+	            		<entry>username</entry>
+	
+	           	 		<entry>DataBase에 access하기 위해 사용된다.</entry>
+	
+	            		<entry align="center">N</entry>
+	
+	            		<entry align="center">N/A</entry>
+	          		</row>
+	
+	          		<row>
+	            		<entry>password</entry>
+	
+	            		<entry>DataBase에 access하기 위해 사용된다.</entry>
+	
+	            		<entry align="center">N</entry>
+	
+	            		<entry align="center">N/A</entry>
+	          		</row>
+        		</tbody>
+      		</tgroup>
+		</informaltable>
+
+    	<section id="core_spring_datasource_JDBCDataSource_samples">
+			<title>Samples</title>
+
+      		<para>다음은 JDBCDataSource의 속성 설정에 대한 예제이다.</para>
+
+      		<itemizedlist>
+        		<listitem>
+          			<para><emphasis role="bold">Configuration </emphasis></para>
+
+          			<para>
+          				다음은 JDBCDataSource의 속성을 정의한 context-datasource.xml의 일부이다. 아래 속성 정의 파일에서는 
+          				HSQL DB를 기반으로 한 JDBCDataSource Bean을 정의하고 있다.
+					</para>
+
+                    <programlisting language="xml"><![CDATA[<bean id="dataSource" 
+    class="]]><emphasis role="bold">org.springframework.jdbc.datasource.SimpleDriverDataSource</emphasis><![CDATA[">
+    <property name="driverClass" value="org.hsqldb.jdbcDriver" />
+    <property name="url" value="jdbc:hsqldb:file:/./db/sampledb" />
+    <property name="username" value="sa" />
+</bean>]]></programlisting>
+        		</listitem>
+      		</itemizedlist>
+    	</section>
+  </section>
+
+  <section id="core_spring_datasource_DBCPDataSource">
+	<title>DBCPDataSource Configuration</title>
+
+    <para>
+    	JDBC driver를 이용하여 Database Connection을 생성하는 또다른 구현체이다.<ulink
+    	url="http://commons.apache.org/dbcp/">Commons DBCP</ulink> 라 불리는 Jakarta의 Database Connection Pool이다. Configuration parameter 전체 <ulink
+    	url="http://commons.apache.org/dbcp/configuration.html">DBCP documentation</ulink>을 통해 확인 가능하다.
+    </para>
+
+    <informaltable>
+        <caption>DBCPDataSource 속성 목록</caption>
+ 		<tgroup cols="4">
+			<colspec colnum="1" colname="col1" colwidth="3*"/>
+			<colspec colnum="2" colname="col2" colwidth="5*"/>
+			<colspec colnum="3" colname="col3" colwidth="1*"/>
+			<colspec colnum="4" colname="col4" colwidth="2*"/>
+        	<thead>
+	          	<row>
+		            <entry align="center">Property Name</entry>
+		
+		            <entry align="center">Description</entry>
+		
+		            <entry align="center">Required</entry>
+		
+		            <entry align="center">Default Value</entry>
+	          </row>
+       	 	</thead>
+
+			<tbody>
+	          <row>
+	            <entry>driverClassName</entry>
+	
+	            <entry>jdbc driver의 class name을 설정한다.</entry>
+	
+	            <entry align="center">Y</entry>
+	
+	            <entry align="center">N/A</entry>
+	          </row>
+	
+	          <row>
+				<entry>url</entry>
+	
+	            <entry>DataBase url을 설정한다.</entry>
+	
+	            <entry align="center">Y</entry>
+	
+	            <entry align="center">N/A</entry>
+	          </row>
+	
+	          <row>
+	            <entry>username</entry>
+	
+	            <entry>DataBase에 접근시 사용할 username을 설정한다.</entry>
+	
+	            <entry align="center">N</entry>
+	
+	            <entry align="center">N/A</entry>
+	          </row>
+	
+	          <row>
+	            <entry>password</entry>
+	
+	            <entry>DataBase에 접근시 사용할 password를 설정한다.</entry>
+	
+	            <entry align="center">N</entry>
+	
+	            <entry align="center">N/A</entry>
+	          </row>
+	
+	          <row>
+	            <entry>maxActive</entry>
+	
+	            <entry>동시에 할당할 수 있는 active connection의 최대 갯수를 설정한다.</entry>
+	
+	            <entry align="center">N</entry>
+	
+	            <entry align="center">8</entry>
+	          </row>
+	
+	          <row>
+	            <entry>maxIdle</entry>
+	
+	            <entry>pool에 남겨놓을 수 있는 idle connection의 최대 갯수를 설정한다.</entry>
+	
+	            <entry align="center">N</entry>
+	
+	            <entry align="center">8</entry>
+	          </row>
+	
+	          <row>
+	            <entry>maxWait</entry>
+	
+	            <entry>모든 Connection이 사용중일 경우 최대 대기 시간을 설정한다.</entry>
+	
+	            <entry align="center">N</entry>
+	
+	            <entry align="center">indefinitely</entry>
+	          </row>
+	
+	          <row>
+	            <entry>defaultAutoCommit</entry>
+	
+	            <entry>이 datasource로부터 리턴된 connection에 대한 auto-commit 여부를  설정한다.</entry>
+	
+	            <entry align="center">N</entry>
+	
+	            <entry align="center">true</entry>
+	          </row>
+	
+	          <row>
+	            <entry>defaultReadOnly</entry>
+	
+	            <entry>Connection Pool에 의해 생성된 Connection에 read-only 속성을  부여한다.</entry>
+	
+	            <entry align="center">N</entry>
+	
+	            <entry align="center">driver default</entry>
+	          </row>
+	
+	          <row>
+	            <entry>defaultTransactionIsolation</entry>
+	
+	            <entry>리턴된 connection에 대한 transaction isolation 속성을 부여한다.</entry>
+	
+	            <entry align="center">N</entry>
+	
+	            <entry align="center">driver default</entry>
+	          </row>
+	
+	          <row>
+	            <entry>defaultCatalog</entry>
+	
+	            <entry>Connection의 catalog를 설정한다.</entry>
+	
+	            <entry align="center">N</entry>
+	
+	            <entry align="center">N/A</entry>
+	          </row>
+	
+	          <row>
+	            <entry>minIdle</entry>
+	
+	            <entry>Connection pool의 최소한 idle connection 갯수를 설정한다.</entry>
+	
+	            <entry align="center">N</entry>
+	
+	            <entry align="center">0</entry>
+	          </row>
+	
+	          <row>
+	            <entry>initialSize</entry>
+	
+	            <entry>Connection pool에 생성될 초기 connection size를 설정한다.</entry>
+	
+	            <entry align="center">N</entry>
+	
+	            <entry align="center">0</entry>
+	          </row>
+	
+	          <row>
+	            <entry>testOnBorrow</entry>
+	
+	            <entry>
+	            	Connection pool에서 객체를 가지고 오기 전에 그 객체의 유효성을 확인할 것인지 결정한다.
+	            	true값은 아무 영향을 미치지 않지만 validationQuery property는 non-null string으로
+	           		 설정되어야 한다.
+	           	</entry>
+	
+	            <entry align="center">N</entry>
+	
+	            <entry align="center">true</entry>
+	          </row>
+	
+	          <row>
+	            <entry>testOnReturn</entry>
+	
+	            <entry>
+	            	객체를 return하기 전에 객체의 유효성을 확인할 것인지 결정한다. true값은 아무 영향을 미치지
+	            	않지만 validationQuery property는 non-null string으로 설정되어야 한다.
+	            </entry>
+	
+	            <entry align="center">N</entry>
+	
+	            <entry align="center">false</entry>
+	          </row>
+	
+	          <row>
+	            <entry>testWhileIdle</entry>
+	
+	            <entry>
+	            	idle object evictor가 connection의 유효성을 확인할 것인지를 설정한다. true값은
+	            	아무 영향을 미치지 않지만 validationQuery property는 non-null string으로 설정되어야
+	            	한다.
+	            </entry>
+	
+	            <entry align="center">N</entry>
+	
+	            <entry align="center">false</entry>
+	          </row>
+	
+	          <row>
+	            <entry>validationQuery</entry>
+	
+	            <entry>validationQuery를 설정한다.</entry>
+	
+	            <entry align="center">N</entry>
+	
+	            <entry align="center">N/A</entry>
+	          </row>
+	
+	          <row>
+	            <entry>loginTimeout</entry>
+	
+	            <entry>
+	            	Database에 연결하기 위한 login timeout(in seconds)을 설정한다.
+	            	createDataSource()를 호출 해서 connection pool을 초기화한다.</entry>
+	
+	            <entry align="center">N</entry>
+	
+	            <entry align="center">N/A</entry>
+	          </row>
+			</tbody>
+	      </tgroup>
+	    </informaltable>
+
+    	<section id="core_spring_datasource_DBCPDataSource_samples">
+      		<title>Samples</title>
+
+      		<para>다음은 DBCPDataSource의 속성 설정에 대한 예제이다.</para>
+
+      		<itemizedlist>
+        		<listitem>
+          			<para><emphasis role="bold">Configuration </emphasis></para>
+
+          			<para>
+          				다음은 DBCPDataSource의 속성을 정의한 context-datasource.xml 의 일부이다. 아래 속성 정의 파일에서는 
+          				HSQL DB를 기반으로 한 DBCPDataSource Bean을 정의하고 있다. 
+                        <programlisting language="xml"><![CDATA[<bean id="dataSource" 
+    class="]]><emphasis role="bold">org.apache.commons.dbcp.BasicDataSource</emphasis><![CDATA[" destroy-method="close">
+    <property name="driverClassName" value="org.hsqldb.jdbcDriver"/>
+    <property name="url" value="jdbc:hsqldb:file:/./db/sampledb"/>
+    <property name="username" value="sa"/>
+    <property name="maxActive" value="100"/>
+    <property name="maxIdle" value="30"/>
+    <property name="maxWait" value="1000"/>
+    <property name="defaultAutoCommit" value="true"/>
+    <property name="removeAbandoned" value="true"/>
+    <property name="removeAbandonedTimeout" value="60"/>
+    <property name="logAbandoned" value="true"/>		
+</bean>]]></programlisting></para>
+        		</listitem>
+
+        		<listitem>
+          			<para><emphasis role="bold">Test case</emphasis></para>
+
+          			<para>
+          				예제 코드는 <link linkend="core_spring_datasource_test">Test Case</link> 에 포함되어 있다.</para>
+        		</listitem>
+      		</itemizedlist>
+    	</section>
+  	</section>
+
+  	<section id="core_spring_datasource_C3P0DataSource">
+    	<title>C3P0DataSource Configuration</title>
+
+    	<para>
+    		JDBC driver 를 이용하여 Database Connection을 생성하는 또다른 구현체이다. C3P0 Library에 관한 자세한 사항은 
+    		<ulink url="http://www.mchange.com/projects/c3p0/index.html#c3p0-config.xml">C3P0 Configuration</ulink> 
+    		에서 확인할 수 있다.
+    	</para>
+
+    	<section id="founion_spring_datasource_C3P0DataSource_samples">
+      		<title>Samples</title>
+
+      		<para>다음은 C3P0DataSource의 속성 설정에 대한 예제이다.</para>
+
+      		<itemizedlist>
+        		<listitem>
+          			<para><emphasis role="bold">Configuration</emphasis></para>
+
+          			<para>
+          				다음은 C3P0DataSource의 속성을 정의한 context-datasource.xml의 일부이다. 아래 속성 정의 파일에서는
+						HSQL DB를 기반으로 하는 C3P0DataSource Bean을 정의하고 있다. 
+                        <programlisting language="xml"><![CDATA[<bean id="dataSource" class="]]><emphasis role="bold">com.mchange.v2.c3p0.ComboPooledDataSource</emphasis><![CDATA[" 
+    destroy-method="close">
+    <property name="driverClass" value="org.hsqldb.jdbcDriver"/>
+    <property name="jdbcUrl" value="jdbc:hsqldb:file:/./db/sampledb"/>
+    <property name="user" value="sa"/>
+    <property name="minPoolSize" value="5"/>
+    <property name="acquireIncrement" value="5"/>
+    <property name="maxPoolSize" value="15"/>
+</bean>]]></programlisting>
+					</para>
+        		</listitem>
+      		</itemizedlist>
+    	</section>
+	</section>
+
+	<section id="core_spring_datasource_JNDIDataSource">
+		<title>JNDIDataSource Configuration</title>
+	
+	    <para>
+	    	JNDIDataSource는 JNDI Lookup을 이용하여 Database Connection을 생성한다.
+	    	JNDIDataSource는 대부분 Enterprise application server에서 제공되는 JNDI tree로 부터
+	    	DataSource를 가져온다.
+	    </para>
+	
+	    <para>
+	    	<emphasis role="bold">Description copied from class: 
+	    	<ulink url="http://static.springsource.org/spring/docs/4.0.x/javadoc-api/org/springframework/jndi/JndiObjectFactoryBean.html">JndiObjectFactoryBean
+	    	</ulink></emphasis></para>
+	    <para>
+	    	JNDIDataSource는 일반적으로 application context의 singleton factory(e.g.JNDI-bound DataSource)를 등록하여 
+	    	사용할 수 있고, 필요한 application service를 빈으로 참조할 수 있다.
+	    </para>
+
+	    <para>
+	    	기본적으로 startup시 캐싱된 JNDI 객체를 검색한다. 이것은 "lookupOnStartup"과 "cache" property를 통해 customized 
+	    	할 수 있으며, JndiObjectTargetSource를 사용할 수 있다. 실제 JNDI object type이 미리 정의되어 있지 않은 경우 
+	    	proxyInterface의 정의가 필요하다.
+		</para>
+
+    	<informaltable>
+    	    <caption>JNDIDataSource 속성 목록</caption>
+      		<tgroup cols="4">
+       			<colspec colnum="1" colname="col1" colwidth="2*"/>
+        		<colspec colnum="2" colname="col2" colwidth="5*"/>
+        		<colspec colnum="3" colname="col3" colwidth="1*"/>
+        		<colspec colnum="4" colname="col4" colwidth="2*"/>
+        		<thead>
+          			<row>
+						<entry align="center">Property Name</entry>
+
+			            <entry align="center">Description</entry>
+			
+			            <entry align="center">Required</entry>
+			
+			            <entry align="center">Default Value</entry>
+					</row>
+				</thead>
+
+        		<tbody>
+          			<row>
+            			<entry>jndiTemplate</entry>
+
+            			<entry>
+            				JNDI 검색을 위해 JNDI 템플릿을 설정한다. 또한 "jndiEnvironment"로 JNDI 환경설정을 할 수 있다.</entry>
+
+            			<entry align="center">N</entry>
+
+            			<entry align="center">N/A</entry>
+          			</row>
+
+          			<row>
+            			<entry>jndiEnvironment</entry>
+
+            			<entry>
+            				JNDI를 검색하기 위해 JNDI 환경을 설정한다. 환경 설정에 제공된 JndiTemplate을 생성한다.</entry>
+
+            			<entry align="center">N</entry>
+
+            			<entry align="center">N/A</entry>
+          			</row>
+
+          			<row>
+            			<entry>resourceRef</entry>
+
+            			<entry>
+            				JavaEE 컨테이너에서 검색할 수 있는지 설정한다. 만약 prefix가 "java:comp/env/"이면
+            				JNDI 이름이 포함되어 있지 않으므로 추가해 주어야 한다. 디폴트 값은 "false"이다. 주의 : 만약
+            				"java:" 와 같이 주어진 scheme이 아니라면 적용할 수 없다.</entry>
+
+            			<entry align="center">N</entry>
+
+            			<entry align="center">false</entry>
+          			</row>
+
+          			<row>
+            			<entry>expectedType</entry>
+
+            			<entry>JNDI 객체의 타입을 지정한다.</entry>
+
+            			<entry align="center">N</entry>
+
+            			<entry align="center">N/A</entry>
+          			</row>
+
+          			<row>
+            			<entry>jndiName</entry>
+
+            			<entry>
+            				검색을 위해 JNDI 이름을 설정한다. 만약 resourceRef가 true로 설정되어 있고,
+            				"java:comp/env/"로 시작되지 않으면 이 prefix를 추가한다.</entry>
+
+            			<entry align="center">Y</entry>
+
+            			<entry align="center">N/A</entry>
+          			</row>
+
+          			<row>
+            			<entry>proxyInterface</entry>
+
+            			<entry>
+            				검색을 위해 JNDI 이름을 설정한다. 만약 resourceRef가 true로 설정되어 있고,
+            				"java:comp/env/"로 시작되지 않으면 이 prefix를 추가한다.</entry>
+
+            			<entry align="center">N</entry>
+
+            			<entry align="center">N/A</entry>
+          			</row>
+
+          			<row>
+            			<entry>lookupOnStartup</entry>
+
+            			<entry>
+            				starup시에 JNDI object를 검색할 지 여부를 설정한다. lazy lookup시에는 proxy
+            				interface 정의가 필요하다.
+            			</entry>
+
+            			<entry align="center">N</entry>
+
+            			<entry align="center">true</entry>
+          			</row>
+
+         	 		<row>
+            			<entry>cache</entry>
+
+            			<entry>JNDI 객체를 캐싱할 것인지 설정한다.</entry>
+
+            			<entry align="center">N</entry>
+
+            			<entry align="center">true</entry>
+          			</row>
+
+          			<row>
+            			<entry>defaultObject</entry>
+
+            			<entry>
+            				JNDI lookup에 실패하였을 경우 전달할 default object를 지정한다. 이것은 임의의 bean reference나 
+            				literal value가 될 수 있다. 주의 : 이것은 startup시 lookup에서만 지원된다.
+            			</entry>
+
+            			<entry align="center">N</entry>
+
+            			<entry align="center">none</entry>
+          			</row>
+        		</tbody>
+      		</tgroup>
+    	</informaltable>
+
+		<section id="core_spring_datasource_JNDIDataSource_samples">
+      		<title>Samples</title>
+
+      		<para>
+      			다음은 JNDIDataSource의 속성 설정에 대한 예제이다. "jnditemplate" Bean에 JNDI Server에 대한 속성을 정의하고, 
+      			"dataSource" Bean에서 "jnditemplate" Bean을 참조하여 Connection 객체를 얻어낼 수 있도록 하고 있다.
+      		</para>
+
+      		<itemizedlist>
+        		<listitem>
+          			<para><emphasis role="bold">Configuration </emphasis></para>
+
+                    <programlisting language="xml"><![CDATA[<bean id="dataSource" class="]]><emphasis role="bold">org.springframework.jndi.JndiObjectFactoryBean</emphasis><![CDATA[">
+    <property name="jndiName" value="AnyframeDS"/>
+    <property]]> <emphasis role="bold"><![CDATA[name="jndiTemplate" ref="jnditemplate"/>]]></emphasis>
+<![CDATA[</bean>
+
+<bean id="jnditemplate" class="]]><emphasis role="bold">org.springframework.jndi.JndiTemplate</emphasis>"<![CDATA[>
+    <property name="environment">
+       <props>
+          <prop key="java.naming.factory.initial">
+               weblogic.jndi.WLInitialContextFactory
+          </prop>
+          <prop key="java.naming.provider.url">
+               t3://server.ip:7001
+          </prop>			
+       </props>
+    </property>
+</bean>]]></programlisting>
+        		</listitem>
+			</itemizedlist>
+		</section>
+  
+		<section id="core_spring_datasource_JNDIDataSource_jee schema">
+			<title>jee schema 를 통한 JNDIDataSource 사용</title>
+
+      		<para>
+      			Spring 2.0 이후 버전에서는 jee Namespace 태그를 통해 JNDI 객체를 lookup 할 수 있는 간소한 설정을 지원한다. 
+      			아래에서는 jee:jndi-lookup 를 사용한 JNDIDataSource 설정이다.
+      		</para>
+
+      		<itemizedlist>
+				<listitem>
+          			<para><emphasis role="bold">Configuration </emphasis></para>
+
+                    <programlisting language="xml"><![CDATA[<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" 
+    ]]><emphasis role="bold">xmlns:jee="http://www.springframework.org/schema/jee"</emphasis><![CDATA[
+    xsi:schemaLocation="http://www.springframework.org/schema/beans 
+        http://www.springframework.org/schema/beans/spring-beans-4.0.xsd
+    ]]><emphasis role="bold">http://www.springframework.org/schema/jee 
+        http://www.springframework.org/schema/jee/spring-jee-4.0.xsd</emphasis><![CDATA[">
+
+    <jee:jndi-lookup id="dataSource" jndi-name="AnyframeDS" resource-ref="true">
+        <jee:environment>
+          java.naming.factory.initial=weblogic.jndi.WLInitialContextFactory
+          java.naming.provider.url=t3://server.ip:7001
+        </jee:environment>
+    </jee:jndi-lookup>
+</beans>]]></programlisting>
+				</listitem>
+ 			</itemizedlist>
+      		<para>
+	      		JndiObjectFactoryBean 와 JndiTemplate 을 통한 설정에 비해  jee 태그를 사용하면 설정이 매우 간소하므로 이 방법을 
+	      		사용할 것을 권고한다. jee schema 에 대한 상세 내용은 
+	      		<ulink url="http://static.springsource.org/spring/docs/3.0.x/spring-framework-reference/html/xsd-config.html">이곳</ulink>을 
+	      		참고하도록 한다.
+      		</para>
+		</section>  
+	</section>
+
+  	<section id="core_spring_datasource_test">
+    	<title>Test Case</title>
+
+    	<para>
+    		다음은 앞서 정의한 속성 설정 파일들을 기반으로 하여 DataSource로부터 connection을 가져오는 Main.java 코드의 일부이다. 
+            <programlisting language="java">public void getConnection() throws Exception {
+    // 1. lookup dataSource
+    DataSource datasource = (DataSource) context.getBean("dataSource");
+    // 2. try to get a connection from dbcp connection pool
+    Connection conn = datasource.getConnection();
+    System.out.println("Connection is " + conn + "");
+}</programlisting></para>
+	</section>
+	
+	<section id="core_spring_datasource_resources">
+		<title>Resources</title>
+		<para>
+			<itemizedlist>
+				<listitem>
+					<para>다운로드</para>
+					<para>
+						다음에서 테스트 DB를 포함하고 있는 hsqldb.zip과 sample 코드를 포함하고 있는 anyframe-sample-datasource.zip 
+						파일을 다운받은 후, 압축을 해제한다. 그리고 hsqldb 폴더 내의 start.cmd (or start.sh) 파일을 실행시켜 테스트 
+						DB를 시작시켜 놓는다.
+						<itemizedlist>
+							<listitem>
+								<para>Maven 기반 실행</para>
+								<para>
+									Command 창에서 압축 해제 폴더로 이동한 후, mvn compile exec:java -Dexec.mainClass=...이라는 명령어를 실행시켜 결과를 확인한다.
+									각 Eclipse 프로젝트 내에 포함된 Main 클래스의 JavaDoc을 참고하도록 한다.
+								</para>
+							</listitem>
+							<listitem>
+								<para>Eclipse 기반 실행</para>
+								<para>
+									Eclipse에서 압축 해제 프로젝트를 import한 후, src/main/java 폴더의 anyframe/sample/datasource 
+									하위의 Main.java를 선택하고 마우스 오른쪽 버튼 클릭하여 컨텍스트 메뉴에서 Run As > Java Application을 클릭한다. 
+									그리고 실행 결과를 확인한다.
+								</para>
+							</listitem>									
+						</itemizedlist>
+					</para>
+					<informaltable>
+						<caption>Download List</caption>
+						<tgroup cols="2">
+							<colspec colnum="1" colname="col1" colwidth="4*"/>
+							<colspec colnum="2" colname="col2" colwidth="6*"/>
+							<thead>
+								<row>
+									<entry align="center">Name</entry>
+									<entry align="center">Download</entry>
+								</row>
+							</thead>
+							<tbody>
+								<row>
+									<entry align="center">hsqldb.zip</entry>
+									<entry align="center"><ulink url="http://dev.anyframejava.org/docs/anyframe/plugin/essential/core/1.6.1-SNAPSHOT/reference/sample/hsqldb.zip">Download</ulink></entry>
+								</row>										
+								<row>
+									<entry align="center">anyframe-sample-datasource.zip</entry>
+									<entry align="center"><ulink url="http://dev.anyframejava.org/docs/anyframe/plugin/essential/core/1.6.1-SNAPSHOT/reference/sample/anyframe-sample-datasource.zip">Download</ulink></entry>
+								</row>
+							</tbody>
+						</tgroup>
+					</informaltable> 
+				</listitem>
+				<listitem>
+					<para>참고자료</para>
+					<itemizedlist>
+						<listitem>
+							<para><ulink 
+								url="http://static.springsource.org/spring/docs/4.0.x/javadoc-api/org/springframework/jdbc/datasource/SimpleDriverDataSource.html">
+								JDBCDataSource - SimpleDriverDataSource</ulink>
+							</para>
+						</listitem>
+						<listitem>
+							<para><ulink 
+								url="http://commons.apache.org/dbcp/configuration.html">DBCP Configuration</ulink>
+							</para>
+						</listitem>
+						<listitem>
+							<para><ulink 
+								url="http://www.mchange.com/projects/c3p0/index.html#c3p0-config.xml">C3P0 Configuration</ulink>
+							</para>
+						</listitem>
+						<listitem>
+							<para><ulink 
+								url="http://static.springsource.org/spring/docs/4.0.x/javadoc-api/org/springframework/jndi/JndiObjectFactoryBean.html">
+								JNDIDataSource - JndiObjectFactoryBean</ulink>
+							</para>
+						</listitem>
+						<listitem>
+							<para><ulink 
+								url="http://static.springsource.org/spring/docs/4.0.x/spring-framework-reference/html/xsd-config.html">
+								JNDIDataSource - jee schema</ulink>
+							</para>
+						</listitem>
+					</itemizedlist>
+				</listitem>
+			</itemizedlist>
+		</para>
+	</section>
+</chapter>

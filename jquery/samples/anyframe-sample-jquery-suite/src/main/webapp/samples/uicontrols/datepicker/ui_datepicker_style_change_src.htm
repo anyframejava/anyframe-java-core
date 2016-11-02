@@ -1,0 +1,149 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN"
+"http://www.w3.org/TR/html4/loose.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+
+<head>
+<meta http-equiv="content-type" content="text/html; charset=UTF-8" />
+<title>[AnyFrame UI Button] Basic Sample</title>
+<link href="../../../common/css/smoothness/jquery-ui-1.10.0.custom.css"	rel="stylesheet">
+<script src="../../../common/exlibs/jquery-1.9.0.js"></script>
+<script src="../../../common/exlibs/jquery-ui-1.10.0.custom.js"></script>
+
+<link type="text/css" rel="stylesheet" href="../../../common/css/style.css"/>
+<link type="text/css" rel="stylesheet" href="sub_css/style_change.css">
+<style>
+.newBgcolorRed {
+	background-color : rgb(0, 181, 211);
+}
+
+.newHeaderBlue {
+	background : rgb(0, 181, 211);
+}
+
+</style>
+
+<script type="text/javascript">
+
+	var datepickerStyleView = {
+										
+		setHeaderColor : function(color){
+				$("#datepicker>div:first-child>div ").css("background", color);
+		},
+		
+		setLabelColor : function(color){
+				$("#datepicker>div>table>thead").css("color", color);
+		},
+		
+		setCellColor : function(color){
+				$("#datepicker>div>table>tbody>tr>td>a").css("color", color);
+		},
+		
+		setCellBgColor : function(color){
+			$("#datepicker>div>table>tbody>tr>td>a").css("background", color);
+	}
+		
+
+	};
+
+	$(document).ready(function() {
+
+		$("#datepicker").datepicker();
+		
+		$("#headerColorBlue, #headerColorPink, #headerColorYellow").button();
+		$("#iconTypeA, #iconTypeB, #iconTypeC").button();
+		$("#labelColorBlue, #labelColorPink, #labelColorYellow").button();
+		$("#cellColorBlue, #cellColorPink, #cellColorYellow").button();
+		$("#cellBgColorBlue, #cellBgColorPink, #cellBgColorYellow").button();
+		
+		
+		$("#bgColorRed").click(function(){
+			$("#datepicker *").addClass("newBgcolorRed");
+		});
+		var blue = "rgb(0, 181, 211)";
+		var pink = "rgb(255, 0, 116)"
+		var yellow ="rgb(255, 245, 85)";
+		
+		
+		$("#headerColorBlue").on("click", function(){
+			datepickerStyleView.setHeaderColor(blue);
+		});
+		$("#headerColorPink").on("click", function(){
+			datepickerStyleView.setHeaderColor(pink);
+		});
+		$("#headerColorYellow").on("click", function(){
+			datepickerStyleView.setHeaderColor(yellow);
+		});
+		
+		$("#labelColorBlue").on("click", function(){
+			datepickerStyleView.setLabelColor(blue);
+		});
+		$("#labelColorPink").on("click", function(){
+			datepickerStyleView.setLabelColor(pink);
+		});
+		$("#labelColorYellow").on("click", function(){
+			datepickerStyleView.setLabelColor(yellow);
+		});
+		
+		$("#cellColorBlue").on("click", function(){
+			datepickerStyleView.setCellColor(blue);
+		});
+		$("#cellColorPink").on("click", function(){
+			datepickerStyleView.setCellColor(pink);
+		});
+		$("#cellColorYellow").on("click", function(){
+			datepickerStyleView.setCellColor(yellow);
+		});
+		
+		$("#cellBgColorBlue").on("click", function(){
+			datepickerStyleView.setCellBgColor(blue);
+		});
+		$("#cellBgColorPink").on("click", function(){
+			datepickerStyleView.setCellBgColor(pink);
+		});
+		$("#cellBgColorYellow").on("click", function(){
+			datepickerStyleView.setCellBgColor(yellow);
+		});
+
+	});
+</script>
+</head>
+<body>
+	<div class="title">Datepicker 스타일 변경</div>
+
+	<ul class="input-area">
+		<li>
+			<p class="text-area">Background Color : </p> 
+			<input type="button" id="headerColorBlue" value="blue"/>
+			<input type="button" id="headerColorPink" value="pink"/>
+			<input type="button" id="headerColorYellow" value="yellow"/>
+		</li>
+		
+		<li>
+			<p class="text-area">Label Text : </p> 
+			<input type="button" id="labelColorBlue" value="blue"/>
+			<input type="button" id="labelColorPink" value="pink"/>
+			<input type="button" id="labelColorYellow" value="yellow"/>
+		</li>
+		
+		<li>
+			<p class="text-area">Cell Color : </p> 
+			<input type="button" id="cellColorBlue" value="blue"/>
+			<input type="button" id="cellColorPink" value="pink"/>
+			<input type="button" id="cellColorYellow" value="yellow"/>
+		</li>
+		
+		<li>
+			<p class="text-area">Cell Background Color : </p> 
+			<input type="button" id="cellBgColorBlue" value="blue"/>
+			<input type="button" id="cellBgColorPink" value="pink"/>
+			<input type="button" id="cellBgColorYellow" value="yellow"/>
+		</li>
+		
+	</ul>
+
+	<div class= "display-area">
+		<div id="datepicker"></div>
+</div>
+
+</body>
+</html>

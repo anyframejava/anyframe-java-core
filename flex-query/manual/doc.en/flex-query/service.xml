@@ -1,0 +1,458 @@
+<chapter id="flex_query_service">
+	<title>FlexService</title>
+	<para>
+		When developing Web Application by using Flex, FlexService provides functions that enable the directly use or inheritance of
+		classes that implements basic CRUD method fully such as domain-based Service Interface/Implementation class, DAO Interface/Implementation class. etc.	
+	</para>
+
+	<para>FlexService provides the following features.</para>
+
+	<itemizedlist>
+		<listitem>
+			<para>Enables easier development of basic CRUD codes based domain object.</para>
+		</listitem>
+		<listitem>
+			<para>Developers can reuse Service classes and Dao classes provided in FlexService as they are
+			instead of developing Business Layer/Data Access Layer code and implement basic CRUD functions.		
+			</para>
+		</listitem>
+		<listitem>
+			<para>When other functions are needed in addition to basic CRUD functions,
+			it is possible to implement the additional functions by simply inheriting classes provided in FlexService.
+			</para>
+		</listitem>
+	</itemizedlist>
+
+	<para>The following is how to use FlexService.</para>
+
+	<itemizedlist>
+		<listitem>
+			<para>Domain Model class creation</para>
+		</listitem>
+
+		<listitem>
+			<para>Service class creation</para>
+		</listitem>
+
+		<listitem>
+			<para>DAO class creation</para>
+		</listitem>
+
+		<listitem>
+			<para>ActionScript creation</para>
+		</listitem>
+	</itemizedlist>
+
+	<section id="tech_riaflex_sec001">
+		<title>Domain Model class creation</title>
+		<para>
+			Domain Model class extends FlexBaseObject.		
+		</para>
+		<section id="tech_riaflex_sec001_sec001">
+			<title>BaseObject</title>
+
+			<para>
+				Extends FlexBaseObject when developing domain class.
+				To define row status value of objects transfered in ArrayCollection at Flex UI, it declares row status as the following.				
+				<programlisting language="java">final public static int NORMAL_ROW = 0;
+    final public static int INSERT_ROW = 1;
+    final public static int UPDATE_ROW = 2;
+    final public static int DELETE_ROW = 3;
+	
+    protected int status = this.NORMAL_ROW;
+
+    public int getStatus() {
+        return status;
+    }
+
+    public void setStatus(int status) {
+        this.status = status;
+    }</programlisting>
+			</para>
+		</section>
+	</section>
+
+	<section id="tech_riaflex_sec002">
+		<title>Service class creation</title>
+		<para>
+			In case of providing functions other than basic CRUD method provided in FlexService
+			or extending basic CRUD method, Service implementation class is created.
+			When using basic CRUD method as it is, Service implementation class is not created.		
+		</para>
+		<section id="tech_riaflex_sec002_sec001">
+			<title>FlexService</title>
+
+			<para>
+				Service Interface uses FlexService. FlexService is declared with method about Create, Update, Pagination, Search and Delete.
+				Method which execute Update, Delete and Create at one time is also declared.				
+				<programlisting language="java"><![CDATA[public interface FlexService {
+	
+    Page getPagingList(FlexSearchVO searchVO) throws Exception;
+	
+    List getList(FlexSearchVO searchVO) throws Exception;
+	
+    int create(FlexBaseObject flexBaseObject) throws Exception;
+	
+    int update(FlexBaseObject flexBaseObject) throws Exception;
+	
+    int remove(FlexBaseObject flexBaseObject) throws Exception;
+	
+    Map saveAll(ArrayList arrayList) throws Exception;
+}]]></programlisting>
+			</para>
+		</section>
+
+		<section id="tech_riaflex_sec002_sec002">
+			<title>FlexServiceImpl</title>
+
+			<para>
+				Service Implementation class uses FlexServiceImpl and is implemented as the following.				
+				<programlisting language="java"><![CDATA[@Service("flexService")
+@Transactional(readOnly = false, rollbackFor = { Exception.class })
+@RemotingDestination
+public class FlexServiceImpl implements FlexService{
+
+    @Resource
+    private FlexDao flexDao;
+	
+    @RemotingInclude
+    public int create(FlexBaseObject flexBaseObject) throws Exception {
+        return flexDao.create(flexBaseObject);
+    }
+
+    @RemotingInclude
+    public List getList(FlexSearchVO searchVO) throws Exception {
+        return flexDao.getList(searchVO);
+    }
+
+    @RemotingInclude
+    public Page getPagingList(FlexSearchVO searchVO) throws Exception {
+        return flexDao.getPagingList(searchVO);
+    }
+
+    @RemotingInclude
+    public int remove(FlexBaseObject flexBaseObject) throws Exception {
+        return flexDao.remove(flexBaseObject);
+    }
+
+    @RemotingInclude
+    public Map saveAll(ArrayList arrayList) throws Exception {
+        return flexDao.saveAll(arrayList);
+    }
+
+    @RemotingInclude
+    public int update(FlexBaseObject flexBaseObject) throws Exception {
+        return flexDao.update(flexBaseObject);
+    }
+}]]></programlisting>
+			</para>
+		</section>
+
+		<section id="tech_riaflex_sec002_sec003">
+			<title>FlexService Inheritance</title>
+
+			<para>
+				The following is Service, ServiceImpl class which implements FlexService, FlexServiceImpl.			
+			</para>
+			<para>
+				The following is an example of Service Interface class.				
+				<programlisting language="java">public interface CategoryService extends FlexService{
+
+    List&lt;Category&gt; getTree(FlexSearchVO searchVO) throws Exception;
+}</programlisting>
+			</para>
+
+			<para>
+				The following is an example of Service implementation class.				
+				<programlisting language="java">@Service("categoryService")
+@Transactional(readOnly = false, rollbackFor = { Exception.class })
+@RemotingDestination
+public class CategoryServiceImpl extends FlexServiceImpl implements CategoryService {
+	
+    @Resource(name = "categoryDao")
+    private CategoryDao categoryDao;
+
+    @SuppressWarnings("unchecked")
+    @RemotingInclude
+    @Transactional(readOnly = true)
+    public List<![CDATA[<Category>]]> getTree(FlexSearchVO searchVO) throws Exception {
+        return this.categoryDao.getTree(searchVO);
+    }
+}</programlisting>
+			</para>
+		</section>
+	</section>
+
+	<section id="tech_riaflex_sec003">
+		<title>DAO class creation</title>
+
+		<section id="tech_riaflex_sec003_sec001">
+			<title>FlexDao</title>
+
+			<para>Method related to Pagination, Save, Delete and Search defined in FlexDao class.			
+				<programlisting language="java">public interface FlexDao {
+    Page getPagingList(FlexSearchVO searchVO) throws Exception;
+	
+    List getList(FlexSearchVO searchVO) throws Exception;
+	
+    int create(FlexBaseObject flexBaseObject) throws Exception;
+	
+    int update(FlexBaseObject flexBaseObject) throws Exception;
+	
+    int remove(FlexBaseObject flexBaseObject) throws Exception;
+	
+    Map saveAll(ArrayList arrayList) throws Exception;
+}</programlisting>
+			</para>
+		</section>
+
+		<section id="tech_riaflex_sec003_sec002">
+			<title>FlexDaoQueryImpl</title>
+			<para>
+				As an implementation class which implements FlexDao Interface class, it is used when QueryService was determined as DAO Framework.
+				To use Query Service in DAO implementation class, extends AbstractDAO.				
+			</para>
+			<para>
+				The following is FlexDaoQueryImpl class.				
+			</para>
+			<programlisting language="java">@Repository("flexDao")
+public class FlexDaoQueryImpl extends AbstractDAO implements FlexDao {
+	
+    @Resource
+    private IPropertiesService propertiesService;
+
+    @Resource
+    private IQueryService queryService;
+
+    @PostConstruct
+    public void initialize() {
+        setQueryService(this.queryService);
+    }
+	
+    private String tableName;
+    
+    public int create(FlexBaseObject flexBaseObject) throws Exception {
+    //Gets table name by using Domain class name which extends FlexBaseObject.   
+        tableName = flexBaseObject.getClass().getSimpleName();
+        return create(tableName, flexBaseObject);
+	}
+
+    public List getList(FlexSearchVO searchVO) throws Exception {
+        //tableName value of FlexSearchVO must be defined in Flex UI.
+        return (List) this.findList(searchVO.getTableName(), searchVO);
+    }
+
+    public Page getPagingList(FlexSearchVO searchVO) throws Exception {
+        int pageIndex = searchVO.getPageIndex();
+        int pageSize = propertiesService.getInt("PAGE_SIZE");
+        int pageUnit = propertiesService.getInt("PAGE_UNIT");
+
+        return this.findListWithPaging(searchVO.getTableName(), searchVO,
+                pageIndex, pageSize, pageUnit);
+    }
+
+    public int remove(FlexBaseObject flexBaseObject) throws Exception {
+        //Gets table name by using Domain class name which extends FlexBaseObject.        
+        tableName = flexBaseObject.getClass().getSimpleName();
+        return remove(tableName, flexBaseObject);
+    }
+
+    //By using Status value, FlexBaseObject ArrayCollection which were deleted, updated and created in Flex UI,
+    //calls create, update and remove method.
+    public Map saveAll(ArrayList arrayList) throws Exception {
+        Map<![CDATA[<String, Integer>]]> resultCount = new HashMap<![CDATA[<String, Integer>]]>();
+		
+        int createRowCount = 0;
+        int updateRowCount = 0;
+        int removeRowCount = 0;
+		
+        for ( int i = 0 ; i <![CDATA[<]]> arrayList.size() ; i ++ ){
+            FlexBaseObject flexVO = (FlexBaseObject) arrayList.get(i);
+            int status = flexVO.getStatus();
+			
+            switch(status){
+                case FlexBaseObject.INSERT_ROW : createRowCount = createRowCount + this.create(flexVO); break;
+                case FlexBaseObject.UPDATE_ROW : updateRowCount = updateRowCount + this.update(flexVO); break;
+                case FlexBaseObject.DELETE_ROW : removeRowCount = removeRowCount + this.remove(flexVO); break;
+            }
+        }
+        //Returns the number of rows inserted, updated and deleted in Map.
+        resultCount.put("INSERT", createRowCount );
+        resultCount.put("UPDATE", updateRowCount );
+        resultCount.put("DELETE", removeRowCount );
+        return resultCount;
+    }
+
+    public int update(FlexBaseObject flexBaseObject) throws Exception {
+        tableName = flexBaseObject.getClass().getSimpleName();
+        return update(tableName, flexBaseObject);
+    }
+}</programlisting>
+		</section>
+	</section>
+	<section id="tech_riaflex_sec004">
+	<title>MXML creation</title>
+	<section id="tech_riaflex_sec004_sec001">
+	<title>Pagination</title>
+	<para>The following is an example of calling getList method of FlexService by using RemotingService of BlazeDS. </para>
+	<programlisting language="java">&lt;mx:Script&gt;
+&lt;![CDATA[
+...
+private function getBoardList(currentPage:int, pageClick:Boolean = false):void {
+				
+    var searchVO:FlexSearchVO = new FlexSearchVO("Board");
+    if ( pageClick ){
+        searchVO.searchCondition = condition;
+        searchVO.searchKeyword = keyword;
+    }else{
+        keyword = searchKeyword.text;
+        condition = searchCondition.selectedItem.data;
+        searchVO.searchKeyword = keyword;
+        searchVO.searchCondition = condition;
+    }
+        searchVO.pageIndex = currentPage;
+        boardService.getPagingList(searchVO);
+}
+private function getBoardListResultHandler(event:ResultEvent):void {
+				
+    page = event.result as Page;
+    plb.totalCount = page.totalCount;
+    plb.fetchSize = page.pagesize;
+    plb.numPages = page.pageunit;
+    plb.currentPage = page.currentPage;
+				
+    boardList = page.objects as ArrayCollection;
+			
+}
+...
+]]&gt;
+&lt;/mx:Script&gt;
+<![CDATA[
+<mx:RemoteObject id="boardService" destination="flexService" showBusyCursor="true">
+    <mx:method name="getPagingList" result="getBoardListResultHandler(event)" fault="ResultHandler.faultMessage(event)"/>
+    <mx:method name="saveAll" result="saveAllResultHandler(event)" fault="ResultHandler.faultMessage(event)"/>
+</mx:RemoteObject>]]></programlisting>
+	<para>
+	When boardService.getPagingList(searchVO) is executed, getPagingList method of flexService which were defined as destination is called,
+	and query whose id is findBoardList is executed and result value is returned in Page object.
+	</para>
+	
+	<para>The following is Page.as class which maps with Page class of Anyframe.
+	</para>
+	<programlisting language="java"><![CDATA[package org.anyframe.pagination
+{
+    import mx.collections.ArrayCollection;
+	
+    [RemoteClass(alias="org.anyframe.pagination.Page")]
+    public class Page
+	{
+		
+    public var objects:ArrayCollection;
+
+    public var currentPage:int;
+
+    public var totalCount:int;
+
+    public var pageunit:int;
+
+    public var pagesize:int;
+
+    public var maxPage:int;
+
+    public var beginUnitPage:int;
+
+    public var endUnitPage:int;
+	}
+}]]></programlisting>
+</section>
+<section id="tech_riaflex_sec004_sec002">
+<title>saveAll method</title>
+<para>saveAll method of FlexService is used when updating DB Data which handled at UI by one Service call
+after inserting, deleting, updating Data by using DataGrid of Flex.
+</para>
+<para>In case of update, delete and insert event at DataGrid,
+update the status value of ASObject mapping with FlexBaseObjcet.</para>
+
+<programlisting language="java">
+//Method executed when row of DataGrid was added.
+private function addCategory():void{
+    var addCategory:Category = new Category();
+    addCategory.status = 1;
+    addCategory.regDate = Util.getToday();
+    grdCategory.dataProvider.addItem(addCategory);
+}
+//Method executed when row of DataGrid was updated.
+private function updateCategory(event:DataGridEvent):void{
+				
+    if (event.reason == DataGridEventReason.CANCELLED){
+        return;
+    }
+                
+    var updateCategory:Category = grdCategory.itemEditorInstance.data as Category;
+    var rowStatus:Number = updateCategory.status;
+	if( rowStatus == 0 ){
+		updateCategory.status = 2;
+	}
+}
+
+//Method executed when row of DataGrid is deleted.
+//Temporarily saves deleted ASObject in deleteCategoryList.
+private var deleteCategoryList:ArrayCollection = new ArrayCollection();
+private function deleteCategory():void{
+    if(grdCategory.selectedIndex != -1){
+        var deleteCategory:Category = grdCategory.selectedItem as Category;
+        var rowStatus:int = deleteCategory.status;
+					
+        if (rowStatus != 1){
+            deleteCategory.status = 3;
+            deleteCategoryList.addItem(deleteCategory)
+        }
+        grdCategory.dataProvider.removeItemAt(grdCategory.selectedIndex);
+    }else{
+        Alert.show("Select Row to delete.");
+    }
+}</programlisting>
+<para>The following is ActionScript which handles the result of calling saveAll method of flexService. </para>
+<programlisting language="java"><![CDATA[//Among Bidning Data of DataGrid,
+// add data whose status value is not 0 and deleted data from DataGrid saved in deleteCategoryList, 
+//and call saveAll method of FlexService.  
+private function saveCategory():void{
+    var saveCategoryList:ArrayCollection = new ArrayCollection();
+    for ( var j:int = 0 ; j < deleteCategoryList.length ; j ++ ){
+        saveCategoryList.addItem(deleteCategoryList.getItemAt(j));
+    }
+    for ( var i:int = 0 ; i < categoryList.length ; i ++ ){
+        var category:Category = categoryList.getItemAt(i) as Category;
+        if(category.status != 0){
+            if ( category.categoryName == null || category.categoryName.length == 0 ){
+                Alert.show("Category name is essential..\n Check and save again.");
+                return;
+            }
+            saveCategoryList.addItem(category);
+        }
+    }
+    if ( saveCategoryList.length == 0 ){
+        Alert.show("There is no data to save.");
+    }else{
+        categoryService.saveAll(saveCategoryList);
+    }
+}
+//Result of calling saveAll method is in Map with the number of rows inserted, updated or deleted.   
+// saveAllResultHandler shows the execution result of saveAll method with Alert window. 
+private function saveAllResultHandler(event:ResultEvent):void{
+    var resultArray:Array = ["INSERT", "UPDATE", "DELETE"];
+			
+    var message:String = "";
+    for ( var i:int = 0 ; i < 3 ; i ++ ){
+        var count:int = event.result[resultArray[i]];
+        message = message + count + " Row " + resultArray[i] + "\n";
+    }
+    message = message + "was done.";
+
+    mx.controls.Alert.show(message);
+    deleteCategoryList.removeAll();
+    getCategoryList(1);
+}]]></programlisting>
+</section>
+	</section>
+</chapter>

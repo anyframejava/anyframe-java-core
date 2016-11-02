@@ -1,0 +1,33 @@
+<chapter id="tiles_tilesintegration_tilesdefinition">
+	<title>Tiles definition file set</title>
+	
+	<para>
+		To use tiles, define tiles definition which defines tiles attribute that will show page based on view name returned from controller. (tiles-def.xml file defined as the above tilesConfigurer location) The following is an example of tiles definition. 
+		<programlisting language="xml"><![CDATA[<definition name="template" template="/sample/layouts/layout.jsp">
+    <put-attribute name="header" value="/sample/layouts/top.jsp" />
+    <put-attribute name="body" value="/sample/layouts/welcome.jsp" />
+    <put-attribute name="footer" value="/sample/layouts/left.jsp" />
+</definition>
+<definition name="listCategory" extends="template">
+    <put-attribute name="body" value="/sample/category/listCategory.jsp" />
+</definition>]]></programlisting>
+	</para>
+	
+	<para>
+		First, define JSP page that has defined layout. After defining the page elements (header, body, and footer 
+		in the above example) that are basically used in the related layout.jsp page, other views can be used by extending definition called template that is defined in advance, 
+		and setting only body. In the above example, when view named listCategory is returned, the "/sample/layouts/layout.jsp" layout is "/sample/layouts/top.jsp" for header, 
+		"/sample/category/listCategory.jsp" for body, and "/sample/layouts/left.jsp" for footer. When putting tiles elements on JSP, 
+		define tiles taglib as below and use <![CDATA[<tiles:insertAttribute>]]> tag. 
+		<programlisting language="xml"><![CDATA[<definition name="template" template="/sample/layouts/layout.jsp">
+    <put-attribute name="header" value="/sample/layouts/top.jsp" />
+    <put-attribute name="body" value="/sample/layouts/welcome.jsp" />
+    <put-attribute name="footer" value="/sample/layouts/left.jsp" />
+</definition>
+<definition name="listCategory" extends="template">
+    <put-attribute name="body" value="/sample/category/listCategory.jsp" />
+</definition>]]></programlisting>
+	</para>
+	
+	<para>The name attribute of tiles definition file is the name to put in name attribute.</para>
+</chapter>

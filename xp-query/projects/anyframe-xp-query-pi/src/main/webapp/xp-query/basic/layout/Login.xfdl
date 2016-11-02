@@ -1,0 +1,89 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<FDL version="1.4">
+  <TypeDefinition url="..\default_typedef.xml"/>
+  <Form id="Login" classname="Login" inheritanceid="" position="absolute 0 0 165 67" titletext="Login" onload="Login_onload" style="background:#f2f2efff;">
+    <Layouts>
+      <Layout>
+        <Static id="stUserId" text="ID" position="absolute 2 2 64 33"/>
+        <Edit id="edtUserId" taborder="1" position="absolute 64 5 120 29" value="test"/>
+        <Edit id="edtPassword" taborder="2" position="absolute 64 37 120 61" password="true" onkeydown="edtPassword_onkeydown" value="test123"/>
+        <Static id="stPassword" text="Password" position="absolute 2 34 64 65"/>
+        <Button id="Button00" taborder="3" text="확인" position="absolute 122 5 160 29" onclick="Button00_onclick"/>
+        <Button id="Button01" taborder="4" text="취소" position="absolute 122 37 160 61" onclick="Button01_onclick"/>
+      </Layout>
+    </Layouts>
+    <Bind>
+      <BindItem id="item0" compid="divBoardForm.edtPostId" propid="value" datasetid="dsBoard" columnid="POST_ID"/>
+      <BindItem id="item1" compid="divBoardForm.edtTitle" propid="value" datasetid="dsBoard" columnid="TITLE"/>
+    </Bind>
+    <Objects>
+      <Dataset id="dsService" firefirstcount="0" firenextcount="0" useclientlayout="false" updatecontrol="true" enableevent="true" loadkeymode="keep" loadfiltermode="keep" reversesubsum="false">
+        <ColumnInfo>
+          <Column id="SVC_ID" type="STRING" size="100"/>
+          <Column id="QUERY_LIST" type="STRING" size="256"/>
+          <Column id="SERVICE" type="STRING" size="100"/>
+          <Column id="IN_DATASET_LIST" type="STRING" size="256"/>
+          <Column id="OUT_DATASET_LIST" type="STRING" size="256"/>
+          <Column id="CONTROLLER" type="STRING" size="512"/>
+          <Column id="CALLBACK" type="STRING" size="100"/>
+          <Column id="SYNC_YN" type="STRING" size="1"/>
+        </ColumnInfo>
+        <Rows>
+          <Row>
+            <Col id="SVC_ID">login</Col>
+            <Col id="IN_DATASET_LIST">inDataset=dsLogin</Col>
+            <Col id="OUT_DATASET_LIST">gdsUser=gdsUser</Col>
+            <Col id="CONTROLLER">xpQueryLogin.do</Col>
+          </Row>
+        </Rows>
+      </Dataset>
+      <Dataset id="dsLogin" firefirstcount="0" firenextcount="0" useclientlayout="false" updatecontrol="true" enableevent="true" loadkeymode="keep" loadfiltermode="keep" reversesubsum="false">
+        <ColumnInfo>
+          <Column id="USER_ID" type="STRING" size="256"/>
+          <Column id="PASSWORD" type="STRING" size="256"/>
+        </ColumnInfo>
+      </Dataset>
+    </Objects>
+    <Script type="xscript4.0"><![CDATA[include "lib::commonScript.xjs";
+
+// Login 버튼 클릭 이벤트 처리
+function Button00_onclick(obj:Button,  e:ClickEventInfo)
+{
+	dsLogin.addRow();
+	dsLogin.setColumn(0, "USER_ID", edtUserId.text);
+	dsLogin.setColumn(0, "PASSWORD", edtPassword.value);
+	gfnService("login");
+}
+
+// 취소 버튼 클릭 이벤트 처리
+function Button01_onclick(obj:Button,  e:ClickEventInfo)
+{
+	close("N");
+}
+
+// Form이 열렸을 때 UserID 칸으로 Focus 이동
+function Login_onload(obj:Form, e:LoadEventInfo)
+{
+	edtUserId.setFocus();
+}
+
+// 엔터키 입력 이벤트 처리
+function edtPassword_onkeydown(obj:Edit, e:KeyEventInfo)
+{
+	if(e.keycode == 13){
+		Button00_onclick();
+	}
+}
+
+// gfnService Callback 처리
+function fnCallback(strServiceId, strErrorCode, strErrorMsg){
+	if(strErrorCode == -1){
+		gfnAlertMsg(strErrorMsg);
+		edtUserId.setFocus();
+	} else {
+//		gvLanguege = gdsUser.getConstColumn("Language");
+		close("Y");
+	}
+}]]></Script>
+  </Form>
+</FDL>

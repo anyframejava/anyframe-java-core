@@ -1,0 +1,116 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<FDL version="1.5">
+  <TypeDefinition url="..\default_typedef.xml"/>
+  <Form id="LocalStorage" classname="LocalStorage" left="0" top="0" width="1024" height="1062" titletext="LocalStorage">
+    <Layouts>
+      <Layout>
+        <Static id="Static01" taborder="0" text="1. setItem" cssclass="WFDA_sta_label" left="20" top="39" width="196" height="160"/>
+        <Static id="Static02" taborder="1" text="2. getItem" cssclass="WFDA_sta_label" left="20" top="198" width="196" height="184"/>
+        <Static id="Static00" taborder="2" text="(string, string) ⇒ ( &quot;name&quot;, &quot;홍길동&quot; )&#13;&#13;(string, number) ⇒ ( &quot;age&quot;, 21 )&#13;&#13;(string, boolean) ⇒ ( &quot;vip&quot;, true )&#13;&#13;(string, object) ⇒ ( &quot;json&quot;,&#13; Eco.Json.encode({&quot;str&quot;:&quot;json test&quot;, &quot;num&quot;: 100} )&#13;&#13;(string, Date) ⇒ ( &quot;date&quot;, new Date() )" cssclass="WFDA_sta_Box" left="215" top="39" width="374" height="160"/>
+        <Static id="Static10" taborder="3" cssclass="WFDA_sta_Box" left="215" top="198" width="374" height="184" text="(string) ⇒ ( &quot;name&quot; )&#13;&#13;(string) ⇒ ( &quot;age&quot; )&#13;&#13;(string) ⇒ ( &quot;vip&quot; )&#13;&#13;(string) ⇒ ( &quot;json&quot; )&#13;&#13;&#13;&#13;&#13;(string) ⇒ ( &quot;date&quot; )" style="padding:6 0 4 11;align:left top;"/>
+        <Button id="Button00" taborder="4" text="실행" onclick="Button00_onclick" cssclass="WF_btn_Point" left="519" top="48" width="56" height="22"/>
+        <Button id="Button02" taborder="5" text="실행" cssclass="WF_btn_Point" left="519" top="208" width="56" height="22" onclick="Button02_onclick"/>
+        <Static id="st_1_result01" taborder="6" cssclass="WFDA_sta_BoxR" left="584" top="39" width="420" height="160"/>
+        <Static id="st_2_result01" taborder="7" cssclass="WFDA_sta_BoxR" left="584" top="198" width="420" height="184" style="padding:6 0 4 11;align:left top;"/>
+        <Static id="Static06" taborder="8" text="Arguments:  ( Type ) ⇒ ( Value )" cssclass="WFDA_sta_header" left="215" top="0" width="374" height="40"/>
+        <Static id="Static07" taborder="9" text="Method" cssclass="WFDA_sta_header" left="20" top="0" width="196" height="40"/>
+        <Static id="Static08" taborder="10" text="Result: (Type) Vaule" cssclass="WFDA_sta_header" left="584" top="0" width="420" height="40"/>
+        <Static id="Static03" taborder="11" text="3. removeItem&#13;    (HTML5 Only)" cssclass="WFDA_sta_label" left="20" top="381" width="196" height="160" wordwrap="false"/>
+        <Static id="Static04" taborder="12" cssclass="WFDA_sta_Box" left="215" top="381" width="374" height="160" text="(string) ⇒ ( &quot;name&quot; )&#13;&#13;(string) ⇒ ( &quot;age&quot; )&#13;&#13;(string) ⇒ ( &quot;vip&quot; )&#13;&#13;(string) ⇒ ( &quot;json&quot; )&#13;&#13;(string) ⇒ ( &quot;date&quot; )"/>
+        <Button id="Button04" taborder="13" text="실행" cssclass="WF_btn_Point" left="519" top="391" width="56" height="22" onclick="Button04_onclick"/>
+        <Static id="st_3_result01" taborder="14" cssclass="WFDA_sta_BoxR" left="584" top="381" width="420" height="160"/>
+        <Static id="Static05" taborder="15" text="4. clear&#13;    (HTML5 Only)" cssclass="WFDA_sta_label" left="20" top="540" width="196" height="68" wordwrap="false"/>
+        <Static id="Static09" taborder="16" cssclass="WFDA_sta_Box" left="215" top="540" width="374" height="68" text="( ) ⇒ ( )"/>
+        <Button id="Button06" taborder="17" text="실행" cssclass="WF_btn_Point" left="519" top="550" width="56" height="30" onclick="Button03_onclick"/>
+        <Static id="st_4_result01" taborder="18" cssclass="WFDA_sta_BoxR" left="584" top="540" width="420" height="68"/>
+      </Layout>
+    </Layouts>
+    <Script type="xscript5.0"><![CDATA[
+// 1.1 LocalStorage api 사용 예제
+this.Button00_onclick = function(obj:Button,  e:nexacro.ClickEventInfo)
+{
+	var result1 = Eco.LocalStorage.setItem("name", "홍길동");
+	
+	var result2 = Eco.LocalStorage.setItem("age", 21);
+
+	var result3 = Eco.LocalStorage.setItem("vip", true);
+
+	//var result4 = Eco.LocalStorage.setItem("json", '{"text":"abc"}');
+	var result4 = Eco.LocalStorage.setItem( "json", Eco.Json.encode({"str":"json test", "num":100}) );
+	
+	var result5 = Eco.LocalStorage.setItem("date", new Date());
+	
+	var msg = "";
+	msg = "(" + typeof(result1) + ") " + result1.toString();
+	msg += "\n\n(" + typeof(result2) + ") " + result2.toString();
+	msg += "\n\n(" + typeof(result3) + ") " + result3.toString();
+	msg += "\n\n(" + typeof(result4) + ") " + result4.toString();
+	msg += "\n\n\n(" + typeof(result5) + ") " + result5.toString();
+	
+	this.st_1_result01.set_text( msg );
+	
+	trace(msg);
+}
+
+
+
+
+// 2.1 LocalStorage api 사용 예제
+this.Button02_onclick = function(obj:Button,  e:nexacro.ClickEventInfo)
+{
+	var result1 = Eco.LocalStorage.getItem("name");
+	
+	var result2 = Eco.LocalStorage.getItem("age");
+		
+	var result3 = Eco.LocalStorage.getItem("vip");
+	
+	var result4 = Eco.LocalStorage.getItem("json");
+
+	var result5 = Eco.LocalStorage.getItem("date");
+		
+	var msg = "";
+	msg = "(" + typeof(result1) + ") " + result1;
+	msg += "\n\n(" + typeof(result2) + ") " + result2;
+	msg += "\n\n(" + typeof(result3) + ") " + result3;
+	msg += "\n\n(" + typeof(result4) + ") " + result4;
+	
+	if(!Eco.isEmpty(result4))
+	{
+		//JSON 변환
+		var jsonDecode = Eco.Json.decode(result4);
+		msg += "\n\t === Object 변환은 Eco.Json.decode 사용 ===";
+		msg += "\n\tresult.str = " + jsonDecode.str;
+		msg += "\n\tresult.num = " + jsonDecode.num;	
+	}
+
+	msg += "\n\n(" + typeof(result5) + ") " + result5;
+		
+		
+	this.st_2_result01.set_text( msg );	
+	trace(msg);
+}
+
+
+//==============================================================================
+
+// 3 LocalStorage api 사용 예제
+this.Button04_onclick = function(obj:Button,  e:nexacro.ClickEventInfo)
+{
+	Eco.LocalStorage.removeItem("name");
+	Eco.LocalStorage.removeItem("age");
+	Eco.LocalStorage.removeItem("vip");
+	Eco.LocalStorage.removeItem("json");
+	Eco.LocalStorage.removeItem("date");
+	
+	this.st_3_result01.set_text( "별도의 return값은 없음.\n\ngetItem()을 실행해보면 removeItem() 결과를 확인할 수 있습니다.");
+}
+
+// 4 LocalStorage api 사용 예제
+this.Button03_onclick = function(obj:Button,  e:nexacro.ClickEventInfo)
+{
+	Eco.LocalStorage.clear();
+	this.st_4_result01.set_text( "별도의 return값은 없음.\n\ngetItem()을 실행해보면 clear() 결과를 확인할 수 있습니다.");
+}
+]]></Script>
+  </Form>
+</FDL>

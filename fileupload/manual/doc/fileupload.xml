@@ -1,0 +1,89 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!DOCTYPE book PUBLIC "-//OASIS//DTD DocBook XML V4.5//EN"
+"http://www.oasis-open.org/docbook/xml/4.5/docbookx.dtd" [
+<!ENTITY fileupload_overview SYSTEM "fileupload/overview.xml">
+<!ENTITY fileupload_develop SYSTEM "fileupload/develop.xml">
+<!ENTITY fileupload_reference SYSTEM "fileupload/reference.xml">
+]>
+<!--
+		Licensed to the Apache Software Foundation (ASF) under one or more
+		contributor license agreements. See the NOTICE file distributed with
+		this work for additional information regarding copyright ownership.
+		The ASF licenses this file to you under the Apache License, Version
+		2.0 (the "License"); you may not use this file except in compliance
+		with the License. You may obtain a copy of the License at
+
+		http://www.apache.org/licenses/LICENSE-2.0 Unless required by
+		applicable law or agreed to in writing, software distributed under the
+		License is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR
+		CONDITIONS OF ANY KIND, either express or implied. See the License for
+		the specific language governing permissions and limitations under the
+		License.
+-->
+<book lang="ko">
+	  <title>Anyframe File Upload Plugin</title>
+	
+	  <bookinfo>
+	  		<copyright>
+					<year>2007-2014</year>
+					<holder>삼성SDS</holder>
+			</copyright>
+			<releaseinfo>Version 1.2.1-SNAPSHOT</releaseinfo>
+			<productname>Anyframe FileUpload Plugin</productname>
+			<authorgroup>
+					<corpauthor />
+			</authorgroup>
+			<mediaobject>
+					<imageobject>
+							<imagedata fileref="../image/common/logo_pdf.jpg" />
+					</imageobject>
+					<textobject>
+							<phrase>Anyframe Java Logo</phrase>
+					</textobject>
+			</mediaobject>
+			<legalnotice>
+					<para>
+					  본 문서의 저작권은 삼성SDS에 있으며 Anyframe 오픈소스 커뮤니티 활동의 목적하에서 자유로운 이용이 가능합니다.
+					  본 문서를 복제, 배포할 경우에는 저작권자를 명시하여 주시기 바라며 본 문서를 변경하실 경우에는 원문과 변경된 내용을 표시하여 주시기 바랍니다. 
+					  원문과 변경된 문서에 대한 상업적 용도의 활용은 허용되지 않습니다. 본 문서에 오류가 있다고 판단될 경우 이슈로 등록해 주시면 적절한 조치를 취하도록 하겠습니다.
+					</para>
+			</legalnotice>
+		</bookinfo>
+	
+	  <part id="fileupload_introduction_part">
+	  		<title>Introduction</title>
+			<partintro id="fileupload_introduction_part_intro">
+					<para>
+							fileupload plugin은 jQuery 기반의 라이브러리를 사용하여 웹에서 파일을 업로드할 수있는 기능의 UI를 제공한다. 
+							또한 파일이 업로드될때 대용량 파일 처리를 위하여 스트리밍 방식으로 직접 Disk에 저장되도록 
+							<ulink url="http://commons.apache.org/fileupload/">Apache Commons FileUpload</ulink>
+							의 StreamingAPI를 사용하였고, 동적으로 form 전송 시 브라우저 호환성 처리를 위하여 jquery form plugin의 오픈소스가 라이브러리에 구성되어 있다.
+					</para>
+					<para role="introduction_title">
+							<emphasis role="bold">Installation</emphasis>
+					</para>
+					<para>
+							Command 창에서 다음과 같이 명령어를 입력하여 fileupload plugin을 설치한다.
+					</para>
+					<programlisting language="java">mvn anyframe:install -Dname=fileupload</programlisting>
+					<para>
+							installed(mvn anyframe:installed) 혹은 jetty:run(mvn clean jetty:run) command를 이용하여 설치 결과를 확인해볼 수 있다.
+					</para>
+				</partintro>
+	  </part>
+	
+	  <part id="fileupload_usage_part">
+			    <title>File Upload</title>
+			
+			    <partintro id="fileupload_usage_part_intro">
+			    		<para>
+			    				RIA (Flash, Silverlight 등) 및 ActiveX 와 같은 비표준 솔루션을 사용하지 않고, 순수 HTML/Javascript 기반의 파일업로드 UI 및 기능을 제공하는 것을 목표로한다.
+			    				세부적인 기능으로는, 파일추가, 파일삭제, 멀티업로드, 파일 Size 표시, 파일 업로드, 업로드 시 Progress 처리 등의 기능을 제공하며, 
+			    				IE7 이상, Chrome, Safari, Firefox 의 브라우저에서 동작되도록 호환성을 제공한다.
+			     		</para>
+			    </partintro>
+			    &fileupload_overview;
+			    &fileupload_develop;
+			    &fileupload_reference;
+	  </part>
+</book>

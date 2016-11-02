@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<queryservice xmlns="http://www.anyframejava.org/schema/query/mapping" 
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" 
+	xsi:schemaLocation="http://www.anyframejava.org/schema/query/mapping http://www.anyframejava.org/schema/query/mapping/anyframe-query-mapping-1.0.xsd ">
+
+	<queries>
+		<query id="findJqueryDeptList">
+			<statement>
+				SELECT dept.DEPT_ID, dept.DEPT_NAME, dept.DEPT_LEVEL, dept.DEPT_DESC, dept.PARENT_DEPT
+				FROM JQUERY_DEPT dept
+				ORDER BY dept.DEPT_ID
+			</statement>
+			<result class="org.anyframe.plugin.jquery.deptfinder.domain.Dept"/>
+		</query>
+		<query id="findJqueryDeptByPk">
+			<statement>
+				SELECT dept.DEPT_ID, dept.DEPT_NAME, dept.DEPT_LEVEL, dept.DEPT_DESC, dept.PARENT_DEPT
+				FROM JQUERY_DEPT dept
+				WHERE dept.DEPT_ID = :vo.deptId
+			</statement>
+			<result class="org.anyframe.plugin.jquery.deptfinder.domain.Dept"/>
+		</query>		
+	</queries>
+</queryservice>

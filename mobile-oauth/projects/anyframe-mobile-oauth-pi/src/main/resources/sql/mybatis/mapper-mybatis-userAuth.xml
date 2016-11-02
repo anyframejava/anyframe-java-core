@@ -1,0 +1,26 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" 
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="UserAuth">
+	
+	<resultMap id="userAuthResult" type="UserAuth">
+		<id property="email" column="email" />
+		<result property="name" column="name" />
+		<result property="password" column="password" />		
+		<result property="roleId" column="role_id" />
+	</resultMap>
+	
+	<insert id="insertUserAuth" parameterType="UserAuth">
+		INSERT INTO USER_AUTH
+		(email, name, role_id)
+		VALUES (#{email,jdbcType=VARCHAR}, #{name,jdbcType=VARCHAR},
+		#{roleId,jdbcType=VARCHAR})
+	</insert>
+	
+	<delete id="deleteUserAuth" parameterType="UserAuth">
+		DELETE FROM USER_AUTH 
+		WHERE email = #{email}
+	</delete>	
+	
+</mapper>

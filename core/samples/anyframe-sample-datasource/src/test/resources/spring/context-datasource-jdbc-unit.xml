@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="
+       http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-4.0.xsd">
+
+	<bean id="someDAO" class="org.anyframe.sample.datasource.some.JdbcSomeDAO">
+		<property name="dataSource" ref="dataSource" />
+	</bean>
+
+	<!-- Database Datasource configuration -->
+	<bean id="dataSource" class="org.springframework.jdbc.datasource.DriverManagerDataSource">
+		<property name="driverClassName" value="sun.jdbc.odbc.JdbcOdbcDriver" />
+		<property name="url" value="@DB-URL@" />
+		<property name="username" value="@DB-USERNAME@" />
+		<property name="password" value="@DB-PASSWORD@" />
+	</bean>
+
+</beans>

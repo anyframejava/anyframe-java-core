@@ -1,0 +1,44 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<plugin name="logback" description="Logback Plugin consists sample code, libraries and configurations needed to use logback with Anyframe.">
+  <groupId>org.anyframe.plugin</groupId>
+  <artifactId>anyframe-logback-pi</artifactId>
+  <version>1.1.1-SNAPSHOT</version>
+  <dependent-plugins>
+    <dependent-plugin name="core" version="2.0.0&gt;*&gt;1.4.0"/>
+  </dependent-plugins>
+  <resources>
+    <resource dir="src/main/java" filtered="true" packaged="true">
+      <include name="**/logback/**/*.java"/>
+    </resource>
+    <resource dir="src/main/resources" filtered="true" packaged="false">
+      <include name="**/logback*.xml"/>
+    </resource>
+    <resource dir="src/test/java" filtered="true" packaged="true">
+      <include name="**/logback/**/*.java"/>
+    </resource>
+    <resource dir="src/test/resources" filtered="true" packaged="false">
+     <include name="**/logback*.xml"/>
+    </resource>
+    
+    <resource dir="src/main/webapp" filtered="false" packaged="false">
+      <include name="**/logback/**/*.*"/>
+      <exclude name="**/anyframe.jsp" merged="true"/>
+    </resource>
+
+    <resource dir="src/main/webapp" filtered="true" packaged="false">
+   		<include name="/logback/dummy.jsp"/>
+    	<exclude name="**/web.xml" merged="true"/>
+    </resource>
+    
+    
+    <resource dir="" filtered="false" packaged="false">
+      <include name="**/remove-pom.xml"/>
+    </resource>
+    
+  </resources>
+  <samples>true</samples>
+  <interceptor>
+    <class></class>
+  </interceptor>
+  <essential>false</essential>
+</plugin>

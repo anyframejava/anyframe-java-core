@@ -1,0 +1,54 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<queryservice xmlns="http://www.anyframejava.org/schema/query/mapping" 
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" 
+	xsi:schemaLocation="http://www.anyframejava.org/schema/query/mapping http://www.anyframejava.org/schema/query/mapping/anyframe-query-mapping-1.0.xsd ">
+
+	<queries>
+		<query id="findDirectorList" isDynamic="true">
+			<statement>
+			   	<!--iam-findDirectorList-START-->
+				select DIRECTOR_ID , NAME , MOVIES 				
+				from DIRECTOR
+				where 
+					NAME like '%' || :vo.searchKeyword || '%' 
+			   	<!--iam-findDirectorList-END-->
+			</statement>
+			<result class="org.anyframe.plugin.iam.domain.Director"/>
+		</query>	
+		
+		<query id="findDirectorByPk" isDynamic="true">
+			<statement>
+				select
+					DIRECTOR_ID , NAME ,MOVIES 			
+				from DIRECTOR
+				where DIRECTOR_ID=:vo.directorId				
+			</statement>
+			<result class="org.anyframe.plugin.iam.domain.Director"/>
+		</query>	
+		
+		<query id="createDirector" isDynamic="true">
+			<statement>
+				insert into DIRECTOR 
+				( DIRECTOR_ID, NAME, MOVIES )
+				values ( :vo.directorId, :vo.name, :vo.movies)
+			</statement>
+		</query>
+		
+		<query id="updateDirector" isDynamic="true">
+			<statement>
+				update DIRECTOR 
+				SET NAME=:vo.name, 
+					MOVIES=:vo.movies				
+				where DIRECTOR_ID=:vo.directorId				
+			</statement>
+		</query>
+		
+		<query id="removeDirector" isDynamic="true">
+			<statement>
+				delete from DIRECTOR 
+				where DIRECTOR_ID=:vo.directorId				
+			</statement>
+		</query>
+		
+	</queries>
+</queryservice>

@@ -1,0 +1,35 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<plugin name="tiles" description="Tiles Plugin consists of sample code that provides basic guidelines on how to use Apache Tiles which is a templating framework built to simplify the development of web application user interfaces and reference libraries needed to use these open sources.">
+  <groupId>org.anyframe.plugin</groupId>
+  <artifactId>anyframe-tiles-pi</artifactId>
+  <version>1.1.1-SNAPSHOT</version>
+  <dependent-plugins>
+    <dependent-plugin name="core" version="2.0.0&gt;*&gt;1.4.0"/>
+  </dependent-plugins>
+  <resources>
+    <resource dir="src/main/java" filtered="true" packaged="true">
+      <include name="**/tiles/**/*.java"/>
+    </resource>
+    <resource dir="src/main/resources" filtered="true" packaged="false">
+      <include name="**/*tiles*.xml"/>
+    </resource>
+    <resource dir="src/test/java" filtered="true" packaged="true">
+      <include name="**/tiles/**/*.java"/>
+    </resource>
+    <resource dir="src/test/resources" filtered="true" packaged="false">
+      <include name="**/*tiles*.xml"/>
+    </resource>
+    <resource dir="src/main/webapp" filtered="false" packaged="false">
+      <include name="**/tiles/**/*.*"/>
+      <include name="**/tiles-views.xml"/>
+      <include name="**/test.xml"/>
+      <exclude name="**/anyframe.jsp" merged="true"/>
+    </resource>    
+  </resources>
+  <samples>true</samples>
+  <interceptor>
+    <class></class>
+  </interceptor>
+  <essential>false</essential>
+  <checked>false</checked>
+</plugin>

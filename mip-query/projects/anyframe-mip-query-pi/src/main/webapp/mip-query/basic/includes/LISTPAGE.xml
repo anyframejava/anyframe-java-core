@@ -1,0 +1,105 @@
+<?xml version="1.0" encoding="utf-8"?>
+<Window>
+	<Form Height="30" Id="frmLISTPAGE" Left="8" PidAttrib="7" Title="frmLISTPAGE" Top="8" Ver="1.0" Width="376" WorkArea="true">
+		<Div Height="34" Id="divList" TabOrder="1" Width="383">
+			<Contents></Contents>
+		</Div>
+	</Form>
+	<Script><![CDATA[var nCurrentPage = 1;	// 현재 페이지
+var objListDataset;
+var objPageDataset;
+
+function fnPage_OnClick(obj) {
+	// 페이지 이동 전 페이징할 Dataset에 변경된 내용이 있는지 확인
+	if(objListDataset.getUpdate()) {
+		var returnValue = gfnConfirm("MSG_PAGING_WITHOUT_UPDATE", "YN");
+		
+		if(returnValue == "N") {
+			return;
+		}
+	}
+	
+	if(indexOf(obj.id, "btn") != -1) {
+		obj.id = substr(obj.id, 3);
+	}
+	
+	if(obj.id == 'First' || obj.id == 'Before' || obj.id == 'Next' || obj.id == 'End') {
+		// ◀, ▶ 클릭
+		objPageDataset.setConstColumn("pageIndex", toInteger(obj.userData));
+		nCurrentPage = obj.userData;
+				
+	} else if(isdigit(toString(obj.id))) {
+		//번호 클릭
+		objPageDataset.setConstColumn("pageIndex", toInteger(obj.id));
+		nCurrentPage = obj.id;
+	}
+	
+	parent.fnGetPagingList();
+}
+
+function fnMakePage() {
+	var strCurrentFont = "돋움,9,bold";	// 현재선택된 페이지의 폰트
+	var strCurrentColor	= "blue";		// 현재선택된 페이지의 컬러
+	var strContents = "<Contents>\n";
+	var nTotalPage;
+	var nPageUnit = objPageDataset.getConstColumn("pageUnit");		// 하단에 Pasing되는 page번호 갯수
+	var nPageSize = objPageDataset.getConstColumn("pageSize");		// 페이지당 조회물 건 수
+	var nTotalCount = objListDataset.getConstColumn("totalCount");	// 서버에서 총 건수(TotalCount)를 꼭 받아야 페이징을 합니다.
+
+	if( floor(nTotalCount % nPageSize) > 0 ) {
+		nTotalPage = floor(nTotalCount / nPageSize) + 1;
+		
+	} else {
+		nTotalPage = floor(nTotalCount / nPageSize);
+	}
+
+	var nBeginUnitPage = (floor((toInteger(nCurrentPage) - 1) / toInteger(nPageUnit))) * nPageUnit + 1;	
+	var nNextBeginUnitPage = toInteger(nBeginUnitPage + nPageUnit);
+	
+	// nLeft, iWidth로 페이지 번호의 크기와 간격을 지정합니다.
+	// 두자리 : width = 25, 세자리 : width = 30, 네자리 : width = 35
+	var nLength = length(toString(nNextBeginUnitPage - 1));
+	var nLeft	= 10;
+	var nBtnImageWidth = 16;
+	var nWidth	= 25 + (nLength - 2) * 5;
+	
+	// 이전 PageUnit (◀)
+	if(nBeginUnitPage > nPageUnit) {
+		strContents = strContents +"<button	buttonStyle='true' imageId='reduce_bt' cursor='hand' id='btnBefore' userData='" + (nBeginUnitPage-1) + "' left='" + nLeft + "' top='0' width='" + nWidth + "' height='"+ nBtnImageWidth +"' font='돋움,9' color='Black' appearance='Flat' onClick='fnPage_OnClick' bkColor='white' borderColor='white' disableBKColor='white' hilight3dColor='white' dkshadowColor='white' face3dColor='white'></button>\n" ;
+	} else {
+		strContents = strContents +"<button	buttonStyle='true' imageId='reduce_bt' enable='false' id='btnBefore' userData='" + (nBeginUnitPage-1)+"' left='" + nLeft + "' top='0' width='" + nWidth + "' height='"+ nBtnImageWidth +"' font='돋움,9' color='Black' appearance='Flat' bkColor='white' borderColor='white' disableBKColor='white' hilight3dColor='white' dkshadowColor='white' face3dColor='white'></button>\n" ;
+	}
+	
+	nLeft += nBtnImageWidth + 5;
+	
+	// 페이징[1 2 3 4 5 6 7 8 9 10]
+	for(var i = nBeginUnitPage ; i < nNextBeginUnitPage ; i++ ) {
+		if(i > nTotalPage) {
+			break;
+		}
+			
+		if(i == nCurrentPage) {
+			strContents = strContents +"<button	cursor='hand' id='btn"+i+"' left='" + nLeft + "' top='0' width='" + nWidth + "' height='"+ nBtnImageWidth +"' font='" + strCurrentFont + "' color='" + strCurrentColor + "' text='" + i + "' appearance='Flat' onClick='fnPage_OnClick' bkColor='white' borderColor='white' disableBKColor='white' hilight3dColor='white' dkshadowColor='white' face3dColor='white'></button>\n" ;
+		} else {
+			strContents = strContents +"<button	cursor='hand' id='btn"+i+"' left='" + nLeft + "' top='0' width='" + nWidth+"' height='"+ nBtnImageWidth +"' font='돋움,9,UnderLine' text='" + i + "' appearance='Flat' onClick='fnPage_OnClick' bkColor='white' borderColor='white' disableBKColor='white' hilight3dColor='white' dkshadowColor='white'></button>\n" ;
+		}
+		nLeft += nWidth;
+	}
+	
+	// 다음 PageUnit (▶)
+	nLeft = nLeft + 5;
+	if(nNextBeginUnitPage <= nTotalPage) {
+		strContents = strContents +"<button	buttonStyle='true' imageId='spread_bt' cursor='hand' id='btnNext' userData='" + nNextBeginUnitPage + "' left='" + nLeft + "' top='0' width='" + nWidth + "'	height='"+ nBtnImageWidth +"' font='돋움,9' color='Black' appearance='Flat' onClick='fnPage_OnClick' bkColor='white' borderColor='white' disableBKColor='white' hilight3dColor='white' dkshadowColor='white' face3dColor='white'></button>\n" ;
+	} else {
+		strContents = strContents +"<button	buttonStyle='true' imageId='spread_bt' enable='false' id='btnNext' userData='" + nNextBeginUnitPage + "' left='" + nLeft + "' top='0' width='" + nWidth + "' height='"+ nBtnImageWidth +"' font='돋움,9' color='Black' appearance='Flat'  bkColor='white' borderColor='white' disableBKColor='white' hilight3dColor='white' dkshadowColor='white' face3dColor='white'></button>\n" ;
+	}	
+	
+	nLeft += nBtnImageWidth + 10;
+	strContents = strContents +"</Contents>\n";
+	
+	divList.contents = strContents;
+	divList.width = nLeft;
+	
+	divList.left = toInteger((this.width - nLeft) / 2);
+}]]></Script>
+</Window>

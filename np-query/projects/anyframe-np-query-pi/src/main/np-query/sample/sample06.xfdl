@@ -1,0 +1,119 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<FDL version="1.5">
+  <TypeDefinition url="..\default_typedef.xml"/>
+  <Form id="sample006" classname="sample006" left="0" top="0" width="1014" height="671" titletext="Popup" onload="form_onload">
+    <Layouts>
+      <Layout>
+        <Button id="Button00" taborder="0" text="Modal Popup" left="41" top="29" width="152" height="50" onclick="Button00_onclick"/>
+        <Button id="Button01" taborder="1" text="Modeless Popup" left="41" top="93" width="152" height="50" onclick="Button01_onclick"/>
+      </Layout>
+    </Layouts>
+    <Objects>
+      <Dataset id="ds_list" firefirstcount="0" firenextcount="0" useclientlayout="false" updatecontrol="true" enableevent="true" loadkeymode="keep" loadfiltermode="keep" reversesubsum="false" oncolumnchanged="ds_list_oncolumnchanged">
+        <ColumnInfo>
+          <Column id="id" type="STRING" size="256"/>
+          <Column id="name" type="STRING" size="256"/>
+          <Column id="cd01" type="STRING" size="256"/>
+          <Column id="cd02" type="STRING" size="256"/>
+          <Column id="dis" type="STRING" size="256"/>
+          <Column id="csj_code" type="STRING" size="256"/>
+          <Column id="csj_code_multi" type="STRING" size="256"/>
+        </ColumnInfo>
+        <Rows>
+          <Row>
+            <Col id="id">a01</Col>
+            <Col id="name">홍진영</Col>
+            <Col id="cd01">BAS</Col>
+            <Col id="cd02">CM</Col>
+            <Col id="dis">사랑의 와이파이</Col>
+            <Col id="csj_code">BAS</Col>
+            <Col id="csj_code_multi">CM</Col>
+          </Row>
+          <Row>
+            <Col id="id">a02</Col>
+            <Col id="name">김준영</Col>
+            <Col id="cd01">BIS</Col>
+            <Col id="cd02">ET</Col>
+            <Col id="csj_code">BIS</Col>
+            <Col id="csj_code_multi">ET</Col>
+          </Row>
+          <Row>
+            <Col id="id">a03</Col>
+            <Col id="name">이윤정</Col>
+            <Col id="cd01">DEV</Col>
+            <Col id="cd02">EX</Col>
+            <Col id="csj_code">DEV</Col>
+            <Col id="csj_code_multi">EX</Col>
+          </Row>
+        </Rows>
+      </Dataset>
+      <Dataset id="ds_param" firefirstcount="0" firenextcount="0" useclientlayout="false" updatecontrol="true" enableevent="true" loadkeymode="keep" loadfiltermode="keep" reversesubsum="false">
+        <ColumnInfo>
+          <Column id="Column0" type="STRING" size="256"/>
+          <Column id="Column1" type="STRING" size="256"/>
+        </ColumnInfo>
+        <Rows>
+          <Row>
+            <Col id="Column0">11</Col>
+            <Col id="Column1">22</Col>
+          </Row>
+          <Row>
+            <Col id="Column0">33</Col>
+            <Col id="Column1">44</Col>
+          </Row>
+        </Rows>
+      </Dataset>
+    </Objects>
+    <Script type="xscript5.0"><![CDATA[include "lib::comForm.xjs";
+
+//Modal Popup
+this.Button00_onclick = function(obj:Button,  e:nexacro.ClickEventInfo)
+{
+	//option 속성설정 : top, left, width, height, title, titletext, status, modeless, layered, opacity, autosize, resizable
+	var oOption = {};
+	oOption.width = 500;
+	oOption.height = 500;
+	
+	//Parameter
+	var oArg = {pString:"Test", pArray:["R", "S"], pDataset:this.ds_param}; 
+	
+	//Modal 팝업오픈
+	var rtn = this.gfn_popup("popup_modal", "sample::sample06_P.xfdl", oArg, oOption, "fn_popupCallback");	
+}
+
+//Modeless Popup
+this.Button01_onclick = function(obj:Button,  e:nexacro.ClickEventInfo)
+{
+	//Modeless 팝업 오픈(option에 modeless=true 속성추가)
+	var oOption = {};
+	oOption.width = 500;
+	oOption.height = 500;
+	oOption.modeless = true;
+	
+	//Parameter
+	var oArg = {pString:"Test", pArray:["R", "S"], pDataset:this.ds_param}; 
+	
+	//Modeless 팝업오픈
+	var rtn = this.gfn_popup("popup_modeless","sample::sample06_P.xfdl", oArg ,oOption, "fn_popupCallback");		
+}
+
+//Popup CallBack
+this.fn_popupCallback = function(sPopId, oRtn)
+{	
+	switch(sPopId)
+	{
+		case "popup_modal" : 
+			break;
+		case "popup_modeless" : 
+			break;
+		default : 
+			break;
+	}
+	trace("Popup Return sPopId = "+sPopId);
+	trace(oRtn.String);
+	trace(oRtn.Array);
+	trace(oRtn.Dataset.saveXML());
+}
+]]></Script>
+  </Form>
+</FDL>

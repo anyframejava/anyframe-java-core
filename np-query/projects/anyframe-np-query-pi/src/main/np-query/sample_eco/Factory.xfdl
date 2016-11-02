@@ -1,0 +1,1020 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<FDL version="1.5">
+  <TypeDefinition url="..\default_typedef.xml"/>
+  <Form id="Factory" classname="Event" left="0" top="0" width="1024" height="890" titletext="Eco.XComp.Factory API 예제">
+    <Layouts>
+      <Layout>
+        <Static id="Static06" taborder="0" text="1. getXComp" cssclass="WFDA_sta_label" left="20" top="39" width="178" height="105" onclick="Static06_onclick"/>
+        <Static id="Static10" taborder="10" text="this.createUserListBox 함수 내에서 getXComp 함수 호출하는 로직이 있음 참조바람.&#13;&#10;실행 버튼은 this.createUserListBox 함수 호출함." cssclass="WFDA_sta_Box" left="197" top="39" width="290" height="105" style="align:left bottom;"/>
+        <Static id="Static30" taborder="17" text="Arguments:  ( Type ) ⇒ ( Value )" cssclass="WFDA_sta_header" left="197" top="0" width="290" height="40"/>
+        <Static id="Static31" taborder="18" text="Method" cssclass="WFDA_sta_header" left="20" top="0" width="178" height="40"/>
+        <Static id="Static32" taborder="19" text="Result: (Type) Vaule" cssclass="WFDA_sta_header" left="486" top="0" width="518" height="40"/>
+        <Button id="Button00" taborder="24" text="실행" cssclass="WF_btn_Point" left="427" top="48" width="56" height="22" onclick="Button00_onclick"/>
+        <Static id="st_1_result01" taborder="28" cssclass="WFDA_sta_BoxR" left="486" top="39" width="518" height="463" text="상위 Grid에 표시된 imageId, name 항목의 데이타를 List형태이고, 3 column으로 표시하면서 List의 높이 중간 지점이 항상 선택된 row로 처리되면서,&#13;&#10;3번째 column은 선택된 row의 imageId를 ListBox 전체 높이로 표시하는 ListBox를 만들어 보자. " style="align:left bottom;"/>
+        <Static id="Static01" taborder="30" text="2. releaseAll" cssclass="WFDA_sta_label" left="20" top="143" width="178" height="57"/>
+        <Static id="Static02" taborder="31" text="3. setProperties" cssclass="WFDA_sta_label" left="20" top="199" width="178" height="56"/>
+        <Static id="Static03" taborder="32" text="4. doLayout" cssclass="WFDA_sta_label" left="20" top="254" width="178" height="120"/>
+        <Static id="Static04" taborder="33" text="5. releaseNamed" cssclass="WFDA_sta_label" left="20" top="373" width="178" height="48"/>
+        <Static id="Static05" taborder="34" text="6. getXCompByName" cssclass="WFDA_sta_label" left="20" top="420" width="178" height="40"/>
+        <Static id="Static07" taborder="35" text="7. parseStyleStr" cssclass="WFDA_sta_label" left="20" top="459" width="178" height="94"/>
+        <Static id="Static08" taborder="36" text="8. getNonClientArea" cssclass="WFDA_sta_label" left="20" top="552" width="178" height="56"/>
+        <Static id="Static00" taborder="38" text="this.createUserListBox 함수 내에서 기준에 생성된 것을 clear 처리하기 위해 releaseAll함수 호출함." cssclass="WFDA_sta_Box" left="197" top="143" width="290" height="57"/>
+        <Static id="Static09" taborder="40" text="this.createUserListBox 함수 내에서 xcomp 생성 후에 속성 값을 설정하기 위해 setProperties함수를 호출함." cssclass="WFDA_sta_Box" left="197" top="199" width="290" height="56"/>
+        <Static id="st_3_result01" taborder="42" cssclass="WFDA_sta_BoxR" left="486" top="501" width="518" height="242"/>
+        <Static id="Static11" taborder="44" text="this.setSelectRow 함수에서 주어진 row을 선택된 row로 처리하고 _draw 함수를 호출한다. _draw함수내 마지막 라인(348) 쯤에 doLayout 함수를 호출하여 실질로 화면상에 그리는 처리를 한다.&#13;&#10;실행 버튼은 this.setSelectRow 함수 호출함." cssclass="WFDA_sta_Box" left="197" top="254" width="290" height="120" style="align:left bottom;"/>
+        <Button id="Button03" taborder="45" text="실행" cssclass="WF_btn_Point" left="426" top="258" width="56" height="22" onclick="Button03_onclick"/>
+        <Static id="Static12" taborder="46" text="_deleteRow 함수내에 마지막 라인에서 releaseNamed함수를 호출하여 삭제 한다." cssclass="WFDA_sta_Box" left="197" top="373" width="290" height="48"/>
+        <Static id="Static13" taborder="48" text="_updateRow 함수내에 getXCompByName함수를 호출하여 update할 xcomp를 얻는다." cssclass="WFDA_sta_Box" left="197" top="420" width="290" height="40"/>
+        <Static id="Static15" taborder="57" text="(object, string) ⇒ (styleObj, &quot;normal&quot;)" cssclass="WFDA_sta_Box" left="197" top="552" width="290" height="56" style="align:left bottom;"/>
+        <Button id="Button08" taborder="58" text="실행" cssclass="WF_btn_Point" left="426" top="555" width="56" height="22" onclick="Button08_onclick"/>
+        <Static id="Static17" taborder="60" text="(string) ⇒ (&quot;border:0 none transparent;padding:0 0 0 5;background:transparent; font:Consolas,15; color:#adadadff;&quot;)" cssclass="WFDA_sta_Box" left="197" top="459" width="290" height="94" style="align:left bottom;"/>
+        <Button id="Button07" taborder="61" text="실행" cssclass="WF_btn_Point" left="428" top="467" width="56" height="22" onclick="Button07_onclick"/>
+        <Grid id="Grid00" taborder="62" binddataset="ds_sample" useinputpanel="false" left="522" top="49" width="428" height="367">
+          <Formats>
+            <Format id="default">
+              <Columns>
+                <Column size="120"/>
+                <Column size="284"/>
+              </Columns>
+              <Rows>
+                <Row size="24" band="head"/>
+                <Row size="87"/>
+              </Rows>
+              <Band id="head" style="cellfont:Consolas,9,bold;">
+                <Cell style="font: ;" text="imageId"/>
+                <Cell col="1" style="font: ;" text="name"/>
+              </Band>
+              <Band id="body" style="selectfont:Consolas,9;cellfont:Consolas,9;">
+                <Cell displaytype="image" text="expr:&quot;Images::listboxdata/&quot; + imageId"/>
+                <Cell col="1" text="bind:name"/>
+              </Band>
+            </Format>
+          </Formats>
+        </Grid>
+        <Div id="div_listBox" taborder="63" left="495" top="508" width="501" height="220" style="border:1 solid #808080ff ;" text="div_listBox"/>
+        <Static id="Static16" taborder="64" text="9. 나머지" cssclass="WFDA_sta_label" left="20" top="607" width="178" height="244"/>
+        <Static id="Static18" taborder="65" text="api 메뉴얼 참조하세요.&#13;&#10;getRect&#13;&#10;setRect&#13;&#10;getProperty&#13;&#10;invalidate&#13;&#10;validate&#13;&#10;invalidateRect&#13;&#10;validateRect&#13;&#10;invalidateProps&#13;&#10;validateProps&#13;&#10;release" cssclass="WFDA_sta_Box" left="197" top="607" width="290" height="244"/>
+        <TextArea id="TextArea00" taborder="66" left="486" top="742" width="518" height="109" readonly="true" style="border:1 solid #c6cbceff ;bordertype:normal 4 4 ;"/>
+      </Layout>
+    </Layouts>
+    <Objects>
+      <Dataset id="ds_sample" firefirstcount="0" firenextcount="0" useclientlayout="false" updatecontrol="true" enableevent="true" loadkeymode="keep" loadfiltermode="keep" reversesubsum="false">
+        <ColumnInfo>
+          <Column id="imageId" type="STRING" size="256"/>
+          <Column id="name" type="STRING" size="256"/>
+        </ColumnInfo>
+        <Rows>
+          <Row>
+            <Col id="imageId">184577034.png</Col>
+            <Col id="name">2015 현대 H350</Col>
+          </Row>
+          <Row>
+            <Col id="imageId">183377833.png</Col>
+            <Col id="name">2015 현대 엑센트 세단</Col>
+          </Row>
+          <Row>
+            <Col id="imageId">183379401.png</Col>
+            <Col id="name">2015 현대 엑센트 해치백</Col>
+          </Row>
+          <Row>
+            <Col id="imageId">183206108.jpg</Col>
+            <Col id="name">2015 현대 i20</Col>
+          </Row>
+          <Row>
+            <Col id="imageId">176900305.jpg</Col>
+            <Col id="name">2015 현대 그랜저 (HG)</Col>
+          </Row>
+          <Row>
+            <Col id="imageId">174999656.jpg</Col>
+            <Col id="name">2015 현대 베라크루즈</Col>
+          </Row>
+          <Row>
+            <Col id="imageId">174507411.jpg</Col>
+            <Col id="name">2014 현대 iX25 컨셉트</Col>
+          </Row>
+          <Row>
+            <Col id="imageId">174425919.jpg</Col>
+            <Col id="name">2014 현대 인트라도 컨셉트</Col>
+          </Row>
+          <Row>
+            <Col id="imageId">174415223.jpg</Col>
+            <Col id="name">2015 현대 투싼 iX 수소연료전지차</Col>
+          </Row>
+          <Row>
+            <Col id="imageId">i30.jpg</Col>
+            <Col id="name">2014 현대 i30</Col>
+          </Row>
+          <Row>
+            <Col id="imageId">174051608.jpg</Col>
+            <Col id="name">2015 현대 투싼 iX</Col>
+          </Row>
+          <Row>
+            <Col id="imageId">170756219.jpg</Col>
+            <Col id="name">2014 현대 아반떼 세단</Col>
+          </Row>
+          <Row>
+            <Col id="imageId">173132750.jpg</Col>
+            <Col id="name">2014 현대 쏘나타 (LF)</Col>
+          </Row>
+          <Row>
+            <Col id="imageId">171424868.jpg</Col>
+            <Col id="name">2014 현대 싼타페</Col>
+          </Row>
+          <Row>
+            <Col id="imageId">170748680.jpg</Col>
+            <Col id="name">2014 현대 아반떼 쿠페</Col>
+          </Row>
+          <Row>
+            <Col id="imageId">166933290.jpg</Col>
+            <Col id="name">2014 현대 그랜저 하이브리드</Col>
+          </Row>
+          <Row>
+            <Col id="imageId">166460067.jpg</Col>
+            <Col id="name">2014 현대 쏘나타 하이브리드</Col>
+          </Row>
+          <Row>
+            <Col id="imageId">165979016.jpg</Col>
+            <Col id="name">2014 현대 제네시스</Col>
+          </Row>
+          <Row>
+            <Col id="imageId">165834663.jpg</Col>
+            <Col id="name">2014 현대 밍투</Col>
+          </Row>
+          <Row>
+            <Col id="imageId">165354408.jpg</Col>
+            <Col id="name">2014 현대 제네시스 쿠페</Col>
+          </Row>
+          <Row>
+            <Col id="imageId">164507453.jpg</Col>
+            <Col id="name">2013 현대 그랜드스타렉스</Col>
+          </Row>
+          <Row>
+            <Col id="imageId">163996900.jpg</Col>
+            <Col id="name">2014 현대 i40 살룬</Col>
+          </Row>
+          <Row>
+            <Col id="imageId">163996343.jpg</Col>
+            <Col id="name">2014 현대 i40 왜건</Col>
+          </Row>
+          <Row>
+            <Col id="imageId">161211681.jpg</Col>
+            <Col id="name">2014 현대 i10</Col>
+          </Row>
+          <Row>
+            <Col id="imageId">159045497.jpg</Col>
+            <Col id="name">2013 현대 랑둥</Col>
+          </Row>
+          <Row>
+            <Col id="imageId">158303896.jpg</Col>
+            <Col id="name">2013 현대 포터2</Col>
+          </Row>
+          <Row>
+            <Col id="imageId">157345636.jpg</Col>
+            <Col id="name">2013 현대 HB20</Col>
+          </Row>
+          <Row>
+            <Col id="imageId">153268367.jpg</Col>
+            <Col id="name">2013 현대 HND-9 컨셉트</Col>
+          </Row>
+          <Row>
+            <Col id="imageId">152741106.jpg</Col>
+            <Col id="name">2013 현대 벨로스터</Col>
+          </Row>
+          <Row>
+            <Col id="imageId">152741328.jpg</Col>
+            <Col id="name">2013 현대 벨로스터 터보</Col>
+          </Row>
+          <Row>
+            <Col id="imageId">152429856.jpg</Col>
+            <Col id="name">2013 현대 그랜드 스타렉스 캠핑카</Col>
+          </Row>
+          <Row>
+            <Col id="imageId">152237844.jpg</Col>
+            <Col id="name">2013 현대 i30</Col>
+          </Row>
+          <Row>
+            <Col id="imageId">152119475.jpg</Col>
+            <Col id="name">2013 현대 맥스크루즈 (싼타페 롱바디)</Col>
+          </Row>
+          <Row>
+            <Col id="imageId">149160934.jpg</Col>
+            <Col id="name">2013 현대 HCD-14 제네시스 컨셉트</Col>
+          </Row>
+          <Row>
+            <Col id="imageId">141418865.jpg</Col>
+            <Col id="name">2013 현대 에쿠스</Col>
+          </Row>
+          <Row>
+            <Col id="imageId">141420069.jpg</Col>
+            <Col id="name">2013 현대 에쿠스 리무진</Col>
+          </Row>
+          <Row>
+            <Col id="imageId">130556738.jpg</Col>
+            <Col id="name">2012 현대 아이오닉 컨셉트</Col>
+          </Row>
+          <Row>
+            <Col id="imageId">130224970.jpg</Col>
+            <Col id="name">2012 현대 헥사 스페이스 컨셉트</Col>
+          </Row>
+          <Row>
+            <Col id="imageId">118041478.jpg</Col>
+            <Col id="name">2012 현대 i20</Col>
+          </Row>
+          <Row>
+            <Col id="imageId">11764.jpg</Col>
+            <Col id="name">2010 현대 i10</Col>
+          </Row>
+          <Row>
+            <Col id="imageId">159774270.jpg</Col>
+            <Col id="name">2013 현대 더 뉴 아반떼</Col>
+          </Row>
+          <Row>
+            <Col id="imageId">162784923.jpg</Col>
+            <Col id="name">2014 현대 엑센트 세단</Col>
+          </Row>
+          <Row>
+            <Col id="imageId">162786459.jpg</Col>
+            <Col id="name">2014 현대 엑센트 해치백</Col>
+          </Row>
+          <Row>
+            <Col id="imageId">155653170.jpg</Col>
+            <Col id="name">2014 현대 쏘나타 더 브릴리언트</Col>
+          </Row>
+          <Row>
+            <Col id="imageId">130829715.jpg</Col>
+            <Col id="name">2013 현대 제네시스</Col>
+          </Row>
+          <Row>
+            <Col id="imageId">154128168.jpg</Col>
+            <Col id="name">2013 현대 뉴 투싼 iX</Col>
+          </Row>
+          <Row>
+            <Col id="imageId">101565406.jpg</Col>
+            <Col id="name">2013 현대 아반떼 쿠페 (MD)</Col>
+          </Row>
+          <Row>
+            <Col id="imageId">152739138.jpg</Col>
+            <Col id="name">2013 현대 투싼 iX 수소연료전지차</Col>
+          </Row>
+          <Row>
+            <Col id="imageId">152239488.jpg</Col>
+            <Col id="name">2013 현대 i40 살룬</Col>
+          </Row>
+          <Row>
+            <Col id="imageId">152238666.jpg</Col>
+            <Col id="name">2013 현대 i40 왜건</Col>
+          </Row>
+          <Row>
+            <Col id="imageId">151924902.jpg</Col>
+            <Col id="name">2013 현대 엑센트 해치백</Col>
+          </Row>
+          <Row>
+            <Col id="imageId">151923238.jpg</Col>
+            <Col id="name">2013 현대 엑센트 세단</Col>
+          </Row>
+          <Row>
+            <Col id="imageId">139101814.jpg</Col>
+            <Col id="name">2013 현대 제네시스 프라다</Col>
+          </Row>
+          <Row>
+            <Col id="imageId">147753063.jpg</Col>
+            <Col id="name">2013 현대 쏘나타 하이브리드</Col>
+          </Row>
+          <Row>
+            <Col id="imageId">145766177.jpg</Col>
+            <Col id="name">2013 현대 투싼 iX</Col>
+          </Row>
+          <Row>
+            <Col id="imageId">141560316.jpg</Col>
+            <Col id="name">2013 현대 그랜저 (HG)</Col>
+          </Row>
+          <Row>
+            <Col id="imageId">134226900.jpg</Col>
+            <Col id="name">2013 현대 아반떼 세단 (MD)</Col>
+          </Row>
+          <Row>
+            <Col id="imageId">132715398.jpg</Col>
+            <Col id="name">2013 현대 쏘나타 더 브릴리언트</Col>
+          </Row>
+          <Row>
+            <Col id="imageId">128227011.jpg</Col>
+            <Col id="name">2012 현대 뉴 싼타페</Col>
+          </Row>
+          <Row>
+            <Col id="imageId">125942209.jpg</Col>
+            <Col id="name">2012 현대 벨로스터</Col>
+          </Row>
+        </Rows>
+      </Dataset>
+    </Objects>
+    <Script type="xscript5.0"><![CDATA[/*
+ * Eco.XComp.Factory api Sample at nexacro
+ * 
+ * Copyright (c) 2014 EcoSystem of nexacro
+ * Licensed Free under nexacro.
+*/
+//RT(runtime) 상에서 scroll up down 버튼 click시에 에러가 발생하는 경우 아래와 같이 조치하면 해결됨
+//Platform.js 의 724라인에 좌측과 같이 수정 요망 => if (pthis.context && !pthis.context._timerManager.deleteTimerItem(pthis))
+
+// 1.1 add api 사용 예제
+this.Button00_onclick = function(obj:Button,  e:nexacro.ClickEventInfo)
+{
+	var layout = {
+		binddataset: this.ds_sample,
+		rowHeight: 42,
+		normalFont: nexacro._getCachedFontObj("Consolas,9"),
+		normalFontColor: "#adadadff",
+		selectFont: nexacro._getCachedFontObj("Consolas,10,bold"),
+		selectFontColor: "#8d9091ff",
+		imageResource: "Images::listboxdata/",
+		columns: [
+			{
+				width: 63,
+				bindcolumn: "imageId",
+				display: "image"
+			},
+			{
+				width: "max",
+				bindcolumn: "name",
+				display: "text"
+			},
+			{
+				width: "*",
+				bindcolumn: "imageId",
+				display: "image"
+			}
+		],
+		selectedColumn: 2,
+		topBlend: "linear 50,0 #ffffffff 50,100 #ffffff00 [50 #ffffffc8]",
+		bottomBlend: "linear 50,0 #ffffff00 50,100 #ffffffff [50 #ffffffc8]",
+		scrollButtonSize: 20
+	};
+	this.createUserListBox(this.div_listBox, layout);
+}
+
+/**
+* 주어진 div 와 layout 값으로 list를 그리기 준비 작업을 한다.<br>
+* scroll를 위한 upArrow, downArrow 버튼을 Eco.XComp.Factory.getXComp를 이용하여 생성한다.
+* 또한 top Blend, bottom blend 처리 위한 static xcomp를 생성한다.
+* 실질로 화면상에 그려지는 작업은 Eco.XComp.Factory.doLayout 호출하여야 한다.
+*/
+this.createUserListBox = function(div, layout)
+{
+	var factory = Eco.XComp.Factory,
+		ecoEventHelper = Eco.XComp.Event;
+
+	// clear 작업
+	var innerXComps = div._innerXComps;
+	if ( innerXComps )
+	{
+		ecoEventHelper.clearRepeatable(innerXComps["upArrow"]);
+		ecoEventHelper.clearRepeatable(innerXComps["downArrow"]);
+	}
+
+	factory.releaseAll(div, null, true);
+
+	div._layout = layout;
+
+	var buttonSize = layout.scrollButtonSize||20;
+	var w = div._client_width,
+		h = div._client_height;
+
+	div._normalStyleStr = "border:0 none transparent;padding:0 0 0 5;background:transparent; " + "font:" + layout.normalFont + "; color:" + layout.normalFontColor + ";";
+	div._selectStyleStr = "border:0 none transparent;padding:0 0 0 5;background:transparent; " + "font:" + layout.selectFont + "; color:" + layout.selectFontColor + ";";
+	div._itemComputeStyles = factory.parseStyleStr(div._normalStyleStr);
+	div._itemTextNonArea = factory.getNonClientArea(div._itemComputeStyles, "normal");
+	_changeViewSize(layout, w - buttonSize - 2, h);
+
+	innerXComps = {};
+	if ( !Eco._isIE8Below )
+	{
+		innerXComps["topBlend"] = factory.getXComp(div, "Static", "topBlend", 0, 0, w, layout.rowHeight);
+		innerXComps["bottomBlend"] = factory.getXComp(div, "Static", "bottomBlend", 0, h - layout.rowHeight, w, layout.rowHeight);
+		factory.setProperties(innerXComps["topBlend"], "style", "background:@gradation; gradation:" + layout.topBlend + ";");
+		factory.setProperties(innerXComps["bottomBlend"], "style", "background:@gradation; gradation:" + layout.bottomBlend + ";");
+	}
+
+	innerXComps["upArrow"] = factory.getXComp(div, "Static", "upArrow", w - buttonSize - 2, h/2 - buttonSize - 1, buttonSize, buttonSize);
+	innerXComps["downArrow"] = factory.getXComp(div, "Static", "downArrow", w - buttonSize - 2, h/2 + 1, buttonSize, buttonSize);
+	factory.setProperties(innerXComps["upArrow"], "style",
+		"background:@gradation URL('Images/base/btn_spinup_N.png') 50 50; border:1 solid #abb1b6ff; gradation:linear 50,100 #ecececff 50,0 #ffffffff [0% #ecececff][42% #f2f2f2ff][54% #e0e0e0ff];");
+	factory.setProperties(innerXComps["downArrow"], "style",
+		"background:@gradation URL('Images/base/btn_spindn_N.png') 50 50; border:1 solid #abb1b6ff; gradation:linear 50,100 #ecececff 50,0 #ffffffff [0% #ecececff][42% #f2f2f2ff][54% #e0e0e0ff];");
+
+	ecoEventHelper.makeRepeatable(innerXComps["upArrow"],
+		this.upRepeatProcess, this, [div]);
+	ecoEventHelper.makeRepeatable(innerXComps["downArrow"],
+		this.downRepeatProcess, this, [div]);
+
+	div._innerXComps = innerXComps;
+}
+
+/**
+* scroll 처리를 위한 upArrow 컴포넌트에 연결된 repeate 이벤트 처리 함수
+*/
+this.upRepeatProcess = function(x, y, div)
+{
+	var targetRow = div._selectrow,
+		ds = div._layout.binddataset;
+
+	if ( targetRow === undefined )
+	{
+		targetRow = 0;
+	}
+	targetRow--;
+
+	if ( targetRow > -1 && targetRow < ds.rowcount )
+	{
+		this.setSelectRow(div, targetRow);
+	}
+	this.arrowStatus(div);
+}
+
+/**
+* scroll 처리를 위한 downArrow 컴포넌트에 연결된 repeate 이벤트 처리 함수
+*/
+this.downRepeatProcess = function(x, y, div)
+{
+	var targetRow = div._selectrow,
+		ds = div._layout.binddataset;
+
+	if ( targetRow === undefined )
+	{
+		targetRow = ds.rowcount;
+	}
+	targetRow++;
+
+	if ( targetRow > -1 && targetRow < ds.rowcount )
+	{
+		this.setSelectRow(div, targetRow);
+	}
+	this.arrowStatus(div);
+}
+
+/**
+* 만약 row가 첫번쨰 이거나, 마지막 row인 경우 더 이상 scroll할 필요가 없기 때문에<br>
+* scroll 처리를 위한 upArrow, downArrow 컴포넌트의 enable 상태 조정 및 repeat 이벤트가 발생하지 않도록 한다.
+*/
+this.arrowStatus = function(div)
+{
+	var sRow = div._selectrow,
+		upXcomp = div._innerXComps["upArrow"],
+		downXcomp = div._innerXComps["downArrow"],
+		ds = div._layout.binddataset;
+
+	if ( sRow == 0 )
+	{
+		Eco.XComp.Event._cancelRepeatable(upXcomp);
+		upXcomp.set_enable(false);
+		upXcomp.style.set_opacity("50");
+	}
+	else
+	{
+		upXcomp.set_enable(true);
+		upXcomp.style.set_opacity("100");
+	}
+	if ( sRow == (ds.rowcount - 1) )
+	{
+		Eco.XComp.Event._cancelRepeatable(downXcomp);
+		downXcomp.set_enable(false);
+		downXcomp.style.set_opacity("50");
+	}
+	else
+	{
+		downXcomp.set_enable(true);
+		downXcomp.style.set_opacity("100");
+	}
+}
+
+/**
+* 주어진 row가 select된 Row로 처리한다.
+*/
+this.setSelectRow = function(div, row)
+{
+	var layout = div._layout,
+		rowHeight = layout.rowHeight;
+	div._selectrow = row;
+
+	this.scrollBy(div, row * rowHeight + rowHeight/2); //row height center 중심으로 시작
+}
+
+/**
+* 주어진 yPosOffset 만큼 scroll 영역을 draw 처리를 한다.
+*/
+this.scrollBy = function(div, yPosOffset)
+{
+	var layout = div._layout;
+	_draw(div, {y: yPosOffset, height: layout._viewSize.height});
+}
+
+// 4. doLayout api 사용 예제
+this.Button03_onclick = function(obj:Button,  e:nexacro.ClickEventInfo)
+{
+	this.setSelectRow(this.div_listBox, 0);
+}
+
+// 7 parseStyleStr api 사용 예제
+this.Button07_onclick = function(obj:Button,  e:nexacro.ClickEventInfo)
+{
+	var  stylestr = "border:0 none transparent;padding:0 0 0 5;background:transparent; font:Consolas,15; color:#adadadff;";
+	var styleObj = Eco.XComp.Factory.parseStyleStr(stylestr);
+	var str = Eco.Logger.inspect(styleObj);
+	this.TextArea00.set_value(str);
+	trace(str);
+}
+
+// 8 getNonClientArea api 사용 예제
+this.Button08_onclick = function(obj:Button,  e:nexacro.ClickEventInfo)
+{
+	var  stylestr = "border:0 none transparent;padding:0 0 0 5;background:transparent; font:Consolas,15; color:#adadadff;";
+	var styleObj = Eco.XComp.Factory.parseStyleStr(stylestr);
+	var retArr = Eco.XComp.Factory.getNonClientArea(styleObj, "normal");
+	var str = "[" + retArr + "]";
+	this.TextArea00.set_value(str);
+	trace(str);
+
+}
+
+/**
+* div내에 column들을 그리는 영역에 대한 view size를 설정한다.
+* @param {object} layout 리스트 항목에 대한 layout 정보.
+* @param {number} w width
+* @param {number} h height
+* @private
+* @memberOf Factory(Form)
+*/
+function _changeViewSize(layout, w, h)
+{
+	var ds = layout.binddataset,
+		rowHeight = layout.rowHeight;
+	layout._viewSize = {width:w, height:h};
+	//layout._scrollPos = {y:-h/2, maxHeight: ds.rowcount*rowHeight + h/2};
+}
+
+/**
+* div내에 column들을 viewport 영역에 대하여 실질로 화면상에 그린다.
+* @param {div} div Div nexacro component
+* @param {object} viewPort y, height 정보를 가진 object
+* @private
+* @memberOf Factory(Form)
+*/
+function _draw(div, viewPort)
+{
+	var factory = Eco.XComp.Factory,
+		layout = div._layout,
+		rowHeight = layout.rowHeight,
+		ds = layout.binddataset,
+		columns = layout.columns,
+		selectedColumn = layout.selectedColumn,
+		selectedRow = div._selectrow;
+
+	var yOffset = viewPort.y - parseInt(viewPort.height/2);//height center 중심으로 시작
+	startRow = parseInt(yOffset/rowHeight); 
+	startRow = Math.max(0, startRow);
+	startRow = Math.min(ds.rowcount - 1, startRow);
+
+	yOffset = startRow*rowHeight - yOffset;
+	var sizeInfos = div._sizeInfos;
+	if ( !sizeInfos )
+	{
+		sizeInfos = [];
+		div._sizeInfos = sizeInfos;
+	}
+
+	var selectFont = layout.selectFont,
+		viewList = div._viewListItems,
+		itemTextNonArea = div._itemTextNonArea,
+		updates = [], removes = [], creates = [];
+
+	if ( !viewList )
+	{
+		for ( var len = ds.rowcount ; startRow < len ; ++startRow )
+		{
+			_measureRow( div, startRow, columns, selectFont, itemTextNonArea, ds, sizeInfos);
+			creates[creates.length] = {offset: yOffset, row: startRow};
+			yOffset += rowHeight;
+			if ( yOffset > viewPort.height )
+			{
+				break;
+			}
+		}
+	}
+	else
+	{
+		for ( var len = ds.rowcount ; startRow < len ; ++startRow )
+		{
+			_measureRow( div, startRow, columns, selectFont, itemTextNonArea, ds, sizeInfos);
+			if ( viewList[i] )
+			{
+				viewList[i].offset = yOffset;
+				updates[updates.length] = viewList[i];
+				delete viewList[i];
+			}
+			else
+			{
+				creates[creates.length] = {offset: yOffset, row: startRow};
+			}
+			yOffset += rowHeight;
+			if ( yOffset > viewPort.height )
+			{
+				break;
+			}
+		}
+		Eco.object.Each(viewList, function(prop, val)
+		{
+			removes[removes.length] = val;
+		});
+	}
+
+	viewList = {};
+	div._viewListItems = viewList;
+
+	var rowInfo;
+	for ( var i = 0, len = removes.length ; i < len ; i++ )
+	{
+		rowInfo = removes[i];
+		_deleteRow(factory, div, rowInfo.row, columns, selectedColumn);
+	}
+	
+	for ( var i = 0, len = creates.length ; i < len ; i++ )
+	{
+		rowInfo = creates[i];
+		_createRow(factory, div, rowInfo.row, rowInfo.row == selectedRow,
+			rowInfo.offset, rowHeight, ds, columns, selectedColumn);
+		viewList[rowInfo.row] = rowInfo;
+		rowInfo.dirty = false;
+	}
+
+	for ( var i = 0, len = updates.length ; i < len ; i++ )
+	{
+		rowInfo = updates[i];
+		_updateRow(factory, div, rowInfo.row, rowInfo.row == selectedRow,
+			rowInfo.offset, rowHeight, rowInfo.dirty, ds, columns, selectedColumn);
+		viewList[rowInfo.row] = rowInfo;
+		rowInfo.dirty = false;
+	}
+
+	factory.doLayout(div);
+	var innerXComps = div._innerXComps;
+	Eco.object.Each(innerXComps, function(prop, val)
+	{
+		val.bringToFront();
+	});
+}
+
+/**
+* 화면상에서 주어진 row를 삭제 처리한다.
+* @param {Eco.XComp.Factory} factory Eco.XComp.Factory 객체
+* @param {div} div Div nexacro component
+* @param {number} row 화면상에서 삭제할 row
+* @param {array} columns column들의 layout 정보를 담고 있는 array
+* @param {number} selectedColumn select column index
+* @private
+* @memberOf Factory(Form)
+*/
+function _deleteRow(factory, div, row, columns, selectedColumn)
+{
+	var nms = [];
+	for ( var i = 0, len = columns.length ; i < len ; i++ )
+	{
+		if ( i != selectedColumn )
+		{
+			var key = "item_" + row + "_" + i;
+			nms[nms.length] = key;
+		}
+	}
+	factory.releaseNamed(div, nms, true);
+}
+
+/**
+* 화면상에서 주어진 row를 생성 처리한다.
+* @param {Eco.XComp.Factory} factory Eco.XComp.Factory 객체
+* @param {div} div Div nexacro component
+* @param {number} row 화면상에서 생성할 row
+* @param {boolean} selected 화면상에서 삭제할 row
+* @param {number} offset row가 그려질 y position
+* @param {number} rowHeight row Height
+* @param {Dataset} ds dataset 객체
+* @param {array} columns column들의 layout 정보를 담고 있는 array
+* @param {number} selectedColumn select column index
+* @private
+* @memberOf Factory(Form)
+*/
+function _createRow(factory, div, row, selected, offset, rowHeight, ds, columns, selectedColumn)
+{
+	var imageResource = div._layout.imageResource;
+	if ( selected )
+	{
+		var select = div._selectStyleStr;
+		for ( var i = 0, len = columns.length ; i < len ; i++ )
+		{
+			if ( i != selectedColumn )
+			{
+				var key = "item_" + row + "_" + i;
+				var xcomp = factory.getXComp(div, "Static", key, columns[i]._offset, offset, columns[i]._width, rowHeight);
+				_drawColumn(factory, xcomp, ds, row, imageResource, select, columns[i]);
+			}
+		}
+		var selectColumn = columns[selectedColumn];
+		if ( selectColumn )
+		{
+			var nm = "selectedColumn_" + selectedColumn;
+			var xcomp = div._innerXComps[nm];
+			if ( !xcomp )
+			{
+				if ( selectColumn.display == "text" )
+				{
+					xcomp = factory.getXComp(div, "Static", nm,
+						selectColumn._offset, 0, selectColumn._width, div._layout._viewSize.height);
+					factory.setProperties(xcomp, "style", select);
+				}
+				else if ( selectColumn.display == "image" )
+				{
+					xcomp = factory.getXComp(div, "ImageViewer", nm,
+						selectColumn._offset, 0, selectColumn._width, div._layout._viewSize.height);
+					factory.setProperties(xcomp, "stretch", "fixaspectratio", "imagealign", "center middle", "style", "border:0 none transparent;background:transparent;");
+				}
+				div._innerXComps[nm] = xcomp;
+			}
+			else
+			{
+				factory.setRect(xcomp, selectColumn._offset, 0, selectColumn._width, div._layout._viewSize.height);
+			}
+			_drawSelectedColumn(factory, xcomp, ds, row, imageResource, select, selectColumn);
+		}
+	}
+	else
+	{
+		var normal = div._normalStyleStr;
+		for ( var i = 0, len = columns.length ; i < len ; i++ )
+		{
+			if ( i != selectedColumn )
+			{
+				var key = "item_" + row + "_" + i;
+				var xcomp = factory.getXComp(div, "Static", key, columns[i]._offset, offset, columns[i]._width, rowHeight);
+				_drawColumn(factory, xcomp, ds, row, imageResource, normal, columns[i]);
+			}
+		}
+	}
+}
+
+/**
+* 화면상에서 주어진 row를 갱신(속성 및 위치를 변경) 처리한다.
+* @param {Eco.XComp.Factory} factory Eco.XComp.Factory 객체
+* @param {div} div Div nexacro component
+* @param {number} row 화면상에서 생성할 row
+* @param {boolean} selected 화면상에서 삭제할 row
+* @param {number} offset row가 그려질 y position
+* @param {number} rowHeight row Height
+* @param {boolean} dirty row의 값이 변경되거나 속성이 수정되는 경우
+* @param {Dataset} ds dataset 객체
+* @param {array} columns column들의 layout 정보를 담고 있는 array
+* @param {number} selectedColumn select column index
+* @private
+* @memberOf Factory(Form)
+*/
+function _updateRow(factory, div, row, selected, offset, rowHeight, dirty, ds, columns, selectedColumn)
+{
+	var imageResource = div._layout.imageResource;
+	if ( selected )
+	{
+		var select = div._selectStyleStr;
+		for ( var i = 0, len = columns.length ; i < len ; i++ )
+		{
+			if ( i != selectedColumn )
+			{
+				var key = "item_" + row + "_" + i;
+				var xcomp = factory.getXCompByName(div, key);
+				factory.setRect(xcomp, columns[i]._offset, offset, columns[i]._width, rowHeight);
+				if ( dirty )
+				{
+					_drawColumn(factory, xcomp, ds, row, imageResource, select, columns[i]);
+				}
+			}
+		}
+		var selectColumn = columns[selectedColumn];
+		if ( selectColumn )
+		{
+			var nm = "selectedColumn_" + selectedColumn;
+			var xcomp = div._innerXComps[nm];
+			if ( !xcomp )
+			{
+				if ( selectColumn.display == "text" )
+				{
+					xcomp = factory.getXComp(div, "Static", nm,
+						selectColumn._offset, 0, selectColumn._width, div._layout._viewSize.height);
+					factory.setProperties(xcomp, "style", select);
+				}
+				else if ( selectColumn.display == "image" )
+				{
+					xcomp = factory.getXComp(div, "ImageViewer", nm,
+						selectColumn._offset, 0, selectColumn._width, div._layout._viewSize.height);
+					factory.setProperties(xcomp, "stretch", "fixaspectratio", "imagealign", "center middle", "style", "border:0 none transparent;background:transparent;");
+				}
+				div._innerXComps[nm] = xcomp;
+			}
+			else
+			{
+				factory.setRect(xcomp, selectColumn._offset, 0, selectColumn._width, div._layout._viewSize.height);
+			}
+			_drawSelectedColumn(factory, xcomp, ds, row, imageResource, select, selectColumn);
+		}
+	}
+	else
+	{
+		var normal = div._normalStyleStr;
+		for ( var i = 0, len = columns.length ; i < len ; i++ )
+		{
+			if ( i != selectedColumn )
+			{
+				var key = "item_" + row + "_" + i;
+				var xcomp = factory.getXCompByName(div, key);
+				factory.setRect(xcomp, columns[i]._offset, offset, columns[i]._width, rowHeight);
+				if ( dirty )
+				{
+					_drawColumn(factory, xcomp, ds, row, imageResource, normal, columns[i]);
+				}
+			}
+		}
+	}
+}
+
+
+/**
+* column를 draw 처리한다.
+* @param {Eco.XComp.Factory} factory Eco.XComp.Factory 객체
+* @param {XComp} xcomp column를 표시하는 nexacro component
+* @param {Dataset} ds dataset 객체
+* @param {number} row column의 그려질 row
+* @param {string} imageResource 이미지일 경우 이미지 경로
+* @param {string} styleStr 그려야 할 style 속성 값
+* @param {object} columnInfo 그려야 할 column에 대한 layout 정보
+* @private
+* @memberOf Factory(Form)
+*/
+function _drawColumn(factory, xcomp, ds, row, imageResource, styleStr, columnInfo)
+{
+	var val = ds.getColumn(row, columnInfo.bindcolumn);
+	if ( columnInfo.display == "image" )
+	{
+		factory.setProperties(xcomp, "style", "background:URL('" + imageResource + val + "') stretch;");
+		factory.setProperties(xcomp, "text", "");
+	}
+	else
+	{
+		factory.setProperties(xcomp, "style", styleStr);
+		factory.setProperties(xcomp, "text", val);
+	}
+}
+
+/**
+* selected column를 draw 처리한다.
+* @param {Eco.XComp.Factory} factory Eco.XComp.Factory 객체
+* @param {XComp} xcomp column를 표시하는 nexacro component
+* @param {Dataset} ds dataset 객체
+* @param {number} row column의 그려질 row
+* @param {string} imageResource 이미지일 경우 이미지 경로
+* @param {string} styleStr 그려야 할 style 속성 값
+* @param {object} columnInfo 그려야 할 column에 대한 layout 정보
+* @private
+* @memberOf Factory(Form)
+*/
+function _drawSelectedColumn(factory, xcomp, ds, row, imageResource, styleStr, columnInfo)
+{
+	var val = ds.getColumn(row, columnInfo.bindcolumn);
+	if ( !Eco.isEmpty(val) )
+	{
+		if ( columnInfo.display == "image" )
+		{
+			factory.setProperties(xcomp, "image", "URL('" + imageResource + val + "')");
+		}
+		else
+		{
+			factory.setProperties(xcomp, "text", val);
+		}
+	}
+	else
+	{
+		if ( columnInfo.display == "image" )
+		{
+			factory.setProperties(xcomp, "image", "");
+		}
+		else
+		{
+			factory.setProperties(xcomp, "text", "");
+		}
+	}
+}
+
+/**
+* column들에 대하여 offset 값을 계산한다.<br/>
+* 만약 column정보들 중에 size값이 *이면 결정된 column크기 값들을 뺸 나머지 값으로 처리한다.
+* @param {array} columns column들의 layout 정보를 담고 있는 array
+* @param {number} remain 남은 width size
+* @param {number} remainSizeCnt column정보 중에 size값이 *인 개수
+* @param {number} lastRemainColIdx column정보 중에 size값이 * 인 마지막 column index
+* @private
+* @memberOf Factory(Form)
+*/
+function _calcColumnOffset ( columns, remain, remainSizeCnt, lastRemainColIdx )
+{
+	var offset = 0, sz;
+	for ( var i = 0, len = columns.length ; i < len ; i++ ) //think about wordwrap later.
+	{
+		if ( columns[i].width == "*" )
+		{
+			if ( lastRemainColIdx == i )
+			{
+				columns[i]._width = remain;
+			}
+			else
+			{
+				sz = parseInt(remain/remainSizeCnt);
+				columns[i]._width = sz;
+				remainSizeCnt--;
+				remain -= sz;
+			}
+		}
+		columns[i]._offset = offset;
+		offset += columns[i]._width;
+	}
+}
+
+/**
+* 주어진 row에 대한 항목별 width 정보를 측정한다.
+* @param {div} div Div nexacro component
+* @param {number} row 크기를 측정할 row
+* @param {nexacro.Style_font} normalFont column에 설정할 font 객체
+* @param {array} itemTextNonArea column에 생성할 xcomp에 대한 non client 영역 정보 [left, top, right, bottom]
+* @param {Dataset} ds dataset 객체
+* @param {object} sizeInfos row별로 측정된 값을 보관하는 cache 정보
+* @private
+* @memberOf Factory(Form)
+*/
+function _measureRow ( div, row, columns, normalFont, itemTextNonArea, ds, sizeInfos)
+{
+	var sizeInfo = sizeInfos[row];
+	if ( !sizeInfo )
+	{
+		sizeInfo = {};
+		sizeInfos[row] = sizeInfo;
+	}
+	if ( sizeInfo._dirtyMeasure === false ) return;
+	var w, colinfo,
+		sizeUtil = Eco.XComp.PositionSize,
+		compare = Eco.array._defaultCompare,
+		arrayUtil = Eco.array, pos, curWidth = 0,
+		remainSize = div._layout._viewSize.width,
+		remainSizeCnt = 0,
+		lastRemainColIdx;
+
+	for ( var i = 0, len = columns.length ; i < len ; i++ ) //think about wordwrap later.
+	{
+		colinfo = columns[i];
+		if ( colinfo.width == "max" ) //later image
+		{
+			var txt = ds.getColumn(row, colinfo.bindcolumn);
+			w = sizeUtil.getTextSize(normalFont, txt)[0];
+			w += itemTextNonArea[0] + itemTextNonArea[2];
+			curWidth += w;
+			if ( !colinfo._widths )
+			{
+				colinfo._widths = [w];
+				colinfo._width = w;
+			}
+			else
+			{
+				pos = arrayUtil.binarySearch(colinfo._widths, 0, colinfo._widths.length, w, compare);
+				if ( pos < 0 )
+				{
+					pos = ~pos;
+					colinfo._widths.splice(pos, 0, w);
+				}
+				w = colinfo._widths[colinfo._widths.length - 1]; //max 값
+				colinfo._width = w;
+			}
+			remainSize -= w;
+		}
+		else if ( Eco.isNumber(colinfo.width) )
+		{
+			w = colinfo.width;
+			curWidth += w;
+			colinfo._width = w;
+			remainSize -= w;
+		}
+		else if ( colinfo.width == "*" )
+		{
+			remainSizeCnt++;
+			lastRemainColIdx = i;
+		}
+	}
+	_calcColumnOffset( columns, remainSize, remainSizeCnt, lastRemainColIdx );
+	sizeInfo._dirtyMeasure = false;
+}
+this.Static06_onclick = function(obj:Static,  e:nexacro.ClickEventInfo)
+{
+	
+}
+]]></Script>
+  </Form>
+</FDL>

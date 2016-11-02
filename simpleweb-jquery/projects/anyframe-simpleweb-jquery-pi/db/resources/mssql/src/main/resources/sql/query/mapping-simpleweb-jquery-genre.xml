@@ -1,0 +1,24 @@
+			    <!--simpleweb-jquery-findGenreName-START-->
+				SELECT name
+				FROM JQUERY_GENRE
+				WHERE name like :prefix + '%'
+				<!--simpleweb-jquery-findGenreName-END-->
+			
+			    <!--simpleweb-jquery-findJqueryGenreList-START-->
+				SELECT DISTINCT genre.genre_id, genre.name, CASE WHEN  movie.movie_id is not null THEN 'closed' ELSE movie.movie_id END state
+				FROM JQUERY_GENRE genre
+				LEFT JOIN JQUERY_MOVIE movie
+				ON	genre.genre_id = movie.genre_id
+				WHERE name like :vo.searchKeyword + '%'
+				ORDER BY name
+				<!--simpleweb-jquery-findJqueryGenreList-END-->
+			
+			    <!--simpleweb-jquery-findGenreListForTree-START-->
+				SELECT genre.genre_id, genre.name, CASE WHEN  movie.movie_id is not null THEN 'closed' ELSE movie.movie_id END state
+				FROM JQUERY_GENRE genre
+				LEFT JOIN JQUERY_MOVIE movie
+				ON	genre.genre_id = movie.genre_id
+				WHERE name like :vo.searchKeyword + '%'
+				ORDER BY name
+				<!--simpleweb-jquery-findGenreListForTree-END-->
+			

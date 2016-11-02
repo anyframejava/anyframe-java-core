@@ -1,0 +1,32 @@
+				<!--simpleweb-map-createMapMovie-START-->
+				INSERT INTO MAP_MOVIE (movie_id, title, director, genre_id, actors, runtime, release_date, ticket_price, now_playing, simple_upload_file_path)
+				VALUES (:movieId, :title, :director, :genreId, :actors, :runtime, :releaseDate, :ticketPrice, :nowPlaying, :filePaths)
+				<!--simpleweb-map-createMapMovie-END-->
+				
+				<!--simpleweb-map-updateMapMovie-START-->
+				UPDATE MAP_MOVIE 
+				SET title = :title,
+				    director = :director,
+				    genre_id = :genreId,
+				    actors = :actors, 
+				    runtime = :runtime,
+				    release_date = :releaseDate,
+				    ticket_price = :ticketPrice,
+				    now_playing = :nowPlaying,
+				    simple_upload_file_path = :filePaths
+				WHERE movie_id = :movieId
+				<!--simpleweb-map-updateMapMovie-END-->
+				
+				<!--simpleweb-map-findMapMovieByPk-START-->
+				SELECT movie_id, title, director, genre_id, actors, runtime, release_date, ticket_price, now_playing, simple_upload_file_path as filePaths
+				FROM MAP_MOVIE
+				WHERE movie_id = :movieId
+				<!--simpleweb-map-findMapMovieByPk-END-->
+				
+			    <!--simpleweb-map-findMapMovieList-START-->
+				SELECT movie.movie_id, movie.title, movie.director, genre.name, movie.actors, movie.release_date, movie.ticket_price, movie.now_playing
+				FROM MAP_MOVIE movie, MAP_GENRE genre
+				WHERE movie.genre_id = genre.genre_id 
+				AND title like CONCAT('%',:searchKeyword,'%')
+				AND movie.now_playing = :nowPlayingCondition
+				<!--simpleweb-map-findMapMovieList-END-->

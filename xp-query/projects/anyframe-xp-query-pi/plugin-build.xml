@@ -1,0 +1,50 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<plugin name="xp-query"
+	description="XP-Query Plugin consists of sample code that provides basic guidelines on how to use XPlatform connection modules and common server modules provided by Anyframe, and reference libraries needed to use open sources.">
+	<groupId>org.anyframe.plugin</groupId>
+	<artifactId>anyframe-xp-query-pi</artifactId>
+	<version>1.6.1-SNAPSHOT</version>
+	<dependent-plugins>
+		<dependent-plugin name="query-ria" version="2.0.0&gt;*&gt;1.4.0" />
+	</dependent-plugins>
+	<resources>
+		<resource dir="src/main/java" filtered="true" packaged="true">
+			<include name="**/xp/query/**/*.java" />
+			<exclude name="**/common/aspect/LoggingAspect.java"
+				merged="true" />
+		</resource>
+		<resource dir="src/main/resources" filtered="true" packaged="false">
+			<include name="**/*xp-query*.xml" />
+			<include name="**/xp-query/**/*.xml" />
+			<include name="**/xp-query-generation-servlet.xml" />
+			<include name="**/*License.xml" />
+			<exclude name="**/spring/context-transaction.xml" merged="true" />
+			<exclude name="**/spring/core-servlet.xml" merged="true" />			
+		</resource>
+		<resource dir="src/test/java" filtered="true" packaged="true">
+			<include name="**/org/anyframe/plugin/xp/query/**/*.java" />
+		</resource>
+		<resource dir="src/test/resources" filtered="true" packaged="false">
+			<include name="**/*xp-query*.xml" />
+		</resource>
+		<resource dir="src/main/webapp" filtered="false" packaged="false">
+			<include name="**/xp-query/**/*.*" />
+			<exclude name="**/anyframe.jsp" merged="true"/>
+			<exclude name="**/default_typedef.xml" />
+		</resource>
+		<resource dir="src/main/webapp/xp-query" filtered="true"
+			packaged="false">
+			<include name="**/default_typedef.xml" />
+		</resource>
+		<resource dir="db" filtered="false" packaged="false">
+			<include name="**/*.sql" />
+			<include name="**/resources/**/*.xml" />
+		</resource>
+	</resources>
+	<interceptor>
+		<class></class>
+	</interceptor>
+	<samples>true</samples>
+	<essential>false</essential>
+	<checked>false</checked>
+</plugin>

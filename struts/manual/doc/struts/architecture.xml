@@ -1,0 +1,77 @@
+<chapter id="struts_architecture">
+	<title>Architecture</title>
+
+		<para>
+			Struts의 Architecture는 Model-View-Controller 디자인 패턴을 기반으로 하고 있다. 따라서 Model과
+			View를 분리함으로써 Single domain model 기반의 다양한 프리젠테이션을 구성할 수 있는 환경을 제공한다.
+		</para>
+
+	<section id="struts_architecture_controller">
+    <title>Controller Structure</title>
+
+	    <para>
+	    	Java EE 의 front controller 패턴을 따라 하나의 컨트롤러를 사용한다. 따라서 Controller를 통해
+    		보안, 국제화, 로깅과 같은 서비스를 집중해서 처리할 수 있는 이점을 제공하며, 다음과 같은 역할을 수행한다.
+    	</para>
+
+    	<itemizedlist>
+      		<listitem>
+        		<para>클라이언트로 부터 들어오는 Request를 가로채는 역할</para>
+      		</listitem>
+      		<listitem>
+        		<para>특정 비즈니스 로직에 각 Request를 매핑하는 역할</para>
+      		</listitem>
+      		<listitem>
+        		<para>현재 상태와 비즈니스 로직 처리 결과를 바탕으로 뷰를 결정하여 클라이언트에 보여주는 역할</para>
+      		</listitem>
+    	</itemizedlist>
+	</section>
+
+	<section id="struts_architecture_requestflow">
+    <title>Request의 흐름</title>
+
+    	<para>다음 그림은 Struts를 이용해 프리젠테이션 레이어를 구성할 때의 Architecture이다.</para>
+
+	    <mediaobject>
+	      <imageobject>
+	        <imagedata align="center"
+	                   fileref="../image/struts/struts_architecture.jpg" />
+	      </imageobject>
+	      <textobject>
+			<phrase>Struts를 이용해 프리젠테이션 레이어를 구성한 Architecture</phrase>
+		  </textobject>
+	    </mediaobject>
+
+    	<para>클라이언트로부터 Request가 전달되면 다음과 같은 순서로 실행된다.</para>
+
+    	<itemizedlist>
+			<listitem>
+        		<para>
+        			웹 어플리케이션이 시작되면 web.xml에 설정된 servlet정보를 이용해 Struts관련 설정
+        			파일(struts-config.xml)이 로딩된다.
+        		</para>
+      		</listitem>
+      		<listitem>
+        		<para>
+        			이 때 struts-config.xml에 정의된 RequestProcessor가 들어온 Request에 따라
+        			ActionMapping을 결정한다.
+        		</para>
+      		</listitem>
+      		<listitem>
+        		<para>
+        			struts-config.xml에 설정된 URL과 Action 매핑 정보에 따라 해당 Action클래스의
+        			execute() 메소드를 실행 한다.
+        		</para>
+      		</listitem>
+      		<listitem>
+        		<para>Action의 execute() 메소드에서는 비즈니스 레이어와 연계하여 비즈니스 로직을 호출한다.</para>
+      		</listitem>
+			<listitem>
+        		<para>
+        			비즈니즈 로직 수행 결과에 따라서 ActionForward를 리턴하고 Controller는 리턴값에 따라 적절한
+        			View로 forwarding한다.
+        		</para>
+      		</listitem>
+		</itemizedlist>
+	</section>
+</chapter>

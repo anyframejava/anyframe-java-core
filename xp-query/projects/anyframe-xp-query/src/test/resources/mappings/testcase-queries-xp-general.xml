@@ -1,0 +1,105 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<queryservice xmlns="http://www.anyframejava.org/schema/query/mapping"
+              xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+              xsi:schemaLocation="http://www.anyframejava.org/schema/query/mapping http://www.anyframejava.org/schema/query/mapping/anyframe-query-mapping-1.0.xsd ">
+
+    <queries>
+        <query id="createXPQueryService" isDynamic="true">
+            <statement>
+                <![CDATA[
+				INSERT INTO TB_XP_TEST 
+				(TEST_CHAR, TEST_VARCHAR2, TEST_NUMBER, TEST_DOUBLE, TEST_DATE)
+				 VALUES(:TEST_CHAR, :TEST_VARCHAR2, :TEST_NUMBER, :TEST_DOUBLE, :TEST_DATE)
+				]]>
+            </statement>
+        </query>
+
+        <query id="updateXPQueryService" isDynamic="true">
+            <statement>
+                <![CDATA[
+				UPDATE TB_XP_TEST
+				SET  TEST_VARCHAR2 = :TEST_VARCHAR2, 
+				TEST_NUMBER = :TEST_NUMBER , TEST_DOUBLE = :TEST_DOUBLE , TEST_DATE = :TEST_DATE
+				WHERE TEST_CHAR = :TEST_CHAR
+				]]>
+            </statement>
+        </query>
+
+        <query id="deleteXPQueryService" isDynamic="true">
+            <statement>
+                <![CDATA[
+				DELETE FROM TB_XP_TEST WHERE TEST_CHAR = :TEST_CHAR
+				]]>
+            </statement>
+        </query>
+
+        <query id="findXPQueryService" isDynamic="true" mappingStyle="none">
+            <statement>
+                <![CDATA[
+				SELECT * 
+				FROM TB_XP_TEST 
+				WHERE TEST_CHAR = :SEARCH_KEYWORD
+				]]>
+            </statement>
+        </query>
+
+        <query id="findListXPQueryService" isDynamic="true" mappingStyle="none">
+            <statement>
+                <![CDATA[
+				SELECT * 
+				FROM TB_XP_TEST 
+				WHERE TEST_CHAR like :SEARCH_KEYWORD
+				]]>
+            </statement>
+        </query>
+
+        <query id="createBlobClob" isDynamic="true">
+            <statement>
+                <![CDATA[
+				INSERT INTO TB_XP_BLOBCLOB 
+				(TEST_CHAR, TEST_BLOB, TEST_CLOB, TEST_DATE)
+				 VALUES( :TEST_CHAR , :TEST_BLOB , :TEST_CLOB, :TEST_DATE )
+				]]>
+            </statement>
+        </query>
+
+        <query id="updateBlobClob" isDynamic="true">
+            <statement>
+                <![CDATA[
+				UPDATE TB_XP_BLOBCLOB 
+				SET 
+				TEST_BLOB = :TEST_BLOB , TEST_CLOB =:TEST_CLOB , TEST_DATE = :TEST_DATE
+				WHERE TEST_CHAR = :TEST_CHAR 
+				]]>
+            </statement>
+        </query>
+
+        <query id="findBlobClob" isDynamic="true">
+            <statement>
+                <![CDATA[
+				SELECT * FROM TB_XP_BLOBCLOB
+				WHERE TEST_CHAR LIKE :SEARCH_KEYWORD
+				]]>
+            </statement>
+        </query>
+
+        <query id="findXPQueryServiceWithoutDynamic" isDynamic="false">
+            <statement>
+                <![CDATA[
+				SELECT * FROM TB_XP_TEST
+				WHERE TEST_CHAR LIKE :SEARCH_KEYWORD
+				]]>
+            </statement>
+        </query>
+
+        <query id="findXPQueryServiceWithWrongQuery" isDynamic="true">
+            <statement>
+                <![CDATA[
+				SELECT a.notexitcolumn, a.* 
+				FROM TB_XP_TEST a
+				WHERE TEST_CHAR LIKE :SEARCH_KEYWORD
+				]]>
+            </statement>
+        </query>
+    </queries>
+</queryservice>

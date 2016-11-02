@@ -1,0 +1,31 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<plugin name="d3js" description="anyframe-d3js-pi plugin">
+  <groupId>org.anyframe.plugin</groupId>
+  <artifactId>anyframe-d3js-pi</artifactId>
+  <version>1.0.0-SNAPSHOT</version>
+  <dependent-plugins>
+    <dependent-plugin name="query" version="2.0.0&gt;*&gt;1.4.0"/>
+  </dependent-plugins>
+  <resources>
+    <resource dir="src/main/java" filtered="true" packaged="true">
+      <include name="**/d3js/**/*.java"/>
+    </resource>
+    <resource dir="src/main/resources" filtered="true" packaged="false">
+      <include name="**/*anyframe-d3js-pi*.xml"/>
+      <include name="**/mapping-d3js-*.xml"/>
+    </resource>
+    <resource dir="db/scripts" filtered="true" packaged="false">
+      <include name="**/d3js-*.sql"/>
+    </resource>
+    <resource dir="src/main/webapp" filtered="false" packaged="false">
+      <include name="**/d3js/**/*.*"/>
+      <include name="/anyframe.jsp"/>
+      <exclude name="**/web.xml" merged="true"/>
+    </resource>
+  </resources>
+  <samples>true</samples>
+  <interceptor>
+    <class></class>
+  </interceptor>
+  <essential>false</essential>
+</plugin>

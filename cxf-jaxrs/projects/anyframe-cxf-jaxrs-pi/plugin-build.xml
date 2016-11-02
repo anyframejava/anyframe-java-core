@@ -1,0 +1,33 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<plugin name="cxf-jaxrs" description="CXF JAX-RS Plugin consists of sample code that provides guidelines for using JAX-RS (JSR-311) Frontend of Apache CXF and reference libraries to use these open sources. ">
+  <groupId>org.anyframe.plugin</groupId>
+  <artifactId>anyframe-cxf-jaxrs-pi</artifactId>
+  <version>1.1.1-SNAPSHOT</version>
+  <dependent-plugins>
+    <dependent-plugin name="cxf" version="2.0.0&gt;*&gt;1.0.3"/>
+    <dependent-plugin name="query" version="2.0.0&gt;*&gt;1.4.0"/>
+  </dependent-plugins>
+  <resources>
+    <resource dir="src/main/java" filtered="true" packaged="true">
+      <include name="**/cxf/jaxrs/**/*.java"/>
+    </resource>
+    <resource dir="src/main/resources" filtered="true" packaged="false">
+      <include name="**/*cxf-jaxrs*.xml"/>
+    </resource>
+    <resource dir="src/main/webapp" filtered="false" packaged="false">
+      <include name="**/cxf-jaxrs/**/*.*"/>
+      <exclude name="**/sample/**/*.*" merged="false"/>
+      <exclude name="**/web.xml" merged="true"/>
+      <exclude name="**/anyframe.jsp" merged="true" /> 
+    </resource>
+    <resource dir="db/resources" filtered="false" packaged="false">
+        <include name="**/*.xml" />
+    </resource>    
+  </resources>
+  <samples>true</samples>
+  <interceptor>
+    <class></class>
+  </interceptor>
+  <essential>false</essential>
+  <checked>false</checked>
+</plugin>

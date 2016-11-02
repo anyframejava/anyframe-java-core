@@ -1,0 +1,109 @@
+<chapter id="struts_extensions_springintegration">
+	<title>Spring Integration</title>
+
+	<para>
+		When developing web application based on Anyframe Struts, 
+  		business object in the MVC Model section will be generally developed in the Spring Framework-based bean.
+        Therefore, let's have a look at how to access Spring Framework-based service
+        which performs business logic in Action class that performs presentation logic.
+  	</para>
+
+  	<section id="struts_extensions_springintegration_configuration">
+    	<title>Configuration</title>
+
+    	<para>To connect to Spring Framework, the following property definition is needed.</para>
+
+		<itemizedlist>
+			<listitem>
+				<para>Register org.springframework.web.context.ContextLoaderListener as listener in web.xml.</para>
+			</listitem>
+			<listitem>
+				<para>Register contextConfigLocation in web.xml as context-param element.</para>
+			</listitem>
+    	</itemizedlist>
+
+		<section id="struts_extensions_springintegration_configuration_context">
+      		<title>ContextLoaderListener, ContextConfigLocation Definition</title>
+
+      		<para>
+      			From Servlet 2.3 version onwards, ServletContextEvent which is an event related to
+                web context (one web application) life cycle and HttpSessionEvent which is an event related to Session life cycle have been added.
+                Therefore, by registering Context Event Listener that responds to this web application in web.xml,
+                useful work (eg. initial property load of application, service container instantiating, etc.)
+                must be performed at startup or shutdown event of web context in Listener implementation class.
+                org.springframework.web.context.ContextLoaderListener class implements ServletContextListener interface, 
+                and includes the following two methods to handle startup event where application is first loaded in servlet container and 
+                shutdown event where application ends.
+      		</para>
+
+      		<itemizedlist>
+        		<listitem>
+          			<para>
+          				contextInitialized : Initializes root WebApplicationContext
+                        and creates relevant service instance based on bean configuration file defined in contextConfigLocation.
+          			</para>
+        		</listitem>
+        		<listitem>
+			        <para>contextDestroyed : Releases relevant resources and closes root WebApplicationContext.</para>
+   			    </listitem>
+      		</itemizedlist>
+
+      		<para>
+      			The following is a part of web.xml (ContextLoaderListener, contextConfigLocation) for Spring Framework integration.
+      			<programlisting language="xml"><![CDATA[<context-param>
+    <param-name>]]><emphasis role="bold">contextConfigLocation</emphasis><![CDATA[</param-name>
+    <param-value>]]>
+   <emphasis role="bold">     /config/spring/context-*.xml</emphasis><![CDATA[
+    </param-value>
+</context-param>
+<listener>
+    <listener-class>]]><emphasis role="bold">org.springframework.web.context.ContextLoaderListener</emphasis><![CDATA[</listener-class>
+</listener>]]></programlisting>
+			</para>
+		</section>
+	</section>
+
+	<section id="struts_extensions_springintegration_action">
+    	<title>Action</title>
+
+	    <para>
+	    	The following is a part of ProductAction class
+            which inherits DefaultDispatchActionSupport and performs presentation logic regarding product search function.
+            We can see that business service to access is given
+            by calling getService method provided in Super Class (AbstractActionSupport).
+    
+	    	<programlisting language="java">public class ProductAction extends DefaultDispatchActionSupport {
+    //  ...
+    public ActionForward list(ActionMapping mapping, ActionForm form,
+        HttpServletRequest request, HttpServletResponse response) throws Exception {
+        ProductService productService = 
+           <emphasis role="bold"> (ProductService) getService("productService");</emphasis>
+
+        ProductSearchVO searchVO = new ProductSearchVO();
+
+        ProductForm productForm = (ProductForm) form;
+        BeanUtils.copyProperties(searchVO, productForm);
+        
+        //  ...
+
+        Page resultPage = productService.getPagingList(searchVO);
+
+        request.setAttribute("search", searchVO);
+        request.setAttribute("productList", resultPage.getList());
+        request.setAttribute("size", resultPage.getTotalCount());
+        request.setAttribute("pagesize", resultPage.getPagesize());
+        request.setAttribute("pageunit", resultPage.getPageunit());
+
+        return mapping.findForward("success_list");
+    }
+}
+</programlisting>
+		</para>
+
+		<para>
+			For more information on bean property definition when developing Spring Framework based service,
+            refer to <ulink url="http://dev.anyframejava.org/docs/anyframe/plugin/essential/core/1.5.0-SNAPSHOT/reference/htmlsingle/core.html#core_spring_ioc">Spring IOC</ulink>.
+		</para>
+	</section>
+</chapter>
+

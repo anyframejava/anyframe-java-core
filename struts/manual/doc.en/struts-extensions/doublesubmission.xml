@@ -1,0 +1,272 @@
+<chapter id="struts_extensions_doublesubmission">
+	<title>Preventing Double Form Submission</title>
+
+	<para>
+		Struts Extensions of Anyframe provides a function to declaratively prevent
+		unexpected results caused by Double Form Submission through Synchronized Token.
+  	</para>
+
+	<section id="struts_extensions_doublesubmission_concept">
+    	<title>Concept of Double Submit</title>
+
+	    <para>Double Form Submit can occur in the following cases.</para>
+	    <itemizedlist>
+    		<listitem>
+        		<para>When refreshing browser</para>
+      		</listitem>
+		    <listitem>
+        		<para>When going back to the previous page by using the back button on
+					browser and submitting form again.</para>
+      		</listitem>
+		    <listitem>
+        		<para>When going back to the previous page by using Browser History
+					and submitting form again.</para>
+      		</listitem>
+		    <listitem>
+        		<para>When submitting form deliberately and maliciously to affect the server.</para>
+      		</listitem>
+		    <listitem>
+        		<para>When clicking on submit button more than once</para>
+      		</listitem>
+    	</itemizedlist>
+
+    	<para>
+    		<![CDATA[The reason why Double Form Submission occurs when refreshing browser is 
+    		the URL shown in the browser address bar after form submission.
+			For example, let's assume that a form was submitted through "<form name='test' action='/submitForm.do'>". 
+			After this form is submitted, '/submitForm.do' remains in the address bar, 
+			and if you click the refresh button in this situation, then same URL will be sent again.
+			The easiest way to prevent this situation is to use HTTP Redirect after form submission.
+         	If the page shown after test form submission is success.jsp,
+			success.jsp	will be shown on the browser address bar when HTTP Redirect is used. 
+			In this case, success.jsp will
+			be reloaded even when refreshing browser.
+			By using <forward name="success" path="/Success.jsp" redirect="true"/>, 
+			unexpected results caused by accidently refreshing browser can be prevented.
+			However, form resubmit using browser back button, etc. cannot be fundamentally prevented.
+			Therefore by providing DefaultActionMapping and AbstractActionSupport,
+			Anyframe can handle Synchronized Token to prevent Double Form Submission declaratively.
+			The following is a conceptual diagram of Double Form Submission prevention using Synchronized Token.]]>
+    	</para>
+
+	    <mediaobject>
+	      <imageobject>
+	        <imagedata align="center" fileref="../image/struts/extensions/default_02.jpg" />
+	      </imageobject>
+	    </mediaobject>
+	</section>
+
+	<section id="struts_extensions_doublesubmission_tokenhandling">
+    <title>General Token handling</title>
+
+	    <para>In general, Double Form Submission in Action class can be checked in the following logic.</para>
+	
+	    <itemizedlist>
+		    <listitem>
+	    		<para>
+	    			Action Class
+	    			<programlisting language="java">boolean valid = isTokenValid(request, true);
+if (valid) {
+    // TODO: Put logic to perform when submitting.
+    System.out.println("status: performed");
+} else {
+    // TODO: Put logic to perform when init / reload.
+    System.out.println("status: initialized or reloaded");
+}
+saveToken(request);</programlisting>
+				</para>
+	      	</listitem>
+		    <listitem>
+				<para>
+					JSP
+	     	   		<programlisting language="xml"><![CDATA[<input type="hidden" name="org.apache.struts.taglib.html.TOKEN" 
+value="<%= session.getAttribute(org.apache.struts.Globals.TRANSACTION_TOKEN_KEY) %>">]]></programlisting>
+				</para>
+
+	        	<para>
+	        		UI(JSP, HTML) sends Token value assigned through Hidden Field
+					which the key is "org.apache.struts.taglib.html.TOKEN" to server. 
+					By comparing this Token value and the Token value saved in session through calling isTokenValid method, 
+					Token is validated. 
+	        	</para>
+			</listitem>
+		</itemizedlist>
+	</section>
+
+	<section id="struts_extensions_doublesubmission_declarativetokenhandling">
+    	<title>Declarative Token handling</title>
+
+    	<para>
+    		To prevent the duplicate implementation of 
+    		all actions that need Double Form Submit prevention handling 
+    		and logic for Token handling in JSP, 
+    		Anyframe provides a function to declaratively handle Sychronized Token 
+    		by using AbstractActionSupport class and DefaultActionMapping class.
+			For declarative Synchronized Token handling, 
+			the following properties must be additionally defined in action mapping within the Struts configuration file.
+    	</para>
+	    <itemizedlist>
+      		<listitem>
+        		<para>
+        			<emphasis role="bold">saveToken</emphasis> : 
+        			After performing relevant action, set whether or not to save the Token returned from Client, in Session.
+        		</para>
+      		</listitem>
+		    <listitem>
+        		<para>
+        			<emphasis role="bold">validateToken</emphasis> : Before performing the relevant Action,
+					set whether or not to validate Token
+        		</para>
+      		</listitem>
+		    <listitem>
+        		<para>
+        			<emphasis role="bold">resetToken</emphasis> : 
+        			After validating Token validation, set whether or not to reset Token saved in Session.
+        		</para>
+      		</listitem>
+    	</itemizedlist>
+	    <para>
+	    	The following is a part of struts-config-token.xml file, an example of preventing Double Form Submission declaratively.
+			
+	    	<programlisting
+	    	language="xml"><![CDATA[<action-mappings type="org.anyframe.struts.action.DefaultActionMapping">
+    <action path="/synchronizedTokenView"
+            type="org.anyframe.struts.action.DefaultForwardAction"
+            parameter="/extensions/token.jsp">
+            <]]><emphasis role="bold">set-property property</emphasis>="<emphasis
+          role="bold">saveToken</emphasis>" <emphasis role="bold">value</emphasis>="<emphasis
+          role="bold">true"</emphasis><![CDATA[ />
+    </action>
+    <action path="/doubleSubmit"
+            type="org.anyframe.sample.struts.action.SampleTokenAction"
+            name="submitForm" scope="request">
+        <]]><emphasis role="bold">set-property</emphasis> <emphasis
+          role="bold">property</emphasis>="<emphasis role="bold">validateToken</emphasis>" <emphasis
+          role="bold">value</emphasis>="<emphasis role="bold">true</emphasis><![CDATA[" />
+        <]]><emphasis role="bold">set-property</emphasis> <emphasis
+          role="bold">property</emphasis>="<emphasis role="bold">resetToken</emphasis>" <emphasis
+          role="bold">value</emphasis>="<emphasis role="bold">true</emphasis><![CDATA[" />
+        <forward name="success" path="/extensions/tokenSuccess.jsp" />
+    </action>
+</action-mappings>]]></programlisting>
+		</para>
+
+    	<para>
+   			Let's look into how the above three properties defined in each Action mapping 
+			are handled through AbstractActionSupport class through the following examples.
+   		</para>
+
+		<section id="struts_extensions_doublesubmission_declarativetokenhandling_samples">
+	      	<title>Samples</title>
+	
+		    <orderedlist>
+	        	<listitem>
+	          		<para>
+	          			1. In the case of UI where Double Form Submission prevention is necessary, 
+	          			Token must be saved in Session through Action execution to load UI.
+						Therefore, saveToken properties value must be defined as true when defining Action	mapping.
+	          			<programlisting
+	          			language="xml"><![CDATA[<set-property property="saveToken" value="true"/>]]></programlisting>
+	          		</para>
+	        	</listitem>
+		        <listitem>
+	          		<para>
+	          			After executing process method of Action class,
+						when saveToken of mapping definition is true,
+						postProcess method in AbstractActionSupport class calls saveToken method
+						provided by parent class and saves this Token in Session.
+	          			<programlisting
+	          			language="java">public ActionForward postProcess(ActionMapping mapping, ActionForm form,
+        HttpServletRequest request, HttpServletResponse response,
+        ActionForward forward) throws Exception {
+    boolean saveToken = false;
+    if (mapping instanceof DefaultActionMapping) {
+        DefaultActionMapping t_mapping = (DefaultActionMapping) mapping;
+        saveToken = t_mapping.isSaveToken();
+    }
+    if (saveToken) {
+        saveToken(request);
+    }
+    return forward;
+}</programlisting>
+					</para>
+		        </listitem>
+		        <listitem>
+			        <para>
+			        	When submitting form in the relevant UI,
+						validateToken and resetToken property value should be defined as true in Action class mapping information for handling.	          			
+	          			<programlisting
+          				language="xml"><![CDATA[<set-property property="validateToken" value="true"/>
+<set-property property="resetToken" value="true"/>]]></programlisting>
+					</para>
+		        </listitem>
+		        <listitem>
+					<para>
+						Before executing Action class process method,
+						AbstractActionSupport preProcess method validates Token validation in Session 
+						according to validateToken and resetToken value defined in Action mapping, 
+						and removes Token in Session if validated.
+						By doing so, error occurs in checking Token validation because Token in Session has already been removed 
+						when Double Form Submission occurs.						
+						<programlisting language="java">public void preProcess(ActionMapping mapping, ActionForm form,
+         HttpServletRequest request, HttpServletResponse response)
+         throws Exception {
+
+    boolean validateToken = false;
+    boolean resetToken = false;
+
+    if (mapping instanceof DefaultActionMapping) { 
+        DefaultActionMapping t_mapping = (DefaultActionMapping) mapping;
+        validateToken = t_mapping.isValidateToken();
+        resetToken = t_mapping.isResetToken();
+    }
+    
+    if (validateToken) {
+        if (!isTokenValid(request, resetToken)) {
+            throw new InvalidTokenException("common.msg.invalidtoken.error");
+       }
+    }
+}</programlisting>
+					</para>
+				</listitem>
+			</orderedlist>
+		</section>
+
+		<section id="struts_extensions_doublesubmission_declarativetokenhandling_comment">
+			<title>References</title>
+	
+			<itemizedlist>
+				<listitem>
+					<para><![CDATA[Use <html:form>]]></para>
+	
+					<para>
+						<![CDATA[When creating Form using <html:form>, 
+						hidden field for Token assignment will be added without any special definition.
+						In case <html:form> is not used, hidden field must be additionally defined as follows.]]>
+	          			
+	          			<programlisting language="xml"><![CDATA[<input type="hidden" name="org.apache.struts.taglib.html.TOKEN" 
+    value="<%= session.getAttribute(org.apache.struts.Globals.TRANSACTION_TOKEN_KEY) %>">]]></programlisting>
+					</para>
+        		</listitem>
+
+        		<listitem>
+					<para>Use DefaultForwardAction</para>
+
+					<para>
+						When only page navigation is needed without performing any special action,
+						ForwardAction basically provided by Struts will be used. 
+						Even in this case, however,
+						if setting for Sychronized Token handling is needed before moving to input view, 
+						use	DefaultForwardAction provided by Anyframe.
+		          		<programlisting language="xml"><![CDATA[<action path="/synchronizedTokenView"
+    type="org.anyframe.struts.action.DefaultForwardAction"
+    parameter="/extensions/token.jsp">
+    <set-property property="saveToken" value="true" />
+</action>]]></programlisting>
+					</para>
+				</listitem>
+      		</itemizedlist>
+		</section>
+  	</section>
+</chapter>
+

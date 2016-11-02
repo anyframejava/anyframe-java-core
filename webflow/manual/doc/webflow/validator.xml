@@ -1,0 +1,47 @@
+<chapter id="webflow_webflow_validator">
+	<title>Validator</title>
+	<para>
+		Spring Web Flow에서는 Validator를 구현하여 지정된 model 객체에 대한 프로그램적인 Validation을
+		수행할 수 있다. Validator를 구현하는 방법에는 model 객체에 validate 메소드를 구현하는 방법과 
+		validator 클래스 및 메소드를 구현하는 방법이 있다.
+	</para>
+	
+	<section id="webflow_webflow_validator_model">
+		<title>model 객체 내에 validate 메소드 구현</title>
+		<para>
+			model 객체 내에 validate 메소드를 구현하여 해당 model 객체에 대한 validation을 수행할 수 있다. 
+			이 때, 메소드의 이름은 일정한 룰에 따라 정의해줘야 하는데 그 이름은 "validate${state}"가 되며
+			ValidationContext를 입력 argument로 받게 된다. 예를 들어, "domain.Category"라는 타입의 model 객체를
+			갖는 "addCategoryView" state에 대한 validate 메소드는 아래와 같이 정의할 수 있다.
+			<programlisting language="java"><![CDATA[public class ]]><emphasis role="bold"><![CDATA[Category]]></emphasis><![CDATA[ implements java.io.Serializable {
+//....
+    public void ]]><emphasis role="bold"><![CDATA[validateAddCategoryView]]></emphasis><![CDATA[(ValidationContext context){
+        MessageContext messages = context.getMessageContext();
+        if(categoryName.length() <=3)
+            messages.addMessage(new MessageBuilder().error().source("categoryName").
+                    defaultText("카테고리명은 4자 이상이어야 합니다. ").build());
+    }]]></programlisting>
+       </para>
+       
+	</section>
+	
+	<section id="webflow_webflow_validator_class">
+		<title>validator 클래스 및 메소드 구현</title>
+		<para>
+			위와 같이 model 객체 내에 validate를 정의할 경우 각각의 model 객체가 validate 메소드를
+			포함하고 있는 모습이 된다. Validator 클래스를 따로 작성하여 Validation 체크 부분에 대한 코드를
+			따로 관리할 수 있다. 이 때, 클래스 명은 "${model}Validator"가 되며 state에 따라 수행되게될 메소드의
+			이름은 "validate${state}"가 된다. 또한 입력 argument는 model 객체와 ValidationContext가 된다.
+		 	<programlisting language="java"><![CDATA[@Component
+public class ]]><emphasis role="bold"><![CDATA[CategoryValidator]]></emphasis><![CDATA[ {
+    public void ]]><emphasis role="bold"><![CDATA[validateGetCategory]]></emphasis><![CDATA[(]]><emphasis role="bold"><![CDATA[Category]]></emphasis><![CDATA[ category, ValidationContext context) {
+        MessageContext messages = context.getMessageContext();
+        if (category.getCategoryName().length() <= 3)
+             messages.addMessage(new MessageBuilder().error().source(
+                "categoryName").code("category.length.error").build());
+        }
+    }]]></programlisting>
+			위에 코드에서 볼 수 있듯이 Validator 클래스를 @Component로 정의하여 Bean으로 등록하여 scan할 수 있도록 한다.
+		</para>
+	</section>
+</chapter>

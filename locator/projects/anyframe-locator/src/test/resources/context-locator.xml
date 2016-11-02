@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:config="http://www.anyframejava.org/schema/service"
+	xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-2.5.xsd
+	http://www.anyframejava.org/schema/service http://www.anyframejava.org/schema/service/anyframe-core-service-2.0.xsd">
+	<bean name="serviceLocator" class="org.anyframe.locator.impl.LocatorServiceImpl">
+		<property name="cacheService">
+			<ref bean="cacheService"/>
+		</property>
+		<config:configuration>
+	    	<context name="default" key="java.naming.provider.url" value="t3://localhost:7001"/>
+	      	<context name="default" key="java.naming.factory.initial" value="weblogic.jndi.WLInitialContextFactory"/>		
+	      	<usertx name="default"  key="javax.transaction.UserTransaction"/>
+		</config:configuration>
+	</bean>		
+</beans>

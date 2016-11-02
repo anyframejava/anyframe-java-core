@@ -1,0 +1,261 @@
+<chapter id="springrest_restsupport_contentnegotiation">
+	<title>Multiple Representation</title>
+	
+	<para>
+		앞 장에서 설명했듯이, RESTful 아키텍처에서 하나의 Resource는 여러 형태의 Represenation을 가질 수 있다.
+		즉, 클라이언트가 서버에 생성하거나 수정하기 위해 전달하는 데이터의 형태도 다양할 수 있고,
+		서버가 클라이언트의 요청을 처리하고 전달하는 응답도 다양한 형태를 가질 수 있다.
+		
+		이러한 Content Negotiation을 지원하기 위해서 Spring에서 제공하는 기능에 대해서 살펴보도록 하자.
+	</para>
+	
+	<para>
+		기존의 웹 어플리케이션은 웹 페이지에서 form submit을 통해 저장 또는 수정하고자 하는 데이터들이 전달되었다.
+		그렇게 submit된 데이터는 아래와 같은 모습의 HTTP Request message로 서버에 들어온다.
+		<mediaobject>
+			<imageobject>
+				<imagedata align="center" fileref="../image/springrest/formsubmitmessage.png" />
+			</imageobject>
+			<textobject>
+				<phrase>submit된 HTTP Request Message</phrase>
+			</textobject>
+		</mediaobject>
+	</para>
+	
+	<para>
+		일반적인 웹 어플리케이션에서 Controller의 메소드는 위 HTTP message body 부분의 정보를 Command 객체에 바인딩해서 사용한다.
+		<programlisting language="java">@RequestMapping(value = "/{movieId}", method = RequestMethod.POST)
+public void update(<emphasis role="bold">Movie updateMovie</emphasis>) throws Exception {
+	this.movieService.update(updateMovie);
+}</programlisting>
+	</para>
+	<para>
+		그러나 RESTful 웹 서비스로 노출하는 메소드는 아래의 그림 처럼 xml, json 등 다양한 형식으로 요청 데이터가 들어올 수 있다.
+		<mediaobject>
+			<imageobject>
+				<imagedata align="center" fileref="../image/springrest/xmlrequestmessage.png" />
+			</imageobject>
+			<textobject>
+				<phrase>RESTful 방식을 통해 들어온 데이터 형식</phrase>
+			</textobject>
+		</mediaobject>
+		그래서 Spring에서는 다양한 형태의 HTTP Request Message를 직접 처리할 수 있도록 <emphasis role="bold">@RequestBody</emphasis>를 제공한다.
+	 	또한, 클라이언트로 다양한 형태의 HTTP Response Message를 직접 리턴할 수 있도록 <emphasis role="bold">@ResponseBody</emphasis>를 제공한다.
+	
+		<programlisting language="java">@RequestMapping(value = "/{movieId}", method = RequestMethod.PUT)
+<emphasis role="bold">@ResponseBody</emphasis>
+public void update(<emphasis role="bold">@RequestBody Movie updateMovie</emphasis>) throws Exception {
+	this.movieService.update(updateMovie);
+}</programlisting>
+	</para>
+
+	<para>
+		@RequestBody와 @ResponseBody가 각각 Request/Reponse message를 처리할 때, <emphasis role="bold">message와 Java 객체간의 변환은 
+		<ulink url="http://static.springsource.org/spring/docs/3.0.x/javadoc-api/org/springframework/http/converter/HttpMessageConverter.html">HttpMessageConverter</ulink></emphasis>가 담당한다.
+		Spring에서는 미디어 타입(예: html, xml, json 등)에 따라 Jaxb2RootElementHttpMessageConverter, StringHttpMessageConverter, MappingJacksonHttpMessageConverter 등 여러가지 HttpMessageConverter 구현체를 제공하고 있다.
+		자세한 내용은 본 매뉴얼 <link linkend="springrest_restsupport_httpmessageconversion">HTTP Message Conversion</link>을 참조하기 바란다.
+		@RequestBody를 적용하여 <emphasis role="bold">Request message 처리시 Content-Type header 값에 따라</emphasis> 적절한 HttpMessageConverter가 사용된다.
+		마찬가지로, @ResponseBody를 사용하여 <emphasis role="bold">Response message 생성시 Request로 들어온 Accept header 값에 따라</emphasis> 적절한 HttpMessageConverter가 사용된다.
+	</para>
+	
+	<para>
+		클라이언트로 전달할 Response를 좀 더 상세하게 구성하고자 하는 경우에는 <emphasis role="bold">ResponseEntity<![CDATA[<?>]]></emphasis>를 사용할 수 있다.
+		<programlisting language="java">@RequestMapping(method = RequestMethod.POST)
+public <emphasis role="bold">ResponseEntity<![CDATA[<String>]]></emphasis> create(@RequestBody Movie movie) throws Exception {
+
+    this.movieService.create(movie);
+
+    HttpHeaders responseHeaders = new HttpHeaders();
+    responseHeaders.set("Location", "http://localhost:8080/mypjt2/movies/" + movie.getMovieId());
+    
+    // 201 CREATED, Location header
+    <emphasis role="bold">return new ResponseEntity<![CDATA[<String>]]>("Created resource " + movie.getMovieId(), responseHeaders, HttpStatus.CREATED);</emphasis>
+}</programlisting>
+	</para>
+	
+	<para>
+		위 코드 예제에서는 @ResponseBody 대신 ResponseEntity를 사용해서 Location header와 '201 CREATED'라는 status code로 Response를 구성했다.
+		일반적으로 POST method의 경우 요청에 의해 Resource가 생성되었다면 '201 CREATED' status code와 새로 생성된 Resource를 조회할 수 있는 정보를 기술한 Location header를 리턴한다.
+	</para>
+	
+	<!--note id="springrest_restsupport_contentnegotiation_responsestatuscode"-->
+	<note>
+		<title>HTTP Response Status Code</title>
+		<mediaobject>
+			<imageobject>
+				<imagedata align="center" fileref="../image/springrest/httpstatuscodetable.png" />
+			</imageobject>
+			<textobject>
+				<phrase>HTTP Response Status Code</phrase>
+			</textobject>
+		</mediaobject>		  
+		자세한 내용은 <ulink url="http://www.w3.org/Protocols/rfc2616/rfc2616-sec10.html">HTTP Status Code Definitions</ulink>와 <ulink url="http://www.w3.org/Protocols/rfc2616/rfc2616-sec9.html">Method Definitions</ulink>를 참조하기 바란다.
+	</note>
+	
+	<para>
+		@ResponseBody나 ResponseEntity를 사용하지 않고 기존의 웹 어플리케이션에서 처럼 View의 이름을 리턴하는 경우에도
+		Content Negotiation이 가능하도록 Spring에서는 <emphasis role="bold">ContentNegotiatingViewResolver</emphasis>를 제공한다.
+	</para>
+		
+	<para>
+		ContentNegotiatingViewResolver는 자기가 직접 View를 구성하는 것이 아니라, 등록된 다른 모든 View Resolver에게로 View를 찾는 것을 위임한다.
+		다른 View Resolver들이 리턴한 View의 Content-Type과 HTTP Request의 Accept 헤더 값 또는 파일 확장자로 기술된 미디어 타입(Content-Type값)을 비교하여
+		클라이언트가 요청한 Content-Type에 가장 적합한 View를 선택하여 응답을 돌려준다.
+	</para>
+	<para>
+		이렇듯 ContentNegotiatingViewResolver는 다른 View Resolver들과 반드시 함께 사용되어야 하므로 View Resolver 설정 시 반드시 order를 정의해야 한다. 
+		당연히 ContentNegotiatingViewResolver가 가장 높은 우선순위(가장 작은숫자)를 가져야 한다.
+	</para>
+	<para>
+		파일 확장자 기반의 Content Negotiation을 처리하기 위해서는 ContentNegotiatingViewResolver의 <emphasis role="bold">mediaTypes</emphasis> 속성에
+		파일 확장자와 미디어 타입을 매핑시켜 정의한다.
+	</para>
+	<para>
+		다음은 ContentNegotiatingViewResolver를 사용하기 위한 설정 예이다.
+		<programlisting language="xml"><emphasis role="bold"><![CDATA[<bean class="org.springframework.web.servlet.view.ContentNegotiatingViewResolver">
+    <property name="mediaTypes">
+        <map>
+            <entry key="html" value="text/html"/>
+            <entry key="xml" value="application/xml" />
+        </map>
+    </property>
+    <property name="order" value="0"/>
+</bean>]]></emphasis></programlisting>
+	</para>					  					
+		 
+	<para>
+		ContentNegotiatingViewResolver는 기본적으로 WebApplicationContext에 등록된 View Resolver들을 자동으로 찾아서 처리하지만, 아래와 같이 <emphasis role="bold">viewResolvers</emphasis> 속성을 이용해서 다른 View Resolver들을 명시적으로 지정할 수도 있다.
+		또한, <emphasis role="bold">defaultViews</emphasis> 속성에 View를 명시해두면, View Resolver 체인에서 클라이언트가 요청한 Content-Type을 지원하는 View를 찾지 못한 경우에 디폴트 View로 사용된다.
+		<programlisting language="xml"><![CDATA[<bean class="org.springframework.web.servlet.view.ContentNegotiatingViewResolver">
+    ]]><emphasis role="bold"><![CDATA[<property name="mediaTypes">]]></emphasis><![CDATA[
+        <map>
+            <entry key="html" value="text/html"/>
+            <entry key="atom" value="application/atom+xml"/>
+            <entry key="json" value="application/json"/>
+        </map>
+    </property>
+  
+     ]]><emphasis role="bold"><![CDATA[<property name="viewResolvers">]]></emphasis><![CDATA[
+        <list>
+            <bean class="org.springframework.web.servlet.view.BeanNameViewResolver"/>
+            <bean class="org.springframework.web.servlet.view.InternalResourceViewResolver">
+                <property name="prefix" value="/WEB-INF/jsp/"/>
+                <property name="suffix" value=".jsp"/>
+            </bean>
+        </list>
+    </property>
+    
+    ]]><emphasis role="bold"><![CDATA[<property name="defaultViews">]]></emphasis><![CDATA[
+        <list>
+            <bean class="org.springframework.web.servlet.view.json.MappingJacksonJsonView"/>
+        </list>
+    </property>
+</bean>]]></programlisting>
+	</para>
+	
+	<para>
+		요청 처리후 돌려줄 적절한 View를 선택하기 위해서, ContentNegotiatingViewResolver는 클라이언트로부터 요청된 미디어 타입을 가지고 매칭시키는데, 
+		이 미디어 타입을 알아내는 작업은 다음과 같은 과정으로 이루어진다.
+		<orderedlist>
+			<listitem>
+				<para>
+					favorPathExtension 속성 값이 true(디폴트값이 true이다)이고, Request path에 파일 확장자가 포함되어 있다면, 
+					ContentNegotiatingViewResolver의 mediaTypes 속성에 정의된 매핑 정보를 사용한다.
+					적절한 미디어 타입을 찾지 못했을 때, 만약 Java Activation Framework가 classpath에 존재한다면, 
+					FileTypeMap.getContentType(String filename) 메소드의 리턴 값을 미디어타입으로 사용한다. 
+				</para>
+			</listitem>
+			
+			<listitem>
+				<para>
+					favorParameter 속성 값이 true(디폴트값은 false이다)이고, Request에 미디어 타입을 정의하는 파라미터가 포함되어 있다면, 
+					ContentNegotiatingViewResolver의 mediaTypes 속성에 정의된 매핑 정보를 사용한다. 디폴트 파라미터 명은 'format'이고 이것은 parameterName이라는 속성으로 변경가능하다.
+				</para>
+			</listitem>
+			
+			<listitem>
+				<para>위의 과정으로도 미디어 타입을 찾지 못했을 때, ContentNegotiatingViewResolver의 ignoreAcceptHeader가 false로 지정되어 있으면 Request의 Accept 헤더 값을 사용한다.</para>
+			</listitem>
+			
+			<listitem>
+				<para>
+					위의 모든 과정을 거치고도 미디어 타입을 찾지 못한 경우, 최종적으로 ContentNegotiatingViewResolver의 defaultContentType이 정의되어 있다면 
+					그 값을 클라이언트에서 요청한 미디어 타입으로 간주한다.
+				</para>
+			</listitem>
+		</orderedlist>
+		일단 클라이언트가 요청한 미디어 타입을 찾아내면 다른 View Resolver들에게 View를 요청하고,
+		View Resolver들이 리턴한 View의 Content-Type과 요청들어온 미디어 타입의 매칭여부를 확인해서 가장 적합한 View를 찾아서 클라이언트로 응답한다.
+	</para>
+	
+	<!--note id="springrest_restsupport_contentnegotiation_errorhandling"-->
+	<note>
+		<title>Response Status Code와 에러 페이지</title>
+		<para>
+			Controller의 메소드에서 Exception이 발생했을 때, 
+			Response를 직접 리턴하는 경우에는 메소드 내부에서 Exception을 catch 하고, Response에 Error Status Code를 설정하여 리턴을 하면 된다.
+			그러나 Response를 직접 리턴하지 않는 경우에는 발생한 Exception을 exceptionResolver가 처리하도록 되어 있다.
+		</para>
+		<para>
+			현재 Anyframe의 core plugin에 의해 SimpleMappingExceptionResolver가 설정되고 defaultErrorView로 error.jsp가 렌더링되어
+			에러가 발생했음에도 불구하고 REST 클라이언트에게는 '200 OK'라는 Response Status와 함께 error 페이지 HTML 내용이 리턴되는 문제가 있다.
+		</para>
+		
+		<!--para>
+			자세한 내용은 <link linkend="springrest_restsupport_exceptionhandling_errorresponsehandling">Response Status Code와 HandlerExceptionResolver</link>를 참조하기 바란다.
+		</para-->
+	</note>
+	
+	<!--note id="springrest_simplemediatypeviewresolver"-->
+	<note>
+		<title>SimpleMediaTypeViewResolver</title>
+		<para>위에서 설명한 대로 ContentNegotiatingViewResolver는 주어진 요청에 "가장 가까운" View를 찾아서 반환하도록 설계되었다. 하지만 이 때문에 설정이 복잡하고 Spring의 ViewResolve 로직을 이해하여야만 하는 직관적이지 못한 설정방법을 제공하고 있다.</para>
+		<para>이에 Anyframe에서는 Core 플러그인 1.0.4 버전부터 "Negotiation"은 제외하고 요청받은 View를 직관적으로 서비스할 수 있는 간략화된 형태의 ViewResolver를 별도로 제공하고 있다. SimpleMediaTypeViewResolver이다.</para>
+		<para>다음은 SimpleMediaTypeViewResolver를 사용할 경우의 설정 예이다.
+			<programlisting language="xml"><![CDATA[<bean id="jstlViewResolver" class="org.springframework.web.servlet.view.UrlBasedViewResolver">
+	<property name="viewClass" value="org.springframework.web.servlet.view.JstlView" />
+	<property name="prefix" value="/WEB-INF/jsp/"/>
+	<property name="suffix" value=".jsp"/>
+</bean>
+
+<bean class="]]><emphasis role="bold">org.anyframe.spring.web.servlet.view.SimpleMediaTypeViewResolver</emphasis><![CDATA[">
+	<property name="mediaTypeMappings">
+		<map>
+			<entry key="html" value-ref="jstlViewResolver"/>
+			<entry key="xml" value-ref="xmlView"/>
+			<entry key="xmls" value-ref="xmlListView"/>
+			<entry key="json" value-ref="jsonView"/>
+		</map>
+	</property>
+	<property name="defaultMapping" ref="jstlViewResolver"/>
+	<property name="order" value="0"/>
+</bean>
+
+<bean name="xmlView" class="org.springframework.web.servlet.view.xml.MarshallingView">
+	<property name="marshaller" ref="marshaller" />
+</bean>
+
+<bean name="xmlListView" class="org.springframework.web.servlet.view.xml.MarshallingView">
+	<property name="modelKey" value="resultPage" />
+	<property name="marshaller" ref="marshaller" />
+</bean>
+
+<bean name="jsonView" class="org.springframework.web.servlet.view.json.MappingJacksonJsonView"/>
+
+<bean class="org.springframework.web.servlet.mvc.annotation.AnnotationMethodHandlerExceptionResolver">
+	<property name="order" value="0" />
+</bean>
+
+<oxm:jaxb2-marshaller id="marshaller">
+	<oxm:class-to-be-bound name="org.anyframe.springrest.example.springrest.domain.Movie" />
+	<oxm:class-to-be-bound name="org.anyframe.pagination.Page" />
+</oxm:jaxb2-marshaller>
+
+<bean id="castorMarshaller" class="org.springframework.oxm.castor.CastorMarshaller" />
+    ]]></programlisting>
+		</para>
+		<para>SimpleMediaTypeViewResolver는 요청받은 request uri의 media type(=extension)을 서비스할 ViewResolver 또는 View를 직접 지정하는 mapping 기반의 설정 방식을 통해 직관적이고 비교적 간단한 설정으로 Multiple Representation을 제공하도록 설계되었다. 
+		</para>
+		<para>위에서 언급한 SimpleMediaTypeViewResolver에 관한 샘플 코드는 본 섹션 내의 다운로드 - <ulink url="http://dev.anyframejava.org/docs/anyframe/plugin/optional/springrest/1.1.1-SNAPSHOT/reference/sample/anyframe-sample-springrest.zip">anyframe-sample-springrest</ulink>를 통해 다운로드받을 수 있다.</para>
+	</note>
+</chapter>

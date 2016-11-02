@@ -1,0 +1,62 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<queryservice xmlns="http://www.anyframejava.org/schema/query/mapping"
+              xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+              xsi:schemaLocation="http://www.anyframejava.org/schema/query/mapping http://www.anyframejava.org/schema/query/mapping/anyframe-query-mapping-1.0.xsd ">
+
+    <queries>
+        <query id="dynamicWithForEachVariableList" isDynamic="true">
+            <statement>
+                <![CDATA[
+				SELECT LOGON_ID, NAME 
+				FROM TB_NP_USER 
+				WHERE LOGON_ID IN (
+					#foreach ($logonId in $logonIdList) 
+						#if ($velocityCount == 1 ) 
+							'$logonId' 
+						#else 
+							, '$logonId' 
+						#end 
+					#end 
+				) ORDER BY NAME
+				]]>
+            </statement>
+        </query>
+
+        <query id="dynamicQueryUsingTextReplaceVariableList" isDynamic="true">
+            <statement>
+                <![CDATA[
+				SELECT LOGON_ID FROM {{schema}} ORDER BY {{sortColumn}}
+				]]>
+            </statement>
+        </query>
+
+        <query id="dynamicQueryUsingIfVariableList" isDynamic="true">
+            <statement>
+                <![CDATA[
+				SELECT LOGON_ID, NAME 
+				FROM TB_NP_USER 
+				#if( $SEARCH_CONDITION.equals('LOGON_ID') )
+					WHERE LOGON_ID = :SEARCH_KEYWORD
+				#elseif( $SEARCH_CONDITION.equals('NAME') )
+					WHERE NAME = :SEARCH_KEYWORD
+				#end
+				]]>
+            </statement>
+        </query>
+
+        <query id="dynamicQueryUsingIfDataSet" isDynamic="true">
+            <statement>
+                <![CDATA[
+				SELECT LOGON_ID, NAME 
+				FROM TB_NP_USER 
+				#if( $SEARCH_CONDITION.equals('LOGON_ID') )
+					WHERE LOGON_ID = :SEARCH_KEYWORD
+				#elseif( $SEARCH_CONDITION.equals('NAME') )
+					WHERE NAME = :SEARCH_KEYWORD
+				#end
+				]]>
+            </statement>
+        </query>
+
+    </queries>
+</queryservice>

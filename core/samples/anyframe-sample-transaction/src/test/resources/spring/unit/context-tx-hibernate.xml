@@ -1,0 +1,42 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:jee="http://www.springframework.org/schema/jee"
+	xsi:schemaLocation="
+       http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-4.0.xsd
+       http://www.springframework.org/schema/jee http://www.springframework.org/schema/jee/spring-jee-4.0.xsd">
+
+	<bean id="someDAO"
+		class="org.anyframe.sample.transaction.JdbcSomeDAO">
+		<property name="dataSource" ref="dataSource" />
+	</bean>
+
+	<!-- Database Datasource configuration -->
+
+
+	<jee:jndi-lookup id="dataSource" jndi-name="jdbc/MyDataSource"
+		cache="true" resource-ref="true" lookup-on-startup="false"
+		expected-type="javax.sql.DataSource"
+		proxy-interface="javax.sql.DataSource" />
+
+
+	<bean id="sessionFactory"
+		class="org.springframework.orm.hibernate.LocalSessionFactoryBean">
+		<property name="dataSource" ref="dataSource" />
+		<property name="mappingResources">
+			<list>
+				<value>sp.hbm.xml</value>
+			</list>
+		</property>
+		<property name="hibernateProperties">
+			<value>hibernate.dialect=${hibernate.dialect}</value>
+		</property>
+	</bean>
+
+
+	<bean id="txManager"
+		class="org.springframework.orm.hibernate.HibernateTransactionManager">
+		<property name="sessionFactory" ref="sessionFactory" />
+	</bean>
+
+</beans>

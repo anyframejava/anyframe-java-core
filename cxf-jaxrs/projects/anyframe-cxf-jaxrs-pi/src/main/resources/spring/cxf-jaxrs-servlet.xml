@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+ xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+  xmlns:jaxrs-client="http://cxf.apache.org/jaxrs-client"
+   xmlns:jaxrs="http://cxf.apache.org/jaxrs"
+	xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd
+	 http://cxf.apache.org/jaxrs-client http://cxf.apache.org/schemas/jaxrs-client.xsd
+	  http://cxf.apache.org/jaxrs http://cxf.apache.org/schemas/jaxrs.xsd">
+
+	<jaxrs-client:client id="cxfJaxRsClientMovieService" address="http://localhost:8080/anyframe-cxf-jaxrs-pi/cxf-jaxrs/movie" serviceClass="org.anyframe.plugin.cxf.jaxrs.moviefinder.service.MovieService">
+	</jaxrs-client:client>
+
+	<!--
+		This ExceptionResolver should be integrated with the exception
+		resolver of foundation plugin on real project
+	-->
+	<bean id="cxfJaxRsExceptionResolver" class="org.springframework.web.servlet.handler.SimpleMappingExceptionResolver">
+		<property name="exceptionMappings">
+			<props>
+				<prop key="javax.ws.rs.WebApplicationException">cxf-jaxrs/common/error</prop>
+			</props>
+		</property>
+		<property name="defaultErrorView" value="forward:/sample/common/error.jsp" />
+		<property name="order" value="1" />
+	</bean>
+
+</beans>

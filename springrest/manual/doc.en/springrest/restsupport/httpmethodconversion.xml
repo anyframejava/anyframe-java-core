@@ -1,0 +1,183 @@
+<chapter id="springrest_restsupport_httpmethodconversion">
+	<title>HTTP Method Conversion</title>
+	
+	<section id="springrest_restsupport_httpmethodconversion_jspformsubmit">
+		<title>When using HTML <![CDATA[<form>]]></title>
+	
+		<para>
+			As explained before, REST architecture recommends using all methods defined in HTTP, 
+			but HTML based on browser supports only two, GET and POST. 
+			PUT and DELETE can be used with JavaScript but require a complicated coding process. 
+			Or, simply do a POST with the 'real' method as an additional parameter modeled as a hidden input field in an HTML form that defines the actual HTTP Method. 
+		</para>
+		<para>
+			Spring 3 provides <emphasis role="bold">HiddenHttpMethodFilter</emphasis> 
+			and supports <emphasis role="bold">the conversion of HTTP Method by finding hidden input parameter that defines the actual HTTP Method.</emphasis> 
+			<emphasis role="bold">If you add HiddenHttpMethodFilter in web.xml, 
+			HTTP Method is changed to '_method' value when HTTP Method is POST and parameter called '_method' exists. </emphasis>
+			To use parameter name other than '_method', define using methodParam property.
+		</para>
+		
+		<para>
+			In Spring, <![CDATA[<form:form>]]> adds automatically hidden input field that defines the actual HTTP Method, 
+	        making it more convenient to use.
+			<programlisting language="xml"><![CDATA[<form:form method="delete">
+    <input type="submit" value="Delete Movie"/>
+</form:form>]]></programlisting>
+		When the above is written in JSP, internally, "_method=delete" is transferred using POST.
+		</para>
+		<important>
+			<title>Notes for using HiddenHttpMethodFilter</title>
+			<para>
+				When using HiddenHttpMethodFilter, 
+				note that the previous MultipartResolver configuration for file upload should change 
+				because HiddenHttpMethodFilter does not run properly when enctype of form is defined as 'multipart/form-data' for file upload.
+			</para>
+			<para>
+				Define <ulink url="http://static.springsource.org/spring/docs/3.0.x/javadoc-api/org/springframework/web/multipart/support/MultipartFilter.html">MultipartFilter</ulink> 
+				before HiddenHttpMethodFilter in web.xml, 
+				and set MultipartResolver as 'filterMultipartResolver' Bean name in root Application Context of Spring 
+				for HiddenHttpMethodFilter to run properly. 
+			</para>
+			<para>
+				The following is the defining of MultipartFilter and HiddenHttpMethodFilter in web.xml.
+				<programlisting language="xml"><![CDATA[<filter>
+    <filter-name>multipartFilter</filter-name>
+    <filter-class>org.springframework.web.multipart.support.MultipartFilter</filter-class>
+</filter>
+<filter-mapping>
+    <filter-name>multipartFilter</filter-name>
+    <url-pattern>/springrest/*</url-pattern>
+</filter-mapping>
+<filter>
+    <filter-name>httpMethodFilter</filter-name>
+    <filter-class>org.springframework.web.filter.HiddenHttpMethodFilter</filter-class>
+</filter>
+<filter-mapping>
+    <filter-name>httpMethodFilter</filter-name>
+    <url-pattern>/springrest/*</url-pattern>
+</filter-mapping>]]></programlisting>			
+	   		</para>
+	   		<para>
+	   			The following is MultipartResolver configuration defined in context-springrest-multipart.xml.
+	   			<programlisting language="xml"><![CDATA[<bean id="filterMultipartResolver" class="org.springframework.web.multipart.commons.CommonsMultipartResolver">
+    <property name="maxUploadSize">
+        <value>10000000</value>
+    </property>
+</bean>]]></programlisting>
+				When MultipartResolver Bean is defined in a name other than 'filterMultipartResolver', 
+				'multipartResolverBeanName' is set using <![CDATA[<init-param>]]> when defining MultipartFilter in web.xml.
+	   		</para>
+		</important>
+	</section>
+	
+	<section id="springrest_restsupport_httpmethodconversion_callajax">	
+		<title>Ajax Calls</title>
+		<para>
+			The above process when you use the Spring form tag library of JSP-based, is used for minimize the javascript code. Therefore, including the URL that requests Query String becomes(Servlet Filter in the way they see the Request Parameter value).
+			If you want to implement asynchronous RestFul API has a "? _method = PUT" inconvenient to have to add a Query String named in the URL.
+		</para>
+		
+		<para>
+			For a more <emphasis role="bold">RESTful architecture implementation</emphasis> it would introduce another way to specify the HTTP Method.
+			Request Method This method is a way of financing using the HTTP Header.
+			The Client named in the code, <emphasis role="bold">add a custom header HTTP Header 'x-http-method-override'</emphasis>,
+			and in the Server code, just <emphasis role="bold">add the Servlet Filter to redefine the Request Method Reads the header value.</emphasis>
+		</para>
+		
+		<para>
+			Specify the HTTP Method to the "POST" and add the <emphasis role="bold">"x-http-method-override"</emphasis> the Request header.
+		</para>
+		
+		<itemizedlist>
+			<listitem>
+				<para><emphasis role="bold">Ajax calls in Javascript</emphasis></para>
+				<para>Normal Javascript</para>
+				<programlisting language="javascript"><![CDATA[
+var data = {title: "Alice"};
+var xhr;
+if (window.XMLHttpRequest){ //code for IE7+, Firefox, Chrome, Opera, Safari
+    xhr=new XMLHttpRequest();
+}else{ // code for IE6, IE5
+    xhr=new ActiveXObject("Microsoft.XMLHTTP");
+}
+xhr.open("POST" , encodeURI(url) , true);
+xhr.setRequestHeader("Content-Type", "application/json");
+xhr.setRequestHeader("x-http-method-override", "PUT");
+xhr.onreadystatechange = function() {
+    if(xhr.readyState == 4 && xhr.status == 200){
+        alert(xhr.responseText);
+    }
+}
+xhr.send(JSON.stringify(data));]]></programlisting>
+				<para>jQuery</para>
+				<programlisting language="javascript"><![CDATA[
+$.ajax({
+   type : "POST",
+   url : url,
+   dataType : "json",
+   contentType : "application/json; charset=UTF-8",
+   headers : {"x-http-method-override" : "PUT" },
+   data : {title: "Alice"},
+   success : function(data) {
+      console.log(data);
+   },
+   error : function(data){
+     console.log("ERROR");
+   }
+});]]></programlisting>
+			</listitem>
+			<listitem>
+				<para><emphasis role="bold">Writing custom Filter class(see HiddenHttpMethodFilter classes provided by the Spring)</emphasis></para>
+				<para>Implement method doFilterInternal of the abstract class OncePerRequestFilter
+					<programlisting language="java"><![CDATA[
+public class CustomHttpMethodFilter extends OncePerRequestFilter {
+	public static final String DEFAULT_METHOD_HEADER = "x-http-method-override";
+	private String methodParam = DEFAULT_METHOD_HEADER;
+
+	public void setMethodParam(String methodParam) {
+		Assert.hasText(methodParam, "'methodParam' must not be empty");
+		this.methodParam = methodParam;
+	}
+
+	protected void doFilterInternal(HttpServletRequest request,
+			HttpServletResponse response, FilterChain filterChain)
+			throws ServletException, IOException {
+		String paramValue = request.getHeader(this.methodParam);
+		if (("POST".equals(request.getMethod())) && (StringUtils.hasLength(paramValue))) {
+			String method = paramValue.toUpperCase(Locale.ENGLISH);
+			HttpServletRequest wrapper = new HttpMethodRequestWrapper(request, method);
+			filterChain.doFilter(wrapper, response);
+		} else {
+			filterChain.doFilter(request, response);
+		}
+	}
+.
+.
+.]]></programlisting>
+				</para>
+			</listitem>
+			<listitem>
+				<para><emphasis role="bold">Add servlet filter on web.xml</emphasis></para>
+				<programlisting language="xml"><![CDATA[
+<filter>
+        <filter-name>httpMethodFilter</filter-name>
+        <filter-class>anyframe.springrest.web.filter.CustomHttpMethodFilter</filter-class>
+</filter>
+<filter-mapping>
+        <filter-name>httpMethodFilter</filter-name>
+        <url-pattern>/springrest/*</url-pattern>
+</filter-mapping>]]></programlisting>
+			</listitem>
+			<listitem>
+				<para><emphasis role="bold">Define Controller RequestMapping</emphasis></para>
+				<programlisting language="java"><![CDATA[
+@RequestMapping(value = "/{movieId}", method = RequestMethod.PUT, headers = "Content-Type=application/json")
+public ResponseEntity<Movie> updateForm(@RequestBody Movie updateMovie) throws Exception {
+    movieService.update(updateMovie);
+    return new ResponseEntity<Movie>(movie, HttpStatus.OK);
+}]]></programlisting>
+			</listitem>
+		</itemizedlist>
+	</section>
+</chapter>

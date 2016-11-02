@@ -1,0 +1,268 @@
+<chapter id="simpleweb_controller">
+	<title>Controller</title>
+	<para>
+		When developing web application based on Spring MVC, 
+		three files that are JSP file, Controller class, Spring configuration file (*-servlet.xml) should be developed,  
+		and Tiles Definition is defined according to the number of views that used tiles. 
+		Developing Controller class and Spring configuration file, and Tiles definition repeatedly for similar works 
+		can require a long period of time and increase the number of files to manage. 
+		Anyframe provides common Controller class and Tag Library so that developer does not have to 
+		develop Controller class every time and making no need for Spring property definition. 
+		In this chapter, we will look into common Controller class provided by Anyframe and 
+		extension points that can be used to extend each Controller class. 
+		
+	</para>
+	<section id="simpleweb_controller_abstractservicecontroller">
+		<title>AbstractServiceController</title>
+		<para>
+			AbstractServiceController inherits the MultiActionController provided in Spring. 
+			It overrides handleRequest(request, response) method and processes requests. 
+			The following is a part of the handleRequest() method. 
+		</para>
+	<programlisting language="java"><![CDATA[public ModelAndView handleRequest(HttpServletRequest request,
+		HttpServletResponse response) throws Exception {
+
+	// 1. preventing duplicated submission.
+	checkDuplicatedSubmission(request);
+
+	// 2. execute service method and get view name
+	Map viewInfo = executeServiceAndReturnView(request);
+	
+	String viewName = (String)viewInfo.get("VIEW_NAME");
+
+	if (viewInfo.get("INPUT_PAGE") == null)
+		// set tiles attribute names and values
+		setTilesAttributes(request, null);
+
+	// 3. set attributes for empty command object
+	setCommandAttributes(request);
+
+	// 4. set attributes for initial data
+	setInitdataAttributes(request);
+	
+	ModelAndView mav = new ModelAndView(viewName);
+	
+	return mav;
+}]]></programlisting>
+	<para>
+		Provides common task for work that is done by general Controller class, 
+		and should be implemented by extending data binding logic according to Transfer object type. 
+		Anyframe extends and provides SimpleServiceController, SimpleMapServiceController, and SimpleJSONController 
+		which implement the data binding logic for VO, Map, and JSON object. 
+		The basic functions for Controller class provided by AbstractServiceController are as follows. 
+	</para>
+			<itemizedlist>
+				<listitem>
+					<para>Form double submission prevention</para>
+				</listitem>
+				<listitem>
+					<para>Tiles attribute value change function using request parameter value</para>
+				</listitem>
+				<listitem>
+					<para>Initial data setting needed in view</para>
+				</listitem>
+				<listitem>
+					<para>ModelAttribute setting needed in form</para>
+				</listitem>
+				<listitem>
+					<para>Data binding (Separate controller provided according to VO, Map, JSON object type)</para>
+				</listitem>
+				<listitem>
+					<para>Formatting application for Date type data</para>
+				</listitem>
+				<listitem>
+					<para>Server side validation (Validator execution)</para>
+				</listitem>
+				<listitem>
+					<para>Business service call</para>
+				</listitem>
+				<listitem>
+					<para>Showing View Return (In case of handling logic type according to method return type, 
+					e.g., anyframe.comon.Page, page object setting)</para>
+				</listitem>
+			</itemizedlist>
+			<note>
+			<title>BeanMethodRepository 설정</title>
+			<para>AbstractServiceController는 사용자가 입력한 Service Bean의 id 혹은 name과 메소드 정보를 가지고 
+			해당 서비스의 메소드를 찾아 실행 시켜주는 기능을 제공한다.
+			이 때, Bean으로 정의된 Service의 정보와 메소드 정보는 BeanMethodRepository에서 찾게 된다. 
+			이에 BeanMethodRepository를 ApplicationContext의 Bean으로 정의 하고
+			AbstractServiceController를 상속받은 모든 클래스에서는 beanMethodsRepo 속성을 설정하여
+			 BeanMethodRepository를 인젝션 할 수 있게 해줘야 한다.
+			다음은 simpleweb-plugin 설치로 추가된 context-simpleweb.xml 파일의 일부이다.</para>
+			<programlisting language="xml"><emphasis role="bold"><![CDATA[<bean id="beanMethodsRepo" class="org.anyframe.simpleweb.beans.support.BeanMethodRepository"/>]]></emphasis></programlisting>
+			<para>그러므로, AbstractServiceController를 확장한, SimpleServiceController, SimpleMapController, SimpleJSONContoller등의 
+			Controller 클래스를 사용할 경우 Controller Bean 설정에 beanMethodsRepo와의 Dependency를 정의해줘야 한다.</para>
+			<programlisting language="xml"><![CDATA[<!-- simple direct service controller -->
+<bean name="/simple.do" class="org.anyframe.simpleweb.controller.SimpleServiceController">
+	]]><emphasis role="bold"><![CDATA[<property name="beanMethodsRepo" ref="beanMethodsRepo" />]]></emphasis><![CDATA[
+</bean>]]></programlisting>
+		</note>
+	</section>
+	
+	<section id="simpleweb_controller_simplemapservicecontroller">
+		<title>SimpleMapServiceController</title>
+		<para>
+			SimpleMapServiceController is a Controller class which extends AbstractServiceController 
+			that supports data binding when using Transfer Object as map type object. 
+			It binds values transferred into HttpServletRequest parameter as argument type object (in this case, map object) 
+			of method information. 
+			When using map type object as transfer object, when you want to change data binding method or add specific work, 
+			or when you want to change the function of AbstractServiceController, 
+			extend SimpleMapServiceController class. 
+			The following is a part of simpleweb-map-servlet.xml Spring configuration file added by Simpleweb Plugin installation. 
+		</para>
+		<programlisting language="xml"><![CDATA[<!-- simple direct service controller -->
+<bean name="/simplemap.do" class="]]><emphasis role="bold"><![CDATA[org.anyframe.simpleweb.controller.SimpleMapServiceController]]></emphasis><![CDATA[">
+	<property name="beanMethodsRepo" ref="mapBeanMethodsRepo" />
+</bean>]]></programlisting>
+		<para>
+			When defined as above, “/simplemap.do” request is processed by SimpleMapServiceController. 
+		</para> 
+	</section>
+	
+	<section id="simpleweb_controller_simplejsoncontroller">
+		<title>SimpleJSONController</title>
+		<para>
+			SimpleJSONController is developed to support component of jQuery that uses JSON object as data type. 
+			Because SimpleJSONController inherits SimpleServiceController, VO object is used for Transfer Object of Service Layer. 
+			Of course, when using SimpleJSONController to integrate jQuery, previous business service can be called 
+			without service layer change or additional coding. 
+			Currently, Anyframe Simpleweb Plugin provides Grid, Autocomplete, UI, Tree, Combobox component sample of jQuery, 
+			and SimpleJSONContorller sets data mainly for Grid(jqgrid plugin) and Autocomplete(autocomplete plugin) function. 
+			When drawing grid on grid component (jqgrid plugin) of jQuery, 
+			model object should be set in map format with key and value pair which can be recognized on grid 
+			that cannot receive page object returned after business service. 
+			The following is a part of SimpleJSONController class. 
+		
+		</para>
+		<programlisting language="java"><![CDATA[if (methodInfo.getOutputParam()[0].getName().equals(
+		ANYFRAME_COMMON_PAGE)) {
+	//.... 
+	jsonModel.put("page", ((Page) result).getCurrentPage() + "");		
+	jsonModel.put("total", ((Page) result).getMaxPage() + "");
+	jsonModel.put("records", ((Page) result).getTotalCount());
+	jsonModel.put("rows", ((Page) result).getList());
+}]]></programlisting>
+	<para>
+		As seen in the above code, 
+		after carrying out business service, 
+		when the return value is anyframe.common.Page type, 
+		the jsonModel object is set in key value that can be recognized on Grid of jQuery. 
+		Also, when using Autocomplete component, set key value data which recognized data to be showed on Autocomplete component. 
+		
+		
+	</para>
+	<programlisting language="java"><![CDATA[jsonModel.put("autoData", resultValue);]]></programlisting>
+	<para>
+		
+		This jsonModel object is transferred to view after being set as the model object of controller. 
+		The code above is already implemented in SimpleJSONContorller, 
+		so developer can use jQuery Grid and AutoComplete functions without additional coding. 
+		When introducing another component that needs data with specific key value, 
+		or when additional functions are needed, the SimpleJSONController can be used after extension. 
+		The following is a part of simpleweb-json-servlet.xml Spring configuration file added by Simpleweb Plugin installation. 
+	
+	</para>
+	<programlisting language="xml"><![CDATA[<bean name="/simplejson.do" class="]]><emphasis role="bold"><![CDATA[org.anyframe.simpleweb.controller.SimpleJSONController]]></emphasis><![CDATA[">
+	<property name="beanMethodsRepo" ref="jsonBeanMethodsRepo" />
+</bean>]]></programlisting>
+	<para>
+		If defined as above, “simplejson.do” request is processed by SimpleJSONController.
+	</para>
+	</section>
+	
+	<section id="simpleweb_controller_simplejsontreecontroller">
+		<title>SimpleJSONTreeController</title>
+		<para>
+			SimpleJSONTreeController is a common controller for supporting jQuery tree component (jstree). 
+			SimpleJSONTreeController is implemented by inheriting SimpleJSONController.  
+			Basically, in order to set necessary node information needed in tree, 
+			domain objects that can be recognized by tree component should be used. 
+			Developers should use Attributes, Data, JStreeNode domain classes which are provided by Anyframe as domain objects, 
+			and extends and adds related classes when additional Attribute setting is needed. 
+			SimpleJSONTreeController basically has a node id that the user clicks to call business service, 
+			sets data to be shown on appropriate tree according to id. 
+			In this case, setting tree data can change according to the view scenario, 
+			so developer should inherit SimpleJSONTreeController class and override setTreeData() method to implement. 
+			The following is a part of MovieTreeController.java which extends and implements SimpleJSONTreeController 
+			that is added by Simpleweb Plugin installation. 
+			
+		<programlisting language="java"><![CDATA[public class MovieTreeController extends ]]><emphasis role="bold"><![CDATA[SimpleJSONTreeController]]></emphasis><![CDATA[ {
+
+	@Override
+	protected void ]]><emphasis role="bold"><![CDATA[setTreeData]]></emphasis><![CDATA[(ArrayList<JSTreeNode> listNode, List jsTreeList,
+			String id) throws Exception {
+		JSTreeNode node;
+		Attributes attr;
+		String data;
+		if (id.equals("0")) {
+			//...
+			//  If id is 0, implement logic that sets Tree data.
+			}
+		} else {
+			//...
+			// If id is not 0, implement logic that sets Tree data.
+			}
+		}
+	}
+}]]></programlisting>
+		</para>
+	</section>
+	
+	<section id="simpleweb_controller_fileuploadcontroller">
+		<title>FileUploadController</title>
+		<para>
+			Use the uploadify component of jQuery to upload selected file on a particular path, 
+			set file information and return to model object. 
+			The following is a part of the FileUploadController code. 
+			
+		</para>
+		<programlisting language="java"><![CDATA[public class FileUploadController extends AbstractController{
+	protected IdGenService idGenService;
+
+	public void setIdGenerationService(IdGenService idGenService) {
+		this.idGenService = idGenService;
+	}
+	
+	private String uploadPath = "/upload/";
+	
+	public void setUploadPath(String uploadPath){
+		this.uploadPath = uploadPath;
+	}
+	
+	@Override
+	protected ModelAndView handleRequestInternal(HttpServletRequest request,
+			HttpServletResponse response) throws Exception {
+
+		MultipartFile file = (MultipartFile) ((MultipartHttpServletRequest)request).getFile("fileData");
+		String fileDir = request.getParameter("fileDir");
+		
+		String destDir = request.getSession().getServletContext().getRealPath(
+				uploadPath);
+		
+		if (fileDir == null) {
+			fileDir = idGenService.getNextStringId();
+			FileUtils.forceMkdir(new File(destDir + "/" + fileDir));
+		}
+
+		file.transferTo(new File(destDir + "/" + fileDir, file.getOriginalFilename()));
+		
+		Map<String, Object> result = new HashMap<String, Object>();
+		result.put("fileNm", file.getOriginalFilename());
+		result.put("fileSize", file.getSize());
+		result.put("fileDir", fileDir);
+
+		ModelAndView mav = new ModelAndView("jsonView");
+		mav.addObject("uploadResult", result);
+
+		return mav;
+	}
+
+}]]></programlisting>
+	<para>
+		As can be seen in the above code, obtain "fileData" as MultipartFile type object 
+		and "fileDir" of request parameter, execute file upload logic, set "fileNm", "fileSize", "fileDir" data, and return the result on view.
+	</para>
+	</section>
+</chapter>

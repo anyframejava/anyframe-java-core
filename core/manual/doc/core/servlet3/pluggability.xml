@@ -1,0 +1,185 @@
+<chapter id="core_servlet3_pluggability">
+	<title>Pluggability</title>
+	<para>
+		Pluggability는 web fragment를 이용한 web.xml의 모듈화, 정적인 자원에 대한 공유 기능 등 을 제공하는 Servlet 3.0에서 지원하는 새로운 기능이다.
+	</para>
+	
+	<section id="core_servlet3_pluggability_webfragment">
+		<title>Web Fragment</title>
+		
+		<para>
+			프레임워크(혹은 라이브러리, 이하 프레임워크)를 사용하기 위해서 web.xml(웹 어플리케이션 배포 기술자) 파일에 해당 프레임워크에 대한 설정을 추가 해야 하는 경우가 있다.
+			Web Fragment는 이러한 프레임워크에 대한 설정을 web.xml 파일에서 분리 시켜 모듈화 하고 프레임워크에 대한 설정은 해당 프레임워크 내에
+			설정 할 수 있도록 해준다.
+				
+			web-fragment.xml은 프레임워크에 대한 descriptor 파일이고 해당 프레임워크의 jar/META-INF 디렉토리에 위치 한다.
+		</para>
+		<para>
+			다음 그림은 web-fragment.xml 파일의 위치를 보여 주고 있다.
+		</para>
+		
+		<mediaobject>
+			<imageobject>
+				<imagedata align="center" fileref="../image/core/servlet3/web-fragment.jpg"/>
+			</imageobject>
+			<textobject>
+				<phrase>web-fragment.xml 파일의 위치</phrase>
+			</textobject>
+		</mediaobject>
+		
+		<para>
+			web-fragment.xml 파일의 설정 예제는 다음과 같다.
+		</para>
+		
+		<programlisting language="xml"><![CDATA[<web-fragment>
+	<name>Logging-Filter</name>
+	<filter>
+		<filter-name>loggingFilter</filter-name>
+		<filter-class>org.anyframe.sample.servletannotation.web.filter.LoggingFilter</filter-class>
+	</filter>
+	<filter-mapping>
+		<filter-name>loggingFilter</filter-name>
+		<url-pattern>/*</url-pattern>
+	</filter-mapping>
+</web-fragment>]]></programlisting>
+
+		<para>
+			하나의 어플이케이션에서 다수의 web-fragment.xml 이 있는 경우 각각의 web-fragment.xml 파일에 대한 구분은  <![CDATA[<name>]]> 태그를 이용한다.
+			여러개의 web-fragment가 사용되는 경우 적용되는 순서(ex. 서블릿 적용 우선 순위 등)를 지정 할 수 있다.
+			web.xml 파일에 지정하는 <![CDATA[<absolute-ordering>]]> 방식(절대적인 순서 지정)과 
+			web-frafment.xml 파일에 지정하는  <![CDATA[<ordering>]]> 방식(상대적인 순서 지정) 방식이 있다.
+			우선 순위를 지정하는 방식에 대한 사용 예제는 다음과 같다.
+		</para>
+		
+		<itemizedlist>
+			<listitem>
+				<para>
+					<emphasis role="bold">absolute-ordering</emphasis>
+				</para>
+			
+				<programlisting language="xml"><![CDATA[<web-app>
+	<absolute-ordering>
+		<name>MyFragment3</name>
+		<name>MyFragment2</name>
+	</absolute-ordering>
+	...
+</web-app>]]></programlisting>
+			</listitem>
+		
+			<listitem>
+				<para>
+					<emphasis role="bold">ordering</emphasis>
+				</para>
+			
+				<programlisting language="xml"><![CDATA[<web-fragment>
+	<name>MyFragment1</name>
+	<ordering>
+		<after>
+			<name>MyFragment2</name>
+		</after>
+	</ordering>
+	...
+</web-fragment>]]></programlisting>
+
+				<programlisting language="xml"><![CDATA[<web-fragment>
+	<name>MyFragment2</name>
+	..
+</web-fragment>]]></programlisting>
+
+				<programlisting language="xml"><![CDATA[<web-fragment>
+	<name>MyFragment3</name>
+	<ordering>
+		<before>
+			<others/>
+		</before>
+	</ordering>
+	...
+</web-fragment>]]></programlisting>
+			</listitem>
+		</itemizedlist>
+	
+		<para>
+			위와 같이 상대적인 순서를 지정 하는 경우 해당 fragment의 적용 순서는 MyFragment3, MyFragment2, MyFragment1 이 된다.
+		</para>
+		
+		<note>
+			<para>
+				web.xml 파일의 root 태그인 <![CDATA[<web-app>]]> 태그의 속성인 metadata-complete 속성을 정의 함으로 써 web-fragment 사용 여부를 결정 할 수 있다.
+				해당 속성을 정의 하지 않거나 false로 설정 하는 경우 web-fragment를 사용하게 되고 true인 경우는 web-fragment를 사용하지 않는다.
+			</para>
+		</note>
+	</section>
+	
+	<section id="core_servlet3_pluggability_resourcesharing">
+		<title>Resource Sharing</title>
+		
+		<para>
+			웹 어플리케이션에서 사용되는 정적인 자원(html, css, js, images, 정적인 일부 jsp 등)들을 document root에 위치 시키지 않고 jar 파일로 관리가 가능하다. 이 경우 jar 파일은 WEB-INF/lib 에 위치 하게 되며 정적인 자원들은
+			WEB-INF/lib/[*.jar]/META-INF/resources 하위로 위치하게 된다. ServletContext 인터페이스에서 제공하는 getResource, getResourceAsStream 메소드를 통해서 해당 자원들을 접근 할 수 있다.
+			정적인 자원들을 jar 파일로 관리하게 되면 다수의 프로젝트에서 정적인 자원에 대한 공유가 필요 한 경우 등에서 유용하게 사용을 할 수 있다. 
+		</para>
+		
+		<mediaobject>
+			<imageobject>
+				<imagedata align="center" fileref="../image/core/servlet3/resource-sharing.jpg"/>
+			</imageobject>
+			<textobject>
+				<phrase>공유되는 정적인 자원 위치</phrase>
+			</textobject>
+		</mediaobject>
+		
+		<para>
+			위와 같이 정적인 자원들이 반드시 document root에 위치 할 필요가 없는 것이다. 위와 같이 사용을 하는 경우 anyframe.jsp 파일은 http://localhosT:8080/anyframe-sample-servlet-pluggablity/anyframe.jsp 로 접근이 가능하다. 
+			단, Resource Sharing의 경우는 정적인 자원(html, css, js, images, 정적인 일부 jsp 등)에 대해서만 처리가 가능하다. 동적으로 처리되어야 하는 jsp와 같은 경우(정적인 jsp는 사용 가능)는 Resource Sharing 을 사용 할 수 없다.
+		</para>
+	</section>
+	<section id="core_servlet3_pluggability_sample_resources">
+		<title>Resources</title>
+		<para>
+			<itemizedlist>
+				<listitem>
+					<para>다운로드</para>
+					<para>
+						다음의 예제는 <link linkend ="core_servlet3_pluggability">Pluggability</link> 에 소개한 내용으로 샘플 코드를 작성한 것이다. 별도로 배포하는 필터에 대한 설정을 프로젝트내의 anyframe-sample-servlet-filter-1.6.1-SNAPSHOT.jar 파일안에
+						설정함으로서 Servlet 3의 특징인 pluggability 를 보여주고 있다. 실행 방법은 다음과 같다.
+					</para>
+					<itemizedlist>
+						<listitem>
+							<para>Eclipse 기반 실행</para>
+							<para>
+							Eclipse에서 압축 해제 프로젝트를 import한 후, 해당 프로젝트에 대해 마우스 오른쪽 버튼을 클릭 하고 컨텍스트 메뉴에서 Maven > Enable Dependency Management를
+							선택하여 컴파일 에러를 해결한다. 그리고 해당	프로젝트에 대해 마우스 오른쪽 버튼을 클릭한 후, 컨텍스트 메뉴에서 Run As > Run on Server (Tomcat 기반)를 클릭한다. 
+							Tomcat Server가 정상적으로 시작되었으면 브라우저를 열고 주소창에 http://localhost:8080/anyframe-sample-servlet-pluggablity/ ( 포트는 사용자가 정의한 포트) 를 입력하여 실행 결과를 확인한다.
+							</para>
+						</listitem>									
+					</itemizedlist>						
+					<informaltable>
+						<caption>Download List</caption>
+						<tgroup cols="2">
+							<colspec colnum="1" colname="col1" colwidth="4*"/>
+							<colspec colnum="2" colname="col2" colwidth="6*"/>
+							<thead>
+								<row>
+									<entry align="center">Name</entry>
+									<entry align="center">Download</entry>
+								</row>
+							</thead>
+							<tbody>										
+								<row>
+									<entry align="center">anyframe-sample-servlet-filter.zip</entry>
+									<entry align="center"><ulink url="http://dev.anyframejava.org/docs/anyframe/plugin/essential/core/1.6.1/reference/sample/anyframe-sample-servlet-filter.zip">Download</ulink>
+									</entry>
+								</row>
+								<row>
+									<entry align="center">anyframe-sample-servlet-pluggability.zip</entry>
+									<entry align="center"><ulink url="http://dev.anyframejava.org/docs/anyframe/plugin/essential/core/1.6.1/reference/sample/anyframe-sample-servlet-pluggablity.zip">Download</ulink>
+									</entry>
+								</row>	
+							</tbody>
+						</tgroup>
+					</informaltable> 
+				</listitem>
+			</itemizedlist>
+		</para>
+	</section>
+</chapter>

@@ -1,0 +1,151 @@
+<chapter id="securedresource">
+	<title>권한 관리</title>
+	<para>
+		이번 장에서는 DB를 기반으로 보호되어지는 웹 자원(Secured Resource)에 대한 권한 관리를 담당하는 IAM의 기본 기능들을 중심으로 
+		권한 설정 및 관리 방법을 설명 하도록 한다.  
+	</para>
+	<mediaobject>
+		<imageobject>
+			<imagedata align="center" fileref="../image/iam/secured_resource_01.png" />
+		</imageobject>
+		<textobject>
+			<phrase>
+				Web Application 가동 후, IAM SAMPLE 메뉴를 클릭하면 나오는 화면으로 로그인을 위해 하단 User / Password 입력상자가 있다.
+			</phrase>
+		</textobject>
+	</mediaobject>
+	<para>
+		위 그림은 Web Application 가동 후, IAM SAMPLE 메뉴를 클릭하면 나오는 화면이다. 하단의 User / Password 입력상자에는 사용자가 즉시 로그인 할 수 있도록
+		admin / admin123 이 입력되어 있다. Login 버튼을 클릭해서 다음 화면을 살펴 보도록 하자.		
+	</para>
+	<mediaobject>
+		<imageobject>
+			<imagedata align="center" fileref="../image/iam/iam_secured_resource_login_01.jpg" />
+		</imageobject>
+		<textobject>
+			<phrase>
+				User는 admin, Password는 admin123으로 입력하고 샘플 어플리케이션에 로그인하였을 경우 나타나는 화면이다. 저장된 영화 감독의 목록이 조회된다.
+			</phrase>
+		</textobject>
+	</mediaobject>
+	<para>
+		admin 계정으로 로그인 한 사용자는 ROLE_ADMIN 권한을 가지게 되는데 이 권한은 모든 감독의 목록에 대한 접근 권한과, 감독 정보에 대한 수정 권한을 모두 가진다.
+		admin 계정이 아닌 다른 계정으로 로그인 하고자 하는 경우에는 위 그림의 좌측 하단에 있는 Help 링크를 클릭하면 아래와 같은 팝업 정보가 나타난다. 
+	</para>
+	<mediaobject>
+		<imageobject>
+			<imagedata align="center" fileref="../image/iam/iam_secured_resource_login_02.jpg" />
+		</imageobject>
+		<textobject>
+			<phrase>
+				 위 그림(감독 목록 조회 화면)의 좌측 하단에 있는 Help 링크를 클릭하면 나타나는 팝업 화면에 대한 그림이다. 사용할 수 있는 User, Password, Role 정보가
+				 나열되어 있으며 제공되는 기능을 수행할 수 있는 Role 정보가 표시되어 있다.
+				 사용할 수 있는 User는 admin, user, buyer가 있으며 Password는 순서대로 admin123, user123, buyer123이다. 그리고 Role 또한 순서대로 ROLE_ADMIN,
+				 ROLE_USER, ROLE_RESTRICTED이다. 그리고, 목록 조회 기능은 ROLE_USER, ROLE_ADMIN 권한을 가진 사용자가 실행할 수 있으며 수정 기능은 ROLE_ADMIN 권한을
+				 가진 사용만 실행할 수 있음을 알 수 있다. 
+			</phrase>
+		</textobject>
+	</mediaobject>
+	<para>
+		로그인 가능한 사용자는 admin, user, buyer 총 3가지 이다. 각각의 사용자는 서로 다른 역할(ROLE)을 가지며, 그에 따라 각각 다른 접근 권한을 가진다.
+		예를 들어 Help에 적혀있는 buyer 계정으로 로그인 할 경우, 로그인 직후 아래와 같은 접근 거부 메세지를 확인하게 된다. 
+		<mediaobject>
+			<imageobject>
+				<imagedata align="center" fileref="../image/iam/iam_secured_resource_login_03.jpg" />
+			</imageobject>
+			<textobject>
+				<phrase>buyer 계정으로 로그인 할 경우 보여지는 접근 거부 메시지를 보여주고 있다. Access is denied라는 오류 메시지를 포함하고 있다.</phrase>
+			</textobject>
+		</mediaobject>
+	</para>
+	<para>
+		3 개의 권한에 따른 각 권한별 실행 가능 자원을 정리해보면 다음 표와 같다.
+		<informaltable>
+			<caption>3 개의 권한에 따른 각 권한별 실행 가능 자원 목록</caption> 
+			<tgroup cols="3">
+				<thead>
+					<row>
+						<entry align="center"></entry>
+						<entry align="center">Director List</entry>
+						<entry align="center">Update Director</entry>
+					</row>
+				</thead>
+				<tbody>
+					<row>
+						<entry align="center">buyer(ROLE_RESTRICTED)</entry>
+						<entry align="center">X</entry>
+						<entry align="center">X</entry>
+					</row>
+					<row>
+						<entry align="center">user(ROLE_USER)</entry>
+						<entry align="center">O</entry>
+						<entry align="center">X</entry>
+					</row>
+					<row>
+						<entry align="center">admin(ROLE_ADMIN)</entry>
+						<entry align="center">O</entry>
+						<entry align="center">O</entry>
+					</row>
+				</tbody>
+			</tgroup>
+		</informaltable>
+	</para>
+	<para>
+		user / user123 으로 로그인을 한 후 Director Update 명령을 실행하면 마찬가지로 Access is denied 메세지가 나오면서 사용이 제한 된다.
+		이는  "/iamListDirector.do", "/iamUpdateDirector.do" 두 웹 자원이 보호자원으로 DB에 등록되어 있기 때문이다. 이를 확인해보기 위해서 DB에서 SECURED_RESOURCES 테이블을 조회 해보면
+		다음과 같이 1개의 포인트컷 자원과 2개의 WEB 자원을 확인할 수 있다. 
+	</para>
+	<mediaobject>
+		<imageobject>
+			<imagedata align="center" fileref="../image/iam/secured_resource_02.png" />
+		</imageobject>
+		<textobject>
+			<phrase>SECURED_RESOURCES 테이블을 조회한 결과를 표현한 화면이다. RESOURCE_ID별로 리소스의 유형과 리소스 패턴 정보가 조회된다.</phrase>
+		</textobject>
+	</mediaobject>
+	<para>
+		SECURED_RESOURCES 테이블에 등록된 자원들은 보호 되어지도록 지정된 자원으로서, 
+		해당 자원을 사용하기 위해서는 자원(SECURED_RESOURCE)과 역할(ROLE)을 서로 맺어줘야 한다.
+		이에 대한 내용은 DB상의 SECURED_RESOURCES_ROLES 테이블에서 확인할 수 있다.
+	</para>
+	<mediaobject>
+		<imageobject>
+			<imagedata align="center" fileref="../image/iam/secured_resource_03.png" />
+		</imageobject>
+		<textobject>
+			<phrase>SECURED_RESOURCES_ROLES 테이블을 조회한 결과를 표현한 화면이다. Resource와 Role 간의 매핑 정보가 조회된다.
+			예를 들어, PNC_000001이라는 ID를 가진 Resource에는 ROLE_USER라는 Role이 자원 사용에 대한 권한을 가지게 된다.</phrase>
+		</textobject>
+	</mediaobject>	
+	<para>
+		현재 SECURED_RESOURCES_ROLES 테이블에 등록된 내용을 살펴보면, WEB-000002 (/iamUpdateDirector.do) 자원은 ROLE_ADMIN에 등록 되어있는것을 볼 수 있다.
+		따라서 /iamUpdateDirector.do 주소를 호출하게 되면 로그인한 사용자의 ROLE를 판별하여 ROLE_ADMIN이 아닌 경우 접근이 제한 된다. 
+		마찬가지로 WEB-000003 (/iamListDirector.do) 자원은 ROLE_USER에 등록되어 있으므로, ROLE_USER가 아닌 사용자에 대해서는 접근이 제한 되게 된다.
+	</para>
+	<para>
+		"/iamListDirector.do" 자원은 ROLE_USER에만 할당 되어 있지만 ROLE_ADMIN이 제한 없이 사용할 수 있는 이유는 ROLE을 계층적 구조로 사용하기 때문이다.
+		계층 구조상 상위에 배치된 ROLE은 하위 ROLE에 할당된 자원에 대한 접근 권한을 모두 물려받는다. 현재 DB에는 최상위에 ROLE_ADMIN을 시작으로
+		ROLE_ADMIN - ROLE_USER - ROLE_RESTRICTED - IS_AUTHENTICATED_ANONYMOUSLY 순으로 배치 되어 있으며, 이는 ROLES_HIERARCHY 테이블에서 확인할 수 있다.
+		ROLES_HIERARCHY 테이블의 내용을 살펴보면 다음 그림과 같다. 
+	</para>
+	<para>
+		<mediaobject>
+			<imageobject>
+				<imagedata align="center" fileref="../image/iam/secured_resource_04.png" />
+			</imageobject>
+			<textobject>
+				<phrase>ROLES_HIERARCHY 테이블을 조회환 결과를 표현한 화면이다. ROLE 간의 계층 구조를 확인할 수 있다.
+				예를 들어, ROLE_USER는 ROLE_RESTRICTED라는 Role을 부모로 하고 있고, ROLE_RESTRICTED는 IS_AUTHENTICATED_ANONYMOUSLY라는 Role을 부모로 하고 있음을 
+				확인할 수 있다.</phrase>
+			</textobject>
+		</mediaobject>		
+		이 때 테이블 상의 PARENT_ROLE과 CHILD_ROLE이 일반적으로 생각되는 상하 관계와 반대로 정의되어있기 때문에 주의해야 한다.
+	</para>
+	<para>
+		DB를 직접 수정하는 번거로움을 덜기 위해 IAM에서는 IAM Admin web application을 제공한다. 
+	</para>
+	<para>
+		IAM Admin Web Application 사용법에 대한 자세한 내용은 
+		<ulink url="http://dev.anyframejava.org/docs/iam/1.1.4-SNAPSHOT/reference/htmlsingle/anyframeiam.html#anyframeiamadmin">Anyframe IAM Admin 매뉴얼</ulink>을 참고하도록 한다.
+	</para>
+</chapter>

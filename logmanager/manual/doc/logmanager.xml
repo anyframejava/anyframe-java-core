@@ -1,0 +1,129 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+
+<!DOCTYPE book PUBLIC "-//OASIS//DTD DocBook XML V4.5//EN" "http://www.oasis-open.org/docbook/xml/4.5/docbookx.dtd"
+[
+<!ENTITY logmanager_dependency SYSTEM "logmanager/dependency.xml">
+<!ENTITY logmanager_configuration SYSTEM "logmanager/configuration.xml">
+<!ENTITY logmanager_resources SYSTEM "logmanager/resources.xml">
+]
+>
+
+<!--
+		Licensed to the Apache Software Foundation (ASF) under one or more
+		contributor license agreements. See the NOTICE file distributed with
+		this work for additional information regarding copyright ownership.
+		The ASF licenses this file to you under the Apache License, Version
+		2.0 (the "License"); you may not use this file except in compliance
+		with the License. You may obtain a copy of the License at
+
+		http://www.apache.org/licenses/LICENSE-2.0 Unless required by
+		applicable law or agreed to in writing, software distributed under the
+		License is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR
+		CONDITIONS OF ANY KIND, either express or implied. See the License for
+		the specific language governing permissions and limitations under the
+		License.
+-->
+    
+<book lang="ko">
+	<title>Anyframe Log Manager Plugin</title>
+	
+	<bookinfo>
+		<copyright>
+			<year>2007-2014</year>
+			<holder>삼성SDS</holder>
+		</copyright>
+		<releaseinfo>Version 1.1.1-SNAPSHOT</releaseinfo>
+
+		<productname>Anyframe Log Manager Plugin</productname>
+
+		<authorgroup>
+			<corpauthor></corpauthor>
+		</authorgroup>
+
+		<mediaobject>
+			<imageobject>
+				<!-- logo 변경 -->
+				<imagedata fileref="../image/common/logo_pdf.jpg"/>
+			</imageobject>
+			<textobject>
+				<phrase>Anyframe Java 로고</phrase>
+			</textobject>
+		</mediaobject>
+		<legalnotice>
+			<para>본 문서의 저작권은 삼성SDS에 있으며 Anyframe 오픈소스 커뮤니티 활동의 목적하에서 자유로운 이용이 가능합니다.
+			본 문서를 복제, 배포할 경우에는 저작권자를 명시하여 주시기 바라며 본 문서를 변경하실 경우에는 원문과 변경된 내용을 표시하여 주시기 바랍니다. 
+			원문과 변경된 문서에 대한 상업적 용도의 활용은 허용되지 않습니다. 본 문서에 오류가 있다고 판단될 경우 이슈로 등록해 주시면 적절한 조치를 취하도록 하겠습니다.
+			</para>
+		</legalnotice>
+	</bookinfo>
+	
+	<part id="logmanager_introduction_part">
+		<title>Introduction</title>
+		<partintro id="logmanager_introduction_part_intro">
+			<para>
+				Log Manager plugin은 Anyframe Log Manager와 연동하기 위한 Legacy Application에서 샘플 코드와 이를 활용하는데 필요한 참조 라이브러리들로 구성되어 있다.
+			</para>
+			<para role="introduction_title"><emphasis role="bold">Installation</emphasis></para>
+			<para>Command 창에서 다음과 같이 명령어를 입력하여 logmanager plugin을 설치한다.</para>
+			<programlisting language="java"><![CDATA[mvn anyframe:install -Dname=logmanager]]></programlisting>
+			<para>해당 플러그인 설치 폴더의 src/main/resources 폴더로 이동하여 log4j.xml(or logback.xml) 파일을 연 후, MongoDbAppender 설정 부분에서 ip 정보와 port 정보등 
+			개발환경(또는, 운영환경)에 맞게 수정해 주도록 한다.(기본적으로 hostname=localhost, port=27017로 변경한다.)</para>
+			<programlisting language="xml"><![CDATA[<appender class="org.anyframe.logmanager.log4j.MongoDbAppender" name="mongodb">
+	]]><emphasis role="bold"><![CDATA[<param name="hostname" value="localhost"/>
+	<param name="port" value="27017"/>
+	<param name="userName" value=""/>
+	<param name="password" value=""/>
+	<param name="databaseName" value="logs"/>
+	<param name="collectionName" value="log4jlogs"/>]]></emphasis><![CDATA[
+</appender>]]></programlisting> or 
+			<programlisting language="xml"><![CDATA[<appender class="org.anyframe.logmanager.logback.MongoDbAppender" name="mongodb">
+	]]><emphasis role="bold"><![CDATA[<hostname>localhost</hostname>
+	<port>27017</port>
+	<userName/>
+	<password/>
+	<databaseName>logs</databaseName>
+	<collectionName>logbacklogs</collectionName>]]></emphasis><![CDATA[
+</appender>]]></programlisting>
+			<para>
+				installed(mvn anyframe:installed) 혹은 jetty:run(mvn clean jetty:run) command를 이용하여 설치 결과를 확인해볼 수 있다. 
+			</para>
+			<informaltable>
+				<caption>Dependent Plugins</caption>
+				<tgroup cols="2">
+					<colspec colnum="1" colname="col1" colwidth="5*" />
+					<colspec colnum="2" colname="col2" colwidth="5*" />
+					<thead>
+						<row>
+							<entry align="center">Plugin Name</entry>
+							<entry align="center">Version Range</entry>
+						</row>
+					</thead>
+					<tbody>
+						<row>
+							<entry align="center"><ulink url="http://dev.anyframejava.org/docs/anyframe/plugin/essential/core/1.6.1-SNAPSHOT/reference/htmlsingle/core.html">Core</ulink></entry>
+							<entry align="center" valign="middle">2.0.0 > * > 1.4.0</entry>
+						</row>
+					</tbody>
+				</tgroup>
+			</informaltable>
+		</partintro>
+	</part>	
+	
+	<part id="logmanager_logmanager_part">
+		<title>Log Manager</title>
+		<partintro id="logmanager_logmanager_part_intro">
+			<para>
+				Log Manager plugin은 Anyframe에서 제공하는 Log Manager를 통한 해당 Application의 로그 조회, 로그 분석, 로그 정책 변경 
+				작업을 수행하고자 할 때, 이를 위해 Legacy Application에 정의해야하는 
+				Log Appender와 Log Pattern Layout, ServletFilter등의 클래스를 제공한다. 
+				Anyframe의 Log Manager는 기본적으로 Mongo DB를 로그 저장소로 사용한다. 그러므로 이 때, Log4j(또는 Logback)의 Appender로 
+				MongoDbAppender를 사용해야 하며, 보다 다양하고 직관적인 패턴으로 저장하고 보여주기 위해 Anyframe에서 확장한 Appender와 
+				Pattern Layout을 사용하도록 한다. 기본적으로 Application에서 남기는 로그 이외에도 Client IP, Server Name, Application Name 을 
+				남겨주며, 이외에도 남기고 싶은 사용자 정보 또는 입력 값을 Anyframe에서 제공하는 ServletFilter를 통해 간편하게 설정해 줄 수 있다.
+			</para>
+		</partintro>
+		&logmanager_dependency;
+		&logmanager_configuration;
+		&logmanager_resources;
+	</part>	
+</book>

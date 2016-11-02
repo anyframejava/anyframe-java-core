@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<plugin name="cxf" description="CXF Plugin consists of reference libraries needed to use Apache CXF open source support for developing web service.">
+  <groupId>org.anyframe.plugin</groupId>
+  <artifactId>anyframe-cxf-pi</artifactId>
+  <version>1.1.1-SNAPSHOT</version>
+  <dependent-plugins>
+    <dependent-plugin name="core" version="2.0.0&gt;*&gt;1.4.0"/>
+  </dependent-plugins>
+  <resources>
+     <resource dir="src/main/resources" filtered="true" packaged="false">
+      <include name="**/log4j.xml"/>
+    </resource> 
+     <resource dir="src/main/webapp" filtered="false" packaged="false">
+      <exclude name="**/sample/**/*.*" merged="false"/>
+      <exclude name="**/WEB-INF/**/*.*" merged="false"/>
+      <exclude name="**/anyframe.jsp" merged="true"/>
+    </resource>      
+  </resources>
+  <interceptor>
+    <class></class>
+  </interceptor>
+  <samples>false</samples>
+  <essential>false</essential>
+  <checked>false</checked>
+</plugin>

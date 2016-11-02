@@ -1,0 +1,88 @@
+<chapter id="springrest_restsupport_httpmessageconversion">
+	<title>HTTP Message Conversion</title>
+	<para>
+		HttpMessageConverter is used when Java object is converted into HTTP Request 
+		or HTTP Response transferred from server is converted into Java object in RestTemplate or @Controller. 
+		HttpMessageConverters for main type provided in Spring 
+		are registered in RestTemplate (client side) and AnnotationMethodHandlerAdapter (server side) as default to be used for conversion internally.
+	</para>
+	
+	<para>
+		HttpMessageConverter interface is as below. You can see the provided functions through the defined methods.
+		<programlisting language="java"><![CDATA[public interface HttpMessageConverter<T> {
+    // Check if Read of entered class and media type is possible in this HttpMessageConverter.
+    boolean canRead(Class<?> clazz, MediaType mediaType);
+    
+    // Check if Write of entered class and media type is possible in this HttpMessageConverter.
+    boolean canWrite(Class<?> clazz, MediaType mediaType);
+    
+    // Return the media type list supported by this HttpMessageConverter.
+    List<MediaType> getSupportedMediaTypes();
+    
+    // Read entered Message, convert into entered type format, and return.
+    T read(Class<T> clazz, HttpInputMessage inputMessage) throws IOException,
+                                              HttpMessageNotReadableException;
+
+    // Transmit entered object to entered OutputMessage.
+    void write(T t, HttpOutputMessage outputMessage) throws IOException,
+                                              HttpMessageNotWritableException;
+}]]></programlisting>
+	</para>
+	<para>
+		Let's look into each HttpMessageConverter interface implementations provided in Spring.
+	</para>
+	<itemizedlist>
+		<listitem>
+			<para><emphasis role="bold">StringHttpMessageConverter</emphasis></para>
+			<para>
+				An HttpMessageConverter implementation that can read and write Strings from the HTTP request and response. 
+				By default, this converter supports all text media types (text/*), and writes with a Content-Type of text/plain.
+			</para>
+		</listitem>
+		<listitem>
+			<para><emphasis role="bold">FormHttpMessageConverter</emphasis></para>
+			<para>
+				An HttpMessageConverter implementation that can read and write form data from the HTTP request and response. 
+				By default, this converter reads and writes the media type application/x-www-form-urlencoded. 
+				Form data is read from and written into a MultiValueMap<![CDATA[<String, String>]]>.
+			</para>
+		</listitem>
+		<listitem>
+			<para><emphasis role="bold">ByteArrayMessageConverter</emphasis></para>
+			<para>
+				An HttpMessageConverter implementation that can read and write byte arrays from the HTTP request and response. 
+				By default, this converter supports all media types (*/*), and writes with a Content-Type of application/octet-stream. 
+				This can be overridden by setting the supportedMediaTypes property, and overriding getContentType(byte[]).
+			</para>
+		</listitem>
+		<listitem>
+			<para><emphasis role="bold">MarshallingHttpMessageConverter</emphasis></para>
+			<para>
+				An HttpMessageConverter implementation that can read and write XML using Spring's Marshaller and Unmarshaller abstractions from the org.springframework.oxm package. 
+				This converter requires a Marshaller and Unmarshaller before it can be used. 
+				These can be injected via constructor or bean properties. By default this converter supports (text/xml) and (application/xml).
+			</para>
+		</listitem>
+		<listitem>
+			<para><emphasis role="bold">MappingJacksonHttpMessageConverter</emphasis></para>
+			<para>
+				Converts HTTP Request or Response to XML using ObjectMapper of Jackson library. 
+				Supports 'application/json' media type as default.
+			</para>
+		</listitem>
+		<listitem>
+			<para><emphasis role="bold">SourceHttpMessageConverter</emphasis></para>
+			<para>
+				Executes conversion between HTTP Request or Response, and javax.xml.transform.Source 
+				(supports only DOMSource, SAXSource, and StreamSource). 
+				Media type supported as default are 'text/xml' and 'application/xml'.
+			</para>
+		</listitem>
+		<listitem>
+			<para><emphasis role="bold">BufferedImageHttpMessageConverter</emphasis></para>
+			<para>Executes conversion between HTTP Request or Response, and java.awt.image.BufferedImage. 
+			Supports conversion for all media types supported in Java I/O API.
+			</para>
+		</listitem>
+	</itemizedlist>
+</chapter>

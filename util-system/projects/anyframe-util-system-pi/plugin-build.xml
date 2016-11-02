@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<plugin name="util-system" description="Util System Plugin consists of sample code that provides dashboard-style UI for System Resource usages with Util-System services which using Sigar, and reference libraries needed to use these open sources.">
+  <groupId>org.anyframe.plugin</groupId>
+  <artifactId>anyframe-util-system-pi</artifactId>
+  <version>1.6.1-SNAPSHOT</version>
+  <dependent-plugins>
+    <dependent-plugin name="chart" version="2.0.0&gt;*&gt;1.0.2"/>
+  </dependent-plugins>
+  <resources>
+    <resource dir="src/main/java" filtered="true" packaged="true">
+      <include name="**/util/system/**/*.java"/>
+    </resource>
+    <resource dir="src/main/resources" filtered="false" packaged="false">
+      <include name="**/util-system/**/*.*"/>
+      <include name="**/util-system*.*"/>
+    </resource>
+    <resource dir="src/main/webapp" filtered="false" packaged="false">
+      <include name="**/util-system*/**/*.*"/>
+      <exclude name="**/anyframe.jsp" merged="true"/>      
+    </resource>
+        <resource dir="src/main/webapp/WEB-INF" filtered="false" packaged="false">
+    	<include name="**/util-system*.*"/>
+    </resource>   
+  </resources>
+  <samples>true</samples>
+  <interceptor>
+    <class></class>
+  </interceptor>
+  <essential>false</essential>
+</plugin>

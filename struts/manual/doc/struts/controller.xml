@@ -1,0 +1,570 @@
+<chapter id="struts_controller">
+	<title>Controller</title>
+
+  		<para>
+  			Controller는 MVC의 Model과 View사이의 중계자 역할을 한다. Struts의 Controller는 사용자의
+  			Request를 처리하고 리소스의 초기화 등을 담당하고 있는 ActionServlet, 사용자 Request로 부터 ActionForm
+			 객체를 생성하고 Action클래스의 execute()를 실행하는 RequestProcessor, 그리고 비즈니스 로직을 호출하고 성공과
+  			실패에 대한 forward 정보를 설정하는 Action클래스로 이루어져있다.
+  		</para>
+
+  		<section id="struts_controller_actionservlet">
+    	<title>ActionServlet</title>
+
+    		<para>ActionServlet은 Struts에서 Controller역할을 담당하는 주요한 클래스이다.</para>
+
+	    	<section id="struts_controller_actionservlet_role">
+    		<title>ActionServlet의 역할</title>
+
+      			<itemizedlist>
+        			<listitem>
+          				<para>사용자의 요청을 받는 단일 진입점의 역할 (Front Controller)</para>
+        			</listitem>
+        			<listitem>
+          				<para>리소스의 초기화와 clean-up 을 담당</para>
+        			</listitem>
+      			</itemizedlist>
+    		</section>
+    		
+    		<section id="struts_controller_actionservlet_initprocess">
+      		<title>초기화 프로세스</title>
+
+      			<para>ActionServlet의 init() 메소드에서 다음과 같이 초기화 절차가 진행된다.</para>
+
+      			<itemizedlist>
+        			<listitem>
+          				<para>Struts 내부에서 사용되는 에러나 경고에 사용되는 메세지 초기화</para>
+        			</listitem>
+			        <listitem>
+          				<para>web.xml에서 init-param으로 정의된 정보(debug, config, detail 등)들을 초기화</para>
+        			</listitem>
+        			<listitem>
+          				<para>web.xml에서 설정한 servlet-mapping 정보 초기화</para>
+        			</listitem>
+        			<listitem>
+          				<para>ServletContext에 ActionServlet 객체 저장</para>
+        			</listitem>
+			        <listitem>
+          				<para>
+          					init-param의 'config'에 의해 정의된 디폴트 모듈 정보(정의되지 않은 경우
+          					'/WEB-INF/struts-config.xml')를 이용하여 ApplicationConfig 객체를 생성
+          				</para>
+        			</listitem>
+        			<listitem>
+          				<para>struts-config.xml에 메세지 리소스 관련 설정이 있을 경우 초기화</para>
+        			</listitem>
+			        <listitem>
+          				<para>struts-config.xml에 DataSource가 설정되어 있을 경우 초기화</para>
+        			</listitem>
+        			<listitem>
+          				<para>struts-config.xml에 정의된 Plug-In정보를 초기화</para>
+        			</listitem>
+      			</itemizedlist>
+    		</section>
+
+    		<section id="struts_controller_actionservlet_runtime">
+      		<title>실행 시(ActionServlet 인스턴스가 HTTP Request를 받을 때)</title>
+
+      			<itemizedlist>
+        			<listitem>
+          				<para>Request의 prefix에 따라 해당되는 서브 어플리케이션을 찾음</para>
+        			</listitem>
+        			<listitem>
+          				<para>RequestProcessor를 찾아 process() 메소드 호출</para>
+        			</listitem>
+      			</itemizedlist>
+    		</section>
+
+    		<section id="struts_controller_actionservlet_shutdown">
+      		<title>ShutDown 프로세스</title>
+
+				<itemizedlist>
+        			<listitem>
+          				<para>RequestProcessor의 destroy() 메소드 호출</para>
+        			</listitem>
+
+        			<listitem>
+          				<para><![CDATA[<plug-in>에 의해 정의된 값이 존재하는 경우 해당 destroy() 메소드 호출]]></para>
+        			</listitem>
+
+        			<listitem>
+          			<para><![CDATA[<data-sources>에 의해 정의된 값이 존재하는 경우 해당 close() 메소드 호출]]></para>
+        			</listitem>
+      			</itemizedlist>
+    		</section>
+  		</section>
+
+		<section id="struts_controller_requestprocessor">
+    	<title >RequestProcessor</title>
+
+		    <para>
+		    	RequestProcessor는 개발자가 필요에 따라 Request 처리에 대한 내용을 확장할 수 있도록 Struts
+    			1.1부터 제공되기 시작했다. 이로 인해 ActionServlet과 RequestProcessor 클래스가 분리되어 어플리케이션
+    			모듈별로 각각의 RequestProcessor를 가질 수 있다는 장점이 있다. RequestProcessor는 기존에
+    			ActionServlet이 제공하던 기본적인 기능에 더하여 확장 가능한 다양한 메소드를 제공한다.
+    		</para>
+
+    		<para>Anyframe 에서는 RequestProcessor를 상속받아 DefaultRequestProcessor로 확장한 클래스를 제공한다.</para>
+
+    		<section id="struts_controller_requestprocessor_role">
+      		<title>RequestProcessor의 역할</title>
+
+      			<itemizedlist>
+        			<listitem>
+          				<para>Request로부터 데이터를 받아서 ActionForm을 생성</para>
+        			</listitem>
+        			<listitem>
+          				<para>Action의 execute() 메소드실행</para>
+        			</listitem>
+        			<listitem>
+          				<para>ActionForm 전달</para>
+        			</listitem>
+			        <listitem>
+          				<para>Configuration에 정의된 대로 forward나 redirect 수행</para>
+        			</listitem>
+			        <listitem>
+          				<para>어플리케이션의 configuration정보 유지</para>
+        			</listitem>
+      			</itemizedlist>
+    		</section>
+
+    		<section id="struts_controller_requestprocessor_process()">
+      		<title>process() 메소드의 Request 처리 절차</title>
+
+      			<itemizedlist>
+        			<listitem>
+          				<para>
+          					processMultipart(): HTTP Request의 content type이 multipart/form-data일 경우 새로운
+          					Request Wrapper 생성
+          				</para>
+        			</listitem>
+			        <listitem>
+          				<para>processPath(): Request의 URI에서 ActionMapping처리를 위한 "path" 값을 추출</para>
+        			</listitem>
+			        <listitem>
+          				<para>processLocale(): Request로 부터 Locale 정보를 추출하여 session에 저장</para>
+        			</listitem>
+			        <listitem>
+          				<para>processContent(): Request의 content type과 encoding 정보를 설정</para>
+        			</listitem>
+			        <listitem>
+          				<para>
+          					<![CDATA[processNoCache(): struts-config.xml에서 <controller>의 nocache 값이 true로
+          					설정되었을 경우 HTTP Response의 header에 브라우저의 cache를 사용하지 않도록 설정]]>
+          				</para>
+        			</listitem>
+			        <listitem>
+          				<para>
+          					processPreprocess(): Request가 처리되기 전에 수행되어야 하는 작업이 있을 경우 RequestProcessor를
+          					상속받아서<emphasis role="bold"> 확장하는 클래스에서 이 메소드를 override</emphasis>하여 구현
+          				</para>
+        			</listitem>
+			        <listitem>
+          				<para>processMapping(): 앞에서 추출한 "path"정보를 이용하여 ActionMapping 검색</para>
+       	 			</listitem>
+			        <listitem>
+          				<para>processRoles(): 사용자가 현재 Request를 수행할 수 있는 Role을 가지고 있는지 확인</para>
+        			</listitem>
+        			<listitem>
+          				<para>
+          					processActionForm(): ActionMapping에 설정된 ActionForm이 존재할 경우, 설정 파일에서 정의한
+          					scope(session 또는 request)에서 ActionForm을 검색하고, 없을 경우 새로운 ActionForm을
+          					생성하여 해당 scope에 저장
+          				</para>
+        			</listitem>
+        			<listitem>
+          				<para> processPopulate(): HTTP Request 파라미터들을 ActionForm에 저장</para>
+        			</listitem>
+        			<listitem>
+          				<para>
+          					processValidate(): 설정 파일에서 'validate' 값이 true로 설정된 경우, ActionForm의 validate()
+          					메소드를 호출.
+          				</para>
+        			</listitem>
+        			<listitem>
+          				<para>
+          					<![CDATA[ processForward(): 설정 파일에서 <action>에 forward나 include 속성이 정의되어
+          					있는 경우,RequestDispatcher의 forward(), include() 메소드를 호출]]>
+          				</para>
+			        </listitem>
+			        <listitem>
+          				<para>
+          					 processActionCreate(): Request에 해당하는 Action 객체 생성. 최초에 한번 생성된 후
+          					 ServletContext에 저장되어 재사용 됨
+          				</para>
+        			</listitem>
+        			<listitem>
+          				<para> processActionPerform(): Action 객체의 execute() 메소드 호출</para>
+        			</listitem>
+			        <listitem>
+          				<para>
+          					 processActionForward(): Action 객체의 execute() 메소드의 리턴 값인 
+          					ActionForward에 해당하는 URL로 forward
+          				</para>
+        			</listitem>
+      			</itemizedlist>
+    		</section>
+
+			<section id="struts_controller_requestprocessor_sample">
+      		<title>Sample</title>
+
+		    	<para>
+		    		<![CDATA[아래는 RequestProcessor 를 struts-config.xml의 <controller>로 설정한 예이다.]]>
+		    		<programlisting
+		    		language="xml"><![CDATA[<controller contentType="text/html;charset=UTF-8"
+                debug="3" locale="true" nocache="true"
+                        processorClass="org.apache.struts.action.RequestProcessor"/>]]></programlisting>
+      			</para>
+
+			    <para>
+			    	위의 processorClass 에는 필요에 따라 RequestProcessor를 확장한 Controller를 설정할 수 있다.
+			     	Anyframe 에서는 RequestProcessor 를 확장한 DefaultRequestProcessor 를  제공한다.
+			     </para>
+    		</section>
+  		</section>
+
+  		<section id="struts_controller_action">
+    	<title>Action</title>
+
+    		<para>Action 클래스는 비지니스 로직을 호출하고 성공과 실패에 대한 적절한 forward 정보를 설정한다.</para>
+
+    		<section id="struts_controller_action_role">
+      		<title>Action의 역할</title>
+
+      			<itemizedlist>
+        			<listitem>
+          				<para>Action의 execute()는 클라이언트의 요청과 Business Logic을 연결</para>
+        			</listitem>
+        			<listitem>
+          				<para>Action은 MVC 구조에서 Controller와 Model사이를 이어주는 역할</para>
+        			</listitem>
+      			</itemizedlist>
+    		</section>
+
+    		<section id="struts_controller_action_realization">
+      		<title>Action의 구현</title>
+
+      			<itemizedlist>
+        			<listitem>
+          				<para>
+          					하나의 인스턴스가 그 action으로 매핑된 모든 request를 처리하므로 execute() 메소드를
+          					thread-safe 메소드로 구현해야 함
+          				</para>
+        			</listitem>
+        			<listitem>
+          				<para>Action 클래스에서 실행하는 Business Logic은 한 업무 처리에만 관련이 있어야 함</para>
+        			</listitem>
+        			<listitem>
+          				<para>execute()는 항상 ActionForward를 리턴해야함</para>
+        			</listitem>
+        			<listitem>
+          				<para>비즈니스 로직을 호출하는 로직만 존재해야 함, 비즈니스 로직은 모델 객체에 구현해야 함</para>
+				        <para>
+				        	Action 인스턴스는 단일 인스턴스로 모든 클라이언트 요청이 같은 인스턴스를 공유하므로
+				        	특정 클라이언트의 정보를 Action 클래스의 멤버변수로 저장하는 것은 잘못된 구현이다. 
+				        	클라이언트의 정보가 필요한 경우 request나 session에 저장하도록 하고 특정 클라이언트의
+				        	상태를 나타내기 위해서는 execute() 메소드내에서 지역변수를 사용하면 각 스레드별로 영향을
+				        	끼치지 않는다. Action 클래스의 작성은 개발자가 반드시 숙지해야 할 부분으로, request로
+				        	전달된 사용자 입력 데이터를 추출하여 비지니스 로직을 호출하고 그 결과를 다시 클라이언트로
+				        	포워드하는 중요한 작업이다.
+				        </para>
+        			</listitem>
+      			</itemizedlist>
+    		</section>
+
+    		<section id="struts_controller_action_sample">
+      		<title>Sample</title>
+
+				<itemizedlist>
+        			<listitem>
+	          			<para>Action 클래스의 작성 예</para>
+	
+	          			<para>
+	          				아래는 로그인에 필요한 사용자 입력 값을 받아 체크한 후 Session에 저장하는 LoginAction.java
+	          				의 소스코드이다. <programlisting
+          					language="java"><![CDATA[public class LoginAction extends Action{
+
+    public ActionForward execute(ActionMapping mapping, ActionForm form,
+        HttpServletRequest request, HttpServletResponse response) 
+        throws Exception {
+			
+        UserForm userForm = (UserForm) form;
+		
+        String userId = userForm.getUserId();
+        String password = userForm.getPassword(); 
+		
+        //사용자 Id, Password 체크
+        if ((userId != null && userId.equals("anyframe"))
+            && (password != null && password.equals("anyframe"))) {
+			
+            //로그인 성공시 Session에 사용자 정보를 저장한다.
+            Set principals = new HashSet();
+            Set credentials = new HashSet();
+			
+            //사용자의 이름과 권한을 저장한다.
+            principals.add(new TypedPrincipal("Anyframe", TypedPrincipal.USER));
+            principals.add(new TypedPrincipal("ADMIN", TypedPrincipal.GROUP));
+            Subject subject = new Subject(false, principals, credentials,
+                        credentials);
+            HttpSession session = request.getSession();
+            session.setAttribute("subject", subject);
+ 
+        } else {
+            throw new FailedLoginException();
+        }
+        return (mapping.findForward("success"));
+    }
+}]]></programlisting>
+						</para>
+
+	          			<para>
+	          				execute()메소드가 호출되면 ActionForm에 저장된 userid 와 password 값을 받아오고
+	          				사용자 인증이 성공하면(위에서는 비지니스 서비스없이 임시로 anyframe/anyframe 에 대해
+	          				ADMIN 사용자로 체크함) Subject객체를 Session에 설정한 후 sucess로 지정된 ActionForward를
+	          				리턴한다. 인증에 실패할 경우에는 FailedLoginException을 발생시켜 struts-config.xml에 설정된
+	          				Exception처리 설정을 따른다.
+	          			</para>
+	        		</listitem>
+	
+	        		<listitem>
+	          			<para>Action 매핑 예</para>
+	
+	      			    <para>아래는 위의 LoginAction.java의 매핑 정보를 설정한 struts-config-login.xml의 일부이다.
+	      			    <programlisting language="xml"><![CDATA[<action
+    path="/login"
+    type="org.anyframe.sample.struts.action.LoginAction"
+    name="userForm"
+    scope="request"
+    input="/basic/login.jsp">
+    <exception key="error.password.mismatch" path="/basic/login.jsp" 
+        type="javax.security.auth.login.FailedLoginException" />
+    <forward name="success" path="/basic/main.jsp" />
+</action>]]></programlisting>
+						</para>
+        			</listitem>
+
+        			<listitem>
+          				<para>Spring Bean 형태의 비즈니스 서비스 Invoke</para>
+
+          				<para>
+          					Spring Framework에서는 Struts와의 통합을 위해 spring-webmvc-struts의
+          					ActionSupport(내부적으로 Struts의 Action을 extends하고 있음)를 제공하고 있다. Struts의
+          					Action클래스 대신 ActionSupport 클래스를 extends하면 Spring Framework Bean형태의
+          					비즈니스 서비스에 쉽게 접근이 가능하다. 사용방법은 다음과 같다. <programlisting
+          					language="java"><![CDATA[public class SampleAction extends ActionSupport {
+    public ActionForward execute(ActionMapping mapping, ActionForm form,
+        HttpServletRequest request, HttpServletResponse response)
+        throws Exception {
+		
+        ApplicationContext ctx = getWebApplicationContext();
+        BusinessService businessService = 
+                            (BusinessService)ctx.getBean("businessService");
+         //중략 
+        return mapping.findForward("success");
+    }
+}]]></programlisting>
+						</para>
+        			</listitem>
+    			</itemizedlist>
+   			</section>
+		</section>
+
+  		<section id="struts_controller_actionforward">
+    	<title>ActionForward</title>
+
+    		<section id="struts_controller_actionforward_role">
+      		<title>ActionForward의 역할</title>
+
+      			<itemizedlist>
+        			<listitem>
+          				<para>JSP 페이지나 서블릿 같은 웹 리소스의 논리적인 추상화</para>
+       				</listitem>
+			        <listitem>
+          				<para>물리적인 리소스에 대한 정보는 설정 파일에 저장</para>
+        			</listitem>
+      			</itemizedlist>
+
+      			<para>
+      				Action 클래스에서 execute() 메소드는 ActionForward 객체를 리턴한다. ActionForward는
+      				리소스를 감싸서 어플리케이션과 물리적인 리소스를 분리하며 설정 파일에 forward의 name, path,
+      				redirect 속성과 같은 요소들로 정의하고 코드에는 포함하지 않는다. RequestDispatcher는
+      				redirect 요소의 값에 따라 ActionForward의 포워드나 리다이렉트를 실행하게 된다.
+      				Action에서 ActionForward를 반환할 때 설정 파일에 미리 정의된 ActionForward를 알아내기 위해
+      				일반적으로 ActionMapping을 사용한다. 다음 코드는 ActionMapping을 사용하여 논리적 이름에 근거해
+      				ActionForward를 찾는 방법을 보여준다.
+      				<programlisting language="java">return <emphasis
+      				role="bold">mapping.findForward("success");</emphasis></programlisting>
+      			</para>
+    		</section>
+		</section>
+
+		<section id="struts_controller_actionpackage">
+    	<title>Actions Package</title>
+
+    		<para>
+    			Struts 에는 어플리케이션에서 쉽게 통합할 수 있는 out-of-the-box 형태의 Action 클래스 5개를
+    			포함하고 있으며 이를 이용해 개발 시간을 단축할 수 있다.
+    		</para>
+
+    		<section id="struts_controller_actionpackage_org.apache.struts.actions">
+      		<title>org.apache.struts.actions 패키지에 미리 정의되어 있는 Action</title>
+
+      			<itemizedlist>
+        			<listitem>
+          				<para>org.apache.struts.actions.ForwardAction</para>
+        			</listitem>
+			        <listitem>
+          				<para>org.apache.struts.actions.IncludeAction</para>
+        			</listitem>
+        			<listitem>
+          				<para>org.apache.struts.actions.DispatchAction</para>
+        			</listitem>
+			        <listitem>
+          				<para>org.apache.struts.actions.LookupDispatchAction</para>
+        			</listitem>
+        			<listitem>
+          				<para>org.apache.struts.actions.SwitchAction</para>
+        			</listitem>
+      			</itemizedlist>
+			    <para>
+			    	다음 그림은 Struts 의 org.apache.struts.actions 패키지에 해당하는 클래스들의 간단한 클래스
+      				다이어그램이다.
+				</para>
+
+				<mediaobject>
+					<imageobject>
+						<imagedata align="center" fileref="../image/struts/actions_classdiagram.jpg" />
+					</imageobject>
+					<textobject>
+						<phrase>org.apache.struts.actions 패키지에 해당하는 클래스 다이어그램</phrase>
+					</textobject> 
+				</mediaobject>
+    		</section>
+
+			<section id="struts_controller_actionpackage_org.apache.struts.actions.forwardaction">
+      		<title>org.apache.struts.actions.ForwardAction</title>
+
+      			<para>
+      				단순히 포워딩만 실행하는 경우 Action 클래스를 직접 구현하지 않고 struts에서 미리 구현된
+      				ForwardAction을 사용한다. 이 Action 클래스는 파라미터 속성에 정의된 URI로 포워드를 실행한다.
+      				<programlisting language="xml"><![CDATA[<action
+    path="/loginView"
+    type="org.apache.struts.actions.ForwardAction"
+    parameter="/basic/login.jsp">
+</action>]]></programlisting>
+				</para>
+
+      			<para>
+      				request url이 loginView.do이면 /basic/login.jsp로 포워드하게 된다. Action 클래스를 통하지 않고
+      				JSP를 직접 호출하는 것은 바람직하지 못하다. MVC 구조에서 Controller의 책임을 위반할 뿐만 아니라
+      				Struts에서 처리하는 중간 단계를 건너뛰게 되므로 문제가 발생할 수 있다.(ex. 리소스 번들에서 올바른 메시지를
+      				가져오지 못함)
+      			</para>
+    		</section>
+
+    		<section id="struts_controller_actionpackage_org.apache.struts.actions.includeaction">
+      		<title>org.apache.struts.actions.IncludeAction</title>
+
+      			<para>
+      				ForwardAction과 비슷하며 기존에 있던 서블릿 기반 컴포넌트들을 스트럿츠 기반 웹 어플리케이션과
+      				쉽게 통합하기 위해 제공하는 것이다.
+      				<programlisting language="xml"><![CDATA[<action
+    input="/subscription.jsp"
+    name="subscriptionForm"
+    path="/saveSubscription"
+    parameter="/path/to/processing/servlet"
+    scope="request"
+    type="org.apache.struts.actions.IncludeAction" />
+</action>]]></programlisting>
+				</para>
+    		</section>
+
+    		<section id="struts_controller_actionpackage_org.apache.struts.actions.dispatchaction">
+      		<title>org.apache.struts.actions.DispatchAction</title>
+
+	      		<para>
+	      			기능마다 각각의 Action 클래스를 만들게 되면 클래스 수가 많아져서 관리하기가 어렵다. Struts에서는 관련된
+	      			기능을 하나의 Action으로 모을 수 있는 DispatchAction을 제공한다. 예를 들면 add, update, view 와
+	      			같은 여러 기능을 하나의 Action(extends DispatchAction) 안에 메소드로 구현하면 (cf. 일반
+	      			Action에서는 execute() 메소드 구현 ) 설정 파일의 parameter 속성값으로 지정한 문자열 키값(아래에서는
+	      			"method"로 지정하였음. 다른 문자열을 써도 됨.)으로 메소드를 호출할 수 있게 된다. 아래는 DispatchAction을
+	      			extends한 ShoppingCartAction.java 의 소스코드이다. 
+	      			<programlisting language="java"><![CDATA[public class ShoppingCartAction extends DispatchAction {
+
+    public ActionForward add (
+        ActionMapping mapping,
+        ActionForm form,
+        HttpServletRequest request,
+        HttpServletResponse response) throws Exception{
+	    // TODO : add 기능 관련 로직
+        return mapping.findForward("add");
+    }
+
+    public ActionForward update (
+    ...
+    // TODO : update 기능 관련 로직
+    return mapping.findForward("update");
+    }
+
+    public ActionForward search (
+    ...
+    // TODO : search 기능 관련 로직
+    return mapping.findForward("search");
+    }
+
+    public ActionForward view (
+    ...
+    // TODO : view 기능 관련 로직
+    return mapping.findForward("view");
+    }
+}]]></programlisting>
+				</para>
+
+				<para>
+					ShoppingCartAction에 대한 action 매핑 정보를 설정한 struts-config-dispatch.xml 의 일부이다.
+					<programlisting language="xml"><![CDATA[<action
+    path="/shoppingCart"
+    type="org.anyframe.sample.struts.web.action.ShoppingCartAction"
+    name="dispatchForm"
+    parameter="dispatchMethod"
+    scope="request">
+    <forward name="add" path="/dispatchActionView.do" />
+    <forward name="list" path="/dispatchActionView.do" />
+    <forward name="update" path="/dispatchActionView.do" />
+    <forward name="delete" path="/dispatchActionView.do" />
+</action>]]></programlisting>
+				</para>
+    		</section>
+
+			<section id="struts_controller_actionpackage_org.apache.struts.actoins.lookupdispatchacton">
+      		<title>org.apache.struts.actions.LookupDispatchAction</title>
+
+      			<para>
+      				DispatchAction과 비슷하나 메소드를 찾을 때 parameter 속성에서 찾는 것이 아니라 리소스 번들에 키
+      				값을 이용해 찾게 된다. LookupDispatchAction을 사용하게 되면 하나의 HTML Form에 submit 버튼이 여러
+      				개 있는 경우 더 쉽게 처리할 수 있다.
+      			</para>
+    		</section>
+
+    		<section id="struts_controller_actoinpackage_org.apache.struts.actions.switchaction">
+      		<title>org.apache.struts.actions.SwitchAction</title>
+
+      			<para>
+      				이 클래스는 하나의 어플리케이션 모듈에서 다른 모듈로 스위칭을 지원하고 어플리케이션의 리소스를 컨트롤한다.
+      				prefix, page 파라메터를 통하여 어플리케이션 모듈을 전환할 수 있다. 사용 예는 다음과 같다.
+      				<programlisting language="xml"><![CDATA[<action path="/toModule"
+          type="org.apache.struts.actions.SwitchAction"/>]]></programlisting>
+      
+      				<programlisting language="xml">/toModule.do?<emphasis
+      				role="bold">prefix</emphasis><![CDATA[=/moduleB&]]><emphasis
+      role="bold">page</emphasis>=/index.do</programlisting>
+      			</para>
+
+      			<para>
+      				디폴트 모듈로 전환하고자 하는 경우 prefix를 null String으로 설정하여 호출할 수 있다.
+      				<programlisting
+      				language="java"><![CDATA[/toModule.do?prefix=&page=/index.do]]></programlisting>
+      			</para>
+    		</section>
+  		</section>
+</chapter>

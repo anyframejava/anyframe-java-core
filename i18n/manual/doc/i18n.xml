@@ -1,0 +1,132 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+
+<!DOCTYPE book PUBLIC "-//OASIS//DTD DocBook XML V4.5//EN" "http://www.oasis-open.org/docbook/xml/4.5/docbookx.dtd"
+[
+<!ENTITY login_login_loginview SYSTEM "login/loginview.xml">
+<!ENTITY login_login_session SYSTEM "login/session.xml">
+<!ENTITY i18n_i18n_messagesource SYSTEM "i18n/messagesource.xml">
+<!ENTITY i18n_i18n_changelocale SYSTEM "i18n/changelocale.xml">
+]
+>
+
+<!--
+		Licensed to the Apache Software Foundation (ASF) under one or more
+		contributor license agreements. See the NOTICE file distributed with
+		this work for additional information regarding copyright ownership.
+		The ASF licenses this file to you under the Apache License, Version
+		2.0 (the "License"); you may not use this file except in compliance
+		with the License. You may obtain a copy of the License at
+
+		http://www.apache.org/licenses/LICENSE-2.0 Unless required by
+		applicable law or agreed to in writing, software distributed under the
+		License is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR
+		CONDITIONS OF ANY KIND, either express or implied. See the License for
+		the specific language governing permissions and limitations under the
+		License.
+-->
+    
+<book lang="ko">
+	<title>Anyframe I18N Plugin</title>
+	
+	<bookinfo>
+		<copyright>
+			<year>2007-2014</year>
+			<holder>삼성SDS</holder>
+		</copyright>
+		<releaseinfo>Version 1.1.1-SNAPSHOT</releaseinfo>
+
+		<productname>Anyframe I18N Plugin</productname>
+		
+		<authorgroup>
+			<corpauthor></corpauthor>
+		</authorgroup>
+		
+		<mediaobject>
+			<imageobject>
+				<imagedata fileref="../image/common/logo_pdf.jpg"/>
+			</imageobject>
+			<textobject>
+				<phrase>Anyframe Java 로고</phrase>
+			</textobject>
+		</mediaobject>
+		<legalnotice>
+			<para>
+				본 문서의 저작권은 삼성SDS에 있으며 Anyframe 오픈소스 커뮤니티 활동의 목적하에서 자유로운 이용이 가능합니다.
+				본 문서를 복제, 배포할 경우에는 저작권자를 명시하여 주시기 바라며 본 문서를 변경하실 경우에는 원문과 변경된 내용을 표시하여 주시기 바랍니다. 
+				원문과 변경된 문서에 대한 상업적 용도의 활용은 허용되지 않습니다. 본 문서에 오류가 있다고 판단될 경우 이슈로 등록해 주시면 적절한 조치를 취하도록 하겠습니다.
+			</para>
+		</legalnotice>
+	</bookinfo>
+ 
+	<part id="i18n_introduction_part">
+		<title>Introduction</title>
+		<partintro id="i18n_introduction_partintro">
+			<para>
+			    I18N Plugin은 사용자의 Locale에 따라 국제화를 지원하는 예제를 포함하고 있다. 국제화 지원을 위해 LocaleChangeResolver, LocaleChangeInterceptor 그리고 MessageSource를 사용한다.
+			</para>		
+			<para role="introduction_title"><emphasis role="bold">Installation</emphasis></para>
+			<para>Command 창에서 다음과 같이 명령어를 입력하여 I18N plugin을 설치한다.</para>
+			<programlisting language="java"><![CDATA[mvn anyframe:install -Dname=i18n]]></programlisting>
+			<para>
+				installed(mvn anyframe:installed) 혹은 jetty:run(mvn clean jetty:run) command를 이용하여 설치 결과를 확인해볼 수 있다. 
+			</para>
+			<informaltable>
+				<caption>Dependent Plugins</caption>
+				<tgroup cols="2">
+					<colspec colnum="1" colname="col1" colwidth="5*" />
+					<colspec colnum="2" colname="col2" colwidth="5*" />
+					<thead>
+						<row>
+							<entry align="center">Plugin Name</entry>
+							<entry align="center">Version Range</entry>
+						</row>
+					</thead>
+					<tbody>
+						<row>
+							<entry align="center"><ulink url="http://dev.anyframejava.org/docs/anyframe/plugin/optional/cache/1.1.1-SNAPSHOT/reference/htmlsingle/cache.html">cache</ulink></entry>
+							<entry align="center" valign="middle">2.0.0 > * > 1.0.3</entry>
+						</row>
+					</tbody>
+				</tgroup>
+			</informaltable>		
+		</partintro>
+	</part>
+ 	 
+	<part id="i18n_internationalization_part">
+		<title>국제화 (Internationalization)</title>
+		<partintro>
+		    <para>
+		    <para>
+				국제화란 대상 어플리케이션이 별도 코드의 수정없이 다양한 지역/언어를 수용할 수 있게 하는 기능이다. Spring MVC에서는 Presentation Layer에서 사용자의 Locale에 맞는 Message를 출력할 수 있도록 지원한다.
+			</para>
+		       	국제화에 대한 자세한 설명은 <ulink url="http://dev.anyframejava.org/docs/anyframe/plugin/essential/core/1.6.1-SNAPSHOT/reference/htmlsingle/core.html#core_springmvc_internationalization">국제화(Internationalization) 매뉴얼</ulink>을 참조한다.
+		    </para>
+		    
+			<para>
+				I18N Plugin에서는 Locale변경을 위해 LocaleResolver, LocaleChangeInterceptor를 사용하며 Locale별 Message를 관리하기 위해 MessageSource를 사용한다.
+		    </para>
+		    
+		    <itemizedlist>
+		      	<listitem>
+		        	<para>
+		        		MessageSource : 다양한 Resource(파일 또는 DB)로 부터 Locale별 Message를 읽어온다. 
+		        	</para>
+		      	</listitem>
+		
+		      	<listitem>
+		        	<para>
+		        		LocaleResolver : 사용자의 Locale을 읽고 저장한다. .
+		        	</para>
+		      	</listitem>
+		
+		      	<listitem>
+		        	<para>
+		        		LocaleChangeIntercepter : Presentation Layer에서 Locale을 변경해 준다. 내부에 LocaleResolver를 사용한다.
+		        	</para>
+		      	</listitem>
+		    </itemizedlist>		    
+		</partintro>	
+		&i18n_i18n_messagesource;
+		&i18n_i18n_changelocale;
+	</part>	
+</book>

@@ -1,0 +1,280 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<FDL version="1.5">
+  <TypeDefinition url="..\default_typedef.xml"/>
+  <Form id="sample00" classname="sample00" left="0" top="0" width="1224" height="660" titletext="공통-Base Script" onload="form_onload">
+    <Layouts>
+      <Layout stepcount="">
+        <Div id="div_search" taborder="0" left="0" top="0" style="border:1 solid #808080ff ;" text="div_search" right="0" height="99">
+          <Layouts>
+            <Layout>
+              <Button id="btn_search" taborder="0" text="조회" top="20" width="120" height="50" right="10" onclick="div_search_btn_search_onclick"/>
+            </Layout>
+          </Layouts>
+        </Div>
+        <Static id="Static00" taborder="1" text="h20" left="0" top="99" height="20" style="background:gainsboro;align:center middle;" right="0" visible="false"/>
+        <Div id="div_body" taborder="2" text="div_body" left="0" top="119" style="border:1 solid #808080ff ;" right="0" bottom="0">
+          <Layouts>
+            <Layout>
+              <Grid id="Grid00" taborder="2" binddataset="ds_list" useinputpanel="false" autofittype="col" left="20" top="24" right="20" bottom="20">
+                <Formats>
+                  <Format id="default">
+                    <Columns>
+                      <Column size="80"/>
+                      <Column size="80"/>
+                      <Column size="80"/>
+                      <Column size="80"/>
+                      <Column size="80"/>
+                      <Column size="80"/>
+                      <Column size="80"/>
+                      <Column size="80"/>
+                      <Column size="80"/>
+                      <Column size="80"/>
+                      <Column size="80"/>
+                      <Column size="80"/>
+                      <Column size="80"/>
+                      <Column size="80"/>
+                      <Column size="80"/>
+                      <Column size="80"/>
+                      <Column size="80"/>
+                      <Column size="80"/>
+                    </Columns>
+                    <Rows>
+                      <Row size="24" band="head"/>
+                      <Row size="24"/>
+                    </Rows>
+                    <Band id="head">
+                      <Cell text="USER_ID"/>
+                      <Cell col="1" text="USER_NAME"/>
+                      <Cell col="2" text="EN_NAME"/>
+                      <Cell col="3" text="COMP_PHONE"/>
+                      <Cell col="4" text="PHONE"/>
+                      <Cell col="5" text="CELL_PHONE"/>
+                      <Cell col="6" text="COMPANY"/>
+                      <Cell col="7" text="JOB_POSITION"/>
+                      <Cell col="8" text="ASSIGNMENT"/>
+                      <Cell col="9" text="OFFICER_YN"/>
+                      <Cell col="10" text="FAX"/>
+                      <Cell col="11" text="ZIP_CODE"/>
+                      <Cell col="12" text="ADDRESS"/>
+                      <Cell col="13" text="COMP_ZIP_CODE"/>
+                      <Cell col="14" text="COMP_ADDRESS"/>
+                      <Cell col="15" text="EMAIL"/>
+                      <Cell col="16" text="DEPT_ID"/>
+                      <Cell col="17" text="PASSWORD"/>
+                    </Band>
+                    <Band id="body">
+                      <Cell text="bind:USER_ID"/>
+                      <Cell col="1" text="bind:USER_NAME"/>
+                      <Cell col="2" text="bind:EN_NAME"/>
+                      <Cell col="3" text="bind:COMP_PHONE"/>
+                      <Cell col="4" text="bind:PHONE"/>
+                      <Cell col="5" text="bind:CELL_PHONE"/>
+                      <Cell col="6" text="bind:COMPANY"/>
+                      <Cell col="7" text="bind:JOB_POSITION"/>
+                      <Cell col="8" text="bind:ASSIGNMENT"/>
+                      <Cell col="9" text="bind:OFFICER_YN"/>
+                      <Cell col="10" text="bind:FAX"/>
+                      <Cell col="11" text="bind:ZIP_CODE"/>
+                      <Cell col="12" text="bind:ADDRESS"/>
+                      <Cell col="13" text="bind:COMP_ZIP_CODE"/>
+                      <Cell col="14" text="bind:COMP_ADDRESS"/>
+                      <Cell col="15" text="bind:EMAIL"/>
+                      <Cell col="16" text="bind:DEPT_ID"/>
+                      <Cell col="17" text="bind:PASSWORD"/>
+                    </Band>
+                  </Format>
+                </Formats>
+              </Grid>
+              <Button id="btn_save" taborder="0" text="저장" left="1095" top="6" width="120" height="26" onclick="div_body_btn_save_onclick" visible="false"/>
+              <Button id="btn_new" taborder="1" text="신규" left="969" top="7" width="120" height="26" onclick="div_body_btn_new_onclick" visible="false"/>
+            </Layout>
+          </Layouts>
+        </Div>
+        <Button id="btn_folding" taborder="3" left="47%" top="98" width="80" height="12"/>
+      </Layout>
+    </Layouts>
+    <Objects>
+      <Dataset id="ds_cond"/>
+      <Dataset id="ds_list">
+        <ColumnInfo>
+          <Column id="_chk" type="string" size="256"/>
+          <Column id="USER_ID" type="string" size="16"/>
+          <Column id="USER_NAME" type="string" size="20"/>
+          <Column id="EN_NAME" type="string" size="20"/>
+          <Column id="COMP_PHONE" type="string" size="20"/>
+          <Column id="PHONE" type="string" size="20"/>
+          <Column id="CELL_PHONE" type="string" size="20"/>
+          <Column id="COMPANY" type="string" size="20"/>
+          <Column id="JOB_POSITION" type="string" size="20"/>
+          <Column id="ASSIGNMENT" type="string" size="20"/>
+          <Column id="OFFICER_YN" type="string" size="1"/>
+          <Column id="FAX" type="string" size="20"/>
+          <Column id="ZIP_CODE" type="string" size="10"/>
+          <Column id="ADDRESS" type="string" size="100"/>
+          <Column id="COMP_ZIP_CODE" type="string" size="10"/>
+          <Column id="COMP_ADDRESS" type="string" size="100"/>
+          <Column id="EMAIL" type="string" size="30"/>
+          <Column id="DEPT_ID" type="string" size="16"/>
+          <Column id="PASSWORD" type="string" size="16"/>
+        </ColumnInfo>
+      </Dataset>
+    </Objects>
+    <Script type="xscript5.0"><![CDATA[/**************************************************************************************************
+ * 01. 업무구분				: 
+ * 02. 화 면 명				: 
+ * 03. 화면설명				:  
+ * 04. 관련 화면 및 서비스	: 
+ * 05. 관련 테이블명			: 
+ * 06. 작 성 자				: 
+ * 07. 작 성 일				: 
+ * 08. 수정이력
+ **************************************************************************************************
+ *    수정일            이름        사유
+ **************************************************************************************************
+ *    
+ *************************************************************************************************/
+
+//-------------------------------------------------------------------------------------------------
+// 1. 공통함수 include
+//-------------------------------------------------------------------------------------------------
+include "lib::comForm.xjs";
+include "lib::comTransaction.xjs";
+
+//-------------------------------------------------------------------------------------------------
+// Form 전역변수 선언
+//-------------------------------------------------------------------------------------------------
+this.fv_var;
+
+//-------------------------------------------------------------------------------------------------
+// 2. Form 함수 정의
+//-------------------------------------------------------------------------------------------------
+this.form_onload = function(obj:Form, e:nexacro.LoadEventInfo)
+{
+	// Form Load 시 필수로 호출
+	this.gfn_formOnLoad(obj);
+
+	//화면 초기설정
+	this.fn_init();
+}
+
+//초기설정
+this.fn_init = function()
+{
+	//공통코드 설정
+}
+
+//화면종료 시 공통호출함수
+this.fn_close = function()
+{
+	//TO-DO : 닫기 전 Validation체크
+	
+	return true;
+}
+
+//-------------------------------------------------------------------------------------------------
+// 3. Transaction 함수 정의
+//-------------------------------------------------------------------------------------------------
+
+//조회
+//1. 조회 함수는 fn_search로 작성한다.
+//2. 조회 Transaction에 대한 구분은 transaction id 로 기술한다.
+//3. 조회 후 Callback 함수는 fn_search 함수 다음에 위치하며 함수명은 fn_searchCallback 으로 작성한다.
+this.fn_search = function(svcId)
+{
+	switch(svcId)
+	{
+		case "searchlist" :
+			break;
+		default : 
+			break;
+	}
+}
+
+//조회 callback
+this.fn_searchCallback = function(svcId, errorCode, errorMsg)
+{
+	if(errorCode < 0){
+		return;
+	}
+	
+	switch(svcId)
+	{
+		case "searchlist" :
+			break;
+		default : 
+			break;
+	}	
+}
+
+//저장
+//1. 저장 함수는 fn_save로 작성한다.
+//2. 저장 Transaction에 대한 구분은 transaction id 로 기술한다.
+//3. 저장 후 Callback 함수는 fn_save 함수 다음에 위치하며 함수명은 fn_saveCallback 으로 작성한다.
+this.fn_save = function(svcId)
+{
+	switch(svcId)
+	{
+		case "savelist" :
+			break;
+		default : 
+			break;
+	}
+}
+
+//저장 callback
+this.fn_saveCallback = function(svcId, errorCode, errorMsg)
+{
+	if(errorCode < 0){
+		return;
+	}
+	
+	switch(svcId)
+	{
+		case "savelist" :
+			break;
+		default : 
+			break;
+	}	
+}
+
+//-------------------------------------------------------------------------------------------------
+// 4. User 함수 정의
+//-------------------------------------------------------------------------------------------------
+//
+this.fn_userfunc = function()
+{
+}
+
+//-------------------------------------------------------------------------------------------------
+// 5. Event 함수 정의
+//------------------------------------------------------------------------------------------------
+
+//조회버튼클릭 시 
+this.div_search_btn_search_onclick = function(obj:Button,  e:nexacro.ClickEventInfo)
+{
+	//TO-DO : 조회 전 필요한 경우 Validation체크
+	
+	//조회
+	this.fn_search("searchlist");
+}
+
+//신규버튼 클릭 시
+this.div_body_btn_new_onclick = function(obj:Button,  e:nexacro.ClickEventInfo)
+{
+	
+}
+
+//저장버튼 클릭 시
+this.div_body_btn_save_onclick = function(obj:Button,  e:nexacro.ClickEventInfo)
+{
+	//TO-DO : 저장 전 필요한 경우 Validation체크
+	
+	//저장하시겠습니까?
+	if(!this.gfn_confirm("beforesave")) return false;
+	
+	//저장
+	this.fn_save("savelist");
+}
+]]></Script>
+  </Form>
+</FDL>

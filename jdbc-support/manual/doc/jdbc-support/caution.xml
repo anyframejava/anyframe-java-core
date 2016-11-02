@@ -1,0 +1,67 @@
+<chapter id="jdbcsupport_injectionandlogging_caution">
+		<title>기타 고려사항</title>
+
+
+		<section id="jdbcsupport_injectionandlogging_caution_native">
+        	<title>DBMS Vendor specific 기능 사용을 위한 P6spyNativeJdbcExtractor 적용</title>
+
+        	<para>
+				OracleLobHandler 사용 시
+			</para>
+			<para>
+				Oracle 인 경우 OracleLobHandler 등을 사용하게 되면 내부적으로 native connection 객체로 casting 하다가 exception 나는 문제가 있다.
+				<programlisting language="java"><![CDATA[org.springframework.dao.InvalidDataAccessApiUsageException: OracleLobCreator needs to work on [oracle.jdbc.OracleConnection], not on [org.anyframe.jdbc.support.p6spy.P6ILConnection]: 
+				specify a corresponding NativeJdbcExtractor; nested exception is java.lang.ClassCastException: org.anyframe.jdbc.support.p6spy.P6ILConnection]]></programlisting>
+			</para>
+			<para>이를 회피할 수 있는 P6spyNativeJdbcExtractor 를 추가로 적용해야 한다.</para>
+			<para>
+				configuration
+				<programlisting language="xml"><![CDATA[<!-- NativeJdbcExtractor for P6Spy -->
+<bean id="nativeJdbcExtractor"
+    class="org.anyframe.jdbc.support.p6spy.P6spyNativeJdbcExtractor"
+    lazy-init="true">
+    <!-- original nativeJdbcExtractor -->
+    <property name="nextNativeJdbcExtractor" ref="commonsDbcpNativeJdbcExtractor" />
+</bean>
+
+<bean id="commonsDbcpNativeJdbcExtractor"
+	class="org.springframework.jdbc.support.nativejdbc.CommonsDbcpNativeJdbcExtractor"
+	lazy-init="true" />
+
+<bean id="lobHandler" class="org.springframework.jdbc.support.lob.OracleLobHandler"
+	lazy-init="true">
+	<property name="nativeJdbcExtractor" ref="nativeJdbcExtractor" />
+</bean>]]></programlisting>
+			</para>
+		</section>
+
+
+
+		<section id="jdbcsupport_injectionandlogging_caution_usage">
+        	<title>적용 가능 영역</title>
+
+        	<para>
+        		dataSource 기반의 persistence 처리 기술 (ex. Spring jdbcTemplate, Anyframe queryService, iBATIS, Hibernate 등) 전반에 모두 활용 가능하다.
+        		(ORM 인 경우도 실제로 jdbc 를 통해 수행되는 내부 sql 문은 확인 가능함.)
+        	</para>
+      	</section>
+      	
+		<section id="jdbcsupport_injectionandlogging_caution_caution">
+        	<title>유의사항</title>
+
+        	<para>
+        		log4jdbc 를 활용한 SQL Logging 과는 기능적으로 중복되는 영역이므로 resultSet logging 등을 사용하지 않는다면 log4jdbc 를 중복으로 적용할 필요가 없다.
+        	</para>
+        	
+        	<para>
+        		p6spy 에 대한 library dependency 충돌 우려가 있는데, 현재 p6spy-1.3.jar 를 pom dependency 로 최종 정의하였다.
+        		
+        		cf.) Anyframe Monitoring Tool 에 대한 에이전트인 infrared-agent-servlet-all-xxx.jar 를 함께 사용하는 것은 추천하지 않는다.
+        		infrared-agent 가 p6spy 관련 모듈을 그대로 copy 하여 포함하고 있음(일부 구현 변경)
+        	</para>
+        	
+        	<para>
+        		Oracle 특화 기능을 사용하는 경우(OracleLobHandler 및 P6spyNativeJdbcExtractor) commons-dbcp 에 대한 기본 dependency 라이브러리가 존재해야 한다.
+        	</para>
+      	</section>
+</chapter>

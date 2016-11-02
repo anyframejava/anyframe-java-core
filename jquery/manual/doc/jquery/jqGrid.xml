@@ -1,0 +1,174 @@
+<chapter id="jquery_jqGrid">
+	<title>jqGrid</title>
+	<para>
+		jqGrid는 웹 상에서 tabular data를 표현하고 조작하기 위한 솔루션을 제공하는 AJAX 기반 자바스크립트 컨트롤이다.(<ulink url="http://www.trirand.com/jqgridwiki/doku.php">http://www.trirand.com/jqgridwiki/doku.php</ulink>)
+	</para> 
+	
+	<section id="jquery_jqGrid_sec002">
+		<title>jqGrid를 위한 Spring MVC Controller 구현</title>
+		<section id="jquery_jqGrid_sec002_001">
+			<title>MovieSearchVO 생성</title>
+			<para>MovieSearchVO는 jqGrid에서 parameter로 제공하는 page, sord, sidx를 멤버로 가지고 있는 클래스이다.</para>
+			<para>MovieSearchVO는 SearchVO 클래스를 상속받는데, SearchVO 클래스에는 영화 검색시 키워드를 저장할 멤버 변수를 갖고 있다. </para>
+			
+			<para>다음은 jqGrid 적용을 위해서 작성한 MovieSearchVO의 코드 일부이다.</para>
+
+			<programlisting language="java">
+<![CDATA[package org.anyframe.plugin.jquery.domain;
+
+public class MovieSearchVO extends SearchVO{
+
+    private String nowPlayingCondition = "Y"; 
+
+    private String sord;
+	
+    private String sidx;
+    
+    private int page = 1;
+	
+	... 중략 ...
+]]></programlisting>
+		</section>
+		<section id="jquery_jqGrid_sec002_002">
+			<title>MovieFinderController.list()</title>
+			<para>현재 jQuery plugin에서는 jQuery의 Grid 컴포넌트(jqgrid plugin)에서 Grid를 그릴 때 비즈니스 서비스 호출 후 반환되는 Page 객체를 바로 받을 수 있는 것이 아닌 Grid에서 인식할 수 있는 Key와 Value 쌍의 Map 형태로 Model 객체에 셋팅해줘야 한다. 
+			다음은 MovieFinderController 클래스의 일부이다.</para>
+			<programlisting language="java">
+<![CDATA[@RequestMapping(params = "method=list")
+public String list(MovieSearchVO search, Model model) throws Exception {
+
+	Page resultPage = movieFinder.getPagingList(search);
+
+	model.addAttribute("page", String.valueOf(resultPage.getCurrentPage()));
+	model.addAttribute("total", String.valueOf(resultPage.getMaxPage()));
+	model.addAttribute("records", String.valueOf(resultPage.getTotalCount()));
+	model.addAttribute("rows", resultPage.getList());
+	return "jsonView";
+}
+]]></programlisting>
+			<para>위의 코드에서 볼 수 있듯이 비즈니스 서비스 수행후 Return 값이 org.anyframe.pagination.Page 타입일 경우 jQuery의 Grid에서 인식 할 수 있는 key값으로 jsonModel 객체를 셋팅해 주고있다.</para>
+		</section>
+	</section>
+		
+	<section id="jquery_jqGrid_sec003">
+		<title>jqGrid를 이용한 HTML 개발</title>
+		<section id="jquery_grGrid_sec003_001">
+			<title>jqGrid를 위한 Javascript 라이브러리 dependency</title>
+			<para>jqGrid를 사용하기 위해서는 jquery, jquery-ui, jqGrid 라이브러리가 필요하다.</para>
+			<programlisting><![CDATA[
+<!-- jquery -->
+<script type="text/javascript" src="<c:url value='/jquery/jquery/jquery-1.7.2.min.js'/>"></script>
+<script type="text/javascript" src="<c:url value='/jquery/jquery/superfish/superfish.js'/>"></script>
+
+<!-- jquery ui-->
+<script type="text/javascript" src="<c:url value='/jquery/jquery/jquery-ui/jquery-ui-1.8.22.custom.min.js'/>"></script>
+<link href="<c:url value='/jquery/jquery/jquery-ui/themes/smoothness/jquery-ui-1.8.22.custom.css'/>" rel="stylesheet" type="text/css" />
+
+<!-- jqGrid -->
+<script type="text/javascript" src="<c:url value='/jquery/jquery/jqgrid/i18n/grid.locale-en.js'/>"></script>
+<script type="text/javascript" src="<c:url value='/jquery/jquery/jqgrid/jquery.jqGrid.min.js'/>"></script>
+<link href="<c:url value='/jquery/jquery/jqgrid/ui.jqgrid.css'/>" rel="stylesheet" type="text/css" />]]></programlisting>
+			<note>
+				<para>※ 라이브러리 참조 선언의 순서에 주의하여야 한다. jQuery -> jQuery ui -> jqGrid 순으로 정의를 한다.</para>
+				<para>※※ jqGrid의 경우 필요에 따라 추가적인 플러그인 라이브러리를 호출하여 사용할 수 있다.(jqGrid 위키사이트 참조 : <ulink url="http://www.trirand.com/jqgridwiki/doku.php">http://www.trirand.com/jqgridwiki/doku.php</ulink>)</para>
+			</note>
+		</section>
+		
+		<para>다음은 jquery plugin 에서는 제공하는 jqGrid MovieFinder 샘플이다.</para>
+		
+		<section id="jquery_grGrid_sec003_002">
+			<title>jqGrid Movie Finder</title>
+			<itemizedlist>
+				<listitem>
+					<para><emphasis role="bold">i.</emphasis> : 영화 리스트를 제공
+					 </para>
+				</listitem>
+				<listitem>
+					<para><emphasis role="bold">ii.</emphasis> : row 단위로 select 할 수 있으며, quickpager 오픈소스 컴포넌트와 결합하여 page navigation을 제공
+					 </para>
+				</listitem>
+				<listitem>
+					<para><emphasis role="bold">iii.</emphasis> : jquery-ui에서 제공하는 dialog widget과 연동하여 영화 등록/수정 기능을 제공
+					 </para>
+				</listitem>
+				<listitem>
+					<para><emphasis role="bold">iv.</emphasis> : jquery-ui에서 제공하는 autocomplete 와 연동하여 목록에 대한 검색기능을 제공
+					 </para>
+				</listitem>
+	  		</itemizedlist>
+			<para>다음은 영화 목록을 출력하는 list.jsp파일의 일부이다.</para>
+			<programlisting><![CDATA[jQuery(document).ready( function() {
+	jQuery('#grid').jqGrid( 
+	{
+		url: "<c:url value='/jqueryMovieFinder.do?method=list'/>",
+		mtype:'POST',
+		datatype : "json",
+		colNames : [ '<spring:message code="movie.genre" />','id','<spring:message code="movie.title" />', '<spring:message code="movie.director" />'
+		 			,'<spring:message code="movie.actors" />', '<spring:message code="movie.releaseDate" />'],
+		jsonReader: {
+				     repeatitems: false
+		},
+		colModel : [
+			{name : 'genre.name', index : 'genre.name', align : 'center'},
+			{key : true, name : 'movieId', hidden : true},
+			{name : 'title', index : 'title', align : 'center'},
+			{name : 'director', index :'director' , align : 'center'}, 
+			{name : 'actors', index : 'actors' , align : 'center'}, 
+			{name : 'releaseDate', index : 'releaseDate', align : 'center'}],
+		autowidth : true,
+		height	  : 69,	
+		scroll : false, 
+		//forceFit:true,	
+		multiselect : true, 
+		viewrecords : true,	
+		rowNum : 3, 
+		sortable : true,
+		loadComplete : function(xhr) {
+			$('#pagination').quickPager( {
+	    		pageSize: '3',
+	    		pageUnit: '3',
+	    		pageIndexId: 'pageIndex',
+	    		searchButtonId: 'searchMovies', 
+	    		currentPage: jQuery('#grid').getGridParam('page'),
+	    		totalCount: jQuery('#grid').getGridParam('records'),
+	    		searchUrl: '#'
+	    		});
+	    },
+	    gridComplete : function() {
+	    },
+		loadError: function(xhr,st,err) {
+			alert('<spring:message code="error.moviefinderimpl.getpaginglist" />');
+		}, 
+		ondblClickRow: function(rowId) {
+			var rowData = jQuery('#grid').getRowData(rowId);
+			
+			openMovieFormDialog('edit', rowData.movieId);
+	    },
+	    beforeSelectRow: function (rowid, e) {
+	    	//Default multi selection works whenever a row of jqGrid clikced.
+	    	//Configuring beforeSelectRow for Multi selection to work when check boxes are clicked - not the rows.
+	        var $myGrid = $(this),
+	            i = $.jgrid.getCellIndex($(e.target).closest('td')[0]),
+	            cm = $myGrid.jqGrid('getGridParam', 'colModel');
+	        return (cm[i].name === 'cb');
+	    }
+	});
+	
+	.
+	.
+	.
+	중략
+
+]]></programlisting>
+			<para>위와 같이 jqgrid로 구현된 리스트의 모습은 아래와 같다.</para>
+			<mediaobject>
+				<imageobject>
+					<imagedata fileref="../image/jquery/jquery_grid.png"	align="center" />
+				</imageobject>
+				<textobject>
+					<phrase>jqgrid로 구현된 리스트의 모습</phrase>
+				</textobject>
+			</mediaobject>
+		</section>
+	</section>
+</chapter>

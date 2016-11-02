@@ -1,0 +1,1168 @@
+<chapter id="cxf_webservices_jaxws">
+	<title>JAX-WS Frontend</title>
+	<para>
+		This is a Frontend model that enables implementation of Web Services through Annotation using JAX-WS,
+        a Web Services standard API.
+  	</para>
+
+  	<para>
+  		JAX-WS (Java API for XML Web Services) is a JAVA API to develop Web Services, as a part of Java EE.
+        Like Java API of another Java EE, JAX-WS uses Annotation adopted at Java SE 5
+        and eases the development and deployment of Web Service client and server module.
+        JAX-WS, a developed concept of JAX-RPC standard, is a Web Service standard 
+        integrated and developed based on JAXB standard for XML binding, SAX standard for standard streaming parser, 
+        and a new SAAJ standard with enhanced functions. JAX-WS is characterized by the following.
+     </para>
+
+	<itemizedlist>
+    	<listitem>
+      		<para>
+      			More convenient to develop Web Services than JAX-RPC
+      		</para>
+
+      		<para>
+      			Compared with JAX-RPC, developing Web Services is much more convenient.
+                Developing Web Service Endpoint and mapping between Java type and WSDL 
+                can be performed explicitly through Annotation setting.
+                By replacing Web Service deployment descriptor which had to be developed to create Web Services in JAX-RPC environment
+                with Annotation, difficulties with developing Web Services are significantly reduced.
+      		</para>
+    	</listitem>
+
+    	<listitem>
+      		<para>
+      			Task through Annotation
+      		</para>
+
+      		<para>
+      			Handles mapping between Java and WSDL, and schema-type mapping between Java type and message referred to by WSDL.
+                Provides necessary information among runtime process handling Web Service messages
+                and is used to respond to calling Web Services.
+      		</para>
+    	</listitem>
+
+    	<listitem>
+      		<para>
+      			Annotation-related Spec.
+      		</para>
+
+      		<para>
+      			Annotation used in JAX-WS 2.x is separately defined in Web Services Metadata(JSR-181)
+                Spec. and JAX-WS 2.x Spec. Annotation used in other message-type mapping is defined in JAXB 2.x Spec.
+                Representative annotation defined in Web Services Metadata(JSR-181) Spec. is as follows.
+                (javax.jws.WebService, javax.jws.WebMethod, javax.jws.WebParam, javax.jws.WebResult, javax.jws.soap.SOAPBinding)
+      		</para>
+    	</listitem>
+  	</itemizedlist>
+
+  	<para>
+  		The following figure shows JAX-WS process.
+  	</para>
+
+  	<mediaobject>
+    	<imageobject>
+      		<imagedata align="center" fileref="../image/cxf-jaxws/webservices/jaxws.jpg" />
+    	</imageobject>
+  	</mediaobject>
+
+  	<para>
+  		The following are instructions on how to use JAX-WS Frontend in server and client layer.
+        JAX-WS Frontend can develop server and client mainly by two ways: using Frontend API
+        or using Spring Configuration.
+  	</para>
+
+  	<itemizedlist>
+    	<listitem>
+      		<para>
+      			Server Configuration
+      		</para>
+
+      		<orderedlist>
+        		<listitem>
+          			<para>
+          				<link linkend="cxf_webservices_jaxws_webservice">Web Service development</link>
+          			</para>
+        		</listitem>
+
+        		<listitem>
+          			<para>
+          				Running server (Select one of two)
+          			</para>
+          			<itemizedlist>
+            			<listitem>
+              				<para>
+              					<link linkend="cxf_webservices_jaxws_endpoint">Spring
+              					Configuration XML - Use <![CDATA[<jaxws:endpoint/> tag (Recommended)]]></link>
+              				</para>
+            			</listitem>
+            			<listitem>
+              				<para>
+              					<link linkend="cxf_webservices_jaxws_serveraip">[Server]
+              					Use JAX-WS Frontend API </link>
+              				</para>
+            			</listitem>            
+          			</itemizedlist>
+        		</listitem>
+			</orderedlist>
+    	</listitem>
+
+	    <listitem>
+	    	<para>
+	    		Client Configuration
+	    	</para>
+	
+	      	<orderedlist>
+	        	<listitem>
+	          		<para>
+	          			Developing client (Select one of two)
+	          		</para>
+	
+	          		<itemizedlist>
+	
+	            		<listitem>
+	              			<para>
+	              				<link linkend="cxf_webservices_jaxws_clienttag">Spring
+	              				Configuration XML - Use <![CDATA[<jaxws:client/> tag (Recommended)]]></link></para>
+	            		</listitem>
+	                        
+	            		<listitem>
+	              			<para>
+	              				<link linkend="cxf_webservices_jaxws_clientaip">[Client]
+	              				Use JAX-WS Frontend API</link></para>
+	            		</listitem>
+	              
+	          		</itemizedlist>
+	        	</listitem>
+			</orderedlist>
+		</listitem>
+	
+	    <listitem>
+	    	<para>
+	    		<link linkend="cxf_webservices_jaxws_annotation">[Reference] Annotation setting when developing Web Services</link>
+	      	</para>
+	    </listitem>
+	</itemizedlist>
+
+	<section id="cxf_webservices_jaxws_webservice">
+    	<title>Developing Web Service</title>
+
+    	<para>
+    		When developing service to be exposed to Web Service, the method is same to developing general service bean.
+            However, @WebService Annotation must be set in interface.
+    	</para>
+
+    	<section id="cxf_webservices_jaxws_webservice_sample">
+      		<title>Samples</title>
+
+      		<para>
+      			The following is an example of Movie Service to be exposed to Web Service.
+                Service composes of interface class, implementation class, DAO(Data Access Object) class,
+                and VO(Value Object) class, same to developing general Spring bean. 
+      		</para>
+
+      		<itemizedlist>
+        		<listitem>
+          			<para>
+          				Interface Class
+          			</para>
+
+          			<para>
+          				The following is a part of MovieService.java which developed Movie Service interface class. 
+                        @WebService Annotation must be defined in the top of interface class. 
+                        Although there are various property values of @WebService Annotation and various Annotation types 
+                        to define by method and parameter, the only required Annotation is @WebService. 
+                        For additionally defining another type of Annotation, 
+                        refer to <link linkend="cxf_webservices_jaxws_annotation">[Reference] Annotation when defining Web 
+                        Services</link> setting method. 
+          				<programlisting language="java"><emphasis role="bold">@WebService</emphasis>
+<![CDATA[public interface MovieService {
+	Page getPagingList(Movie movie, int pageIndex) throws Exception;
+	
+	@XmlJavaTypeAdapter(CXFMapAdapter.class)
+	Map<String, Movie> get(String movieId) throws Exception;
+
+	Page getPagingList(Movie movie, int pageIndex) throws Exception;
+...]]></programlisting>
+    				</para>
+        		</listitem>
+
+        		<listitem>
+          			<para>
+          				Implementation Class
+          			</para>
+
+          			<para>
+          				As a class which implemented interface class, it can be developed regardless of Web Service implementation. 
+                        The following is a part of MovieServiceImpl.java which implemented Movie Service interface class. 
+                        By using MovieDao internally, it manages Movie information. 
+                        @WebService Annotation can be defined at the top of the implementation class. 
+                        As @WebService Annotation was already defined at the top of interface class, it will be skipped here. 
+                        For instructions on how to set annotation, refer to <link
+                        linkend="cxf_webservices_jaxws_annotation"> [Reference] Annotation when developing Web Services</link>.
+          				<programlisting language="java"><emphasis role="bold">@Service("cxfJaxWsMovieService")</emphasis><![CDATA[
+@Transactional(rollbackFor = { Exception.class }, propagation = Propagation.REQUIRED)
+public class MovieServiceImpl implements MovieService {
+
+	@Inject
+	@Named("cxfJaxWsMovieDao")
+	private MovieDao movieDao;
+
+	public Map<String, Movie> get(String movieId) throws Exception {
+		return this.movieDao.get(movieId);
+	}
+
+	public Page getPagingList(Movie movie, int pageIndex) throws Exception {
+		return this.movieDao.getPagingList(movie, pageIndex);
+	}
+    ...
+}]]></programlisting></para>
+				</listitem>
+			</itemizedlist>
+    	</section>
+	</section>
+
+
+	<section id="cxf_webservices_jaxws_endpoint">
+    	<title>Spring Configuration XML - Use jaxws:endpoint tag</title>
+
+    	<para>
+    		<![CDATA[To run server exposing the developed service to Web Service, two methods are supported.
+            Among them, let's use Spring Configuration XML - <jaxws:endpoint/> tag to run server.
+            (Apache CXF also provides ways to run server using <jaxws:server/> tag, but Anyframe uses <jaxws:endpoint/> tag, 
+            so the manual does not include information on <jaxws:server/> tag.)]]>
+    	</para>
+    	<para>
+    		<![CDATA[Each property value of <jaxws:endpoint/> tag is as shown in the following table.
+    		There are also many properties that are not shown in the table.
+            Note that the following is an explanation of property values that need to be defined.]]>
+            For explanation on other property values, refer to 
+            <ulink url="http://cxf.apache.org/docs/jax-ws-configuration.html">JAX-WS Configuration</ulink>.
+    	</para>
+
+    	<informaltable>
+      		<tgroup cols="4">
+            	<colspec colnum="1" colname="col1" colwidth="2*"/>
+                <colspec colnum="2" colname="col2" colwidth="6*"/>
+                <colspec colnum="3" colname="col3" colwidth="1*"/>
+                <colspec colnum="4" colname="col4" colwidth="1*"/>
+
+        		<thead>
+          			<row>
+            			<entry align="center">Property Name</entry>
+
+            			<entry align="center">Description</entry>
+
+            			<entry align="center">Required</entry>
+
+            			<entry align="center">Default Value</entry>
+          			</row>
+        		</thead>
+
+        		<tbody>
+          			<row>
+			            <entry>id</entry>
+			
+			            <entry>Define spring bean id.</entry>
+			
+			            <entry align="center">Y</entry>
+			
+			            <entry align="center">N/A</entry>
+          			</row>
+
+          			<row>
+            			<entry>implementor</entry>
+
+            			<entry>
+            				Define implementation class. If you want to replace class name with spring bean id,
+                            add # in front of bean id.
+            			</entry>
+
+            			<entry align="center">Y</entry>
+
+            			<entry align="center">N/A</entry>
+          			</row>
+
+          			<row>
+            			<entry>address</entry>
+
+            			<entry>Define the address to run service in relative path.</entry>
+
+			            <entry align="center">Y</entry>
+
+			            <entry align="center">N/A</entry>
+          			</row>
+        		</tbody>
+      		</tgroup>
+		</informaltable>
+
+    	<section id="cxf_webservices_jaxws_endpoint_sample">
+      		<title>Samples</title>
+
+      		<para>
+      			<![CDATA[The following is an example of running server to expose Movie Service to Web Service 
+                by using Spring Configuration XML - <jaxws:endpoint/> tag.]]>
+      		</para>
+
+      		<itemizedlist>
+        		<listitem>
+          			
+
+          			<para>
+          				<![CDATA[The following is a part of context-cxf-jaxws.xml
+                        which defines the properties of <jaxws:endpoint/> tag that exposes business layer service to Web Service.]]>
+          				<para>
+          				Configuration
+          			</para><programlisting language="xml"><![CDATA[<beans xmlns="http://www.springframework.org/schema/beans"
+  xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+  xmlns:cxf="http://cxf.apache.org/core"
+  ]]><emphasis role="bold">xmlns:jaxws="http://cxf.apache.org/jaxws"</emphasis><![CDATA[	
+  xsi:schemaLocation="http://www.springframework.org/schema/beans
+  http://www.springframework.org/schema/beans/spring-beans-3.0.xsd
+  http://cxf.apache.org/core http://cxf.apache.org/schemas/core.xsd
+  ]]><emphasis role="bold">http://cxf.apache.org/jaxws http://cxf.apache.org/schemas/jaxws.xsd</emphasis><![CDATA["> 
+          			
+    <!-- Load CXF modules from cxf.jar -->
+    <import resource="classpath:META-INF/cxf/cxf.xml" />
+    <import resource="classpath:META-INF/cxf/cxf-extension-soap.xml" />
+    <import resource="classpath:META-INF/cxf/cxf-servlet.xml" /> 
+	
+    <!-- Enable message logging using the CXF logging feature -->   
+    <cxf:bus>
+        <cxf:features>
+            <cxf:logging />
+        </cxf:features>
+    </cxf:bus>	
+	
+    <!-- JAX-WS Frontend to expose movieService using endpoint tag -->
+    <]]><emphasis role="bold">jaxws:endpoint</emphasis><![CDATA[ id="cxfJaxWsServerMovieService" implementor="#cxfJaxWsMovieService" address="/ws"/>]]></programlisting>
+    				</para>
+
+          			<para>
+          				Run web application using WAS of Jetty or Tomcat server and expose business layer service to Web Service.
+                        In this case, Spring configuration XML file must be registered in web.xml
+                        using org.springframework.web.context.ContextLoaderListener.
+                        The following is a part of web.xml defining CXFServlet and ContextLoaderListener.
+          				<programlisting language="xml"><![CDATA[<web-app 
+    ...
+    <context-param>
+        <param-name>contextConfigLocation</param-name>
+        <param-value>
+            classpath:/spring/context-*.xml
+        </param-value>
+    </context-param>
+	
+    <listener>
+        <listener-class>]]><emphasis role="bold">org.springframework.web.context.ContextLoaderListener</emphasis><![CDATA[</listener-class>
+    </listener>
+	...
+    <!-- cxf-configuration-START -->  
+    <servlet>
+        <servlet-name>CXF-JAXWS-Servlet</servlet-name>
+           <servlet-class>]]><emphasis role="bold">org.apache.cxf.transport.servlet.CXFServlet</emphasis><![CDATA[</servlet-class>
+        <load-on-startup>1</load-on-startup>
+    </servlet>	
+	
+    <servlet-mapping>
+        <servlet-name>CXF-JAXWS-Servlet</servlet-name>
+        <url-pattern>/cxf-jaxws/*</url-pattern>
+    </servlet-mapping>	
+    <mime-mapping>
+        <extension>wsdl</extension>
+        <mime-type>text/xml</mime-type>
+    </mime-mapping>
+    <mime-mapping>
+        <extension>xsd</extension>
+        <mime-type>text/xml</mime-type>
+    </mime-mapping>    
+    ...
+</web-app>]]></programlisting>
+					</para>
+        		</listitem>
+      		</itemizedlist>
+    	</section>
+  	</section>
+
+	<section id="cxf_webservices_jaxws_serveraip">
+    	<title>Server: Using JAX-WS Frontend API</title>
+
+    	<para>
+    		To run server exposing the developed services to Web Services, two methods are provided.
+            Among these, let's develop Java code and run server by using JAX-WS Frontend API.
+            It is possible to directly call JAX-WS Frontend API and develop Java code provided in Apache CXF,
+            and also possible to register JaxWsServerFactoryBean class as a bean of Spring Configuration file.
+    	</para>
+
+    	<section id="cxf_webservices_jaxws_serveraip_sample">
+      		<title>Samples</title>
+
+      		<para>
+      			The following is an example of running server exposing MovieFinder Service to Web Service using JaxWsServerFactoryBean
+                provided in Apache CXF.
+      		</para>
+
+      		<itemizedlist>
+        		<listitem>
+          			<para>
+          				Running server using Apache CXF JaxWsServerFactoryBean
+          			</para>
+
+          			<para>
+          				The following is an example of developing code which runs server exposing business layer service to Web Service.
+          				<programlisting language="java">MovieServiceImpl implementor = new MovieServiceImpl();
+JaxWsServerFactoryBean svrFactory=new JaxWsServerFactoryBean();
+svrFactory.setServiceClass(MovieService.class);
+svrFactory.setAddress("http://localhost:8080/myproject/cxf-jaxws/ws");
+svrFactory.setServiceBean(implementor);     
+svrFactory.create();</programlisting>
+					</para>
+        		</listitem>
+      		</itemizedlist>
+    	</section>
+	</section>
+  
+
+	<section id="cxf_webservices_jaxws_clienttag">
+    	<title>Spring Configuration XML - Using jaxws:client tag</title>
+
+    	<para>
+    		<![CDATA[To develop client accessing web service, two methods are provided.
+            Among them, let's develop client using Spring Configuration XML - <jaxws:client/> tag to access web services.
+            Each property value of <jaxws:client/> tag is as shown in the following table.
+            There are also many properties that are not shown in the following table.
+            Note that the following is an explanation of property values that need to be defined.
+            For explanation on other property values, refer to ]]>
+            <ulink url="http://cxf.apache.org/docs/jax-ws-configuration.html">JAX-WS Configuration</ulink> .
+    		<informaltable>
+        		<tgroup cols="4">
+          			<thead>
+            			<row>
+              				<entry align="center">Property Name</entry>
+
+              				<entry align="center">Description</entry>
+
+              				<entry align="center">Required</entry>
+
+              				<entry align="center">Default Value</entry>
+            			</row>
+          			</thead>
+
+          			<tbody>
+            			<row>
+              				<entry>id</entry>
+
+              				<entry>Define spring bean id.</entry>
+
+			              	<entry align="center">Y</entry>
+			
+			              	<entry align="center">N/A</entry>
+            			</row>
+
+            			<row>
+				       		<entry>serviceBean</entry>
+				
+				            <entry>Define service interface class.</entry>
+				
+				            <entry align="center">Y</entry>
+				
+				            <entry align="center">N/A</entry>
+            			</row>
+
+            			<row>
+		              		<entry>address</entry>
+		
+		              		<entry>Define URL address to access service in absolute path.</entry>
+		
+		              		<entry align="center">Y</entry>
+
+              				<entry align="center">N/A</entry>
+            			</row>
+          			</tbody>
+        		</tgroup>
+      		</informaltable>
+      	</para>
+
+		<section id="cxf_webservices_jaxws_clienttag_sample">
+      		<title>Samples</title>
+
+      		<para>
+      			<![CDATA[The following is an example of accessing Movie Service using Spring Configuration XML - <jaxws:client/> tag.]]>
+      		</para>
+
+      		<itemizedlist>
+        		<listitem>
+          			<para>
+          				Configuration
+          			</para>
+
+          			<para>
+          				<![CDATA[The following is a part of cxf-jaxws-servlet.xml, a configuration file of <jaxws:client/> tag
+                        accessing Movie Service exposed to Web Services.]]>
+          				<programlisting language="xml"><![CDATA[<beans xmlns="http://www.springframework.org/schema/beans"
+  xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+  xmlns:cxf="http://cxf.apache.org/core"
+  ]]><emphasis role="bold">xmlns:jaxws="http://cxf.apache.org/jaxws"</emphasis><![CDATA[	
+  xsi:schemaLocation="http://www.springframework.org/schema/beans
+  http://www.springframework.org/schema/beans/spring-beans-3.0.xsd
+  http://cxf.apache.org/core http://cxf.apache.org/schemas/core.xsd
+  ]]><emphasis role="bold">http://cxf.apache.org/jaxws http://cxf.apache.org/schemas/jaxws.xsd</emphasis><![CDATA[">           				
+  <]]><emphasis role="bold">jaxws:client id="cxfJaxWsClientMovieService" serviceClass="myproject.cxf.jaxws.moviefinder.service.MovieService"
+    address="http://localhost:8080/myproject/cxf-jaxws/ws" </emphasis><![CDATA[/>]]></programlisting>
+    				</para>
+        		</listitem>
+
+        		<listitem>
+          			<para>
+          				Controller
+          			</para>
+
+          			<para>
+          				The following is a part of MovieController.java, a Controller class accessing to Movie Service 
+                        exposed to Web Service based on the above-mentioned configuration files.
+           				<programlisting language="java"><![CDATA[@Controller("cxfJaxWsMovieController")
+@RequestMapping("/cxfJaxWsMovie.do")
+@SessionAttributes(types = Movie.class)
+public class MovieController {
+
+	@Inject
+	@Named("cxfJaxWsClientMovieService")
+	private MovieService movieService;
+
+	@RequestMapping(params = "method=get")
+	public String get(@RequestParam("movieId") String movieId, Model model)
+			throws Exception {
+		Map<String, Movie> resultMap = this.movieService.get(movieId);
+		model.addAttribute(resultMap.get("movie"));
+
+		return "cxf-jaxws/moviefinder/movie/form";
+	}
+...]]></programlisting>
+    				</para>
+        		</listitem>
+      		</itemizedlist>
+    	</section>
+	</section>
+
+	<section id="cxf_webservices_jaxws_clientaip">
+    	<title>Client: Using JAX-WS Frontend API</title>
+
+    	<para>
+    		To develop client accessing Web Service, two methods are provided.
+            Among them, let's develop client using JAX-WS Frontend API and access Web Service.
+            It is possible to directly call JAX-WS Frontend API provided in Apache CXF and is also possible
+            to register JaxWsProxyFactoryBean class as a bean of Spring Configuration file.
+   		 </para>
+
+    	<section id="cxf_webservices_jaxws_clientaip_sample">
+      		<title>Samples</title>
+
+      		<para>
+      			Here is an example of accessing Movie Service exposed to Web Services
+                by directly using JaxWsProxyFactoryBean provided in Apache CXF.
+      		</para>
+
+      		<itemizedlist>
+        		<listitem>
+          			<para>
+          				Client using Apache CXF JaxWsProxyFactoryBean
+          			</para>
+
+          			<para>
+          				The following is an example of developing code accessing Movie Service exposed to
+                        Web Services using JaxWsProxyFactoryBean class provided in Apache CXF.
+          				<programlisting language="java"><![CDATA[JaxWsProxyFactoryBean factory = new JaxWsProxyFactoryBean();
+factory.setServiceClass(MovieService.class);
+factory.setAddress("http://localhost:8080/myproject/cxf-jaxws/ws");
+
+MovieService movieService = (MovieService) factory.create();
+Map<String, Movie> resultMap = movieService.get("MV-00003");]]></programlisting>
+					</para>
+        		</listitem>
+      		</itemizedlist>
+    	</section>
+	</section>
+  
+  	<section id="cxf_webservices_jaxws_annotation">
+    	<title>Defining annotation</title>
+
+    	<para>
+    		Only @WebService() is required, and in most cases, defining annotation is not required as default value is provided.
+    	</para>
+
+    	<section id="cxf_webservices_jaxws_annotation_webservice">
+      		<title>@WebService (javax.jws.WebService)</title>
+
+      		<para>
+      			This is used when java class containing Annotation specifies Web Service Endpoint interface class or implementation class, 
+                and is defined in SEI and implementation class. (Required) 
+                No need to define all property values, but it is recommended to define as much information as possible. 
+                The more Annotation information defined in SEI, the more well-defined WSDL can be created. 
+                Details on property are as shown in the following table. 
+      			<informaltable>
+          			<tgroup cols="6">
+                		<colspec colnum="1" colname="col1" colwidth="2*"/>
+		                <colspec colnum="2" colname="col2" colwidth="1*"/>
+		                <colspec colnum="2" colname="col2" colwidth="1*"/>
+		                <colspec colnum="1" colname="col1" colwidth="2*"/>
+		                <colspec colnum="2" colname="col2" colwidth="1*"/>
+		                <colspec colnum="2" colname="col2" colwidth="3*"/>
+            			<thead>
+              				<row>
+				            	<entry align="center">Property Name</entry>
+				
+				                <entry align="center">Type</entry>
+				
+				                <entry align="center">Required</entry>
+				
+				                <entry align="center">WSDL Mapping</entry>
+				
+				                <entry align="center">Default</entry>
+				
+				                <entry align="center">Description</entry>
+              				</row>
+            			</thead>
+
+            			<tbody>
+              				<row>
+				                <entry>name</entry>
+				
+				                <entry>String</entry>
+				
+				                <entry align="center">X</entry>
+				
+				                <entry>wsdl:portType</entry>
+				
+				                <entry>Class name</entry>
+				
+				                <entry>
+				                	Mapped as a web service name of wsdl:portType.
+                                    Default value is the name excluding interface class or implementation class package.
+				                </entry>
+				              </row>
+
+				            <row>
+								<entry>targetNamespace</entry>
+				
+				                <entry>String</entry>
+				
+				                <entry align="center">X</entry>
+				
+				                <entry align="center">N/A</entry>
+				
+				                <entry>Package Name</entry>
+				
+				                <entry>
+				                	XML namespace to be used in WSDL and XML element created from Web Service
+				                </entry>
+              				</row>
+
+				            <row>
+				                <entry>serviceName</entry>
+				
+				                <entry>String</entry>
+				
+				                <entry align="center">X</entry>
+				
+				                <entry>wsdl:service</entry>
+				
+				                <entry>Class name + "Service"</entry>
+				
+				                <entry>
+				                	Cannot be set in SEI. Mapped as a service name of wsdl:service. 
+                                    Default value is the name excluding interface class or implementation class package name + "Service"
+				                </entry>
+				       		</row>
+
+				            <row>
+				                <entry>wsdlLocation</entry>
+				
+				                <entry>String</entry>
+				
+				                <entry align="center">X</entry>
+				
+				                <entry align="center">N/A</entry>
+				
+				                <entry>Service Deploy URI</entry>		
+				                
+				                <entry>
+				                	portType and binding defined in WSDL in the pre-defined WSDL location must be consistent with 
+                                    values developed in service implementation class.
+				               	</entry>
+				            </row>
+
+				            <row>
+				                <entry>endpointInterface</entry>
+				
+				                <entry>String</entry>
+				
+				                <entry align="center">X</entry>
+				
+				                <entry align="center">N/A</entry>
+				
+				                <entry>Class name including SEI package name, implementation class name + "Port"</entry>
+				
+				                <entry>Cannot set in SEI, SEI name of implementation class</entry>
+				            </row>
+				
+				            <row>
+				                <entry>portName</entry>
+				
+				                <entry>String</entry>
+				
+				                <entry align="center">X</entry>
+				
+				                <entry>wsdl:port</entry>
+				
+				                <entry>Implementation class name + "Port"</entry>
+				
+				                <entry>Cannot set in SEI. Mapped as wsdl:port. Default value is implementation class name + "Port"</entry>
+				            </row>
+            			</tbody>
+          			</tgroup>
+        		</informaltable>
+        	</para>
+
+      		<itemizedlist>
+        		<listitem>
+          			<para>
+          				Method rules in class where @WebService annotation setting is applied.
+          			</para>
+
+          			<itemizedlist>
+            			<listitem>
+              			<para>
+              				When @WebService annotation of implementation class refers to SEI,
+                            there must be no @WebMethod annotation in implementation class.
+              			</para>
+            			</listitem>
+
+            			<listitem>
+              				<para>
+              					All common methods of SEI are considered methods exposed to Web Service
+                                regardless of @WebMethod annotation setting.
+              				</para>
+            			</listitem>
+
+            			<listitem>
+              				<para>
+              					In case of implementation class not referring to SEI,
+                                method is not exposed to Web Service when @WebMethod annotation is defined as exclude=true value.
+              				</para>
+            			</listitem>
+          			</itemizedlist>
+        		</listitem>
+      		</itemizedlist>
+		</section>
+
+    	<section id="cxf_webservices_jaxws_annotation_webparam">
+      		<title>@WebParam (javax.jws.WebParam)</title>
+
+      		<para>
+      			Sets mapping between Java method input parameter of Web Service
+                and XML element showing parameter in WSDL file.
+                Details on property is as shown in the following table.
+      			<informaltable>
+          		<tgroup cols="4">
+	                <colspec colnum="1" colname="col1" colwidth="1*"/>
+	                <colspec colnum="2" colname="col2" colwidth="1*"/>
+	                <colspec colnum="3" colname="col3" colwidth="1*"/>
+	                <colspec colnum="4" colname="col4" colwidth="7*"/>
+
+            		<thead>
+              			<row>
+			                <entry align="center">Property</entry>
+			
+			                <entry align="center">Type</entry>
+			
+			                <entry align="center">Required</entry>
+			
+			                <entry align="center">Description</entry>
+              			</row>
+            		</thead>
+
+            		<tbody>
+              			<row>
+			                <entry>name</entry>
+			
+			                <entry>String</entry>
+			
+			                <entry align="center">X</entry>
+			
+			                <entry>
+			                	Web Service that has a parameter name is RPC style is mapped as wsdl:part.
+                                Web Service of Document style becomes the local name of XML element showing parameter.
+                                Default value is parameter name of method.
+			                </entry>
+              			</row>
+
+              			<row>
+                			<entry>targetNamespace</entry>
+
+                			<entry>String</entry>
+
+                			<entry align="center">X</entry>
+
+                			<entry>
+                				Used only in document style Web Service where XML namespace of parameter is matched with XML element.
+                                Default value is targetNamespace of Web Service.
+                			</entry>
+              			</row>
+
+              			<row>
+                			<entry>mode</entry>
+
+                			<entry>Enum</entry>
+
+                 			<entry align="center">X</entry>
+
+                			<entry>As a direction where parameter is transferred, select one among IN, OUT or INOUT.
+                            Default value is IN. </entry>
+              			</row>
+
+              			<row>
+			                <entry>header</entry>
+			
+			                <entry>Boolean</entry>
+			
+			                <entry align="center">X</entry>
+			
+			                <entry>If defined as true, parameter will be fetched from SOAP message header, not from SOAP message body.
+                            Default value is false.</entry>
+              			</row>
+
+              			<row>
+                			<entry>partName</entry>
+
+                			<entry>String</entry>
+
+                			<entry align="center">X</entry>
+
+                			<entry>This is only used if the operation is RPC style, or if the operation is document style and the parameter style is BARE.</entry>
+              			</row>
+            		</tbody>
+          		</tgroup>
+        	</informaltable></para>
+		</section>
+
+		<section id="cxf_webservices_jaxws_annotation_webmethod">
+      		<title>@WebMethod (javax.jws.WebMethod)</title>
+
+      		<para>
+      			Used when exposing methods to Web Service. 
+                @WebMethod annotation is provided only in the class where @WebService annotation is defined. 
+                Details of property are shown in the following table.
+      			<informaltable>
+          			<tgroup cols="4">
+                		<colspec colnum="1" colname="col1" colwidth="2*"/>
+                		<colspec colnum="2" colname="col2" colwidth="1*"/>
+		                <colspec colnum="3" colname="col3" colwidth="1*"/>
+		                <colspec colnum="4" colname="col4" colwidth="6*"/>
+
+            			<thead>
+              				<row>
+				                <entry align="center">Property</entry>
+				
+				                <entry align="center">Type</entry>
+				
+				                <entry align="center">Required</entry>
+				
+				                <entry align="center">Description</entry>
+              				</row>
+            			</thead>
+
+            			<tbody>
+              				<row>
+				                <entry>operationName</entry>
+				
+				                <entry>String</entry>
+				
+				                <entry align="center">X</entry>
+				
+				                <entry>Mapped as method name of wsdl:operation.
+                                Default value is java method name.</entry>
+              				</row>
+
+              				<row>
+				                <entry>action</entry>
+				
+				                <entry>String</entry>
+				
+				                <entry align="center">X</entry>
+				
+				                <entry>
+				                	As an action property applied to method, 
+				                	it determines the value of SOAPAction header in SOAP message.
+				                </entry>
+              				</row>
+
+              				<row>
+				                <entry>exclude</entry>
+				
+				                <entry>Boolean</entry>
+				
+				                <entry align="center">X</entry>
+				
+				                <entry>Defines whether to exclude method in Web Service.
+                                Default value is false.</entry>
+              				</row>
+            			</tbody>
+          			</tgroup>
+        		</informaltable>
+        	</para>
+		</section>
+
+    	<section id="cxf_webservices_jaxws_annotation_oneway">
+      		<title>@OneWay (javax.jws.OneWay)</title>
+
+      		<para>
+      			Used when defining one-way method where there is input value but no return value.
+                Used along with @WebMethod annotation and special property definition is not needed.
+      		</para>
+    	</section>
+
+    	<section id="cxf_webservices_jaxws_annotation_webresult">
+      		<title>@WebResult (javax.jws.WebResult)</title>
+
+      		<para>
+      			Used when defining mapping between return value of the method exposed to Web Service
+                and XML element showing WSDL return value.
+                Details of property are shown in the following table.
+      			<informaltable>
+	          		<tgroup cols="4">
+	                	<colspec colnum="1" colname="col1" colwidth="2*"/>
+	                	<colspec colnum="2" colname="col2" colwidth="1*"/>
+	                	<colspec colnum="3" colname="col3" colwidth="1*"/>
+	                	<colspec colnum="4" colname="col4" colwidth="6*"/>
+	
+	            		<thead>
+	              			<row>
+				                <entry align="center">Property</entry>
+				
+				                <entry align="center">Type</entry>
+				
+				                <entry align="center">Required</entry>
+				
+				                <entry align="center">Description</entry>
+	              			</row>
+	            		</thead>
+	
+	            		<tbody>
+	              			<row>
+				                <entry>name</entry>
+				
+				                <entry>String</entry>
+				
+				                <entry align="center">X</entry>
+				
+				                <entry>
+				                	Element name showing the return value in WSDL.
+                                    For RPC style web services, this is the name of the wsdl:part attribute representing the return value. 
+                                    For document style web services, this is the local name of the XML element representing the return value. 
+                                    The default value is return for RPC and DOCUMENT/WRAPPED bindings.
+                                    The default value is the method name + Response for DOCUMENT/BARE bindings. 
+					            </entry>
+	              			</row>
+	
+	              			<row>
+				                <entry>targetNamespace</entry>
+				
+				                <entry>String</entry>
+				
+				                <entry align="center">X</entry>
+				
+				                <entry>
+                                    Specifies the XML namespace for the return value. 
+                                    This parameter is only used if the operation is RPC style or if the operation is DOCUMENT style and the parameter style is BARE. 
+                                    Default value is targetNamespace value of Web Service.
+				                </entry>
+	              			</row>
+	
+	              			<row>
+				                <entry>header</entry>
+				
+				                <entry>String</entry>
+				
+				                <entry align="center">X</entry>
+				
+				                <entry>
+				                Specifies whether the result is carried in a header. 
+                                Default value is false.</entry>
+	              			</row>
+	
+	              			<row>
+	                			<entry>partName</entry>
+	
+	                			<entry>String</entry>
+	
+	                			<entry align="center">X</entry>
+	
+	                			<entry>
+	                			Specifies the part name for the result with RPC or DOCUMENT/BARE operations. The default value is @WebResult.name. 
+	                			</entry>
+	              			</row>
+	            		</tbody>
+					</tgroup>
+        		</informaltable>
+        	</para>
+    	</section>
+
+    	<section id="cxf_webservices_jaxws_annotation_sample">
+      		<title>Samples</title>
+
+      		<para>
+      			Here is an example of setting various Annotations in Movie Service interface class.  
+      		</para>
+
+      		<itemizedlist>
+        		<listitem>
+          			<para>
+          				Interface Class
+          			</para>
+
+          			<para>
+          				The following is a part of MovieService.java class which develops Movie Service interface class.
+                        Setting @WebService Annotation at the top of interface class is required.
+                        Also, let's take a look into @WebMethod, @Oneway, and @WebParam Annotation and see how they work. 
+          				<programlisting language="java"><![CDATA[@WebService
+public interface MovieService {
+    // ================= method for Annotation tests
+    ]]><emphasis role="bold">@WebMethod(exclude = true)</emphasis><![CDATA[
+    public void testAnnotationMethodExclude();
+
+    ]]><emphasis role="bold">@WebMethod(operationName = "testAnnotationMethodInclude")</emphasis><![CDATA[
+    public void testAnnotationMethod();
+
+    ]]><emphasis role="bold">@Oneway</emphasis><![CDATA[
+    public String testAnnotationOneWay();
+
+    public String testAnnotationWebParam(
+            ]]><emphasis role="bold">@WebParam(name = "movieAnnotationWebParam")</emphasis><![CDATA[ String input);
+...]]></programlisting>
+    				</para>
+				</listitem>
+        		<listitem>
+          			<para>
+          				Implementation Class
+          			</para>
+          			<para>
+          			The following is a part of MovieServiceImpl.java which implements Movie Service interface class. 
+          			<programlisting language="java"><![CDATA[@Service("cxfJaxWsMovieService")
+public class MovieServiceImpl implements MovieService {
+
+	@Inject
+	@Named("cxfJaxWsMovieDao")
+	private MovieDao movieDao;
+
+	// ================= method for Annotation tests
+	public void testAnnotationMethodExclude() {
+		MovieService.LOGGER.debug("testAnnotationMethodExclude method is called.");
+	}
+
+	public void testAnnotationMethod() {
+		MovieService.LOGGER.info("testAnnotationMethod method is called.");
+	}
+
+	public String testAnnotationOneWay() {
+		MovieService.LOGGER.debug("testAnnotationOneWay method is called.");
+		return "testAnnotationOneWay";
+	}
+
+	public String testAnnotationWebParam(String input) {
+		MovieService.LOGGER.debug("testAnnotationWebParam method is called with the input parameter="
+						+ input);
+		return "testAnnotationWebParam";
+	}
+...]]></programlisting>
+    				</para>
+        		</listitem>
+
+				<listitem>
+	          		<para>
+	          			Test Case
+	          		</para>
+	
+	          		<para>
+	          			The following is a part of JaxWsFrontendServerFactoryAnnotationTest.java which accesses Movie Service exposed to Web Services
+                        using JaxWsProxyFactoryBean class provided in Apache CXF.
+                        Let's take a look at how it works according to the value defined in WebServices Annotation.
+          				<programlisting language="java"><![CDATA[@RunWith(JUnit4.class)
+public class JaxWsFrontendServerFactoryAnnotationTest extends ServerRunner {				
+    /**
+     * [Flow #-1] Positive Case : Using @WebMethod annotation, specific method is not exposed by WebService Method.
+	 *                            One of the property exclude of @WebMethod's is set by true.
+     *                            (ex. @WebMethod(exclude=true) )
+     */      
+    @Test
+    public void testAnnotationMethodExclude() {
+        Client client = new JaxWsClient();
+        MovieService movieService =
+            (MovieService) client.getClient(new ClientInfo(MovieService.class,
+                "http://localhost:9002/Movie", false));
+
+        try {
+            movieService.testAnnotationMethodExclude();
+            Assert.fail();
+        } catch (Exception e) {
+            // Exception should be occurred.
+            if (!(e instanceof WebServiceException))
+            	Assert.fail();
+        }
+    }
+
+    /**
+     * [Flow #-2] Positive Case : Using @WebMethod annotation, specific method's name can be changed another name and called.
+     *                            One of the property operationName of @WebMethod's is set to another name.
+     *                            (ex. @WebMethod(operationName="testAnnotationMethodInclude") )
+     *                            
+     *                            testAnnotationMethod is the only method provided by SEI and operationName 
+     *                            is set up as testAnnotationMethodInclude out of @WebMethod property value. 
+     */   
+    @Test
+    public void testAnnotationMethodInclude() {
+        Client client = new JaxWsClient();
+        org.anyframe.sample.cxf.jaxws.moviefinder.service.MovieServiceWebMethod movieService =
+            (org.anyframe.sample.cxf.jaxws.moviefinder.service.MovieServiceWebMethod) client.getClient(
+            		new ClientInfo(org.anyframe.sample.cxf.jaxws.moviefinder.service.MovieServiceWebMethod.class,
+            		"http://localhost:9002/Movie", false));
+        
+        try {
+            movieService.testAnnotationMethodInclude();
+        } catch (Exception e) {
+            // It should not be failed.
+        	Assert.fail();
+        }
+    }
+...]]></programlisting>
+          			</para>
+        		</listitem>
+      		</itemizedlist>
+		</section>
+	</section>
+  
+  	<section id="cxf_webservices_jaxws_resource">
+		<title>Resources</title>
+		<para>
+			<itemizedlist>
+				<listitem>
+					<para>References</para>
+					<itemizedlist>
+						<listitem>
+							<para>
+								<ulink url="http://jcp.org/en/jsr/detail?id=224">JAX-WS 2.0 Specification</ulink>
+							</para>
+						</listitem>
+						<listitem>
+							<para>
+								<ulink url="http://download.oracle.com/javaee/5/tutorial/doc/bnayl.html">Building Web Services with JAX-WS</ulink>
+							</para>
+						</listitem>
+						<listitem>
+							<para>
+								<ulink url="http://cxf.apache.org/docs/jax-ws-configuration.html">JAX-WS Configuration</ulink>
+							</para>
+						</listitem>
+					</itemizedlist>
+				</listitem>
+			</itemizedlist>
+		</para>
+	</section>
+</chapter>

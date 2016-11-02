@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-4.0.xsd">
+	<bean id="sessionFactory"
+		class="org.springframework.orm.hibernate3.LocalSessionFactoryBean">
+		<property name="dataSource" ref="dataSource" />
+		<property name="mappingResources">
+			<list>
+			</list>
+		</property>
+        <property name="hibernateProperties">
+        <props>
+        	<prop key="hibernate.dialect">org.hibernate.dialect.OracleDialect</prop>
+        	<prop key="hibernate.cache.use_second_level_cache">false</prop> 
+            <prop key="hibernate.show_sql">true</prop>
+            <!-- Create/update the database tables automatically when the JVM starts up -->
+            <prop key="hibernate.hbm2ddl.auto">create</prop> 
+            <!--
+            <prop key="hibernate.cache.provider_class">org.hibernate.cache.OSCacheProvider</prop> 
+            <prop key="hibernate.cache.use_second_level_cache">true</prop> 
+            <prop key="hibernate.cache.use_query_cache">true</prop> -->
+            <!-- Turn batching off for better error messages under PostgreSQL 
+            <prop key="hibernate.jdbc.batch_size">0</prop> -->
+        </props>
+        </property>		
+	</bean>
+</beans>

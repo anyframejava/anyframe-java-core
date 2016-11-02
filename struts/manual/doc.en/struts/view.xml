@@ -1,0 +1,1199 @@
+<chapter id="struts_view">
+	<title>View</title>
+
+  		<para>
+  			View is a window from which the client can see the status of model. 
+  			One model can include several windows, in other words, views. 
+  			And the view changes according to which view client uses to see model. 
+  			It can be indicated in various ways including XML, XSLT, SOAP, and HTML. 
+  			In Anyframe, view mainly consists of Jave code and tags, 
+  			and provides dynamic contents to clients based on JSP. 
+  			
+  		</para>
+
+  		<para><emphasis role="bold">Role of View</emphasis></para>
+
+  		<itemizedlist>
+    		<listitem>
+      			<para>User input data acceptance and data display</para>
+    		</listitem>
+		    <listitem>
+      			<para>Input data verification</para>
+    		</listitem>
+    		<listitem>
+      			<para>Error handling</para>
+    		</listitem>
+		    <listitem>
+      			<para>Internationalization</para>
+    		</listitem>
+  		</itemizedlist>
+
+		<para><emphasis role="bold">Frequently used view formats</emphasis></para>
+
+		<itemizedlist>
+    		<listitem>
+      			<para>HTML : Page shown to the end user through browser.</para>
+    		</listitem>
+		    <listitem>
+      			<para>JSP Custom Tag : Plays an important role in Struts application. Is not required.</para>
+    		</listitem>
+		    <listitem>
+      			<para>JavaScript and StyleSheet : Is not restricted. If used properly, can make an effective view.</para>
+    		</listitem>
+		    <listitem>
+      			<para>MessageResource Bundle : Provides localization and can save maintenance time.</para>
+    		</listitem>
+
+    		<listitem>
+      			<para>Multimedia file</para>
+    		</listitem>
+  		</itemizedlist>
+
+  		<para>View consists of JSP and related technology and ActionForm. The contents are as follows.</para>
+
+  		<itemizedlist>
+    		<listitem>
+      			<para>
+      				JSP
+      				<itemizedlist>
+      					<listitem>
+            				<para>
+            					Java platform technology that creates dynamic web contents in server, 
+            					server script language executed on Servlet Container
+            				</para>
+          				</listitem>
+				        <listitem>
+            				<para>
+            				    Converted to servlet. 
+            					The servlet instance compiled for related page when initially requested is created only once, 
+            					so server resources can be efficiently used. 
+            				</para>
+          				</listitem>
+    				    <listitem>
+	            			<para>
+	            				Has merits including strong portability, fast execution speed, separation of presentation logic and business logic, 
+	            				reuse of component, and easy development due to use of custom tag.
+	            			</para>
+          				</listitem>
+        			</itemizedlist>
+        		</para>
+    		</listitem>
+  		</itemizedlist>
+
+  		<itemizedlist>
+    		<listitem>
+      			<para>
+      				Javascript
+      				<itemizedlist>
+          				<listitem>
+            				<para>Interpreter type script language made by Netscape</para>
+          				</listitem>
+				        <listitem>
+            				<para>
+            					Javascript code can be inserted into HTML page, 
+            					and interpreted by client side web browser.
+            				</para>
+			            </listitem>
+				        <listitem>
+            				<para>
+            					Object-oriented model that handles DOM object which is the standard format of displaying 
+            					structured documents, and manipulates it into program
+            				</para>
+          				</listitem>
+        			</itemizedlist>
+        		</para>
+    		</listitem>
+    		<listitem>
+      			<para>CSS</para>
+					<itemizedlist>
+						<listitem>
+          					<para>
+          						Cascading Style Sheet is a language that describes display method of markup language (HTML, XHTML, XML), 
+          						and is W3C standard
+          					</para>
+        				</listitem>
+		      			<listitem>
+          					<para>When style information is updated, related factors in the entire website are reflected</para>
+        				</listitem>
+				        <listitem>
+          					<para>Provides documents of the same format even in different user environment</para>
+        				</listitem>
+      				</itemizedlist>
+				<para>
+					DHTML: The technique of developing an interactive website by combining 
+      				HTML which is a markup language, client based script language, and CSS which is style definition language
+      			</para>
+    		</listitem>
+  		</itemizedlist>
+
+  		<para><emphasis role="bold">ActionForm</emphasis></para>
+
+  		<para>
+  			When receiving user input on web application, 
+  			components such as text box and button are included in HTML form elements, and if user clicks the button, 
+  			the values within field will be submitted to server along with HTTP request. 
+  			Server application will get these input values from request, execute validation on whether data is appropriately entered, 
+  			and send data to Action to execute business. 
+  			If input data does not pass validation rule, set error message and send back to input page. 
+  			As such, directly implementing functions 
+  			such as getting input data from request for validation, and showing error message for failures is not easy. 
+  			Reuse is recommended because these tasks are repeated within the entire application. 
+  			org.apache.struts.action.ActionForm performs this task. 
+  		</para>
+		<itemizedlist>
+    		<listitem>
+      			<para>Role of ActionForm</para>
+				<itemizedlist>
+        			<listitem>
+          				<para>
+       						Reuse handling processes such as getting input value from request and performing validation, 
+       						and showing error message for failures
+       					</para>
+       				</listitem>
+       				<listitem>
+       					<para>ActionForm pass client input value to Action, and can return results</para>
+       				</listitem>
+			        <listitem>
+       					<para>Runs as a buffer that saves the status of input data while being validated</para>
+       				</listitem>
+			        <listitem>
+       					<para>
+       						Acts as a firewall that enables unverified input values to be located outside business class 
+       						before detailed validation is performed according to validation rules 
+       					</para>
+       				</listitem>
+      				<listitem>
+       					<para>Setting ActionForm as view display data makes it easier to display the HTML form input field. 
+       					</para>
+       				</listitem>
+   				</itemizedlist>
+			    <para>
+   					<![CDATA[Parameters received from HTML input form are automatically filled in ActionForm. 
+   					validate() method for validation and reset() method, 
+   					which is to initialize before filling ActionForm, should be implemented. 
+   					struts-config.xml needs <form-beans> definition on ActionForm. 
+   					ActionForm is not part of Model. 
+   					Model area to perform business handling should be completely separated from Controller/View 
+   					and should not be returned to business class. 
+   					It should be returned by creating Data Transfer Object with the same format with ValueObject or Parameters.]]>
+   				</para>
+    		</listitem>
+		    
+		    <listitem>
+				<para>Demerits of ActionForm</para>
+			    <itemizedlist>
+	        		<listitem>
+	          			<para>The application developer should implement the sub-class of ActionForm</para>
+	        		</listitem>
+	        		<listitem>
+	          			<para>Many classes can be created which can make maintenance difficult</para>
+	        		</listitem>
+			        <listitem>
+	        			<para>
+	        				DynaActionForm should be inherited to implement validate() method.
+	          				It is recommendable to use validator framework.
+	          			</para>
+	        		</listitem>
+	      		</itemizedlist>
+    		</listitem>
+
+    		<listitem>
+      			<para>DynaActionForm</para>
+
+      			<itemizedlist>
+        			<listitem>
+          				<para> There is no need to make real implementation classes.</para>
+        			</listitem>
+			        <listitem>
+          				<para>Property is set in configuration file</para>
+        			</listitem>
+			        <listitem>
+          				<para>
+          					DynaActionForm should be inherited to implement validate() method. 
+          					It is recommendable to use validator framework. 
+          				</para>
+        			</listitem>
+      			</itemizedlist>
+    		</listitem>
+
+    		<listitem>
+      			<para>Scope of ActionForm</para>
+			    <itemizedlist>
+        			<listitem>
+          				<para>Shows the context scope of the saving and maintenance of ActionForm object.</para>
+        			</listitem>
+			        <listitem>
+          				<para>There are two levels, which are session and request.</para>
+        			</listitem>
+			        <listitem>
+          				<para>
+          					<![CDATA[Set as scope of struts-config.xml <action>. 
+          					Default is session. Be care to remove ActionForm in case of session scope.]]>
+          				</para>
+        			</listitem>
+      			</itemizedlist>
+    		</listitem>
+		    <listitem>
+      			<para>LifeCycle of ActionForm</para>
+			    <orderedlist>
+        			<listitem>
+          				<para>Confirm action mapping information, and check if ActionForm is set.</para>
+        			</listitem>
+			        <listitem>
+          				<para>
+          					If ActionForm is set in action, 
+          					it is used to find action element name property from form bean setup information.
+          				</para>
+        			</listitem>
+			        <listitem>
+          				<para>Check if there is an ActionForm instance that is already made.</para>
+        			</listitem>
+			        <listitem>
+          				<para>Reuse if ActionForm instance is in the appropriate scope and if it is the same as the type needed for request.</para>
+        			</listitem>
+			        <listitem>
+          				<para>
+          					If ActionForm instance is not in the appropriate scope, 
+          					make a new instance, 
+          					and save in scope according to the scope property of action element. 
+          				</para>
+        			</listitem>
+			        <listitem>
+          				<para>Call reset() method of ActionForm instance.</para>
+        			</listitem>
+			        <listitem>
+          				<para>
+          					Enter request parameter value in ActionForm through ActionForm setter method according to the request parameter name. 
+          				</para>
+        			</listitem>
+			        <listitem>
+          				<para>
+          					Lastly, if validate property is set to "true", 
+          					execute validate() method of ActionForm instance, 
+          					and return errors if an error occurs in the validation process. 
+          				</para>
+        			</listitem>
+      			</orderedlist>
+				<para>
+					The following is a part of the UserForm.java source code that shows an example of developing ActionForm.
+      				<programlisting language="java"><![CDATA[public class UserForm extends ActionForm{
+	
+    private String userId;
+	
+    private String password;
+	
+    public String getUserId() {
+        return userId;
+    }
+	
+    public void setUserId(String userId) {
+        this.userId = userId;
+    }
+	
+    public String getPassword() {
+        return password;
+    }
+	
+    public void setPassword(String password) {
+        this.password = password;
+    }
+	
+    public void reset(ActionMapping mapping, HttpServletRequest request) {
+        this.password = null;
+        this.userId = null;
+    }
+
+    public ActionErrors validate(ActionMapping mapping,
+                            HttpServletRequest request) {
+        ActionErrors errors = new ActionErrors();
+        if ((userId == null) || (userId.length() < 1))
+            errors.add("userId", new ActionMessage("error.userid.required"));
+        if ((password == null) || (password.length() < 1))
+            errors.add("password", new ActionMessage("error.password.required"));
+        return errors;
+    }
+}]]></programlisting>
+				</para>
+
+      			<para>
+      				Define attribute of elements to be entered in view 
+      			 	and develop the related getter/setter method. 
+      			 	Also, implement reset method for the validate method for validation and initialization.
+      			</para>
+    		</listitem>
+
+    		<listitem>
+      			<para>Use ActionErrors</para>
+
+				<para>
+      				The above shows the returning of ActionErrors object in the validate method of ActionForm source. 
+      				Here, we will look into the use of ActionErrors. 
+      			</para>
+      			<itemizedlist>
+        			<listitem>
+          				<para>ActionErrors encapsulates more than one error found in application.
+          				</para>
+        			</listitem>
+			        <listitem>
+          				<para>
+          					ActionErrors saved in request are shown in error messages to user in JSP through custom tag.
+          				</para>
+        			</listitem>
+      			</itemizedlist>
+      			<para>
+      				The following is an example of creating ActionMessage.
+      				<programlisting language="java">ActionMessage message 
+                = new ActionMessage("global.error.login.requiredfield", "email");</programlisting>
+                </para>
+			    <para>
+			    	The first element above is a string that matches one of the keys in the resource bundle, 
+      				and the second element is a parameter for message. 
+      				Below is a definition of messages in resource bundle. 
+      				<programlisting
+      				language="java">global.error.login.requiredfield=The {0} field is required.</programlisting>
+      			</para>
+				<para>
+					The word 'email' can be seen in {0}. 
+      				Other than the formats above, there are more creator types that can handle multiple message parameters. 
+      				ActionMessage is not created only in ActionForm validate. 
+      				For instance, ActionMessage can be used when an exception occurs in handling business called by action, 
+      				and an error message is to be added to notice this to user. 
+      				The following is an example of using Taglib in JSP to show ActionErrors. 
+      				
+      				<programlisting language="xml"><![CDATA[<%@ page contentType="text/html; charset=euc-kr" %>
+<%@ taglib uri="http://struts.apache.org/tags-html" prefix="html"%>
+
+<html:html>
+    <head>
+        <title>Error Page</title>
+    </head>
+    <body>
+        <html:errors/>
+    </body>
+</html:html>]]></programlisting>
+				</para>
+			</listitem>
+		</itemizedlist>
+
+		<section id="struts_view_taglib">
+	    <title>Taglib</title>
+	
+	    	<para>
+	    	Struts Framework includes a few types of tags, 
+	    		and Tag Library can be used to control presentation class and reuse more easily. 
+	    		If you use the provided Tag Library, you can developed without using Java code in JSP page. 
+	    	</para>
+	    
+			<section id="struts_view_taglib_feature">
+	        <title>Characteristics of Taglib</title>
+	
+				<section id="struts_view_taglib_feature_necessity">
+	          	<title>Importance of Tag Library</title>
+	
+			        <itemizedlist>
+	        		    <listitem>
+	              			<para>Increases productivity through reuse during GUI production</para>
+	            		</listitem>
+			            <listitem>
+	        			    <para>Eliminates scripting elements to help the division of roles between developer and designer</para>
+	            		</listitem>
+			            <listitem>
+	        		 	   <para>Implementing common functions frequently used for entire task scope can enhance productivity.</para>
+	            		</listitem>
+	          		</itemizedlist>
+	        	</section>
+	
+	        	<section id="struts_view_taglib_feature_component">
+	       		<title>Components of Tag Library</title>
+	
+					<itemizedlist>
+	            		<listitem>
+	              			<para>
+	              				Tag Handler : Class that defines how tag runs. 
+	              				Extends javax.servlet.jsp.tagext.TagSupport or BodyTagSupport that has implemented javax.servlet.jsp.tagext.Tag interface.
+	              			</para>
+	            		</listitem>
+			            <listitem>
+	        			    <para>
+	        			    	Tag Library Descriptor (TLD) : Custom Tag technical document in XML format that is implemented by Tag Handler class. 
+	        			    </para>
+	            		</listitem>
+			            <listitem>
+	        				<para>Taglib Descriptor (in JSP page): Descriptor for using the Tag Library of JSP page.
+	        				</para>
+	            		</listitem>
+	          		</itemizedlist>
+	        	</section>
+	
+	        	<section id="struts_view_taglib_feature_type">
+	          	<title>Type of Tag Library</title>
+	
+	          		<itemizedlist>
+	            		<listitem>
+	              			<para>Struts Tag Library : HTML, Logic, Bean, Nested</para>
+	            		</listitem>
+			            <listitem>
+	        			    <para>JSTL : core, fmt, xml, sql</para>
+	            		</listitem>
+			            <listitem>
+	        			    <para>Jakarata taglibs</para>
+	            		</listitem>
+			            <listitem>
+	        			    <para>Custom Tag Library developed appropriate to related project</para>
+	            		</listitem>
+	          		</itemizedlist>
+	        	</section>
+	        </section>
+	
+			<section id="struts_view_taglib_strutstaglib">
+	        <title>Struts Taglib</title>
+	
+		        <para>The types of Struts Tag library are as below.</para>
+	
+	    	    <itemizedlist>
+	        		<listitem>
+	            		<para>
+	            			HTML tag: Tags that are generally used for developing HTML based user interface or developing HTML input form.
+	            		</para>
+	          		</listitem>
+			        <listitem>
+	            		<para>Logic tag: Tag used for condition handling, looping and showing collection object, flow control, etc.</para>
+	          		</listitem>
+			        <listitem>
+	        		    <para>
+	        		    	Bean tag: Tag used for accessing Java bean and related properties. 
+	            			A new bean that can be easily accessed can be defined through variable technology. 
+	            		</para>
+	          		</listitem>
+			        <listitem>
+	        		    <para>Template tag : Tag that is useful for developing dynamic JSP template that shares layout.</para>
+	          		</listitem>
+			        <listitem>
+	        		    <para>Nested tag: Enables repeated use of struts tags.</para>
+	          		</listitem>
+	        	</itemizedlist>
+		        <para>
+		        	The use method is the same as Tag Library. The following is an example of declaring taglib in JSP. 
+	        		<programlisting language="xml"><![CDATA[<%@ taglib
+        uri="http://struts.apache.org/tags-bean"
+        prefix="bean"%>]]></programlisting>
+	        	</para>
+	
+		        <para>
+		        	In many cases, Tag Libraries are used with Java beans. 
+	        		Java bean can be an ActionForm that includes many properties that respond to input field of HTML form, 
+	        		but Value Objects can also be used. 	        		
+	        	</para>
+		
+		        <section id="struts_view_taglib_strutstaglib_html">
+	          	<title>HTML</title>
+	
+	          		<para>The following is an explanation of HTML Tag Library tags.</para>
+	
+			        <informaltable>
+			            <tgroup cols="2">
+			            <colspec colnum="1" colname="col1" colwidth="3*"/>
+						<colspec colnum="2" colname="col2" colwidth="7*"/>
+			              <thead>
+			                <row>
+			                  <entry align="center">Name</entry>
+			                  <entry align="center">Description</entry>
+			                </row>
+			              </thead>
+			              <tbody>
+			                <row>
+			                  <entry>base</entry>
+			                  <entry><![CDATA[Shows <base>of HTML.]]></entry>
+			                </row>
+			                <row>
+			                  <entry>button</entry>
+			                  <entry>Shows button input field.</entry>
+			                </row>
+			                <row>
+			                  <entry>cancel</entry>
+				              <entry>Shows cancel button.</entry>
+			                </row>
+			                <row>
+			                  <entry>checkbox</entry>
+			                  <entry>Shows checkbox input field. </entry>
+			                </row>
+			                <row>
+			                  <entry>errors</entry>
+			                  <entry>Conditionally shows all error messages. </entry>
+			                </row>
+			                <row>
+			                  <entry>file</entry>
+			                  <entry>Shows file selection input field. </entry>
+			                </row>
+			                <row>
+			                  <entry>form</entry>
+			                  <entry>HTML <![CDATA[Defines <form>.]]></entry>
+			                </row>
+			                <row>
+			                  <entry>frame</entry>
+			                  <entry>HTML의<![CDATA[ Defines <frame>.]]></entry>
+			                </row>
+			                <row>
+			                  <entry>hidden</entry>
+			                  <entry>Shows hidden field.</entry>
+			                </row>
+			                <row>
+			                  <entry>html</entry>
+			                  <entry><![CDATA[Shows <html> of HTML.]]></entry>
+			                </row>
+			                <row>
+			                  <entry>img</entry>
+			                  <entry><![CDATA[Shows <img> of HTML.]]></entry>
+			                </row>
+			                <row>
+			                  <entry>javascript</entry>
+			                  <entry>
+			                  	Shows javascript based on validation-rule that is loaded by validator plugin. 
+			                  </entry>
+			                </row>
+			                <row>
+			                  <entry>link</entry>
+			                  <entry>Shows HTML anchor or hyperlink. </entry>
+			                </row>
+			                <row>
+			                  <entry>messages</entry>
+			                  <entry>Conditionally shows gathered messages. </entry>
+			                </row>
+			                <row>
+			                  <entry>multibox</entry>
+			                  <entry>Shows multiple checkbox input field. </entry>
+			                </row>
+			                <row>
+			                  <entry>option</entry>
+			                  <entry>Shows select options.</entry>
+			                </row>
+			                <row>
+			                  <entry>options</entry>
+			                  <entry>Shows the set of select options. </entry>
+			                </row>
+			                <row>
+			                  <entry>optionsCollection</entry>
+			                  <entry>Shows the set of select options. </entry>
+			                </row>
+			                <row>
+			                  <entry>password</entry>
+			                  <entry>Shows password input field. </entry>
+			                </row>
+			                <row>
+			                  <entry>radio</entry>
+			                  <entry>Shows radio button input field. </entry>
+			                </row>
+			                <row>
+			                  <entry>reset</entry>
+			                  <entry>Shows reset button input field.</entry>
+			                </row>
+			                <row>
+			                  <entry>rewrite</entry>
+			                  <entry>Shows URI.</entry>
+			                </row>
+			                <row>
+			                  <entry>select</entry>
+			                  <entry><![CDATA[Shows <select>.]]></entry>
+			                </row>
+			                <row>
+			                  <entry>submit</entry>
+			                  <entry>Shows submit button.</entry>
+			                </row>
+			                <row>
+			                  <entry>text</entry>
+			                  <entry>Shows input field of "text" type. </entry>
+			                </row>
+			                <row>
+			                  <entry>textarea</entry>
+			                  <entry>Shows textarea input field. </entry>
+			                </row>
+			              </tbody>
+			            </tgroup>
+			        </informaltable>
+	
+	          		<para>
+	          			The following is an example of HTML link and password tag. 
+	          			<programlisting language="xml"><![CDATA[<tr>
+    <td colspan="4" align="center">
+    <html:link page="/html-link.do?doubleProperty=321.321&longProperty=321321">
+        Double and long via hard coded changes
+    </html:link>
+    </td>
+</tr>]]></programlisting>
+					</para>
+
+					<programlisting language="xml"><![CDATA[<html:password property="password"
+          size="15" maxlength="16" redisplay="false" />]]></programlisting>
+				</section>
+
+				<section id="struts_view_taglib_strutstaglib_logic">
+				<title>Logic</title>
+		
+					<para>The following explains tags of Logic Tag Library.</para>
+		
+			        <informaltable>
+			            <tgroup cols="2">
+			            <colspec colnum="1" colname="col1" colwidth="3*"/>
+						<colspec colnum="2" colname="col2" colwidth="7*"/>
+			              <thead>
+			                <row>
+			                  <entry align="center">Name</entry>
+			                  <entry align="center">Description</entry>
+			                </row>
+			              </thead>
+			              <tbody>
+			                <row>
+			                  <entry>empty</entry>
+			                  <entry>Executes body contents of this tag in case the requested variable is null or an empty string.</entry>
+			                </row>
+			                <row>
+			                  <entry>equal</entry>
+			                  <entry>Executes body contents of this tag when the requested variable is the same as the defined value.</entry>
+			                </row>
+			                <row>
+			                  <entry>forward</entry>
+			                  <entry>Executes forward to the selected page through ActionForward entry.</entry>
+			                </row>
+			                <row>
+			                  <entry>greaterEqual</entry>
+			                  <entry>Execute body contents of this tag when the requested variable is the same as or more than the defined value.</entry>
+			                </row>
+			                <row>
+			                  <entry>greaterThan</entry>
+			                  <entry>When the requested variable is more than the defined value.</entry>
+			                </row>
+			                <row>
+			                  <entry>iterate</entry>
+			                  <entry>Repeats body contents in this tag with the defined collection.</entry>
+			                </row>
+			                <row>
+			                  <entry>lessEqual</entry>
+			                  <entry>When the requested value is the same as or smaller than the defined value.</entry>
+			                </row>
+			                <row>
+			                  <entry>lessThan</entry>
+			                  <entry>When the requested value is smaller than the defined value.</entry>
+			                </row>
+			                <row>
+			                  <entry>match</entry>
+			                  <entry>When the defined value matches the substring of the requested variable.</entry>
+			                </row>
+			                <row>
+			                  <entry>messagesNotPresent</entry>
+			                  <entry>When the defined message is not in this request.</entry>
+			                </row>
+			                <row>
+			                  <entry>messagesPresent</entry>
+			                  <entry>When the defined message is in the request.</entry>
+			                </row>
+			                <row>
+			                  <entry>notEmpty</entry>
+			                  <entry>When the requested variable is not null or an empty string.</entry>
+			                </row>
+			                <row>
+			                  <entry>notEqual</entry>
+			                  <entry>When the requested variable is not the same as the defined value.</entry>
+			                </row>
+			                <row>
+			                  <entry>notMatch</entry>
+			                  <entry>When the defined value does not match the substring or requested variable, body contents of this tag is executed.</entry>
+			                </row>
+			                <row>
+			                  <entry>notPresent</entry>
+			                  <entry>When the defined value is not in this request.</entry>
+			                </row>
+			                <row>
+			                  <entry>present</entry>
+			                  <entry>When the defined value is in this request.</entry>
+			                </row>
+			                <row>
+			                  <entry>redirect</entry>
+			                  <entry>Shows HTTP redirect.</entry>
+			                </row>
+			              </tbody>
+			            </tgroup>
+			        </informaltable>
+		
+					<para>
+						The following is an example of notEmpty, iterate tag.
+						<programlisting language="xml"><![CDATA[<logic:notEmpty name="userSummary" property="addresses">
+<!— This part can consist of logic tag that is repeatedly shown by looping all objects of address Collection. -->
+</logic:notEmpty>]]></programlisting>
+					</para>
+
+          			<programlisting language="xml"><![CDATA[<logic:iterate id="address" name="usersSummary" property="addresses">
+<!— Show address object in table format. -->
+</logic:iterate>]]></programlisting>
+				</section>
+
+		        <section id="struts_view_taglib_strutstaglib_bean">
+		        <title>Bean</title>
+		
+					<para>The following is an explanation of Bean Tag Library tags.</para>
+		
+			        <informaltable>
+			            <tgroup cols="2">
+			            <colspec colnum="1" colname="col1" colwidth="3*"/>
+						<colspec colnum="2" colname="col2" colwidth="7*"/>
+			              <thead>
+			                <row>
+			                  <entry align="center">Name</entry>
+			                  <entry align="center">Description</entry>
+			                </row>
+			              </thead>
+			              <tbody>
+			                <row>
+			                  <entry>cookie</entry>
+			                  <entry>Defines variable based on the defined requested cookie value.</entry>
+			                </row>
+			                <row>
+			                  <entry>define</entry>
+			                  <entry>Defines variable based on the defined bean property value.</entry>
+			                </row>
+			                <row>
+			                  <entry>header</entry>
+			                  <entry>Defines variable based on the defined requested header value.</entry>
+			                </row>
+			                <row>
+			                  <entry>include</entry>
+			                  <entry>Loads the response of dynamic application to be used as bean.</entry>
+			                </row>
+			                <row>
+			                  <entry>message</entry>
+			                  <entry>Shows the internationalized message string that responds.</entry>
+			                </row>
+			                <row>
+			                  <entry>page</entry>
+			                  <entry>Defined item bean that is extracted from the page context.</entry>
+			                </row>
+			                <row>
+			                  <entry>parameter</entry>
+			                  <entry>Defines variable based on the defined requested parameter value.</entry>
+			                </row>
+			                <row>
+			                  <entry>resource</entry>
+			                  <entry> Load web application resource to be used as bean.</entry>
+			                </row>
+			                <row>
+			                  <entry>size</entry>
+			                  <entry>Defines bean that includes the number of elements of Collection or Map.</entry>
+			                </row>
+			                <row>
+			                  <entry>struts</entry>
+			                  <entry>Extracts the defined Struts internal setup object as bean.</entry>
+			                </row>
+			                <row>
+			                  <entry>write</entry>
+			                  <entry>Shows the defined bean property value.</entry>
+			                </row>
+			              </tbody>
+			            </tgroup>
+			        </informaltable>
+	
+	        	  	<para>
+	          			The following is an example of message, write tag.
+	          			<programlisting
+	          			language="xml"><![CDATA[<td><bean:message key="global.user.firstName"/>:</td>]]></programlisting>
+	          		</para>
+	
+					<para>
+						If used as above, it obtains and shows message related to global.user.firstName. 
+	          			<programlisting
+	          			language="xml"><![CDATA[<td>Hello <bean:write name="user" property="firstName"/>:</td>]]></programlisting>
+	          		</para>
+
+		          	<para>If used as above, firstName is obtained from bean called user and put next to Hello.</para>
+		          	<para>Nested</para>
+			        <para>
+			        	Can be applied when you with to use one tag in another tag. 
+		          		It includes current tag supported by Struts, and HTML Nested Tag, Logic Nested Tag, and Bean Nested Tag. 
+		          		It is used the same way as other tags.
+		          	</para>
+		        </section>
+			</section>
+
+			<section id="struts_view_taglib_jstl">
+		    <title>JSP Standard Tag Library</title>
+		
+				<itemizedlist>
+					<listitem>
+		            	<para>JSR52, JSP Standard Tag Library spec</para>
+		          	</listitem>
+			        <listitem>
+		    	        <para>Defines standard tag set that can be used in all containers.</para>
+		        	</listitem>
+			        <listitem>
+		    	        <para>Has core, fmt, xml, and sql tag.</para>
+		        	</listitem>
+			        <listitem>
+		    	        <para>Needs container that supports Servlet 2.3, JSP 1.2 onwards. (Almost all support including Tomcat.)</para>
+		          	</listitem>
+		        </itemizedlist>
+		
+		        <para>
+		        	JSTL provides standard implementation of standard presentation layers including data format, repeat handling, and condition handling. 
+		        	So, it helps JSP developers focus on application development. 
+		        	And because general functions are packaged as custom tag library standard set, 
+		        	scripting elements become less necessary for JSP developers and management costs can be reduced. 
+		        	On the other hand, more system resources are used compared to pure Java, 
+		        	and during extreme overload, performance can decrease by 2~3 times, 
+		        	so be careful when performance becomes an issue.
+		        </para>
+		
+		        <para>
+		        	Struts Bean, Logic tags can be used more easily when changed to JSTL. 
+		        	The following is an example of handling conditional branch and Collection loop among tags. 
+		 	       <programlisting language="xml"><![CDATA[<%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
+..
+
+<!-- Tag list repeat -->
+<c:choose>                                      	
+    <c:when test="${page.totalCount <= 0}">
+        <tr class="ct_list_pop">
+            <td colspan="11" align="center">::: No user information found. :::</td>	
+        </tr>
+        <tr>
+            <td colspan="11" bgcolor="D6D7D6" height="1"></td>
+        </tr>
+    </c:when>
+    <c:otherwise>
+        <c:forEach var="userVO" items="${page.list}" varStatus="status">
+            <tr class="ct_list_pop">
+                <td align="center">
+                    <c:out value="${status.count + ((page.currentPage - 1) * pageSize) }"/>
+                </td>
+                <td></td>
+                <td align="left">
+                    <a href="javascript:fncGetUser('<c:out value="${userVO.userId}"/>');">
+                        <c:out value="${userVO.userId}"/>
+                    </a>
+                </td>
+                <td></td>
+                <td align="left"><c:out value="${userVO.userName}"/></td>
+                <td></td>
+                <td align="center" style="padding-right:3px;"><c:out value="${userVO.ssn}"/>
+                </td>
+                <td></td>
+                <td align="center"><c:out value="${userVO.cellPhone}"/></td>
+                <td></td>
+                <td align="left"><c:out value="${userVO.email}"/></td>		
+            </tr>
+            <tr>
+                <td colspan="11" bgcolor="D6D7D6" height="1"></td>
+            </tr>
+        </c:forEach>
+    </c:otherwise>
+</c:choose>
+..]]></programlisting>
+				</para>
+			</section>
+
+			<section id="struts_view_taglib_etc">
+	        <title>Other Taglibs</title>
+	
+	        	<section id="struts_view_taglib_etc_jakarata">
+	          	<title>Jakarata taglibs</title>
+	
+	          		<itemizedlist>
+	            		<listitem>
+	              			<para>Provides 25 tag libraries from the Jakarta Taglibs project.</para>
+	            		</listitem>
+	            		<listitem>
+	              			<para>
+	              				Refer to <ulink
+	              				url="http://tomcat.apache.org/taglibs/index.html">http://jakarta.apache.org/taglibs/</ulink>.
+	              			</para>
+	            		</listitem>
+	          		</itemizedlist>
+	
+	          		<para>
+	          			Can use many tag libraries including Standard Taglib 1.1(JSTL
+	          			1.1 - Servlet 2.4, JSP 2.0 onwards) which is an implementation of JSP Standard Tag Library (JSTL).
+	          		</para>
+	        	</section>
+
+		        <section id="struts_view_taglib_etc_custom">
+		          <title>Custom Tags</title>
+		
+					<itemizedlist>
+						<listitem>
+							<para>
+		              			Should make a class that implements tag interface and provides tag library descriptor
+		              			(TLD) in XML format.
+		              		</para>
+		            	</listitem>
+						<listitem>
+							<para>Provided in Tag Library format that is a bundle of related Custom Tags.</para>
+						</listitem>
+						<listitem>
+							<para>Directly implements common functions, frequently used in the entire area of task, as custom tag. </para>
+						</listitem>
+					</itemizedlist>
+					<para>
+						For instance, if you apply Custom Tag that searches code list from code table and expresses in select box format, 
+		          		it will help enhance the productivity of the entire task. 
+		          		The pagenavigator provided by Anyframe is also a custom tag implemented to help the page handling of list data with multiple rows. 
+		          	</para>
+				</section>
+			</section>
+		</section>
+
+
+		<section id="struts_view_tiles">
+	    <title>Tiles</title>
+	
+	    	<para>
+	    		There are a couple of ways to form the layout of JSP Page. 
+	    		The most well-known is reducing the number of repeated codes by using include directive. 
+	    		However, there are limitations, 
+	    		so a better way is to apply an architecture centered on template. 
+	    		Tiles is a templating system that supports this, and is made to simplify web application user interface. 
+	    		It is built in Struts in Plug-in format. 
+	    		Tiles can be independently applied without Struts. For related information go to 
+	    		<ulink url="http://tiles.apache.org/">Apache Tiles Project</ulink> (http://tiles.apache.org/).
+	    	</para>
+
+			<section id="struts_view_tiles_pagelayout">
+	      	<title>How to compose Page Layout</title>
+	
+	      		<section id="struts_view_tiles_pagelayout_method">
+		        <title>How to compose</title>
+	
+	        		<itemizedlist>
+	          			<listitem>
+	            			<para>
+	            				JSP based approach: Becomes more complex when more functions are inserted in the page. Appropriate only for small applications. 
+	            			</para>
+	          			</listitem>
+				        <listitem>
+	            			<para>Use include directive: Reuse repeated coding. Contents and layout still exist together in page. 
+	            			</para>
+	          			</listitem>
+				        <listitem>
+	            			<para>
+	            				Template based approach: Provides ways to hide the physical area of page. Separates contents and layout.
+	            			</para>
+				            <mediaobject>
+				              <imageobject>
+				                <imagedata align="center" fileref="../image/struts/tiles.jpg" />
+				              </imageobject>
+				            </mediaobject>
+	
+	            			<para>The figure above is an example of composing page layout applying Tiles.</para>
+	          			</listitem>
+	        		</itemizedlist>
+	      		</section>
+			</section>
+
+			<section id="struts_view_tiles_installation">
+	     	<title>Tiles Installation</title>
+	
+		      	<itemizedlist>
+		        	<listitem>
+		          		<para>Copy struts-tiles.jar in WEB-INF/lib directory.</para>
+		        	</listitem>
+			        <listitem>
+		    		      <para>Add the following to the Action Servlet definition part of web.xml file.</para>
+		        	</listitem>
+		      	</itemizedlist>
+			    <programlisting language="xml"><![CDATA[<init-param>
+    <param-name>chainConfig</param-name>
+    <param-value>org/apache/struts/tiles/chain-config.xml</param-value>
+</init-param>]]></programlisting>
+
+				<itemizedlist>
+					<listitem>
+						<para>Register TilesPlugin in Plug-in of struts-config.xml.</para>
+					</listitem>
+				</itemizedlist>
+
+				<programlisting language="xml"><![CDATA[<plug-in className="org.apache.struts.tiles.TilesPlugin">
+    <set-property
+        property="definitions-config"
+        value="/WEB-INF/tiles-defs.xml"/>
+</plug-in>]]></programlisting>
+
+				<itemizedlist>
+					<listitem>
+						<para>Add the following code to JSP that uses Tiles.</para>
+					</listitem>
+				</itemizedlist>
+	
+			<programlisting language="xml"><![CDATA[ <%@ taglib
+      uri="http://struts.apache.org/tags-tiles" prefix="tiles" %>]]></programlisting>
+			</section>
+
+			<section id="struts_view_tiles_use">
+	      	<title>Use Tiles</title>
+
+	      		<section id="struts_view_tiles_use_check">
+	        	<title>Things to consider when applying Tiles</title>
+	
+	        		<itemizedlist>
+	          			<listitem>
+	            			<para>Tiles can be used independently.</para>
+	          			</listitem>
+				        <listitem>
+	            			<para>
+	            				Tiles plug-in is needed only when using Tiles definitions. 
+	            				(Library can be used even without plug-in setting.)
+	            			</para>
+	          			</listitem>
+				        <listitem>
+	            			<para>
+	            				Tiles definition can be defined in JSP, 
+	            				but generally, layout and Tiles definition (xml) is defined separately. 
+	            			</para>
+	          			</listitem>
+				        <listitem>
+	            			<para>
+	            				Tiles provides many layouts with basic template, 
+	            				but full preparation for layout is needed before starting development. 
+	            			</para>
+	          			</listitem>
+	        		</itemizedlist>
+	      		</section>
+
+      		<section id="struts_view_tiles_use_attribute">
+        	<title>Characteristics of Tiles Tag Library</title>
+
+		        <para>The following is a list and brief explanation on Tiles Tag Library tags.</para>
+
+		        <informaltable>
+		          <tgroup cols="2">
+		          <colspec colnum="1" colname="col1" colwidth="4*"/>
+					<colspec colnum="2" colname="col2" colwidth="6*"/>
+		            <thead>
+						<row>
+							<entry align="center">Attribute</entry>
+							<entry align="center">Description</entry>
+						</row>
+					</thead>
+					<tbody>
+		              <row>
+		                <entry>add</entry>
+		                <entry>Adds element</entry>
+		              </row>
+		              <row>
+		                <entry>definition</entry>
+		                <entry>Defines titles component</entry>
+		              </row>
+		              <row>
+		                <entry>get</entry>
+		                <entry><![CDATA[Receives resources transferred to JSP through <template:put>.]]></entry>
+		              </row>
+		              <row>
+		                <entry>getAsString</entry>
+		                <entry>Show Tile/Component/Template property value on JspWriter.</entry>
+		              </row>
+		              <row>
+		                <entry>importAttribute</entry>
+		                <entry>Adds tile property in defined context.</entry>
+		              </row>
+		              <row>
+		                <entry>initComponentDefinitions</entry>
+		                <entry>Initializes definitions factory.</entry>
+		              </row>
+		              <row>
+		                <entry>Insert</entry>
+		                <entry>Adds dynamic template within JSP page.</entry>
+		              </row>
+		              <row>
+		                <entry>put</entry>
+		                <entry><![CDATA[Defines resources to insert in template within <template:insert> tag.]]></entry>
+		              </row>
+		              <row>
+		                <entry>putList</entry>
+		                <entry>Declare lists to return as property.</entry>
+		              </row>
+		              <row>
+		                <entry>useAttribute</entry>
+		                <entry>Uses property value in JSP page.</entry>
+		              </row>
+		            </tbody>
+		          </tgroup>
+		        </informaltable>
+
+		        <para>
+		        	Layout is defined in advance by gathering headers applied in all pages 
+        			and contents related to copyright. 
+        			This is called Definition and can be made in JSP or XML. Examples are as follows.
+        		</para>
+      		</section>
+    	</section>
+
+		<section id="struts_view_tiles_definition">
+      	<title>Tiles Layout Definition</title>
+
+		    <section id="struts_view_tiles_definition_jspexample">
+        	<title>Example of defining layout as JSP</title>
+
+			        <para>
+			        	The following is an example of defining tile definition in a jsp called storefront-defs.jsp.
+	        			<programlisting language="xml"><![CDATA[<%@ taglib
+        uri="http://struts.apache.org/tags-tiles" prefix="tiles" %>
+<tiles:definition id="storefront.default"
+        pgae="/layouts/storefrontdefaultLayout.jsp" scope="request">
+    <tiles:put name="header" value="/common/header.jsp"/>
+    <tiles:put name="menubar" value="/common/menubar.jsp"/>
+    <tiles:put name="copyright" value="/common/copyright.jsp"/>
+</tiles:definition>]]></programlisting>
+					</para>
+
+        			<para>
+	        			To use the definitions, the tile components should be able to access definition. 
+	        			The following is an example of JSP using definition. 
+	        			It refers to storefront-defs.jsp using include. 
+	        			
+	        			<programlisting
+	        			language="xml"><![CDATA[<%@ taglib uri="http://struts.apache.org/tags-tiles" prefix="tiles" %>
+<%@ include file="../common/storefront-defs.jsp" %>
+
+<tiles:insert beanName="storefront.default" beanScope="request">
+    <tiles:put name="body-content" value="../security/sigin-body.jsp"/>
+</tiles:insert>]]></programlisting>
+					</para>
+				</section>
+
+				<section id="struts_view_tiles_definition_xmlexample">
+        		<title>Example of defining layout as XML</title>
+
+			        <para>
+			        	The above shows an example of setting tile definition in jsp, 
+	        			but it is usually defined in xml, and defined in struts-config.xml as plug-in. 
+	        			The following is a part of tiles-defs.xml. 
+	        			It is based on a definition called index, and it is used after being extended to reduce the number of repeated coding.
+	        			<programlisting language="xml"><![CDATA[<!-- Doc index page description  -->
+<definition name="index" path="/layout.jsp">
+    <put name="title"  value="Anyframe Sample" />
+    <put name="header" value="/header.jsp" />
+    <put name="menu"   value="/menu.jsp" />
+    <put name="body"   value="/body.jsp" />
+    <put name="footer" value="/bottom.jsp" /> 
+</definition>
+
+<!-- view order information page description  -->  
+<definition name="list" extends="index">
+    <put name="body"   value="/user/listUser.jsp" />
+</definition>]]></programlisting>
+					</para>
+
+   					<para>
+	   					When using tiles, in action-mapping, forward path should be given in definition name defined in tile definition.
+	        			<programlisting language="xml"><![CDATA[<action
+    name="userForm"
+    path="/empListUser"
+    type="com.sds.emp.view.action.user.GetUserListAction"
+    scope="request"
+    validate="false"
+    roles="admin,user">
+    <forward name="success" path="list"  />
+</action>]]></programlisting>
+					</para>
+
+        			<para>Note that '/' is not used if definition name of tiles is put into the path part of forward.</para>
+				</section>
+			</section>
+		</section>
+	
+</chapter>

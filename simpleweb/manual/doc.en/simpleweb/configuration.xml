@@ -1,0 +1,120 @@
+<chapter id="simpleweb_configuration">
+	<title>Configuration</title>
+	<para>
+		Web application development based on Spring MVC can be simplified using the Anyframe functions listed above. 
+		However, to use functions based on Spring JS(JavsScript) such as Partial Rendering and Popup,
+		the application view layout should be in tiles. 
+	</para>
+	<section id="simpleweb_configuration_tilesview">
+		<title>Tiles View Configuration</title>
+		<para>
+			In Spring MVC, AjaxUrlBasedViewResolver and AjaxTilesView class are provided for using Spring JS (Ajax support) based on Tiles.  
+			To provide more functions, Anyframe provides AjaxUrlBasedContentTypeViewResolver and AjaxParamTilesView that is an extension of each class. 
+			They should be set as follows. 
+			The following is a part of simpleweb-vo-servlet.xml	which is a Spring configuration file added by Simpleweb Plugin installation. (simpleweb-map-servlet.xml of Simpleweb-Map plugin, simpleweb-json-servlet.xml of Simpleweb-JSON plugin) 
+	<programlisting language="xml"><![CDATA[<bean id="ajaxViewResolver" class="org.anyframe.simpleweb.js.ajax.]]><emphasis role="bold"><![CDATA[AjaxUrlBasedContentTypeViewResolver]]></emphasis><![CDATA[">
+	<property name="viewClass" value="org.anyframe.simpleweb.js.ajax.tiles2.]]><emphasis role="bold"><![CDATA[AjaxParamTilesView]]></emphasis><![CDATA["/>
+	<property name="order" value="2"/>
+	<property name="contentType" value="text/html;charset=utf-8"/>	
+</bean>]]></programlisting>
+		Also, in the case of using Tiles, the location of xml file including Tiles Definition should be defined via TilesConfigurer. It is automatically registered 
+		when Anyframe Tiles Plugin is installed, for more details, please refer to 
+		<ulink url="http://dev.anyframejava.org/docs.en/anyframe/plugin/optional/tiles/1.0.3-SNAPSHOT/reference/htmlsingle/tiles.html#tiles_tilesintegration_tilesconfigurer">Tiles Plugin >> Tiles Configure</ulink>
+		</para>
+	</section>
+	
+	<!--  Tiles Configuration Move.. START -->
+	<section id="simpleweb_configuration_tilesconfigurer">
+		<title>Tiles Configurer Configuration</title>
+		<para>
+			When using tiles, define the location of the xml file that includes Tiles Definition through TilesConfigurer. 
+			In this case, define ELTilesInitializer as below in Anyframe through tilesInitializer to be able to use EL of Spring 3.0. 
+			The following is a part of moviefinder-servlet.xml Spring configuration file added by Simpleweb Plugin installation.
+			
+		<programlisting language="xml"><![CDATA[<bean id="tilesConfigurer" class="org.springframework.web.servlet.view.tiles2.TilesConfigurer">
+	]]><emphasis role="bold"><![CDATA[<property name="tilesInitializer">
+		<bean class="org.anyframe.tiles.ELTilesInitializer">]]></emphasis><![CDATA[
+			<property name="definitions">
+				<list>
+					<value>/WEB-INF/tilesviews.xml</value>
+				</list>
+			</property>
+		</bean>
+	</property>
+</bean>	]]></programlisting>
+		</para>
+		<note>
+			<title>Servlet 2.4 spec Tiles EL Support</title>
+			<para>
+				The above Tiles EL is basically supported by Servlet 2.5 spec or over. 
+				Anyframe Simpleweb provides tilesInitializer class to support Tiles EL also in Servlet 2.4 spec. 
+				Setup is as follows. 
+			</para>
+			<programlisting language="xml"><![CDATA[<bean id="tilesConfigurer" class="org.springframework.web.servlet.view.tiles2.TilesConfigurer">
+	]]><emphasis role="bold"><![CDATA[<property name="tilesInitializer">
+		<bean class="org.anyframe.tiles.Servlet24ELTilesInitializer">]]></emphasis><![CDATA[
+			<property name="definitions">
+				<list>
+					<value>/WEB-INF/tilesviews.xml</value>
+				</list>
+			</property>
+		</bean>
+	</property>
+</bean>]]></programlisting>
+		</note>
+	</section>
+	
+	<!--  Tiles Configuration Move.. END -->
+	<!-- Jquery Configuration Move... START -->
+	
+	<section id="simpleweb_configuration_json">
+		<title>JSON View Configuration</title>
+		<para>
+			When developing application using jQuery, 
+			basically JSON object type data is exchanged, 
+			and Spring 3.0 provides MappingJacksonJsonView class to support this JSON View. 
+			Application also uses general JSP View as well as JSON View, 
+			so XmlViewResolver should be defined other than the already defined AjaxUrlBasedContentTypeViewResolver, 
+			and MappingJacksonJsonView should be defined to process JSON requests. 
+			The following is a part of simpleweb-vo-servlet.xml Spring configuration file added by Simpleweb Plugin installation. 
+			(simpleweb-map-servlet.xml of Simpleweb-Map plugin, simpleweb-json-servlet.xml of Simpleweb-JSON plugin) 
+		<programlisting language="xml"><![CDATA[<bean name="jsonViewResolver" class="]]><emphasis role="bold"><![CDATA[org.springframework.web.servlet.view.XmlViewResolver]]></emphasis><![CDATA[">
+	<property name="order" value="1"/>
+	<property name="location" value="/WEB-INF/simpleweb-vo-views.xml"/>
+</bean>]]></programlisting>
+			<warning><title>Multi View Resolver Priority</title>
+				<para>
+					If view resolvers that inherits UrlBasedViewResolver cannot find view name, 404 error occurs. 
+					So, it should have the lowest priority among view resolvers. 
+					The priority of XmlViewResolver should be higher than AjaxUrlBasedContentTypeViewResolver defined above. 
+				</para>
+			</warning>
+		</para>
+		In XmlViewResolver defined above, define MappingJacksonJsonView in simpleweb-vo-views.xml which will define view information. 
+		The following is a part of simpleweb-vo-views.xml Spring configuration file that is added by Simpleweb Plugin installation.
+		
+		<programlisting language="xml"><![CDATA[<bean name="jsonView" class="]]><emphasis role="bold"><![CDATA[org.springframework.web.servlet.view.json.MappingJacksonJsonView]]></emphasis><![CDATA["/>]]></programlisting>
+		In the above code, "jsonView" view name is processed in MappingJacksonJsonView.  
+		So, the return view name is "jsonView" for the Controller class handling JSON requests. 
+	</section>
+	<!-- jQuery Configuration Move... END -->
+	
+	<section id="simpleweb_configuration_interceptor">
+		<title>TilesInterceptor Configuration</title>
+		<para>
+			For development based on Tiles Layout, the name for views that are returned are defined as tiles definition. 
+			In this case view name can be defined using "layout" property of Anyframe submit tag and link tag. 
+			When this property is not defined, in other words when tiles definition is not defined, an error occurs. 
+			To show "standardLayout" view without defining layout, 
+			Interceptor should be defined as below to handle requests that use Simpleweb. 
+			The following is a part of simpleweb-vo-servlet.xml that defines Interceptor. 
+			
+		</para>
+		<programlisting language="xml"><![CDATA[<mvc:interceptors>
+	<mvc:interceptor>
+		<mvc:mapping path="/simple*"/>
+		<bean class="org.anyframe.simpleweb.interceptor.TilesInterceptor"/>
+	</mvc:interceptor>
+</mvc:interceptors>]]></programlisting>
+	</section>
+</chapter>

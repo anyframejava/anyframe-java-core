@@ -1,0 +1,420 @@
+<chapter id="core_springmvc_view">
+	<title>View</title>
+	<para>
+		Spring MVC는 JSP에서 보다 쉽게 데이터를 출력할 수 있도록 Tag Library를 제공하며 여러 View
+		기술(Velocity, Freemarker, Tiles 등)과의 연계 방법을 제시한다. 
+	</para>
+	
+	<section id="core_springmvc_view_springformtag">
+		<title>Tag library</title>
+		
+		<para>
+			Spring MVC에서는 입력 폼 구현을 보다 쉽게 구현하기 위해 Spring Form Tag를 제공한다. 이는 태그에서
+			command 객체, controller 참조 데이터로의 접근이 가능하다. Spring Form tag의 사용 방법은 매우 간단하며
+			예제를 중심으로 각 tag에 대한 내용을 살펴본다.
+		</para>
+		
+		<section id="core_springmvc_view_springformtag_conf">
+			<title>configuration</title>
+			
+			<para>
+				Spring Form Tag를 사용하기 위해서는 spring-form.tld 파일이 필요하고 이는
+				spring-webmvc-x.x.x.jar 파일에 포함되어 있다. 이 폼 태그를 사용하기 위해서는 JSP 페이지에 taglib을
+				추가해줘야한다. 
+				<programlisting language="xml">&lt;%@ taglib prefix="form" uri="http://www.springframework.org/tags/form" %&gt;</programlisting>
+			</para>
+		</section>
+		
+		<section id="core_springmvc_view_springformtag_form">
+			<title>form</title>
+			<para>
+				<![CDATA[<form>]]>은 데이터 바인딩을 위해 태그 안에 바인딩 path를 지정해 줄 수 있다. path에 해당되는
+				값은 도메인 모델의 Bean 객체를 의미한다. 사용예는 다음과 같다. 
+				<programlisting language="xml"><![CDATA[<form:form commandName="user">
+    userId : <form:input path="userId"/>
+</form:form>]]></programlisting>
+			</para>
+			
+			<para>
+				또한 Spring Form Tag를 이용하기 위해서는 각각의 입력 path값에 매칭될 트랜스퍼 오브젝트를 지정해 줘야하는데 
+				<![CDATA[<form>]]>안에 commandName 속성으로 다음과 같이 지정해 줄 수 있다.
+				<programlisting language="xml"><![CDATA[<% request.setAttribute("user", sample.services.UserVO())>]]></programlisting>
+			</para>
+
+      		<para>
+      			이러한 commandName의 기본값은 "command"이며 input값들과 매칭될 트랜스퍼 오브젝트를 request값으로 셋팅해줘야한다. 
+      			이 값은 SimpleFormController를 사용할 경우 formBackingObject()메소드에서 지정해 줄 수도있다. 
+      			<programlisting language="java">protected Object formBackingObject(HttpServletRequest request)
+    throws Exception {
+    <emphasis role="bold">UserVO vo=new UserVO();</emphasis>
+    <emphasis role="bold">request.setAttribute</emphasis>("<emphasis
+            role="bold">user</emphasis>",<emphasis role="bold">vo</emphasis>);
+    return new UserVO();
+}
+</programlisting>
+			</para>
+    	</section>
+
+    	<section id="core_springmvc_view_springformtag_input">
+    		<title>input</title>
+    		<para>HTML의 <![CDATA[<input>]]>의 value가 text인 것을 기본 value로 갖는다. 이 태그의 예는 위의 <![CDATA[<form>]]> 예에서 볼 수 있다.</para>
+    	</section>
+    	
+    	<section id="core_springmvc_view_springformtag_checkbox">
+    		<title>checkbox</title>
+    		<para>
+    			다음은 <![CDATA[<checkbox>]]>의 예이다. 마찬가지로 path에 트랜스퍼 오브젝트의 bean name을 매핑시켜주고 
+    			label속성을 이용하면 jsp페이지로 보여질 이름을 설정할 수 있다. 
+    			<programlisting language="xml">&lt;form:checkbox path="hobby" value="listeningMusic" label="음악감상"/&gt;
+&lt;form:checkbox path="hobby" value="study" label="공부"/&gt;</programlisting>
+			</para>
+			
+			<para>※ 위 코드는 아래와 같은 화면을 출력한다.</para>
+			
+			<mediaobject>
+				<imageobject>
+					<imagedata align="center" fileref="../image/core/springmvc/formtag2.jpg" />
+				</imageobject>
+				<textobject>
+					<phrase>음악감상과 공부라는 항목 앞에 체크박스가 표현된 그림</phrase>
+				</textobject>
+			</mediaobject>
+		</section>
+		
+		<section id="core_springmvc_view_springformtag_checkboxes">
+			<title>checkboxes</title>
+			<para>
+				위의 <![CDATA[<checkbox>]]>는 각각의 항목에 대해 작성해줘야 하지만 <![CDATA[<checkboxes>]]>를 사용하면
+				items속성을 이용해서 한줄로 나타내줄 수 있다. 이러한 items에 들어갈 값은 컨트롤러의
+				formBackingObject()메소드에서 Array, List, Map형태의 것들로 넘겨 줄 수 있다. Map의 key와
+				value쌍으로 넘겨줄 경우 key는 태그의 value값이 되고 value는 label명이 된다. (단, Array나 List로
+				넘길 경우 label은 value와 같은 값을 가지게 된다.) 다음은 그 예이다. 
+				<programlisting language="java">protected Object formBackingObject(HttpServletRequest request) throws Exception {
+    UserVO vo = new UserVO();
+    <emphasis role="bold"><![CDATA[Map<String, String> interest = new HashMap<String, String>()]]>;
+    interest.put("reading", "독서");
+    interest.put("listeningMusic", "음악감상");
+    interest.put("study", "공부");
+    request.setAttribute("interest", interest);
+    request.setAttribute("user", vo);</emphasis>
+    return new UserVO();
+}
+</programlisting>
+			</para>
+			
+			<programlisting language="xml"><![CDATA[<tr>
+    <td>hobby :</td>
+    <td><form:checkboxes path="hobby" items="${interest}" /></td>
+</tr>]]></programlisting>
+
+      		<para>※ 위 코드는 아래와 같은 화면을 출력한다.</para>
+
+      		<mediaobject>
+        		<imageobject>
+          			<imagedata align="center" fileref="../image/core/springmvc/formtag3.jpg" />
+        		</imageobject>
+        		<textobject>
+        			<phrase>
+        				공부, 독성, 음악감상 항목 앞에 체크박스가 표현된 화면
+        			</phrase>
+        		</textobject>
+      		</mediaobject>
+    	</section>
+
+    	<section id="core_springmvc_view_springformtag_radiobutton">
+    		<title>radiobutton</title>
+    	
+    		<para>
+	      		다음은 <![CDATA[<radiobutton>]]>의 예이다. <![CDATA[<radiobutton>]]> 또한 label 속성을 이용하여 label명을 설정해 줄 수 있다. 
+	      		<programlisting language="xml"><![CDATA[<tr>
+    <td>Gender:</td>
+    <td>Male: <form:radiobutton path="gender" value="M" label="남자"/> <br/>
+        Female: <form:radiobutton path="gender" value="F" label="여자"/> </td>
+</tr>]]></programlisting>
+			</para>
+			
+			<mediaobject>
+				<imageobject>
+					<imagedata align="center" fileref="../image/core/springmvc/formtag4.jpg" />
+				</imageobject>
+				<textobject>
+					<phrase>남자, 여자라는 항목 앞에 라디오버튼이 표현된 화면</phrase>
+				</textobject>
+			</mediaobject>
+		</section>
+
+    	<section id="core_springmvc_view_springformtag_radiobuttons">
+	    	<title>radiobuttons</title>
+	    	
+	    	<para>
+	    		다음은 <![CDATA[<radiobuttons>]]>의 예이다. items 속성의 사용방법은 위의 <![CDATA[<checkboxes>]]>와 동일하다. 
+	    		<programlisting language="xml"><![CDATA[<tr>
+    <td>Gender:</td>
+    <td><form:radiobuttons path="gender" items="${genderOptions}"/></td>
+</tr>]]></programlisting>
+			</para>
+    	</section>
+
+    	<section id="core_springmvc_view_springformtag_password">
+	    	<title>password</title>
+	    	<para>
+	    		다음은 <![CDATA[<password>]]>의 예이다.
+	    		<programlisting language="xml"><![CDATA[<tr>
+    <td>password :</td>
+    <td><form:password path="password" /></td>
+</tr>]]></programlisting>
+			</para>
+			
+			<para>※ 위 코드는 아래와 같은 화면을 출력한다.</para>
+		
+			<mediaobject>
+				<imageobject>
+					<imagedata align="center" fileref="../image/core/springmvc/formtag8.jpg" />
+				</imageobject>
+				<textobject>
+					<phrase>패스워드를 입력하기 위한 입력 상자에 입력된 패스워드가 직접적으로 보여지지 않음을 나타낸 그림</phrase>
+				</textobject>
+			</mediaobject>
+		</section>
+	
+	    <section id="core_springmvc_view_springformtag_select">
+	    	<title>select</title>
+			<para>
+				<![CDATA[<select>]]>도 위의 <![CDATA[<checkboxes>]]>나 <![CDATA[<radiobuttons>]]>처럼 items 속성을 이용하여 formBackingObject에서 
+				넘겨주는 값으로 자동 매핑 시켜줄 수 있다.
+				<programlisting language="java">protected Object formBackingObject(HttpServletRequest request)
+                throws Exception {
+    UserVO vo = new UserVO();
+    <emphasis role="bold"><![CDATA[Map<String, String> address = new HashMap<String, String>();]]>
+    address.put("seoul","서울");
+    address.put("daegu","대구");
+    address.put("busan","부산");
+    request.setAttribute("address", address);
+    request.setAttribute("user", vo);</emphasis>
+    
+	return new UserVO();
+}
+</programlisting>
+			</para>
+
+			<programlisting language="xml"><![CDATA[<tr>
+    <td>주소</td>
+    <td><form:select path="address" items="${address}" /></td>
+</tr>]]></programlisting>
+
+			<para>※ 위 코드는 아래와 같은 화면을 출력한다.</para>
+		
+			<mediaobject>
+				<imageobject>
+					<imagedata align="center" fileref="../image/core/springmvc/formtag6.jpg" />
+				</imageobject>
+				<textobject>
+					<phrase>주소를 표현하기 위해 도시 목록을 보여주는 Select Box를 나타낸 그림으로써 목록에 서울,대구,부산이 보여지고 있다.</phrase>
+				</textobject>
+			</mediaobject>
+	
+			<para>
+				일반적인 <![CDATA[<option>]]>와 함께 아래와 같이 사용할 수도 있다.
+			</para>
+		</section>
+	
+	    <section id="core_springmvc_view_springformtag_option">
+	    	<title>option</title>
+			<para>
+				다음은 <![CDATA[<option>]]>의 사용 예이다.
+				<programlisting language="xml"><![CDATA[<tr>
+    <td>주소</td>
+    <td><form:select path="address">
+        <form:option value="seoul" label="서울" />
+        <form:option value="daegu" label="대구" />
+        <form:option value="busan" label="부산" />
+    </form:select></td>
+</tr>]]></programlisting>
+			</para>
+	    </section>
+	
+	    <section id="core_springmvc_view_springformtag_options">
+	    	<title>options</title>
+	    	<para>
+	      		다음은 <![CDATA[<options>]]>의 사용예이다. 
+      			<programlisting language="xml"><![CDATA[<tr>
+    <td>주소</td>
+    <td><form:select path="address">
+        <form:options items="${address}" />
+    </form:select></td>
+</tr>]]></programlisting>
+			</para>
+	    </section>
+	
+	    <section id="core_springmvc_view_springformtag_textarea">
+	    	<title>textarea</title>
+	    	<para>
+	    		다음은 <![CDATA[<textarea>]]>의 사용 예이다. 
+	    		<programlisting language="xml"><![CDATA[<td>Note :</td>
+<td><form:textarea path="comment" rows="3" cols="20"></form:textarea></td>]]></programlisting>
+			</para>
+			
+			<mediaobject>
+				<imageobject>
+					<imagedata align="center" fileref="../image/core/springmvc/formtag7.jpg" />
+				</imageobject>
+				<textobject>
+					<phrase>비고를 입력하기 위한 입력창을 표현한 그림</phrase>
+				</textobject>
+			</mediaobject>
+	    </section>
+	
+	    <section id="core_springmvc_view_springformtag_hidden">
+	    	<title>hidden</title>
+	    	<para>
+	    		다음은 <![CDATA[<hidden>]]>의 사용 예이다. 
+	    		<programlisting language="xml"><![CDATA[<form:hidden path="userId" />]]></programlisting>
+	    	</para>
+	    </section>
+
+	    <section id="core_springmvc_view_springformtag_errors">
+	    	<title>errors</title>
+	
+			<para>
+		      	Spring MVC는 validatior에서 얻어진 메시지를 JSP페이지에서 쉽게 출력할 수 있도록 Spring Form 태그의 <![CDATA[<form:errors>]]>를 제공한다. 
+		      	이는 생성한 validator를 통해 입력값의 유효성 체크 후 에러 메시지를 출력해주는데 자세한 사항은 
+		      	본 매뉴얼 <link linkend="core_springmvc_validation_validator_taglibrary">Spring MVC >> Validation >> Spring Validator의 <![CDATA[<form:errors>]]> 태그 사용</link>을 참고한다.
+			</para>
+		</section>
+	
+	    <section id="core_springmvc_view_springformtag_sample">
+	    	<title>sample</title>
+	    	
+	    	<section id="core_springmvc_view_springformtag_sample_formview">
+	    		<title>입력 화면</title>
+	    		
+	    		<para>
+	    			다음은 영화 정보 입력 화면 작성 예인 form.jsp 파일의 일부이다. 
+	    			<programlisting language="xml"><![CDATA[<%@ taglib prefix="form" uri="http://www.springframework.org/tags/form"%>
+<form:form modelAttribute="movie" name="movieForm" method="post">
+	<c:if test="${not empty movie.movieId}">
+		<form:hidden path="movieId" />
+	</c:if>
+	<table summary="This table shows detail information about genre, title, director, actors, runtime, release date, ticket price of the movie">
+		<caption>Detail information</caption>
+		<colgroup>
+			<col style="width:20%;" />
+			<col style="width:80%;" />
+		</colgroup>
+		<tbody>
+			<tr>
+				<th><label for="title"><spring:message code="movie.title" />&nbsp;*</label></th>
+				<td><form:input path="title" cssClass="w_normal" /><form:errors path="title" cssClass="errors" /></td>
+			</tr>
+			<tr>
+				<th><label for="director"><spring:message code="movie.director" />&nbsp;*</label></th>
+				<td><form:input path="director" cssClass="w_normal" /><form:errors path="director" cssClass="errors" /></td>
+			</tr>
+			<tr>
+				<th><label for="genre"><spring:message code="movie.genre" />&nbsp;*</label></th>
+				<td>
+					<!-- items 속성을 사용하여 컨트롤러의  populateGenreList() 에서 넘겨준
+					Map 형태의 객체를 받아서 출력해준다. -->
+					<form:select id="genre" path="genre.genreId">
+					<form:options items="${genreList}" itemValue="genreId" itemLabel="name"/>
+					</form:select>
+				</td>
+			</tr>
+			<tr>
+				<th><label for="actors"><spring:message code="movie.actors" />&nbsp;*</label></th>
+				<td><form:input path="actors" cssClass="w_normal" /><form:errors path="actors" cssClass="errors" /></td>
+			</tr>
+			<tr>
+				<th><label for="runtime"><spring:message code="movie.runtime" /></label></th>
+				<td><form:input path="runtime" cssClass="w_time" />min.<form:errors path="runtime" cssClass="errors" /></td>
+			</tr>
+			<tr>
+				<th><label for="releaseDate"><spring:message code="movie.releaseDate" /></label></th>
+				<td>
+				<form:input path="releaseDate" cssClass="w_date"  maxlength="10" />
+				<a class="underline_none" href="javascript:popUpCalendar(document.movieForm.releaseDate, 'yyyy-mm-dd');">
+					<img id="calendar" src="<c:url value='/sample/images/btn_calendar_i.gif'/>" alt="Calendar" />
+				</a>
+				<form:errors path="releaseDate" cssClass="errors" /></td>
+			</tr>
+			<tr>
+				<th><label for="ticketPrice"><spring:message code="movie.ticketPrice" /></label></th>
+				<td><form:input path="ticketPrice" cssClass="w_price" /><form:errors path="ticketPrice" cssClass="errors" /></td>
+			</tr>
+			<tr>
+				<th><label for="nowPlaying"><spring:message code="movie.nowPlaying" /></label></th>
+				<td><span class="float_left"><spring:message code="movie.isNowPlaying" /></span>
+				<span class="float_left margin_left5"><form:checkbox id="nowPlaying" path="nowPlaying" value="Y" /></span>
+				<input type="hidden" name="!nowPlaying" value="N" /></td>
+			</tr>
+		</tbody>
+	</table>
+</form:form>]]></programlisting>
+				</para>
+			</section>
+			
+			<section id="core_springmvc_view_springformtag_sample_controller">
+				<title>Controller 클래스</title>
+				
+				<para>
+					다음은 Form에서 사용할 객체를 셋팅해주는 MovieController 파일의 populateGenreList()메소드와 요청 처리 결과를 
+					모델 객체에 셋팅해서 view로 넘겨주는 create()메소드의 일부이다. 
+					<programlisting language="java">@Controller("movieController")
+@RequestMapping("/movie.do")
+public class <emphasis role="bold">MovieController</emphasis> {
+    ... 중략...
+
+	// genreList select box에서 사용할 데이터를 view로 전달
+	@ModelAttribute("genreList")
+	public Collection<![CDATA[<Genre>]]>populateGenreList() throws Exception {
+		return this.genreService.getList();
+	}
+	
+	@RequestMapping(params = "method=create")
+	public String create(
+			@Valid Movie movie, BindingResult results, SessionStatus status, Model model
+			HttpSession session) throws Exception {
+
+		if (results.hasErrors())
+			return "core/moviefinder/movie/form";
+			
+		// call business service
+		this.movieService.create(movie);
+		status.setComplete();
+		
+		// view에 "movie" 라는 객체를 넘겨준다.
+		model.addAttribute("movie", movie);
+
+		return "moviefinder/movie/get";
+	}
+}</programlisting>
+				</para>
+			</section>
+			
+			<section id="core_springmvc_view_springformtag_sample_output">
+				<title>출력 화면</title>
+				
+				<para>
+					다음은 EL문을 사용한 데이터 출력을 작성한 get.jsp 파일의 일부이다. 
+					<programlisting language="xml"><![CDATA[<tr><td>Title : </td><td>${movie.title}</td></tr>
+<tr><td>Director : </td><td>${movie.director}</td></tr>
+<tr><td>actors : </td><td>${movie.actors}</td></tr>
+<tr><td>runtime : </td><td>${movie.runtime}</td></tr>
+... 중략
+]]></programlisting>
+				</para>
+				
+				<para>
+					위의 JSP 코드처럼 Expression Language(JSP 2.0에서 지원)를 사용하여 Controller에서 넘겨준 "movie"라는 이름의 모델 객체의 값을 출력할 수 있다.
+				</para>
+			</section>
+		</section>
+	</section>
+	
+	<section id="core_springmvc_view_tilesintegration">
+    	<title>Tiles Integration</title>
+    	<para>
+    		<ulink url="http://dev.anyframejava.org/docs/anyframe/plugin/optional/tiles/1.1.1-SNAPSHOT/reference/htmlsingle/tiles.html">Tiles Plugin 매뉴얼</ulink>을 참조한다. 
+    	</para>
+	</section>
+</chapter>

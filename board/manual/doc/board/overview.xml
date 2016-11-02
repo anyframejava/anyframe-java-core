@@ -1,0 +1,274 @@
+	<chapter id="board_overview">
+		<title>게시판 생성 기능</title>
+		<para>
+			Board Plugin의 게시판 생성 기능은 사용자가 입력한 정보를 토대로 블로그형/리스트형 두가지 타입의 게시판을 생성할 수 있으며, 
+			덧글, 첨부파일, 익명 기능을 사용할 수 있다(선택가능). 또한, 화면에 표시될 Column 또는 필드 정보에 대해 추가, 삭제, 수정할 수 있으며 
+			이를 토대로 화면 UI를 구성할 수 있다. 게시판에 대한 모든 코드 및 설정 파일은 Velocity 기반의 Template으로 제공이 되며 
+			이는 확장, 수정, 배포가 가능하다. 현재 제공되고 있는 Template은 Server Side는 Java로 Client Side는 JSP 기반의 jQuery를 사용하여 구성되어 있다. 
+			<itemizedlist>
+				<listitem>
+					<para>게시판 명 설정 기능 : 게시판 메인페이지에 나오게될 게시판 명을 설정할 수 있다. </para>
+				</listitem>
+				<listitem>
+					<para>패키지 명 설정 기능 : 게시판을 위한 자바 코드가 생성될 패키지를 설정할 수 있다. </para>
+				</listitem>
+				<listitem>
+					<para>bean id 설정 기능 : 게시판을 위한 코드에 대한 bean id(Service, Dao, Controller)를 정의할 수 있다. 이 이름은 Web Contents 하위의 해당 게시판을 위한 폴더명으로도 사용된다. </para>
+				</listitem>
+				<listitem>
+					<para>필드명 설정 기능 : 게시판의 목록/등록(조회,수정) 화면에 출력되는 필드에 대해서 이름을 설정할 수 있다. </para>
+				</listitem>
+				<listitem>
+					<para>다국어 지원 기능 : 게시판 제목, 필드 이름에 대해 Message Resource Bundle을 통해 출력되고 있으며 향후 지원언어 추가시 이를 활용하여 코드 수정없이 그대로 사용할 수 있다. </para>
+				</listitem>
+				<listitem>
+					<para>추가 필드 설정 기능 : 기본으로 제공되는 필드이외의 각 게시판에서 필요한 추가 필드에 대해 설정할 수 있다. </para>
+				</listitem>
+				<listitem>
+					<para>등록/목록 화면을 구성하는 필드 설정 기능 : 목록/등록(조회,수정) 화면에 출력되는 필드를 선택할 수 있다.</para>
+				</listitem>
+				<listitem>
+					<para>등록/목록 화면의 필드 출력 순서 설정 기능 : 목록/등록(조회,수정) 화면에 출력되는 필드들의 순서를 재배치할 수 있다.</para>
+				</listitem>
+				<listitem>
+					<para>덧글 기능 : 게시물에 덧글 기능(추가,수정,삭제)을 사용할 수 있다.</para>
+				</listitem>
+				<listitem>
+					<para>블로그형/리스트형 설정 기능 : 게시판의 종류를 블로그형, 리스트형 중 선택할 수 있다. </para>
+				</listitem>
+				<listitem>
+					<para>파일 첨부 기능 : 게시물 추가 시 파일 첨부 기능을 사용할 수 있다. </para>
+				</listitem>
+				<listitem>
+					<para>익명 여부 설정 기능</para>
+				</listitem>
+			</itemizedlist>
+		</para>
+		<section id="board_overview_flow">
+		<title>게시판 생성 흐름</title>
+		<para>
+			Board Plugin 설치 시 현재 프로젝트에 게시판 생성을 위한 웹 페이지가 출력되며 이 페이지를 통해 사용자가 원하는 게시판 정보를 입력받아  
+			그에 맞는 게시판을 생성할 수 있다. 이 때, Board Plugin 설치 시 웹페이지, 설치로직과 더불어 게시판 생성을 위한 Output 파일이 될 Template이 함께 설치가 되며, 
+			이는 게시판 기능을 위한 클래스, 설정 파일, 화면 등을 위한 파일을 포함하고 있다. 게시판이 생성 기능은 아래와 같은 흐름으로 실행된다.  				
+		</para>
+		 <mediaobject>
+			<imageobject>
+ 	     		<imagedata align="center"
+ 	           		fileref="../image/board/board_flow.png" />
+		     	</imageobject>
+   	 		<textobject>
+   				<phrase>게시판 생성 흐름</phrase>
+   			</textobject>
+   		</mediaobject>
+		<para>
+			위의 그림과 같이 Board Plugin인 설치시 생성되는 게시판 생성 화면을 통해 입력받은 정보와 Template내의 Output 파일을 조합하여, 실제 사용자가 원하는 형태의 게시판을 위한 파일들이
+			현재 프로젝트에 생성되게 되며 생성 후 WAS를 재기동하게 되면 생성된 게시판을 실제로 사용할 수 있게 된다. 
+			각각의 생성 Flow는 아래와 같다. 
+		</para>
+		<orderedlist numeration="arabic" inheritnum="inherit">
+			<listitem>
+				<para>Anyframe 기반으로 생성한 프로젝트에 Board Plugin을 설치</para>
+			</listitem>
+			<listitem>
+				<para>게시판 생성 UI를 비롯한 게시판 생성 로직이 들어 있는 GenerateBoardService.java 등의 게시판 생성을 위한 파일들이 생성됨</para>
+			</listitem>
+			<listitem>
+				<para>templates 폴더 하위에 게시판의 토대가 되는 Velocity 기반의 Template이 생성됨. 이 때, Template은 Java + jQuery기반으로 작성되어 있으며 프로젝트 특성에 맞게 수정, 확장 모두 가능</para>
+			</listitem>
+			<listitem>
+				<para>현재 프로젝트를 WAS에서 기동</para>
+			</listitem>
+			<listitem>
+				<para>Board 1.1.1-SNAPSHOT 링크를 클릭하여 게시판 생성을 위한 화면으로 이동</para>
+			</listitem>
+			<listitem>
+				<para>원하는 대로 게시판 정보/컬럼 정보/화면 구성 정보를 입력한 후 Generate 버튼을 클릭</para>
+			</listitem>
+			<listitem>
+				<para>현재 프로젝트에 사용자가 입력한 정보를 토대로 게시판이 생성됨.(생성파일은 아래 목록 참조)</para>
+				<informaltable>
+					<caption>Output file through the generating board</caption>
+					<tgroup cols="2">
+						<colspec colnum="1" colname="col1" colwidth="4*" />
+						<colspec colnum="2" colname="col2" colwidth="6*" />
+						<thead>
+							<row>
+								<entry align="center">파일명</entry>
+								<entry align="center">설명</entry>
+							</row>
+						</thead>
+						<tbody>
+							<row>
+								<entry align="center">createtable-${beanId}.sql</entry>
+								<entry>게시판에 등록되는 게시물이 실제 저장되는 DBMS의 Table에 대한 DDL문을 포함한 sql 파일</entry>
+							</row>
+							<row>
+								<entry align="center">${BeanId}.java</entry>
+								<entry>게시판에 등록되는 게시물에 대한 Value Object</entry>
+							</row>
+							<row>
+								<entry align="center">${BeanId}Dao.java</entry>
+								<entry>생성된 게시판에서 게시물에 대한 CRUD 기능을 제공하는 Dao 클래스 </entry>
+							</row>
+							<row>
+								<entry align="center">${BeanId}ServiceImpl.java</entry>
+								<entry>생성된 게시판에서 게시물에 대한 CRUD 기능을 제공하는 Service 구현 클래스 </entry>
+							</row>
+							<row>
+								<entry align="center">${BeanId}Service.java</entry>
+								<entry>생성된 게시판에서 게시물에 대한 CRUD 기능을 제공하는 Service 인터페이스 </entry>
+							</row>
+							<row>
+								<entry align="center">${BeanId}Controller.java</entry>
+								<entry>생성된 게시판에서 게시물에 대한 CRUD 기능을 제공하는 Controller 클래스 </entry>
+							</row>
+							<row>
+								<entry align="center">PostComment.java</entry>
+								<entry>게시물에 달린 덧글에 대한 Value Object(덧글 기능 사용시에만 생성)</entry>
+							</row>
+							<row>
+								<entry align="center">PostCommentDao.java</entry>
+								<entry>덧글에 대한 CRUD 기능을 제공하는 Dao 클래스(덧글 기능 사용시에만 생성)</entry>
+							</row>
+							<row>
+								<entry align="center">PostCommentServiceImpl.java</entry>
+								<entry>덧글에 대한 CRUD 기능을 제공하는 Service 구현 클래스(덧글 기능 사용시에만 생성)</entry>
+							</row>
+							<row>
+								<entry align="center">PostCommentService.java</entry>
+								<entry>덧글에 대한 CRUD 기능을 제공하는 Service 인터페이스(덧글 기능 사용시에만 생성)</entry>
+							</row>
+							<row>
+								<entry align="center">PostCommentController.java</entry>
+								<entry>덧글에 대한 CRUD 기능을 제공하는 Controller 클래스(덧글 기능 사용시에만 생성)</entry>
+							</row>
+							<row>
+								<entry align="center">PostAttachFile.java</entry>
+								<entry>게시물에 달린 첨부파일에 대한 Value Object(첨부파일 기능 사용시에만 생성)</entry>
+							</row>
+							<row>
+								<entry align="center">PostAttachFileDao.java</entry>
+								<entry>첨부파일에 대한 CRUD 기능을 제공하는 Dao 클래스(첨부파일 기능 사용시에만 생성)</entry>
+							</row>
+							<row>
+								<entry align="center">PostAttachFileServiceImpl.java</entry>
+								<entry>첨부파일에 대한 CRUD 기능을 제공하는 Service 구현 클래스(첨부파일 기능 사용시에만 생성)</entry>
+							</row>
+							<row>
+								<entry align="center">PostAttachFileService.java</entry>
+								<entry>첨부파일에 대한 CRUD 기능을 제공하는 Service 인터페이스(첨부파일 기능 사용시에만 생성)</entry>
+							</row>
+							<row>
+								<entry align="center">PostAttachFileController.java</entry>
+								<entry>첨부파일에 대한 CRUD 기능을 제공하는 Controller 인터페이스(첨부파일 기능 사용시에만 생성)</entry>
+							</row>
+							<row>
+								<entry align="center">PostAttachFileMeta.java</entry>
+								<entry>첨부파일에 대한 CRUD 기능을 제공하기 위해 파일 사이즈, 파일명 등의 메타정보 표현하는 클래스(첨부파일 기능 사용시에만 생성)</entry>
+							</row>
+							<row>
+								<entry align="center">PostAttachFileUploadConfig.java</entry>
+								<entry>첨부파일에 대한 업로드가 처리되기 위해 기본적인 환경정보를 처리하는 클래스(첨부파일 기능 사용시에만 생성)</entry>
+							</row>
+							<row>
+								<entry align="center">PostAttachFileUploadException.java</entry>
+								<entry>첨부파일에 대해 업로드가 처리 시 나타나는 오류를 처리하는 Exception 클래스(첨부파일 기능 사용시에만 생성)</entry>
+							</row>
+							<row>
+								<entry align="center">message-${beanId}.properties</entry>
+								<entry>게시관에 관련된 message resource가 정의되어 있는 property 파일(다국어 지원)</entry>
+							</row>
+							<row>
+								<entry align="center">mapping-query-${beanId}.xml</entry>
+								<entry>게시물 CRUD를 위한 SQL문의 정의되어 있는 mapping xml 파일</entry>
+							</row>
+							<row>
+								<entry align="center">mapping-query-postcomment.xml</entry>
+								<entry>덧글 CRUD를 위한 SQL문의 정의되어 있는 mapping xml 파일(덧글 기능 사용시에만 생성)</entry>
+							</row>
+							<row>
+								<entry align="center">mapping-query-postattachfile.xml</entry>
+								<entry>첨부파일 CRUD를 위한 SQL문의 정의되어 있는 mapping xml 파일(첨부파일 기능 사용시에만 생성)</entry>
+							</row>
+							<row>
+								<entry align="center">content.css</entry>
+								<entry>게시판을 위한 CSS 파일(직접 JSP 파일을 고치지 않고 CSS 변경만으로 디자인 변경 가능)</entry>
+							</row>
+							<row>
+								<entry align="center">form.jsp</entry>
+								<entry>게시물 등록/수정을 위한 JSP 파일</entry>
+							</row>
+							<row>
+								<entry align="center">list.jsp</entry>
+								<entry>게시물 목록 조회를 위한 JSP 파일(블로그형 게시판일 경우 bloglist.jsp 파일로 대체됨)</entry>
+							</row>
+							<row>
+								<entry align="center">view.jsp</entry>
+								<entry>게시물 상세 조회를 위한 JSP 파일(블로그형 게시판일 경우 생성되지 않음)</entry>
+							</row>
+						</tbody>
+					</tgroup>
+				</informaltable>
+			</listitem>
+			<listitem>
+				<para>WAS 재기동 후 생성된 게시판 화면 확인</para>
+			</listitem>
+		</orderedlist>	
+		</section>
+		<section id="board_overview_features">
+		<title>특징</title>
+		<para>
+			Anyframe의 게시판 생성 기능은 개발자 편의를 돕고 프로젝트에 맞는 최적의 게시판을 제공하기 위해 다음과 같은 특징을 가진다.  		
+		</para>
+		<itemizedlist>
+			<listitem>
+				<para>편의성</para>
+				<itemizedlist>
+					<listitem>
+						<para>화면을 통한 게시판 정보 입력 : 실제 Web Application 구동 후 화면을 통한 정보 입력이 가능하므로 사용자가 보다 쉽게 게시판을 생성할 수 있다.</para>
+					</listitem>
+					<listitem>
+						<para>화면 구성을 위한 기본 컬럼 제공 : 제목, 본문등의 모든 게시판에서 사용되는 기본 컬럼에 대한 정보 제공를 제공하고 쉽게 UI를 통해 확인할 수 있다.</para>
+					</listitem>
+					<listitem>
+						<para>화면 구성을 위한 확장 컬럼 추가 : 게시판에서 추가로 사용될 필드에 대한 컬럼 정보를 입력할 수 있다.</para>
+					</listitem>
+					<listitem>
+						<para>화면 레이아웃 변경 : 목록/등록화면에 대한 레이아웃을 UI를 통해 쉽게 변경하여 적용할 수 있다.</para>
+					</listitem>
+					<listitem>
+						<para>게시물 정보 저장을 위한 DDL 제공 : 입력된 정보를 기반으로 HSQL용 SQL문을 제공한다. </para>
+					</listitem>
+				</itemizedlist>
+			</listitem>
+			<listitem>
+				<para>확장성</para>
+				<itemizedlist>
+					<listitem>
+						<para>Template 제공 : Velocity로 작성된 Template을 기반으로 모든 코드와 파일이 생성되므로 프로젝트에서 가이드하는 Template이 변경/추가될 경우 해당 Template을 수정하여 모든 게시판 생성에 적용할 수 있다.</para>
+					</listitem>
+					<listitem>
+						<para>다국어 지원 : MessageResource 기반의 화면 구성으로 향후 지원 언어가 추가되더라도 화면 수정없이 쉽게 사용자 Locale에 맞는 언어를 출력할 수 있다. </para>
+					</listitem>
+					<listitem>
+						<para>CSS 파일을 통한 디자인 : 디자인 관련 요소들이 CSS 파일로 도출되어 정의되어 있으므로, 디자인 변경에 있어서 CSS 파일만 변경하면 JSP 파일 수정없이도 해당 디자인을 적용할 수 있다.</para>
+					</listitem>
+				</itemizedlist>
+			</listitem>
+			<listitem>
+				<para>다양한 추가기능 지원</para>
+				<itemizedlist>
+					<listitem>
+						<para>덧글(Comment) 기능 제공 : 게시물에 대한 덧글(Comment) 기능을 지원한다.</para>
+					</listitem>
+					<listitem>
+						<para>익명 기능 제공 : 익명 기능을 제공하여 작성자에 대한 정보를 출력하지 않도록한다.</para>
+					</listitem>
+					<listitem>
+						<para>파일 첨부 기능 제공 : 게시물 등록시 파일을 첨부할 수 있도록 파일 첨부 기능을 지원한다.</para>
+					</listitem>
+				</itemizedlist>
+			</listitem>
+		</itemizedlist>	
+		</section>
+	</chapter>

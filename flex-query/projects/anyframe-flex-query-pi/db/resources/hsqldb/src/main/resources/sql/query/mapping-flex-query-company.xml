@@ -1,0 +1,11 @@
+				<!--flex-query-findFlexQueryCompanyListByName-START-->
+				SELECT * FROM FLEX_company WHERE name like '%'|| :name ||'%'	ORDER BY name
+				<!--flex-query-findFlexQueryCompanyListByName-END-->
+				<!--flex-query-createFlexQueryCompany-START-->
+				INSERT 
+				INTO 
+				FLEX_COMPANY(ID, NAME, ADDRESS, CITY, STATE, ZIP, PHONE, INDUSTRY_ID) 
+				VALUES(
+				'COMPANY-'|| NEXT VALUE FOR FLEX_COMPANY_ID_SEQ, :name,:address,:city,:state,:zip,:phone,:industry_id
+				)
+				<!--flex-query-createFlexQueryCompany-END-->

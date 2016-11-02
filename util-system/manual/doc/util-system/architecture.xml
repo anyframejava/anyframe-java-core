@@ -1,0 +1,108 @@
+<chapter id="utilsystem_architecture">
+	<title>Architecture</title>
+	<section id="utilsystem_architecture_sigar">
+		<title>SigarAccessor Architecture</title>
+		<para>
+			Anyframe 에서는 JNI 라이브러리를 사용하는 SIGAR 의 초기 구동 환경 설정을 간편화하기 위한 SigarAccessor 를 제공한다.
+		</para>
+		<para>다음 그림은 Sigar 를 사용하기 위한 Anyframe 시스템 Architecture 다.</para>
+		<mediaobject>
+	      <imageobject>
+	        <imagedata align="center" fileref="../image/util-system/util-system-architecture-sigar.jpg" />
+	      </imageobject>
+	      <textobject>
+			<phrase>Sigar 사용을 위한 시스템 Architecture</phrase>
+		  </textobject>
+	    </mediaobject>
+    	<para>SIGAR (System Information Gatherer and Reporter) 는 다양한 platform/language 를 지원하는 오픈 소스(Apache License, Version 2.0) 라이브러리로
+    	 Java, Perl, .Net 등에서 OS 와 하드웨어 수준의 정보에 접근하기하기 위한 command-line 툴이다.</para>
+    	 <para>
+			SIGAR 는 System Management/Monitoring Tool Suite 인 Hyperic HQ 의 핵심 서브 프로젝트로
+			처음에는 Java 플랫폼에서 low-level의 하드웨어/OS 정보에 대한 유연한 접근 및 측정이 어려운 문제를 극복하기 위해 만들어 졌다.
+			현재 Hyperic 은 SpringSource 에 인수되었으며 라이센스 정책도 최근 Apache License 로 변경되어 사용에 제약이 없어지게 되었다.
+			JNI(Java Native Interface) 기반으로 플랫폼에 따라 상이한 시스템 처리도 Native 라이브러리를 사용하여 빠르고 강력한 low-level 처리로 수행하며
+			Java JNI Binding 을 통하여 유연하게 Java 환경에 통합된다.
+		</para>
+		<para>SIGAR 에서 제공하는 주요 기능은 다음과 같다.</para>
+    	<itemizedlist>
+      		<listitem>
+        		<para>시스템 메모리, SWAP, cpu, load average, uptime..</para>
+      		</listitem>
+      		<listitem>
+        		<para>프로세스당 메모리정보, 자격인증정보, 상태, arguments, environment</para>
+      		</listitem>
+      		<listitem>
+        		<para>파일시스템 정보</para>
+      		</listitem>
+      		<listitem>
+        		<para>네트워크 정보 및 설정</para>
+      		</listitem>
+      		<listitem>
+        		<para>TCP 와 UDP 연결 테이블 정보</para>
+      		</listitem>
+      		<listitem>
+        		<para>네트워크 라우트 테이블 정보</para>
+      		</listitem>
+    	</itemizedlist>
+        <para>이런 다양한 기능의 Sigar 의 기능을 쉽게 활용하기 위해 Anyframe 에서는 SigarAccessor 를 제공해 시스템, 네트워크, 파일에 관한 정보 제공을 손쉽게 한다.
+        	SigarAccessor 의 기능은 아래와 같다.
+        </para>
+	    <itemizedlist>
+      		<listitem>
+        		<para>Sigar 구동환경 초기화</para>
+      		</listitem>
+      		<listitem>
+        		<para>기본 System resource gathering 및 초기화</para>
+      		</listitem>
+      		<listitem>
+        		<para>실시간 변경 resource 갱신기능</para>
+      		</listitem>
+    	</itemizedlist>
+	</section>
+
+	<section id="utilsystem_architecture_filemonitor">
+		<title>File Monitor Architecture</title>
+		<para>
+			Anyframe 에서는 FileMonitor 라는 utility 를 통해 Sigar 에서 제공하는 FileWatcherThread 를 생성시켜 주기적으로 디렉토리 내 파일의 변경 이벤트를 감지할 수 있는 기능을 제공한다.
+			감시 대상 디렉토리 내에 추가/수정/삭제된 파일에 대한 정보는 log4j를 활용하여 로그로 기록한다.(Appender 지정에 따라 console, file, DB 등 다양한 target 설정 가능)
+		</para>
+		<para>다음 그림은 FileMonitor 를 위한  Anyframe 시스템 Architecture 이다.</para>
+		<mediaobject>
+	      <imageobject>
+	        <imagedata align="center"  fileref="../image/util-system/util-system-architecture-filemonitor.jpg" />
+	      </imageobject>
+	      <textobject>
+			<phrase>FileMonitor를 위한 시스템 Architecture</phrase>
+		  </textobject>
+	    </mediaobject>
+	</section>
+
+	<section id="utilsystem_architecture_zip">
+		<title>Zip Architecture</title>
+		<para>Anyframe 에서는 Apache Commons Compress 기능을 활용하여 zip, tar, tar.gz 등의 파일 압축/해제를 지원한다. </para>
+		<para>다음 그림은 파일 압축/해제를 위한  Anyframe 시스템 Architecture 이다.</para>
+		<mediaobject>
+	      <imageobject>
+	        <imagedata align="center"  fileref="../image/util-system/util-system-architecture-zip.jpg" />
+	      </imageobject>
+	      <textobject>
+			<phrase>파일 압축/해제를 위한 시스템 Architecture</phrase>
+		  </textobject>
+	    </mediaobject>
+	</section>
+
+	<section id="utilsystem_architecture_shellscript">
+		<title>Shell Script Architecture</title>
+		<para>Anyframe 에서는 자바 환경에서 Shell Script 실행 및 결과 처리를 유연하게 지원하기 위한 기능을 제공한다. </para>
+		<para>다음 그림은 Shell Script 실행을 위한  Anyframe 시스템 Architecture 이다.</para>
+		<mediaobject>
+	      <imageobject>
+	        <imagedata align="center"  fileref="../image/util-system/util-system-architecture-shellscript.jpg" />
+	      </imageobject>
+	      <textobject>
+			<phrase>Shell Script 실행을 위한  시스템 Architecture</phrase>
+		  </textobject>
+	    </mediaobject>
+	</section>
+
+</chapter>

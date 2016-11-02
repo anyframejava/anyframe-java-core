@@ -1,0 +1,57 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN"
+"http://www.w3.org/TR/html4/loose.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+
+<head>
+<meta http-equiv="content-type" content="text/html; charset=UTF-8" />
+<title>[AnyFrame UI Button] Basic Sample</title>
+<link href="../../../common/css/smoothness/jquery-ui-1.10.0.custom.css"	rel="stylesheet">
+<script src="../../../common/exlibs/jquery-1.9.0.js"></script>
+<script src="../../../common/exlibs/jquery-ui-1.10.0.custom.js"></script>
+
+<link type="text/css" rel="stylesheet" href="../../../common/css/style.css" />
+<link type="text/css" rel="stylesheet" href="sub_css/resizable.css">
+
+<style>
+.resizable-helper { border : 1px dotted rgb(0, 181, 211);}
+</style>
+
+<script type="text/javascript">
+
+	var ENV = {
+		ID_INPUT_RESIZABLE : "#inputResizable",
+		ID_TEXTAREA_RESIZABLE : "#textareaResizable"
+	};
+			
+	$(document).ready(function() {
+		
+		$(ENV.ID_INPUT_RESIZABLE+", "+ENV.ID_TEXTAREA_RESIZABLE).resizable({
+			 handles : "se",
+			 minWidth : 100,
+			 maxWidth : 600,
+			 minHeight : 20,
+			 maxHeight: 200,
+			 helper : "resizable-helper"
+		 });
+		
+		$(".ui-wrapper").css("padding-bottom", "0");
+		
+	
+	});
+</script>
+</head>
+<body>
+	<div class="title">사이즈 조절</div>
+	<div class="text-area">input 태그 사용 :</div>
+	<div class="input-area">
+		<input id="inputResizable" type="text" value="INPUT창 사이즈 조절" />
+	</div>
+	<br>
+	<div class="text-area">textarea 태그 사용 :</div>
+	<div class="input-area">
+		<textarea id="textareaResizable">TEXTAREA창 사이즈 조절</textarea>
+	</div>
+</body>
+
+</html>
+

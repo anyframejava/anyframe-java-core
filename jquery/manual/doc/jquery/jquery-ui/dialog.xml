@@ -1,0 +1,36 @@
+	<section id="jquery_dialog_sec001">
+		<title>Dialog widget</title>
+		<para>Dialog 위젯은 Window Popup이나 브라우져의 Message Alert Box를 Layed된 html 요소를 활용하여 대체할 수 있도록 한 것이다.</para>
+		<para>jQuery UI에서 제공하는 Dialog 위젯은 아래 코드와 같이 다양한 옵션 및 이벤트 핸들링을 구성할 수 있다.</para>
+		<programlisting><![CDATA[$(document).ready(function() {
+... 생략
+
+	// Dialog form definition for Category
+	$('#movieForm').dialog({
+		autoOpen	: false,
+		width		: "auto",
+		height		: "auto",
+		maxWidth	: "410px",
+		title		: "Movie Information",
+		modal		: true,
+		resizable	: false,
+		close		: function() {
+			//close callback
+		},
+		open : function() {
+			//open callback
+		}
+	});
+
+... 생략
+]]></programlisting>
+		<para>다음은 Dialog를 적용한 결과이다. Modal 형태의 Window로서 'Cancel' 버튼과 타이틀바의 'x' 버튼 및 ESC 키를 통해 창을 닫을 수 있으며, window의 사이즈 조절도 가능하도록 옵션처리 되었다.</para>
+		<mediaobject>
+			<imageobject>
+				<imagedata fileref="../image/jquery/jquery_dialog.png"	align="center" />
+			</imageobject>
+			<textobject>
+				<phrase>Dialog 적용 결과</phrase>
+			</textobject>
+		</mediaobject>
+	</section>

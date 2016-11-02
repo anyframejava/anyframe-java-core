@@ -1,0 +1,139 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+
+<!DOCTYPE book PUBLIC "-//OASIS//DTD DocBook XML V4.5//EN" "http://www.oasis-open.org/docbook/xml/4.5/docbookx.dtd"
+[
+<!ENTITY xplatform_integration_xprequesthandlerutil SYSTEM "xplatform/integration/xprequesthandlerutil.xml">
+<!ENTITY xplatform_integration_gfntransaction SYSTEM "xplatform/integration/gfntransaction.xml">
+]
+>
+
+<!--
+		Licensed to the Apache Software Foundation (ASF) under one or more
+		contributor license agreements. See the NOTICE file distributed with
+		this work for additional information regarding copyright ownership.
+		The ASF licenses this file to you under the Apache License, Version
+		2.0 (the "License"); you may not use this file except in compliance
+		with the License. You may obtain a copy of the License at
+
+		http://www.apache.org/licenses/LICENSE-2.0 Unless required by
+		applicable law or agreed to in writing, software distributed under the
+		License is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR
+		CONDITIONS OF ANY KIND, either express or implied. See the License for
+		the specific language governing permissions and limitations under the
+		License.
+-->
+    
+<book lang="ko">
+	<title>Anyframe XPLATFORM Plugin</title>
+	
+	<bookinfo>
+		<copyright>
+			<year>2007-2014</year>
+			<holder>삼성SDS</holder>
+		</copyright>
+		<releaseinfo>Version 1.6.1-SNAPSHOT</releaseinfo>
+
+		<productname>Anyframe XPLATFORM Plugin</productname>
+
+		<authorgroup>
+			<corpauthor></corpauthor>
+		</authorgroup>
+
+		<mediaobject>
+			<imageobject>
+				<!-- logo 변경 -->
+				<imagedata fileref="../image/common/logo_pdf.jpg"/>
+			</imageobject>
+		</mediaobject>
+		<legalnotice>
+			<para>본 문서의 저작권은 삼성SDS에 있으며 Anyframe 오픈소스 커뮤니티 활동의 목적하에서 자유로운 이용이 가능합니다.
+			본 문서를 복제, 배포할 경우에는 저작권자를 명시하여 주시기 바라며 본 문서를 변경하실 경우에는 원문과 변경된 내용을 표시하여 주시기 바랍니다. 
+			원문과 변경된 문서에 대한 상업적 용도의 활용은 허용되지 않습니다. 본 문서에 오류가 있다고 판단될 경우 이슈로 등록해 주시면 적절한 조치를 취하도록 하겠습니다.
+			</para>
+		</legalnotice>
+	</bookinfo>
+	
+	<part id="xplatform_installation_part">
+		<title>Introduction</title>
+		<partintro id="xplatform_installation_part_intro">
+			XPLATFORM은 MiPlatform의 단점을 보완하기 위해 TOBE SOFT가 개발한 RIA 플랫폼이다.
+			Anyframe에서는 XPLATFORM을 UI로 이용하는 어플리케이션 개발시, XPLATFORM 전용 데이터 구조를 처리할 수 있는
+			Util 클래스를 제공한다.
+			본 Plugin은 Anyframe과 XPLATFORM 연계를 위한 참조 라이브러리와 이를 이용한 예제 화면을 포함하고 있다.
+			
+			<para role="introduction_title"><emphasis role="bold">Installation</emphasis></para>
+			<para>Command 창에서 다음과 같이 명령어를 입력하여 Anyframe XPLATFORM Plugin을 설치한다.</para>
+			<programlisting language="java"><![CDATA[mvn anyframe:install -Dname=xplatform]]></programlisting>
+			<para>
+				installed(mvn anyframe:installed) 혹은 jetty:run(mvn clean jetty:run) command를 이용하여 설치 결과를 확인해볼 수 있다. 
+			</para>
+			<para>
+				플러그인 설치 후 브라우저를 통해서 Anyframe XP Query Plugin을 확인 하기 위해서는 아래의 몇 가지 추가 작업이 필요하다.
+			</para>
+			<itemizedlist>
+				<listitem>
+					<para>
+						<emphasis role="bold">TOBESOFT가 제공하는 UX Studio(UI 개발툴) 혹은 XPLATFORM RUNTIME client plugin(ver 9.2)을 설치한다.</emphasis>
+					</para>
+				</listitem>
+				<listitem>
+					<para>
+						Anyframe XPLATFORM Plugin을 동작시키기 위해서는 TOBESOFT가 제공하는 XPLATFORM_SERVER_License.xml, XPLATFORM_Client_License.xml
+						총 2가지 license가 필요하다. 현재 Anyframe XPLATFORM Plugin 내에는 두 가지 라이센스가 모두 포함 되어 있으며, license file의 상세 위치는 다음과 같다.
+					</para>
+					<itemizedlist>
+						<listitem>
+							<para>
+								XPLATFORM_SERVER_LICENSE.xml : xplatform-api-x.x.x.jar 파일 내에 존재
+							</para>
+						</listitem>
+						<listitem>
+							<para>
+								XPLATFORM_CLIENT_LICENSE.xml : {PROJECT_HOME}\src\main\webapp\xplatform\SampleApplication\ 폴더에 존재
+							</para>
+						</listitem>
+					</itemizedlist>
+				</listitem>
+			</itemizedlist>
+		<important>
+			<title>Anyframe XPLATFORM Plugin 개발 환경</title>
+			<para>
+				Anyframe XPLATFORM Plugin에서 제공하는 예제 화면은 XPLATFORM Runtime 9.2 버전을 기준으로 개발 되었다.
+				XPLATFORM Runtime client나 UX Studio가 상이한 버전으로 설치 된 경우, 비정상 동작 하거나 기동 되지 않는
+				문제가 생길 수 있으니 참고한다. 
+			</para>
+		</important>
+			<para role="introduction_title"><emphasis role="bold">Dependent Plugins</emphasis></para>
+			<informaltable>
+				<tgroup cols="2">
+					<colspec colnum="1" colname="col1" colwidth="5*" />
+					<colspec colnum="2" colname="col2" colwidth="5*" />
+					<thead>
+						<row>
+							<entry align="center">Plugin Name</entry>
+							<entry align="center">Version Range</entry>
+						</row>
+					</thead>
+					<tbody>
+						<row>
+							<entry align="center"><ulink url="http://dev.anyframejava.org/docs/anyframe/plugin/optional/query/1.6.1-SNAPSHOT/reference/htmlsingle/query.html">Query</ulink></entry>
+							<entry align="center" valign="middle">2.0.0 > * > 1.4.0</entry>
+						</row>
+					</tbody>
+				</tgroup>
+			</informaltable>
+		</partintro>
+	</part>	
+	
+	<part id="xplatform_integration_part">
+		<title>XPLATFORM Integration</title>
+		<partintro id="xplatform_integration_part_intro">
+			<para>
+				Anyframe에서는 XPLATFORM이 사용하는 PlatformRequest, PlatformResponse를 처리하기 위해 XPRequestHandlerUtil Class를 제공하고 있다.
+				또한 UI에서 서버로의 요청을 발생 시키기 위해 호출하는 transaction() 명령을 쉽게 사용할 수 있는 script를 제공한다.
+			</para>
+		</partintro>
+		&xplatform_integration_xprequesthandlerutil;
+		&xplatform_integration_gfntransaction;
+	</part>
+</book>

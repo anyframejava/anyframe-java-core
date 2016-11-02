@@ -1,0 +1,53 @@
+<chapter id="core_springmvc_architecture">
+	<title>Architecture</title>
+	<para>
+		Spring MVC는 MVC 패턴 기반의 Model2아키텍처를 사용하며 Model, View, Controller 컴포넌트로 구성된다. 
+	</para>
+	<itemizedlist>
+		<listitem>
+			<para>
+				<emphasis role="bold">Model</emphasis>
+				: Spring MVC에서는 Model 컴포넌트를 만드는 방법을 직접 제공하지 않는다. 대신 EJB (Enterprise
+				Java Beans), JDO (Java Data Objects), JavaBeans, ORM (Object to Relational Mapping framework ) 등 
+				여러 기술들을 이용해 구현된 어떤 Model 컴포넌트든 접근 가능하다. 
+				또한 폼 입력 필드 값을 별도로 폼 객체를 개발할 필요 없이 일반 모델 객체로 바인딩 할 수 있는데, 이 때 모델 객체 attribute로
+				자동으로 매핑되어 정의된 타입에 맞게 타입 변환이 이루어진다. 단, attribute명과 입력 필드 명이 일치해야한다.
+			</para>
+		</listitem>
+		<listitem>
+			<para>
+				<emphasis role="bold">View</emphasis>
+				: 표준 JSP 나 Spring MVC에서 제공하는 tag library를 사용하여 View 컴포넌트를 제작한다. 
+				Spring MVC에서는 별도의 bean, html, logic 태그는 제공하지 않으며 표준JSP 태그인 JSTL을
+				사용할 것을 권장한다. 컴포넌트의 재사용, 관리 노력의 절감, 에러 최소화를 위해 Application-Specific
+				Custom tag, Image Rendering Component 등 다른 기술의 채택을 고려할 수 있다.
+			</para>
+		</listitem>
+		<listitem>
+			<para>
+				<emphasis role="bold">Controller </emphasis>
+				: Spring MVC에서는 서버로 입력된 요청을 실제로 처리하는 Controller(Spring MVC에서는 Handler라고 일컫는다.)를 쉽게 개발할 수 있도록 다양한 Annotation들을 제공하고 있다.
+				Spring MVC의 DispatcherServlet은 모든 요청을 받아서 해당 요청을 처리할 Controller로 전달해 주는 "Front Controller" 역할을 담당하고 있다.
+			</para>
+		</listitem>
+	</itemizedlist>
+	<para>
+		FrontController 역할을 하는 DispatcherServlet의 요청 처리 workflow는 아래의 그림과 같다.
+	</para>
+	<mediaobject>
+		<imageobject>
+			<imagedata align="center" fileref="../image/core/springmvc/dispatcher.jpg" />
+		</imageobject>
+		<textobject>
+			<phrase>FrontController 역할을 하는 DispatcherServlet의 요청 처리 workflow를 간략히 표현한 그림이다. 모든 요청이 통과하는 곳은 Front Controller이며 
+			Front Controller는 각각의 요청을 처리할 Controller를 찾아내어 요청을 전달하고, 요청을 처리한 뒤에는 적절한 ViewTemplate을 통해 화면에 표현된다.</phrase>
+		</textobject>
+	</mediaobject>
+	<para>
+		위의 그림에서 볼 수 있듯이 모든 요청이 통과하는 곳은 Front Controller이며 Spring MVC에서는 DispatcherServlet이 이 Front Controller 역할을 한다.
+		DispatcherServlet은 모든 요청을 받아서, Locale, Theme, Multipart 등과 관련된 작업을 처리한 후
+		HandlerMapping을 통해 각각의 요청을 처리할 Handler를 찾아내어 요청을 전달한다.
+		Handler서 요청을 처리한 뒤 View정보와 응답으로 보여줄 정보를 포함한 ModelAndView 객체를 다시 DispatcherServlet에게 리턴하면 
+		DispatcherServlet은 ModelAndView 객체와 ViewResolver를 통해 View를 찾고 해당 View를 통해 응답을 전달한다.
+	</para>
+</chapter>

@@ -1,0 +1,320 @@
+<chapter id="struts_validator">
+	<title>Validator</title>
+
+  		<para>
+  			사용자 입력 값을 검증하는 여러가지 방법 중에서 일반적으로 많이 사용하고 있는 방법이 JSP페이지 내에서 javascript
+  			함수를 이용해 사용자 입력 값을 검증하는 방법이다. 하지만 이런 방법으로는 완전한 검증을 할 수 없기 때문에 Sever측에서
+  			다시 한번 검증하는 것이 필요하다. Validator는 Struts 1.1부터 배포된 프레임워크로 ActionForm에 대한 유효성 검사를
+  			편리하게 도와주고 있다. 본 문서에서는 Validator를 사용하기 위한 플러그인 등록 및 Struts에서 제공하고 있는
+  			validator-rule에 대해서 소개하기로 한다.
+  		</para>
+
+		<section id="struts_validator_plugin">
+    	<title>Plug-in 등록</title>
+
+    		<section id="struts_validator_plugin_regist">
+      		<title>struts-config.xml에 plug-in 등록</title>
+
+	      		<para>
+	      			Validator를 사용하기 위해서는 struts-config.xml에
+	      			org.apache.struts.validator.ValidatorPlugIn을 등록해야 한다. ValidatorPlugIn은
+	      			property로 pathname을 가지며 pathname의 값으로는 Struts에서 기본으로 제공하고 있는 검증 규칙이 정의되어
+	      			있는 validator-rules.xml과 사용자가 검증한 ActionForm에 대한 검증 규칙을 정의한 xml파일을 세팅한다.
+	      		</para>
+    		</section>
+
+    		<section id="struts_validator_plugin_sample">
+      		<title>Samples</title>
+
+      			<para>
+      				다음은 Validator Plug-in을 설정한 struts-config-validator.xml 의 일부분이다.
+      				<programlisting
+      				language="xml"><![CDATA[<plug-in className="org.apache.struts.validator.ValidatorPlugIn">
+    <set-property property="pathnames"
+        value="/org/apache/struts/validator/validator-rules-compressed.xml,
+        /WEB-INF/validator/validation-sample.xml" />
+</plug-in>]]></programlisting>
+				</para>
+			    <para>
+			    	Struts에서는 일반적으로 많이 사용하고 있는 검증 규칙에 대한 정의가 포함된 validator-rules.xml과
+      				validator-rules-compressed.xml을 struts-core-1.3.x.jar파일에 같이 배포하고 있다.
+      				validation-sample.xml은 검증하고자 하는 ActionForm에 대한 <link
+      				linkend="struts_validator_formset">formset 설정</link> 이 포함되어 있다.
+      			</para>
+    		</section>
+  		</section>
+
+		<section id="struts_validator_rule">
+    	<title>Validator Rules</title>
+
+    		<section id="struts_validator_rule_function">
+      		<title>Struts Validator Rules 기본 기능</title>
+
+      			<para>
+      				Struts에서 기본적으로 많은 검증 규칙을 제공하고 있기 때문에 사용자가 검증규칙을 새로 작성하는 번거로운 작업이
+      				많이 줄어들었다. 다음은 validation rule 설정의 예이다.
+      				<programlisting language="xml"><![CDATA[<validator name="minlength"
+    classname="org.apache.struts.validator.FieldChecks"
+    method="validateMinLength"
+    methodParams="java.lang.Object,
+            org.apache.commons.validator.ValidatorAction,
+            org.apache.commons.validator.Field,
+            org.apache.struts.action.ActionErrors,
+            javax.servlet.http.HttpServletRequest"
+        epends="required"
+        msg="errors.minlength">
+    <javascript>[function validateMinLength(form) {
+    // javascript를 사용하고자 할 경우 여기에 작성하면 된다.
+    }
+    </javascript>
+</validator>]]></programlisting>
+				</para>
+
+      			<para>
+      				name 은 unique 해야 하며 다른 rule에서 참조할 때도 name을 사용하게 된다. classname과
+      				method는 실제 validation 로직이 들어있는 클래스와 메소드의 이름이다. depends 는 validator rule
+      				간의 우선순위이다. 위의 예는 minlength를 체크하기 전에 required 라는 validation rule을 먼저
+      				수행한다는 뜻이다. depends="required,integer"라고 되어있다면 null 인지 체크하고, Integer 인지
+      				체크하고 그 다음에 minlength를 체크하겠다는 뜻이다. msg 는 validation error 가 발생했을 때 뿌려줄
+      				메시지를 resource bundle 에서 가져올 때 사용할 key 값이다.
+      			</para>
+      			
+      			<para>
+      				기본적으로 다음의 값들을 사용한다.
+      				<programlisting language="java"># Struts Validator Error Messages 
+errors.required={0} is required.
+errors.minlength={0} can not be less than {1} characters.
+errors.maxlength={0} can not be greater than {1} characters.
+errors.invalid={0} is invalid.
+errors.byte={0} must be a byte.
+errors.short={0} must be a short.
+errors.integer={0} must be an integer.
+errors.long={0} must be a long.
+errors.float={0} must be a float.
+errors.double={0} must be a double.
+errors.date={0} is not a date.
+errors.range={0} is not in the range {1} through {2}.
+errors.creditcard={0} is an invalid credit card number.
+errors.email={0} is an invalid e-mail address.</programlisting>
+				</para>
+
+      			<para>다음은 validator-rules.xml에 포함되어 있는 검증 규칙에 대한 설명이다.</para>
+
+			    <informaltable>
+			    	<caption>validator-rules.xml에 포함되어 있는 검증 규칙</caption>
+			        <tgroup cols="3">
+			        <colspec colnum="1" colname="col1" colwidth="3*"/>
+					<colspec colnum="2" colname="col2" colwidth="6*"/>
+					<colspec colnum="3" colname="col3" colwidth="3*"/>
+			          <thead>
+			            <row>
+			              <entry align="center">Name</entry>
+			              <entry align="center">Description</entry>
+			              <entry align="center"><![CDATA[<var-name>]]></entry>
+			            </row>
+			          </thead>
+			          <tbody>
+			            <row>
+			              <entry>required</entry>
+			              <entry>입력 값이 반드시 존재해야 한다.</entry>
+			              <entry>-</entry>
+			            </row>
+			            <row>
+			              <entry>validwhen</entry>
+			              <entry>다른 필드의 값을 비교한다.</entry>
+			              <entry>test</entry>
+			            </row>
+			            <row>
+			              <entry>minlength</entry>
+				          <entry>입력 값의 최소 글자수를 제한한다.</entry>
+			              <entry>minlength</entry>
+			            </row>
+			            <row>
+			              <entry>maxlength</entry>
+			              <entry>입력 값의 최대 글자수를 제한한다.</entry>
+			              <entry>maxlength</entry>
+			            </row>
+			            <row>
+			              <entry>mask</entry>
+			              <entry>설정한 regular expression을 만족 해야한다.</entry>
+			              <entry>mask</entry>
+			            </row>
+			            <row>
+			              <entry>date</entry>
+			              <entry>Date형태로 변환 가능해야 한다.</entry>
+			              <entry>datePatternStrice 또는 datePattern</entry>
+			            </row>
+			            <row>
+			              <entry>creditCard</entry>
+			              <entry>신용카드 번호 규칙에 만족해야 한다.</entry>
+			              <entry>-</entry>
+			            </row>
+			            <row>
+			              <entry>email</entry>
+			              <entry>e-mail 규칙에 만족해야 한다.</entry>
+			              <entry>-</entry>
+			            </row>
+			          </tbody>
+			        </tgroup>
+			    </informaltable>
+    		</section>
+		</section>
+
+		<section id="struts_validator_actionform">
+    	<title>ActionForm</title>
+
+  			<section id="struts_validator_actionform_inherit">
+   			<title>ValidatorForm의 상속</title>
+
+      			<para>
+      				Validator를 이용할 때는 ActionForm이 아닌 org.apache.struts.validator.ValidatorForm을 상속 받아야 한다.
+      				ValidatorForm은 유효성 검증에 필요한 validate() 메소드를 포함하고 있으며 검증 실패 시
+      				ActionErrors에 error message를 셋팅해서 리턴한다.
+      			</para>
+    		</section>
+
+    		<section id="struts_validator_actionform_samples">
+      		<title>Samples</title>
+
+      			<para>
+      				다음은 ValidatorForm을 상속받은 ValidatorSampleForm.java 의 일부분이다.
+      				<programlisting language="java">public class ValidatorSampleForm extends <emphasis
+      				role="bold">ValidatorForm</emphasis>{
+
+    private String userName;
+    private String userId;
+    private String password;
+    private String phoneNumber;
+    private String email;
+    public String getUserName() {
+        return userName;
+    }
+
+    public void setUserName(String userName) {
+        this.userName = userName;
+    }
+    //중략
+    }
+}</programlisting>
+				</para>
+			</section>
+		</section>
+
+		<section id="struts_validator_formset">
+    	<title>formset 설정</title>
+
+    		<section id="struts_validator_formset_setting">
+      		<title>formset 설정 방법</title>
+
+      			<para>
+      				<![CDATA[validator-rules.xml에 등록된 검증 규칙과 ActionForm과의 매핑을 하기 위해서는 formset을
+      				정의해야 한다. 다음은 <form>의 attribute들이다.]]></para>
+
+			    <informaltable>
+			    	<caption>form 태그 속성</caption>
+			        <tgroup cols="2">
+			        <colspec colnum="1" colname="col1" colwidth="3*"/>
+			        <colspec colnum="2" colname="col2" colwidth="6*"/>
+			          <thead>
+			            <row>
+			              <entry align="center">Attribute</entry>
+			              <entry align="center">Description</entry>
+			            </row>
+			          </thead>
+			          <tbody>
+			            <row>
+			              <entry>property</entry>
+			              <entry>ActionForm subclass의 property에 해당한다.</entry>
+			            </row>
+			            <row>
+			              <entry>depends</entry>
+			              <entry>하나 이상의 Validation rule들을 지정한다</entry>
+			            </row>
+			            <row>
+			              <entry>page</entry>
+			              <entry>Multi-page ActionForm에서 페이지 번호를 지정할 때 사용</entry>
+			            </row>
+			            <row>
+			              <entry>indexedListProperty</entry>
+			              <entry>ActionForm 에서 Collection을 return하는 property name</entry>
+			            </row>
+			          </tbody>
+			        </tgroup>
+			    </informaltable>
+    		</section>
+
+			<section id="struts_validator_formset_sample">
+			<title>Sample</title>
+
+				<para>
+					다음은 ValidatorSampleForm에 Struts에서 제공한 검증규칙을 적용하기 위해 설정한
+					validation-sample.xml 의 일부분이다.
+					<programlisting language="xml"><![CDATA[<form name="validatorSampleForm">
+    <field property="userName" depends="required,minlength,maxlength">
+        <arg key="validator.sample.userName" position="0"/>
+        <arg name="minlength" key="${var:minlength}" resource="false" position="1"/>
+        <arg name="maxlength" key="${var:maxlength}" resource="false" position="1"/>
+        <var>
+            <var-name>minlength</var-name>
+            <var-value>4</var-value>
+        </var>
+        <var>
+            <var-name>maxlength</var-name>
+            <var-value>10</var-value>
+        </var>
+    </field>
+        <!-- 중략  -->
+    <field property="email" depends="email">
+        <arg key="validator.sample.email" position="0"/>
+    </field>
+</form>]]></programlisting>
+				</para>
+
+				<para>
+					<![CDATA[<form>의 name attribute에 struts-config.xml에 등록된 ActionForm의
+      				form name을 등록하고 <form의 하위의 <field>에 ActionForm의 유효성 검사를 할 attribute에 대한 설정을 등록한다.
+      				위의 Sample에서는 userName은 필수 입력값에, 4자리 이상 10자리 이하로 설정을 했고 email은 e-mail 주소 검증 규칙을
+      				적용했다. 유효성 검증에 실패하면 arg 값을 에러 메시지의 arguements로 설정하여 돌려주게 된다.
+      				기본으로 arg0-arg3 요소는 message resources에서 해당 key 값으로 찾게되고. resource 속성이 false로 설정되면
+      				message resources에서 찾지 않고 해당 값을 바로 돌려준다. validation.xml은 크게 global 과 formset 으로 나누는데
+      				global은 file 내에서 상수로 사용될 값들을 정의한다. formset은 다시 constant 와 form으로 나누는데
+      				constant는 global과 같으며 form 은 validation을 적용할 ActionForm 에 매핑된다. 참고로 formset 에는 language와
+      				country라는 attribute 가 있어서 다국어 지원이 가능하다.]]>
+      			</para>
+    		</section>
+		</section>
+
+		<section id="struts_validator_actionmapping">
+    	<title>Action 매핑 설정</title>
+
+    		<section id="struts_validator_actionmapping_struts-config.xml">
+      		<title>struts-config.xml의 Action 매핑 설정</title>
+
+      			<para>
+      				<![CDATA[RequestProcessor가 들어온 Request 정보를 이용해 ActionForm을 생성할 때 유효성 검증을
+      				실행하기 위해서는 struts-config.xml의 <action>에 ]]><emphasis
+      				role="bold">validate</emphasis>="<emphasis role="bold">true</emphasis>"를
+      				설정해야 한다.
+      			</para>
+   			</section>
+
+    		<section id="struts_validator_actionmapping_sample">
+      		<title>Sample</title>
+
+			    <para>
+			    	<![CDATA[다음은 struts-config.xml의 <action>에 Validator를 적용하기 위한 설정을 보여주는
+       				struts-config-validator.xml 의 일부이다.]]>
+      				<programlisting language="xml"><![CDATA[<action
+    path="/validatorSample"
+    type="org.anyframe.sample.struts.basic.ValidatorSampleAction"]]>
+    <emphasis role="bold">validate</emphasis>="<emphasis role="bold">true</emphasis>"
+    <![CDATA[cancellable="true"
+    scope="request"
+    input="/basic/validatorSample.jsp" 
+    name="validatorSampleForm">
+    <forward name="success" path="/basic/validatorSuccess.jsp"></forward>
+</action>]]></programlisting>
+				</para>
+    		</section>
+		</section>
+</chapter>

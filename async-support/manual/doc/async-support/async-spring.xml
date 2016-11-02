@@ -1,0 +1,175 @@
+<chapter id="async_suppport_spring">
+	<title>Asynchronous Support in Spritng MVC 3.2</title>
+		<para> Spring MVC 3.2는 Servlet 3 기반의 비동기적인 요청 처리를 지원한다. 본 챕터에서는 Spring에 기반을 둔 비동기 요청 처리기법에 대한
+		몇가지 방법을 알아보고록 한다. 본 플러그인은 Spring API에 기반하여  <link linkend="async_suppport_servlet3_async">Asynchronous Support in Servlet 3</link> 
+		에서 소개한 Server push 기술 중 Long polling 기법을 이용하여 게시판에 새로운 글이 등록되었을 때 각 클라이언트에게 알림를 보내는 웹 어플리케이션을 구현한 것과 함께 
+		새로운 요청이 들어왔을 때 요청을 처리하기 위한 스레드를 바로 반환하여 요청 스레드를 확보하는 예제를 제공한다.
+		</para>
+	<para>
+	</para>
+	<section id="async_suppport_spring_callable">
+		<title>Callable</title>
+				<para><emphasis role="bold">Callable</emphasis></para>
+				
+				<para>Spring MVC 3.2 에서는 컨트롤러는 어떤 값을 리턴하는 대신에 java.util.concurrent.Callable 객체를 리턴할 수 있으며
+				요청을 처리하는 스레드가 아닌 새로운 스레드로 응답할 수 있다. 그 동안에 원래의 Servlet Container 쓰레드는 반환되어 다른
+				요청들을 처리할 수 있게 된다. Spring MVC는 TaskExecutor의 도움으로 분리된 쓰레드안에 있는 Callable 클래스를 호출하는데
+				Callable 객체는  리턴이 될 때 그것에 의해 처리된 리턴값과 함께 원래의 요청에 대한 응답을 Servlet container로 보낸다.
+				</para>
+				<para>아래의 예제는 Callable 클래스를 이용해서 만든 컨트롤러 예제이다. 이 예제는 플러그인과 함게 배포되며 async-support 플러그인을 설치한 뒤에 어플리케이션을 실행하여 'Async-Support 1.0.0 - Callable' 링크를 클릭하면
+				확인할 수 있다. 웹 어플리케이션을 실행 서버의 로그를 확인하면 스레드가 반환되고 사용되는 것을 실시간으로 확인할 수 있다.</para>
+				<programlisting language="java"><![CDATA[....
+
+	@RequestMapping(params = "method=list")
+	public Callable<String> list(
+			@RequestParam(value = "pageIndex", defaultValue = "1") final int pageIndex,
+			final Movie movie, BindingResult result, final Model model) throws Exception {
+		
+		//Original thread has been returned to a threadpool.;
+		//We can do something does not take a long time here.;
+		
+		return new Callable<String>() {
+			public String call() throws Exception {
+				
+				//We can do someting takes a long time in call method;
+				
+				Page resultPage = movieFinder.getPagingList(movie, pageIndex);
+				model.addAttribute("movie", movie);
+				model.addAttribute("movies", resultPage.getList());
+				model.addAttribute("resultPage	", resultPage);
+				return "core/moviefinder/movie/list";
+			}
+		};
+	}
+	
+....]]></programlisting>
+				<para> 위의 예제의 코드를 보면 좀 더 쉽게 이해가 가능하다. 클라이언트로부터 list 메소드가 호출이 되면 요청을 처리한 스레드는 다시 반환이 되고
+				새로운 스레드의 call 메소드안에 들어있는 로직들이 새로운 스레드에 의해서 처리가 되어서 Dispatcher servlet으로 응답을 보낸다. 다시 말하면 
+				비 동기처리의 목적이 요청을 처리시간이 오래 걸리는 작업이나 Remote Service를 호출하는 작업을 Call() 메소드 안에 작성하여 다른 스레드로 하여금 처리하도록 하고
+				간단한 작업은 요청을 받은 스레드로 처리하고 그것을 반환하여 요청 스레드 풀을 확보하는데 있다고 할 수 있다.
+				</para>
+	</section>
+	<section id="async_suppport_spring_deferredResult">
+		<title>DeferredResult</title>
+			<para> 비동기적인 요청 처리를 위한 두번째 옵션은 컨트롤러를 통해서  DefferdResult 의 인스턴스를 반환하는 것이다. 이 경우에도 역시 분리된 스레드에
+			의해서 리턴값이 처리가 된다. 하지만 이 스레드는 Spring MVC에서 관리되는 것이 아니다. 예를 들면 JMS 메세지나 스케쥴링된 작업 혹은 기타등등 같은 
+			외부적인 이벤트에 대한 응답을 처리할때 결과가 만들어질 수 있다</para>
+			<para> 아래의 예제는 DeferredResult 클래스를 이용해서 만든 컨트롤러 예제이다. 이 예제는 플러그인과 함게 배포된다.</para>
+			<programlisting language="java"><![CDATA[.....
+	@RequestMapping(params = "method=list")
+	public DeferredResult<ModelAndView> list(
+			@RequestParam(value = "pageIndex", defaultValue = "1") final int pageIndex,
+			final Movie movie, BindingResult result, final Model model) throws Exception {
+		
+		//Original thread has been returned to a threadpool.;
+		//We can do something does not take a long time here.;
+		
+		final DeferredResult<ModelAndView> deferredResult = new DeferredResult<ModelAndView>();
+		
+		new Thread(new Runnable() {
+			@Override
+			public void run() {
+				//In another thread
+				//We can do someting takes a long time in call method;
+				Page resultPage = null;
+				try {
+					resultPage = movieFinder.getPagingList(movie, pageIndex);
+				} catch (Exception e) {
+					e.printStackTrace();
+				}
+				ModelAndView modelAndView = new ModelAndView("core/moviefinder/movie/list");
+				modelAndView.addObject("movie", movie);
+				modelAndView.addObject("movies", resultPage.getList());
+				modelAndView.addObject("resultPage", resultPage);
+				deferredResult.setResult(modelAndView);
+			}
+		}).start();
+		
+		return deferredResult;
+	}
+}]]></programlisting>	
+				<para> 이 코드 DeferredResult Class 예제는 위의 callable 클래스의 예제와 같은 동작을 하도록 작성하였다. 위의 코드를 잘 보면 요청을 받은 쓰레드가 아닌 또 다른 
+				 쓰레드 안에서 데이타베이스를	조회하는 작업 - 일반적으로 긴 시간을 요구하는 - 을 하고 있는데 Callable 클래스와는 다르게 DeferreResult 클래스의 인스턴스는 
+				 어떤 요청에 대한 응답을 열어둔채로 가지고 있다가 DeferredResult.setResult() 메소드가 호출되면 	DispatcherSerlvet으로 응답을 보낸다. 다시 말하자면 DeferredResult 응답을
+				 보내는 시점을 어플리케이션에서 선택할 수가 있다는 것이다. 이런 특성은  <link linkend="async_suppport_servlet3_async">Asynchronous Support in Servlet 3</link> 에서 소개한 Server
+				Push 기술들을 쉽게 구현할 수 있는 바탕이 된다. ( 위의 예제코드는 일반적인 DeferredResult 클래스의 활용법이 아닌 Callable 클래스와 비교를 위한 코드임을 유의하자.)
+				</para>
+			<para> 아래의 예제는 본 플러그인에서 제공하는 DeferredResult 클래스를 이용해서 만든 Server push 어플리케이션의 일부이다. 본 플러그인의 어플리케이션을 tomcat에서 실행하고
+			브라우저를 2개 실행한다. 그리고 2개의 브라우저에서 Callable Class Example을  클릭해서 영화 목록이 출력이 되는 화면으로 이동한다. 해당 화면에서 오른쪽 아래의 Add 버튼을 누르고
+			form의 형식에 맞게 입력을 하여 새로운 영화를 등록하면 2개의 브라우저 모두에게 새로운 영화가 등록되었다는 알림창이 표시가 된다. (테스트 브라우저는 크룸 버전 27.0.1453.116 m 이다.)
+			 이 예제 역시 플러그인과 함게 배포된다.</para>	
+				<programlisting language="java"><![CDATA[@RequestMapping("/movieBroadCast.do")
+public class MovieBroadCastController {
+
+	Logger logger = LoggerFactory.getLogger(MovieBroadCastController.class);
+
+	private MovieRepository movieRepository;
+
+	@Autowired
+	public MovieBroadCastController(MovieRepository movieRepository) {
+		this.movieRepository = movieRepository;
+	}
+	
+	private final Queue<DeferredResult<String>> responseBodyQueue = new ConcurrentLinkedQueue<DeferredResult<String>>();
+
+	@RequestMapping(method = RequestMethod.POST)
+	public @ResponseBody
+	DeferredResult<String> newMoviceNotify() {
+		
+		final DeferredResult<String> result = new DeferredResult<String>(10000);
+		
+		this.responseBodyQueue.add(result);
+
+		List<String> movies = this.movieRepository.getMovies();
+		
+		if (!movies.isEmpty()) {
+			broadcastMovieUpdate();
+		}
+
+		result.onCompletion(new Runnable() {
+			@Override
+			public void run() {
+				responseBodyQueue.remove(result);
+			}
+		});
+		return result;
+	}
+	
+	public void broadcastMovieUpdate() {
+		logger.debug("broadcast");
+		for (DeferredResult<String> result : this.responseBodyQueue) {
+			result.setResult("New movie added");
+			this.responseBodyQueue.remove(result);
+		}
+		this.movieRepository.removeMovie();
+	}
+	......
+}]]></programlisting>
+		<para>브라우저로부터 /movieBroadCast.do에 대한 요청이 들어오면 새로운 DeferredResult 인스턴스가 생성되어 큐에 저장되며 그것은  비동기적인 요청이 끝날 때, 혹은 요청에 대하여 타임아웃이나 네트워크 에러가 날 때
+		 호출이 되는 onCompletion()메소드에	의해서 큐에서 삭제가 될 것이다. 일단 요청이 들어오면 MovieRepository에 새로운 영화가 들어있는 지를 확인하는데 만약에 새로운 영화가 등록 되어
+		 있다면 해당하는 같은 클래스내의 broadcastMovieUpdate()를 호출한다. broadcastMovieUpdate() 메소드가 호출이 되면 큐에 담겨져 있던 DeferredResult 인스턴스들을 모두 setResult
+		() 메소드를 실행하면서 원래의 요청들에게 응답을 보낸다. 그리고 나서 큐에 있던 DeferredResult 인스턴스를 삭제한다. 클라이언트(브라우저)상에서는 사용자에게 새로운 영화가 등록됐다는 
+		알림 표시가 뜰 것이다.  </para>
+		<programlisting language="java"><![CDATA[@RequestMapping(params = "method=create")
+	public String create(@Valid Movie movie, BindingResult results,
+			SessionStatus status, HttpSession session) throws Exception {
+
+		if (results.hasErrors())
+			return "core/moviefinder/movie/form";
+
+		movieService.create(movie);
+		status.setComplete();
+		this.movieRepository.addMovie("new movie added");
+		return "redirect:/asyncSupportMovieFinder.do?method=list";
+	}]]></programlisting>
+		<para>위의 메소드는 사용자가 영화를 새롭게 등록하였을 때 호출되는 메소드로써 새로운 영화를 DB에 생성하고 나서 MovieRepository에 새로운 영화가 등록됐다는 String 인스턴스를 추가한다.
+		메모리에 새로운 영화가 등록됐을 저장하고 나면 원래의 영화 목록 페이지로 다시 화면이 전환되고 브라우저에서는 /movieBroadCast.do를 호출하게 된다. </para>
+		<note><para>
+		플러그인에서 제공하는 Server push 예제는 Long polling 기법의 특성상 브라우저에서 지속적으로  /movieBroadCast.do를 요청하도록 프로그래밍 되었다. JQuery 를 이용하여 사용자가
+		영화목록 화면으로 진입하면 10초에 한번씩 서버쪽으로 /movieBroadCast.do로 요청을 날리는데 해당하는 요청에 응답이 없으면 반복적으로 재귀적으로 요청을 다시하고 응답이 있으면 화면에 알림을
+		표시하도록 하였다. 알림을 표시하기 위하여  pnotify 라는 JavaScript notifications 라이브러리가 사용되었다. 상세한 세팅방법과 사용법이 알고 싶다면
+		<ulink url="http://http://pinesframework.org/pnotify/">Pines Notify</ulink> 를 참조하도록 한다.
+			</para>
+		</note>
+		</section>
+</chapter>

@@ -1,0 +1,149 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
+<html>
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+<title>Grid Sample - Basic</title>
+
+<link href="../../../common/css/smoothness/jquery-ui-1.10.0.custom.css" rel="stylesheet">
+<link href="../../../common/css/smoothness/jquery.jqgrid.css" rel="stylesheet">
+<script src="../../../common/exlibs/jquery-1.9.0.js"></script>
+<script src="../../../common/exlibs/jquery-ui-1.10.0.custom.js"></script>
+<script src="../../../common/exlibs/jquery.jqGrid.src.js"></script>
+
+<link href="sub_css/event_control.css" rel="stylesheet">
+
+<script type="text/javascript">
+
+	var ENV = {
+			ID_GRID : "#grid",
+			ID_EVENT_LOGGER : "#eventlogger"
+	};
+	
+	var elog = null;
+	var GRID_DATA = [ 
+	                	{id:"1", date:"2013-02-01", name:"client1", balance:120000, deposit:20000, notes:"note0"},
+	                	{id:"2", date:"2013-02-01", name:"client2", balance:120000, deposit:20000, notes:"note0"},	                 
+	                	{id:"3", date:"2013-02-01", name:"client3", balance:120000, deposit:20000, notes:"note0"},
+	                	{id:"4", date:"2013-02-02", name:"client4", balance:120000, deposit:20000, notes:"note0"},
+	                	{id:"5", date:"2013-02-02", name:"client5", balance:120000, deposit:20000, notes:"note0"},
+	                	{id:"6", date:"2013-02-03", name:"client6", balance:120000, deposit:20000, notes:"note0"},
+	                	{id:"7", date:"2013-02-03", name:"client7", balance:120000, deposit:20000, notes:"note0"},
+	                	{id:"8", date:"2013-02-03", name:"client8", balance:120000, deposit:20000, notes:"note0"},
+	                	{id:"9", date:"2013-02-04", name:"client1", balance:140000, deposit:20000, notes:"note0"},
+	                	{id:"10", date:"2013-02-05", name:"client1", balance:160000, deposit:20000, notes:"note0"},
+	                ];
+	
+	var mainView = {
+			
+			init : function()
+			{
+				// Grid 초기화
+				$(ENV.ID_GRID).jqGrid({
+					
+					datatype: "local",
+					data: GRID_DATA,
+					caption: "Grid Event 처리",
+					colNames: [ "아이디", "일시", "고객", "잔액", "입금액", "기타" ],
+					colModel: [
+					          	{name:"id", sortable:false},
+					          	{name:"date"},
+					          	{name:"name"},
+					          	{name:"balance"},
+					          	{name:"deposit"},
+					          	{name:"notes"}					          	
+					          ]					
+				});
+				
+				elog = this.elog;
+			},
+			
+			elog : function(text)
+			{
+				var oldlog = $(ENV.ID_EVENT_LOGGER).val(),
+					nowT = new Date(),
+					newlog = nowT.toLocaleTimeString() + ", " + text + "\n" + oldlog;
+				
+				$(ENV.ID_EVENT_LOGGER).val(newlog);
+			},
+			
+			onSelectRow : function(rowid, status, evt)
+			{
+				elog("onSelectRow, rowid:" + rowid + ", status:" + status);
+			}, 
+			
+			beforeSelectRow : function(rowid, evt)
+			{
+				elog("beforeSelectRow, rowid:" + rowid);
+				return true;
+			}, 
+			
+			ondblClickRow : function(rowid, iRow, iCol, evt)
+			{
+				elog("ondblClickRow, rowid:" + rowid + ", iRow:" + iRow + ", iCol:" + iCol);				
+			},
+			
+			onHeaderClick : function(gridstate)
+			{
+				elog("onHeaderClick, gridstate:" + gridstate);
+			},
+			
+			onRightClickRow : function(rowid, iRow, iCol, evt)
+			{
+				elog("onRightClickRow, rowid:" + rowid + ", iRow:" + iRow + ", iCol:" + iCol);				
+			}
+	};
+
+	$(document).ready(function() {
+		
+		mainView.init();
+		
+		$("input[type='checkbox']").click(function(evt) {
+			
+			var txtEvent = $(this).siblings('label').text(),
+				checked = this.checked;
+			
+			var gridprop = (($(ENV.ID_GRID))[0]).p;
+			
+			elog(txtEvent + " event " + (checked ? "on" : "off"));
+			
+			switch (txtEvent.toLowerCase())
+			{
+			case "onselectrow":		gridprop.onSelectRow = (checked) ? mainView.onSelectRow : null; break;
+			case "ondblclickrow":	gridprop.ondblClickRow = (checked) ? mainView.ondblClickRow : null; break;
+			case "onheaderclick": 	gridprop.onHeaderClick = (checked) ? mainView.onHeaderClick : null; break;
+			case "onrightclickrow":	gridprop.onRightClickRow = (checked) ? mainView.onRightClickRow : null; break;
+			case "beforeselectrow":	gridprop.beforeSelectRow = (checked) ? mainView.beforeSelectRow : null; break;			
+			}
+			
+		});		
+		
+	});
+	
+</script>
+
+</head>
+<body class="grid_demo">
+	
+	<div class="container">
+		<div style="float:left;">		
+			<label>이벤트 사용</label>
+			<ul>			
+				<li><label>onSelectRow</label><input type="checkbox"/></li>
+				<li><label>ondblClickRow</label><input type="checkbox"/></li>
+				<li><label>onHeaderClick</label><input type="checkbox"/></li>
+				<li><label>onRightClickRow</label><input type="checkbox"/></li>
+				<li><label>beforeSelectRow</label><input type="checkbox"/></li>						
+			</ul>	
+		</div>
+		<div style="float:left;margin-left:100px;">
+			<label style="display:list-item;list-style:none;">이벤트 로그</label>
+			<textarea id="eventlogger" rows="10" cols="80" style="display:list-item;list-style:none;"></textarea>		
+		</div>	
+		<div style="clear: left" />
+	</div>
+	
+	<div class="container">
+		<table id="grid"></table>
+	</div>
+</body>
+</html>

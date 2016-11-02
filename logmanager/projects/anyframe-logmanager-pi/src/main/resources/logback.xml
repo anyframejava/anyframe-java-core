@@ -1,0 +1,46 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<configuration scan="true" scanPeriod="60 seconds">
+
+	<property name="loggingCondition" value="ID"/>
+	
+	<appender name="console" class="ch.qos.logback.core.ConsoleAppender">
+		<encoder>
+			<pattern>[%-5level] %d{yyyy-MM-dd HH:mm:ss} %logger %n%msg%n
+			</pattern>
+		</encoder>
+	</appender>
+
+	<!--Add new configuration here-->
+    <!--logmanager-configuration-START-->
+	<appender class="org.anyframe.logmanager.logback.MongoDbAppender" name="logbackMongo">
+		<hostname>localhost</hostname>
+        <port>27017</port>
+        <userName></userName>
+        <password></password>
+        <databaseName>logs</databaseName>
+        <collectionName>logbacklogs</collectionName>
+	</appender>
+    <!--logmanager-configuration-END-->
+	
+	<!--  for mvc exception logging -->
+	<logger name="controller.logs" level="WARN" additivity="false">
+		<appender-ref ref="console" />
+	</logger>
+	
+    <!-- default pi logger -->
+	<logger name="org.anyframe.plugin" level="DEBUG" additivity="false">
+		<appender-ref ref="console" />
+		<appender-ref ref="logbackMongo"/>
+	</logger>
+	
+	<!-- default pi logger -->
+	<logger name="org.anyframe.logmanager" level="DEBUG" additivity="false">
+		<appender-ref ref="console" />
+		<appender-ref ref="logbackMongo"/>
+	</logger>
+
+	<root level="INFO">
+		<appender-ref ref="console"/>
+	</root>
+
+</configuration>

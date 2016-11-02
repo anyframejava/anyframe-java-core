@@ -1,0 +1,684 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+
+<!DOCTYPE book PUBLIC "-//OASIS//DTD DocBook XML V4.5//EN" "http://www.oasis-open.org/docbook/xml/4.5/docbookx.dtd"
+[
+<!ENTITY hibernate_hibernate_configuration SYSTEM "hibernate/hibernate/configuration.xml">
+<!ENTITY hibernate_hibernate_mappingfile SYSTEM "hibernate/hibernate/mappingfile.xml">
+<!ENTITY hibernate_hibernate_persistence SYSTEM "hibernate/hibernate/persistence.xml">
+<!ENTITY hibernate_hibernate_basiccrud SYSTEM "hibernate/hibernate/basiccrud.xml">
+<!ENTITY hibernate_hibernate_hql SYSTEM "hibernate/hibernate/hql.xml">
+<!ENTITY hibernate_hibernate_criteria SYSTEM "hibernate/hibernate/criteria.xml">
+<!ENTITY hibernate_hibernate_nativesql SYSTEM "hibernate/hibernate/nativesql.xml">
+<!ENTITY hibernate_hibernate_performance SYSTEM "hibernate/hibernate/performance.xml">
+<!ENTITY hibernate_hibernate_concurrency SYSTEM "hibernate/hibernate/concurrency.xml">
+<!ENTITY hibernate_hibernate_transaction SYSTEM "hibernate/hibernate/transaction.xml">
+<!ENTITY hibernate_hibernate_springintegration SYSTEM "hibernate/hibernate/springintegration.xml">
+<!ENTITY hibernate_dynamic_configuration SYSTEM "hibernate/dynamic/configuration.xml">
+<!ENTITY hibernate_dynamic_hql SYSTEM "hibernate/dynamic/hql.xml">
+<!ENTITY hibernate_dynamic_nativesql SYSTEM "hibernate/dynamic/nativesql.xml">
+<!ENTITY hibernate_sample_download SYSTEM "hibernate/download.xml">
+]
+>
+
+<!--
+		Licensed to the Apache Software Foundation (ASF) under one or more
+		contributor license agreements. See the NOTICE file distributed with
+		this work for additional information regarding copyright ownership.
+		The ASF licenses this file to you under the Apache License, Version
+		2.0 (the "License"); you may not use this file except in compliance
+		with the License. You may obtain a copy of the License at
+
+		http://www.apache.org/licenses/LICENSE-2.0 Unless required by
+		applicable law or agreed to in writing, software distributed under the
+		License is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR
+		CONDITIONS OF ANY KIND, either express or implied. See the License for
+		the specific language governing permissions and limitations under the
+		License.
+-->
+    
+<book lang="ko">
+	<title>Anyframe Hibernate Plugin</title>
+	
+	<bookinfo>
+		<copyright>
+			<year>2007-2014</year>
+			<holder>삼성SDS</holder>
+		</copyright>
+		<releaseinfo>Version 1.6.1-SNAPSHOT</releaseinfo>
+
+		<productname>Anyframe Hibernate Plugin</productname>
+
+		<authorgroup>
+			<corpauthor></corpauthor>
+		</authorgroup>
+
+		<mediaobject>
+			<imageobject>
+				<!-- logo 변경 -->
+				<imagedata fileref="../image/common/logo_pdf.jpg"/>
+			</imageobject>
+			<textobject>
+				<phrase>Anyframe Java Logo</phrase>
+			</textobject>
+		</mediaobject>
+		<legalnotice>
+			<para>본 문서의 저작권은 삼성SDS에 있으며 Anyframe 오픈소스 커뮤니티 활동의 목적하에서 자유로운 이용이 가능합니다.
+			본 문서를 복제, 배포할 경우에는 저작권자를 명시하여 주시기 바라며 본 문서를 변경하실 경우에는 원문과 변경된 내용을 표시하여 주시기 바랍니다. 
+			원문과 변경된 문서에 대한 상업적 용도의 활용은 허용되지 않습니다. 본 문서에 오류가 있다고 판단될 경우 이슈로 등록해 주시면 적절한 조치를 취하도록 하겠습니다.
+			</para>
+		</legalnotice>
+	</bookinfo>
+	
+	<part id="hibernate_introduction_part">
+		<title>Introduction</title>
+		<partintro id="hibernate_introduction_part_intro">
+			<para>
+				Hibernate Plugin은 대표적인 ORM(Object Relational Mapping) 도구인 <ulink url="http://www.hibernate.org">Hibernate</ulink>의 기본 활용 방법을 가이드하기 위한 
+				샘플 코드와 이 오픈소스들을 활용하는데 필요한 참조 라이브러리들로 구성되어 있다.		
+			</para>		
+			<para role="introduction_title"><emphasis role="bold">Installation</emphasis></para>
+			<para>Command 창에서 다음과 같이 명령어를 입력하여 hibernate plugin을 설치한다.</para>
+			<programlisting language="java"><![CDATA[mvn anyframe:install -Dname=hibernate]]></programlisting>
+			<para>
+				installed(mvn anyframe:installed) 혹은 jetty:run(mvn clean jetty:run) command를 이용하여 설치 결과를 확인해볼 수 있다. 
+			</para>
+			<informaltable>
+				<caption>Dependent Plugins</caption>
+				<tgroup cols="2">
+					<colspec colnum="1" colname="col1" colwidth="5*" />
+					<colspec colnum="2" colname="col2" colwidth="5*" />	
+					<thead>
+						<row>
+							<entry align="center">Plugin Name</entry>
+							<entry align="center">Version Range</entry>
+						</row>
+					</thead>
+					<tbody>
+						<row>
+							<entry align="center"><ulink url="http://dev.anyframejava.org/docs/anyframe/plugin/essential/core/1.6.1-SNAPSHOT/reference/htmlsingle/core.html">Core</ulink></entry>
+							<entry align="center" valign="middle">2.0.0 > * > 1.4.0</entry>
+						</row>
+					</tbody>
+				</tgroup>
+			</informaltable>
+		</partintro>
+	</part>
+	
+	<part id="hibernate_hibernate_part">
+		<title>Hibernate</title>
+		<partintro id="hibernate_hibernate_part_intro">
+			<para>
+				Hibernate는 객체 모델링(Object Oriented Modeling)과 관계형 데이터 모델링(Relational Data Modeling) 사이의 불일치를 해결해 주는 ORM 도구로, EJB의 Entity Bean과 
+				같이 특정 플랫폼에 의존적인 제약을 정의하고 있지 않기 때문에 POJO 기반 개발이 가능하다. 또한 Java에서 지원하는 다양한 Collection 유형을 지원함으로써 객체 모델링을 관계형 모델링으로 
+				매핑하는데 따르는 제약을 최소화하고 있다.
+			</para>	
+			<para>Hibernate의 특징을 살펴보면, 다음과 같다.</para>
+		
+		  	<itemizedlist>
+				<listitem>
+		      		<para>
+		      			Hibernate 기반 개발시 특정 DBMS에 영향을 받지 않으므로 DBMS가 변경되더라도 데이터 액세스 처리 코드에 대한 변경없이 
+		      			설정 정보의 변경만으로도 올바르게 동작 가능하다.
+		      		</para>
+		    	</listitem>
+		
+		    	<listitem>
+		      		<para>
+		      			SQL을 작성하고 SQL 실행 결과로부터 전달하고자 하는 객체로 변경하는 코드를 작성하는 시간이 줄어들기 때문에
+		      			개발자는 비즈니스 로직에 집중할 수 있게 되고, 개발 시간이 단축될 수 있다.</para>
+		    	</listitem>
+		
+		    	<listitem>
+		      		<para>
+		      			JDBC Api를 사용한 코드의 양이 줄어들고, 매핑 파일을 별도로 관리하게 되면서 DB 정보 변경으로 인해 영향을  받는 부분 
+		      			또한 감소한다.
+		      		</para>
+		    	</listitem>
+		
+		    	<listitem>
+		      		<para>
+		      			다음과 같은 접근 방법을 취함으로써, DBMS에 대한 접근 횟수를 줄여나가 궁극적으로 어플리케이션의 성능 향상을
+		      			도모한다.
+		      		</para>
+		
+		      		<itemizedlist>
+		        		<listitem>
+		          			<para>기본적으로 필요 시점에만 DBMS에 접근하는 Lazy Loading 전략 채택</para>
+		        		</listitem>
+			
+		        		<listitem>
+		          			<para>Session 종료 시에 변경 사항에 대해 일괄 batch 처리</para>
+		        		</listitem>
+		
+		        		<listitem>
+		          			<para>
+		          				1st Level Cache, 2nd Level Cache를 활용하여 DBMS에 대한 재접근없이 Caching된 객체 사용
+		          			</para>
+		        		</listitem>
+		      		</itemizedlist>
+				</listitem>
+		
+		    	<listitem>
+		      		<para>
+		      			대부분의 개발자가 어플리케이션의 데이터 액세스 로직을 개발하기 위해 DTO(Data Transfer Object),
+		      			DAO 패턴을 사용하는데 익숙하기 때문에 데이터와 로직을 가진 객체를 설계하는데 익숙하지 못하다는 단점을 가지고있다.
+		      		</para>
+		    	</listitem>
+			</itemizedlist>	
+			
+		  	<para>
+		  		본 페이지에서는 Hibernate 3.6.5.Final 버전을 이용하여 Hibernate 기본 개념에 대해서 살펴볼 것이다. 먼저 어플리케이션 실행 여부
+		  		와 상관없이 물리적으로 존재하는 데이터들을 정의하고 있는 Persistent Class와 Persistent Class의 Lifecycle에 대해 알아보고
+		  		이러한 객체들의 영속성을 관리하는 Hibernate Session에 대해 정리해 보고자 한다.
+		  	</para>
+  
+			<para>
+				<emphasis role="bold">Conceptual Architecture</emphasis>
+			</para>
+
+			<para>Hibernate 기본 구성은 다음 그림과 같다.</para>
+
+			<mediaobject>
+				<imageobject>
+					<imagedata align="center"
+						fileref="../image/hibernate/conceptual_arch.png" />
+				</imageobject>
+				<textobject>
+					<phrase>Hibernate 기본 구성을 보여주는 그림으로써, Hibernate이 DBMS 기반의 어플리케이션 수행을 하기 위해 필요한 주요 구성 요소는 
+					Persistent Objects, Hibernate Properties, XML Mapping임을 표현하고 있다.</phrase>
+				</textobject>
+			</mediaobject>
+
+			<para>
+				위 그림에서와 같이 Hibernate이 DBMS 기반의 어플리케이션 수행을 하기 위해 필요한 주요 구성 요소는 <emphasis role="bold">
+				Persistent Objects, Hibernate Properties, XML Mapping</emphasis>이며, 각각은 다음과 같은 역할을 수행한다.
+			</para>
+
+			<itemizedlist>
+				<listitem>
+					<para>
+						Persistent Objects : Persistent Object는 어플리케이션 실행 여부와 상관없이
+						물리적으로 존재하는 데이터들을 다룬다. 일반적으로 DBMS 데이터를 이용하는 어플리케이션을 개발할 경우 어플리케이션의
+						비즈니스 레이어에서 특정 DBMS에 맞는 SQL을 통해 어플리케이션의 데이터를 처리하게 된다. 그러나 Hibernate
+						기반의 어플리케이션에서는 Persistent Object를 중심으로 하여 어플리케이션의 데이터와 DBMS 연동이
+						가능해진다.
+					</para>
+				</listitem>
+
+				<listitem>
+					<para>
+						<link linkend="hibernate_hibernate_configuration">Hibernate Properties</link>
+						: Hibernate 실행에 관련된 속성 정보를 포함하고 있는 파일로, hibernate.cfg.xml 또는
+						hibernate.properties 형태로 정의할 수 있다. 주로 DBMS, Logging, Cache, Mapping
+						File 정보 등을 다루고 있다.
+					</para>
+				</listitem>
+
+				<listitem>
+					<para>
+						<link linkend="hibernate_hibernate_mappingfile">XML Mapping</link>
+						:Persistent Object과 특정 테이블 사이의 다양한 매핑 정보를 명시하기 위한 XML 파일이다.
+						Hibernate는 Hibernate Mapping XML을 기반으로 하여 실행할 SQL을 생성하고 있다.
+					</para>
+				</listitem>
+			</itemizedlist>
+
+			<para>
+				<emphasis role="bold">Persistent Classes</emphasis>
+			</para>
+
+			<para>
+				Persistent Class는 Hibernate를 이용하여 DB의 특정 테이블과 매핑되는 객체로 Hibernate를
+				제대로 사용하기 위해서는 Persistence Class작성이 중요하다. Java Class를 Hibernate의
+				Persistent Class로 사용하기 위한 기본 요건은 다음과 같다.
+			</para>
+
+			<itemizedlist>
+				<listitem>
+					<para>
+						<emphasis role="bold">[필수] Default Constructor 구현 :</emphasis>
+						Hibernate에서는 Constructor.newInstance()를 이용하여 해당 클래스의 인스턴스를 생성하므로
+						Persistence Object로 사용하기 위해서는 해당 클래스 내에 입력 인자를 갖지 않은 Default
+						Constructor를 생성해야 함에 유의하도록 한다.
+					</para>
+		
+		            <programlisting language="java"><![CDATA[public class Category implements java.io.Serializable {
+    <!-- 중략 -->]]>
+    <emphasis role="bold"><![CDATA[public Category() {]]></emphasis>
+    <emphasis role="bold">}</emphasis>
+}</programlisting>
+				</listitem>
+
+				<listitem>
+					<para>
+						<emphasis role="bold">[권장] 테이블의 Primary Key 칼럼과 매핑 되는 identifier field 정의 :</emphasis>
+						일반적인 경우 Hibernate Persistent Class에 DB 테이블의 primary key와 매핑되는 identifier field가 반드시 
+						존재해야 할 필요는 없지만 몇 가지 경우에 반드시 필요하다. (예 : Session.saveOrUpdate or Session.merge 메소드 이용 시)
+						하지만 일반적인 Domain Object에서 identifier를 갖는 것이 일반적이므로 Persistent Class에 identifier field
+						정의하는 것을 추천한다.
+					</para>
+				</listitem>
+
+				<listitem>
+					<para>
+						<emphasis role="bold">[권장] final 클래스로 정의하지 않음 :</emphasis> Hibernate의 lazy loading은 proxy를
+						 사용해야 하는데 final로 Persistent class를 선언할 경우 proxy를 사용 할 수 없다.
+					</para>
+				</listitem>
+
+				<listitem>
+					<para>
+						<emphasis role="bold">[권장] 속성 정보 접근을 위한 getter, setter 정의:</emphasis>
+						Hibernate는 getter/setter로 구성된 method가 존재할 경우 매핑 처리를 할 수 있다.
+		                <programlisting language="java"><![CDATA[public class Category implements java.io.Serializable {
+
+    private String categoryId;
+    private String categoryName;
+
+    ...중략
+    public String getCategoryId() {
+        return this.categoryId;
+    }
+
+    public void setCategoryId(String categoryId) {
+        this.categoryId = categoryId;
+    }
+
+    public String getCategoryName() {
+        return this.categoryName;
+    }
+
+    public void setCategoryName(String categoryName) {
+        this.categoryName = categoryName;
+    }
+    ...중략
+}]]></programlisting>
+					</para>
+		
+					<para>
+						만약 Mapping File에 DB컬럼에 대한 매핑 정보를 아래와 같이 설정 한다면 gettter/setter메소드가 필요없다.
+		                <programlisting language="xml"><![CDATA[<property name="name" column="NAME"]]> <emphasis role="bold"><![CDATA[access="field"]]></emphasis>/></programlisting>
+					</para>
+				</listitem>
+
+				<listitem>
+					<para>
+						<emphasis role="bold">[선택] equals(), hashCode() 메소드 구현:</emphasis>
+						다음에서 동일한 테이블의 동일한 행의 데이터를 읽어온 category1과 category2는 다른
+						Session을 통해 얻어졌으므로 동일한 객체가 아닌 것으로 처리된다. 이처럼 다른 Session을 통해 얻어 온 객체의
+						동일함을 비교할 필요가 있을 경우에는 equals() 메소드를 적절히 구현해 주도록 한다.
+		                <programlisting language="java"><![CDATA[Session session1 = SessionFactory.openSession();
+    Category category1 = (Category)session1.get(Category.class, "test");
+session1.close();
+
+Session session2 = SessionFactory.openSession();
+    Category category2 = (Category)session2.get(Category.class, "test");
+session2.close();]]></programlisting>
+					</para>
+					<para>
+					<programlisting language="java"><![CDATA[public boolean equals(Object other) {
+    if ( !(other instanceof Category) ) return false;
+    Category castOther = (Category) other;
+    return new EqualsBuilder().append(this.getCategoryId(),
+    castOther.getCategoryId()).isEquals();
+    }
+    public int hashCode() {
+        return new HashCodeBuilder().append(getCategoryId()).toHashCode();
+}]]></programlisting>
+					</para>
+				</listitem>
+		
+				<listitem>
+					<para>
+						<emphasis role="bold">[선택] Serializable 인터페이스 구현 :</emphasis>
+						Hibernate에서 persistent class들이 java.io.Serializable 인터페이스를 반드시 implement 해야 하는 것은 아니지만, persistent object가 HttpSession에 저장되거나 RMI를
+						이용해서 전달할 때는 반드시 필요한다.
+					</para>
+					<para>
+		                <programlisting language="java"><![CDATA[public class Category implements java.io.Serializable {
+    …중략
+}]]></programlisting>
+					</para>
+				</listitem>
+		
+			</itemizedlist>
+
+			<para>
+				<emphasis role="bold">Dynamic Model</emphasis>
+			</para>
+			<para>
+				Hibernate는 Dynamic Model(Map)을 지원하기 때문에 Persistent entity가 JavaBean이나 POJO일 필요는 없다. Dynamic Model을 
+				이용할 때는 Persistent Class를 작성하지 않고 Hibernate Mapping파일에 정의만 하면 된다.
+			</para>
+			<para>
+				다음은 Map을 이용해 Hiberante의 Session에 접근하는 소스의 일부이다.
+			</para>
+			<para>
+		        <programlisting language="java"><![CDATA[Session sessions = SessionFactory.openSession();
+    Map<String, String> categoryMap = new HashMap<String, String>();
+    categoryMap.put("categoryId", "CTGR-0001");
+    categoryMap.put("categoryName", "Romantic");
+    categoryMap.put("categoryDesc, "Romantic genre");
+
+    sessions.save("Category", categoryMap);
+    …중략]]></programlisting>
+			</para>
+		
+			<para>
+				<emphasis role="bold">Hibernate Session</emphasis>
+			</para>
+		
+			<para>
+				Session은 Hibernate과 DB Connection 사이의 연결 고리 역할을 수행하는 객체로써, Session 생성시에 단일 DB Connection을 
+				열고 Session이 종료될 때까지 Connection을 유지하게 된다. Hibernate에 의해 로드된 모든 객체(Persistent 객체)는 Session과 
+				연관되어 있어, Session에 의해 객체의 변경 사항이 자동 반영되거나 Lazy Loading 처리될 수 있다.
+			</para>
+
+			<para>
+				새로운 Session 생성은 SessionFactory를 통해 이루어질 수 있으며 다음은 Hibernate에서hibernate.cfg.xml 파일을 기반으로 
+				SessionFactory를 초기화시키는 예제 코드이다.
+			</para>
+			<para>
+		        <programlisting language="java"><![CDATA[SessionFactory initialSessionFactory
+        = new Configuration().configure(hibernateconfig/hibernate.cfg.xml")
+                .buildSessionFactory();]]></programlisting>
+			</para>
+		
+			<para>
+				SessionFactory를 통해 신규 Session을 생성하는 방법은 openSession()과 getCurrentSession() 두 가지로 구분해 볼 수 있다.
+			</para>
+			<itemizedlist>
+				<listitem>
+					<para>
+						<emphasis role="bold">openSession</emphasis>
+					</para>
+		
+					<para>
+						SessionFactory의 openSession() 메소드를 호출할 때마다 새로운 Session이 생성된다.
+		                <programlisting language="java">Session session1 = SessionFactory.openSession();
+Session session2 = SessionFactory.openSession();</programlisting>
+					</para>
+		
+					<para>
+						위 소스에서 생성된 session1과 session2는 서로 다른 session이다.
+					</para>
+				</listitem>
+
+				<listitem>
+					<para>
+						<emphasis role="bold">getCurrentSession</emphasis>
+					</para>
+		
+					<para>
+						SessionFactory에서 Session을 생성하는 또 다른 방법으로, getCurrentSession() 메소드를 이용하는 방법이 있다. 
+						getCurrentSession()은 Proxy를 리턴하고 생성된 Session이 있을 경우에는 생성된 Session을, 없을 경우에는 신규 
+						Session을 리턴한다.
+					</para>
+					<para>
+		                <programlisting language="java"><![CDATA[Session session1 = initialSessionFactory.getCurrentSession();
+Session session2 = initialSessionFactory.getCurrentSession();
+session1.close();
+Session session3 = initialSessionFactory.getCurrentSession();]]></programlisting>
+					</para>
+					<para>
+						getCurrentSession()을 호출하는 경우로 session1과 session2는 동일한 Session의 Proxy 객체이나 session3은 다른 
+						Proxy 객체임을 확인 할 수 있다.
+					</para>
+				</listitem>
+			</itemizedlist>
+		
+			<para>
+				openSession(), getCurrentSession() 메소드를 호출해서 얻어진 Session에는 차이가 있다. openSession()으로 생성된 Session은 
+				관련된 트랜잭션이 종료되더라도 종료되지 않는 반면, getCurrentSession()으로 얻어진 Session은 트랜잭션 종료 시 해당 Session도
+				함께 종료된다. 따라서 openSession()으로 얻어진 Session에 대해서는 session.close()를 호출해서 직접 Session을 종료해 주어야 
+				하며, getCurrentSession()으로 얻어진 Session에 대해서는 따로 Session.close() 메소드를 호출하지 않아야 한다.
+			</para>
+
+			<para>
+				<emphasis role="bold">Persistent Object States</emphasis>
+			</para>
+
+			<itemizedlist>
+				<listitem>
+					<para>
+						<emphasis role="bold">Lifecycle</emphasis>
+					</para>
+		
+					<para>
+						Hibernate에서 Persistent Object는 Transient, Persistent, Detached의 3가지 상태를 가질 수 있으며, 상태 변이를 
+						발생시킨다. 각 상태에 관한 내용은 다음과 같다.
+					</para>
+		
+					<mediaobject>
+						<imageobject>
+							<imagedata align="center" fileref="../image/hibernate/polifecycle.png" />
+						</imageobject>
+						<textobject>
+							<phrase>Hibernate에서 Persistent Object는 Transient, Persistent, Detached의 3가지 상태를 가질 수 있으며 상태들 간의 변이에 
+							대해 표현한 그림이다. Transient 상태의 객체는 save, persist, saveOrUpdate 메소드 실행시 Persistent 상태로 변경되며, Persistent 상태의 
+							객체는 evict, session 종료등에 의해 Detached 상태로 변경된다. 또한 Detached 상태의 객체는 lock, update, merge, saveOrUpdate에 의해 
+							다시 Persistent 상태로 변경될 수 있으며 Persistent 상태의 객체는 delete 메소드 실행에 의해 Transient 상태로 돌아간다.</phrase>
+						</textobject>
+					</mediaobject>
+		
+					<itemizedlist>
+						<listitem>
+							<para>
+								Transient : 객체는 생성되었으나 아직 Hibernate에 의해 관리되지 않는 경우
+		                        <programlisting language="java">...중략
+<![CDATA[Category category = new Category();
+
+category.setCategoryId("CTGR-0001");
+category.setCategoryName("Romantic");
+category.setCategoryDesc("Romantic genre");
+..중략]]></programlisting>
+							</para>
+		
+							<para>
+								위의 소스에서 처럼 persistent class의 인스턴스는 생성되었지만 Hibernate에 의해서 아직 관리되지 않은 상태를 
+								Transient 상태라고 한다.
+							</para>
+						</listitem>
+		
+						<listitem>
+							<para>
+								<emphasis role="bold">Persistent : </emphasis>
+								Hibernate에 의해 관리되는 객체로써 Hibernate에서 제공하는 기능(테이블의 특정 행과 매핑되며 변경 값 자동 반영,
+								Lazy Loading 등)이 적용되는 경우
+		                        <programlisting language="java"><![CDATA[Category category = new Category();
+category.setCategoryId("CTGR-0001");
+category.setCategoryName("Romantic");
+category.setCategoryDesc("Romantic genre"); // -- transient 상태
+session.save(category); // -- Persistent 상태]]> </programlisting>
+							</para>
+		
+							<para>
+								Transient상태의 persistent class를 Hibernate의 Session의 save(),persist()와 같은 method를 이용하면 
+								Hibernate에서 제공하는 기능을 사용할 수 있는 상태인 Persistent 상태가 된다.
+							</para>
+		
+							<para>
+								아래는 Persistent 상태인 Object의 값을 변경 했을 때 자동으로 DB에 변경된 내용이 반영 되는 것을 테스트 하기 
+								위한 HibernatePersistentObjcetStates.java 의 일부분이다.</para>
+		
+							<para>
+		                        <programlisting language="java"><![CDATA[public void persistentState() throws Exception {
+    newSession();
+
+    Category category = new Category();
+    category.setCategoryId("CTGR-0001");
+    category.setCategoryName("Romantic");
+    category.setCategoryDesc("Romantic genre");
+
+    session.save(category);
+
+    category.setCategoryName("Comedy");
+    category.setCategoryDesc("Comedy consists...");
+
+    closeSession();
+}]]></programlisting>
+									다음은 위 테스트 코드를 실행 시켰을 때 query log의 일부분이다.
+                        		<programlisting><![CDATA[1: insert into PUBLIC.CATEGORY (CATEGORY_NAME, CATEGORY_DESC, CATEGORY_ID)
+        values ('Romantic','Romantic genre', 'CTGR-0001')
+1: update PUBLIC.CATEGORY set CATEGORY_NAME='Comedy', CATEGORY_DESC='Comedy consists'
+        where CATEGORY_ID='CTGR-0001']]></programlisting>
+							</para>
+
+							<para>
+								위 로그에서 알 수 있듯이 category의 값을 변경한 후 save나 update명령을 실행하지 않았음에도 불구하고 
+								transaction이 종료 됐을 때 update query가 실행된다. 이처럼 persistent 상태가 되면 DB 테이블의 특정
+								 행과 매핑되어 값이 자동으로 반영된다.
+							</para>
+						</listitem>
+		
+						<listitem>
+							<para>
+								<emphasis role="bold">Detached : </emphasis>
+								Hibernate에 의해 관리되는 객체이나 Persistent 상태와는 달리 Hibernate에서 제공하는 기능이
+								지원되지 않는 상태로 객체의 속성값이 바뀌더라도 DB에 변경된 값이 자동 반영되지 않는 경우
+							</para>
+		
+							<para>
+								아래는 Detached 상태가 된 persistent object의 값을 변경시키고 Session을 닫았을 때 DB에 반영이 안되는 경우를
+								테스트 하는 HibernatePersistentObjcetStates.java 의 일부분이다.
+		                        <programlisting language="java"><![CDATA[public void detachedState() throws Exception {
+    newSession();
+
+    Category category = new Category();
+    category.setCategoryId("CTGR-0001");
+    category.setCategoryName("Romantic");
+    category.setCategoryDesc("Romantic genre");
+
+    session.save(category);
+
+    closeSession();
+
+    newSession();
+
+    category.setCategoryName("Comedy");
+    category.setCategoryDesc("Comedy consists");
+    closeSession();
+    ...중략]]></programlisting>
+							</para>
+		
+							<para>
+								위 테스트 케이스에서 보면 closeSession()을 해서 persistent object의 state를 detached 상태로 만든 후에 
+								값을 변경하고 다음 Session을 close시키면 persistent state때와는 달리 update가 되지 않는다. 실행되는 
+								query 로그는 다음과 같다.
+		                        <programlisting><![CDATA[insert into
+        PUBLIC.CATEGORY (CATEGORY_NAME, CATEGORY_DESC, CATEGORY_ID) 
+            values ('Romantic', 'Romantic genre', 'CTGR-0001']]></programlisting>
+							</para>
+		
+							<para>
+								위 query 로그에서 보듯이 persistent state상태일 때와는 달리 persistent
+								object가 변경 되었음에도 update query가 실행 되지 않는다.
+							</para>
+		
+							<para>
+								<emphasis role="bold">참고 : </emphasis>
+								한 Session 내에서 Initialize되지 않은 객체는 해당 Session 종료로 인해 Detached 상태로 변경되었을 때에는 
+								객체 정보를 읽을 수 없다. 아래는 Session이 종료 되서 Detached상태로 된 객체에서 initialize되지 않은 연관 
+								객체의 정보를 읽을 때 LazyInitializationException발생하는 것을 확인 하는 테스트 코드 
+								HibernateLazyInitializationException.java 의 일부분이다.
+		                        <programlisting language="java"><![CDATA[public void findMovie() throws Exception {
+    ...중략
+    Movie movie = (Movie) session.get(Movie.class, "MV-00001");
+    ...중략
+    session.close();
+
+    try {
+        movie.getCategories().iterator();
+        fail("expected LazyInitializationException");
+    } 
+    catch (Exception e) {
+        ...중략
+}]]></programlisting>
+							</para>
+		
+							<para>
+								Movie와 Category는 1:n 관계를 갖고 있다. MOVIE 테이블을 대상으로 단건 조회 작업을 수행한 후, Session을 
+								종료하여 Movie Object를 Detached 상태로 만든다. 그리고 initialize되지 않은 Category 목록 정보를 얻으려 
+								할 때 LazyInitializationException이 발생한다.</para>
+						</listitem>
+					</itemizedlist>
+				</listitem>
+			</itemizedlist>							
+		</partintro>
+		&hibernate_hibernate_configuration;
+		&hibernate_hibernate_mappingfile;
+		&hibernate_hibernate_persistence;
+		&hibernate_hibernate_basiccrud;
+		&hibernate_hibernate_hql;
+		&hibernate_hibernate_criteria;
+		&hibernate_hibernate_nativesql;
+		&hibernate_hibernate_performance;
+		&hibernate_hibernate_concurrency;
+		&hibernate_hibernate_transaction;
+		&hibernate_hibernate_springintegration;
+	</part>		
+	
+	<part id="hibernate_dynamic_part">
+		<title>Dynamic Hibernate</title>
+		<partintro id="hibernate_dynamic_intro">
+			<para>
+				Hibernate만을 사용하여 데이터 액세스 처리를 수행할 때 입력 조건에 따라 동적으로 변경되는 HQL, Native SQL을 만들기
+		    	위해서는 해당되는 자바 코드 내에 HQL또는 Native SQL문을 만들기 위한 로직이 포함되어야 한다. 이로 인해 쿼리문과 자바 코드가 뒤섞이게 되어,
+		    	변경 및 유지보수가 어려워질 수 있다. 따라서, Anyframe에서는 별도 XML에 동적으로 변경되는 HQL, Native SQL문을 정의하여
+		    	Hibernate을 이용하여 처리할 수 있도록 Hibernate와 Velocity를 연동한 DynamicHibernateService를 제공한다.
+		    	Dynamic HQL 또는 Dynamic Native SQL에서 사용하는주요 syntax는 다음과 같다.
+		    </para>
+		    <itemizedlist>
+		    	<listitem>
+		        	<para>
+		        		<emphasis role="bold">:ParameterName</emphasis> : Named
+		            	Parameter 형태로 변수를 지정할 때 사용한다.
+		            </para>
+		        </listitem>
+		
+		        <listitem>
+		            <para>
+		            	<emphasis role="bold">{{치환 문자열 키}} </emphasis>: 키에 해당하는 문자열로
+		            	치환하여 Query를 수행한다.
+		            </para>
+				</listitem>
+		
+		        <listitem>
+		            <para>
+		            	<emphasis role="bold">#if ~ (#elseif) ~ #end </emphasis>: 조건
+		            	분기
+		            </para>
+		        </listitem>
+		
+		        <listitem>
+		            <para>
+		            	<emphasis role="bold"># foreach ~ #end</emphasis> :
+		            	Loop
+		            </para>
+		        </listitem>
+		
+		        <listitem>
+		            <para>
+		            	<emphasis role="bold">$velocityCount</emphasis> : foreach
+		            	구문내의 Loop index를 체크하고자 하는 부분에 정의한다.
+		            </para>
+		        </listitem>
+			</itemizedlist>
+			<para>
+				DynamicHibernateService에 대한 구현체는 1가지이며, 다음은 각 구현체별 사용 방법이다.
+		    </para>
+		</partintro>
+		&hibernate_dynamic_configuration;
+		&hibernate_dynamic_hql;
+		&hibernate_dynamic_nativesql;
+	</part>	
+	<part id="sample_download">
+		<title>Sample Download</title>
+			<partintro id="hibernate_dynamic_intro">
+				<para>Download page</para>
+			</partintro>
+		&hibernate_sample_download;
+	</part>
+	
+
+</book>

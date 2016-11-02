@@ -1,0 +1,43 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<plugin name="iam" description="IAM Plugin based on Spring Security consists of sample code which is to guide how to use Anyframe IAM that provides user authentication and authorization functions, and reference libraries that are needed to use these open sources.">
+	<groupId>org.anyframe.plugin</groupId>
+	<artifactId>anyframe-iam-pi</artifactId>
+	<version>1.0.4-SNAPSHOT</version>
+	<dependent-plugins>
+		<dependent-plugin name="query" version="2.0.0&gt;*&gt;1.4.0" />
+		<dependent-plugin name="idgen" version="1.4.0&lt;=*" />		
+	</dependent-plugins>
+	<resources>
+		<resource dir="src/main/java" filtered="true" packaged="true">
+			<include name="**/iam/**/*.java" />
+		</resource>
+		<resource dir="src/main/resources" filtered="true" packaged="false">
+			<include name="**/spring/context-iam.xml" />
+			<include name="**/spring/iam-servlet.xml" />
+			<include name="**/spring/iam-spring-security-servlet.xml" />
+			<include name="**/sql/query/mapping-iam-*.xml" />
+		</resource>
+		<resource dir="src/test/java" filtered="true" packaged="true">
+			<include name="**/iam/**/*.java" />
+		</resource>
+		<resource dir="src/test/resources" filtered="true" packaged="false">
+			<include name="**/*anyframe-iam-pi*.xml" />
+		</resource>
+		<resource dir="src/main/webapp" filtered="false" packaged="false">
+			<include name="**/iam/**/*.*" />
+			<include name="**/anyframe-iam.tld" />
+			<exclude name="**/web.xml" merged="true"/>
+			<exclude name="**/anyframe.jsp" merged="true"/>
+		</resource>
+		<resource dir="db" filtered="false" packaged="false">
+			<include name="**/mapping-iam-*.xml" />
+			<include name="**/iam-*.sql" />
+		</resource>
+	</resources>
+	<samples>true</samples>
+	<interceptor>
+		<class></class>
+	</interceptor>
+	<essential>false</essential>
+	<checked>false</checked>
+</plugin>

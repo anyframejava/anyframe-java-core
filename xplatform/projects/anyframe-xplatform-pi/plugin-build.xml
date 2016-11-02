@@ -1,0 +1,35 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<plugin name="xplatform"
+	description="XPLATFORM plugin consists of sample code that provides basic guidelines on how to use XPLATFORM connection modules with basic Spring MVC architecture.">
+	<groupId>org.anyframe.plugin</groupId>
+	<artifactId>anyframe-xplatform-pi</artifactId>
+	<version>1.6.1-SNAPSHOT</version>
+	<dependent-plugins>
+		<dependent-plugin name="query" version="2.0.0&gt;*&gt;1.4.0" />
+	</dependent-plugins>
+	<resources>
+		<resource dir="src/main/java" filtered="true" packaged="true">
+			<include name="**/xplatform/**/*.java" />
+		</resource>
+		<resource dir="src/main/resources" filtered="true" packaged="false">
+			<include name="**/*xplatform*.xml" />
+		</resource>
+		<resource dir="src/main/webapp" filtered="false"
+			packaged="false">
+			<include name="**/xplatform/**/*.*" />
+   		    <exclude name="**/anyframe.jsp" merged="true"/>     
+   		    <exclude name="**/default_typedef.xml" />
+		</resource>
+		<resource dir="src/main/webapp/xplatform" filtered="true" packaged="false">
+			<include name="**/default_typedef.xml" />
+		</resource>
+		<resource dir="db" filtered="false" packaged="false">
+			<include name="**/resources/**/*.xml" />
+		</resource>
+	</resources>
+	<samples>true</samples>
+	<interceptor>
+		<class></class>
+	</interceptor>
+	<essential>false</essential>
+</plugin>

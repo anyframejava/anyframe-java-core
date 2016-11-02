@@ -1,0 +1,76 @@
+<chapter id="struts_architecture">
+	<title>Architecture</title>
+
+		<para>
+			Struts Architecture is based on Model-View-Controller design pattern. 
+			So, if you separate model and view, an environment that can form various presentations based on Single domain model is provided. 
+			
+		</para>
+
+	<section id="struts_architecture_controller">
+    <title>Controller Structure</title>
+
+	    <para>
+    		One controller is used according to the Front Controller pattern of Java EE. 
+    		Therefore, services such as security, internationalization, and logging can be processed through Controller which is an advantage. 
+    		It executes the following roles. 
+    	</para>
+
+    	<itemizedlist>
+      		<listitem>
+        		<para>Interrupts request that comes from client </para>
+      		</listitem>
+      		<listitem>
+        		<para>Mapping of each request to specific business logic </para>
+      		</listitem>
+      		<listitem>
+        		<para>Selects view based on the current situation and business logic processing results, and shows view to client </para>
+      		</listitem>
+    	</itemizedlist>
+	</section>
+
+	<section id="struts_architecture_requestflow">
+    <title>Flow of Request</title>
+
+    	<para>The following figure shows architecture when forming presentation layer using Struts</para>
+
+	    <mediaobject>
+	      <imageobject>
+	        <imagedata align="center"
+	                   fileref="../image/struts/struts_architecture.jpg" />
+	      </imageobject>
+	    </mediaobject>
+
+    	<para>Executed in the following order when request is sent by client</para>
+
+    	<itemizedlist>
+			<listitem>
+        		<para>
+        			When web application starts, Struts configuration file (struts-config.xml) loading is performed 
+        			using servlet information set in web.xml.
+        		</para>
+      		</listitem>
+      		<listitem>
+        		<para>
+        			Decide ActionMapping according to request from RequestProcessor defined in struts-config.xml. 
+        		</para>
+      		</listitem>
+      		<listitem>
+        		<para>
+        			Execute execute() method of Action class according to URL and action mapping information defined in struts-config.xml.
+        		</para>
+      		</listitem>
+      		<listitem>
+        		<para>
+        		Action execute() method calls business logic by connecting to business layer.
+        		</para>
+      		</listitem>
+			<listitem>
+        		<para>
+                    Return ActionForward according to business logic execution result,
+        			and Controller performs forwarding with the appropriate view according to return value.
+        		</para>
+      		</listitem>
+		</itemizedlist>
+	</section>
+</chapter>

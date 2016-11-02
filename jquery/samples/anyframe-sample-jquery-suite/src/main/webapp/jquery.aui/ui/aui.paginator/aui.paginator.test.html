@@ -1,0 +1,76 @@
+<!--
+    Anyframe UI (AUI)
+
+    @author     jeongeun.lee(jel.lee@samsung.com)
+-->
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN"
+        "http://www.w3.org/TR/html4/loose.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+    <meta http-equiv="X-UA-Compatible" content="IE=Edge">
+    <meta http-equiv="content-type" content="text/html; charset=UTF-8" />
+    <title>jquery.aui.paginator test</title>
+
+<script type="text/javascript" src="jquery-1.9.0.js"></script>
+<script type="text/javascript" src="jquery-ui-1.10.0.custom.js"></script>
+
+<!--jquery.aui.paginator stylesheet     -->
+<link type="text/css" rel="stylesheet" href="jquery.aui.paginator.css">
+
+<!--jquery.aui.paginator library     -->
+<script type="text/javascript" src="jquery.aui.paginator.js"></script>
+
+<script type="application/javascript">
+
+    $(document).ready(function() {
+
+        //initialize
+        $("#PaginatorDemo1").paginator({buttonStyleMode: 2});
+        $("#PaginatorDemo2").paginator({itemsTotalCount: 100, itemsPerPage:5});
+        $("#PaginatorDemo3").paginator({itemsTotalCount: 100, itemsPerPage:5, isFirstPageZero:true});
+        $("#PaginatorDemo4").paginator({itemsTotalCount: 100, itemsPerPage:5, buttonText:{ first: "처음", prev: "이전", next: "다음", last: "끝" } });
+
+        //Test1 - enable/disable
+        $("#Test1").on('click', function(evt) {
+            var curDisable = $("#PaginatorDemo1").paginator("option", "disabled");
+            $("#PaginatorDemo1").paginator("option", "disabled", !curDisable);
+        });
+
+        //Test2 - callback
+        $("#PaginatorDemo2").paginator("option", "change", function(pageNum) {
+            $("#Test2").text("selected page : " + pageNum);
+        });
+
+        //Test3 - buttonStyleMode
+        $("#Test3").on('click', function() {
+            var curMode = $("#PaginatorDemo3").paginator("option", "buttonStyleMode") + 1;
+
+            curMode = curMode > 2 ? 0 : curMode;
+            $("#PaginatorDemo3").paginator("option", "buttonStyleMode", curMode);
+        });
+
+    });
+
+
+</script>
+
+</head>
+<body>
+
+<div id="PaginatorDemo1"></div>
+<button id="Test1">Enable/Disable Test</button>
+<hr>
+
+<div id="PaginatorDemo2"></div>
+<span id="Test2"></span>
+<hr>
+
+<div id="PaginatorDemo3"></div>
+<button id="Test3">Toggle ButtonStyle</button>
+<hr>
+
+<div id="PaginatorDemo4"></div>
+<hr>
+
+</body>
+</html>

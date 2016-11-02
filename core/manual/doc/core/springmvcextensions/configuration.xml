@@ -1,0 +1,152 @@
+<chapter id="core_springmvcextensions_configuration">
+	<title>Configuration Simplification</title>
+	<section>
+		<title><![CDATA[<mvc:annotation-driven>]]></title>
+		<para>
+			Spring 3.1 에서는 Annotation 기반의 Controller 처리를 위해 반드시 필요한 RequestMappingHandlerAdapter 등록 등의 Spring MVC 관련 설정을 간편하게 할 수 있도록 
+			<ulink url="http://static.springsource.org/schema/mvc/spring-mvc.xsd">mvc</ulink> 네임스페이스를 제공하고 있다.
+			mvc 네임스페이스를 통해서 다양한 태그가 지원되고 있는데 그 중, <![CDATA[<mvc:annotation-driven>]]>는 HTTP 요청을 Annotation 기반으로 구현된 Controller로 전달해주는 
+			RequestMappingHandlerMapping, RequestMappingHandlerAdapter등을 몇가지 디폴트 설정과 함께 등록해주는 역할을 수행하고 있다. 		
+		</para>
+		<para>
+			그런데 <![CDATA[<mvc:annotation-driven>]]>를 사용하여 Spring MVC 관련 설정을 하게 되는 경우, RequestMappingHandlerAdapter등을의 하위 속성인 synchronizedOnSession 
+			속성값이 'false'로 설정되어 Double Submit 방지 기능을 수행할 수 없게 된다. 
+		</para>
+		<para>
+			따라서, Anyframe에서는 <![CDATA[<mvc:annotation-driven>]]>와 동일한 기능을 수행하면서도 Double Submit 방지 기능을 수행할 수 있도록 하기 위해 
+			RequestMappingHandlerAdapter의 하위 속성인 synchronizedOnSession 값을 정의할 수 있는 <![CDATA[<anyframe:annotation-driven>]]>를 추가로 제공하고 있다.
+			다음은 Core Plugin 설치로 생성된 샘플 프로젝트 하위의 src/main/resources/core-servlet.xml 파일의 일부로, <![CDATA[<anyframe:annotation-driven />]]>을 활용하여
+			속성을 정의하고 있음을 알 수 있다. 
+		</para>
+		<programlisting language="xml"><![CDATA[<?xml version="1.0" encoding="UTF-8"?>
+	<beans xmlns="http://www.springframework.org/schema/beans"
+	    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" 
+	    xmlns:context="http://www.springframework.org/schema/context"
+	    xmlns:mvc="http://www.springframework.org/schema/mvc" 
+	    ]]><emphasis role="bold">xmlns:anyframe="http://www.anyframejava.org/schema/mvc"</emphasis><![CDATA[
+	    xsi:schemaLocation=
+	        "http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-3.1.xsd
+	        http://www.springframework.org/schema/context http://www.springframework.org/schema/context/spring-context-3.1.xsd
+	        http://www.springframework.org/schema/mvc http://www.springframework.org/schema/mvc/spring-mvc-3.1.xsd
+	        ]]><emphasis role="bold">http://www.anyframejava.org/schema/mvc http://www.anyframejava.org/schema/mvc/anyframe-spring-mvc-5.3.xsd"</emphasis><![CDATA[>
+	
+	    <]]><emphasis role="bold">anyframe:annotation-driven synchronizeOnSession="true"</emphasis><![CDATA[/>
+		
+	    <!-- 중략 -->
+	</beans>]]></programlisting>
+		<para>
+			위 XML에서와 같이 <![CDATA[<anyframe:annotation-driven>]]>를 정의하기 위해서는 <![CDATA[<beans>]]> 내에 anyframe 네임스페이스에 대한 정의가 반드시 추가되어야 한다.
+		</para>
+	</section>
+	<section>
+		<title>@EnableWebMvcAnyframe</title>
+		<para>Spring은 3.0 부터 Java Based Configuration을 지원해왔으며, 3.1부터는 이를 더욱 발전시켜 @Enable* 형태의 어노테이션 기반 설정 간략화 기능을 제공하고 있다.</para>
+		<para><![CDATA[Spring은 <mvc:annotaion-driven/>]]>에 대응되는 @EnableWebMvc 어노테이션을 제공하고 있다.(스프링에서 제공하는 @Enable* 어노테이션들에 관한 상세한 내용은 <link linkend="core_spring_javaconfig_bean_codeequivalents">여기</link>를 참고하기 바란다.)</para>
+		<para>이에 Anyframe에서는 Core Plugin 1.0.4 버전부터 <![CDATA[<anyframe:annotation-driven/>]]>에 대응되는 @EnableWebMvcAnyframe 어노테이션을 제공하고 있다. @EnableWebMvcAnyframe의 사용예제는 다음과 같다.</para>
+		<programlisting language="java"><![CDATA[package org.anyframe.sample.javaconfig.config.web;
+
+import java.util.Locale;
+
+import org.anyframe.spring.config.EnableWebMvcAnyframe;
+import org.springframework.context.annotation.Bean;
+import org.springframework.context.annotation.ComponentScan;
+import org.springframework.context.annotation.Configuration;
+import org.springframework.stereotype.Controller;
+import org.springframework.web.servlet.HandlerExceptionResolver;
+import org.springframework.web.servlet.LocaleResolver;
+import org.springframework.web.servlet.ViewResolver;
+import org.springframework.web.servlet.handler.SimpleMappingExceptionResolver;
+import org.springframework.web.servlet.i18n.SessionLocaleResolver;
+import org.springframework.web.servlet.view.InternalResourceViewResolver;
+import org.springframework.web.servlet.view.JstlView;
+
+@Configuration
+]]><emphasis role="bold">@EnableWebMvcAnyframe(synchronizeOnSession="true")</emphasis><![CDATA[
+@ComponentScan(basePackages = "org.anyframe.sample.javaconfig.moviefinder", useDefaultFilters = false, includeFilters = { @ComponentScan.Filter(Controller.class) })
+public class WebAppConfig {
+
+	private static final String VIEW_RESOLVER_PREFIX = "/WEB-INF/jsp/";
+	private static final String VIEW_RESOLVER_SUFFIX = ".jsp";
+	private static final String DEFAULT_ERROR_VIEW = "forward:/sample/common/error.jsp";
+	private static final String WARN_LOG_CATEGORY = "controller.logs";
+
+	@Bean
+	public ViewResolver viewResolver() {
+		InternalResourceViewResolver viewResolver = new InternalResourceViewResolver();
+
+		viewResolver.setViewClass(JstlView.class);
+		viewResolver.setPrefix(VIEW_RESOLVER_PREFIX);
+		viewResolver.setSuffix(VIEW_RESOLVER_SUFFIX);
+
+		return viewResolver;
+	}
+
+	@Bean
+	public HandlerExceptionResolver exceptionResolver() {
+		SimpleMappingExceptionResolver exceptionResolver = new SimpleMappingExceptionResolver();
+		exceptionResolver.setDefaultErrorView(DEFAULT_ERROR_VIEW);
+		exceptionResolver.setWarnLogCategory(WARN_LOG_CATEGORY);
+
+		return exceptionResolver;
+	}
+
+	@Bean
+	public LocaleResolver localeResolver() {
+		SessionLocaleResolver localeResolver = new SessionLocaleResolver();
+		localeResolver.setDefaultLocale(new Locale("en_US"));
+		return localeResolver;
+	}
+}
+]]></programlisting>
+		<para>본 예제 코드는 Spring MVC 관련 설정을 모아놓은 Web Application Configuration class이며, @EnableWebMvcAnyframe 어노테이션이 @Configuration과 같이 사용되었고, 세부적으로 synchronizeOnSession 부분의 값을 true로 설정한 것에 주목하기 바란다.</para>
+	</section>
+	<section id="core_spring_mvc_javaconfig_resource">
+  		<title>Resources</title>
+		<para>
+			<itemizedlist>
+				<listitem>
+					<para>다운로드</para>
+					<para>
+						다음에서 sample 코드를 포함하고 있는 Eclipse 프로젝트 파일을 다운받은 후, 압축을 해제한다.
+					</para>
+					<itemizedlist>
+						<listitem>
+							<para>Maven 기반 실행</para>
+							<para>
+								Command 창에서 압축 해제 폴더로 이동한 후, mvn compile exec:java -Dexec.mainClass=...이라는 명령어를 실행시켜 결과를 확인한다.
+								각 Eclipse 프로젝트 내에 포함된 Main 클래스의 JavaDoc을 참고하도록 한다.
+							</para>
+						</listitem>
+						<listitem>
+							<para>Eclipse 기반 실행</para>
+							<para>
+								Eclipse에서 압축 해제 프로젝트를 import한 후, src/main/java 폴더 하위의 Main.java를 선택하고 마우스 오른쪽 버튼 클릭하여 컨텍스트 메뉴에서 
+								Run As > Java Application을 클릭한다. 	그리고 실행 결과를 확인한다.
+							</para>
+						</listitem>									
+					</itemizedlist>						
+					<informaltable>
+						<caption>Download List</caption>
+						<tgroup cols="2">
+							<colspec colnum="1" colname="col1" colwidth="4*"/>
+							<colspec colnum="2" colname="col2" colwidth="6*"/>
+							<thead>
+								<row>
+									<entry align="center">Name</entry>
+									<entry align="center">Download</entry>
+								</row>
+							</thead>
+							<tbody>										
+								<row>
+									<entry align="center">anyframe-sample-javaconfig-mvc.zip</entry>
+									<entry align="center"><ulink url="http://dev.anyframejava.org/docs/anyframe/plugin/essential/core/1.6.1-SNAPSHOT/reference/sample/anyframe-sample-javaconfig-mvc.zip">Download</ulink>
+									</entry>
+								</row>														
+							</tbody>
+						</tgroup>
+					</informaltable> 
+				</listitem>
+			</itemizedlist>
+		</para>	
+	</section>
+</chapter>

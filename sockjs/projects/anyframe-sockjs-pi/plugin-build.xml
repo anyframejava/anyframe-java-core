@@ -1,0 +1,31 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<plugin name="sockjs" description="anyframe-sockjs-pi plugin">
+	<groupId>org.anyframe.plugin</groupId>
+	<artifactId>anyframe-sockjs-pi</artifactId>
+	<version>1.0.1-SNAPSHOT</version>
+	<dependent-plugins>
+		<dependent-plugin name="core" version="1.6.1-SNAPSHOT" />
+	</dependent-plugins>
+	<resources>
+		<resource dir="src/main/java" filtered="true" packaged="true">
+			<include name="**/sockjs/**/*.java" />
+		</resource>
+		<resource dir="src/main/resources" filtered="true" packaged="false">
+			<include name="**/*sockjs*.xml" />
+		</resource>
+		<resource dir="src/test/java" filtered="true" packaged="true">
+			<include name="**/sockjs/**/*.java" />
+		</resource>
+		<resource dir="src/main/webapp" filtered="false" packaged="false">
+			<include name="**/sockjs/**/*.*" />
+			<exclude name="**/web.xml" merged="true"/>
+			<exclude name="**/anyframe.jsp" merged="true" />
+		</resource>
+	</resources>
+	<samples>false</samples>
+  <interceptor>
+    <class></class>
+  </interceptor>
+  <essential>false</essential>
+  <checked>false</checked>
+</plugin>

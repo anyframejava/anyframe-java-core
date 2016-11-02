@@ -1,0 +1,144 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN"
+"http://www.w3.org/TR/html4/loose.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+
+<head>
+<meta http-equiv="content-type" content="text/html; charset=UTF-8" />
+<title>[Dialog] Data Form Sample</title>
+<link href="../../../common/css/smoothness/jquery-ui-1.10.0.custom.css" rel="stylesheet">
+<script src="../../../common/exlibs/jquery-1.9.0.js"></script>
+<script src="../../../common/exlibs/jquery-ui-1.10.0.custom.js"></script>
+
+<link type="text/css" rel="stylesheet" href="../../../common/css/style.css" />
+<link type="text/css" rel="stylesheet" href="sub_css/data_form.css">
+
+<script type="text/javascript">
+	var ENV = {
+		ID_DIALOG : "#dialog",
+		ID_ADD : "#add",
+		ID_NAME : "#name",
+		ID_PHONE : "#phone",
+		ID_PART : "#part"
+	};
+
+	var dialogDataFormView = {
+
+		init : function() {
+
+			initDialog();
+
+			function initDialog() {
+				$(ENV.ID_NAME).val("");
+				$(ENV.ID_PHONE).val("");
+				$(ENV.ID_PART).val("");
+			};
+		},
+
+		addUser : function(idVal, phoneVal, partVal) {
+			$("table tbody:last-child").append(
+					"<tr><td>" + idVal + "</td><td>" + phoneVal + "</td><td>" + partVal + "</td></tr>");
+		}
+
+	};
+
+	$(document).ready(
+			function() {
+
+				dialogDataFormView.init();
+				$("#add").button();
+
+				$(ENV.ID_DIALOG).dialog(
+						{
+							autoOpen : false,
+							width : "400",
+							buttons : {
+								"Add" : function() {
+									var inputName = $(ENV.ID_NAME).val();
+									var inputPhone = $(ENV.ID_PHONE).val();
+									var inputPart = $(ENV.ID_PART).val();
+									dialogDataFormView.addUser(inputName, inputPhone, inputPart);
+									$(this).dialog("close");
+									dialogDataFormView.init();
+								},
+								Cancel : function() {
+									$(this).dialog("close");
+								}
+							}
+						});
+
+				//버튼 바 : 버튼 중앙정렬
+				$(ENV.ID_DIALOG).next().children().css({
+					"float" : "none",
+					"text-align" : "center"
+				});
+
+				$(ENV.ID_ADD).on("click", function() {
+					$(ENV.ID_DIALOG).dialog("open");
+				});
+
+			});
+</script>
+</head>
+<body>
+
+	<div class="title">User Information</div>
+	<div class="display-area">
+		<table>
+			<thead>
+				<tr>
+					<th>이름</th>
+					<th>휴대폰</th>
+					<th>부서</th>
+				</tr>
+			</thead>
+			<tbody>
+				<tr>
+					<td>이공정</td>
+					<td>010-1111-1234</td>
+					<td>R&D그룹</td>
+				</tr>
+
+			</tbody>
+		</table>
+
+	</div>
+
+
+	<div id="dialog" class="dialog-content" title="Login">
+		<form>
+			<fieldset>
+				<legend>Form</legend>
+
+				<div class="text-area">이름 :</div>
+				<div class="input-area">
+					<input id="name" size="30" maxlength="3" />
+				</div>
+
+
+				<div>
+					<div class="text-area">전화번호 :</div>
+					<div class="input-area">
+						<input id="phone" size="30" maxlength="11" />
+					</div>
+				</div>
+
+				<div>
+					<div class="text-area">부서 :</div>
+					<div class="input-area">
+						<input id="part" size="30" />
+					</div>
+				</div>
+
+
+			</fieldset>
+		</form>
+	</div>
+
+
+	<div class="button-div">
+		<button id="add" type="button">Add</button>
+	</div>
+
+
+</body>
+</html>

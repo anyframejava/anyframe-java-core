@@ -1,0 +1,37 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<plugin name="webflow" description="Webflow Plugin consists of sample code that provides basic guidelines on how to use Spring Web Flow which is one of the Spring projects, and reference libraries needed to use these open sources.">
+  <groupId>org.anyframe.plugin</groupId>
+  <artifactId>anyframe-webflow-pi</artifactId>
+  <version>1.0.3-SNAPSHOT</version>
+  <dependent-plugins>
+    <dependent-plugin name="query" version="2.0.0&gt;*&gt;1.4.0"/>
+  </dependent-plugins>
+  <resources>
+    <resource dir="src/main/java" filtered="true" packaged="true">
+      <include name="**/webflow/**/*.java"/>
+    </resource>
+    <resource dir="src/main/resources" filtered="true" packaged="false">
+      <include name="**/*webflow*.xml"/>
+    </resource>
+    <resource dir="src/test/java" filtered="true" packaged="true">
+      <include name="**/webflow/**/*.java"/>
+    </resource>
+    <resource dir="src/test/resources" filtered="true" packaged="false">
+      <include name="**/*webflow*.xml"/>
+    </resource>
+    <resource dir="src/main/webapp" filtered="true" packaged="false">
+      <include name="**/webflow/**/*-flow.xml"/>
+    </resource>
+    <resource dir="src/main/webapp" filtered="false" packaged="false">
+      <include name="**/webflow/**/*.jsp"/>
+      <exclude name="**/web.xml" merged="true"/>
+      <exclude name="**/anyframe.jsp" merged="true"/>
+    </resource>
+    <resource dir="db/resources" filtered="false" packaged="false">
+      <include name="**/*.*"/>
+    </resource>
+  </resources>
+  <samples>true</samples>
+  <essential>false</essential>
+  <checked>false</checked>
+</plugin>

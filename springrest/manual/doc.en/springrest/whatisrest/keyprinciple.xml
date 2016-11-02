@@ -1,0 +1,157 @@
+<chapter id="springrest_whatisrest_keyprinciple">
+
+	<title>Key Principles of REST</title>
+	
+	<para>
+		REST is a set of principles that define how Web standards, such as HTTP and URIs, are supposed to be used. 
+	    In this case, network architecture principle means an overview on how to define and identify Resources. 
+	    Simply put, it is an explanation on a very simple interface for transferring domain-oriented data on HTTP. 
+	    The following is a summary of five key principles of REST. (Source: http://www.infoq.com/articles/rest-introduction)
+	</para>
+	
+	<section id="giveid">
+		<title>Give every "thing" an ID</title>
+		<para>
+			As described above, apply unique ID called URI to all Resources. 
+			Client uses URI to identify many Resources. 
+			A book called <ulink url="http://oreilly.com/catalog/9780596529260">RESTful Web Services</ulink> 
+			introduces the following design rules for URI design. 
+			It is a URI design guideline based on the experiences of many people that applied RESTful architecture. 
+			
+			<itemizedlist>
+				<listitem>
+					<para>URI should consist of words that can intuitively read Resources.</para>
+					<para>Provides guidelines on composing URI so that the provided information can be known intuitively, for instance, '/movies', and '/products'.</para>
+				</listitem>
+				<listitem>
+					<para>URI should be composed in hierarchical structure.</para>
+					<para>Recommended to be composed so that URI path is formed in hierarchical structure like '/hotels/hayatt/bookings/20101128'.</para>
+				</listitem>
+				<listitem>
+					<para>The parent path of URI should consist of words that indicate the child path collection.</para>
+					<para>As seen in '/hotels/hayatt/bookings/20101128', 'hotels' is a collection of 'hayatt', 
+					so '/hotels' can be a valid URI because it indicates a hotel list.</para>
+				</listitem>
+			</itemizedlist>
+		</para>
+		<para>
+			There are many other guidelines, but only a few that stand out have been described.
+		</para>
+		<para>
+			When creating URI following the above guidelines, 
+			many URIs with similar patterns are created such as '/hotels/hilton' and '/hotels/hayatt'. 
+			URI Template helps the abstraction of URI so that it can be easily managed. 
+			<emphasis role="bold">URI Template</emphasis> is a string that is in 
+			<emphasis role="bold">a URI format that includes more than one variable</emphasis> like '/movies/{movieId}'. 
+			For more information on URI Template, refer to <ulink url="http://tools.ietf.org/html/draft-gregorio-uritemplate-04">proposed RFC</ulink>.
+		</para>
+	</section>
+		
+	<section id="link">
+		<title>Link things together</title>
+		<para>
+			One Resource can include various other Resource information. 
+			As seen in the example below, Order includes Product and Customer, 
+			so there is a link for Product and Customer in Representation transferred as response to Order information search request. 
+		    When necessary, client can search additional information 
+		    because Representation includes URI of other Resources as link. 
+		    This concept is also called 'HATEOAS(Hypermedia As The Engine Of Application State)'.
+		</para>
+		<programlisting language="xml"><![CDATA[<order self='http://example.com/customers/1234' >
+    <amount>23</amount>
+    <product ref='http://example.com/products/4554' />
+    <customer ref='http://example.com/customers/1234' />
+</order>]]></programlisting>
+		<para>
+			Client has received Representation for Resource called 'Order', 
+			and can request 'Product' or 'Customer'  information when necessary. 
+			In other words, server only transfers link of Resource that can be converted into another State, 
+			and does not define the order of State to be converted. 
+		</para>
+		
+	</section>
+		
+	<section id="usemethods">
+		<title>Use standard methods</title>
+		
+		<para>
+			To manipulate CRUD for Resource, using standard method provided in HTTP is recommended. 
+			Previously, ways like '/movies.do?id=MV-00001&amp;method=delete' have been used for the client to delete Movie of server. 
+			But in REST, this can be requested through the combination of '/movies/MV-00001' URI and DELETE method of HTTP.
+			<para>
+				Most browsers generally support only GET and POST, 
+				so frameworks such as Spring or Apache CXF for REST implementation provide ways that support all HTTP methods. 
+			</para>
+			<mediaobject>
+				<imageobject>
+					<imagedata align="center" fileref="../image/springrest/httpmethodtable.png" />
+				</imageobject>
+			</mediaobject>
+			<para>
+				<ulink url="http://www.w3.org/Protocols/rfc2616/rfc2616-sec9.html">HTTP/1.1 RFC</ulink> gives more information on 
+				Method provided in HTTP. 
+			</para>
+		</para>
+		
+		<para>
+			For instance, when providing RESTful web service in application that manages product orders, 
+			URI and HTTP method combination can be as follows.
+		</para>
+		
+		<mediaobject>
+			<imageobject>
+				<imagedata align="center" fileref="../image/springrest/httpmethod.png" />
+			</imageobject>
+		</mediaobject>
+		
+	</section>
+		
+	<section id="multiplerepresentations">
+		<title>Resources with multiple representations</title>
+		<para>
+			In REST based on HTTP, client can request to server for Representation in a Format that client can handle. 
+			The format that client handles can be stated in the <emphasis role="bold">Accept header</emphasis> of Request message, and request can be sent to sever. 
+			For instance, the below HTTP Request means 
+			<emphasis role="bold">"Give me detailed information on a movie with 'MV-00005' ID in XML format"</emphasis>.
+		</para>
+		<mediaobject>
+			<imageobject>
+				<imagedata align="center" fileref="../image/springrest/httprequestmessage.png" />
+			</imageobject>
+		</mediaobject>
+		
+		<para>
+			The server that receives the above request will send the following Response Message.
+		</para>
+		<mediaobject>
+			<imageobject>
+				<imagedata align="center" fileref="../image/springrest/httpresponsemessage.png" />
+			</imageobject>
+		</mediaobject>
+		<para>
+			When accept header states another format, server will send another type of message.
+		</para>
+		
+		<para>
+			As such, one Resource can have several Representations. 
+		    This is called <emphasis role="bold"><ulink url="http://www.w3.org/Protocols/rfc2616/rfc2616-sec12.html#sec12">Content Negotiation</ulink></emphasis>.
+		</para>
+	
+		<para>
+			One problem is that the general browser fixes and sends Accept Header value, 
+			so Content Negotiation cannot be based on Accept Header value. 
+			So, as an alternative, <emphasis role="bold">extension is added to URL path, and the Representation that client wants is expressed through extension.</emphasis> 
+			For instance, when '/myapp/movies.pdf' request comes in, server searches movie list and sends it to client through PDF View. 
+		</para>
+		
+	</section>
+	
+	<section>
+		<title>Communicate statelessly</title>
+		<para>
+			REST recommends server not to save the state of each client request. 
+			All information needed for request to be handled should be included in request. 
+			Server does not need to save information related to client, so the system can respond flexibly to the increase of the number of clients. 
+		</para>
+	</section>
+</chapter>

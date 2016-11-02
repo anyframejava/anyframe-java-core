@@ -1,0 +1,57 @@
+<?xml version="1.0" encoding="utf-8"?>
+<Window>
+	<Form BorderColor="#58595b" Height="288" Id="frmAddMovie" Left="8" OnLoadCompleted="frmAddMovie_OnLoadCompleted" PidAttrib="7" Top="8" Ver="1.0" Width="512" WorkArea="true">
+		<Div BKColor="user2" Border="Flat" Height="254" Id="divManage" Left="5" Style="stlDivManage" TabOrder="1" Text="Div0" Top="2" UserData="RESIZE=TWH" Width="502">
+			<Contents>
+				<Image Align="Left" Font="돋움체,9,Bold" Height="20" Id="imgGenreId" ImageID="blet_02" Left="2" LeftMargin="20" OnClick="Div0_Image0_OnClick" Style="stlImgManage" TabOrder="1" TabStop="FALSE" Text="Genre&#32;:" Top="61" Width="110"></Image>
+				<Image Align="Left" Font="돋움체,9,Bold" Height="20" Id="imgActors" ImageID="blet_02" Left="2" LeftMargin="20" OnClick="Div0_Image0_OnClick" Style="stlImgManage" TabOrder="2" TabStop="FALSE" Text="Actors&#32;:" Top="86" Width="110"></Image>
+				<TextArea BindDataset="dsGridMovie" Border="Flat" Column="ACTORS" Height="20" Id="taActors" Left="122" Style="stlTxa" TabOrder="3" Top="86" UserData="titleObj=imgItem4" VScroll="TRUE" Width="370"></TextArea>
+				<Edit BindDataset="dsGridMovie" Border="Flat" Column="TITLE" Height="20" Id="edtTitle" Left="122" Style="stlEdtRead" TabOrder="4" Top="11" Width="370"></Edit>
+				<Image Align="Left" Font="돋움체,9,Bold" Height="20" Id="imgReleaseDate" ImageID="blet_01" Left="2" LeftMargin="20" OnClick="Div0_Image0_OnClick" Style="stlImgManage" TabOrder="5" TabStop="FALSE" Text="Release&#32;Date&#32;:" Top="136" Width="115"></Image>
+				<Image Align="Left" Font="돋움체,9,Bold" Height="20" Id="imgNowPlaying" ImageID="blet_01" Left="2" LeftMargin="20" OnClick="Div0_Image0_OnClick" Style="stlImgManage" TabOrder="6" TabStop="FALSE" Text="Now&#32;Playing&#32;:" Top="186" Width="110"></Image>
+				<Image Align="Left" Font="돋움체,9,Bold" Height="20" Id="imgTitle" ImageID="blet_02" Left="2" LeftMargin="20" OnClick="Div0_Image0_OnClick" Style="stlImgManage" TabOrder="7" TabStop="FALSE" Text="Title&#32;:" Top="11" Width="110"></Image>
+				<Image Align="Left" Font="돋움체,9,Bold" Height="20" Id="imgTicketPrice" ImageID="blet_01" Left="2" LeftMargin="20" OnClick="Div0_Image0_OnClick" Style="stlImgManage" TabOrder="8" TabStop="FALSE" Text="Ticket&#32;Price&#32;:" Top="161" Width="115"></Image>
+				<Edit BindDataset="dsGridMovie" Border="Flat" CheckLength="Byte" Column="TICKET_PRICE" Height="20" Id="edtTicketPrice" ImeMode="none" Left="122" Style="stlCal" TabOrder="9" Top="161" UserData="titleObj=imgItem3" Width="126"></Edit>
+				<Edit BindDataset="dsGridMovie" Border="Flat" Column="DIRECTOR" Height="20" Id="edtDirector" ImeMode="none" Left="122" Style="stlCal" TabOrder="10" Top="36" UserData="titleObj=imgItem3" Width="370"></Edit>
+				<Combo BindDataset="dsGridMovie" Border="Flat" CodeColumn="GENRE_ID" Column="GENRE_ID" DataColumn="Name" Height="20" Id="cboGenreId" InnerDataset="dsGridGenre" Left="122" ResetIndex="FIRST" Style="stlCbo" TabOrder="11" Top="61" Width="370"></Combo>
+				<Calendar BindDataset="dsGridMovie" Border="Flat" Column="RELEASE_DATE" Height="20" Id="calReleaseDate" Left="122" MonthPickerFormat="yyyy-MM-dd" SaturdayTextColor="blue" Style="stlCbo" SundayTextColor="red" TabOrder="12" Top="136" Width="126"></Calendar>
+				<Checkbox Align="LEFT" BindDataset="dsGridMovie" BKColor="user2" Column="NOW_PLAYING" FalseValue="N" Height="20" Id="chkNowPlaying" Left="122" Style="stlImgManage" TabOrder="13" Text="Is&#32;this&#32;movie&#32;now&#32;playing?" Top="186" TrueValue="Y" Width="205"></Checkbox>
+				<Image Align="Left" Font="돋움체,9,Bold" Height="20" Id="imgDirector" ImageID="blet_02" Left="2" LeftMargin="20" OnClick="Div0_Image0_OnClick" Style="stlImgManage" TabOrder="14" TabStop="FALSE" Text="Director&#32;:" Top="36" Width="110"></Image>
+				<Image Align="Left" Font="돋움체,9,Bold" Height="20" Id="imgRuntime" ImageID="blet_01" Left="2" LeftMargin="20" OnClick="Div0_Image0_OnClick" Style="stlImgManage" TabOrder="15" TabStop="FALSE" Text="Runtime&#32;:" Top="111" Width="115"></Image>
+				<Edit BindDataset="dsGridMovie" Border="Flat" Column="RUNTIME" Height="20" Id="edtRuntime" ImeMode="none" Left="122" Style="stlCal" TabOrder="16" Top="111" UserData="titleObj=imgItem3" Width="126"></Edit>
+			</Contents>
+		</Div>
+		<Button ButtonStyle="TRUE" Cursor="HAND" DomainID="button.cancel" Height="19" Id="btnCancel" ImageID="btn_close" Left="451" OnClick="btnCancel_OnClick" Style="stlBtn" TabOrder="2" Text="&#32;취소" Top="260" UserData="TYPE=D" Width="56"></Button>
+		<Button ButtonStyle="TRUE" Cursor="HAND" Height="19" Id="btnSave" ImageID="btn_save" Left="392" OnClick="btnSave_OnClick" Style="stlBtn" TabOrder="2" Text="&#32;&#32;저장" Top="260" UserData="TYPE=D" Width="56"></Button>
+	</Form>
+	<Script><![CDATA[#include "javascript::common.js";
+
+function frmAddMovie_OnLoadCompleted(obj){
+	divManage.cboGenreId.index = 0;
+	divManage.chkNowPlaying.Value = "Y";
+}
+
+function btnSave_OnClick(obj) {
+	if(gfnIsNull(dsGridMovie.getColumn(dsGridMovie.row, "TITLE"))) {
+		alert("영화 제목은 필수 입력 항목입니다.");
+		return;
+	}
+	
+	if(gfnIsNull(dsGridMovie.getColumn(dsGridMovie.row, "DIRECTOR"))) {
+		alert("감독은 필수 입력 항목입니다.");
+		return;
+	}
+	
+	if(gfnIsNull(dsGridMovie.getColumn(dsGridMovie.row, "ACTORS"))) {
+		alert("출연 배우는 필수 입력 항목입니다.");
+		return;
+	}
+	parent.fnCreate(obj);
+	close();
+}
+
+function btnCancel_OnClick(obj) {
+	parent.frmListMovie_OnLoadCompleted();
+	close();	
+}]]></Script>
+</Window>

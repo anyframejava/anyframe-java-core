@@ -1,0 +1,165 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN"
+"http://www.w3.org/TR/html4/loose.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+
+<head>
+<meta http-equiv="content-type" content="text/html; charset=UTF-8" />
+<title>Chart : Label</title>
+
+<!-- FILES INCLUDED.. ----------------------------------------------------->
+<script type="text/javascript" src="../../../common/exlibs/jquery-1.9.0.js"></script>
+<script type="text/javascript" src="../../../common/exlibs/highlighter/scripts/shCore.js"></script>
+<script type="text/javascript" src="../../../common/exlibs/highlighter/scripts/shBrushJScript.js"></script>
+<script type="text/javascript" src="../../../common/js/template_common.js"></script>
+
+<!--  STYLESHEET  -->
+<link type="text/css" rel="stylesheet" href="../../../common/exlibs/highlighter/styles/shCore.css" />
+<link type="text/css" rel="stylesheet" 	href="../../../common/exlibs/highlighter/styles/shCoreDefault.css" />
+<link type="text/css" rel="stylesheet" 	href="../../../common/css/style.css" />
+
+<!-- SCRIPT  ----------------------------------------------------->
+<script type="text/javascript">
+
+$(function() {
+	JTemplate.load("ui_chart_tick_and_label_src.htm");
+	JTemplate.loadDemo("ui_chart_tick_and_label_src.htm");
+});  
+
+</script>
+
+</head>
+
+<!-- CONTENTS BODY -------------------------------------------------------------->
+<body >
+
+<!-- HEADER BAR -------------------------------------------------------------->
+<div class="content-title">Chart - Chart</div>
+
+<!-- START OF PAGE ... -------------------------------------------------------->
+<div id="page">
+		<p class="header-title">Chart 눈금 및 레이블</p>
+		<p class="header-desc">: 차트의 눈금설정과 기본 레이블의 설정에 관해 조작하는 예이다.</p>
+
+<!-- DEMO ----------------------------------------------------------------------->
+			<div class="demo">
+				<h3 >Demo</h3>
+				<div id="visualExample"></div>
+			</div>
+
+<!-- DEMO DESCRIPTION----------------------------------------------------->
+		<div class="desc">
+			<h3>Demo Description</h3>
+			<hr>
+			<p class = "desc-title">배경 그리드</p>
+			<p class ="desc-overall">
+				: 차트 뒷배경으로 존재하는 그리드에 대해, 가로, 세로 그리드 선을  show/hide 할 수 있다.<br>
+			</p>
+			
+			<p class = "desc-title">눈금 조절</p>
+			<p class ="desc-overall">
+				: x, y축의 최소, 최대값, 눈금 간격을 지정할 수 있으며, 본 예에서는 y축에 대한 최소, 최대값과 눈금간격에 대해서 조작가능하도록 구현하였다.<br>
+			</p>
+			<ul class ="desc-hypl">
+				<li><span>최소/최대값</span>: 입력창에 숫자값을 입력하고 적용시키면, 그 값을 기준으로 하여 차트가 보여진다.</li>
+				<li><span>눈금간격</span>: 슬라이더가 움직임에 따라 그 간격이 조절된다.(슬라이더의 최소값은 1, 최대값은 20)</li>
+			</ul>
+			
+			<p class = "desc-title"> 레이블 텍스트</p>
+			<p class ="desc-overall">
+				: x축 전체에 대한 타이틀이름, y축 전체를 포함하는 타이틀 이름을 사용자임의로 입력하여 적용되도록 구현하였다.<br>
+			</p>
+			
+			<p class = "desc-title"> 눈금 레이블 각도</p>
+			<p class ="desc-overall">
+				: 각 x, y축의 눈금별 레이블 또는 숫자에 대해 각도를 변경해 볼 수 있다.(타이틀의 명칭이 길어질 경우 쓰임)<br>
+			</p>
+			
+		</div>
+
+<!-- CODE------------------------------------------------------------------------>
+			<div class="code">
+				<h3>Code Source </h3>
+				<pre id="codeExample" class="brush: js"></pre>
+			</div>
+
+<!-- CODE DESCRIPTION------------------------------------------------------>
+			<div class="desc">
+				<h3>Code Description </h3>
+				<hr>
+				<p class="desc-title">기본 슬라이더 생성</p>
+				<span class="code-line">#58 - #60</span>
+				<p class = "desc-overall">
+				:  .slider() 코드로 기본 가로형태의 슬라이더를 생성할 수 있으며, orientation 옵션을 통해 방향을 설정할 수 있다.
+				</p>
+				
+				<p class="desc-title">단계(이동간격) 설정</p>
+				<span class="code-line">#62 - #65</span>
+				<p class = "desc-overall">
+				: step 옵션으로 이동간격 값을 설정할 수 있다. 단, 설정값은 숫자 상수 혹은 number 타입의 변수여야 한다.
+				</p>
+				
+				<p class="desc-title">범위설정형 슬라이더 : range 옵션</p>
+				<p class = "desc-overall">
+				: range 옵션으로 범위형 슬라이더를 생성할 수 있으며, 값의 형태는 다음과 같다.
+				</p>
+				<ul class="desc-hypl">
+					<span class="code-line">#72 - #88</span>
+					<li><span>"min"</span>
+					: 슬라이더의 가장 왼쪽에 있는 최소값을 시작점으로 고정하고, 움직이는 슬라이더 핸들러까지를 범위로 설정하는 형태로 생성된다.
+					</li>
+					<li><span>"max"</span>
+					: 슬라이더의 가장 오른쪽에 있는 최대값을 시작점으로 고정하고, 움직이는 슬라이더 핸들러까지를 범위로 설정하는 형태로 생성된다.
+					</li>
+					<span class="code-line">#100 - #103</span>
+					<li><span>true</span>
+					: range 옵션을 true로 초기설정을 하면 범위를 컨트롤할 수 있는 두개의 핸들러가 생성되고, values 옵션으로 값도 2개를 각각 설정할 수 있다.
+					</li>
+				</ul>
+				
+				<p class="desc-title">value / values</p>
+				<p class = "desc-overall">
+				: 핸들러가 하나인 경우, value 옵션으로 값을 1개 설정하고, 핸들러가 두개 필요한 경우, values 옵션으로 2개를 배열로(다음과 같은 형태로) 설정해 주어야 한다.
+				<div class="code-block">
+				<pre>
+$(ENV.ID_SLIDER_RANGE_TWO).slider({
+     range : true,
+     values : [10, 65]
+});
+</pre>
+				</div>
+				
+				<p class="desc-title">range 동적설정</p>
+					<p class = "desc-overall">
+					:  범위형 슬라이더로 range : "min" 또는 "max" 값으로 동적으로 바꾸고자 재설정할 때, 값이 제대로 바뀌지 않는다. 
+					필요한 경우, 직접 클래스에 접근하여 해당클래스를 제거하고 재설정하며, 값을 0 또는 100으로 이동시켜 다시 이동하도록 해야한다.
+				</p>
+				<span class="code-line">#100 - #103</span>
+			</div>
+				 
+		
+		
+
+<!-- RELATED LINKS ----------------------------------------------------------->
+	<div class="related">
+		<h3>Related Links</h3>
+		<hr>
+		 <ul class="desc-hypl">
+           	<li>
+           		<span>jqplot API</span>
+           		<a href = "http://www.jqplot.com/docs/files/jqplot-core-js.html"></a>
+           	</li>
+           	<li>
+           		<span>눈금설정 관련 API</span>
+           		<a href = "http://www.jqplot.com/docs/files/jqplot-axisTickRenderer-js.html"></a>
+           	</li>
+           	<li>
+           		<span>기본 축설정 관련 API</span>
+           		<a href = "http://www.jqplot.com/docs/files/jqplot-core-js.html#Axis"></a>
+           	</li>             	
+		</ul>
+	</div>
+	
+</div>
+<!-- END OF PAGE------------------------------------------------------------->
+</body>
+</html>

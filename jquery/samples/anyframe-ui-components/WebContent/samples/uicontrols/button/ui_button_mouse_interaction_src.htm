@@ -1,0 +1,136 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN"
+"http://www.w3.org/TR/html4/loose.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+
+<head>
+<meta http-equiv="content-type" content="text/html; charset=UTF-8" />
+<title>[Button] 마우스 이벤트 및 효과 Sample</title>
+<link href="../../../common/css/smoothness/jquery-ui-1.10.0.custom.css" rel="stylesheet">
+<script src="../../../common/exlibs/jquery-1.9.0.js"></script>
+<script src="../../../common/exlibs/jquery-ui-1.10.0.custom.js"></script>
+
+<link type="text/css" rel="stylesheet" href="../../../common/css/style.css" />
+<link type="text/css" rel="stylesheet" href="sub_css/mouse_interaction.css">
+
+<script type="text/javascript">
+
+	var ENV 		= { ID_BUTTON_CLICK : "#btnClick" },
+		OPTIONS 	= { TEXT : true,
+						LABEL : "label"	},
+		CSS 		= { BG : "background",
+						TXT_COLOR : "color"	};
+	
+	function setOptions(target, kind, value){
+		$(target).button("option", kind, value);
+	};
+		
+	function getOptions(target, kind) {
+		return $(target).button("option", kind);
+	};
+	
+	function setCSS(target, property, value){
+		$(target).css(property, value);
+	};
+	
+	function getCSS(target, property){
+		return $(target).css(property);
+	};
+	
+	var mainView = {
+		
+		setMouseOver : function(target, type){
+			
+			var initBg, initTxt, initTxtColor, effectTimer,
+				changeTxtVal 		= "mouse over",
+				changeBgVal 		= "yellow",
+				changeTxtColorVal 	= "green",
+				changeEffectVal 	= "fade";
+
+			$(target).mouseenter(function(){
+				
+				switch(type){
+				case "text" :
+					initTxt = getOptions(target,  OPTIONS.LABEL);
+					setOptions(target, OPTIONS.LABEL, changeTxtVal);
+					break;
+				case "color" :
+					initBg = getCSS(target, CSS.BG);
+					initTxtColor = getCSS(target, CSS.TXT_COLOR);
+					setCSS(target, CSS.BG,changeBgVal);
+					setCSS(target, CSS.TXT_COLOR, changeTxtColorVal);
+					break;
+				case "effect" :
+					effectTimer = setInterval(function(){$(target).fadeToggle("fast")}, 250);
+					break;
+				default : 
+					break;	
+				};
+				
+			}).mouseleave(function(){
+				
+				switch(type){
+				case "text" :
+					setOptions(target, OPTIONS.LABEL, initTxt);
+					break;
+				case "color" :
+					setCSS(target, CSS.BG, initBg);
+					setCSS(target, CSS.TXT_COLOR, initTxtColor);
+					break;
+				case "effect" :
+					clearInterval(effectTimer);
+					$(target).fadeIn(100);
+					break;
+				default : 
+					break;	
+				};
+			});
+			
+		}
+		
+	};
+	
+
+	$(document).ready(function() {
+		
+		$(":button").button();
+	
+		$(ENV.ID_BUTTON_CLICK).on("click", function() {
+			alert("clicked!");
+		});
+		
+		$("input:button[name='mouseover']").each(function(){
+			mainView.setMouseOver(this, $(this).val());
+		});
+
+	});
+</script>
+</head>
+
+<body>
+	<div class="title">마우스 클릭 이벤트</div>
+	<div>
+		<div class="display-area">
+			<button id="btnClick">click</button>
+		</div>
+	</div>
+	
+	
+	<div class="title">마우스 오버 이벤트</div>
+	
+	<div>
+		<div class="display-area">
+			<input type="button"  name ="mouseover" value="text" />
+		</div>
+		/
+		<div class="display-area">
+			<input type="button"  name="mouseover" value="color"  style="background: rgb(218, 218, 218);"/>
+		</div>
+		/
+		<div class="display-area">
+			<input type="button" name="mouseover" value="effect" />
+		</div>
+	</div>
+</body>
+
+</html>
+

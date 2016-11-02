@@ -1,0 +1,175 @@
+<chapter id="springrest_restsupport_httpmethodconversion">
+	<title>HTTP Method Conversion</title>
+	
+	<section id="springrest_restsupport_httpmethodconversion_jspformsubmit">
+		<title>HTML <![CDATA[<form>]]> 사용 시</title>
+		
+		<para>
+			앞서 설명했듯이, REST 아키텍처에서는 HTTP에서 정의하고 있는 모든 method를 사용할 것을 권장하고 있지만,
+			브라우저 기반의 HTML에서는 이 중 단 2가지, GET과 POST만을 지원한다.
+			JavaScript를 이용해서 PUT과 DELETE를 사용할 수도 있겠지만 번거로운 코딩 작업이 추가되어야 하기 때문에, 
+			일반적으로 HTML에는 POST를 사용하고 실제 HTTP Method를 지정하는 hidden 타입의 입력 필드를 추가해서 사용하는 경우가 많다.
+		</para>
+		<para>
+			Spring 3에서는 <emphasis role="bold">HiddenHttpMethodFilter</emphasis>를 제공하여 <emphasis role="bold">QueryString으로 부터 실제 HTTP Method를 지정하는 hidden 타입의 입력 파라미터를 찾아내서 HTTP Method를 변환</emphasis>하는 작업을 지원해준다.
+			<emphasis role="bold">web.xml에 HiddenHttpMethodFilter 설정을 추가하면, HTTP Method가 POST이고 _method라는 파라미터가 존재하는 경우 HTTP의 Method를 _method 값으로 바꾼다.</emphasis>
+			'_method'가 아닌 다른 파라미터명을 사용하려면 methodParam 속성을 이용해서 지정해준다.
+		</para>
+		
+		<para>
+			또한 Spring에서는 <![CDATA[<form:form>]]>에서 실제 HTTP Method를 지정하는 hidden 타입의 입력 필드를 자동으로 추가해주기 때문에 훨씬 더 편리하게 사용할 수 있다.
+			<programlisting language="xml"><![CDATA[<form:form method="delete">
+    <input type="submit" value="Delete Movie"/>
+</form:form>]]></programlisting>
+			JSP에 위와 같이 작성하면, 내부적으로는 POST 방식으로 "_method=delete"가 전달되는 것이다.
+		</para>
+		<important>
+			<title>HiddenHttpMethodFilter 사용 시 유의 사항</title>
+			<para>
+				HiddenHttpMethodFilter를 사용할 때 한가지 주의할 점은, 
+				파일 업로드를 위해 form의 enctype 속성을 'multipart/form-data'로 지정하는 경우 HiddenHttpMethodFilter가 정상적으로 동작하기 않기 때문에
+				기존에 파일 업로드를 위해서 사용했던 MultipartResolver 설정 방식을 변경해야 한다는 것이다.
+			</para>
+			<para>
+				web.xml에다가 <ulink url="http://static.springsource.org/spring/docs/3.0.x/javadoc-api/org/springframework/web/multipart/support/MultipartFilter.html">MultipartFilter</ulink>를 HiddenHttpMethodFilter 앞에 정의하고,
+				MultipartResolver를 Spring의 root Application Context에 'filterMultipartResolver'라는 Bean 이름으로 설정해 주어야 HiddenHttpMethodFilter가 정상적으로 동작할 수 있다.
+			</para>
+			<para>
+				다음은 web.xml에 MultipartFilter와 HiddenHttpMethodFilter를 정의한 모습이다.
+				<programlisting language="xml"><![CDATA[<filter>
+    <filter-name>multipartFilter</filter-name>
+    <filter-class>org.springframework.web.multipart.support.MultipartFilter</filter-class>
+</filter>
+<filter-mapping>
+    <filter-name>multipartFilter</filter-name>
+    <url-pattern>/springrest/*</url-pattern>
+</filter-mapping>
+<filter>
+    <filter-name>httpMethodFilter</filter-name>
+    <filter-class>org.springframework.web.filter.HiddenHttpMethodFilter</filter-class>
+</filter>
+<filter-mapping>
+    <filter-name>httpMethodFilter</filter-name>
+    <url-pattern>/springrest/*</url-pattern>
+</filter-mapping>]]></programlisting>			
+	   		</para>
+	   		<para>
+	   			다음은 context-springrest-multipart.xml에 정의한 MultipartResolver 설정이다.
+	   			<programlisting language="xml"><![CDATA[<bean id="filterMultipartResolver" class="org.springframework.web.multipart.commons.CommonsMultipartResolver">
+    <property name="maxUploadSize">
+        <value>10000000</value>
+    </property>
+</bean>]]></programlisting>
+			MultipartResolver Bean을 'filterMultipartResolver'가 아닌 다른 이름으로 정의할 경우, web.xml에서 MultipartFilter 정의 시에 <![CDATA[<init-param>]]>을 이용해서 'multipartResolverBeanName'을 설정해준다.
+	   		</para>
+		</important>
+	</section>
+	
+	<section id="springrest_restsupport_httpmethodconversion_callajax">
+		<title>Ajax 호출 시</title>
+		<para>
+			위의 방식은 JSP기반의 Spring form tag library를 사용할 때, javascript 코딩을 최소화 하기 위해 사용된다. 따라서 요청하는 URL이 Query String을 포함(Servlet Filter에서 Request Parameter값을 참조하는 방식)하게 된다.
+			만약 비동기식(Asyncronous) RestFul API를 구현하고자 한다면 URL에 "?_method=PUT" 라는 Query String을 추가해 주어야 하는 불편함이 있다.
+		</para>
+		
+		<para>
+			좀 더 <emphasis role="bold">RESTful한 아키텍처 구현</emphasis>을 위해 HTTP Method를 지정하는 또 다른 방법을 소개하겠다.
+			이 방법은 HTTP Header를 이용한 Request Method 재정의 방식이다. Client 코드에서는 <emphasis role="bold">HTTP Header에 'x-http-method-override'라는 사용자 정의 헤더를 추가</emphasis>하고, Server 코드에서는 해당 헤더 값을 읽어 <emphasis role="bold">Request Method를 재정의 하는 Servlet Filter를 추가</emphasis>하면 된다.
+		</para>
+		
+		<para>
+			HTTP Method를 "POST"로 지정하고, Request header에 <emphasis role="bold">"x-http-method-override"</emphasis>를 추가한다.
+		</para>
+		
+		<itemizedlist>
+			<listitem>
+				<para><emphasis role="bold">Javascript Ajax 호출</emphasis></para>
+				<para>Normal Javascript</para>
+				<programlisting language="javascript"><![CDATA[
+var data = {title: "Alice"};
+var xhr;
+if (window.XMLHttpRequest){ //code for IE7+, Firefox, Chrome, Opera, Safari
+    xhr=new XMLHttpRequest();
+}else{ // code for IE6, IE5
+    xhr=new ActiveXObject("Microsoft.XMLHTTP");
+}
+xhr.open("POST" , encodeURI(url) , true);
+xhr.setRequestHeader("Content-Type", "application/json");
+xhr.setRequestHeader("x-http-method-override", "PUT");
+xhr.onreadystatechange = function() {
+    if(xhr.readyState == 4 && xhr.status == 200){
+        alert(xhr.responseText);
+    }
+}
+xhr.send(JSON.stringify(data));]]></programlisting>
+				<para>jQuery</para>
+				<programlisting language="javascript"><![CDATA[
+$.ajax({
+   type : "POST",
+   url : url,
+   dataType : "json",
+   contentType : "application/json; charset=UTF-8",
+   headers : {"x-http-method-override" : "PUT" },
+   data : {title: "Alice"},
+   success : function(data) {
+      console.log(data);
+   },
+   error : function(data){
+     console.log("ERROR");
+   }
+});]]></programlisting>
+			</listitem>
+			<listitem>
+				<para><emphasis role="bold">사용자 정의 Filter 작성(Spring에서 제공하는 HiddenHttpMethodFilter 클래스 참고)</emphasis></para>
+				<para>추상클래스 OncePerRequestFilter의 doFilterInternal를 구현
+					<programlisting language="java"><![CDATA[
+public class CustomHttpMethodFilter extends OncePerRequestFilter {
+	public static final String DEFAULT_METHOD_HEADER = "x-http-method-override";
+	private String methodParam = DEFAULT_METHOD_HEADER;
+
+	public void setMethodParam(String methodParam) {
+		Assert.hasText(methodParam, "'methodParam' must not be empty");
+		this.methodParam = methodParam;
+	}
+
+	protected void doFilterInternal(HttpServletRequest request,
+			HttpServletResponse response, FilterChain filterChain)
+			throws ServletException, IOException {
+		String paramValue = request.getHeader(this.methodParam);
+		if (("POST".equals(request.getMethod())) && (StringUtils.hasLength(paramValue))) {
+			String method = paramValue.toUpperCase(Locale.ENGLISH);
+			HttpServletRequest wrapper = new HttpMethodRequestWrapper(request, method);
+			filterChain.doFilter(wrapper, response);
+		} else {
+			filterChain.doFilter(request, response);
+		}
+	}
+.
+.
+.]]></programlisting>
+				</para>
+			</listitem>
+			<listitem>
+				<para><emphasis role="bold">Web.xml - Servlet Filter 추가</emphasis></para>
+				<programlisting language="xml"><![CDATA[
+<filter>
+        <filter-name>httpMethodFilter</filter-name>
+        <filter-class>anyframe.springrest.web.filter.CustomHttpMethodFilter</filter-class>
+</filter>
+<filter-mapping>
+        <filter-name>httpMethodFilter</filter-name>
+        <url-pattern>/springrest/*</url-pattern>
+</filter-mapping>]]></programlisting>
+			</listitem>
+			<listitem>
+				<para><emphasis role="bold">Controller RequestMapping 정의</emphasis></para>
+				<programlisting language="java"><![CDATA[
+@RequestMapping(value = "/{movieId}", method = RequestMethod.PUT, headers = "Content-Type=application/json")
+public ResponseEntity<Movie> updateForm(@RequestBody Movie updateMovie) throws Exception {
+    movieService.update(updateMovie);
+    return new ResponseEntity<Movie>(movie, HttpStatus.OK);
+}]]></programlisting>
+			</listitem>
+		</itemizedlist>
+	</section>
+</chapter>

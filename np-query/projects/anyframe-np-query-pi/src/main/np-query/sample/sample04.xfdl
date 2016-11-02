@@ -1,0 +1,37 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<FDL version="1.5">
+  <TypeDefinition url="..\default_typedef.xml"/>
+  <Form id="sample005" classname="improt" left="0" top="0" width="1014" height="671" titletext="Message Popup" onload="form_onload">
+    <Layouts>
+      <Layout>
+        <Button id="Button00" taborder="0" text="Alert" left="23" top="36" width="120" height="50" onclick="Button00_onclick"/>
+        <Button id="Button01" taborder="1" text="Confirm" left="24" top="107" width="120" height="50" onclick="Button01_onclick"/>
+        <Button id="Button02" taborder="2" text="Alert(치환)" left="175" top="36" width="120" height="50" onclick="Button02_onclick"/>
+        <Button id="Button03" taborder="3" text="Confirm(치환)" left="176" top="107" width="120" height="50" onclick="Button03_onclick"/>
+      </Layout>
+    </Layouts>
+    <Objects/>
+    <Script type="xscript5.0"><![CDATA[include "lib::comForm.xjs";
+
+this.Button00_onclick = function(obj:Button,  e:nexacro.ClickEventInfo)
+{
+	this.gfn_alert("aftersave");
+}
+
+this.Button01_onclick = function(obj:Button,  e:nexacro.ClickEventInfo)
+{
+	if(!this.gfn_confirm("beforesave")) return false;
+}
+
+this.Button02_onclick = function(obj:Button,  e:nexacro.ClickEventInfo)
+{
+	this.gfn_alert("validate", ["환자구분"]);
+}
+
+this.Button03_onclick = function(obj:Button,  e:nexacro.ClickEventInfo)
+{
+	if(!this.gfn_confirm("validate", ["환자구분"])) return false;
+}
+]]></Script>
+  </Form>
+</FDL>

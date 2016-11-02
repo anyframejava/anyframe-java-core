@@ -1,0 +1,33 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<FDL version="1.5">
+  <TypeDefinition url="..\default_typedef.xml"/>
+  <Form id="XComp_sub" classname="XComp_sub" inheritanceid="" position="absolute" titletext="Eco.XComp" left="0" top="0" width="1024" height="685">
+    <Layouts>
+      <Layout>
+        <Button id="Button00" taborder="1" text="get" position="absolute" onclick="Button00_onclick" left="4" top="1" width="32" height="18"/>
+      </Layout>
+    </Layouts>
+    <Objects/>
+    <Script type="xscript5.0"><![CDATA[/*
+ * Eco.XComp api Sample at nexacro
+ * 
+ *
+ * Copyright (c) 2014 EcoSystem of TOBESOFT
+ * Licensed Free under nexacro.
+*/
+
+
+this.Button00_onclick = function(obj:Button,  e:TOBE.ClickEventInfo)
+{
+	var form = this.fn_getTopForm();
+	trace(form.name);
+}
+
+this.fn_getTopForm = function()
+{
+	var form = Eco.XComp.getTopLevelForm(this);
+	
+	return form;
+}]]></Script>
+  </Form>
+</FDL>

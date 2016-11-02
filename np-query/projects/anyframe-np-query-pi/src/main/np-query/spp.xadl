@@ -1,0 +1,78 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<ADL version="1.2">
+  <TypeDefinition url="default_typedef.xml"/>
+  <GlobalVariables url="globalvars.xml"/>
+  <Application id="spp" codepage="utf-8" language="Korean" loginformurl="" loginformstyle="" windowopeneffect="" windowcloseeffect="" version="" tracemode="none" themeid="default.xtheme" onload="application_onload">
+    <Layout>
+      <MainFrame id="mainframe" title="maintitle" defaultfont="" resizable="true" showtitlebar="true" showstatusbar="true" left="0" top="0" width="1280" height="900" onsize="MainFrame_onsize" onsyscommand="MainFrame_onsyscommand">
+        <VFrameSet id="vframeset" separatesize="80,0,*,0,140">
+          <Frames>
+            <ChildFrame id="topframe" autosize="true" dragmovetype="none" showtitlebar="false" showtitleicon="false" formurl="frame::topframe.xfdl"/>
+            <ChildFrame id="infoframe" autosize="false" dragmovetype="none" showtitlebar="false" showtitleicon="false" formurl="frame::infoframe.xfdl"/>
+            <ChildFrame id="homeframe" autosize="false" dragmovetype="none" showtitlebar="false" showtitleicon="false" formurl="frame::homeframe.xfdl"/>
+            <ChildFrame id="workframe" autosize="false" dragmovetype="none" showtitlebar="false" showtitleicon="false" formurl="frame::workframe.xfdl"/>
+            <ChildFrame id="bottomframe" autosize="false" dragmovetype="none" showtitlebar="false" showtitleicon="false" formurl="frame::bottomframe.xfdl"/>
+          </Frames>
+        </VFrameSet>
+      </MainFrame>
+    </Layout>
+    <ScreenInfo/>
+    <Style url="css::Common.css"/>
+    <Style url="css::TopBottomFrame.css"/>
+    <Style url="css::WorkFrame.css"/>
+  </Application>
+  <Script type="xscript5.0"><![CDATA[
+this.gv_topframe = null;
+this.gv_infoframe = null;
+this.gv_homeframe = null;
+this.gv_workframe = null;
+this.gv_bottomframe = null;
+
+this.gv_topframe_height = 60;
+this.gv_infoframe_height = 45;
+this.gv_bottomframe_height = 40;
+this.gv_mainframe_width = 1264;
+this.gv_mainframe_height = 900;
+
+this.application_onload = function(obj:Application, e:nexacro.LoadEventInfo)
+{
+	this.gv_topframe = application.mainframe.vframeset.topframe;
+	this.gv_infoframe = application.mainframe.vframeset.infoframe;
+	this.gv_homeframe = application.mainframe.vframeset.homeframe;
+	this.gv_workframe = application.mainframe.vframeset.workframe;
+	this.gv_bottomframe = application.mainframe.vframeset.bottomframe;	
+	this.gv_vframeset = application.mainframe.vframeset;
+	this.gv_vframeset.set_separatesize(this.gv_topframe_height+",0,*,0,"+this.gv_bottomframe_height);
+	
+	var sXadlUrl = application.xadl;	
+	
+	//tool 실행 또는 로컬인 경우
+	if(sXadlUrl.indexOf("file://") > 0 || sXadlUrl.indexOf("localhost") > 0)
+	{
+		//global변수에 설정된 값으로 기본사용
+	}
+	//개발인경우
+	else if(sXadlUrl.indexOf("203.249.223.88") > 0)
+	{
+		application.services["svc"].url = "http://203.249.223.88:8091/";
+		application.gv_location = "DEV";
+	}
+	//운영인경우
+	else if(sXadlUrl.indexOf("운영IP") > 0)
+	{
+		application.services["svc"].url = "운영IP";
+		application.gv_location = "OPR";
+	}
+}
+
+this.MainFrame_onsize = function(obj:MainFrame, e:nexacro.SizeEventInfo)
+{
+	
+}
+
+this.MainFrame_onsyscommand = function(obj:MainFrame, e:nexacro.SysCommandEventInfo)
+{
+
+}
+]]></Script>
+</ADL>

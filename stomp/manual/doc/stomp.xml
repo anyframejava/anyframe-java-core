@@ -1,0 +1,122 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+
+<!DOCTYPE book PUBLIC "-//OASIS//DTD DocBook XML V4.5//EN" "http://www.oasis-open.org/docbook/xml/4.5/docbookx.dtd"
+[
+<!ENTITY stomp_configuration  SYSTEM "stomp/configuration.xml">
+<!ENTITY stomp_samples  SYSTEM "stomp/samples.xml">
+<!ENTITY stomp_resources  SYSTEM "stomp/resources.xml">
+
+]
+>
+<!--
+		Licensed to the Apache Software Foundation (ASF) under one or more
+		contributor license agreements. See the NOTICE file distributed with
+		this work for additional information regarding copyright ownership.
+		The ASF licenses this file to you under the Apache License, Version
+		2.0 (the "License"); you may not use this file except in compliance
+		with the License. You may obtain a copy of the License at
+
+		http://www.apache.org/licenses/LICENSE-2.0 Unless required by
+		applicable law or agreed to in writing, software distributed under the
+		License is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR
+		CONDITIONS OF ANY KIND, either express or implied. See the License for
+		the specific language governing permissions and limitations under the
+		License.
+-->
+    
+<book lang="ko">
+	<title>Anyframe STOMP Plugin</title>
+	
+	<bookinfo>
+		<copyright>
+			<year>2007-2014</year>
+			<holder>삼성SDS</holder>
+		</copyright>
+		<releaseinfo>Version 1.0.1-SNAPSHOT</releaseinfo>
+
+		<productname>Anyframe STOMP Plugin</productname>
+
+		<authorgroup>
+			<corpauthor></corpauthor>
+		</authorgroup>
+
+		<mediaobject>
+			<imageobject>
+				<!-- logo 변경 -->
+				<imagedata fileref="../image/common/logo_pdf.jpg"/>
+			</imageobject>
+		</mediaobject>
+		<legalnotice>
+			<para>본 문서의 저작권은 삼성SDS에 있으며 Anyframe 오픈소스 커뮤니티 활동의 목적하에서 자유로운 이용이 가능합니다.
+			본 문서를 복제, 배포할 경우에는 저작권자를 명시하여 주시기 바라며 본 문서를 변경하실 경우에는 원문과 변경된 내용을 표시하여 주시기 바랍니다. 
+			원문과 변경된 문서에 대한 상업적 용도의 활용은 허용되지 않습니다. 본 문서에 오류가 있다고 판단될 경우 이슈로 등록해 주시면 적절한 조치를 취하도록 하겠습니다.
+			</para>
+		</legalnotice>
+	</bookinfo>
+	
+	<part id="stomp_introduction_part">
+		<title>Introduction</title>
+		<partintro id="stomp_introduction_part_intro">
+			<para>
+				STOMP Plugin은 Java EE 7에 새롭게 추가된 메시지 푸시 처리의 특징과 사용법을 설명하고 그에 기반해 스프링 4.0.0.RELEASE - <ulink url="http://static.springsource.org/spring/docs/4.0.x/javadoc-api/"> - Spring Framework 4.0.0.RELEASE API</ulink> 
+				에서 추가된 푸시 처리에 대한 활용 방법을 가이드하기 위한 샘플 코드와 이 오픈 소스를 활용하는데 필요한 가이드라인으로 구성되어있다. 
+			</para>
+		
+			<para role="introduction_title"><emphasis role="bold">Installation</emphasis></para>
+			<para>Command 창에서 다음과 같이 명령어를 입력하여 STOMP plugin을 설치한다.</para>
+			<programlisting language="java"><![CDATA[mvn anyframe:install -Dname=stomp]]></programlisting>
+			<para>
+				본 플러그인은 JDK 7 이상, TOMCAT 7.0.47 이상, SPRING 4.0.0-RELEASE에서 동작한다. 아래의 설정을 통해서 어플리케이션을 실행하여 설치 확인을 하도록한다.
+			</para>
+			<para role="introduction_title">Dependent Plugins</para>
+			<informaltable>
+				<tgroup cols="2">
+					<colspec colnum="1" colname="col1" colwidth="5*" />
+					<colspec colnum="2" colname="col2" colwidth="5*" />
+					<thead>
+						<row>
+							<entry align="center">Plugin Name</entry>
+							<entry align="center">Version Range</entry>
+						</row>
+					</thead>
+					<tbody>
+						<row>
+							<entry align="center"><ulink url="http://dev.anyframejava.org/docs/anyframe/plugin/core/1.6.1-SNAPSHOT/reference/htmlsingle/core.html">Core</ulink></entry>
+							<entry align="center" valign="middle">2.0.0 > * > 1.5.1</entry>
+						</row>
+					</tbody>
+				</tgroup>
+			</informaltable>
+			<para>
+				Spring STOMP 는 Spring 4.0부터 제공되는 WebSocket과 SockJS를 탑재하여 간단하게 메시징 서비스를 가능하게 한다. STOMP(Simple Text-Oriented Messaging Protol)는 텍스트기반의 메시지 프로토콜로써 스크립트언어에서도 메시지 브로커를 사용할 수 있다.
+			</para>
+			<para>
+				Spring STOMP를 이용하면 다음과 같은 장점을 얻을 수 있다.
+			</para>
+			<section id="stomp_introduction">
+				<itemizedlist>
+					<listitem>
+						<para>
+							양방향 streaming network protocol(WebSocket)에 적용가능하며 과도한 소켓 연결에도 지연현상이 적다.
+						</para>
+					</listitem>
+					<listitem>
+						<para>
+							클라이언트 사이드를 제공한다.(stomp.js)
+						</para>
+					</listitem>
+					<listitem>
+						<para>
+							javascript단에서 Enterprise Message Broker와의 연결이 가능하다.(ActiveMQ, HornetQ, RabbitMQ, MorbidQ, Ruby Server …)
+						</para>
+					</listitem>
+				</itemizedlist>
+			</section>
+		</partintro>
+
+		&stomp_configuration;
+		&stomp_samples;
+		&stomp_resources;
+
+	</part>
+</book>

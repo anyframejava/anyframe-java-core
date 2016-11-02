@@ -1,0 +1,1187 @@
+<chapter id="struts_view">
+	<title>View</title>
+
+  		<para>
+  			View 는 클라이언트가 모델의 상태를 보기 위해 사용하는 창(window)이다. 하나의 모델은 여러 창, 즉 뷰를 포함할 수
+  			있으며 클라이언트가 어떤 view를 통해 모델을 보느냐에 따라 화면이 달라진다. 표시 방법으로 XML, XSLT, SOAP, HTML 등
+  			다양한 방법을 택할 수 있으며 Anyframe 에서는 주로 자바 코드와 태그로 View를 구성하며 JSP를 기반으로 클라이언트에
+  			동적인 컨텐츠를 제공하게 된다.
+  		</para>
+
+  		<para><emphasis role="bold">View의 역할</emphasis></para>
+
+  		<itemizedlist>
+    		<listitem>
+      			<para>사용자 입력 데이터 수용 및 데이터 표시</para>
+    		</listitem>
+		    <listitem>
+      			<para>입력 데이터 검증</para>
+    		</listitem>
+    		<listitem>
+      			<para>에러처리</para>
+    		</listitem>
+		    <listitem>
+      			<para>국제화</para>
+    		</listitem>
+  		</itemizedlist>
+
+		<para><emphasis role="bold">자주 사용되는 View 형태</emphasis></para>
+
+		<itemizedlist>
+    		<listitem>
+      			<para>HTML : 브라우저를 통해 최종사용자가 보는 페이지이다.</para>
+    		</listitem>
+		    <listitem>
+      			<para>JSP Custom Tag : Struts 어플리케이션에서 매우 중요한 역할을 한다, 필수는 아님.</para>
+    		</listitem>
+		    <listitem>
+      			<para>JavaScript and StyleSheet : 사용을 금지하지 않으며 적절히 사용하면 효과적인 view를 만들 수 있다.</para>
+    		</listitem>
+		    <listitem>
+      			<para>MessageResource Bundle : Localization 기능을 제공하며 유지보수 시간을 절약할 수 있다.</para>
+    		</listitem>
+
+    		<listitem>
+      			<para>Multimedia file</para>
+    		</listitem>
+  		</itemizedlist>
+
+  		<para>View의 구성 요소는 JSP 및 관련 기술과 ActionForm이 있으며 해당 내용은 아래와 같다.</para>
+
+  		<itemizedlist>
+    		<listitem>
+      			<para>
+      				JSP
+      				<itemizedlist>
+      					<listitem>
+            				<para>
+            					서버에서 동적 웹 컨텐츠를 생성하는 자바 플랫폼 기술,
+            					Servlet Container 상에서 수행되는 서버스크립트 언어
+            				</para>
+          				</listitem>
+				        <listitem>
+            				<para>
+            					서블릿으로 변환되어 수행되며 최초 요청 시 해당 페이지에 대한 컴파일 된
+            					서블릿 인스턴스는 한번만 생성되므로 서버 자원을 효율적으로 사용
+            				</para>
+          				</listitem>
+    				    <listitem>
+	            			<para>
+	            				강력한 이식성, 빠른 수행속도, 프리젠테이션 로직과 비즈니스 로직 분리,
+	            				컴포넌트의 재사용, 커스텀 태그의 사용으로 인한 개발 편의성 등이 장점
+	            			</para>
+          				</listitem>
+        			</itemizedlist>
+        		</para>
+    		</listitem>
+  		</itemizedlist>
+
+  		<itemizedlist>
+    		<listitem>
+      			<para>
+      				Javascript
+      				<itemizedlist>
+          				<listitem>
+            				<para>넷스케이프에서 만든 인터프리터 형 스크립트 언어</para>
+          				</listitem>
+				        <listitem>
+            				<para>
+            					자바스크립트 코드는 HTML 페이지 내에 삽입될 수 있으며, 클라이언트 측인
+            					웹 브라우저에 의해 해석됨
+            				</para>
+			            </listitem>
+				        <listitem>
+            				<para>
+            					객체 지향 모델로써 구조화된 문서를 표현하는 표준 형식인 DOM(Document Object Model)
+            					객체를 다루고 프로그램으로 조작(manipulate)함
+            				</para>
+          				</listitem>
+        			</itemizedlist>
+        		</para>
+    		</listitem>
+    		<listitem>
+      			<para>CSS</para>
+					<itemizedlist>
+						<listitem>
+          					<para>
+          						Cascading Style Sheet는 마크업 언어(HTML, XHTML, XML)가 실제 표시되는 방법을
+          						기술하는 언어로 W3C의 표준임
+          					</para>
+        				</listitem>
+		      			<listitem>
+          					<para>스타일 정보의 수정 시 홈페이지 전체에서 이에 해당하는 요소들이 한꺼번에 반영됨</para>
+        				</listitem>
+				        <listitem>
+          					<para>각기 다른 사용자 환경에서도 동일한 형태의 문서를 제공</para>
+        				</listitem>
+      				</itemizedlist>
+				<para>
+					DHTML : 정적 마크업 언어인 HTML, 클라이언트 기반 스크립트 언어(ex. Javascript)와 스타일 정의
+      				언어인 CSS를 조합하여 대화형 웹 사이트를 제작하는 기법을 의미함
+      			</para>
+    		</listitem>
+  		</itemizedlist>
+
+  		<para><emphasis role="bold">ActionForm</emphasis></para>
+
+  		<para>
+  			웹 어플리케이션에서 사용자의 입력을 받을 때 페이지에는 텍스트 박스, 버튼 등과 같은 컴포넌트들이 HTML 의 폼 요소 내에
+  			포함되어 있고 사용자가 버튼을 누르게 되면 필드 내에 있는 값들이 HTTP request와 함께 서버로 submit 된다. 서버
+  			어플리케이션은 request에서 이 입력 값들을 꺼내어 올바른 데이터를 입력했는지 validation을 수행하고 나서 실제 비지니스를
+  			수행하기 위해 Action으로 데이터를 넘기게 된다. 만일 입력 데이터가 validation rule을 통과하지 못한 경우 에러 메시지를
+  			설정하여 입력 페이지로 돌아가게끔 처리해야 한다. 이처럼 요청에서 입력 값을 꺼내어 검증을 수행하고 실패에 대한
+  			에러 메시지를 출력하는 등의 기능을 직접 구현하는 것은 쉬운 일이 아니다. 또한 이런 작업은 전체 어플리케이션 내에서 반복해서
+  			 일어나므로 재사용하는 것이 좋다. 이러한 작업들을 해주는 것이 org.apache.struts.action.ActionForm 클래스 이다.
+  		</para>
+		<itemizedlist>
+    		<listitem>
+      			<para>ActionForm의 역할</para>
+				<itemizedlist>
+        			<listitem>
+          				<para>
+       						요청에서 입력 값을 꺼내어 검증 수행, 실패에 대한 에러 메시지를 출력하는 등의 일련의
+       						 처리 과정을 재사용
+       					</para>
+       				</listitem>
+       				<listitem>
+       					<para>ActionForm은 클라이언트의 입력 값을 Action으로 전달하고, 결과를 되돌려줄 수 있음</para>
+       				</listitem>
+			        <listitem>
+       					<para>입력 데이터들을 검증하는 동안 상태를 보관하는 버퍼로 동작</para>
+       				</listitem>
+			        <listitem>
+       					<para>
+       						확실하지 않은 입력 값들을 검증 룰을 통해 세밀하게 조사하기 전까지 비즈니스 계층 밖에
+       						위치하도록 해주는 firewall 역할
+       					</para>
+       				</listitem>
+      				<listitem>
+       					<para>ActionForm을 화면 표시 데이터로 설정하여 HTML 폼의 입력 필드를 쉽게 표시할 수 있음</para>
+       				</listitem>
+   				</itemizedlist>
+			    <para>
+			    	<![CDATA[Html 입력 Form으로 부터 받은 parameter 들은 자동으로 ActionForm 객체에 채워진다. 검증을 위한
+			    	validate() 메소드와 parameter가 ActionForm에 채워지기 전에 초기화 하는 reset() 메소드를 구현해야
+   					한다. struts-config.xml 에 ActionForm 에 대한 <form-beans> 정의가 필요하다.
+   					ActionForm은 Model의 부분이 아니다. 비즈니스 처리를 수행하기 위한 Model 영역은 Controller / View
+   					와 완전히 분리하여야 하며 직접 비즈니스 계층으로 전달해서는 안되고 ValueObject 나 Parameters 같은 형태의
+   					Data Transfer Object를 생성하여 전달하도록 해야 한다.]]>
+   				</para>
+    		</listitem>
+		    
+		    <listitem>
+				<para>ActionForm의 단점</para>
+			    <itemizedlist>
+	        		<listitem>
+	          			<para>어플리케이션 개발자가 ActionForm의 서브클래스를 직접 구현해야 함</para>
+	        		</listitem>
+	        		<listitem>
+	          			<para>많은 수의 클래스가 생겨날 수 있어서 유지보수 관리 어려움</para>
+	        		</listitem>
+			        <listitem>
+	        			<para>
+	        				validate() 메소드를 구현하려면 DynaActionForm을 상속받아 직접 구현해야함. Validator
+	          				프레임워크를 이용하는 것이 좋음.
+	          			</para>
+	        		</listitem>
+	      		</itemizedlist>
+    		</listitem>
+
+    		<listitem>
+      			<para>DynaActionForm</para>
+
+      			<itemizedlist>
+        			<listitem>
+          				<para>실제 구현 클래스들을 만들 필요가 없음</para>
+        			</listitem>
+			        <listitem>
+          				<para>Property는 configuration파일에서 설정</para>
+        			</listitem>
+			        <listitem>
+          				<para>
+          					validate() 메소드를 구현하려면 DynaActionForm을 상속받아 직접 구현해야함. Validator
+          					프레임워크를 이용하는 것이 좋음.
+          				</para>
+        			</listitem>
+      			</itemizedlist>
+    		</listitem>
+
+    		<listitem>
+      			<para>ActionForm의 scope</para>
+			    <itemizedlist>
+        			<listitem>
+          				<para>ActionForm 객체가 저장되어 유지되는 context의 scope를 나타낸다.</para>
+        			</listitem>
+			        <listitem>
+          				<para>session, request 2가지 레벨이 있다.</para>
+        			</listitem>
+			        <listitem>
+          				<para>
+          					<![CDATA[struts-config.xml 의 <action>의 scope 속성으로 설정한다. default는
+          					session이다. session scope일 경우 ActionForm의 제거에 유의해야 한다.]]>
+          				</para>
+        			</listitem>
+      			</itemizedlist>
+    		</listitem>
+		    <listitem>
+      			<para>ActionForm의 LifeCycle</para>
+			    <orderedlist>
+        			<listitem>
+          				<para>액션의 매핑 정보를 확인하고 ActionForm이 설정되어 있는지 검사한다.</para>
+        			</listitem>
+			        <listitem>
+          				<para>
+          					액션에 ActionForm이 설정되어 있다면, 폼 빈의 설정 정보에서 action요소의 name속성을
+          					찾는데 사용한다.
+          				</para>
+        			</listitem>
+			        <listitem>
+          				<para>이미 만든 ActionForm 인스턴스가 있는지 검사한다.</para>
+        			</listitem>
+			        <listitem>
+          				<para>ActionForm 인스턴스가 적합한 scope에 있고 요청에 필요한 타입과 같다면 재사용한다.</para>
+        			</listitem>
+			        <listitem>
+          				<para>
+          					ActionForm 인스턴스가 적합한 scope내에 없다면 새로운 인스턴스를 만들고 action 요소의
+          					scope 속성에 따른 scope에 저장한다.
+          				</para>
+        			</listitem>
+			        <listitem>
+          				<para>ActionForm 인스턴스의 reset() 메소드를 호출한다.</para>
+        			</listitem>
+			        <listitem>
+          				<para>
+          					요청 파라미터의 이름에 따른 ActionForm의 setter 메소드를 통해서 요청 파라미터의 값을
+          					ActionForm에 입력한다. (populate 라고 한다.)
+          				</para>
+        			</listitem>
+			        <listitem>
+          				<para>
+          					마지막으로 validate 속성이 "true"로 설정되어 있다면 ActionForm 인스턴스의
+          					validate()메소드를 수행하고 검증과정에 에러가 있다면 에러들을 반환한다.
+          				</para>
+        			</listitem>
+      			</orderedlist>
+				<para>
+					다음은 ActionForm 작성의 예를 보여주는 UserForm.java 의 일부 소스코드이다.
+      				<programlisting language="java"><![CDATA[public class UserForm extends ActionForm{
+	
+    private String userId;
+	
+    private String password;
+	
+    public String getUserId() {
+        return userId;
+    }
+	
+    public void setUserId(String userId) {
+        this.userId = userId;
+    }
+	
+    public String getPassword() {
+        return password;
+    }
+	
+    public void setPassword(String password) {
+        this.password = password;
+    }
+	
+    public void reset(ActionMapping mapping, HttpServletRequest request) {
+        this.password = null;
+        this.userId = null;
+    }
+
+    public ActionErrors validate(ActionMapping mapping,
+                            HttpServletRequest request) {
+        ActionErrors errors = new ActionErrors();
+        if ((userId == null) || (userId.length() < 1))
+            errors.add("userId", new ActionMessage("error.userid.required"));
+        if ((password == null) || (password.length() < 1))
+            errors.add("password", new ActionMessage("error.password.required"));
+        return errors;
+    }
+}]]></programlisting>
+				</para>
+
+      			<para>
+      				화면에서 입력받을 요소에 대한 attribute를 정의하고 해당 getter/setter 메소드를 작성한다.
+      			 	또한 검증을 위한 validate 메소드와 초기화를 위한 reset 메소드를 구현해야 한다.
+      			</para>
+    		</listitem>
+
+    		<listitem>
+      			<para>ActionErrors 사용하기</para>
+
+				<para>
+      				위 ActionForm 소스의 validate 메소드에서 ActionErrors 객체를 반환하는 것을 보았다.
+      				여기서는 ActionErrors의 사용에 대해 알아본다.
+      			</para>
+      			<itemizedlist>
+        			<listitem>
+          				<para>ActionErrors는 어플리케이션에서 발견한 에러를 하나 이상 캡슐화한다.</para>
+        			</listitem>
+			        <listitem>
+          				<para>
+          					request에 저장된 ActionErrors는 이후 JSP 에서 custom tag를 통해 사용자들에게 에러
+          					메시지로 보여진다.
+          				</para>
+        			</listitem>
+      			</itemizedlist>
+      			<para>
+      				다음은 ActionMessage 생성의 예이다.
+      				<programlisting language="java">ActionMessage message 
+                = new ActionMessage("global.error.login.requiredfield", "email");</programlisting>
+                </para>
+			    <para>
+			    	위의 첫번째 인자는 리소스 번들 내의 키 중 하나와 일치하는 문자열이고, 두번째 인자는 메시지를 위한
+      				parameter이다. 아래는 리소스 번들 내의 관련 메시지 정의이다.
+      				<programlisting
+      				language="java">global.error.login.requiredfield=The {0} field is required.</programlisting>
+      			</para>
+				<para>
+					{0} 부분에는 email 이란 글자가 찍혀 표시된다. 위의 형태 외에도 복수개의 메시지 파라메터를 처리할 수 있는
+      				몇가지 생성자 유형이 더 있다. ActionMessage는 ActionForm의 validate 에서만 생성할 수 있는 것은
+      				아니다. 예를 들어, Action에서 호출한 비즈니스 처리에서 예외가 발생했고 이를 사용자에게 알리기 위한 에러 메시지를
+      				추가하려고 할 때도 ActionMessage를 사용할 수 있다. JSP 에서 Taglib를 이용해 메세지로
+      				ActionErrors를 보여주는 예는 다음과 같다.
+      				<programlisting language="xml"><![CDATA[<%@ page contentType="text/html; charset=euc-kr" %>
+<%@ taglib uri="http://struts.apache.org/tags-html" prefix="html"%>
+
+<html:html>
+    <head>
+        <title>Error Page</title>
+    </head>
+    <body>
+        <html:errors/>
+    </body>
+</html:html>]]></programlisting>
+				</para>
+			</listitem>
+		</itemizedlist>
+
+		<section id="struts_view_taglib">
+	    <title>Taglib</title>
+	
+	    	<para>
+	    		Struts Framework 는 몇몇 종류의 태그들을 포함하고 있으며 이 Tag Library 기능을 이용하면
+	    		프리젠테이션 계층을 더 쉽게 제어할 수 있고 재사용이 용이하다. 제공하는 Tag library를 사용하여 JSP 페이지에서 자바
+	    		코드를 일체 사용하지 않고도 개발이 가능하다.
+	    	</para>
+	    
+			<section id="struts_view_taglib_feature">
+	        <title>Taglib의 특징</title>
+	
+				<section id="struts_view_taglib_feature_necessity">
+	          	<title>Tag library의 필요성</title>
+	
+			        <itemizedlist>
+	        		    <listitem>
+	              			<para>GUI 제작시 재사용을 통해 생산성 향상</para>
+	            		</listitem>
+			            <listitem>
+	        			    <para>scripting 요소의 제거로 개발자와 디자이너간 역할 분담에 도움을 줌</para>
+	            		</listitem>
+			            <listitem>
+	        		 	   <para>전체 업무 영역에서 많이 사용되는 공통 기능을 커스텀 태그로 구현하면 생산성 향상에 도움이 될 수 있음</para>
+	            		</listitem>
+	          		</itemizedlist>
+	        	</section>
+	
+	        	<section id="struts_view_taglib_feature_component">
+	       		<title>Tag library의 구성요소</title>
+	
+					<itemizedlist>
+	            		<listitem>
+	              			<para>
+	              				Tag Handler : Tag 가 어떤 식으로 동작하는지 정의하는 클래스,
+	              				javax.servlet.jsp.tagext.Tag 인터페이스를 구현한
+	              				javax.servlet.jsp.tagext.TagSupport 나 BodyTagSupport를
+	              				상속(extends)하여 구현함
+	              			</para>
+	            		</listitem>
+			            <listitem>
+	        			    <para>
+	        			    	Tag Library Descriptor (TLD) : Tag Handler 클래스로 구현한 Custom Tag 들에 대한
+	        			    	XML 형식의 기술문서
+	        			    </para>
+	            		</listitem>
+			            <listitem>
+	        				<para>taglib 지시자 (JSP 페이지 내에서) : JSP 페이지에서 해당 Tag Library를 사용하기 위한 지시자</para>
+	            		</listitem>
+	          		</itemizedlist>
+	        	</section>
+	
+	        	<section id="struts_view_taglib_feature_type">
+	          	<title>Tag library의 종류</title>
+	
+	          		<itemizedlist>
+	            		<listitem>
+	              			<para>Struts Tag Library : HTML, Logic, Bean, Nested</para>
+	            		</listitem>
+			            <listitem>
+	        			    <para>JSTL : core, fmt, xml, sql</para>
+	            		</listitem>
+			            <listitem>
+	        			    <para>Jakarata taglibs</para>
+	            		</listitem>
+			            <listitem>
+	        			    <para>해당 프로젝트에 맞게 작성한 Custom Tag Library</para>
+	            		</listitem>
+	          		</itemizedlist>
+	        	</section>
+	        </section>
+	
+			<section id="struts_view_taglib_strutstaglib">
+	        <title>Struts Taglib</title>
+	
+		        <para>Struts Tag library의 종류는 아래와 같다.</para>
+	
+	    	    <itemizedlist>
+	        		<listitem>
+	            		<para>
+	            			HTML tag : HTML 입력 폼을 작성하거나 HTML 기반 사용자 인터페이스를 작성하는데 일반적으로
+	            			쓰이는 태그
+	            		</para>
+	          		</listitem>
+			        <listitem>
+	            		<para>Logic tag : 조건 처리, Collection 객체를 loop을 돌면서 출력, 흐름 제어 등에 쓰이는 태그</para>
+	          		</listitem>
+			        <listitem>
+	        		    <para>
+	        		    	Bean tag : 자바 빈과 관련 프로퍼티들에 접근하는 데 이용되는 태그. 변수의 기술을 통해 쉽게 접근할
+	            			수 있는 새 빈을 정의할 수 있음
+	            		</para>
+	          		</listitem>
+			        <listitem>
+	        		    <para>Template tag : layout를 공유하는 동적인 JSP 템플릿을 작성할 때 유용하게 쓸 수 있는 태그</para>
+	          		</listitem>
+			        <listitem>
+	        		    <para>Nested tag : Struts 태그들을 중첩해서 사용할 수 있게 해줌</para>
+	          		</listitem>
+	        	</itemizedlist>
+		        <para>
+		        	사용법은 다른 Tag Library와 같다. 아래는 JSP에 taglib 선언한 예이다.
+	        		<programlisting language="xml"><![CDATA[<%@ taglib
+        uri="http://struts.apache.org/tags-bean"
+        prefix="bean"%>]]></programlisting>
+	        	</para>
+	
+		        <para>
+		        	많은 경우 Tag Library 들은 자바빈즈와 함께 사용된다. 자바 빈은 HTML 폼의 입력 필드에 대응하는
+	        		프로퍼티들을 포함하는 ActionForm일 수도 있지만 Value Object들도 사용할 수 있다.
+	        	</para>
+		
+		        <section id="struts_view_taglib_strutstaglib_html">
+	          	<title>HTML</title>
+	
+	          		<para>다음은 HTML Tag Library의 태그들에 대한 설명이다.</para>
+	
+			        <informaltable>
+			        	<caption>HTML Tag Library 태그에 대한 설명</caption>
+			            <tgroup cols="2">
+			            <colspec colnum="1" colname="col1" colwidth="3*"/>
+						<colspec colnum="2" colname="col2" colwidth="7*"/>
+			              <thead>
+			                <row>
+			                  <entry align="center">Name</entry>
+			                  <entry align="center">Description</entry>
+			                </row>
+			              </thead>
+			              <tbody>
+			                <row>
+			                  <entry>base</entry>
+			                  <entry><![CDATA[HTML의 <base>를 표시한다.]]></entry>
+			                </row>
+			                <row>
+			                  <entry>button</entry>
+			                  <entry>button 입력 필드를 표시한다.</entry>
+			                </row>
+			                <row>
+			                  <entry>cancel</entry>
+				              <entry>cancel 버튼을 표시한다.</entry>
+			                </row>
+			                <row>
+			                  <entry>checkbox</entry>
+			                  <entry>checkbox 입력필드를 표시한다.</entry>
+			                </row>
+			                <row>
+			                  <entry>errors</entry>
+			                  <entry>모든 일련의 에러 메시지를 조건적으로 표시한다.</entry>
+			                </row>
+			                <row>
+			                  <entry>file</entry>
+			                  <entry>file 선택 입력 필드를 표시한다.</entry>
+			                </row>
+			                <row>
+			                  <entry>form</entry>
+			                  <entry>HTML <![CDATA[<form>을 정의한다.]]></entry>
+			                </row>
+			                <row>
+			                  <entry>frame</entry>
+			                  <entry>HTML의<![CDATA[ <frame>을 정의한다.]]></entry>
+			                </row>
+			                <row>
+			                  <entry>hidden</entry>
+			                  <entry>hidden 필드를 표시한다.</entry>
+			                </row>
+			                <row>
+			                  <entry>html</entry>
+			                  <entry><![CDATA[HTML의 <html>을 표시한다.]]></entry>
+			                </row>
+			                <row>
+			                  <entry>img</entry>
+			                  <entry><![CDATA[HTML의 <img>를 표시한다.]]></entry>
+			                </row>
+			                <row>
+			                  <entry>javascript</entry>
+			                  <entry>
+			                  	validator 플러그 인이 로딩한 validation-rule에 기반한 javascript를
+			                  	표시한다.
+			                  </entry>
+			                </row>
+			                <row>
+			                  <entry>link</entry>
+			                  <entry>HTML의 앵커나 하이퍼링크를 표시한다.</entry>
+			                </row>
+			                <row>
+			                  <entry>messages</entry>
+			                  <entry>모여진 일련의 메시지들을 조건적으로 표시한다.</entry>
+			                </row>
+			                <row>
+			                  <entry>multibox</entry>
+			                  <entry>멀티플 checkbox 입력 필드를 표시한다.</entry>
+			                </row>
+			                <row>
+			                  <entry>option</entry>
+			                  <entry>select의 option을 표시한다.</entry>
+			                </row>
+			                <row>
+			                  <entry>options</entry>
+			                  <entry>select의 option들의 집합을 표시한다.</entry>
+			                </row>
+			                <row>
+			                  <entry>optionsCollection</entry>
+			                  <entry>select의 option들의 집합을 표시한다.</entry>
+			                </row>
+			                <row>
+			                  <entry>password</entry>
+			                  <entry>password 입력필드를 표시한다.</entry>
+			                </row>
+			                <row>
+			                  <entry>radio</entry>
+			                  <entry>radio 버튼 입력 필드를 표시한다.</entry>
+			                </row>
+			                <row>
+			                  <entry>reset</entry>
+			                  <entry>reset 버튼 입력 필드를 표시한다.</entry>
+			                </row>
+			                <row>
+			                  <entry>rewrite</entry>
+			                  <entry>URI를 표시한다.</entry>
+			                </row>
+			                <row>
+			                  <entry>select</entry>
+			                  <entry><![CDATA[<select>를 표시한다.]]></entry>
+			                </row>
+			                <row>
+			                  <entry>submit</entry>
+			                  <entry>submit 버튼을 표시한다.</entry>
+			                </row>
+			                <row>
+			                  <entry>text</entry>
+			                  <entry>"text" 타입의 입력 필드를 표시한다.</entry>
+			                </row>
+			                <row>
+			                  <entry>textarea</entry>
+			                  <entry>textarea 입력 필드를 표시한다</entry>
+			                </row>
+			              </tbody>
+			            </tgroup>
+			        </informaltable>
+	
+	          		<para>
+	          			다음은 HTML 의 link, password 태그의 예이다. 
+	          			<programlisting language="xml"><![CDATA[<tr>
+    <td colspan="4" align="center">
+    <html:link page="/html-link.do?doubleProperty=321.321&longProperty=321321">
+        Double and long via hard coded changes
+    </html:link>
+    </td>
+</tr>]]></programlisting>
+					</para>
+
+					<programlisting language="xml"><![CDATA[<html:password property="password"
+          size="15" maxlength="16" redisplay="false" />]]></programlisting>
+				</section>
+
+				<section id="struts_view_taglib_strutstaglib_logic">
+				<title>Logic</title>
+		
+					<para>다음은 Logic Tag Library의 태그들에 대한 설명이다.</para>
+		
+			        <informaltable>
+			        	<caption>Logic Tag Library 태그에 대한 설명</caption>
+			            <tgroup cols="2">
+			            <colspec colnum="1" colname="col1" colwidth="3*"/>
+						<colspec colnum="2" colname="col2" colwidth="7*"/>
+			              <thead>
+			                <row>
+			                  <entry align="center">Name</entry>
+			                  <entry align="center">Description</entry>
+			                </row>
+			              </thead>
+			              <tbody>
+			                <row>
+			                  <entry>empty</entry>
+			                  <entry>요청한 변수가 null 또는 빈 문자열인 경우 이 태그의 바디 컨텐츠를 수행한다.</entry>
+			                </row>
+			                <row>
+			                  <entry>equal</entry>
+			                  <entry>요청한 변수가 지정한 값과 같을 경우 이 태그의 바디 컨텐츠를 수행한다.</entry>
+			                </row>
+			                <row>
+			                  <entry>forward</entry>
+			                  <entry>ActionForward 엔트리를 통해 지정한 페이지로 포워드를 수행한다.</entry>
+			                </row>
+			                <row>
+			                  <entry>greaterEqual</entry>
+			                  <entry>요청한 변수가 지정한 값보다 크거나 동일한 경우 이 태그의 바디 컨텐츠를 수행한다.</entry>
+			                </row>
+			                <row>
+			                  <entry>greaterThan</entry>
+			                  <entry>요청한 변수가 지정한 값보다 큰 경우…</entry>
+			                </row>
+			                <row>
+			                  <entry>iterate</entry>
+			                  <entry>지정한 컬렉션으로 이 태그 내의 바디 컨텐츠를 반복한다</entry>
+			                </row>
+			                <row>
+			                  <entry>lessEqual</entry>
+			                  <entry>요청한 변수가 지정한 값보다 작거나 동일한 경우</entry>
+			                </row>
+			                <row>
+			                  <entry>lessThan</entry>
+			                  <entry>요청한 변수가 지정한 값보다 작을 경우</entry>
+			                </row>
+			                <row>
+			                  <entry>match</entry>
+			                  <entry>지정한 값이 요청한 변수의 부분 문자열에 일치하는 경우</entry>
+			                </row>
+			                <row>
+			                  <entry>messagesNotPresent</entry>
+			                  <entry>지정한 메시지가 이 요청에 없는 경우</entry>
+			                </row>
+			                <row>
+			                  <entry>messagesPresent</entry>
+			                  <entry>지정한 메시지가 이 요청에 있는 경우</entry>
+			                </row>
+			                <row>
+			                  <entry>notEmpty</entry>
+			                  <entry>요청한 변수가 null도, 빈 문자열도 아닌 경우</entry>
+			                </row>
+			                <row>
+			                  <entry>notEqual</entry>
+			                  <entry>요청한 변수가 지정한 값과 동일하지 않은 경우</entry>
+			                </row>
+			                <row>
+			                  <entry>notMatch</entry>
+			                  <entry>지정한 값이 요청한 변수의 부분 문자열에 일치하지 않는 경우 이 태그의 바디 컨텐츠를 수행한다.</entry>
+			                </row>
+			                <row>
+			                  <entry>notPresent</entry>
+			                  <entry>지정한 값이 이 Request에 없는 경우</entry>
+			                </row>
+			                <row>
+			                  <entry>present</entry>
+			                  <entry>지정한 값이 이 Request에 있는 경우</entry>
+			                </row>
+			                <row>
+			                  <entry>redirect</entry>
+			                  <entry>HTTP Redirect를 표시한다.</entry>
+			                </row>
+			              </tbody>
+			            </tgroup>
+			        </informaltable>
+		
+					<para>
+						다음은 notEmpty, iterate 태그의 예이다. 
+						<programlisting language="xml"><![CDATA[<logic:notEmpty name="userSummary" property="addresses">
+<!—이 부분은 address Collection 의 모든 객체들을 돌며 반복 출력하는 logic 태그로 구성하면 됨 -->
+</logic:notEmpty>]]></programlisting>
+					</para>
+
+          			<programlisting language="xml"><![CDATA[<logic:iterate id="address" name="usersSummary" property="addresses">
+<!—address 객체를 테이블 형태로 출력한다. -->
+</logic:iterate>]]></programlisting>
+				</section>
+
+		        <section id="struts_view_taglib_strutstaglib_bean">
+		        <title>Bean</title>
+		
+					<para>다음은 Bean Tag Library의 태그들에 대한 설명이다.</para>
+		
+			        <informaltable>
+			        	<caption>Bean Tag Library 태그에 대한 설명</caption>
+			            <tgroup cols="2">
+			            <colspec colnum="1" colname="col1" colwidth="3*"/>
+						<colspec colnum="2" colname="col2" colwidth="7*"/>
+			              <thead>
+			                <row>
+			                  <entry align="center">Name</entry>
+			                  <entry align="center">Description</entry>
+			                </row>
+			              </thead>
+			              <tbody>
+			                <row>
+			                  <entry>cookie</entry>
+			                  <entry>지정한 요청 쿠키의 값에 근거해 변수를 정의한다</entry>
+			                </row>
+			                <row>
+			                  <entry>define</entry>
+			                  <entry>지정한 빈 프로퍼티의 값에 근거해 변수를 정의한다</entry>
+			                </row>
+			                <row>
+			                  <entry>header</entry>
+			                  <entry>지정한 요청 헤더의 값에 근거해 변수를 정의한다</entry>
+			                </row>
+			                <row>
+			                  <entry>include</entry>
+			                  <entry>동적인 어플리케이션 요청의 응답을 로드해 빈으로 이용할 수 있도록 한다</entry>
+			                </row>
+			                <row>
+			                  <entry>message</entry>
+			                  <entry>응답이 되는 국제화된 메시지 문자열을 표시한다</entry>
+			                </row>
+			                <row>
+			                  <entry>page</entry>
+			                  <entry>지정한 아이템을 빈으로써 페이지 문맥에서 꺼낸다</entry>
+			                </row>
+			                <row>
+			                  <entry>parameter</entry>
+			                  <entry>지정한 요청 파라미터의 값에 근거해 변수를 정의한다</entry>
+			                </row>
+			                <row>
+			                  <entry>resource</entry>
+			                  <entry>웹 어플리케이션의 자원을 로드 해 빈으로 이용할 수 있도록 한다</entry>
+			                </row>
+			                <row>
+			                  <entry>size</entry>
+			                  <entry>Collection 또는 Map의 요소의 갯수를 포함한 빈을 정의한다.</entry>
+			                </row>
+			                <row>
+			                  <entry>struts</entry>
+			                  <entry>지정한 Struts 내부 설정 객체를 빈으로 꺼낸다.</entry>
+			                </row>
+			                <row>
+			                  <entry>write</entry>
+			                  <entry>지정한 빈 프로퍼티의 값을 표시한다.</entry>
+			                </row>
+			              </tbody>
+			            </tgroup>
+			        </informaltable>
+	
+	        	  	<para>
+	          			다음은 message, write 태그의 예이다.
+	          			<programlisting
+	          			language="xml"><![CDATA[<td><bean:message key="global.user.firstName"/>:</td>]]></programlisting>
+	          		</para>
+	
+					<para>
+						위와 같이 사용하면 global.user.firstName 에 해당하는 메시지를 가져와 보여준다.
+	          			<programlisting
+	          			language="xml"><![CDATA[<td>Hello <bean:write name="user" property="firstName"/>:</td>]]></programlisting>
+	          		</para>
+
+		          	<para>위와 같이 사용하면 user 라는 빈에서 firstName을 꺼내 Hello 옆에 붙여준다.</para>
+		          	<para>Nested</para>
+			        <para>
+			        	한 태그를 다른 태그에 중첩하여 사용하고자 할 경우 적용할 수 있다. Struts에서 지원하는 현재 태그와
+		          		매칭되는 HTML Nested Tag, Logic Nested Tag, Bean Nested Tag가 존재하며 사용 방법은
+		          		원래 태그와 같다.
+		          	</para>
+		        </section>
+			</section>
+
+			<section id="struts_view_taglib_jstl">
+		    <title>JSP Standard Tag Library</title>
+		
+				<itemizedlist>
+					<listitem>
+		            	<para>JSR52, JSP Standard Tag Library 스펙</para>
+		          	</listitem>
+			        <listitem>
+		    	        <para>어떤 컨테이너에서도 사용 가능한 표준 태그 집합을 정의</para>
+		        	</listitem>
+			        <listitem>
+		    	        <para>core, fmt, xml, sql 태그가 있음</para>
+		        	</listitem>
+			        <listitem>
+		    	        <para>Servlet 2.3, JSP 1.2 이상을 지원하는 컨테이너 필요(Tomcat 을 비롯하여 대부분 지원함)</para>
+		          	</listitem>
+		        </itemizedlist>
+		
+		        <para>
+		        	JSTL은 데이터의 포맷, 반복 처리, 조건 처리 등 전형적인 프리젠테이션 레이어를 위한 표준 구현을 제공하기
+		        	때문에, JSP 작성자들이 어플리케이션 개발에 집중하는데 도움이 되며 일반적인 기능을 커스텀 태그 라이브러리의 표준 세트로
+		        	패키징했기 때문에 JSP 작성자들이 스크립팅 엘리먼트에 대한 필요를 줄이고 관련된 관리 비용을 피할 수 있도록 한다. 이에
+		        	반해 pure 자바 코드에 비해 시스템 리소스를 많이 사용하며 극한 부하 상황에서는 2~3배의 성능 저하가 발생할 수 있으므로
+		        	성능이 이슈가 되는 경우 사용에 유의하도록 한다.
+		        </para>
+		
+		        <para>
+		        	Struts Bean, Logic 태그들은 JSTL로 바꾸어 더 쉽게 사용할 수 있다. 다음은 JSTL Core
+		        	태그 중 조건 분기 및 Collection loop 처리의 예이다. 
+		 	       <programlisting language="xml"><![CDATA[<%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
+..
+
+<!-- 테이블의 리스트 반복부  -->
+<c:choose>                                      	
+    <c:when test="${page.totalCount <= 0}">
+        <tr class="ct_list_pop">
+            <td colspan="11" align="center">::: 조회된 사용자 정보가 없습니다. :::</td>	
+        </tr>
+        <tr>
+            <td colspan="11" bgcolor="D6D7D6" height="1"></td>
+        </tr>
+    </c:when>
+    <c:otherwise>
+        <c:forEach var="userVO" items="${page.list}" varStatus="status">
+            <tr class="ct_list_pop">
+                <td align="center">
+                    <c:out value="${status.count + ((page.currentPage - 1) * pageSize) }"/>
+                </td>
+                <td></td>
+                <td align="left">
+                    <a href="javascript:fncGetUser('<c:out value="${userVO.userId}"/>');">
+                        <c:out value="${userVO.userId}"/>
+                    </a>
+                </td>
+                <td></td>
+                <td align="left"><c:out value="${userVO.userName}"/></td>
+                <td></td>
+                <td align="center" style="padding-right:3px;"><c:out value="${userVO.ssn}"/>
+                </td>
+                <td></td>
+                <td align="center"><c:out value="${userVO.cellPhone}"/></td>
+                <td></td>
+                <td align="left"><c:out value="${userVO.email}"/></td>		
+            </tr>
+            <tr>
+                <td colspan="11" bgcolor="D6D7D6" height="1"></td>
+            </tr>
+        </c:forEach>
+    </c:otherwise>
+</c:choose>
+..]]></programlisting>
+				</para>
+			</section>
+
+			<section id="struts_view_taglib_etc">
+	        <title>기타 Taglib</title>
+	
+	        	<section id="struts_view_taglib_etc_jakarata">
+	          	<title>Jakarata taglibs</title>
+	
+	          		<itemizedlist>
+	            		<listitem>
+	              			<para>자카르타 Taglibs 프로젝트에서 25개 정도의 태그 라이브러리 제공</para>
+	            		</listitem>
+	            		<listitem>
+	              			<para>
+	              				<ulink
+	              				url="http://tomcat.apache.org/taglibs/index.html">http://jakarta.apache.org/taglibs/</ulink>참조
+	              			</para>
+	            		</listitem>
+	          		</itemizedlist>
+	
+	          		<para>
+	          			JSP Standard Tag Library (JSTL) 의 구현인 Standard Taglib 1.1(JSTL
+	          			1.1 - Servlet 2.4, JSP 2.0 이상)을 비롯한 많은 태그 라이브러리들을 활용할 수 있다.
+	          		</para>
+	        	</section>
+
+		        <section id="struts_view_taglib_etc_custom">
+		          <title>Custom Tags</title>
+		
+					<itemizedlist>
+						<listitem>
+							<para>
+								Tag interface를 구현한 클래스를 만들고 XML 형식의 tag library descriptor
+		              			(TLD) 파일을 제공해야 함
+		              		</para>
+		            	</listitem>
+						<listitem>
+							<para>보통 관련된 Custom Tag의 묶음인 Tag Library 형태로 제공됨</para>
+						</listitem>
+						<listitem>
+							<para>전체 업무 영역에서 많이 사용되는 공통 기능을 커스텀 태그로 직접 구현</para>
+						</listitem>
+					</itemizedlist>
+					<para>
+						예를 들면 코드 테이블로부터 코드리스트를 조회하여 select box 형식으로 표출하는 Custom Tag 를
+		          		적용하면 전체 업무의 생산성 향상에 도움이 될 것이다. Anyframe 에서 제공하는 pagenavigator 태그도
+		          		다중 행의 리스트성 자료의 페이지 처리 기능을 돕기 위해 직접 구현한 커스텀 태그이다.
+		          	</para>
+				</section>
+			</section>
+		</section>
+
+
+		<section id="struts_view_tiles">
+	    <title>Tiles</title>
+	
+	    	<para>
+	    		JSP Page의 Layout을 구성하는 방법에는 몇 가지가 있다. 대표적인 것이 include 지시어를 사용하여 중복되는
+	    		코드를 줄여주는 방법이다. 그러나 여전히 한계가 존재하며 이를 해결하기 위한 더 나은 접근법은 템플릿 중심 아키텍처를 적용하는
+	    		것이다. Tiles 는 이를 지원하는 templating system으로 웹 어플리케이션의 유저 인터페이스를 단순화 하기위해
+	    		만들어졌다. Struts 에는 Plug-in 형태로 내장되어 있다. Struts 없이도 Tiles를 독립적으로 적용할 수 있으며 이는
+	    		<ulink url="http://tiles.apache.org/">Apache Tiles 프로젝트</ulink> (http://tiles.apache.org/)에서 확인할 수 있다.
+	    	</para>
+
+			<section id="struts_view_tiles_pagelayout">
+	      	<title>Page Layout 구성 방법</title>
+	
+	      		<section id="struts_view_tiles_pagelayout_method">
+		        <title>구성 방법</title>
+	
+	        		<itemizedlist>
+	          			<listitem>
+	            			<para>
+	            				JSP based approach : 페이지에 삽입할 기능이 많아질수록 복잡해짐.
+	            				소규모 어플리케이션에만 적합
+	            			</para>
+	          			</listitem>
+				        <listitem>
+	            			<para>include 지시어 사용 : 중복되는 코딩 부분의 재사용. 여전히 페이지에서 컨텐츠와 레이아웃이 혼재됨.</para>
+	          			</listitem>
+				        <listitem>
+	            			<para>
+	            				Template based approach : 페이지의 물리적인 영역을 은닉화하는 방법 제공.
+	            				 컨텐츠와 레이아웃의 분리
+	            			</para>
+				            <mediaobject>
+				              <imageobject>
+				                <imagedata align="center" fileref="../image/struts/tiles.jpg" />
+				              </imageobject>
+				              <textobject>
+								<phrase>Tiles를 적용하여 페이지 레이아웃을 구성한 예</phrase>
+							  </textobject>
+				            </mediaobject>
+	
+	            			<para>위 그림은 Tiles를 적용하여 페이지 레이아웃을 구성한 예이다.</para>
+	          			</listitem>
+	        		</itemizedlist>
+	      		</section>
+			</section>
+
+			<section id="struts_view_tiles_installation">
+	     	<title>Tiles 설치</title>
+	
+		      	<itemizedlist>
+		        	<listitem>
+		          		<para>struts-tiles.jar을 WEB-INF/lib 디렉토리에 복사한다.</para>
+		        	</listitem>
+			        <listitem>
+		    		      <para>web.xml파일의 Action Servlet 정의 부분에 다음과 같이 추가한다.</para>
+		        	</listitem>
+		      	</itemizedlist>
+			    <programlisting language="xml"><![CDATA[<init-param>
+    <param-name>chainConfig</param-name>
+    <param-value>org/apache/struts/tiles/chain-config.xml</param-value>
+</init-param>]]></programlisting>
+
+				<itemizedlist>
+					<listitem>
+						<para>struts-config.xml의 plug-in에 TilesPlugin을 다음과 같이 등록한다.</para>
+					</listitem>
+				</itemizedlist>
+
+				<programlisting language="xml"><![CDATA[<plug-in className="org.apache.struts.tiles.TilesPlugin">
+    <set-property
+        property="definitions-config"
+        value="/WEB-INF/tiles-defs.xml"/>
+</plug-in>]]></programlisting>
+
+				<itemizedlist>
+					<listitem>
+						<para>Tiles를 사용하는 JSP에 다음과 같은 코드를 추가 한다.</para>
+					</listitem>
+				</itemizedlist>
+	
+			<programlisting language="xml"><![CDATA[ <%@ taglib
+      uri="http://struts.apache.org/tags-tiles" prefix="tiles" %>]]></programlisting>
+			</section>
+
+			<section id="struts_view_tiles_use">
+	      	<title>Tiles 사용</title>
+
+	      		<section id="struts_view_tiles_use_check">
+	        	<title>Tiles 적용 시 고려점</title>
+	
+	        		<itemizedlist>
+	          			<listitem>
+	            			<para>Tiles 단독으로도 사용이 가능하다.</para>
+	          			</listitem>
+				        <listitem>
+	            			<para>
+	            				Tiles plug-in은 Tiles definitions를 사용할 때만 필요하다. (plug-in 설정
+	            				없이도 Tiles 라이브러리를 사용할 수 있음)
+	            			</para>
+	          			</listitem>
+				        <listitem>
+	            			<para>
+	            				Tiles definition은 JSP로 정의할 수도 있으나 일반적으로 layout과 Tiles
+	            				definition (xml) 을 별도로 지정한다.
+	            			</para>
+	          			</listitem>
+				        <listitem>
+	            			<para>
+	            				Tiles는 기본적 Template 으로 많은 Layout을 제공하지만 개발에 들어가기 전에 Layout 에
+	            				대한 충분한 준비가 필요하다.
+	            			</para>
+	          			</listitem>
+	        		</itemizedlist>
+	      		</section>
+
+      		<section id="struts_view_tiles_use_attribute">
+        	<title>Tiles Tag Library의 속성</title>
+
+		        <para>다음은 Tiles Tag Library의 태그들의 목록과 간단한 설명이다.</para>
+
+		        <informaltable>
+		          <caption>Tiles Tag Library 태그에 대한 설명</caption>
+		          <tgroup cols="2">
+		          <colspec colnum="1" colname="col1" colwidth="4*"/>
+					<colspec colnum="2" colname="col2" colwidth="6*"/>
+		            <thead>
+						<row>
+							<entry align="center">Attribute</entry>
+							<entry align="center">Description</entry>
+						</row>
+					</thead>
+					<tbody>
+		              <row>
+		                <entry>add</entry>
+		                <entry>element를 추가</entry>
+		              </row>
+		              <row>
+		                <entry>definition</entry>
+		                <entry>titles component 정의</entry>
+		              </row>
+		              <row>
+		                <entry>get</entry>
+		                <entry><![CDATA[<template:put>을 통해 JSP로 전달된 자원을 얻는다.]]></entry>
+		              </row>
+		              <row>
+		                <entry>getAsString</entry>
+		                <entry>Tile/Component/Template 속성값을 JspWriter에 출력</entry>
+		              </row>
+		              <row>
+		                <entry>importAttribute</entry>
+		                <entry>정의된 context안에 타일의 속성을 추가한다.</entry>
+		              </row>
+		              <row>
+		                <entry>initComponentDefinitions</entry>
+		                <entry>정의 팩토리(definitions factory)를 초기화한다.</entry>
+		              </row>
+		              <row>
+		                <entry>Insert</entry>
+		                <entry>JSP 페이지 내에서 동적 템플릿을 추가</entry>
+		              </row>
+		              <row>
+		                <entry>put</entry>
+		                <entry><![CDATA[<template:insert>태그 내에서 템플릿에 삽입할 자원을 지정]]></entry>
+		              </row>
+		              <row>
+		                <entry>putList</entry>
+		                <entry>속성으로 전달할 리스트를 선언</entry>
+		              </row>
+		              <row>
+		                <entry>useAttribute</entry>
+		                <entry>JSP 페이지에서 속성 값을 사용한다.</entry>
+		              </row>
+		            </tbody>
+		          </tgroup>
+		        </informaltable>
+
+		        <para>
+		        	보통 모든 페이지에서 적용되는 헤더나 저작 관련 내용들을 한곳에 모아 미리 Layout를 정의해둔다. 이를
+        			Definition 이라 하는데 JSP 나 XML 로 만들 수 있으며 예는 다음과 같다.
+        		</para>
+      		</section>
+    	</section>
+
+		<section id="struts_view_tiles_definition">
+      	<title>Tiles Layout 정의</title>
+
+		    <section id="struts_view_tiles_definition_jspexample">
+        	<title>JSP 로 레이아웃을 정의한 예</title>
+
+			        <para>
+			        	다음은 storefront-defs.jsp 라는 jsp 에 tile definition을 정의한 예이다.
+	        			<programlisting language="xml"><![CDATA[<%@ taglib
+        uri="http://struts.apache.org/tags-tiles" prefix="tiles" %>
+<tiles:definition id="storefront.default"
+        pgae="/layouts/storefrontdefaultLayout.jsp" scope="request">
+    <tiles:put name="header" value="/common/header.jsp"/>
+    <tiles:put name="menubar" value="/common/menubar.jsp"/>
+    <tiles:put name="copyright" value="/common/copyright.jsp"/>
+</tiles:definition>]]></programlisting>
+					</para>
+
+        			<para>
+	        			definition들을 이용하려면, 타일 컴포넌트들이 definition 에 접근할 수 있어야 한다. 다음은
+	        			definition을 사용하는 JSP 의 예이다. include 를 사용하여 storefront-defs.jsp 를 참조하고 있다.
+	        			<programlisting
+	        			language="xml"><![CDATA[<%@ taglib uri="http://struts.apache.org/tags-tiles" prefix="tiles" %>
+<%@ include file="../common/storefront-defs.jsp" %>
+
+<tiles:insert beanName="storefront.default" beanScope="request">
+    <tiles:put name="body-content" value="../security/sigin-body.jsp"/>
+</tiles:insert>]]></programlisting>
+					</para>
+				</section>
+
+				<section id="struts_view_tiles_definition_xmlexample">
+        		<title>XML 로 레이아웃을 정의한 예</title>
+
+			        <para>
+			        	위에서는 tile definition 을 jsp 에 설정한 예를 보였지만, xml 로 정의하고
+	        			struts-config.xml 에 plug-in으로 정의해 놓고 쓰는 것이 일반적이다. 다음은 tiles-defs.xml의
+	        			일부분이다. index 라는 definition을 기본으로 하여 extends 해서 사용함으로 반복된 코딩을 줄여준다.
+	        			<programlisting language="xml"><![CDATA[<!-- Doc index page description  -->
+<definition name="index" path="/layout.jsp">
+    <put name="title"  value="Anyframe Sample" />
+    <put name="header" value="/header.jsp" />
+    <put name="menu"   value="/menu.jsp" />
+    <put name="body"   value="/body.jsp" />
+    <put name="footer" value="/bottom.jsp" /> 
+</definition>
+
+<!-- view order information page description  -->  
+<definition name="list" extends="index">
+    <put name="body"   value="/user/listUser.jsp" />
+</definition>]]></programlisting>
+					</para>
+
+   					<para>
+	   					Tiles를 사용하는 경우 action-mapping 에서는 forward path를 Tiles
+	        			definition에 정의된 definition name으로 주어야 한다. 
+	        			<programlisting language="xml"><![CDATA[<action
+    name="userForm"
+    path="/listUser"
+    type="org.anyframe.sample.struts.action.user.GetUserListAction"
+    scope="request"
+    validate="false"
+    roles="admin,user">
+    <forward name="success" path="list"  />
+</action>]]></programlisting>
+					</para>
+
+        			<para>forward 의 path 부분에 tiles 의 Definition name 이 들어가면 '/'를 사용하지 않음에 유의한다.</para>
+				</section>
+			</section>
+		</section>
+	
+</chapter>

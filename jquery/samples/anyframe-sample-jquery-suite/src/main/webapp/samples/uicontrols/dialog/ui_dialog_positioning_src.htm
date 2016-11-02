@@ -1,0 +1,153 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN"
+"http://www.w3.org/TR/html4/loose.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+
+<head>
+<meta http-equiv="content-type" content="text/html; charset=UTF-8" />
+<title>[Dialog] Positioning Sample</title>
+<link href="../../../common/css/smoothness/jquery-ui-1.10.0.custom.css" rel="stylesheet">
+<script src="../../../common/exlibs/jquery-1.9.0.js"></script>
+<script src="../../../common/exlibs/jquery-ui-1.10.0.custom.js"></script>
+
+<link type="text/css" rel="stylesheet" href="../../../common/css/style.css" />
+<link type="text/css" rel="stylesheet" href="sub_css/positioning.css">
+
+<script type="text/javascript">
+	var ENV = {
+		ID_DIALOG : "#dialog"
+	};
+
+	var dialogPositioningView = {
+			
+		_setOfTarget : function(idValue) {
+
+			var pos = $(ENV.ID_DIALOG).dialog('option', 'position');
+
+			switch (idValue) {
+			case "FullSec":
+				pos.of = window;
+				break;
+			case "Sec01":
+				pos.of = "#section01";
+				break;
+			case "Sec02":
+				pos.of = "#section02";
+				break;
+			default:
+				pos.of = window;
+			};
+
+			$(ENV.ID_DIALOG).dialog('option', 'position', pos);
+
+		},
+
+		setOfTarget : function(targetSelector) {
+			var idValue = $(targetSelector).attr("id");
+			this._setOfTarget(idValue);
+		},
+
+		_setLocation : function(idValue) {
+			var myPos = "center";
+			var atTargetPos = "center";
+			var pos = $(ENV.ID_DIALOG).dialog('option', 'position');
+
+			switch (idValue) {
+			case "Center":
+				pos.my = "center";
+				pos.at = "center";
+				break;
+			case "TopLeft":
+				pos.my = "left top";
+				pos.at = "left top";
+				break;
+			case "TopRight":
+				pos.my = "right top";
+				pos.at = "right top";
+				break;
+			case "BottomLeft":
+				pos.my = "left bottom";
+				pos.at = "left bottom";
+				break;
+			case "BottomRight":
+				pos.my = "right bottom";
+				pos.at = "right bottom";
+				break;
+			default:
+				pos.my = "center";
+				pos.at = "center";
+			};
+
+			$(ENV.ID_DIALOG).dialog('option', 'position', pos);
+		},
+
+		setLocation : function(targetSelector) {
+			var idValue = $(targetSelector).attr("id");
+			this._setLocation(idValue);
+		}
+		
+	};
+
+	$(document).ready(function() {
+
+		$("#open, #close").button();
+
+		$(ENV.ID_DIALOG).dialog({
+			autoOpen : false
+		});
+
+		$("input[name='optionSec']:radio").on("click", function() {
+			dialogPositioningView.setOfTarget(this);
+		});
+
+		$("input[name='optionLoc']:radio").on("click", function() {
+			dialogPositioningView.setLocation(this);
+		});
+
+		$("#open").on("click", function() {
+			$(ENV.ID_DIALOG).dialog("open");
+		});
+
+		$("#close").on("click", function() {
+			$(ENV.ID_DIALOG).dialog("close");
+		});
+
+	});
+</script>
+</head>
+<body>
+
+	<div id="dialog" title="Basic dialog"></div>
+
+	<div>
+		<div class="button-div">
+			<button id="open" type="button">open</button>
+			<button id="close" type="button">close</button>
+		</div>
+	</div>
+
+
+	<div>
+		<div class="text-area">Section :</div>
+		<div class="input-area">
+			<input id="FullSec" type="radio" name="optionSec" checked /><label for="FullSec">전체화면</label> 
+			<input id="Sec01" type="radio"  name="optionSec" /><label for="Sec01">section #1</label>
+			<input id="Sec02" type="radio" name="optionSec" /><label for="Sec02">section#2</label>
+		</div>
+	</div>
+
+	<div>
+		<div class="text-area">Location :</div>
+		<div class="input-area">
+			<input id="Center" type="radio" name="optionLoc" /><label for="Center">center</label> 
+			<input id="TopLeft" type="radio" name="optionLoc" /><label for="TopLeft">top+left</label> 
+			<input id="TopRight" type="radio" name="optionLoc" /><label for="TopRight">top+right</label>
+			<input id="BottomLeft" type="radio" name="optionLoc" /><label for="BottomLeft">bottom+left</label> 
+			<input id="BottomRight" type="radio" name="optionLoc" /><label for="BottomRight">bottom+right</label>
+		</div>
+	</div>
+
+	<div id="section01" class="section01-area">section #1</div>
+	<div id="section02" class="section02-area">section #2</div>
+
+</body>
+</html>

@@ -1,0 +1,90 @@
+<chapter id="core_springmvc_springintegration">
+	<title>Spring Integration</title>
+
+	<para>
+		Anyframe 은 Spring MVC를 기반으로 구성되어 있으므로 Spring 프레임워크의 다른 모듈과의 연계가 용이하다.
+		일반 웹 애플리케이션을 개발할 때 Business Layer의 Business Logic을 이용하여 요청을 처리하게 되는데 이
+  		때 Business Layer를 연계하기 위한 방법은 다음과 같다.
+  	</para>
+
+	<section id="core_springmvc_springintegration_register">
+    <title>Listener 등록과 Spring 설정 파일 목록 위치 정의</title>
+
+	    <para>
+	    	Spring MVC에서는 DispatcherServlet을 사용하여 WebApplicationContext를 로드하게 된다.
+	    	이때 Presentation Layer에서 사용할 Business Layer의 서비스 bean들을 ContextLoaderListener 등록 후
+	    	contextConfigLocation으로 Spring 설정 파일 위치를 지정해줌으로써 Presentation Layer에서 Business
+	    	서비스 bean들을 호출하여 사용할 수 있다. 다음은 설정 예인web.xml 파일의 일부이다.
+	    </para>
+	
+	    <para>
+			<programlisting language="xml"><![CDATA[<context-param>
+    <param-name>contextConfigLocation</param-name>
+    <param-value>
+        classpath:/spring/context-*.xml
+    </param-value>
+</context-param>
+<!--리스너 등록 -->
+<listener>
+    <listener-class>]]>
+        <emphasis role="bold">org.springframework.web.context.ContextLoaderListener</emphasis>
+    <![CDATA[</listener-class>
+</listener>]]></programlisting>
+		</para>
+	</section>
+
+	<section id="core_springmvc_springintegration_call">
+    <title>Dependency Injection을 통한 Business Service 호출</title>
+
+    	<para>
+    		위와 같이 Listener를 등록하고 Spring 설정 파일 위치를 지정해 주었으면 일반 서비스 호출과 같이
+    		Dependency Injection을 사용하여 Business Service를 호출할 수 있다. 
+    	</para>
+
+    	<para>
+    		다음은 Annotation을 이용하여 Business Service를 호출한 MovieController.java 파일의 일부이다. 
+    		<programlisting language="java">@Controller("coreMovieController")
+@RequestMapping("/coreMovie.do")
+public class MovieController{
+
+    <emphasis role="bold">	@Inject
+	@Named("coreMovieService")
+	private MovieService movieService;
+</emphasis>
+    
+	@RequestMapping(params = "method=get")
+	public String get(@RequestParam("movieId") String movieId, Model model)
+			throws Exception {
+		Movie movie = this.movieService.get(movieId);
+		if (movie == null) {
+			throw new Exception("Resource not found " + movieId);
+		}
+		model.addAttribute(movie);
+
+		return "core/moviefinder/movie/form";
+	} 
+}</programlisting>
+			Spring IoC 컨테이너 Dependency Injection에 대한 자세한 사항은
+   			본 매뉴얼 >> Spring >> IoC(Inversion of Control) >> <link linkend="core_spring_ioc_dependencies">Dependencies</link>를 참고한다.
+		</para>
+	</section>
+	
+	<section id="core_springmvc_springintegration_resources">
+		<title>Resources</title>
+		<para>
+			<itemizedlist>
+				<listitem>
+					<para>참고자료</para>
+					<itemizedlist>
+						<listitem>
+							<para>
+								<ulink url="http://static.springsource.org/spring/docs/4.0.0.RELEASE/spring-framework-reference/html/mvc.html">
+								Spring 4.0.0.RELEASE reference manual - Web MVC framework</ulink>
+							</para>
+						</listitem>
+					</itemizedlist>
+				</listitem>
+			</itemizedlist>
+		</para>
+	</section>	
+</chapter>

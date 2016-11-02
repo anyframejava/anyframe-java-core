@@ -1,0 +1,35 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<plugin name="i18n" description="i18n plugin consists of sample code that provides functionality LocaleResolver handling Internalization.">
+  <groupId>org.anyframe.plugin</groupId>
+  <artifactId>anyframe-i18n-pi</artifactId>
+  <version>1.1.1-SNAPSHOT</version>
+  <dependent-plugins>
+    <dependent-plugin name="cache" version="2.0.0&gt;*&gt;1.0.3"/>
+  </dependent-plugins>
+  <resources>
+    <resource dir="src/main/java" filtered="true" packaged="true">
+      <include name="**/i18n/**/*.java"/>
+    </resource>
+    <resource dir="src/main/resources" filtered="false" packaged="false">
+      <include name="**/*i18n*.xml"/>
+      <exclude name="**/cache/ehcache.xml" merged="true"/>
+      <exclude name="**/spring/context-message.xml" merged="true"/>
+    </resource>
+    <resource dir="src/main/webapp/WEB-INF/jsp" filtered="false" packaged="false">
+      <include name="**/i18n/**/*.*"/>
+    </resource>
+    <resource dir="src/main/webapp" filtered="false" packaged="false">
+      <exclude name="**/sample/**" />
+      <exclude name="**/anyframe.jsp" merged="true"/>
+      <exclude name="**/web.xml" merged="true"/>
+    </resource>
+    <resource dir="db/scripts" filtered="false" packaged="false">
+      <include name="**/i18n-*.sql"/>
+    </resource>
+  </resources>
+  <samples>true</samples>
+  <interceptor>
+    <class></class>
+  </interceptor>
+  <essential>false</essential>
+</plugin>

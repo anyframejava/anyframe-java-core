@@ -1,0 +1,693 @@
+<chapter id="core_springmvc_validation">
+	<title>Validation</title>
+	<para>
+		Spring provides support so that Spring Validator or JSR-303 Validator can be used to check the validation of user input value.
+	</para>
+	
+	<section id="core_springmvc_validation_validator">
+		<title>Spring Validator</title>
+		<para>
+	  		Spring MVC uses Spring Validator to execute validation check on input field 
+	  		and provides support so that error message is shown through Errors object. 
+	  		The error message in Errors object can be shown through form:errors tag in jsp page.
+	  	</para>
+	  	<section id="core_springmvc_validation_validator_create">
+	    	<title>Create Validator</title>	  	
+			<itemizedlist>
+     			<listitem>
+	       			<para>Use ValidatorUtils</para>
+			        <para>
+			        	Execute Validation Check for required input field, and provide support so that error message can be shown. 
+			        	This can simply be implemented using ValidatorUtils. 
+			        	The following is a part of UserValidator.java class that has implemented Validator interface.
+			        </para>
+		        	<programlisting language="java">public class <emphasis role="bold">UserValidator implements Validator</emphasis> {
+    public boolean supports(Class clazz) {
+        return UserVO.class.isAssignableFrom(clazz);
+    }
+			
+    public void validate(Object object, Errors errors) {
+        // Use validationUtils to check if input value is empty.
+        <emphasis role="bold">  ValidationUtils.rejectIfEmptyOrWhitespace</emphasis>(errors, "userName",
+            "required", new Object[] { "userName" }, "Enter your name");
+        ValidationUtils.rejectIfEmptyOrWhitespace(errors, "password",
+            "required", new Object[] { "password" }, "Enter your password");</programlisting>
+     			</listitem>
+     			<listitem>
+	       			<para>Use Errors</para>
+	       			<para>
+	       				Save Error that is the result of Validation Check using Errors object 
+	       				to provide support so that error message defined for related fields are shown. 
+	       				The following is an example.
+	       			</para> 
+	       			<programlisting language="java">public class UserValidator implements Validator {
+    public boolean supports(Class clazz) {
+        return HelloVO.class.isAssignableFrom(clazz);
+    }
+
+    public void validate(Object object, Errors errors) {
+        
+        HelloVO helloVO = (HelloVO) object;
+        if (helloVO.getPassword().length() <![CDATA[<]]> 6)
+            <emphasis role="bold">errors.rejectValue("password", "error.password.tooshort");</emphasis>
+
+        if (!helloVO.getPassword().equals(helloVO.getConfirmPassword()))
+            <emphasis role="bold">errors.rejectValue("confirmPassword", "error.confirm");</emphasis>
+    }
+}</programlisting>
+			        <para>
+				        When validation error occurs, 
+				        messages including error.password.tooshort and error.confirm defined in message resource file in advance, will be shown.
+	       			</para>
+	      		</listitem>
+    		</itemizedlist>
+  		</section>
+
+	  	<section id="core_springmvc_validation_validator_inject">
+	    	<title>Use Validator</title>
+	    	<para>
+	    		To use created validator, 
+	    		inject the related validator or define @InitBinder method in Controller class 
+	    		and set related validator in binder passed as input parameter of the related method. 
+	    	</para>
+  		</section>
+
+	  	<section id="core_springmvc_validation_validator_taglibrary">
+	    	<title>Use <![CDATA[<form:errors>]]> tag</title>
+		    <para>
+		    	To easily show Validaton Error on JSP page, 
+		    	use <![CDATA[<form:errors>]]> tag among form tags provided by Spring MVC. 
+		    	To use this tag, follow the below procedures. 
+		    </para>
+    		<itemizedlist>
+      			<listitem>
+	        		<para>Register tag library</para>
+	        		<para>
+	        			To use Spring form tag library, 
+	        			spring-form.tld file is needed which is included in spring-webmvc-x.x.x.jar file. 
+	        			To use this form tag, taglib definition should be added as follows. 
+	        		</para>
+	        		<programlisting language="xml"><![CDATA[<%@ taglib prefix="form" uri="http://www.springframework.org/tags/form" %>]]></programlisting>
+	      		</listitem>
+	      		<listitem>
+	        		<para>Use <![CDATA[<form:form>]]> tag</para>	
+	       			<para>
+	       				commandName property should be defined to use form tag. 
+	       				The name should be the same with commandName used on the JSP page and should be the same type object as commandClass. 
+	       				If a certain name is not applied to commandName, the basic value is set as command. 
+	       				Form tag has various form input tags. 
+	       				Among them, the tag that shows Validation Error is <![CDATA[<form:errors>]]>, 
+	       				and the property of this tag is path. 
+	       				"*" is applied as path value, and error message is shown for all properties that commandClass has. 
+	       				The following is a part of getUser.jsp file in which <![CDATA[<form:errors>]]> tag is defined.
+					</para>
+	        		<programlisting language="xml"><![CDATA[<%@ taglib prefix="form" uri="http://www.springframework.org/tags/form"%>
+<tr>
+    <td> Name :</td>
+    <td><form:input path="userName" />(required)</td>
+    <td>]]><emphasis role="bold"><![CDATA[<form:errors path="userName" />]]></emphasis><![CDATA[</td>
+</tr>
+<tr>
+    <td>password :</td>
+    <td><form:password path="password" />(required, enter more than 6 characters)</td>
+    <td>]]><emphasis role="bold"><![CDATA[<form:errors path="password" />]]></emphasis><![CDATA[</td>
+</tr>]]></programlisting>
+      			</listitem>
+    		</itemizedlist>
+  		</section>	
+  	</section>	  
+
+	<section id="core_springmvc_validation_spring3">
+		<title>Spring 3 Validation</title>
+		<para>
+			From Spring 3 onwards, JSR-303 Spec. that defines Bean Validation standard has been supported. 
+			Validation can be classified into declarative format and program format, 
+			and is handled by connecting JSR-303 implementation such as Hibernate Validator. 
+		</para>
+		<section id="core_springmvc_validation_spring3_jsr303basic">
+			<title>JSR-303 (Bean Validation) Basic</title>
+			<para>
+				JSR-303 defines Bean Validation standards. 
+				When applying Validation Constraints using JSR-303 Annotation on domain class that composes a specific application, 
+				Validation Check is performed accordingly during runtime. 
+				The following is annotation list provided by JSR-303 Spec.
+			</para>
+	    	<informaltable>
+	    		<tgroup cols="3">
+	    			<colspec colname="col1" colnum="1" colwidth="1*" />
+			        <colspec colname="col2" colnum="2" colwidth="2*" />
+			        <colspec colname="col2" colnum="2" colwidth="7*" />
+		
+			        <thead>
+			        	<row>
+			            	<entry align="center">Annotation</entry>
+			            	<entry align="center">Supported Type</entry>
+			            	<entry align="center">Description</entry>
+			          	</row>
+			        </thead>
+		
+		 	        <tbody>
+						<row>
+							<entry>@AssertFalse</entry>
+							<entry>boolean, Boolean</entry>
+							<entry>Check if the property value is false.</entry>
+			          	</row>
+						<row>
+							<entry>@AssertTrue</entry>
+							<entry>boolean, Boolean</entry>
+							<entry>Check if the property value is true.</entry>
+			          	</row>	
+						<row>
+							<entry>@DecimalMax</entry>
+							<entry>Wrappers for BigDecimal, BigInteger, String, byte, short, int, long and primitive type</entry>
+							<entry>Check the maximum value that the property can have.</entry>
+			          	</row>	
+						<row>
+							<entry>@DecimalMin</entry>
+							<entry>Wrappers for BigDecimal, BigInteger, String, byte, short, int, long and primitive type</entry>
+							<entry>Check the minimum value that the property can have.</entry>
+			          	</row>	
+						<row>
+							<entry>@Digits</entry>
+							<entry>Wrappers for BigDecimal, BigInteger, String, byte, short, int, long and primitive type</entry>
+							<entry>Check the number of digits for the integral part and the decimal part that the property can have.
+							</entry>
+			          	</row>	
+						<row>
+							<entry>@Future</entry>
+							<entry>java.util.Date, java.util.Calendar</entry>
+							<entry>Check if the property value is after the current date.</entry>
+			          	</row>			          	
+						<row>
+							<entry>@Max</entry>
+							<entry>Wrappers for BigDecimal, BigInteger, String, byte, short, int, long and primitive type</entry>
+							<entry>Check the maximum length the property can have.</entry>
+			          	</row>	
+						<row>
+							<entry>@Min</entry>
+							<entry>Wrappers for BigDecimal, BigInteger, String, byte, short, int, long and primitive type</entry>
+							<entry>Check the minimum length the property can have.</entry>
+			          	</row>		
+			          	<row>
+							<entry>@NotNull</entry>
+							<entry>any type</entry>
+							<entry>Check if the property value is not Null.</entry>
+			          	</row>
+			          	<row>
+							<entry>@Null</entry>
+							<entry>any type</entry>
+							<entry>Check if the property value is Null.</entry>
+			          	</row>
+			          	<row>
+							<entry>@Past</entry>
+							<entry>java.util.Date, java.util.Calendar</entry>
+							<entry>Check if the property value is before the current date.</entry>
+			          	</row>				          	
+			          	<row>
+							<entry>@Pattern</entry>
+							<entry>String</entry>
+							<entry>
+								Check if the property value fits the defined Regular Expression. 
+								Regular Expression should be defined according to Java Regular Expression Convention (see java.util.regex.Pattern).
+							</entry>
+			          	</row>
+			          	<row>
+							<entry>@Size</entry>
+							<entry>String, Collection, Map and arrays</entry>
+							<entry>Check the maximum and minimum length the property can have.</entry>
+			          	</row>
+			          	<row>
+							<entry>@Valid</entry>
+							<entry>any non primitive type</entry>
+							<entry>Validation Check is performed on the related object.</entry>
+			          	</row>		          				          				          				          				          			          			          	
+					</tbody>
+				</tgroup>
+			</informaltable>
+			Custom Annotation for Validation Constraint definition is also provided for each JSR-303 implementation.
+			<para>
+				The following is part of domain class ~/domain/Movie.java added due to Core Plugin installation. 
+				It defines Validation Constraint using the previously mentioned JSR-303 Annotation. 
+				For instance, title property cannot have null value, allows only 1 to 50 digits, cannot exceed 180 in runtime property value, 
+				and allows only 3 digits for the integral part and 0 digits for the decimal part. 
+			</para>
+			<programlisting language="java">public class Movie implements Serializable {
+
+    private static final long serialVersionUID = 1L;
+	
+    private String movieId;
+
+    <emphasis role="bold">@NotNull
+    @Size(min = 1, max = 50)</emphasis>
+    private String title = "";
+	
+    <emphasis role="bold">@NotNull
+    @Size(min = 1, max = 50)</emphasis>
+    private String director;
+
+    private Genre genre;
+
+    <emphasis role="bold">@NotNull
+    @Size(min = 5, max = 100)</emphasis>
+    private String actors;
+
+    <emphasis role="bold">@DecimalMax(value = "180")
+    @Digits(integer=3, fraction=0)</emphasis>
+    private int runtime;
+
+    @DateTimeFormat(iso = ISO.DATE)
+    <emphasis role="bold">@Future</emphasis>
+    private Date releaseDate;
+
+    @NumberFormat(pattern = "#,###")
+    <emphasis role="bold">@Digits(integer=5, fraction=0)</emphasis>
+    private int ticketPrice;
+
+    private String posterFile;
+
+    private String nowPlaying = "Y";
+
+    // getter, setter ...
+}</programlisting>
+		</section>
+		<section id="core_springmvc_validation_spring3_jsr303optional">
+			<title>JSR-303 (Bean Validation) Optional</title>
+			<para>
+				All Annotations that abide by JSR-303 Spec. 
+				commonly have payload, groups, and message properties other than the properties for each Annotation. 
+				Let's look into the meaning of each property. 
+			</para>
+			<itemizedlist>
+				<listitem>
+					<para>
+					    payload (Can be used in case of Programmatic Validating): 
+						Used for defining meta information related to used Validation Constraint. 
+						When the severity is defined in payload property valid for a specific constraint, 
+						severity information can be extracted when Validation Error occurs. 
+						The following is a part of Domain class that is additionally defined in payload information. 
+						It applies payload value as Error and Warning class of Severity class for title and director Validation Constraint. 
+					</para>
+					<programlisting language="java">public class Movie implements Serializable {
+
+    private static final long serialVersionUID = 1L;
+
+    private String movieId;
+
+    @NotNull(<emphasis role="bold">payload = Severity.Error.class</emphasis>)
+    @Size(min = 1, max = 50, <emphasis role="bold">payload = Severity.Warning.class</emphasis>)
+    private String title = "";
+
+    @NotNull(<emphasis role="bold">payload = Severity.Error.class</emphasis>)
+    @Size(min = 1, max = 50, <emphasis role="bold">payload = Severity.Warning.class</emphasis>)
+    private String director;
+
+    // ...
+}</programlisting>
+					<para>
+						The following is Severity class mentioned above. 
+						It includes Warning and Error class definition which each inherit javax.validation.Payload.
+					</para>
+					<programlisting language="java">public class Severity {
+    public static interface <emphasis role="bold">Warning extends Payload</emphasis> {
+    };
+
+    public static interface <emphasis role="bold">Error extends Payload</emphasis> {
+    };
+}</programlisting>
+					<para>
+						When the code is composed as above, 
+						call the getConstraintDescriptor().getPayload() method of ConstraintViolation object to extract Payload information.
+					</para>
+					<programlisting language="java">
+Set<![CDATA[<ConstraintViolation<Movie>>]]> constraintViolations = validator.validate(movie);
+System.out.println("the number of constraint violation is "	+ constraintViolations.size());
+
+Iterator<![CDATA[<ConstraintViolation<Movie>>]]> iterator = constraintViolations.iterator();
+
+while (iterator.hasNext()) {
+    ConstraintViolation<![CDATA[<Movie>]]> constraintViolation = iterator.next();
+    <emphasis role="bold">Set payloads = constraintViolation.getConstraintDescriptor().getPayload();</emphasis>		
+    // ...
+}</programlisting>
+					<para>
+						The sample code mentioned above can be downloaded from 
+						<link linkend="core_springmvc_validation_resources">Download - anyframe.sample.validation.
+						payload</link> in this manual.
+					</para> 
+				</listitem>
+				<listitem>
+					<para>
+						groups (Can be used in case of Programmatic Validating): 
+						Used for defining used Validation Constraint group information. 
+						When the same group is applied for some constraints, Validation is performed only a specific group. 
+						For instance, properties that should go through Validation Check of the time when a specific domain object is created 
+						and properties that should go through Validation Check when the domain object is modified can be different. 
+						So, a group should be applied to these properties and Validation by group should be executed for use. 
+						The following is a part of Domain class where groups information is defined additionally. 
+						For title, director, and actors, apply Draft and Playing group. 
+						For runtime, releaseDate, and ticketPrice, apply only Playing group.
+					</para>
+					<programlisting language="java">public class Movie implements Serializable {
+    private static final long serialVersionUID = 1L;
+
+    private String movieId;
+
+    @NotNull(<emphasis role="bold">groups = { Draft.class, Playing.class }</emphasis>)
+    @Size(min = 1, max = 50, <emphasis role="bold">groups = { Draft.class, Playing.class }</emphasis>)
+    private String title = "";
+
+    @NotNull(<emphasis role="bold">groups = { Draft.class, Playing.class }</emphasis>)
+    @Size(min = 1, max = 50, <emphasis role="bold">groups = { Draft.class, Playing.class }</emphasis>)
+    private String director;
+
+    @NotNull(<emphasis role="bold">groups = { Draft.class, Playing.class }</emphasis>)
+    @Size(min = 5, max = 100, <emphasis role="bold">groups = { Draft.class, Playing.class }</emphasis>)
+    private String actors;
+
+    @DecimalMax(value = "180", <emphasis role="bold">groups = Playing.class</emphasis>)
+    @Digits(integer = 3, fraction = 0, <emphasis role="bold">groups = Playing.class</emphasis>)
+    private int runtime;
+
+    @Future(<emphasis role="bold">groups = Playing.class</emphasis>)
+    private Date releaseDate;
+
+    @Digits(integer = 5, fraction = 0, <emphasis role="bold">groups = Playing.class</emphasis>)
+    private int ticketPrice;
+	
+    // ...
+}</programlisting>
+					<para>
+						In other words, Validation Check is only performed on title, director, and actors 
+						when movie is registered (Draft Group), 
+						and additional Validation Check is performed on runtime, releaseDate, and ticketPrice 
+						after playing movie is confirmed (Playing Group). 
+					</para>
+					<para>
+						The following is Draft.java class used when defining the groups above. 
+						Group class should be in javax.validation.groups.Default format, and have a hierarchy. 
+						When there is a Validation Check request for bottom classes, 
+						Validation Check is also performed on upper classes. 
+						When groups property value is not defined, regard Default group.
+					</para>		
+					<programlisting language="java">public interface <emphasis role="bold">Draft extends Default</emphasis> {
+}</programlisting>		
+					<para>
+						When the code is composed as the above, 
+						Validation Check is executed only on properties included in the related group 
+						if group information is transferred as argument when Validator calls validate() method.
+					</para>	
+					<programlisting language="java">
+Set<![CDATA[<ConstraintViolation<Movie>>]]> constraintViolations = <emphasis role="bold">validator.validate(movie, Draft.class)</emphasis>;
+System.out.println("the number of constraint violation is "	+ constraintViolations.size());
+
+Iterator<![CDATA[<ConstraintViolation<Movie>>]]> iterator = constraintViolations.iterator();
+
+while (iterator.hasNext()) {
+    ConstraintViolation<![CDATA[<Movie>]]> constraintViolation = iterator.next();	
+    // ...
+}</programlisting>
+					<para>
+						The groups sample code mentioned above can be downloaded from 
+						<link linkend="core_springmvc_validation_resources">Download - anyframe.sample.validation.
+						groups</link> in this section.
+						
+					</para> 
+				</listitem>
+				<listitem>
+					<para>
+						message: Used to define message shown when Validation Error occurs. 
+						Message value related with {fully-qualified class name}.message of Annotation 
+						is extracted from message resource file in library that includes the validator basically used. 
+						For instance, if error occurs during @NotNull Check, 
+						<emphasis role="bold">javax.validation.constraints.NotNull.message</emphasis> message is shown. 
+						If you with to show a message other than the message basically provided, 
+						define new message key as message property value. 
+						Also define the related key and the message resource file that includes the relevant message 
+						on the parent class path. 
+					</para>
+					<para>
+						Internationalization is supported for message resource files. 
+						In case of Hibernate Validator, resource bundles are provided in English, French, and German format. 
+						If you wish to add message resource file in another language, 
+						add org/hibernate/validator/ValidationMessages_{locale}.properties file in class path 
+						and define message for each JSR-303 Annotation.
+					</para>
+				</listitem>										
+			</itemizedlist>			
+		</section>
+		<section id="core_springmvc_validation_spring3_custom">
+			<title>Custom Constraints</title>
+			<para>
+				When it is difficult to execute Validation Check for specific domain class property value 
+				only with Annotation basically provided in JSR-303, Custom Constraints that are suitable to the project can be defined. 
+				To use Custom Constraints, Custom Annotation and Custom Validator should be implemented. 
+				The following is a part of Telephone.java class newly defined for Validation Check on phone number property.
+			</para>
+			<programlisting language="java"><emphasis role="bold">@Target( { ElementType.METHOD, ElementType.FIELD })
+@Retention(RetentionPolicy.RUNTIME)
+@Constraint(validatedBy = TelephoneValidator.class)
+@Size(min = 12, max = 13)
+public @interface Telephone</emphasis> {
+    String <emphasis role="bold">message() default "{org.anyframe.sample.validation.constraint.Telephone.message}"</emphasis>;
+
+    Class<![CDATA[<?>]]>[] groups() default {};
+
+    Class<![CDATA[<? extends Payload>]]>[] payload() default {};
+}</programlisting>	
+			<para>
+				According to the above code, @Telephone can be defined for Method and Field and is applied during runtime. 
+				Also, when you meet a property which @Telephone is applied in Domain class, 
+				TelephoneValidator is initialized to execute Validation Check. 
+				@Size Annotation definition is added, so @Telephone is also basically limited in Size. 
+				@Telephone does not include additional properties other than the basic properties (message, groups, payload) defined in JSR-303 Spec.
+			</para>
+			<para>
+				Message property is defined as org.anyframe.sample.validation.constraint.Telephone.message. 
+				So, when error occurs in @Telephone Validation Check, 
+				message that has org.anyframe.sample.validation.constraint.Telephone.message as key will be shown from 
+				ValidationMessages.properties file that is the highest in class path. 
+				The following are the contents of ValidationMessages.properties file.
+			</para>
+			<programlisting language="java"><emphasis role="bold">org.anyframe.sample.validation.constraint.Telephone.message</emphasis>=must match "0000-000(or 0000)-0000" (max 13)</programlisting>
+			<para>
+				The following is a part of TelephoneValidator.java file that will execute Validation Check on @Telephone Annotation. 
+				Custom Validator should implement javax.validation.ConstraintValidator interface like the following code, 
+				and implement isValid() method to execute Validation Check logic. 
+			</para>
+			<programlisting language="java">public class <emphasis role="bold">TelephoneValidator implements ConstraintValidator<![CDATA[<Telephone, String>]]></emphasis> {
+    private java.util.regex.Pattern pattern = java.util.regex.Pattern
+        .compile("^[0-9]\\d{2}-(\\d{3}|\\d{4})-\\d{4}$");
+
+    public void initialize(Telephone annotation) {
+    }
+
+    <emphasis role="bold">public boolean isValid(String value, ConstraintValidatorContext context)</emphasis> {
+        if (value == null || value.length() == 0) {
+            return true;
+        }
+        Matcher m = pattern.matcher(value);
+        return m.matches();
+    }
+}</programlisting>
+			<para>
+				TelephoneValidator uses Regular Expression to define the phone number pattern, 
+				and Validation Error occurs when this pattern is not matched.  
+			</para>
+			<para>
+				The following is a part of Movie.java file of domain class that includes @Telephone definition previously defined.
+			</para>
+			<programlisting language="java">public class Movie implements Serializable {
+
+    private static final long serialVersionUID = 1L;
+    
+    private String movieId;
+
+    <emphasis role="bold">@Telephone</emphasis>
+    private String telephone;			
+
+    // ...
+}</programlisting>
+			<para>
+				The Custom Constraint sample code mentioned above can be downloaded from 
+				<link linkend="core_springmvc_validation_resources">Download - anyframe.sample.validation.custom</link> 
+				in this section.
+			</para> 			
+		</section>
+		<section id="core_springmvc_validation_spring3_declarative">
+			<title>Declarative Validating</title>
+			<para>
+				Before Spring MVC 2.5, Spring Validator was implemented and directly defined as Validator of specific Controller 
+				to perform Validation Check. 
+				However, from Spring 3 onwards, @Valid Annotation has been applied for Controller method input parameters, 
+				so that Validation Check is performed automatically before the related method is called. 
+				The following is a part of create() method defined in ~/core/moviefinder/web/MovieController.java class 
+				added due to Core Plugin installation. 
+			</para>
+			<programlisting language="java">@RequestMapping(params = "method=create")
+public String create(..., <emphasis role="bold">@Valid Movie movie</emphasis>, BindingResult results, ...) throws Exception {
+
+    if (results.hasErrors()) {
+        return "coreViewMovie";
+    }
+    
+    // ...
+}</programlisting>
+			<para>
+				In case of the above method, Validation Check is performed when user input value is mapped as Movie object, 
+				and the return value is included in BindingResult object. 
+				So, when Validation Error exists in BindingResult object passed as input parameter, 
+				Logic should be composed to return to input view.
+				
+			</para>
+			<para>
+				By using <![CDATA[<form:errors>]]> provided by Spring, Validation Error can be shown in input view. 
+				The following is a part of webapp/WEB-INF/jsp/core/moviefinder/movie/form.jsp file that is added 
+				due to Core Plugin installation. 
+				You can see that it is defined 
+				so that <![CDATA[<form:errors>]]> can be used when value entered in title and director field are not valid.
+			</para>
+			<programlisting language="xml"><![CDATA[<tr>
+    <td width="150" class="ct_td"><spring:message code="movie.title" />&nbsp;*</td>
+    <td bgcolor="D6D6D6" width="1"></td>
+    <td class="ct_write01">
+        <form:input path="title" cssClass="ct_input_g" cssErrorClass="text medium error" size="40" maxlength="50" />
+        ]]><emphasis role="bold"><![CDATA[<form:errors path="title" cssClass="errors" />]]></emphasis><![CDATA[
+    </td>
+</tr>
+<tr>
+    <td height="1" colspan="3" bgcolor="D6D6D6"></td>
+</tr>
+<tr>
+    <td width="150" class="ct_td"><spring:message code="movie.director" />&nbsp;*</td>
+    <td bgcolor="D6D6D6" width="1"></td>
+    <td class="ct_write01">
+        <form:input path="director" cssClass="ct_input_g" cssErrorClass="text medium error" size="40" maxlength="50" />
+        ]]><emphasis role="bold"><![CDATA[<form:errors path="director" cssClass="errors" />]]></emphasis><![CDATA[
+    </td>
+</tr>]]></programlisting>
+			<para>
+				Lastly, property definition is needed to assign validator for declarative Validation Check. 
+				To do this, Spring provides three ways. 
+				<itemizedlist>
+					<listitem>
+						<para>
+							Uses mvc namespace newly introduced in Spring 3. 
+						    When defined as follows, JSR-303 Validator implementation such as Hibernate Validator is automatically searched 
+						    from class path, and applied in all @Controllers. 
+						</para>
+						<programlisting language="xml"><![CDATA[<mvc:annotation-driven />]]></programlisting>							
+					</listitem>
+					<listitem>
+						<para>
+							Uses mvc namespace newly introduced in Spring 3 but defines a specific validator. 
+							The assigned validator is applied in all @Controllers.
+						</para>
+						<programlisting language="xml"><![CDATA[<mvc:annotation-driven validator="..."/>]]></programlisting>
+					</listitem>
+					<listitem>
+						<para>
+							Defines @InitBinder method in Controller class 
+							and sets specific validator in Binder passed as input parameter of the related method. 
+							In this case, the set Validator is applied only in the specific controller. 
+						</para>
+						<programlisting language="java">@Controller
+public class MovieController {
+
+    @InitBinder
+    protected void initBinder(WebDataBinder binder) {
+        binder.setValidator(new CustomValidator());
+    }
+    
+    // ...
+}</programlisting>
+					</listitem>
+				</itemizedlist>
+			</para>
+		</section>
+		<section id="core_springmvc_validation_spring3_programmatic">
+			<title>Programmatic Validating</title>
+			<para>
+				 In Spring, when Validation Check is needed, 
+				 LocalValidatorFactoryBean class is provided to execute JSR-303 Validator implementation such as Hibernate Validator. 
+				 LocalValidatorFactoryBean searches library related to JSR-303 implementation in class path, and automatically searches validator. 
+				 Therefore, you can define LocalValidatorFactoryBean as bean and refer this bean to a specific class to execute Validation Check. 
+			</para>
+			<programlisting language="xml"><![CDATA[<bean id="validator" class="org.springframework.validation.beanvalidation.LocalValidatorFactoryBean" />]]></programlisting>
+			<programlisting language="java">@Service
+public class MovieServiceImpl implements MovieService {
+    /**Inject a reference to javax.validation.Validator if you prefer to work with the JSR-303 API directly.
+     * Inject a reference to org.springframework.validation.Validator if your bean requires the Spring Validation API
+     */
+    <emphasis role="bold">@Inject
+    private Validator validator;</emphasis>
+
+    public void create(Movie movie){
+        validator.validate(movie);
+        // ...
+    }
+}</programlisting>
+		</section>
+	</section>	
+  	<section id="core_springmvc_validation_resources">
+  		<title>Resources</title>
+		<para>
+			<itemizedlist>
+				<listitem>
+					<para>Download</para>
+					<para>
+						Download Eclipse project file that includes sample code, and extract compressed file.
+					</para>
+					<itemizedlist>
+						<listitem>
+							<para>Maven-based run</para>
+							<para>
+								Move to extracted directory on Command window, 
+								execute mvn compile exec:java -Dexec.mainClass=... command, and check results. 
+								Refer to JavaDoc of Main class included in each Eclipse project. 
+							</para>
+						</listitem>
+						<listitem>
+							<para>Eclipse-based run</para>
+							<para>
+								Import the extracted project from Eclipse, 
+								select Main.java under src/main/java folder, click the right mouse button, 
+								and click Run As > Java Application in context menu. 
+								Then check execution results. 
+							</para>
+						</listitem>									
+					</itemizedlist>						
+					<table>
+						<title>Download List</title>
+						<tgroup cols="2">
+							<colspec colnum="1" colname="col1" colwidth="4*"/>
+							<colspec colnum="2" colname="col2" colwidth="6*"/>
+							<thead>
+								<row>
+									<entry align="center">Name</entry>
+									<entry align="center">Download</entry>
+								</row>
+							</thead>
+							<tbody>										
+								<row>
+									<entry align="center">anyframe-sample-validation-payload.zip</entry>
+									<entry align="center"><ulink url="http://dev.anyframejava.org/docs.en/anyframe/plugin/essential/core/1.0.1/reference/sample/anyframe-sample-validation-payload.zip">Download</ulink>
+									</entry>
+								</row>
+								<row>
+									<entry align="center">anyframe-sample-validation-groups.zip</entry>
+									<entry align="center"><ulink url="http://dev.anyframejava.org/docs.en/anyframe/plugin/essential/core/1.0.1/reference/sample/anyframe-sample-validation-groups.zip">Download</ulink>
+									</entry>
+								</row>	
+								<row>
+									<entry align="center">anyframe-sample-validation-custom.zip</entry>
+									<entry align="center"><ulink url="http://dev.anyframejava.org/docs.en/anyframe/plugin/essential/core/1.0.1/reference/sample/anyframe-sample-validation-custom.zip">Download</ulink>
+									</entry>
+								</row>																
+							</tbody>
+						</tgroup>
+					</table> 
+				</listitem>
+			</itemizedlist>
+		</para>
+	</section>	
+</chapter>

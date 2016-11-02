@@ -1,0 +1,82 @@
+<chapter id="loggingsql_sqllogging_logger">
+		<title>Step 5. Logger definition</title>
+
+		<para>
+			To record a log using lo4jdbc, refer to the following log4j.xml file
+			and define the necessary logger.			
+      	</para>
+
+		<itemizedlist>
+			<listitem>
+				<para>
+					<emphasis role="bold">jdbc.sqlonly</emphasis> : Logs SQL statement only, and in the case of prepared statement,
+						SQL replaced with the relevant argument value is shown.			
+          		</para>
+        	</listitem>
+
+        	<listitem>
+          		<para>
+          			<emphasis role="bold">jdbc.sqltiming</emphasis> : Contains SQL statement and time information (milliseconds) used for executing the SQL.          		
+          		</para>
+        	</listitem>
+
+        	<listitem>
+				<para>
+					<emphasis role="bold">jdbc.audit</emphasis> : Logs JDBC call information.
+						As large amount of logs are created,
+						unless special JDBC tracing is necessary, this usage is not recommended.					
+          		</para>
+        	</listitem>
+
+        	<listitem>
+          		<para>
+          			<emphasis role="bold">jdbc.resultset</emphasis> : As all JDBC call information will be logged including result set, 
+						vast amount of log is created.					
+          		</para>
+        	</listitem>
+      	</itemizedlist>
+
+      	<para>
+      		In addition, you can select log level for each logger among DEBUG, INFO, ERROR.      
+      	</para>
+
+		<itemizedlist>
+        	<listitem>
+         	 	<para>
+         	 		DEBUG - Logs the class name where SQL was executed and line number.         	 
+         	 	</para>
+        	</listitem>
+
+        	<listitem>
+          		<para>
+          			INFO - Logs SQL statement          		
+          		</para>
+        	</listitem>
+
+        	<listitem>
+          		<para>
+          			ERROR - In the case of SQL execution error, logs stack trace information.          		
+          		</para>
+        	</listitem>
+      	</itemizedlist>
+
+      	<para>
+      		However, when using JNDIDataSource defined in WebLogic Server,
+					As log4j.xml file must be loaded in JNDIDataSource which was added to WAS,
+					note that log4j-*.jar and log4j.xml must be set on classpath of the relevant WAS.
+					On WebLogic 9.2, in the case of log4j.xml, you can compress the file in jar file type and
+					locate it in [Domain Server Home/lib] or add the following to the JAVA option to 
+					execute WebLogic
+				Server.
+			 <programlisting>-Dlog4j.configuration=file:///path../log4j.xml</programlisting>
+		</para>
+      	<warning>
+      		<title>When monitoring through Anyframe Monitoring Tool</title>
+      		 <para>
+      	 		When monitoring through Anyframe Monitoring Tool on the relevant web application,
+				ClassCastException occurs when loading WAS due to logging handling logic.
+				Therefore, -Dlog4j.defaultInitOverride=true option must be added.
+				In this case, log on Monitoring Agent cannot be checked.			
+			</para>      
+      	</warning>           
+</chapter>

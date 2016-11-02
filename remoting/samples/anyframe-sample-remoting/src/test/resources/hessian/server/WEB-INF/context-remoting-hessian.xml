@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://www.springframework.org/schema/beans
+	 http://www.springframework.org/schema/beans/spring-beans-3.2.xsd">
+
+	<!-- MovieService -->
+	<bean id="org.anyframe.sample.remoting.moviefinder.service.MovieService"
+		class="org.anyframe.sample.remoting.moviefinder.service.impl.MovieServiceImpl">
+		<property name="movieDao" ref="movieDao"/>
+	</bean>
+
+	<bean id="movieDao" class="org.anyframe.sample.remoting.moviefinder.service.impl.MovieDao" />
+	
+	<!-- Add Hessian ServiceExporter -->
+	<bean id="hessianMovieService" class="org.springframework.remoting.caucho.HessianServiceExporter">
+		<property name="service" ref="org.anyframe.sample.remoting.moviefinder.service.MovieService" />
+		<property name="serviceInterface" value="org.anyframe.sample.remoting.moviefinder.service.MovieService" />
+	</bean>
+
+</beans>
+
+

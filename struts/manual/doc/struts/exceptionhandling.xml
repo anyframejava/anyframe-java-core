@@ -1,0 +1,229 @@
+<chapter id="struts_exceptionhandling">
+  	<title>Exception Handling</title>
+
+	<para>
+		[<![CDATA[Action클래스의 execute() 메소드에서 Exception이 전달되었을 때 실행하는 ExceptionHandler를
+  		설정할 수 있다. struts-config.xml에 개별 Action에 대한 ExceptionHandler를 설정할 수도
+  		있고(action level), <global-exceptions>을 이용해 application의 모든 Action에서
+  		발생하는 Exception에 대한 ExceptionHandler를 설정(global level)할 수도 있다. 양쪽 모두에
+  		ExceptionHandler가 정의되었을 때 action level에 선언된 것이 더 우선순위가 높다.]]>
+  	</para>
+
+	<section id="struts_exceptionhandling_global">
+    	<title>Global Level Exception Handling</title>
+
+    	<section id="struts_exceptionhandling_global_feature">
+      		<title>Global Level Exception Handling의 특징</title>
+
+			<itemizedlist>
+        		<listitem>
+          			<para>에러나 Exception 처리를 정의하는 선언적인 방법</para>
+        		</listitem>
+		        <listitem>
+        			<para>모든 action에서 사용할 수 있는 global level Exception 처리를 정의</para>
+        		</listitem>
+		        <listitem>
+        			<para><![CDATA[하위로 여러 개의 <exception>을 가질 수 있음]]></para>
+        		</listitem>
+      		</itemizedlist>
+
+			<para><![CDATA[다음은 <exceptions>의 attribute들이다.]]></para>
+
+			<informaltable>
+				<caption>exceptions 태그 속성</caption>
+		        <tgroup cols="2">
+		        <colspec colnum="1" colname="col1" colwidth="2*"/>
+				<colspec colnum="2" colname="col2" colwidth="8*"/>
+		          <thead>
+		            <row>
+		              <entry align="left">Name</entry>
+		              <entry align="left">Description</entry>
+		            </row>
+		          </thead>
+		          <tbody>
+		            <row>
+		              <entry>bundle</entry>
+		              <entry>
+			              Exception의 handler 클래스가 사용하는 message resources bundle에 대한
+			              servlet context attribute의 name 값이다. 디폴트 값 :
+			              org.apache.struts.Globals.MESSAGES_KEY의 값
+			          </entry>
+		            </row>
+		            <row>
+		              <entry>className</entry>
+		              <entry>
+		              	Exception들의 configuration 정보를 담고 있을 객체이다. 반드시
+		              	org.apache.struts.config.ExceptionConfig 또는 이를 상속 받은 클래스여야 한다.
+		              	디폴트 값 : org.apache.struts.config.ExceptionConfig
+		              </entry>
+		            </row>
+		            <row>
+		              <entry>handler</entry>
+		              <entry>
+		              	이 exception이 발생할 때, 이 exception을 처리하는 클래스를 나타낸다. 즉,
+		              	handler 클래스는, 어떤 exception이 발생하면, 적절한 error message('key'
+		              	attribute)와 함께 적절한 페이지('path' attribute)로 forward 해주는 클래스이다. 반드시
+		              	org.apache.struts.action.ExceptionHandler 또는 이를 상속 받은 클래스여야 한다.
+		              	디폴트 값 : org.apache.struts.action.ExceptionHandler
+		              </entry>
+		            </row>
+		            <row>
+		              <entry>key</entry>
+		              <entry>
+		              	이 exception이 발생할 때, message resource bundle에서 찾아낼 error
+		              	message의 key 값이다. [required]
+		              </entry>
+		            </row>
+		            <row>
+		              <entry>path</entry>
+		              <entry>
+		              	이 exception이 발생할 때, forward할 resource(*.do, *.jsp 등)의
+		              	상대(module-relative)경로를 나타낸다.
+		              </entry>
+		            </row>
+		            <row>
+		              <entry>scope</entry>
+		              <entry>
+		              	ActionError 객체에 접근할 context의 scope를 나타낸다. request 또는
+		              	session. 디폴트 값 : request
+		              </entry>
+		            </row>
+		            <row>
+		              <entry>type</entry>
+		              <entry>Exception Handling을 수행할 exception의 type을 나타낸다. [required]</entry>
+		            </row>
+		          </tbody>
+		        </tgroup>
+		    </informaltable>
+		</section>
+
+    	<section id="struts_exceptionhandling_global_sample">
+      		<title>Samples</title>
+
+      		<para>
+      			다음은 struts-config.xml 파일에서 global-exceptions 설정에 대한 예제이다.
+      			<programlisting language="xml"><![CDATA[<global-exceptions>
+    <exception key="global.exception.message" 
+        path="/basic/globalException.jsp" 
+        type="java.lang.Exception" 
+        handler="org.apache.struts.action.ExceptionHandler" />
+</global-exceptions>]]></programlisting>
+			</para>
+
+      		<para>
+      			Action 클래스의 execute() 메소드에서 Exception이 발생하면 ExceptionHandler에서
+	      		exception message key값(global.exception.message)을 이용해 Resource Bundle에서
+	      		Exception Message를 세팅한 후 path에 설정된 /basic/globalException.jsp로
+	      		forwarding한다.
+	      	</para>
+    	</section>
+	</section>
+
+	<section id="struts_exceptionhandling_action">
+    	<title>Action Level Exception Handling</title>
+
+    	<section id="struts_exceptionhandling_action_feature">
+      		<title>Action Level Exception Handling의 특징</title>
+
+      		<itemizedlist>
+        		<listitem>
+          			<para>개별 Action에 대한 Exception Handling이 가능</para>
+        		</listitem>
+		        <listitem>
+        			<para>Action Level Exception이 정의되어 있지 않을 경우 Global Level Exception 적용</para>
+        		</listitem>
+		        <listitem>
+         			 <para><![CDATA[<action>하위에 <exception>으로 정의]]></para>
+        		</listitem>
+      		</itemizedlist>
+
+      		<para><![CDATA[다음은 <exception>의 attribute들이다.]]></para>
+
+		    <informaltable>
+		        <caption>exception 태그 속성</caption>
+		        <tgroup cols="2">
+		          <colspec colnum="1" colname="col1" colwidth="2*"/>
+				  <colspec colnum="2" colname="col2" colwidth="8*"/>
+		          <thead>
+		            <row>
+		              <entry align="center">Name</entry>
+		              <entry align="center">Description</entry>
+		            </row>
+		          </thead>
+		          <tbody>
+		            <row>
+		              <entry>bundle</entry>
+		              <entry>
+		              	Exception의 handler 클래스가 사용하는 message resources bundle에 대한
+		              	servlet context attribute의 name 값이다. 디폴트 값 :
+		              	org.apache.struts.Globals.MESSAGES_KEY의 값
+		              </entry>
+		            </row>
+		            <row>
+		              <entry>className</entry>
+		              <entry>
+		              	Exception들의 configuration 정보를 담고 있을 객체이다. 반드시
+		              	org.apache.struts.config.ExceptionConfig 또는 이를 상속 받은 클래스여야 한다.
+		              	디폴트 값 : org.apache.struts.config.ExceptionConfig
+		              </entry>
+		            </row>
+		            <row>
+		              <entry>handler</entry>
+		              <entry>
+		              	이 exception이 발생할 때, 이 exception을 처리하는 클래스를 나타낸다. 즉,
+		              	handler 클래스는, 어떤 exception이 발생하면, 적절한 error message('key'
+		              	attribute)와 함께 적절한 페이지('path' attribute)로 forward 해주는 클래스이다. 반드시
+		              	org.apache.struts.action.ExceptionHandler 또는 이를 상속 받은 클래스여야 한다.
+		              	디폴트 값 : org.apache.struts.action.ExceptionHandler
+		              </entry>
+		            </row>
+		            <row>
+		              <entry>key</entry>
+		              <entry>
+		              	이 exception이 발생할 때, message resource bundle에서 찾아 낼 error
+		              	message의 key 값이다. [required]
+		              </entry>
+		            </row>
+		            <row>
+		              <entry>scope</entry>
+		              <entry>
+		              	ActionError 객체에 접근할 context의 scope를 나타낸다. request 또는
+		              	session. 디폴트 값 : request
+		              </entry>
+		            </row>
+		            <row>
+		              <entry>type</entry>
+		              <entry>Exception Handling을 수행할 exception의 type을 나타낸다. [required]</entry>
+		            </row>
+		          </tbody>
+		        </tgroup>
+		    </informaltable>
+		</section>
+
+		<section id="struts_exceptionhandling_action_samples">
+			<title>Samples</title>
+
+			<para>
+				<![CDATA[다음은 struts-config-login.xml  파일에서 <action> 하위의 <exception> 설정에 대한 예제이다.]]>
+				<programlisting language="xml"><![CDATA[<action
+    path="/login"
+    type="org.anyframe.sample.struts.action.LoginAction"
+    name="userForm"
+    scope="request"
+    input="/basic/login.jsp">
+    <exception key="error.password.mismatch" path="/basic/login.jsp" 
+        type="javax.security.auth.login.FailedLoginException" />
+    <forward name="success" path="/basic/main.jsp" />
+</action>]]></programlisting>
+			</para>
+
+      		<para>
+      			Global Level Exception 설정과 달리 모든 Action에서 발생하는 Exception이 아닌
+      			LoginAction의 execute() 메소드에서 발생하는 Exception에 대한 처리를 담당한다.
+      			FailedLoginException이 발생했을 경우 /basic/login.jsp로 forwarding되고, 이 외 다른
+      			Exception이 발생할 경우 Global Level Exception에 설정된 error page로
+      			forwarding된다.
+      		</para>
+    	</section>
+	</section>
+</chapter>

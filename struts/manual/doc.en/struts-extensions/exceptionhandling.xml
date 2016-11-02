@@ -1,0 +1,186 @@
+<chapter id="struts_extensions_exceptionhandling">
+	<title>Exception Handling</title>
+
+	<para>
+		Let's look into ExceptionHandler 
+  		that performs handling when exception in BaseException provided by Anyframe is thrown. 
+  		
+  	</para>
+	<itemizedlist>
+    	<listitem>
+      		<para>DefaultExceptionHandler</para>
+
+      		<para>
+      			<![CDATA[DefaultExceptionHandler is a class that has extended ExceptionHandler. 
+      			When BaseException provided by Anyframe is caught, 
+      			logic is composed by saving message key defined in BaseException and alternative string in ActionMessage object, and forwarding. 
+      			In case of catch of exception, key value defined in <exception> is used like basic ExceptionHandler of Struts.]]>
+      		</para>
+    	</listitem>
+
+    	<listitem>
+      		<para>DefaultBaseExceptionHandler</para>
+
+      		<para>
+      			Business exception that inherits BaseException provided by Anyframe 
+      			uses the message key returned on the creation point 
+      			to put message by type (basics, resolutions, causes) defined in Message Resource Bundle in related exception object. 
+      			DefaultBaseExceptionHandler is composed so that all types of messages can be handled from BaseException that is caught. 
+      			Through Tag Library, message by type is extracted and error messages are not shown as message key. 
+      			Also, refer to "org.anyframe.struts.CommonResource" which is basic resource bundle name 
+      			so that error message handling can be done on exception that occurs in presentation layer other than business exception. 
+      			Generally, ExceptionHandler can inherit DefaultBaseExceptionHandler provided by Anyframe.
+      		</para>
+    	</listitem>
+  	</itemizedlist>
+
+  	<para>
+  		Next, we will look into declarative Exception Handling and how to extend DefaultBaseExceptionHandler.
+  	</para>
+
+	<section id="struts_extensions_exceptionhandling_declarative">
+    	<title>Declarative Exception Handling</title>
+
+    	<para>
+    		In Anyframe, exception can be handled declaratively through property definition, 
+    		and not through try-catch statement directly on Action class.
+    	</para>
+
+    	<section id="struts_extensions_exceptionhandling_declarative_samples">
+      		<title>Samples</title>
+
+		    <para>
+		    	The following is a part of struts-config-exception.xml and is an example of handling declarative exception.
+		    	<programlisting language="xml"><![CDATA[<action path="/exceptionHandling"
+    type="org.anyframe.struts.sample.action.ExceptionHandlingAction"
+    scope="request">
+    <]]><emphasis role="bold">exception</emphasis> <emphasis role="bold">type</emphasis>="<emphasis
+            role="bold">org.anyframe.exception.BaseException</emphasis>"
+        <emphasis role="bold">key</emphasis>="<emphasis role="bold">common.msg.action.error</emphasis>"
+        <emphasis role="bold">path</emphasis>="/<emphasis role="bold">extensions</emphasis>/<emphasis
+            role="bold">error.jsp</emphasis>" 
+        <emphasis role="bold">handler</emphasis>="<emphasis
+        role="bold">org.anyframe.struts.action.DefaultBaseExceptionHandler</emphasis><![CDATA["/>
+</action>]]>
+</programlisting>
+			</para>
+
+      		<para>
+      		    <![CDATA[When ExceptionHandlingAction is executed by the above setting, 
+      			the related exception is handled through DefaultBaseExceptionHandler if the occured exception is BaseException type. 
+      			When exception occurs by executing ExceptionHandlingAction through the settings above, 
+      			exception is handled through DefaultBaseExceptionHandler if exception is BaseException type. 
+      			Exception within <global-exceptions> can be commonly defined as below. 
+      			When same exception is defined in <action> and <global-exceptions>, 
+      			handling of exception defined in <action> has priority.]]>
+      			<programlisting language="xml"><![CDATA[<global-exceptions>
+    <exception path="/extensions/error.jsp"
+        key="common.msg.authentication.error"
+        type="org.anyframe.struts.util.AuthenticationException"
+        handler="org.anyframe.struts.sample.common.SampleExceptionHandler" />
+    <exception path="/extensions/error.jsp"
+        key="common.msg.authorization.error"
+        type="org.anyframe.struts.util.AuthorizationException"
+        handler="org.anyframe.struts.sample.common.SampleExceptionHandler" />
+    <exception path="/extensions/error.jsp" 
+        key="common.msg.base.error"
+        type="org.anyframe.struts.util.BaseException"
+        handler="org.anyframe.struts.sample.common.SampleExceptionHandler" />
+</global-exceptions>]]></programlisting>
+			</para>
+		</section>
+	</section>
+
+  	<section id="struts_extensions_exceptionhandling_defaultbase">
+    	<title>DefaultBaseExceptionHandler Extension</title>
+
+    	<para>
+    		The following is SampleExceptionHandler.java that has redefined the exception handling method of the related project 
+     		by extending DefaultBaseExceptionHandler.
+     		<programlisting language="java">public class SampleExceptionHandler extends DefaultBaseExceptionHandler {
+
+    public SampleExceptionHandler() {
+        <emphasis role="bold">this.defaultBundle</emphasis> 
+            = "<emphasis role="bold">org.anyframe.sample.struts.web.common.SampleResources</emphasis>";
+	}
+
+    public ActionForward execute(Exception exception, ExceptionConfig config,
+            ActionMapping mapping, ActionForm form, HttpServletRequest request,
+            HttpServletResponse response) throws ServletException {
+
+        ActionForward forward = mapping.getInputForward();
+		
+        if (exception instanceof AuthenticationException) {
+            String loginPageURI = "/loginView.do";
+            forward.setPath(loginPageURI);
+            request.setAttribute("authenticateFail", "true");
+        } else if (exception instanceof AuthorizationException) {
+            String homePageURI = "/authrizationView.do";
+            forward.setPath(homePageURI);
+            request.setAttribute("authFail", "true");
+        } else {
+            String forwardPath = forward.getPath();
+            if (forwardPath == null || forwardPath.equals("")) {
+                forwardPath = "/loginView.do";
+                request.setAttribute("authFail", "true");
+            }
+            String url = forwardPath + "?";
+			
+            <emphasis role="bold">Enumeration enumrequest</emphasis> = <emphasis role="bold">request.getParameterNames</emphasis>();
+            <emphasis role="bold">while</emphasis> (<emphasis role="bold">enumrequest.</emphasis><emphasis role="bold"><emphasis role="bold">hasMoreElements</emphasis>()) {</emphasis>
+                <emphasis role="bold">String parameterName = (String) enumrequest.nextElement();</emphasis>
+                <emphasis role="bold">String parameterValue = request.getParameter(parameterName);</emphasis>
+                <emphasis role="bold"><![CDATA[url += parameterName + "=" + parameterValue + "&";]]></emphasis>
+            <emphasis role="bold">}</emphasis>
+            <emphasis role="bold">forward.setPath(url);</emphasis>
+        }
+        request.getSession().setAttribute("afterErrorPage", forward);
+        return <emphasis role="bold">super.execute(exception, config, mapping, form, request,</emphasis>
+            <emphasis role="bold">response);</emphasis>
+    }
+}</programlisting>
+		</para>
+
+		<para>
+		    Basic Message Resource Bundle for error message processing has been redefined as org.anyframe.sample.struts.web.common.SampleResources and logic that is forwarded as afterErrorPage by adding previous information on url in get method has been added. 
+			Also, you can see that handling according to exception type uses super.execute method.	
+			The following is a part of error.jsp that handles error message that is returned through SampleExceptionHandler. 
+    		<programlisting language="xml"><![CDATA[<%
+    ...]]>
+    <emphasis role="bold">String[] messages </emphasis>
+        <emphasis role="bold">= (String[])request.getAttribute(Globals.MESSAGE_KEY);
+    </emphasis><![CDATA[
+  	
+    String userMessage = messages[0];
+    String solution = "";
+    String reason = "";
+  	
+    if(messages.length==2) {
+        solution = messages[1];
+    }
+  	
+    if(messages.length==3) {
+        solution = messages[1];
+        reason = messages[2];
+    } 
+%>
+    ...
+    <%= ]]><emphasis role="bold">userMessage</emphasis><![CDATA[ %>]]><![CDATA[<p/>
+    <% if(!solution.equals("")) { %>
+        <strong>* SOLUTION</strong><br/>
+        <%= ]]><emphasis role="bold">solution</emphasis><![CDATA[ %>
+    <% } %>
+    <% if(!reason.equals("")) { %>
+        <strong>* REASON</strong><br/>
+        <%= ]]><emphasis role="bold">reason</emphasis><![CDATA[ %>
+    <% } %>
+    ...
+<td background="<html:rewrite page='/sample/images/ct_btnbg02.jpg'/>" 
+    class="ct_btn01" style="padding-top:3px;">
+    <a href="javascript:fncGoAfterErrorPage();">OK</a>
+</td>
+    ...
+]]></programlisting>
+		</para>
+  	</section>
+</chapter>

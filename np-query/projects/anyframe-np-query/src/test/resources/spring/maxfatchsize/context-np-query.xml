@@ -1,0 +1,56 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans" 
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:query="http://www.anyframejava.org/schema/query"
+	xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-3.2.xsd
+	http://www.anyframejava.org/schema/query http://www.anyframejava.org/schema/query/anyframe-query-1.1.xsd">
+	
+	<bean id="npQueryService" class="org.anyframe.np.query.impl.NPQueryServiceImpl">
+		<property name="namedParamJdbcTemplate" ref="pagingNamedParamJdbcTemplate"/>
+		<property name="lobHandler" ref="lobHandler"/>
+		<property name="sqlRepository" ref="sqlLoader"/>
+		<lookup-method name="getRowCallbackHandler" bean="rowCallbackHandler"/>
+		<lookup-method name="getCallableStatementCallbackHandler" bean="callableStatementCallbackHandler"/>
+		<lookup-method name="getPrintWriterRowCallbackHandler" bean="printWriterRowCallbackHandler"/>
+	</bean>	
+	
+	<bean id="callableStatementCallbackHandler" class="org.anyframe.np.query.impl.jdbc.mapper.NPCallableStatementCallbackHandler" scope="prototype"/>
+	
+	<bean id="rowCallbackHandler" class="org.anyframe.np.query.impl.jdbc.mapper.NPDataSetCallbackHandler" scope="prototype"/>
+	
+	<bean id="printWriterRowCallbackHandler" class="org.anyframe.np.query.impl.jdbc.mapper.NPPrintWriterCallbackHandler" scope="prototype"/>
+	 
+   <!-- The original JdbcTemplate definition -->
+    <bean id="pagingNamedParamJdbcTemplate" class="org.anyframe.query.impl.jdbc.PagingNamedParamJdbcTemplate">
+    	<constructor-arg ref="pagingJdbcTemplate"/>
+    </bean> 
+    
+    <bean id="pagingJdbcTemplate" class="org.anyframe.query.impl.jdbc.PagingJdbcTemplate">
+	    <property name="dataSource" ref="dataSource"/>
+	    <property name="exceptionTranslator" ref="exceptionTranslator"/>
+   	    <property name="paginationSQLGetter" ref="pagingSQLGenerator"/>
+   	     <property name="maxFetchSize" value="3"/>
+    </bean>
+    
+    <bean id="pagingSQLGenerator" class="org.anyframe.query.impl.jdbc.generator.OraclePagingSQLGenerator"/>
+    
+    
+     <!--  SqlLoader -->
+	<bean name="sqlLoader" class="org.anyframe.query.impl.config.loader.MappingXMLLoader">
+		<property name="mappingFiles">
+			<value>classpath:/mappings/maxfatchsize/testcase-queries-np-maxfatchsize.xml</value>
+		</property>	
+		<property name="nullchecks">
+			<map>
+		    	<entry key="VARCHAR" value=""/>
+		    </map>
+		</property>	    
+		<property name="skipError" value="true" />				
+	</bean>
+	
+	<bean id="lobHandler" class="org.springframework.jdbc.support.lob.OracleLobHandler" lazy-init="true"/>
+	
+    <bean id="exceptionTranslator" class="org.anyframe.query.impl.util.RawSQLExceptionTranslator"/>
+    
+</beans>
+

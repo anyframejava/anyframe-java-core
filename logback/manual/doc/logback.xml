@@ -1,0 +1,200 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+
+<!DOCTYPE book PUBLIC "-//OASIS//DTD DocBook XML V4.5//EN" "http://www.oasis-open.org/docbook/xml/4.5/docbookx.dtd"
+[
+<!ENTITY logback_logback_configuration SYSTEM "logback/logback/configuration.xml">
+<!ENTITY logback_logback_logging SYSTEM "logback/logback/logging.xml">
+<!ENTITY logback_logback_features SYSTEM "logback/logback/features.xml">
+]
+>
+
+<!--
+		Licensed to the Apache Software Foundation (ASF) under one or more
+		contributor license agreements. See the NOTICE file distributed with
+		this work for additional information regarding copyright ownership.
+		The ASF licenses this file to you under the Apache License, Version
+		2.0 (the "License"); you may not use this file except in compliance
+		with the License. You may obtain a copy of the License at
+
+		http://www.apache.org/licenses/LICENSE-2.0 Unless required by
+		applicable law or agreed to in writing, software distributed under the
+		License is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR
+		CONDITIONS OF ANY KIND, either express or implied. See the License for
+		the specific language governing permissions and limitations under the
+		License.
+-->
+    
+<book lang="ko">
+	<title>Anyframe Logback Plugin</title>
+	
+	<bookinfo>
+		<copyright>
+			<year>2007-2014</year>
+			<holder>삼성SDS</holder>
+		</copyright>
+		<releaseinfo>Version 1.1.1-SNAPSHOT</releaseinfo>
+
+		<productname>Anyframe Logback Plugin</productname>
+		
+		<authorgroup>
+			<corpauthor></corpauthor>
+		</authorgroup>
+		
+		<mediaobject>
+			<imageobject>
+				<imagedata fileref="../image/common/logo_pdf.jpg"/>
+			</imageobject>
+			<textobject>
+				<phrase>Anyframe Java 로고</phrase>
+			</textobject>
+		</mediaobject>
+		<legalnotice>
+			<para>
+				본 문서의 저작권은 삼성SDS에 있으며 Anyframe 오픈소스 커뮤니티 활동의 목적하에서 자유로운 이용이 가능합니다.
+				본 문서를 복제, 배포할 경우에는 저작권자를 명시하여 주시기 바라며 본 문서를 변경하실 경우에는 원문과 변경된 내용을 표시하여 주시기 바랍니다. 
+				원문과 변경된 문서에 대한 상업적 용도의 활용은 허용되지 않습니다. 본 문서에 오류가 있다고 판단될 경우 이슈로 등록해 주시면 적절한 조치를 취하도록 하겠습니다.
+			</para>
+		</legalnotice>
+	</bookinfo>
+ 
+	<part id="logback_introduction_part">
+		<title>Introduction</title>
+		<partintro id="logback_introduction_partintro">
+			<para>
+				Logback plugin은 Logback framework에서 제공하는 SiftingAppender와 MDC를 활용한 사용자별 로깅 방법을 가이드 하기 위한 샘플코드, 참조 라이브러리, 설정파일로 구성되어 있다. 
+			</para>
+			<para role="introduction_title"><emphasis role="bold">Installation</emphasis></para>
+			<para>Command 창에서 다음과 같이 명령어를 입력하여 Logback plugin을 설치한다.</para>
+			<programlisting language="java"><![CDATA[mvn anyframe:install -Dname=logback]]></programlisting>
+			<para>
+				installed(mvn anyframe:installed) 혹은 jetty:run(mvn clean jetty:run) command를 이용하여 설치 결과를 확인해볼 수 있다. 
+			</para>
+			<informaltable>
+				<caption>Dependent Plugins</caption>
+				<tgroup cols="2">
+					<colspec colnum="1" colname="col1" colwidth="5*" />
+					<colspec colnum="2" colname="col2" colwidth="5*" />
+					<thead>
+						<row>
+							<entry align="center">Plugin Name</entry>
+							<entry align="center">Version Range</entry>
+						</row>
+					</thead>
+					<tbody>
+						<row>
+							<entry align="center"><ulink url="http://dev.anyframejava.org/docs/anyframe/plugin/essential/core/1.6.1-SNAPSHOT/reference/htmlsingle/core.html">core</ulink></entry>
+							<entry align="center" valign="middle">2.0.0 > * > 1.4.0</entry>
+						</row>
+					</tbody>
+				</tgroup>
+			</informaltable>		
+		<warning>
+			<title>주의 사항</title>
+			<itemizedlist>
+			<listitem>
+			    <para>
+				Logback Plugin을 설치한 후 샘플 어플리케이션 실행 시 slf4j-log4j-x.jar 라이브러리와 logback-classic-x.jar 라이브러리가 충돌하여 "SLF4J: Class path contains multiple SLF4J bindings" 
+				라는 경고 메시지가 나타날 수 있으나 어플리케이션 실행에는 영향을 미치지 않는다. 해당 경고 메시지를 제거하기 위해서는 slf4j-log4j 라이브러리를 수동으로 제거하면 문제를 해결할 수 있다.
+				</para>
+		    </listitem>
+		    
+			<listitem>
+			    <para>
+				Logback을 사용하는 경우 Core Plugin을 제외한 다른 Plugin 설치시 log4j.xml에 자동으로 추가되는 logger는 
+				직접 logback.xml에 등록해주어야한다.
+				</para>
+		    </listitem>
+			
+			<listitem>
+			    <para>
+				기본적으로 Anyframe Plugin 설치로 생긴 각각의 샘플 코드는 LoggingAspect.java 클래스에 구현된 로직을 바탕으로 로그를 출력하고 있다. 이 때, LoggingAspect.java 클래스에 의해 출력되는 로그는 Debug 레벨로 설정되어 있으므로 Logback.xml에 정의된 해당 Logger의 Level을 Debug로 변경하여야 한다. 
+				</para>
+		    </listitem>	
+		    <listitem>
+			    <para>
+				Logback Plugin 설치 시 등록되는 FileAppender와 RollingFileAppender는 로그 파일이 생성되는 위치를 상대경로로 설정되어있다. 
+			 	상대경로의 경우 해당 로그 파일은 샘플 어플리케이션을 실행한 곳을 기준으로 생성이 된다.
+			 	예를 들면 eclipse 와 eclipse에 연결 된 tomcat을 이용하여 샘플 어플리케이션을 실행한 경우에는 eclipse가 설치된 경로이고 
+			 	특정 WAS에 배포하여 사용하는 경우에는 해당 WAS에 실행되는 상대경로를 확인하여야 한다.
+				</para>
+		    </listitem>
+			</itemizedlist>
+		</warning>
+		</partintro>
+	</part>
+ 	 
+	<part id="logback_logback_part">
+		<title>Logback</title>
+		<partintro id="logback_features_partintro">
+			<para>
+				Logback은 널리 알려진 Java Logging Framework인 Log4j를 대체하기 위해 개발된  Logging Framework이다. Logback은 log4j에 비해서 속도나 메모리 사용면에서 개선되었고, slf4j 인터페이스를 직접 구현함으로써 로깅을 수행하는 어플리케이션에서는 slf4j api만을 사용하여 로깅을 수행할 수 있기때문에 다른 Logging framework 와의 변경을 손쉽게 할 수 있다.
+				또한 Logback은 Filter, SiftingAppender, Dynamic Reloading, 설정파일의 조건부 처리 기능, RollingFileAppender의 자동압축기능과 설정한 기간이 지난 로그 파일의 자동 삭제와  같은 새로운 기능을 지원한다.
+			</para>
+			<para> 이 장에서는 Logback의 구성요소, 설정방법, 기능에 대해서 알아보도록 한다.</para>
+			
+			
+			<note>
+				<title>Dependencies</title>
+				<para> Logback을 사용하기 위해서는 logback-core와 logback-classic 라이브러리가 필수적으로 필요하다. 
+	또한 Logback은 sf4j를 구현하였기 때문에 slf4j-api 라이브러리를 필요로 한다. 다음은 필수라이브러리에 대한 추가 설명이다.</para>
+				<itemizedlist>
+					<listitem>
+					    <para>
+						slf4j-api : slf4j 표준 인터페이스 구현체로, core Plugin 설치시 디폴트로 추가된다. 
+						</para>
+				    </listitem>
+					<listitem>
+					    <para>
+						logback-core : logback-classic과 의존 모듈로 appender, layout 등이 구현되어 있는 모듈이다.  
+						</para>
+				    </listitem>
+					<listitem>
+					    <para>
+						logback-classic : Logback의 logger와 SiftAppender등이 구현되어 있는 모듈이다.
+						</para>
+				    </listitem>
+				</itemizedlist>
+				<para> Logback 에서는 &lt;if&gt; 태그를 제공하여 하나의 설정파일을 다양한 조건에 의해 변경할 수 있는  조건부 처리 기능을 제공하는데
+					이 조건을 처리하는 방식을 Java언어를 이용한 방식과 groovy언어를 사용한 방식 두 가지를 지원한다. 
+					Logback Plugin에서는 Java를 이용한 방식을 사용하였고 설정파일에서 JAVA 표현식을 사용하기 위해 필요한 라이브러리인 janino와 commons-complier 라이브러리가 추가된다.
+				</para>
+				<para>core 모듈이 설치되면 sl4j-log4j-x.jar가 참조 라이브러리로 지정이 된다. 
+	sl4j-log4j-x.jar와 logback-classic-x.jar 이 동시에 존재하게 되면, slf4j-api 구현체가 중복으로 존재하게 되므로, Logback Plugin 설치시  slf4j-log4j-x.jar에 대한 dependency를 제거 한다.
+		</para>
+			</note>
+		</partintro>
+		&logback_logback_configuration;
+		&logback_logback_features;
+		&logback_logback_logging;						
+	</part>	
+	
+	<part id="logback_references_part">
+		<title>References</title>
+		<partintro id="logback_references_partintro">
+			<para>
+				<itemizedlist>
+					<listitem>
+						<para>참고자료</para>
+							<itemizedlist>
+								<listitem>
+									<para>
+									<ulink url="http://logback.qos.ch/">Logback</ulink>
+									</para>
+								</listitem>
+								<listitem>
+									<para>
+									<ulink url="http://logback.qos.ch/manual/mdc.html">MDC</ulink>
+									</para>
+								</listitem>
+								<listitem>
+									<para>
+									<ulink url="http://logback.qos.ch/manual/groovy.html">Groovy Configuration</ulink>
+									</para>
+								</listitem>
+							</itemizedlist>
+					</listitem>
+				</itemizedlist>
+			</para>
+		</partintro>				
+	</part>
+</book>

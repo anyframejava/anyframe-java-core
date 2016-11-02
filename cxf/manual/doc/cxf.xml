@@ -1,0 +1,135 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+
+<!DOCTYPE book PUBLIC "-//OASIS//DTD DocBook XML V4.5//EN" "http://www.oasis-open.org/docbook/xml/4.5/docbookx.dtd"
+[
+<!ENTITY cxf_overview SYSTEM "cxf/overview.xml">
+<!ENTITY cxf_databinding SYSTEM "cxf/databinding.xml">
+<!ENTITY cxf_resources SYSTEM "cxf/resources.xml">
+]
+>
+
+<!--
+		Licensed to the Apache Software Foundation (ASF) under one or more
+		contributor license agreements. See the NOTICE file distributed with
+		this work for additional information regarding copyright ownership.
+		The ASF licenses this file to you under the Apache License, Version
+		2.0 (the "License"); you may not use this file except in compliance
+		with the License. You may obtain a copy of the License at
+
+		http://www.apache.org/licenses/LICENSE-2.0 Unless required by
+		applicable law or agreed to in writing, software distributed under the
+		License is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR
+		CONDITIONS OF ANY KIND, either express or implied. See the License for
+		the specific language governing permissions and limitations under the
+		License.
+-->
+    
+<book lang="ko">
+	<title>Anyframe CXF Plugin</title>
+	
+	<bookinfo>
+		<copyright>
+			<year>2007-2014</year>
+			<holder>삼성SDS</holder>
+		</copyright>
+		<releaseinfo>Version 1.1.1-SNAPSHOT</releaseinfo>
+
+		<productname>Anyframe CXF Plugin</productname>
+
+		<authorgroup>
+			<corpauthor></corpauthor>
+		</authorgroup>
+
+		<mediaobject>
+			<imageobject>
+				<!-- logo 변경 -->
+				<imagedata fileref="../image/common/logo_pdf.jpg"/>
+			</imageobject>
+			<textobject>
+				<phrase>Anyframe Java Logo</phrase>
+			</textobject>	
+		</mediaobject>
+		<legalnotice>
+			<para>본 문서의 저작권은 삼성SDS에 있으며 Anyframe 오픈소스 커뮤니티 활동의 목적하에서 자유로운 이용이 가능합니다.
+			본 문서를 복제, 배포할 경우에는 저작권자를 명시하여 주시기 바라며 본 문서를 변경하실 경우에는 원문과 변경된 내용을 표시하여 주시기 바랍니다. 
+			원문과 변경된 문서에 대한 상업적 용도의 활용은 허용되지 않습니다. 본 문서에 오류가 있다고 판단될 경우 이슈로 등록해 주시면 적절한 조치를 취하도록 하겠습니다.
+			</para>
+		</legalnotice>
+	</bookinfo>
+	
+	<part id="cxf_introduction_part">
+		<title>Introduction</title>
+		<partintro id="cxf_introduction_part_intro">
+			<para>
+				웹 서비스 구현을 위해 많이 사용하고 있는 오픈소스 프레임워크에는 Apache CXF, Apache Axis/Axis2, Spring Web Services 등등 여러가지가 존재한다. 
+				cxf plugin은 이 중 <ulink url="http://cxf.apache.org/">Apache CXF</ulink>를 활용하는데 필요한 
+				참조 라이브러리들과 JAXB Databinding 수행시 요구되는 Map 타입에 대한 기본 XmlAdapter 클래스를 제공하는 CXF Service로 구성되어 있다.
+			</para>
+			<para role="introduction_title"><emphasis role="bold">Installation</emphasis></para>
+			<para>Command 창에서 다음과 같이 명령어를 입력하여 cxf plugin을 설치한다.</para>
+			<programlisting language="java"><![CDATA[mvn anyframe:install -Dname=cxf]]></programlisting>
+			<para>
+				installed(mvn anyframe:installed) 혹은 jetty:run(mvn clean jetty:run) command를 이용하여 설치 결과를 확인해볼 수 있다. 
+			</para>
+			<informaltable>
+				<caption>Dependent Plugins</caption>
+				<tgroup cols="2">
+					<colspec colnum="1" colname="col1" colwidth="5*" />
+					<colspec colnum="2" colname="col2" colwidth="5*" />
+					<thead>
+						<row>
+							<entry align="center">Plugin Name</entry>
+							<entry align="center">Version Range</entry>
+						</row>
+					</thead>
+					<tbody>
+						<row>
+							<entry align="center"><ulink url="http://dev.anyframejava.org/docs/anyframe/plugin/essential/core/1.6.1-SNAPSHOT/reference/htmlsingle/core.html">Core</ulink></entry>
+							<entry align="center" valign="middle">2.0.0 > * > 1.4.0</entry>
+						</row>
+					</tbody>
+				</tgroup>
+			</informaltable>
+		</partintro>
+	</part>	
+	
+	<part id="cxf_overview_part">
+		<title>Web Services</title>
+		<partintro id="cxf_overview_intro">
+			<para>
+				Anyframe은 <emphasis role="bold">Apache CXF 2.5.2 버전</emphasis>을 이용하여 웹 서비스 기능을 제공하고 있다.
+			</para>
+		
+		  	<para>
+		  		웹 서비스란 인터넷 네트워크를 통하여 다수의 기존 어플리케이션 시스템을 표준화된 기술로서 상호 작용 시키고, 이러한 표준
+		  		기술을 이용하여 모든 비즈니스를 가능하게 한다.
+		  	</para>
+		
+		  	<para>
+		  		웹 서비스는 언제, 어디에서나 원하는 정보나 서비스를 제공해 주는 역할을 하며 기존의 다른 소프트웨어처럼 완벽한 정의를 지정하여 
+		  		구성하는 것이 아니라 서로 주고받는 데이터 표준에 대한 정의를 규정함으로써 매우 유연하고 이질적인 운영시스템, 이질적인 프로그램
+		  		언어 간의 커뮤니케이션 차이를 극복해 주는 연결고리 역할을 수행한다.
+		  	</para>
+		
+		  	<para>
+		  		<ulink url="http://www.w3.org/2002/ws/arch/">Web Service Architecture Working Group. W3C</ulink> (Web Services 
+		  		Glossary, Web Services Architecture 등 자료 조회 가능)에서는 Web Services를 다음과 같이 정의하고 있다.
+		  	</para>
+
+    		<programlisting>"A Web service is a software system designed to support interoperable machine-to-machine 
+interaction over a network. It has an interface described in a machine-processable format 
+(specifically WSDL). Other systems interact with the Web service in a manner prescribed by 
+its description using SOAP-messages, typically conveyed using HTTP with an XML serialization
+in conjunction with other Web-related standards." </programlisting>
+
+			<para>
+				위의 영문 정의를 해석해보면, 다음과 같다. 네트워크를 통해 상호 운용성있는 기계 대 기계 상호작용을 지원하기 위해 설계된
+		  		소프트웨어 시스템으로, WSDL이라는 형태로 정의된 인터페이스를 가지며, SOAP 메시지를 사용하여 타 시스템들은 웹 서비스와 상호
+		  		작용할 수 있다. 웹 관련 표준들과 협력하며 전형적으로 HTTP를 사용한 XML 직렬화를 통해 전송한다.
+		  	</para>
+		</partintro>
+		&cxf_overview;
+		&cxf_databinding;
+		&cxf_resources;
+	</part>	
+</book>

@@ -1,0 +1,685 @@
+<chapter id="simpleweb_tag">
+	<title>Tag Library</title>
+	<para>Anyframe에서는 개발자가 보다 쉽고 간결한 웹 개발을 할 수 있도록 유용한 Tag Library를 제공한다. 
+	이는 주로 Simpleweb 기반의 개발을 지원할 수 있는 Tag와 Spring JS 호출을 위한 Tag로 구성되어 있다.
+	Anyframe에서 제공하는 Tag Library를 사용하기 위해서는 아래와 같이 taglib이 정의되어 있어야 한다. </para>
+	<programlisting language="c"><![CDATA[<%@ taglib uri="http://www.anyframejava.org/tags/simpleweb" prefix="simpleweb" %>]]></programlisting>
+		<para>* 해당 tld 파일은 anyframe-simpleweb 프로젝트 내에 존재한다.</para>
+		<para>Anyframe Simpleweb에서 제공하는 Tag Library의 주요 기능은 아래와 같다.</para>
+	<itemizedlist>
+		<listitem>
+			<para>Get 방식의 Link 지원</para>
+		</listitem>
+		<listitem>
+			<para>POST 방식의 Submit 지원</para>
+		</listitem>
+		<listitem>
+			<para>SimpleWeb 기반의 공통 Controller 호출</para>
+			<itemizedlist>
+				<listitem>
+					<para>호출할 비즈니스 서비스 정의</para>
+				</listitem>
+				<listitem>
+					<para>비즈니스 서비스 수행 후 리턴할 뷰 정의</para>
+				</listitem>
+			</itemizedlist>
+		</listitem>
+		<listitem>
+			<para>Submit 시 중복 폼 서브밋 방지 기능</para>
+		</listitem>
+		<listitem>
+			<para>JSP 페이지에서 필요한 Model 객체 정의</para>
+		</listitem>
+		<listitem>
+			<para>Request Parameter 정의</para>
+		</listitem>
+		<listitem>
+			<para>Submit이나 Link 사용시 javascript function 호출</para>
+		</listitem>
+		<listitem>
+			<para>서버단 Validation 적용을 위한 Validator 정의</para>
+		</listitem>
+		<listitem>
+			<para>Spring JS를 이용한 Client단 Validation </para>
+		</listitem>
+		<listitem>
+			<para>Spring JS를 이용한 Tiles 기반의 Partial Rendering</para>
+		</listitem>
+		<listitem>
+			<para>Spring JS를 이용한 Popup(Dialog) 기능 제공</para>
+		</listitem>
+	</itemizedlist>
+	<section id="simpleweb_tag_springjs">
+		<title>Spring JS 연계</title>
+	<para>위의 기능에서 알 수 있듯이 Partial Rendering, Popup, Validation 기능을 위해 Spring JS를 사용한다. 이번 절에서는 
+	Spring JS와의 연계 방안에 대해 알아보도록 한다. 
+	Spring JS를 사용하기 위해서는 spring-js-x.x.x.jar 라이브러리가 필요하다. 이는 simpleweb-plugin 설치시 자동 설치 되므로 개발자가
+	신경쓰지 않아도 된다. 
+	Spring JS는 dojo기반으로 동작하고 있으며 Spring JavaScript 형태로 dojo를 호출해 준다. 필요한 js, image, css 파일의 접근을 위해
+	ResourceServlet을 제공하고 있으며 web.xml에 해당 servlet을 정의해줘야 한다.
+	</para>
+	<programlisting language="xml"><![CDATA[<servlet>
+	<servlet-name>Resource Servlet</servlet-name>
+	<servlet-class>org.springframework.js.resource.ResourceServlet</servlet-class>
+</servlet>
+<servlet-mapping>
+	<servlet-name>Resource Servlet</servlet-name>
+	<url-pattern>/resources/*</url-pattern>
+</servlet-mapping>]]></programlisting>
+	<para>servlet 정의가 끝나면 해당 js파일과 css파일의 경로를 jsp의 상단에 정의하도록 한다. 
+	다음은 simpleweb-plugin 설치로 추가된 화면 레이아웃이 정의되어 있는 standard.jsp 파일의 일부이다.</para>
+	<programlisting language="xml"><![CDATA[<script type="text/javascript" src="<c:url value="/resources/dojo/dojo.js" />"></script>  
+<script type="text/javascript" src="<c:url value="/resources/dojo/io/iframe.js" />"></script>  
+<script type="text/javascript" src="<c:url value="/resources/anyframe/spring/Anyframe-Spring.js" />"></script>
+<script type="text/javascript" src="<c:url value="/resources/anyframe/spring/Anyframe-Spring-Dojo.js" />"></script>
+<link type="text/css" rel="stylesheet" href="<c:url value="/resources/dijit/themes/tundra/tundra.css" />" />
+<!-- 아래의 css는 Anyframe에서 tundra.css를 customizing 한 css 파일이며 필요시 참조하도록 한다. (필수 정의 아님)-->
+<link rel="stylesheet" href="<c:url value='/sample/css/tundra-customized.css'/>" type="text/css">]]></programlisting>
+	<para>기본적으로 Spring JS와의 연계를 위해서는 Spring에서 제공하는 JavaScript인 Spring.js와 Spring-Dojo.js를 import하게 된다. 
+	하지만 여기서는 Simpleweb 기능을 지원하기 위해 Anyframe에서 확장한 Anyframe-Spring.js와 Anyframe-Spring-Dojo.js를 사용하도록 한다.</para> 
+	</section>
+	<section id="simpleweb_tag_submit">
+		<title>submit tag</title>
+		<para>submit tag는 기본적으로 Form submit을 처리하기 위한 tag로 Anyframe의 공통 Controller를 통해 별도의 Controller 클래스 
+		작성없이 바로 비즈니스 서비스를 호출 할 수 있다.
+		submit tag에서 제공하는 Attribute는 아래의 표와 같다.
+		</para>
+		<informaltable>
+		  <caption>submit tag에서 제공하는 Attribute</caption>
+          <tgroup cols="3">
+          		<colspec colnum="1" colname="col1" colwidth="2*"/>
+				<colspec colnum="2" colname="col2" colwidth="2*"/>
+				<colspec colnum="3" colname="col3" colwidth="6*"/>
+	            <thead>
+	              <row>
+	                <entry align="center">Attribute</entry>
+	
+	                <entry align="center">Required</entry>
+	
+	                <entry align="center">Description</entry>
+	              </row>
+	            </thead>
+
+	            <tbody>
+	              <row>
+	                <entry align="center">id</entry>
+	                <entry align="center">true</entry>
+	                 <entry>
+	                 	<para>submit tag를 식별할 유일한 ID</para>
+	                 </entry>
+	              </row>
+	              <row>
+	                <entry align="center">form</entry>
+	                <entry align="center">true</entry>
+	                 <entry>Submit 대상이 되는 form의 이름</entry>
+	              </row>
+	              <row>
+	                <entry align="center">action</entry>
+	                <entry align="center">false</entry>
+	                 <entry>servlet에서 처리하게될 요청 명. default 값은 "/simple.do"임</entry>
+	              </row>
+	              <row>
+	                <entry align="center">service</entry>
+	                <entry align="center">false</entry>
+	                 <entry>호출해야하는 비즈니스 서비스와 메소드명 (ex> movieService.get(movieId)).
+	                 단, service 명은 bean의 id로 명시 </entry>
+	              </row>
+	              <row>
+	                <entry align="center">forward</entry>
+	                <entry align="center">false</entry>
+	                 <entry>비즈니스 서비스 호출 후 또다른 요청을 하는 경우.  forward 방식으로 전달되기 때문에 Request 유지</entry>
+	              </row>
+	              <row>
+	                <entry align="center">redirect</entry>
+	                <entry align="center">false</entry>
+	                 <entry>비즈니스 서비스 호출 후 또다른 요청을 하는 경우. redirect 방식으로 전달되기 때문에 Request가 유지되지 않음</entry>
+	              </row>
+	              <row>
+	                <entry align="center">render</entry>
+	                <entry align="center">false</entry>
+	                 <entry>요청 처리 후 출력되는 View가 Partial Rendering 될 지 결정. render의 값이 "partial"일 경우 Partial Rendering 됨
+	                 단, Tiles 기반의 Layout에서만 가능</entry>
+	              </row>
+	              <row>
+	                <entry align="center">layout</entry>
+	                <entry align="center">false</entry>
+	                 <entry>요청 처리 후 출력되는 View가 사용하게 될 Tile Definition의 이름. default 값은 "standardLayout"임</entry>
+	              </row>
+	              <row>
+	                <entry align="center">tiles</entry>
+	                <entry align="center">false</entry>
+	                 <entry>Tiles Definition의 put-attribute에 들어갈 name, value 쌍을 name:value의 형태로 지정 (ex> tiles="body:list.jsp")</entry>
+	              </row>
+	               <row>
+	                <entry align="center">view</entry>
+	                <entry align="center">false</entry>
+	                 <entry>요청 처리 후 출력할 view 지정</entry>
+	              </row>
+	              <row>
+	                <entry align="center">jsValidate</entry>
+	                <entry align="center">false</entry>
+	                 <entry>&lt;simpleweb:validate&gt; tag를 사용하여 적용된 Spring JS Validation을 Submit 시 체크 할 것인지 설정</entry>
+	              </row>
+	            </tbody>
+          </tgroup>
+        </informaltable>
+        <para>submit tag의 정의 예는 아래와 같다. </para>
+<programlisting language="xml"><![CDATA[<simpleweb:submit id="addlink" form="movieForm" action="/simplejsoncommon.do" layout="jsonLayout" service="simplewebJsonMovieService.create(movie)" 
+	  forward="simplewebJsonMovieFinder.getPagingList(search)"
+	  tiles="body:/WEB-INF/jsp/simpleweb-json/moviefinder/movie/list.jsp" 
+	  render="partial" jsValidate="true">
+	submit
+</simpleweb:submit>]]></programlisting>
+	</section>
+	<section id="simpleweb_tag_link">
+		<title>link tag</title>
+		<para>link tag는 Get 방식의 요청을 처리하게 될 tag이다.
+		submit tag를 상속받아 구현되어 있으며 tag attribute 또한 submit tag와 같다.
+		단, Link Tag에서는 Spring JS를 사용한 Popup 기능을 attribute 설정을 통해 사용할 수 있다. 
+   		Popup 기능을 사용하기 위해 Link Tag에 추가된 Attribute는 아래의 표와 같다. 
+		</para>
+		<informaltable>
+		  <caption>Link Tag에 추가된 Attribute</caption>
+          <tgroup cols="3">
+          		<colspec colnum="1" colname="col1" colwidth="2*"/>
+				<colspec colnum="2" colname="col2" colwidth="2*"/>
+				<colspec colnum="3" colname="col3" colwidth="6*"/>
+	            <thead>
+	              <row>
+	                <entry align="center">Attribute</entry>
+	
+	                <entry align="center">Required</entry>
+	
+	                <entry align="center">Description</entry>
+	              </row>
+	            </thead>
+
+	            <tbody>
+	              <row>
+	                <entry align="center">popup</entry>
+	                <entry align="center">false</entry>
+	                 <entry>Partial Rendering 대상이 되는 Tile Definition에 해당하는 화면을 Popup으로 제공</entry>
+	              </row>
+	              <row>
+	                <entry align="center">popupTitle</entry>
+	                <entry align="center">false</entry>
+	                 <entry>Popup창의 Title bar에 나오게될 제목</entry>
+	              </row>
+	            </tbody>
+          </tgroup>
+        </informaltable>
+                <para>link tag의 정의 예는 아래와 같다. </para>
+        <programlisting language="xml"><![CDATA[<simpleweb:link action="/simplejsoncommon.do" id="addviewlink"  
+        	layout="jsonLayout" render="partial" popup="true">
+	<simpleweb:setProperty name="title" value="add"/>
+</simpleweb:link>]]></programlisting>
+	</section>
+	<section id="simpleweb_tag_setproperty">
+		<title>setProperty tag</title>
+		<para>setProperty tag는 submit tag나 link tag의 Inner tag로 사용되며 단순히 name, value 쌍을 가지는 property를 셋팅해주기 위한 tag이다.
+		setProperty tag에서 제공하는 Attribute는 아래와 같다. 
+		</para>
+		<informaltable>
+		  <caption>setProperty tag에서 제공하는 Attribute</caption>
+          <tgroup cols="3">
+          		<colspec colnum="1" colname="col1" colwidth="2*"/>
+				<colspec colnum="2" colname="col2" colwidth="2*"/>
+				<colspec colnum="3" colname="col3" colwidth="6*"/>
+	            <thead>
+	              <row>
+	                <entry align="center">Attribute</entry>
+	
+	                <entry align="center">Required</entry>
+	
+	                <entry align="center">Description</entry>
+	              </row>
+	            </thead>
+
+	            <tbody>
+	              <row>
+	                <entry align="center">name</entry>
+	                <entry align="center">true</entry>
+	                 <entry>property로 정의하게 되는 key 값. Anyframe에서 제공하는 특정 요소를 이름으로 가지며
+	                 name으로 셋팅해 줄 수 있는 값과 각각의 기능은 아래 리스트 참고.
+	                 	<itemizedlist>
+	                 		<listitem><para>title</para><para>link나 submit을 실행시킬 대상이 되는 text 또는 이미지 요소</para></listitem>
+	                 		<listitem><para>hiddenDiv </para><para> submit tag, link tag로 인해 생성되는 Parameter들을 가지게 되는 div 요소의 id 값. default는 "hiddenDiv"</para></listitem>
+	                 		<listitem><para>upload </para><para>jQuery의 uploadify 플러그인을 이용한 파일 업로드 여부</para></listitem>
+	                 		<listitem><para>javascript </para><para> link나 submit을 실행시키기 전에 수행시킬 javascript 함수</para></listitem>
+	                 		<listitem><para>request:${key} </para><para>Controller 클래스에 넘겨줄 Request Parameter</para></listitem>
+	                 	</itemizedlist>
+	                 </entry>
+	              </row>
+	              <row>
+	                <entry align="center">value</entry>
+	                <entry align="center">false</entry>
+	                 <entry>name에 셋팅해 주게될 실제 값</entry>
+	              </row>
+	            </tbody>
+          </tgroup>
+        </informaltable>
+        <para>setProperty의 설정 예는 아래와 같다.</para> 
+        <programlisting language="xml"><![CDATA[<simpleweb:link id="jsonMovie" action="/simplejson.do" layout="jsonLayout" tiles="body:/WEB-INF/jsp/simpleweb-json/moviefinder/movie/list.jsp">
+	]]><emphasis role="bold"><![CDATA[<simpleweb:setProperty name="title">SimpeWeb-JSON[1]</simpleweb:setProperty>
+	<simpleweb:setProperty name="javascript value="fncAlert();"></simpleweb:setProperty>
+	<simpleweb:setProperty name="request:pageSize" value="100"></simpleweb:setProperty>
+	<simpleweb:setProperty name="request:pageUnit" value="3"></simpleweb:setProperty>]]></emphasis><![CDATA[
+</simpleweb:link>]]></programlisting>
+<programlisting language="xml"><![CDATA[<simpleweb:submit id="updatelink" form="movieForm" service="simplewebVoMovieService.update(movie)" forward="simplewebVoMovieFinder.getPagingList(search)"
+		layout="voLayout" tiles="body:/WEB-INF/jsp/simpleweb-vo/moviefinder/movie/list.jsp" render="partial" jsValidate="true">
+	]]><emphasis role="bold"><![CDATA[<simpleweb:setProperty name="title">
+		<img src="<c:url value='/sample/images/btn_update.png'/>" width="64" height="18" border="0" />
+	</simpleweb:setProperty>
+	<simpleweb:setProperty name="hiddenDiv" value="hiddenDivPopup" />
+	<simpleweb:setProperty name="upload" value="true" />]]></emphasis><![CDATA[
+</simpleweb:submit>]]></programlisting>
+	</section>
+	<section id="simpleweb_tag_doublesubmit">
+		<title>doublesubmit tag</title>
+		<para>doublesubmit tag는 link tag나 submit tag의 inner tag로 사용되며 중복 폼 서브밋 방지 기능 구현을 위해 사용한다. 
+		doublesubmit tag에서 제공하는 Attribute는 아래와 같다. 
+		</para>
+		<informaltable>
+		  <caption>doublesubmit tag에서 제공하는 Attribute</caption>
+          <tgroup cols="3">
+          		<colspec colnum="1" colname="col1" colwidth="2*"/>
+				<colspec colnum="2" colname="col2" colwidth="2*"/>
+				<colspec colnum="3" colname="col3" colwidth="6*"/>
+	            <thead>
+	              <row>
+	                <entry align="center">Attribute</entry>
+	
+	                <entry align="center">Required</entry>
+	
+	                <entry align="center">Description</entry>
+	              </row>
+	            </thead>
+	            <tbody>
+	              <row>
+	                <entry align="center">formName</entry>
+	                <entry align="center">true</entry>
+	                 <entry>중복 form submit 기능을 적용하게 되는 form의 이름
+	                 </entry>
+	              </row>
+	              <row>
+	                <entry align="center">isShowNewForm</entry>
+	                <entry align="center">false</entry>
+	                 <entry>중복 form submit 방지 기능을 적용하는 form을 출력하는 요청에 "true"로 설정</entry>
+	              </row>
+	              <row>
+	                <entry align="center">isSessionForm</entry>
+	                <entry align="center">false</entry>
+	                 <entry>form submit에 "true"로 설정</entry>
+	              </row>
+	            </tbody>
+          </tgroup>
+        </informaltable>
+        <para>중복 form submit 방지 기능의 구현 예는 아래와 같다.</para>
+        <orderedlist>
+        	<listitem> <para>중복 form submit 방지 기능의 대상이 되는 form 출력 요청</para>
+       		<para>formName을 지정해 주고 isShowNewForm 속성을 "true"로 설정한다. </para></listitem>
+         	<programlisting language="xml"><![CDATA[<simpleweb:link id="addviewlink" layout="voLayout" tiles="body:/WEB-INF/jsp/simpleweb-vo/moviefinder/movie/form.jsp">
+	<simpleweb:setProperty name="title"><img src="<c:url value='/sample/images/btn_add.png'/>" width="64" height="18" border="0" /></simpleweb:setProperty>
+	<simpleweb:model name="movie" type="${package}.simpleweb.vo.moviefinder.domain.Movie"/>
+	<simpleweb:init valueList="genreList:simplewebVoGenreService.getList()" />   
+	]]><emphasis role="bold"><![CDATA[<simpleweb:doublesubmit formName="movieForm" isShowNewForm="true"/>]]></emphasis><![CDATA[
+</simpleweb:link>]]></programlisting>
+        	<listitem> <para>form submit 요청</para>
+		        <para>formName을 지정해 주고(위에서 설정한 formName과 동일해야함) isSessionForm 속성을 "true"로 설정한다. </para>
+		        <programlisting language="xml"><![CDATA[<simpleweb:submit id="addlink" form="movieForm" service="simplewebVoMovieService.create(movie)" forward="simplewebVoMovieFinder.getPagingList(search)"
+		layout="voLayout" tiles="body:/WEB-INF/jsp/simpleweb-vo/moviefinder/movie/list.jsp" render="partial" jsValidate="true">
+	<simpleweb:setProperty name="title"><img src="<c:url value='/sample/images/btn_add.png'/>" width="64" height="18" border="0" /></simpleweb:setProperty> 
+	<simpleweb:setProperty name="hiddenDiv" value="hiddenDivPopup" />	
+	<simpleweb:setProperty name="upload" value="true" />	
+	]]><emphasis role="bold"><![CDATA[<simpleweb:doublesubmit formName="movieForm" isSessionForm="true"/>  ]]></emphasis><![CDATA[   
+</simpleweb:submit>]]></programlisting></listitem>
+        </orderedlist>
+	</section>
+	
+	<section id="simpleweb_tag_init">
+		<title>init tag</title>
+		<para>init tag는 link tag나 submit tag의 inner tag로 사용 되며 
+		JSP에서 출력해줄 초기 데이터를 셋팅할 수 있도록 해준다.  ","를 사용하여 여러개의 데이터 셋팅이 가능하다.
+		init tag에서 제공하는 Attribute는 아래와 같다. </para>
+		<informaltable>
+		  <caption>init tag에서 제공하는 Attribute</caption>
+          <tgroup cols="3">
+          		<colspec colnum="1" colname="col1" colwidth="2*"/>
+				<colspec colnum="2" colname="col2" colwidth="2*"/>
+				<colspec colnum="3" colname="col3" colwidth="6*"/>
+	            <thead>
+	              <row>
+	                <entry align="center">Attribute</entry>
+	
+	                <entry align="center">Required</entry>
+	
+	                <entry align="center">Description</entry>
+	              </row>
+	            </thead>
+	            <tbody>
+	              <row>
+	                <entry align="center">valueList</entry>
+	                <entry align="center">true</entry>
+	                 <entry>초기데이터를 셋팅해 줄 값의 리스트. "${key}:${service.method};${key}:${service.method}..." 형태로 정의
+	                 </entry>
+	              </row>
+              </tbody>
+           </tgroup>
+         </informaltable>
+         <para>init tag의 정의 예는 아래와 같다. </para>
+         <programlisting language="xml"><![CDATA[<simpleweb:link id="jsonTree" action="/simplejson.do" layout="jsonLayout" tiles="body:/WEB-INF/jsp/simpleweb-json/moviefinder/movie/tree.jsp">
+	<simpleweb:model name="movie" type="${package}.simpleweb.json.moviefinder.domain.Movie" />
+	]]><emphasis role="bold"><![CDATA[<simpleweb:init valueList="genreList:simplewebJsonGenreService.getDropDownGenreList()"></simpleweb:init>]]></emphasis><![CDATA[
+	<simpleweb:setProperty name="title">SimpeWeb-JSON[2]</simpleweb:setProperty>
+</simpleweb:link>]]></programlisting>
+	</section>
+	<section id="simpleweb_tag_validation">
+		<title>validator tag</title>
+		<para>validator tag는 link tag나 submit tag의 inner tag로 사용 되며 Server 단 Validation 또는, Custom Javascript  Validation을 지원한다.
+		validator tag에서 제공하는 Attribute는 아래와 같다. 
+		</para>
+		<informaltable>
+		  <caption>validator tag에서 제공하는 Attribute</caption>
+          <tgroup cols="3">
+          		<colspec colnum="1" colname="col1" colwidth="2*"/>
+				<colspec colnum="2" colname="col2" colwidth="2*"/>
+				<colspec colnum="3" colname="col3" colwidth="6*"/>
+	            <thead>
+	              <row>
+	                <entry align="center">Attribute</entry>
+	
+	                <entry align="center">Required</entry>
+	
+	                <entry align="center">Description</entry>
+	              </row>
+	            </thead>
+	            <tbody>
+	              <row>
+	                <entry align="center">validator</entry>
+	                <entry align="center">false</entry>
+	                 <entry>Validation할 validator를 지정. Server단 Validation일 경우 Validator 클래스의 bean id로 정의 하고 
+	                 javascript 함수일 경우 "javascript:${function name};"으로 정의
+	                 </entry>
+	              </row>
+	              <row>
+	                <entry align="center">inputpage</entry>
+	                <entry align="center">false</entry>
+	                 <entry>Server단 Validation일 경우 에러발생시 출력할 View를 지정. Tiles Definition 파일에 정의된 put-attribute의 ${name}:${value}의 형태로 정의
+	                 </entry>
+	              </row>
+              </tbody>
+           </tgroup>
+         </informaltable>
+         <para>다음은 validator tag의 정의 예이다.</para>
+         <programlisting language="xml"><![CDATA[<simpleweb:validator validator="movieValidator" inputpage="body:/WEB-INF/jsp/simpleweb-vo/moviefinder/movie/form.jsp"/>]]></programlisting>
+	</section>
+	<section id="simpleweb_tag_model">
+		<title>model tag</title>
+		<para>model tag는 link tag나 submit tag의 inner tag로 사용 되며 JSP 페이지의 Model Attribute를 셋팅해준다.
+		model tag에서 제공하는 Attribute는 아래와 같다. 
+		</para>
+		<informaltable>
+		  <caption>model tag에서 제공하는 Attribute</caption>
+          <tgroup cols="3">
+          		<colspec colnum="1" colname="col1" colwidth="2*"/>
+				<colspec colnum="2" colname="col2" colwidth="2*"/>
+				<colspec colnum="3" colname="col3" colwidth="6*"/>
+	            <thead>
+	              <row>
+	                <entry align="center">Attribute</entry>
+	                <entry align="center">Required</entry>
+	                <entry align="center">Description</entry>
+	              </row>
+	            </thead>
+	            <tbody>
+	              <row>
+	                <entry align="center">name</entry>
+	                <entry align="center">true</entry>
+	                 <entry>model attribute의 이름. Spring Form tag의 modelAttribute 속성과 같아야 함.
+	                 </entry>
+	              </row>
+	              <row>
+	                <entry align="center">type</entry>
+	                <entry align="center">true</entry>
+	                 <entry>model attribute의 타입. 풀 패키지 명으로 정의. ex>org.anyframe.datatype.SearchVO
+	                 </entry>
+	              </row>
+              </tbody>
+           </tgroup>
+         </informaltable>
+         <para>다음은 model tag의 정의 예이다.</para>
+         <programlisting language="xml"><![CDATA[ <simpleweb:link id="jsonMovie" action="/simplejson.do" layout="jsonLayout" tiles="body:/WEB-INF/jsp/simpleweb-json/moviefinder/movie/list.jsp">
+	]]><emphasis role="bold"><![CDATA[<simpleweb:model name="search" type="pack.simpleweb.json.moviefinder.service.MovieSearchVO" />]]></emphasis><![CDATA[
+	<simpleweb:setProperty name="title">SimpeWeb-JSON[1]</simpleweb:setProperty>
+</simpleweb:link>]]></programlisting>
+	</section>
+	<section id="simpleweb_tag_tiles">
+		<title>tiles tag</title>
+		<para>tiles tag는 submit tag와 link tag의 inner tag로 Tiles Definition의 요소를 정의해주는 역할을 한다. 
+		위에서 언급했듯이 Tiles 요소는 submit tag와 link tag의 tiles attribute로 정의할 수 있다. 
+		개발자가 여러개의 Tiles Definition을 정의해야할 때 submit tag와 link tag의 정의가 길어지는 것을 원하지 않는다면
+		tiles tag를 사용하도록 한다. tiles tag의 Attribute는 아래와 같다. </para>
+		<informaltable>
+		  <caption>tiles tag의 Attribute</caption>
+          <tgroup cols="3">
+          		<colspec colnum="1" colname="col1" colwidth="2*"/>
+				<colspec colnum="2" colname="col2" colwidth="2*"/>
+				<colspec colnum="3" colname="col3" colwidth="6*"/>
+	            <thead>
+	              <row>
+	                <entry align="center">Attribute</entry>
+	                <entry align="center">Required</entry>
+	                <entry align="center">Description</entry>
+	              </row>
+	            </thead>
+	            <tbody>
+	              <row>
+	                <entry align="center">name</entry>
+	                <entry align="center">true</entry>
+	                 <entry>Tiles Definition의 put-attribute에 들어갈 name
+	                 </entry>
+	              </row>
+	              <row>
+	                <entry align="center">value</entry>
+	                <entry align="center">true</entry>
+	                 <entry>Tiles Definition의 put-attribute에 들어갈 value
+	                 </entry>
+	              </row>
+              </tbody>
+           </tgroup>
+         </informaltable>
+         <para>다음은 tiles tag의 정의 예이다. </para>
+         <programlisting language="xml"><![CDATA[<simpleweb:tiles name="body" value="/WEB-INF/jsp/simpleweb-vo/moviefinder/movie/form.jsp"/>]]></programlisting>
+	</section>
+	<section id="simpleweb_tag_validate">
+		<title>validate tag</title>
+		<para>Spring JS에서는 dojo 기반의 Client단 Validation을 지원한다. Anyframe에서는 JavaScript 문을 사용하는 Spring JS를 간편하게 제공하고자 
+		자주 사용하게 되는 요소에 대해서 Anyframe vaildation tag를 제공한다. Validation에 위배되는 필드에 대해서 Validation Error를 UI로 출력해 주며 
+		Submit시 해당사항을 체크해준다. validate tag에서 제공하는 Attribute는 아래와 같다.</para>
+		<informaltable>
+		  <caption>validate tag에서 제공하는 Attribute</caption>
+          <tgroup cols="3">
+          		<colspec colnum="1" colname="col1" colwidth="2*"/>
+				<colspec colnum="2" colname="col2" colwidth="2*"/>
+				<colspec colnum="3" colname="col3" colwidth="6*"/>
+	            <thead>
+	              <row>
+	                <entry align="center">Attribute</entry>
+	                <entry align="center">Required</entry>
+	                <entry align="center">Description</entry>
+	              </row>
+	            </thead>
+	            <tbody>
+	              <row>
+	                <entry align="center">id</entry>
+	                <entry align="center">true</entry>
+	                 <entry>validation 체크 대상이 되는 필드의 유일한 id. 반드시 input 요소의 id와 같아야 함. 
+	                 </entry>
+	              </row>
+	              <row>
+	                <entry align="center">type</entry>
+	                <entry align="center">false</entry>
+	                 <entry>필드에 적용할 widget type. default로 설정되는 widget type은 dijit.form.ValidationTextBox
+	                 	<itemizedlist>
+	                 		<listitem><para>Number : dijit.form.NumberTextBox</para></listitem>
+	                 		<listitem><para>Date : dijit.form.DateTextBox</para></listitem>
+	                 		<listitem><para>CheckBox : dijit.form.CheckBox</para></listitem>
+	                 		<listitem><para>RadioButton : dijit.form.RadioButton</para></listitem>
+	                 		<listitem><para>Currency : dijit.form.CurrencyTextBox</para></listitem>
+	                 	</itemizedlist>
+	                 </entry>
+	              </row>
+	               <row>
+	                <entry align="center">required</entry>
+	                <entry align="center">false</entry>
+	                 <entry>필수 입력 값인지 체크
+	                 </entry>
+	              </row>
+	               <row>
+	                <entry align="center">promptMessage</entry>
+	                <entry align="center">false</entry>
+	                 <entry>form에 입력 값을 넣을 때 보여줄 메시지
+	                 </entry>
+	              </row>
+	               <row>
+	                <entry align="center">promptMessageKey</entry>
+	                <entry align="center">false</entry>
+	                 <entry>form에 입력 값을 넣을 때 보여줄 메시지의 key 값 (messageSource bean에 정의된 리소스에서 메시지 추출)
+	                 </entry>
+	              </row>
+	              <row>
+	                <entry align="center">promptMessageArgs</entry>
+	                <entry align="center">false</entry>
+	                 <entry>promptMessageKey를 사용할 때 넘겨줄 argument
+	                 </entry>
+	              </row>
+	               <row>
+	                <entry align="center">invalidMessage</entry>
+	                <entry align="center">false</entry>
+	                 <entry>validation에 위배되었을 때 보여줄 메시지
+	                 </entry>
+	              </row>
+	               <row>
+	                <entry align="center">invalidMessageKey</entry>
+	                <entry align="center">false</entry>
+	                 <entry>validation에 위배되었을 때 보여줄 메시지 key 값 (messageSource bean에 정의된 리소스에서 메시지 추출)
+	                 </entry>
+	              </row>
+	              <row>
+	                <entry align="center">invalidMessageArgs</entry>
+	                <entry align="center">false</entry>
+	                 <entry>invalidMessageKey를 사용할 때 넘겨줄 argument
+	                 </entry>
+	              </row>
+	               <row>
+	                <entry align="center">constraints</entry>
+	                <entry align="center">false</entry>
+	                 <entry>validator에 넘겨줄 사용자가 정의한 parameter
+	                 </entry>
+	              </row>
+	               <row>
+	                <entry align="center">regExp</entry>
+	                <entry align="center">false</entry>
+	                 <entry>필드 값을 체크하게될 Regular Expression
+	                 </entry>
+	              </row>
+	               <row>
+	                <entry align="center">datePattern</entry>
+	                <entry align="center">false</entry>
+	                 <entry>type이 "Date"(dijit.form.DateTextBox)일 경우 format 정의. default는 yyyy-MM-dd
+	                 </entry>
+	              </row>
+	               <row>
+	                <entry align="center">checked</entry>
+	                <entry align="center">false</entry>
+	                 <entry>type이 "CheckBox"(dijit.form.CheckBox)일 경우 check/unchek 여부 결정
+	                 </entry>
+	              </row>
+	               <row>
+	                <entry align="center">trim</entry>
+	                <entry align="center">false</entry>
+	                 <entry>입력 받은 문자열을 trim
+	                 </entry>
+	              </row>
+	               <row>
+	                <entry align="center">currency</entry>
+	                <entry align="center">false</entry>
+	                 <entry>type이 "Currency"(dijit.form.CurrencyTextBox)일 경우 currency 설정. default 값은 "KRW"
+	                 </entry>
+	              </row>
+	              <row>
+	                <entry align="center">value</entry>
+	                <entry align="center">false</entry>
+	                 <entry>필드에 value 지정
+	                 </entry>
+	              </row>
+              </tbody>
+           </tgroup>
+         </informaltable>
+         <para>다음은 simpleweb-plugin 설치로 추가된 form이 정의된 form.jsp 파일의 일부이다.</para>
+         <programlisting language="xml"><![CDATA[<form:form modelAttribute="movie" method="post" action="/simple.do" id="movieForm" name="movieForm" enctype="multipart/form-data">
+	<form:input path="title" cssClass="ct_input_g" cssErrorClass="text medium error" size="40" maxlength="50" />
+	]]><emphasis role="bold"><![CDATA[<simpleweb:validate id="title" required="true" promptMessage="Enter movie Title." />]]></emphasis><![CDATA[ 
+	...중략...
+	<form:input path="director" cssClass="ct_input_g" cssErrorClass="text medium error" size="40" maxlength="50" />
+	]]><emphasis role="bold"><![CDATA[<simpleweb:validate id="director" required="true" />]]></emphasis><![CDATA[ 
+	...중략...
+	<form:input path="actors" cssClass="ct_input_g" cssErrorClass="text medium error" size="60" maxlength="50" /></td>
+	]]><emphasis role="bold"><![CDATA[<simpleweb:validate id="actors" required="true" promptMessage="Enter Actors." />]]></emphasis><![CDATA[
+	...중략...
+	<form:input path="runtime" cssClass="ct_input_g" cssErrorClass="text medium error" size="10" maxlength="3" /> min.
+	]]><emphasis role="bold"><![CDATA[<simpleweb:validate id="runtime" type="Number" />]]></emphasis><![CDATA[
+	...중략...
+	<form:input path="releaseDate" cssClass="ct_input_g" cssErrorClass="text medium error" maxlength="10" />
+		<c:if test="${empty movie.movieId}">
+			]]><emphasis role="bold"><![CDATA[<simpleweb:validate id="releaseDate" type="Date" value="currentDate"/>]]></emphasis><![CDATA[
+		</c:if>
+		<c:if test="${not empty movie.movieId}">
+			]]><emphasis role="bold"><![CDATA[<simpleweb:validate id="releaseDate" type="Date"/>]]></emphasis><![CDATA[
+		</c:if>
+	...중략...
+	<form:input path="ticketPrice" cssClass="ct_input_g" cssErrorClass="text medium error" maxlength="7" />
+	]]><emphasis role="bold"><![CDATA[<simpleweb:validate id="ticketPrice" type="Number" />]]></emphasis><![CDATA[
+	...중략...
+	Is this movie now playing ? ]]><emphasis role="bold"><![CDATA[<form:checkbox path="nowPlaying" value="Y"/>]]></emphasis><![CDATA[
+	
+	<simpleweb:submit id="addlink" form="movieForm" ... 중략...  ]]><emphasis role="bold"><![CDATA[jsValidate="true"]]></emphasis><![CDATA[>
+		<simpleweb:setProperty name="title">
+			<img src="<c:url value='/sample/images/btn_add.png'/>" width="64" height="18" border="0" />
+		</simpleweb:setProperty>
+		<simpleweb:setProperty name="hiddenDiv" value="hiddenDivPopup" />
+		<simpleweb:setProperty name="upload" value="true" />
+		<simpleweb:doublesubmit formName="movieForm" isSessionForm="true"/>
+	</simpleweb:submit>
+	.....]]></programlisting>
+			<para>위의 코드에서 볼 수 있듯이 &lt;simpleweb:validate&gt; tag만 사용하면 단지 UI로 validation 위배 사항을 알려 줄 뿐이다. submit시 validation 오류를 체크하기 위해서는
+			반드시 submit tag나 link tag의 jsValidate 속성을 "true"로 설정해줘야 한다.</para>
+			<para>다음은 validate tag를 적용한 샘플 화면이다. </para>
+			<mediaobject>
+				<imageobject>
+					<imagedata align="center" fileref="../image/simpleweb/simpleweb_tag_sampleview.jpg" />
+				</imageobject>
+				<textobject>
+					<phrase>validate tag를 적용한 샘플</phrase>
+				</textobject>
+			</mediaobject>
+        <note>
+        	<title>Anyframe에서 제공하는 유용한 value</title>
+        	<para>Anyframe은 많이 쓰이는 타입의 필드에 대해 몇가지 유용한 value를 제공한다. 
+        	해당 요소는 아래와 같다.
+        	</para>
+        	<itemizedlist>
+        		<listitem><para>type이 "Date"인 필드의 value 값을 "currentDate"로 지정할 시 필드에 오늘 날짜로 초기 데이터 설정</para> </listitem>
+        		<listitem><para>type을 정의 하지 않고(default로 "dijit.form.ValidationTextBox"로 widget type 설정) value 값을 "zipcode"로 지정할 시 NNN-NNN 형식의 우편번호 Validation 체크</para></listitem>
+        		<listitem><para> type을 정의 하지 않고(default로 "dijit.form.ValidationTextBox"로 widget type 설정) value 값을 "email"로 지정할 시 이메일 형태의 Validation 체크</para></listitem>
+        	</itemizedlist>
+        </note>
+		
+		<para>※ Spring JS에서는 dojo 기반의 다양한 JavaScript를 지원한다. 자세한 사항은 아래의 Link를 참조하도록 한다.
+			<itemizedlist>
+				<listitem><para>Spring JS Documentation : <ulink url="http://static.springsource.org/spring-webflow/docs/2.1.x/reference/htmlsingle/spring-webflow-reference.html">바로가기</ulink></para></listitem>
+				<listitem><para>dojo homepage : <ulink url="http://www.dojotoolkit.org/">바로가기</ulink></para></listitem>
+			</itemizedlist>
+		</para>
+	</section>
+</chapter>

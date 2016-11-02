@@ -1,0 +1,77 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<FDL version="1.4">
+  <TypeDefinition url="..\default_typedef.xml"/>
+  <Form id="GRDFIND" classname="GRDFIND" inheritanceid="" position="absolute 0 0 151 117" titletext="GRDFIND" onload="GRDFIND_onload" style="background:#f2f2efff;">
+    <Layouts>
+      <Layout>
+        <Edit id="edtSearchKeyword" taborder="0" position="absolute 8 8 106 32" onkeydown="edtSearchKeyword_onkeydown"/>
+        <Button id="btSearch" taborder="1" text="global.domain.search" position="absolute 108 8 142 32" onclick="btSearch_onclick"/>
+        <GroupBox id="grbxDirection" text="global.domain.searchdirection" position="absolute 8 40 142 85" style="titlealign:topleft;"/>
+        <Radio id="rdDirection" taborder="2" position="absolute 16 54 144 86" direction="vertical" innerdataset="@dsRadioDir" codecolumn="CODE" datacolumn="TEXT" index="1" value="D">
+          <Contents>
+            <Layouts>
+              <Layout code="U" text="Up"/>
+              <Layout code="D" text="Down"/>
+            </Layouts>
+          </Contents>
+        </Radio>
+        <Button id="btClose" taborder="3" text="global.domain.close" position="absolute 59 89 93 113" onclick="btClose_onclick"/>
+      </Layout>
+    </Layouts>
+    <Objects>
+      <Dataset id="dsRadioDir" firefirstcount="0" firenextcount="0" useclientlayout="false" updatecontrol="true" enableevent="true" loadkeymode="keep" loadfiltermode="keep" reversesubsum="false">
+        <ColumnInfo>
+          <Column id="CODE" type="STRING" size="256"/>
+          <Column id="TEXT" type="STRING" size="256"/>
+        </ColumnInfo>
+        <Rows>
+          <Row>
+            <Col id="CODE">U</Col>
+            <Col id="TEXT">Up</Col>
+          </Row>
+          <Row>
+            <Col id="CODE">D</Col>
+            <Col id="TEXT">Down</Col>
+          </Row>
+        </Rows>
+      </Dataset>
+    </Objects>
+    <Script type="xscript4.0"><![CDATA[include "lib::commonScript.xjs";
+
+var objGrid;
+var objGridDataset;
+
+// Form onload 이벤트 처리
+function GRDFIND_onload(obj:Form, e:LoadEventInfo)
+{
+	objGrid = this.getOwnerFrame().objGrd;
+
+	gfnSetTitle();
+	edtSearchKeyword.setFocus();
+}
+
+// 검색 버튼 클릭 이벤트
+function btSearch_onclick(obj:Button,  e:ClickEventInfo)
+{
+	var nRow = objGrid.currentrow;
+	var nCol = objGrid.currentcell;
+	
+	gfnFindInGrid(objGrid, edtSearchKeyword.text, nRow, nCol, rdDirection.value);
+}
+
+// 검색 키워드 입력 후 엔터키 입력 이벤트
+function edtSearchKeyword_onkeydown(obj:Edit, e:KeyEventInfo)
+{
+	if(e.keycode == 13){
+		btSearch_onclick();
+	}
+}
+
+// 닫기 버튼 클릭 이벤트
+function btClose_onclick(obj:Button,  e:ClickEventInfo)
+{
+	close("N");
+}
+]]></Script>
+  </Form>
+</FDL>

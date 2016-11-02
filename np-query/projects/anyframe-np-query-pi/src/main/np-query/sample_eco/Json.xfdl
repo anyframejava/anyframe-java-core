@@ -1,0 +1,93 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<FDL version="1.5">
+  <TypeDefinition url="..\default_typedef.xml"/>
+  <Form id="Json" classname="Json" left="0" top="0" width="1024" height="768" titletext="New Form">
+    <Layouts>
+      <Layout>
+        <Static id="Static01" taborder="0" text="1. decode" cssclass="WFDA_sta_label" left="20" top="39" width="196" height="119"/>
+        <Static id="Static02" taborder="1" text="2. encode" cssclass="WFDA_sta_label" left="20" top="157" width="196" height="298"/>
+        <Static id="Static00" taborder="2" text="(string) ⇒ (&quot;{\&quot;str\&quot;: \&quot;json test\&quot;, \&quot;num\&quot;: 100 }&quot;)" cssclass="WFDA_sta_Box" left="215" top="39" width="370" height="119"/>
+        <Static id="Static10" taborder="3" text="(object) ⇒&#13;&#10;( {&quot;str&quot;: &quot;json test&quot;, &quot;num&quot;: 100} )" cssclass="WFDA_sta_Box" left="215" top="157" width="370" height="72"/>
+        <Button id="Button00" taborder="4" text="실행" onclick="Button00_onclick" cssclass="WF_btn_Point" left="519" top="48" width="56" height="22"/>
+        <Button id="Button01" taborder="5" text="실행" onclick="Button01_onclick" cssclass="WF_btn_Point" left="519" top="167" width="56" height="22"/>
+        <Static id="st_1_result01" taborder="6" cssclass="WFDA_sta_BoxR" left="584" top="39" width="420" height="119"/>
+        <Static id="st_2_result01" taborder="7" cssclass="WFDA_sta_BoxR" left="584" top="157" width="420" height="72"/>
+        <Static id="Static06" taborder="8" text="Arguments:  ( Type ) ⇒ ( Value )" cssclass="WFDA_sta_header" left="215" top="0" width="370" height="40"/>
+        <Static id="Static07" taborder="9" text="Method" cssclass="WFDA_sta_header" left="20" top="0" width="196" height="40"/>
+        <Static id="Static08" taborder="10" text="Result: (Type) Vaule" cssclass="WFDA_sta_header" left="584" top="0" width="420" height="40"/>
+        <Static id="Static03" taborder="11" text="(object, function) ⇒&#13;&#10;( {&quot;str&quot;: &quot;json test&quot;, &quot;num&quot;: 100}, function(key, value) {&#13;&#10;    if (typeof value === &quot;string&quot;) &#13;&#10;    {&#13;&#10;        return undefined;&#13;&#10;    }&#13;&#10;        return value;&#13;&#10;} )" cssclass="WFDA_sta_Box" top="228" height="156" width="370" left="215"/>
+        <Static id="st_2_result02" taborder="12" cssclass="WFDA_sta_BoxR" top="228" height="156" width="420" left="584"/>
+        <Button id="Button02" taborder="13" text="실행" cssclass="WF_btn_Point" top="294" height="22" onclick="Button02_onclick" width="56" left="519"/>
+        <Static id="Static04" taborder="14" text="(object, function, string) ⇒&#13;&#10;( {&quot;str&quot;: &quot;json test&quot;,&#9;&#9;&quot;num&quot;: 100}, &quot;&quot;, &quot;    &quot; )" cssclass="WFDA_sta_Box" top="383" height="72" width="370" left="215"/>
+        <Button id="Button03" taborder="15" text="실행" cssclass="WF_btn_Point" top="393" height="22" width="56" left="519" onclick="Button03_onclick"/>
+        <Static id="st_2_result03" taborder="16" cssclass="WFDA_sta_BoxR" top="383" height="72" width="420" left="584"/>
+      </Layout>
+    </Layouts>
+    <Script type="xscript5.0"><![CDATA[/*
+ * Eco.Json api Sample at nexacro
+ * 
+ * Copyright (c) 2014 EcoSystem of TOBESOFT
+ * Licensed Free under nexacro.
+*/
+
+// 1.1 decode api 사용 예제
+this.Button00_onclick = function(obj:Button,  e:nexacro.ClickEventInfo)
+{
+	var jsonStr = "{ \"str\": \"json test\", \"num\": 100 }";
+	var jsonObj = Eco.Json.decode(jsonStr);
+	
+	var result = "(object) " + jsonObj + "\n\n";
+	result += "==== object contains ===\n";
+	result += "result.str ==> " + jsonObj.str + "\n";
+	result += "result.num ==> " + jsonObj.num;
+
+ 	this.st_1_result01.set_text(result);
+ 	trace(result);
+}
+
+// 1.2 encode api 사용 예제
+this.Button01_onclick = function(obj:Button,  e:nexacro.ClickEventInfo)
+{
+	var jsonObj = {
+		"str": "json test",
+		"num": 100
+	};
+	var jsonStr = Eco.Json.encode(jsonObj);
+	
+ 	this.st_2_result01.set_text("(string) " + jsonStr);
+ 	trace(jsonStr);
+}
+
+this.Button02_onclick = function(obj:Button,  e:nexacro.ClickEventInfo)
+{
+	var jsonObj = {
+		"str": "json test",
+		"num": 100
+	};
+	var jsonStr = Eco.Json.encode(jsonObj, function(key, value) {
+		if (typeof value === "string") 
+		{
+			return undefined;
+		}
+		return value;
+	});
+	
+ 	this.st_2_result02.set_text("(string) " + jsonStr);
+ 	trace(jsonStr);
+}
+
+this.Button03_onclick = function(obj:Button,  e:nexacro.ClickEventInfo)
+{
+	var jsonObj = {
+		"str": "json test",
+		"num": 100
+	};
+	var jsonStr = Eco.Json.encode(jsonObj, "", "    ");
+	
+ 	this.st_2_result03.set_text("(string) " + jsonStr);
+ 	trace(jsonStr);
+}
+
+]]></Script>
+  </Form>
+</FDL>

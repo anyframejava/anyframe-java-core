@@ -1,0 +1,63 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans" 
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:query="http://www.anyframejava.org/schema/query"
+	xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-3.2.xsd
+	http://www.anyframejava.org/schema/query http://www.anyframejava.org/schema/query/anyframe-query-1.1.xsd">
+	
+	<bean name="npService" class="org.anyframe.np.query.service.impl.NPServiceImpl">
+		<constructor-arg ref="npDao" />
+	</bean>
+
+	<bean name="npDao" class="org.anyframe.np.query.service.impl.NPDao">
+		<constructor-arg ref="npQueryService" />
+	</bean>
+	
+	<bean id="npQueryService" class="org.anyframe.np.query.impl.NPQueryServiceImpl">
+		<property name="namedParamJdbcTemplate" ref="npPagingNamedParamJdbcTemplate"/>
+		<!--np-query-lobHandler-START-->
+		<property name="lobHandler" ref="lobHandler"/>
+		<!--np-query-lobHandler-END-->
+		<property name="sqlRepository" ref="npSqlLoader"/>
+		<lookup-method name="getRowCallbackHandler" bean="npRowCallbackHandler"/>
+		<lookup-method name="getCallableStatementCallbackHandler" bean="npCallableStatementCallbackHandler"/>
+		<lookup-method name="getPrintWriterRowCallbackHandler" bean="npPrintWriterRowCallbackHandler"/>
+	</bean>
+
+	<bean id="npCallableStatementCallbackHandler" class="org.anyframe.np.query.impl.jdbc.mapper.NPCallableStatementCallbackHandler" scope="prototype"/>
+	
+	<bean id="npRowCallbackHandler" class="org.anyframe.np.query.impl.jdbc.mapper.NPDataSetCallbackHandler" scope="prototype"/>
+	
+	<bean id="npPrintWriterRowCallbackHandler" class="org.anyframe.np.query.impl.jdbc.mapper.NPPrintWriterCallbackHandler" scope="prototype"/>
+	    
+    <bean id="npJdbcTemplate" class="org.anyframe.query.impl.jdbc.PagingJdbcTemplate">
+	    <property name="dataSource" ref="dataSource"/>
+	    <property name="exceptionTranslator" ref="exceptionTranslator"/>
+	    <!--np-query-pagingSQLGenerator-START-->
+        <property name="paginationSQLGetter" ref="pagingSQLGenerator"/>
+		<!--np-query-pagingSQLGenerator-END-->
+    </bean>
+    
+    <bean id="npPagingNamedParamJdbcTemplate" class="org.anyframe.query.impl.jdbc.PagingNamedParamJdbcTemplate">
+    	<constructor-arg ref="npJdbcTemplate"/>
+    </bean> 
+    
+    <bean id="pagingSQLGenerator" class="org.anyframe.query.impl.jdbc.generator.OraclePagingSQLGenerator"/>
+    
+	<bean id="lobHandler" class="org.springframework.jdbc.support.lob.OracleLobHandler" lazy-init="true"/>
+	
+    <bean id="exceptionTranslator" class="org.anyframe.query.impl.util.RawSQLExceptionTranslator"/>
+    
+    
+	<bean name="npSqlLoader" class="org.anyframe.query.impl.config.loader.MappingXMLLoader">
+		<property name="mappingFiles">
+			<value>classpath:/sql/np-query/mapping-*.xml</value>
+		</property>
+		<property name="nullchecks">
+			<map>
+				<entry key="VARCHAR" value="" />
+			</map>
+		</property>
+		<property name="skipError" value="true" />
+	</bean>
+</beans>	

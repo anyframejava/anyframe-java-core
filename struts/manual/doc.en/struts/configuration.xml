@@ -1,0 +1,1056 @@
+<chapter id="struts_configuration">
+	<title>Configuration</title>
+	
+		<para>
+  			<![CDATA[Basic environment setting is needed for using Struts. 
+  			First, <servlet> setting, etc. is needed for web.xml file which is the web application Deployment Descriptor, 
+  			and then struts-config.xml that sets the setting information on what Action Controller will execute, what view to move to, etc. is needed. 
+  			This document will focus on the conditions needed to develop web application using Struts and 
+  			the environmental setting of functions frequently used by Struts.]]>
+  		</para>
+
+	<section id="struts_configuration_web">
+	<title>web.xml</title>
+
+		<para>
+    		Web application Deployment Descriptor that describes how to deploy web application in Java EE environment. 
+    		It it described in XML phrases, and is located in WEB-INF which is the sub-directory right under the web application root. 
+    		This document will focus on how to develop web.xml when using Anyframe DefaultActionServlet that is an extension of ActionServlet.
+    	</para>
+
+    	<para>
+    		For information on ActionServlet, refer to <ulink url="http://struts.apache.org/1.3.10/userGuide/configuration.html">Apache
+			Struts User Guide</ulink>. 
+		</para>
+
+    	<itemizedlist>
+      		<listitem>
+        		<para>servlet, servlet-mapping setting</para>
+      		</listitem>
+      		<listitem>
+        		<para>taglib setting</para>
+      		</listitem>
+    	</itemizedlist>
+
+		<section id="struts_configuration_web_servlet">
+		<title>servlet, servlet-mapping setting</title>
+
+			<section id="struts_configuration_web_servlet_servlet">
+			<title><![CDATA[<servlet> setting]]></title>
+	
+				<itemizedlist>
+					<listitem>
+						<para>
+							<![CDATA[Register org.apache.struts.action.ActionServlet or sub-class in <servlet-class>]]>
+						</para>
+	          		</listitem>
+			        <listitem>
+	            		<para>Define the configuration file list of Struts that has to be loaded through the related Servlet</para>
+	          		</listitem>
+			        <listitem>
+	        		    <para>Define the property needed for Servlet initialization</para>
+	          		</listitem>
+	        	</itemizedlist>
+	
+				<para>
+					<![CDATA[The following are initialization parameters that can be defined as <init-param> under <servlet>.]]>
+	        	</para>
+	
+		        <informaltable>
+		          <tgroup cols="2">
+		          <colspec colnum="1" colname="col1" colwidth="2*"/>
+					<colspec colnum="2" colname="col2" colwidth="6*"/>
+					<thead>
+						<row>
+							<entry align="center">Name</entry>
+							<entry align="center">Purpose / Default Value</entry>
+						</row>
+					</thead>
+		            <tbody>
+		              <row>
+		                <entry>config</entry>
+		                <entry>
+		                	Shows the module-relative path of default application struts configuration file. 
+		                	Default value is /WEB-INF/struts-config.xml. 
+		                </entry>
+		              </row>
+		              <row>
+		                <entry>config/sub1</entry>
+		                <entry>
+		                	<![CDATA[When using sub-application, describe by using config/ and sub-application prefix. 
+		                	For example, for a sub-application that has hello as prefix, 
+		                	<init-param> should be descibed in <init-param> as config/hello. 
+		                	If there are many sub-applications, each should separately be described in <init-param>. 
+		                	(In this case, config and config/sub1, config/sub2, etc. are each called a module.)]]>
+		                </entry>
+		              </row>
+		              <row>
+		                <entry>convertNull</entry>
+		                <entry>
+		                	Populate form property values to null by force. 
+		                	For example, if convertNull value is true, 
+		                	the default value of the properties of java.lang.Integer type are set to null, not 0. 
+		                	convertNull default value is false. 
+		                </entry>
+		              </row>
+		
+		              <row>
+		                <entry>chainConfig</entry>
+		                <entry>
+		                	Set when forwarding in definition name is performed in action. 
+		                	Note when using Struts Tiles, because it has been newly added in Struts 1.3. 
+		                	Default value is org/apache/struts/chain/chain-config.xml.
+		                </entry>
+		              </row>
+		              <row>
+		                <entry>configFactory</entry>
+		                <entry>
+		                	ModuleConfigFactory Java class name to create implementation of ModuleConfig interface (Struts 1.3 onward).
+		                </entry>
+		              </row>
+		              <row>
+		                <entry>debug</entry>
+		                <entry>
+		                	Decides the Logging level of Servlet. 
+		                	Default value is 0, and a number within 0~6 can be set. 
+		                	6 shows the most logging information.
+		                </entry>
+		              </row>
+		            </tbody>
+		          </tgroup>
+		        </informaltable>
+			</section>
+
+			<section id="struts_configuration_web_servlet_servletmapping">
+	        <title><![CDATA[<servlet-mapping> setting]]></title>
+	
+				<itemizedlist>
+	          		<listitem>
+	            		<para><![CDATA[Mapping URL pattern of request, with <servlet>]]></para>
+	          </listitem>
+	        </itemizedlist>
+	      </section>
+
+	      <section id="struts_configuration_web_servlet_samples">
+	        <title>Samples</title>
+	
+	        	<para>
+	        		<![CDATA[The follwing is an example of setting <servlet> and <servlet-mapping> in web.xml file of web application 
+	        		that is formed based on Struts.]]>
+	        	</para>
+	
+		        <para>
+		        	For request of *.do URL pattern, ActionServlet which is Front Controller is set to process. 
+		        	And multiple struts-config configuration files used in related web application are set as initialization parameters. 
+		        	(Multiple files can be set using ','.)
+		        	You can also check the initialization parameter setting of convertNull. 
+		        	load-on-startup is the value that decides the priority of load when a servlet engine starts.
+	        		<programlisting language="xml"><![CDATA[<servlet>
+    <servlet-name>action</servlet-name>
+    <servlet-class>org.apache.struts.action.ActionServlet</servlet-class>
+        <init-param>
+        <param-name>config</param-name>
+        <param-value>
+            /config/struts/struts-config.xml,
+            /config/struts/struts-config-login.xml
+        </param-value>
+    </init-param>
+    <init-param>
+        <param-name>debug</param-name>
+        <param-value>3</param-value>
+    </init-param>
+    <init-param>
+        <param-name>convertNull</param-name>
+        <param-value>true</param-value>
+    </init-param>
+    <load-on-startup>0</load-on-startup>
+</servlet>
+	
+<servlet-mapping>
+    <servlet-name>action</servlet-name>
+    <url-pattern>*.do</url-pattern>
+</servlet-mapping>]]></programlisting>
+				</para>
+			</section>
+		</section>
+
+		<section id="struts_configuration_web_taglib">
+		<title>taglib setting</title>
+
+			<section id="struts_configuration_web_taglib_jsp">
+			<title>setting in JSP</title>
+	
+				<para>
+					In Struts 1.3, the tag library setting of Servlet 2.3 and 2.4 have become easier. 
+					Copy struts-taglib.jar file on /WEB-INF/lib, 
+					and add definition of tag to be used on JSP as the below sample. 
+				</para>
+			</section>
+	
+			<section id="struts_configuration_web_taglib_samples">
+			<title>Samples</title>
+	
+				<para>
+	       			The following is an example that shows how to define in JSP when using 'bean', 'html', and 'logic' tag library.
+	     			<programlisting
+	     			language="xml"><![CDATA[<%@ taglib uri="http://struts.apache.org/tags-bean" prefix="bean"%>
+<%@ taglib uri="http://struts.apache.org/tags-html" prefix="html"%>
+<%@ taglib uri="http://struts.apache.org/tags-logic" prefix="logic"%>]]></programlisting>
+				</para>
+			</section>
+		</section>
+	</section>
+
+	<section id="struts_configuration_strutsconfig">
+    <title>struts-config.xml</title>
+
+    	<para>
+    		Deploy Descriptor for Struts based web application, and main configuration file that connects Model, View, and Controller. 
+    		This document only introduces attributes that are frequently used. 
+    		For more information refer to <ulink
+    		url="http://struts.apache.org/1.3.10/userGuide/configuration.html#struts-config">Apache
+    		Struts User Guide</ulink> and struts-config online <ulink
+    		url="http://struts.apache.org/1.3.10/struts-core/dtddoc/struts-config_1_3.dtd.html">DTDDoc</ulink>.
+    	</para>
+    	<itemizedlist>
+      		<listitem>
+        		<para>Separate setup information in code</para>
+      		</listitem>
+      		<listitem>
+        		<para>Struts DTD : Follow struts-config_1_3.dtd</para>
+      		</listitem>
+      		<listitem>
+        		<para>Save mapping information among Action, ActionForm, and JSP</para>
+      		</listitem>
+      		<listitem>
+        		<para>More than one configuration file can be used</para>
+      		</listitem>
+      		<listitem>
+        		<para>Configuration file can be defined for each sub-module</para>
+      		</listitem>
+      		<listitem>
+      			<para>Struts configuration file setup factor</para>	
+      		</listitem>
+    	</itemizedlist>
+
+    	
+
+		<section id="struts_configuration_strutsconfig_controller">
+      	<title>controller</title>
+
+			<section id="struts_configuration_strutsconfig_controller_setting">
+    	    <title><![CDATA[<controller> setting]]></title>
+
+				<itemizedlist>
+					<listitem>
+	         		   <para>ActionServlet that receives request is commissioned to RequestProcessor for processing. </para>
+	          		</listitem>
+	          		<listitem>
+	            		<para>Each module can be separated by setting the controller of each sub-application differently. </para>
+	          		</listitem>
+	          		<listitem>
+	            		<para><![CDATA[Register org.apache.struts.action.RequestProcessor or sub-class in <controller>]]></para>
+	          		</listitem>
+	        	</itemizedlist>
+	
+	        	<para><![CDATA[The following are attributes of <controller>.]]></para>
+
+		        <informaltable>
+		          <tgroup cols="2">
+		          <colspec colnum="1" colname="col1" colwidth="2*"/>
+				  <colspec colnum="2" colname="col2" colwidth="8*"/>
+		            <thead>
+		              <row>
+		                <entry align="center">Name</entry>
+		
+		                <entry align="center">Description</entry>
+		              </row>
+		            </thead>
+		            <tbody>
+		              <row>
+		                <entry>bufferSize</entry>
+		                <entry>
+		                	The size of input buffer used when uploading file. 
+		                	This property can be used optionally. Default value: 4096.
+		                </entry>
+		              </row>
+		              <row>
+		                <entry>className</entry>
+		                <entry>
+		                	The full name of class which implements Config bean that includes Controller information. 
+		                	This should be a class that inherits org.apache.struts.config.ControllerConfig. 
+		                	Default value: org.apache.struts.config.ControllerConfig.
+		                </entry>
+		              </row>
+		              <row>
+		                <entry>contentType</entry>
+		                <entry>
+		                	Content type used when sending response result. 
+		                	This property is used optionally. 
+		                	Even when there is a value set for this property, the content type defined in the action of JSP page takes priority. 
+		                	Default value: text/html.
+		                </entry>	
+		              </row>
+		              <row>
+		                <entry>forwardPattern</entry>
+		                <entry>
+		                  <itemizedlist>
+		                    <para>
+		                    	<![CDATA[Alternative pattern that shows the mapping of 
+		                    	context-relative URL starting with / (when contextRelative property is false) and 'path' property of <forward>. 
+		                    	This value is a combination of the below items.]]>
+		                    </para>
+		                    <listitem>
+		                      <para>$M – Replace as prefix value of module</para>
+		                    </listitem>
+		                    <listitem>
+		                      <para><![CDATA[$P – Replace as 'path' property value of <forward>]]></para>
+		                    </listitem>
+		                    <listitem>
+		                      <para>$$ - Shown as $ in URL</para>
+		                    </listitem>
+		                    <listitem>
+		                      <para>$x (x has not been defined above) – Booked for future use</para>
+		                    </listitem>
+		                    <para>Default value: $M$P</para>
+		                  </itemizedlist>
+		                </entry>
+		              </row>
+		              <row>
+		                <entry>inputForward</entry>
+		                <entry>
+		                	<![CDATA[Set to true if you wish for forward or global-forward name that will use <action> input attribute as final URL. 
+		                	If set to false, regard it as the relative path of sub-application. 
+		                	Default value: false]]>
+		                </entry>
+		              </row>
+		              <row>
+		                <entry>locale</entry>
+		                <entry>Default value on whether user locale information will be saved in user session: true</entry>
+		              </row>
+		              <row>
+		                <entry>maxFileSize</entry>
+		                <entry>The maximum file size when uploading file. Used in K, M, G units. 
+		                Default value: 250M</entry>
+		              </row>
+		              <row>
+		                <entry>multipartClass</entry>
+		                <entry>
+		                	Entire name for class that is in charge of processing Multipart request. 
+		                	Used when uploading file. 
+		                	Default value: org.apache.struts.upload.CommonsMultipartRequestHandler
+		                </entry>
+		              </row>
+		              <row>
+		                <entry>nocache</entry>
+		                <entry>
+		                	Boolean value on whether to set the HTTP header to 'nocache' in response. 
+		                	Optional. Default value: false
+		                </entry>
+		              </row>
+		              <row>
+		                <entry>pagePattern</entry>	
+		                <entry>
+		                  <itemizedlist>
+		                    <para>
+		                    	Alternative pattern for the mapping method for page property of page the uses custom tag on 
+		                    	context relative URL path. 
+		                    	This property value consists of the below items. 
+		                    </para>
+		                    <listitem>
+		                      <para>$M – Substituted by Module prefix</para>
+		                    </listitem>
+		                    <listitem>
+		                      <para>$P – Substituted by the path property of selected forward factor</para>
+		                    </listitem>
+		                    <listitem>
+		                      <para>$$ - Shown as $ in URL</para>
+		                    </listitem>
+		                    <listitem>
+		                      <para>$x (x has not been defined above) – Booked for future use</para>
+		                    </listitem>
+		                    <para>Default value : $M$P</para>
+		                  </itemizedlist>
+		                </entry>
+		              </row>
+		              <row>
+		                <entry>processorClass</entry>
+		                <entry>
+		                    The full name of class that will process user request. 
+		                	The class defined here becomes the sub-class of org.apache.struts.action.RequestProcessor class. 
+		                	Default value: org.apache.struts.chain.ComposableRequestProcessor
+		                </entry>
+		              </row>
+		              <row>
+		                <entry>tempDir</entry>
+		                <entry>
+		                	Temporary directory to be used when uploading file. 
+		                	Optional. Default value: Directory provided by Servlet container
+		                </entry>
+		              </row>
+		            </tbody>
+		          </tgroup>
+		        </informaltable>
+      		</section>
+
+			<section id="struts_configuration_strutsconfig_controller_samples">
+			<title>Samples</title>
+
+		        <para>
+		        	The following is an example of Controller setting in struts-config.xml file.
+		        	<programlisting language="xml"><![CDATA[<controller
+        contentType="text/html;charset=utf-8" locale="true" nocache="true"
+        processorClass="org.apache.struts.action.RequestProcessor"/>]]></programlisting>
+        		</para>
+      		</section>
+		</section>
+
+		<section id="struts_configuration_strutsconfig_messageresources">
+		<title>message-resources</title>
+
+      		<section id="struts_configuration_strutsconfig_messageresources_setting">
+        	<title><![CDATA[<message-resources> setting]]></title>
+
+        		<itemizedlist>
+          			<listitem>
+            			<para>Define issues related with message source bundle</para>
+          			</listitem>
+			        <listitem>
+            			<para>Internationalization support (I18N)</para>
+          			</listitem>
+          			<listitem>
+            			<para><![CDATA[Can be used by registring many <message-resources> in application]]></para>
+         			</listitem>
+			        <listitem>
+            			<para>Individual modules can each define a resource bundle</para>
+          			</listitem>
+          			<listitem>
+            			<para>Key value should be set to use many resource bundles in application</para>
+          			</listitem>
+        		</itemizedlist>
+
+		        <para><![CDATA[The following are attributes for <message-resources>.]]></para>
+
+		        <informaltable>
+		          <tgroup cols="2">
+		          <colspec colnum="1" colname="col1" colwidth="2*"/>
+					<colspec colnum="2" colname="col2" colwidth="8*"/>
+		            <thead>
+		              <row>
+		                <entry align="center">Name</entry>
+		                <entry align="center">Description</entry>
+		              </row>
+		            </thead>
+		            <tbody>
+		              <row>
+		                <entry>className</entry>
+		                <entry>
+		                	Name of class which implements the setup bean that includes message-resources information. 
+		                	The class selected here should be the sub-class of org.apache.struts.config.MessageResourcesConfig class. 
+		                	Optional. Default value: org.apache.struts.config.MessageResourcesConfig
+		                </entry>
+		              </row>
+		              <row>
+		                <entry>factory</entry>
+		                <entry>
+		                	 MessageResourcesFactory class to be used. 
+		                	 Default value: org.apache.struts.util.PropertyMessageResourcesFactory
+		                </entry>
+		              </row>
+		              <row>
+		                <entry>key</entry>
+		                <entry>
+		                	ServletContext property in which message resource bundle will be saved. 
+		                	This property is optional. Default value: org.apache.struts.action.MESSAGE
+		                </entry>
+		              </row>
+		              <row>
+		                <entry>null</entry>
+		                <entry>
+		                	Boolean value which shows how to process in the sub-class of MessageResources when the message key that is not defined is used. 
+		                	If set to false, "???keyname???" string will be returned, not null. 
+		                	Default value: true
+		                </entry>
+		              </row>
+		              <row>
+		                <entry>parameter</entry>
+		                <entry>
+		                   	Resource bundle name. 
+		                	For example, if resource bundle name is ApplicationResources.
+		                	property value becomes ApplicationResources. 
+		                	This property must be defined. 
+		                	If resource bundle is packaged, define the entire name that includes the related package name. 
+		                </entry>
+		              </row>
+		            </tbody>
+		          </tgroup>
+		        </informaltable>
+			</section>
+	
+			<section id="struts_configuration_strutsconfig_messageresources_samples">
+        	<title>Samples</title>
+
+        		<para>
+        			The following is an example of message-resources setting in struts-config.xml file. 
+        			<programlisting language="xml"><![CDATA[<message-resources
+        parameter="message.message-productmgmt"/>]]></programlisting>
+        		</para>
+      		</section>
+		</section>
+
+		<section id="struts_configuration_strutsconfig_plugin">
+		<title>plug-in</title>
+
+			<section id="struts_configuration_strutsconfig_plugin_setting">
+        	<title><![CDATA[<plug-in> setting]]></title>
+
+        		<itemizedlist>
+          			<listitem>
+            			<para>Strong function that enables the processing of dynamic resources when running Struts Application</para>
+          			</listitem>
+
+					<listitem>
+						<para>
+							Can be used by adding plug-in element to setup file after creating Java class that implements 
+            				org.apache.struts.action.PlugIn interface. 
+            			</para>
+          			</listitem>
+			        <listitem>
+            			<para>plug-in examples: validator, tiles, etc.</para>
+          			</listitem>
+        		</itemizedlist>
+
+        		<para><![CDATA[The following is attribute of <plug-in>.]]></para>
+
+		        <informaltable>
+		          <tgroup cols="2">
+		          <colspec colnum="1" colname="col1" colwidth="2*"/>
+				  <colspec colnum="2" colname="col2" colwidth="8*"/>
+		            <thead>
+		              <row>
+		                <entry align="center">Name</entry>
+		                <entry align="center">Description</entry>
+		              </row>
+		            </thead>
+		            <tbody>
+		              <row>
+		                <entry>className</entry>
+		                <entry>
+			                Shows the entire name of Plug-in class. 
+			                The related class must implement org.apache.struts.action.PlugIn interface.
+			            </entry>
+		              </row>
+		            </tbody>
+		          </tgroup>
+		        </informaltable>
+			</section>
+
+			<section id="struts_configuration_strutsconfig_plugin_samples">
+        	<title>Samples</title>
+
+        		<para>
+        			The following is an example of setting plug-in in struts-config.xml file.
+        			<programlisting language="xml"><![CDATA[<plug-in
+        className="org.apache.struts.tiles.TilesPlugin"> 
+    <set-property property="definitions-config" value="/WEB-INF/struts-tiles-defs.xml"/>
+</plug-in>]]></programlisting>
+				</para>
+      		</section>
+		</section>
+
+		<section id="struts_configuration_strutsconfig_formbeans">
+		<title>form-beans</title>
+
+			<section id="struts_configuration_strutsconfig_formbeans_setting">
+        	<title><![CDATA[<form-beans> setting]]></title>
+
+		        <itemizedlist>
+       				<listitem>
+	            		<para>Form bean information setting used for Action execution</para>
+          			</listitem>
+
+    			    <listitem>
+            			<para><![CDATA[Multiple <form-bean> can be formed under <form-beans>]]></para>
+          			</listitem>
+
+          			<listitem>
+            			<para><![CDATA[<form-bean> can have many <form-property>.]]></para>
+          			</listitem>
+        		</itemizedlist>
+
+        		<para><![CDATA[The following are attributes of <form-bean>.]]></para>
+
+		        <informaltable>
+		          <tgroup cols="2">
+		          <colspec colnum="1" colname="col1" colwidth="2*"/>
+				  <colspec colnum="2" colname="col2" colwidth="8*"/>
+		            <thead>
+		              <row>
+		                <entry align="center">Name</entry>
+		                <entry align="center">Description</entry>
+		              </row>
+		            </thead>
+		            <tbody>
+		              <row>
+		                <entry>className</entry>
+		                <entry>
+			               	 Object that contains configuration information of form bean. 
+			               	 It must inherit org.apache.struts.config.FormBeanConfig class. 
+			               	 Default value: org.apache.struts.config.FormBeanConfig
+			           	</entry>
+		              </row>
+		              <row>
+		                <entry>dynamic</entry>
+		                <entry>
+			              	If the type attribute of form bean is org.apache.struts.action.DynaActionForm, 
+			              	or if it is a class implemented after inheriting org.apache.struts.action.DynaActionForm, 
+			              	attribute should be true. Default value: false
+			            </entry>
+		              </row>
+		              <row>
+		                <entry>name</entry>
+		                <entry>
+		                	The name of this form bean. Identifier that separates it from other form beans. [required]</entry>
+		              </row>
+		              <row>
+		                <entry>type</entry>
+		                <entry>
+		                	Shows the implementation class of this form bean. 
+		                	This class should be the sub-class of ActionForm. 
+		                	[required]
+		                	</entry>
+		              </row>
+		            </tbody>
+		          </tgroup>
+		        </informaltable>
+
+       			<para><![CDATA[The following are the attributes of <form-property>.]]>
+		       	<informaltable>
+		            <tgroup cols="2">
+		            <colspec colnum="1" colname="col1" colwidth="2*"/>
+					<colspec colnum="2" colname="col2" colwidth="8*"/>
+		              <thead>
+		                <row>
+		                  <entry align="center">Name</entry>
+		                  <entry align="center">Description</entry>
+		                </row>
+		              </thead>
+		              <tbody>
+		                <row>
+		                  <entry>className</entry>
+		                  <entry>
+			          			Object that will contain configuration information of form property. 
+			     				Must be org.apache.struts.config.FormPropertyConfig or a class that inherits it. 
+			     				Default value: org.apache.struts.config.FormPropertyConfig
+			     		  </entry>
+		                </row>
+		                <row>
+		                  <entry>initial</entry>
+		                  <entry>Shows the initial value of property, and is in letters. </entry>
+		                </row>
+		                <row>
+		                  <entry>name</entry>
+		                  <entry>The name of this property that is used by form bean [required]</entry>
+		                </row>
+		                <row>
+		                  <entry>size</entry>
+		                  <entry>
+			                  The number of array elements 
+			                  when the type attribute of form property is array.
+			              </entry>
+		                </row>
+		                <row>
+		                  <entry>type</entry>
+		                  <entry>
+		                    <itemizedlist>
+		                      <para>
+			                      The type of this property that is used by form bean. 
+			                      The following is the type supported by DynaActionForm.
+			                  </para>
+		                      <listitem>
+		                        <para>java.math.BigDecimal</para>
+		                      </listitem>
+		                      <listitem>
+		                        <para>java.math.BigInteger</para>
+		                      </listitem>
+		                      <listitem>
+		                        <para>boolean</para>
+		                      </listitem>
+		                      <listitem>
+		                        <para>byte</para>
+		                      </listitem>
+		                      <listitem>
+		                        <para>char</para>
+		                      </listitem>
+		                      <listitem>
+		                        <para>java.lang.Class</para>
+		                      </listitem>
+		                      <listitem>
+		                        <para>double, int, long, short</para>
+		                      </listitem>
+		                      <listitem>
+		                        <para>java.lang.String</para>
+		                      </listitem>
+		                      <listitem>
+		                        <para>java.sql.Data</para>
+		                      </listitem>
+		                      <listitem>
+		                        <para>java.sql.Time</para>
+		                      </listitem>
+		                      <listitem>
+		                        <para>java.sql.Timestamp</para>
+		                      </listitem>
+		                    </itemizedlist>
+		                  </entry>
+		                </row>
+		              </tbody>
+		            </tgroup>
+		    	</informaltable>
+		    	</para>
+      		</section>
+
+			<section id="struts_configuration_strutsconfig_formbeans_samples">
+			<title>Samples</title>
+
+				<para>
+	      		  	The following is an example on setting form-beans in struts-config.xml file.
+	        		<programlisting language="xml"><![CDATA[<form-beans>
+    <form-bean
+        name="productForm"
+        type="org.anyframe.struts.sample.sales.web.form.ProductForm">
+    </form-bean>
+    <form-bean 
+        name="employeeForm"
+        type="org.apache.struts.action.DynaActionForm">
+        <form-property name="name" type="java.lang.String"/>
+        <form-property name="age" type="int"/>
+        <form-property name="department" type="java.lang.String" initial="2"/>
+        <form-property name="flavorIDs" type="java.lang.String[]"/>
+    </form-bean>
+</form-beans>]]></programlisting>
+				</para>
+      		</section>
+
+			<section id="struts_configuration_strutsconfig_formbeans_dynaactionform">
+        	<title>DynaActionForm</title>
+
+        		<para>
+        			It takes a lot of time to manage ActionForm class of each form in Struts application. 
+        			If you use DynaActionForm, bean property, type, and default value are listed on struts-config.xml 
+        			as the second form-bean setting above, so there is no need to directly develop ActionForm. 
+        			However, the setting process is complex and performance may decrease.
+        		</para>
+      		</section>
+    	</section>
+
+    	<section id="struts_configuration_strutsconfig_actionmapping">
+      	<title>action-mappings</title>
+
+      		<section id="struts_configuration_strutsconfig_actionmapping_setting">
+        		<title><![CDATA[<action-mappings> setting]]></title>
+
+        			<itemizedlist>
+          				<listitem>
+            				<para>Setup information on what Action instance to execute when Controller receives request</para>
+          				</listitem>
+          				<listitem>
+            				<para><![CDATA[Can use <action> under <action-mappings> to set multiple actions]]></para>
+          				</listitem>
+          				<listitem>
+            				<para><![CDATA[<action> : Defines Action mapping matched with specific request URI]]></para>
+          				</listitem>
+        			</itemizedlist>
+      		</section>
+
+      		<section id="struts_configuration_strutsconfig_actionmapping_attribute">
+        	<title><![CDATA[Main attribute of <action>]]></title>
+
+        		<itemizedlist>
+          			<listitem>
+            			<para>path : Path name starting with "/" except for extension</para>
+          			</listitem>
+          			<listitem>
+            			<para>type : Name of Action class</para>
+          			</listitem>
+          			<listitem>
+            			<para>scope : Scope of context in which form bean is saved</para>
+          			</listitem>
+          			<listitem>
+            			<para>name : Name of form bean connected with action</para>
+          			</listitem>
+          			<listitem>
+            			<para>role : Set authority to access Action object</para>
+          			</listitem>
+          			<listitem>
+            			<para>
+            				input : Path to return or indicate situation when validation error occurs in form bean
+            			</para>
+          			</listitem>
+        		</itemizedlist>
+        		<para><![CDATA[The following are attributes of <action>.]]> 
+		        <informaltable>
+		            <tgroup cols="2">
+		            <colspec colnum="1" colname="col1" colwidth="2*"/>
+					<colspec colnum="2" colname="col2" colwidth="10*"/>
+		              <thead>
+		                <row>
+		                  <entry align="center">Name</entry>
+		
+		                  <entry align="center">Description</entry>
+		                </row>
+		              </thead>
+		
+		              <tbody>
+		                <row>
+		                  <entry>attribute</entry>
+		                  <entry>
+		                    Name value of request-scope or session-scope attribute to access form bean. 
+		                  	Used when you wish to use form bean in another attribute name. 
+		                  	Can be described only when form bean is described in name attribute. 
+		                  </entry>
+		                </row>
+		                <row>
+		                  <entry>className</entry>
+		                  <entry>
+		                  	Object that will contain configuration information of actions. 
+		                  	Must be org.apache.struts.config.ActionMapping or a class that inherited it. 
+		                  	Default value: org.apache.struts.config.ActionMapping
+		                  </entry>
+		                </row>
+		                <row>
+		                  <entry>forward</entry>
+		                  <entry>
+		                  	Shows module-relative path of resource (*.do, *.jsp, etc.) that will execute request instead of action class. 
+		                  	[required: Only one among forward, include, and type attribute should be described.]
+		                  </entry>
+		                </row>
+		                <row>
+		                  <entry>include</entry>
+		                  <entry>
+		                  	Shows module-relative path of resource (*.do, *.jsp, etc.) that will execute request instead of Action class. 
+		                  	[required: Only one among forward, include, and type attribute should be described.]
+		                  </entry>
+		                </row>
+		                <row>
+		                  <entry>input</entry>
+		                  <entry>
+		                  	module-relative path that shows resource (*.do, *.jsp, etc.) when validation error occurs in form bean. 
+		                  	Can only be described when form bean is described in name attribute. 
+		                  	[required: When form bean name is described in name attribute and returns validation error.]
+		                  </entry>
+		                </row>		
+		                <row>
+		                  <entry>name</entry>
+		                  <entry>Shows the name of form bean that uses this Action mapping.</entry>
+		                </row>
+		                <row>
+		                  <entry>path</entry>
+		                  <entry>
+		                  	Shows the module-relative path of submitted request. 
+		                  	This attribute should start with "/" and should be described without filename extension. 
+		                  	For example, "/main.do" is not an appropriate description method. 
+		                  	Because do extension is already used in action mapping, only "/main" should be described.
+		                  </entry>
+		                </row>
+		                <row>
+		                  <entry>parameter</entry>
+		                  <entry>
+		                  	Setup parameter to transfer a unique value to action object. 
+		                  	The current Action class does not use this attribute, so even if this value is entered it will not be processed. 
+		                  	If you with to use this attribute, sub-class of Action class should be made.
+		                  </entry>
+		                </row>
+		                <row>
+		                  <entry>prefix</entry>
+		                  <entry>
+		                  	Shows the prefix that is used to match request parameter name to form bean property name. 
+		                  	Can only be set when form bean is described in name attribute.
+		                  </entry>
+		                </row>
+		                <row>
+		                  <entry>roles</entry>
+		                  <entry>
+		                  	Sets the authority to access action object. 
+		                  	Role names can be separated with commas (,). 
+		                  	For example, if written as "admin, master, user," the user which has at least one authority 
+		                  	out of admin, master, and user can use this action.
+		                  </entry>
+		                </row>
+		                <row>
+		                  <entry>scope</entry>
+		                  <entry>
+		                   	Shows the scope of context in which the form bean that is used by action is saved. 
+		                   	Request or session. Default value: session
+		                  </entry>
+		                </row>
+		                <row>
+		                  <entry>suffix</entry>
+		                  <entry>
+		                  	Shows the suffix that is used for matching Request parameter name to form bean property name. 
+		                  	Can only be set when form bean is described in name attribute. 
+		                  </entry>
+		                </row>
+		                <row>
+		                  <entry>type</entry>
+		                  <entry>
+		                  	Shows Action class that will execute request. 
+		                  	This class should be the sub-class of org.apache.struts.action.Action. 
+		                  	[required: Only one out of forward, include, and type attribute should be described.]
+		                  </entry>
+		                </row>
+		                <row>
+		                  <entry>unknown</entry>
+		                  <entry>
+		                  	Shows whether it is default action mapping which processes request that is not defined in setup file. 
+		                  	When there is no action mapping object to execute request, 
+		                  	transfer this request to Action mapping object which unknown is set to true. 
+		                  	For each module, there can be only one action mapping which unknown is true. 
+		                  	Default value: false
+		                  </entry>
+		                </row>
+		                <row>
+		                  <entry>validate</entry>
+		                  <entry>
+		                  	Shows whether validation will be executed in form bean. 
+		                  	If the value is true, validate method of form bean is executed. 
+		                  	Default value: true
+		                  </entry>
+		                </row>
+		                <row>
+		                  <entry>cancellable</entry>
+		                  <entry>
+		                  	<![CDATA[Attribute added to Struts 1.3. 
+		                  	The <set-property> of Struts 1.2.9 changed from version 1.3 onwards. 
+		                  	This should be set to use cancle process.]]>
+		                  </entry>
+		                </row>
+		              </tbody>
+		            </tgroup>
+		        </informaltable>
+	  			</para>
+      		</section>
+
+			<section id="struts_configuration_strutsconfig_actionmapping_samples">
+			<title>Samples</title>
+
+				<para>
+					The following is an example of action-mappings setting in struts-config-login.xml file.
+        			<programlisting language="xml"><![CDATA[<action-mappings>
+    <action
+        path="/login"
+        type="org.anyframe.sample.struts.action.LoginAction"
+        name="userForm"
+        scope="request"
+        input="/basic/login.jsp">
+    <exception key="error.password.mismatch" path="/basic/login.jsp"  
+            type="javax.security.auth.login.FailedLoginException" />
+    <forward name="success" path="/basic/main.jsp" />
+    </action>
+	...
+</action-mappings>]]></programlisting>
+				</para>
+
+        		<para>
+        			Mapping is performed so that LoginAction is processed for '/login.do' request. 
+        			The form bean connected in this case is UserForm. 
+        			Form bean is maintained throughout request scope.
+        			Forward path is forwarded as /basic/main.jsp because the forward name is set as "success" in Action class. 
+        			When an exception occurs, it is turned into /basic/login.jsp.
+        		</para>
+
+        		<para>
+        			<![CDATA[<action> development needs to be considered by developer. 
+        			It is an important task in web application development 
+        			that includes request processing, action mapping, page navigation control, etc.]]>
+        		</para>
+			</section>
+		</section>
+
+		<section id="struts_configuration_strutsconfig_globalfowards">
+      	<title>global-forwards</title>
+
+      		<section id="struts_configuration_strutsconfig_globalfowards_setting">
+        	<title><![CDATA[<global-forwards> setting]]></title>
+
+        		<itemizedlist>
+          			<listitem>
+            			<para>Mapping of URI that can forward or redirect, in logical name</para>
+          			</listitem>
+          			<listitem>
+            			<para><![CDATA[Set multiple URI mapping using <forward> under <global-forwards>]]></para>
+          			</listitem>
+          			<listitem>
+            			<para>
+            				<![CDATA[One <forward> maps one logical name into module-relative or context-relative URI path. 
+            				(Uses name internally decided in logic rather than directly using URI path, 
+            				and separates Controller and Model from View.)]]>
+            			</para>
+          			</listitem>
+          			<listitem>
+            			<para>Defines forward of global level that can be used in all Actions</para>
+          			</listitem>
+        		</itemizedlist>
+        		<para>Priority of forward</para>
+        		<para>
+        			<![CDATA[<forward> can be defined in global level and action level, 
+        			but the one that is declared in action level has higher priority. 
+        			The following are the atributes of <forward>.]]>
+        		</para>
+
+		        <informaltable>
+		          <tgroup cols="2">
+		          <colspec colnum="1" colname="col1" colwidth="2*"/>
+				<colspec colnum="2" colname="col2" colwidth="8*"/>
+		            <thead>
+		              <row>
+		                <entry align="center">Name</entry>
+		                <entry align="center">Description</entry>
+		              </row>
+		            </thead>
+		            <tbody>
+		              <row>
+		                <entry>className</entry>
+		                <entry>
+		                	Object that will contain configuration information of forward. 
+		                	Should be org.apache.struts.config.ActionForward or class that inherits it. 
+		                	Default value: org.apache.struts.config.ActionForward
+		                </entry>
+		              </row>
+		              <row>
+		                <entry>name</entry>
+		                <entry>The current forward name. An identifier that can be separated from other forwards.</entry>
+		              </row>
+		              <row>
+		                <entry>path</entry>
+		                <entry>
+		                	Shows the module-relative or
+		                	context-relative path of resource (*.do, *.jsp, etc.) to forward or redirect. 
+		                </entry>
+		              </row>
+		              <row>
+		                <entry>redirect</entry>
+		                <entry>
+		                	When there is a need for RequestProcessor to redirect this forward, 
+		                	set to true. Default value: false
+		                </entry>
+		              </row>
+		            </tbody>
+		          </tgroup>
+		        </informaltable>
+			</section>
+
+     		<section id="struts_configuration_strutsconfig_globalfowards_samples">
+      		<title>Samples</title>
+
+        		<para>The following is an example of setting global-forwards in struts-config.xml.</para>
+
+        		<para>
+          			<programlisting language="xml"><![CDATA[<global-forwards>
+    <forward name="login" path="/login.jsp"/>
+    <forward name="main" path="/main.do" redirect="true"/>
+</global-forwards>]]></programlisting>
+				</para>
+			</section>
+		</section>
+	</section>
+</chapter>

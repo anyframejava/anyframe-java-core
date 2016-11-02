@@ -1,0 +1,123 @@
+<chapter id="securedresource">
+	<title>Authorization</title>
+	<para>
+		In this chapter, let's take a look at how to set authorization and manage central to basic functions of IAM
+		which manages authorization on DB-based Secured Resource.
+	</para>
+	<mediaobject>
+		<imageobject>
+			<imagedata fileref="../image/iam/secured_resource_01.png" />
+		</imageobject>
+	</mediaobject>
+	<para>
+		The figure above is a screen shown when you click IAM SAMPLE after running Web Application.
+		In the Use/Password input box below, admin/admin123 was entered for the immediate log-in for user.
+		Let's take a look at the following screen by clicking Login button.
+	</para>
+	<mediaobject>
+		<imageobject>
+			<imagedata fileref="../image/iam/iam_secured_resource_login_01.jpg" />
+		</imageobject>
+	</mediaobject>
+	<para>
+		Users who logged in with admin account are authorized for ROLE_ADMIN, which includes access to all director list and update to director information.
+		If you want to log in with another account other than admin, look Help on the bottom left, then pop-up information will appear as below.
+	</para>
+	<mediaobject>
+		<imageobject>
+			<imagedata fileref="../image/iam/iam_secured_resource_login_02.jpg" />
+		</imageobject>
+	</mediaobject>
+	<para>
+		There are three types of users who can log in: admin, user, buyer.
+		Each user has a different role, hence different authorization.
+		For example, if logging-in with buy account which is written on Help, "Access is denied."  message will be shown right after log-in as the following.
+		<mediaobject>
+			<imageobject>
+				<imagedata fileref="../image/iam/iam_secured_resource_login_03.jpg" />
+			</imageobject>
+		</mediaobject>
+	</para>
+	<para>
+		Resources that can be executed by each authority are as the following.
+		<informaltable> 
+			<tgroup cols="3">
+				<thead>
+					<row>
+						<entry align="center"></entry>
+						<entry align="center">Director List</entry>
+						<entry align="center">Update Director</entry>
+					</row>
+				</thead>
+				<tbody>
+					<row>
+						<entry align="center">buyer(ROLE_RESTRICTED)</entry>
+						<entry align="center">X</entry>
+						<entry align="center">X</entry>
+					</row>
+					<row>
+						<entry align="center">user(ROLE_USER)</entry>
+						<entry align="center">O</entry>
+						<entry align="center">X</entry>
+					</row>
+					<row>
+						<entry align="center">admin(ROLE_ADMIN)</entry>
+						<entry align="center">O</entry>
+						<entry align="center">O</entry>
+					</row>
+				</tbody>
+			</tgroup>
+		</informaltable>
+	</para>
+	<para>
+		If you execute 'Director Update' command after logging in with user / user123, again "Access is denied." message will be shown limiting usage.
+		This is because two web resources, "/iamListDirector.do" and "/iamUpdateDirector.do". are registered to DB as secured resources.
+		To check this, if you search for SECURED_RESOURCES table at DB,
+		you will see one pointcut and two WEB resources as the following.
+	</para>
+	<mediaobject>
+		<imageobject>
+			<imagedata fileref="../image/iam/secured_resource_03.png" />
+		</imageobject>
+	</mediaobject>
+	<para>
+		Resources registered at SECURED_RESOURCES table are resources designated to be secured.
+		Therefore, to use these resources, you must match resource(SECURED_RESOURCE) with role(ROLE).
+		For details, see SECURED_RESOURCES_ROLES table on DB.
+	</para>
+	<mediaobject>
+		<imageobject>
+			<imagedata fileref="../image/iam/secured_resource_04.png" />
+		</imageobject>
+	</mediaobject>	
+	<para>
+		If you look at the contents registered in SECURED_RESOURCES_ROLES table, you can see that WEB-000002 (/iamUpdateDirector.do) resource is
+		registered in ROLE_ADMIN. Therefore, if you call /iamUpdateDirector.do address, ROLE of log-in user will be identified
+		and will be denied to access if not ROLE_USER.
+		Likewise, WEB-000003 (/iamListDirector.do) resource is registered in ROLE_USER, access will be denied to users who are not ROLE_USER.
+	</para>
+	<para>
+		"/iamListDirector.do" resource is assigned to ROLE_USER only, but can be used without limit by ROLE ADMIN as ROLE is used in hierarchical structure.
+		ROLE placed in the top of the hierarchy inherits all authority of access to resources assigned to lower ROLE.
+		Currently, the top of DB is places by the order of ROLE_ADMIN, ROLE_ADMIN - ROLE_USER - ROLE_RESTRICTED - IS_AUTHENTICATED_ANONYMOUSLY,
+		and you can check this at ROLES_HIERARCHY.
+		Contents of ROLES_HIERARCHY table is as the following.
+	</para>
+	<para>
+		<mediaobject>
+			<imageobject>
+				<imagedata fileref="../image/iam/secured_resource_04.png" />
+			</imageobject>
+		</mediaobject>		
+		In this case, note that PARENT_ROLE and CHILD_ROLE on the table are defined in a hierarchy 
+		that are defined as opposed to what generally are thought to be.
+	</para>
+	<para>
+		To reduce inconvenience of directly updating DB, IAM provides IAM Admin web application.
+	</para>
+	<para>
+		For details on how to use IAM Admin Web Application,
+		see <ulink url="http://dev.anyframejava.org/docs.en/iam/1.1.4-SNAPSHOT/reference/htmlsingle/anyframeiam.html#anyframeiamadmin">Anyframe IAM Admin manual</ulink>.
+		
+	</para>
+</chapter>

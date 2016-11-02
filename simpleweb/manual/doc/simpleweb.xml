@@ -1,0 +1,144 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+
+<!DOCTYPE book PUBLIC "-//OASIS//DTD DocBook XML V4.5//EN" "http://www.oasis-open.org/docbook/xml/4.5/docbookx.dtd"
+[
+<!ENTITY simpleweb_configuration SYSTEM "simpleweb/configuration.xml">
+<!ENTITY simpleweb_controller SYSTEM "simpleweb/controller.xml">
+<!ENTITY simpleweb_tag SYSTEM "simpleweb/tag.xml">
+]
+>
+
+<!--
+		Licensed to the Apache Software Foundation (ASF) under one or more
+		contributor license agreements. See the NOTICE file distributed with
+		this work for additional information regarding copyright ownership.
+		The ASF licenses this file to you under the Apache License, Version
+		2.0 (the "License"); you may not use this file except in compliance
+		with the License. You may obtain a copy of the License at
+
+		http://www.apache.org/licenses/LICENSE-2.0 Unless required by
+		applicable law or agreed to in writing, software distributed under the
+		License is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR
+		CONDITIONS OF ANY KIND, either express or implied. See the License for
+		the specific language governing permissions and limitations under the
+		License.
+-->
+    
+<book lang="ko">
+	<title>Anyframe Simpleweb Plugin</title>
+	
+	<bookinfo>
+		<copyright>
+			<year>2007-2012</year>
+			<holder>삼성SDS</holder>
+		</copyright>
+		<releaseinfo>Version 1.0.3-SNAPSHOT</releaseinfo>
+
+		<productname>Anyframe Simpleweb Plugin</productname>
+
+		<authorgroup>
+			<corpauthor></corpauthor>
+		</authorgroup>
+
+		<mediaobject>
+			<imageobject>
+				<!-- logo 변경 -->
+				<imagedata fileref="../image/common/logo_pdf.jpg" />				
+			</imageobject>
+			<textobject>
+				<phrase>Anyframe Java 로고</phrase>
+			</textobject>
+		</mediaobject>
+		<legalnotice>
+			<para>본 문서의 저작권은 삼성SDS에 있으며 Anyframe 오픈소스 커뮤니티 활동의 목적하에서 자유로운 이용이 가능합니다.
+			본 문서를 복제, 배포할 경우에는 저작권자를 명시하여 주시기 바라며 본 문서를 변경하실 경우에는 원문과 변경된 내용을 표시하여 주시기 바랍니다. 
+			원문과 변경된 문서에 대한 상업적 용도의 활용은 허용되지 않습니다. 본 문서에 오류가 있다고 판단될 경우 이슈로 등록해 주시면 적절한 조치를 취하도록 하겠습니다.
+			</para>
+		</legalnotice>
+	</bookinfo>
+	<part id="simpleweb_introduction_part">
+		<title>Introduction</title>
+		<partintro id="simpleweb_introduction_part_intro">
+			<para>
+				Simpleweb Plugin은 Spring MVC 기반의 웹 어플리케이션을 개발할 때 개발자가 웹 개발을 보다 쉽고 간단하게 할 수 있게 하는데 필요한
+				공통 설정 파일 및 라이브러리들(공통 Controller 클래스 및 태그 라이브러리 포함)을 제공한다. 
+				실제 사용 예를 보여주는 샘플 코드는 Simpleweb VO/Map/jQuery Plugin 등에서 제공되므로 참고하도록 한다.
+		    </para>
+			<para role="introduction_title"><emphasis role="bold">Installation</emphasis></para>
+			<para>Command 창에서 다음과 같이 명령어를 입력하여 simpleweb-plugin을 설치한다.</para>
+			<programlisting language="java"><![CDATA[mvn anyframe:install -Dname=simpleweb]]></programlisting>
+			<para>
+				installed(mvn anyframe:installed) 혹은 jetty:run(mvn clean jetty:run) command를 이용하여 설치 결과를 확인해볼 수 있다. 
+			</para>
+			<informaltable>
+				<caption>Dependent Plugins</caption>
+				<tgroup cols="2">
+					<colspec colnum="1" colname="col1" colwidth="5*" />
+					<colspec colnum="2" colname="col2" colwidth="5*" />
+					<thead>
+						<row>
+							<entry align="center">Plugin Name</entry>
+							<entry align="center">Version Range</entry>
+						</row>
+					</thead>
+					<tbody>
+						<row>
+							<entry align="center"><ulink url="http://dev.anyframejava.org/docs/anyframe/plugin/optional/idgen/1.5.0-SNAPSHOT/reference/htmlsingle/idgen.html">Idgen</ulink></entry>
+							<entry align="center" valign="middle">2.0.0 > * > 1.4.0</entry>
+						</row>
+						<row>
+							<entry align="center">
+								<ulink
+									url="http://dev.anyframejava.org/docs/anyframe/plugin/optional/query/1.5.0-SNAPSHOT/reference/htmlsingle/query.html">Query</ulink>
+							</entry>
+							<entry align="center" valign="middle">2.0.0 > * > 1.4.0</entry>
+						</row>						
+						<row>
+							<entry align="center">
+								<ulink
+									url="http://dev.anyframejava.org/docs/anyframe/plugin/optional/tiles/1.0.3-SNAPSHOT/reference/htmlsingle/tiles.html">Tiles</ulink>
+							</entry>
+							<entry align="center" valign="middle">2.0.0 > * > 1.0.2</entry>
+						</row>
+					</tbody>
+				</tgroup>
+			</informaltable>
+		</partintro>
+	</part>	
+	<part id="simpleweb_part">
+		<title>Simplification of web</title>
+		<partintro id="simpleweb_part_intro">
+			<para>
+				Spring MVC 기반의 웹 어플리케이션을 개발할 때 개발자는 요청을 처리할 Controller 클래스, 각 요청과 Controller 클래스를 매핑해줄 *-servlet.xml을 작성해야 한다.
+				이러한 과정은 매 요청을 처리할 때마다 발생하게 되며 때로는 많은 시간을 필요로 하게 된다. 이에 Anyframe에서는 Controller 클래스 작성 없이도 요청을 처리해줄 공통 Controller와 
+				Tag Library를 제공한다. 또한, 보다 간결하고 역동적인 웹 개발을 위해 Spring JS, jQuery와의 연계 방안을 제시하고 있다.
+				Anyframe에서 웹 개발을 간소화하기 위해 제공하는 기능 목록은 아래와 같다. 
+			</para>
+			<itemizedlist>
+				<listitem><para>Controller 클래스 개발 없이도 요청 처리가 가능한 공통 Controller 제공</para>
+					<itemizedlist>
+						<listitem><para>비즈니스 서비스 호출</para></listitem>
+						<listitem><para>Command 객체 바인딩(VO, Map 타입 지원) </para></listitem>
+						<listitem><para>중복 폼 서브밋 방지</para></listitem>
+						<listitem><para> Custom Validator 클래스 적용 </para></listitem>
+						<listitem><para> Model Validation 기능 사용을 위한 JSR-303 Validator 적용 </para></listitem>
+						<listitem><para>화면 초기 데이터 셋팅</para></listitem>
+						<listitem><para>Tiles Attribute 셋팅</para></listitem>
+						<listitem><para>View 이름 셋팅</para></listitem>
+					</itemizedlist>
+				</listitem>
+				<listitem><para>공통 Controller 클래스에서 사용될 데이터를 JSP 페이지에서 설정할 수 있도록 Anyframe Tag Library 제공 </para></listitem>
+				<listitem><para>VO 객체를 사용하는 Application 개발을 위한 VO용 공통 Controller 제공</para></listitem>
+				<listitem><para>Map 객체를 사용하는 Application 개발을 위한 Map용 공통 Controller 제공</para></listitem>
+				<listitem><para>jQuery와의 연계를 위한 공통 Controller 제공</para></listitem>
+				<listitem><para>Tiles 화면 레이아웃 사용 시 Partial Rendering 및 Popup 기능 제공</para></listitem>
+				<listitem><para>공통 Controller의 넘겨줄 데이터를 셋팅할 수 있는 Anyframe Tag Library 제공</para></listitem>
+				<listitem><para>간편하게 Client단 Validation을 구현할 수 있는 Anyframe Tag Library 제공 </para></listitem>
+			</itemizedlist>			
+		</partintro>
+		&simpleweb_configuration;
+		&simpleweb_controller;
+		&simpleweb_tag;
+	</part>	
+
+</book>

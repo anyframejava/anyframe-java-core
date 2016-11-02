@@ -1,0 +1,70 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN"
+        "http://www.w3.org/TR/html4/loose.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+
+<head>
+    <meta http-equiv="content-type" content="text/html; charset=UTF-8"/>
+    <title>[Tooltip] Basic Sample</title>
+    <link href="../../../common/css/smoothness/jquery-ui-1.10.0.custom.css" rel="stylesheet">
+    <script src="../../../common/exlibs/jquery-1.9.0.js"></script>
+    <script src="../../../common/exlibs/jquery-ui-1.10.0.custom.js"></script>
+
+    <link type="text/css" rel="stylesheet" href="../../../common/css/style.css"/>
+    <link type="text/css" rel="stylesheet" href="sub_css/basic.css">
+    <link type="text/css" rel="stylesheet" href="sub_css/ttstyle.css">
+    <script>
+        $(document).ready(function() {
+            var inputField = $('input');
+
+            $('#nationality').tooltip();
+            $('#name').tooltip({
+                track: true
+            });
+            $('#age').tooltip({
+                show:{
+                    effect: 'slideDown',
+                    delay: 250
+                },
+                hide:{
+                    effect: 'explode',
+                    delay: 250
+                }
+            });
+            $('#chkBtn').button().click(function(){
+                if ($(this).text() == "Show All") {
+                    inputField.tooltip("open");
+                    $(this).html("<span class='ui-button-text'>Close All</span>").click(function () {
+                        inputField.tooltip("close");
+                    });
+                } else {
+                    inputField.tooltip("close");
+                    $(this).html("<span class='ui-button-text'>Show All</span>").click(function () {
+                        inputField.tooltip("open");
+                    });
+                }
+            });
+        });
+    </script>
+</head>
+<body>
+<div class="title">변화 상태</div>
+<form id="field">
+    <fieldset>
+        <p>Please hover the element with your mouse for each. You can meet various effects from the below.</p>
+        <div>
+            <label for="nationality">Firstname</label>
+            <input id="nationality" name="nationality" title="This is the default example." />
+        </div>
+        <div>
+            <label for="name">Lastname</label>
+            <input id="name" name="name" title="This is the track example." />
+        </div>
+        <div>
+            <label for="age">Address</label>
+            <input id="age" name="age" title="This is the animation example." />
+        </div>
+    </fieldset>
+</form>
+ <button id="chkBtn">Show All</button>
+</body>
+</html>

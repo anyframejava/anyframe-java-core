@@ -1,0 +1,127 @@
+<chapter id="xplatform_integration_xprequesthandlerutil">
+	<title>XPRequestHandlerUtil</title>
+	
+	<para>
+		XPLATFORM을 사용하는 웹어플리케이션 개발 환경에서 Controller Class를 개발할 때, 
+		XPLATFORM에서 전용으로 사용하는 데이터 타입을 변환 하는 작업이 반드시 필요하다. 
+		Anyframe은 복잡한 변환 로직을 처리하고 개발자가 원하는 데이터 타입으로 사용할 수 있도록
+		XPRequestHandlerUtil class를 제공한다.
+	</para>
+	
+	<para>
+		Spring MVC 아키텍쳐에 따라 Controller를 작성한 경우, XPLATFORM의 데이터 타입을 변환 하기 위해서
+		일반적으로 아래의 예제 코드와 같은 Request 변환, DataSet 및 VariableList 추출 등의 작업을 수행하는
+		코드를 메소드마다 작성 해야 한다.
+	</para>
+	
+	<para>
+		<programlisting language="java"><![CDATA[@Controller
+@RequestMapping("/xplatformMovie.do")
+public class MovieController {
+
+	@Inject
+	@Named("xplatformMovieService")
+	private MovieService movieService;
+
+	@RequestMapping(params = "method=getList")
+	public void getList(HttpServletRequest request, HttpServletResponse response)
+			throws Exception {
+		HttpPlatformRequest platformRequest = new HttpPlatformRequest(
+		this.request, contentType, charset);
+		platformRequest.receiveData();
+		PlatformData inPlatformData = platformRequest.getData();
+		
+		DataSetList inDl = inPlatformData.getDataSetList();
+		VariableList inVl = inPlatformData.getVariableList();
+		
+		// ...중략
+		
+		DataSetList outDl = new DataSetList();
+		VariableList outVl = new VariableList();
+		
+		HttpPlatformResponse httpPlatformResponse = new HttpPlatformResponse(
+			response, contentType, charset);
+		PlatformData outPlatformData = new PlatformData();
+		outPlatformData.setDataSetList(outDl);
+		outPlatformData.setVariableList(outVl);
+		httpPlatformResponse.setData(outPlatformData);
+		httpPlatformResponse.sendData();
+	}
+
+// ...중략
+}]]></programlisting>
+	</para>
+	
+	<para>
+		또한 이 경우 XPLATFORM 전용 데이터 타입인 DataSet을 주로 사용하기 때문에 이를 Map 혹은 VO형태로
+		사용하기 위해서는 아래와 같은 추가 작업이 필요할 것이다.
+	</para>	
+	
+	<para>
+	<programlisting language="java"><![CDATA[DataSet dsGrdMovie = inDl.get("dsGrdMovie");
+List<Movie> movieList = new ArrayList<Movie>();
+for(int i = 0 ; i < dsGrdMovie.getRowCount() ; i++){
+	Movie movie = new Movie();
+	movie.setMovieId(dsGrdMovie.getString(i, "MOVIE_ID"));
+	movie.setTitle(dsGrdMovie.getString(i, "TITLE"));
+	
+	//...중략
+	
+	movieList.add(movie);
+}]]></programlisting>
+	</para>
+	
+	<para>
+		위에서 살펴본 중복적인 변환 작업을 처리하기 위해 Anyframe에서 XPRequestHandlerUtil class를 제공하면
+		다음과 같이 코드를 단순화 시킬 수 있다.
+	</para>
+	
+	<para>
+		<programlisting language="java"><![CDATA[@Controller
+@RequestMapping("/xplatformMovie.do")
+public class MovieController {
+
+	@Inject
+	@Named("xplatformMovieService")
+	private MovieService movieService;
+
+	private String contentType = PlatformType.CONTENT_TYPE_XML;
+
+	private String charset = PlatformType.DEFAULT_CHAR_SET;
+
+	@RequestMapping(params = "method=getList")
+	public void getList(HttpServletRequest request, HttpServletResponse response)
+			throws Exception {
+		
+		XPRequestHandlerUtil xpHandlerUtil = new XPRequestHandlerUtil(request,
+				response, contentType, charset);
+		try {
+			List<Map<String, Object>> resultList = movieService
+					.getList(xpHandlerUtil.getDataSetAsMap("dsSearch").get(0));
+
+			xpHandlerUtil.setMapListToDataSetListWithCheck("dsGrdMovie",
+					resultList);
+			xpHandlerUtil.setResultMsg(0, "save successed");
+		} catch (Exception e) {
+			String errorMsg = e.getMessage();
+			if ("".equals(errorMsg)) {
+				errorMsg = "Fail to process client.";
+			}
+			xpHandlerUtil.setResultMsg(-1, errorMsg);
+		} finally {
+			xpHandlerUtil.sendData();
+		}
+	}
+// ...중략	
+}]]></programlisting>
+	</para>
+	
+	<para>
+		XPRequestHandlerUtil class가 생성될 때 입력 인자로 받는 request를 PlatformRequest로 변환하는 과정을
+		내부적으로 수행 한다. 또한 PlatformRequest에 저장되어 있는 DataSetList, VariableList를 멤버변수에 저장 해두고
+		사용자가 데이터를 요청할 때 Map 혹은 VO의 형태로 제공하는 메소드를 가지고 있다.
+		위 예제 코드에서 사용한 getDataSetAsMap method를 호출해서 UI에서 넘어온 "dsSearch"라는 이름의 DataSet을
+		Map 형태로 제공받아 검색조건 파라미터로 넘겨주는 것을 확인 할 수 있다.
+	</para>
+</chapter>
+    

@@ -1,0 +1,213 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN"
+"http://www.w3.org/TR/html4/loose.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+
+<head>
+<meta http-equiv="content-type" content="text/html; charset=UTF-8" />
+<title>[Progressbar] Basic Sample</title>
+<link href="../../../common/css/smoothness/jquery-ui-1.10.0.custom.css"
+	rel="stylesheet">
+<script src="../../../common/exlibs/jquery-1.9.0.js"></script>
+<script src="../../../common/exlibs/jquery-ui-1.10.0.custom.js"></script>
+
+<link type="text/css" rel="stylesheet"
+	href="../../../common/css/style.css" />
+<link type="text/css" rel="stylesheet" href="sub_css/basic.css">
+
+<script type="text/javascript">
+	var ENV = {
+		ID_PROGRESSBAR_LOAD : "#progressbarLoad",
+		ID_PROGRESSBAR_CHNG : "#progressbarChange",
+		ID_PROGRESSBAR_LBPOS : "#progressbarLabelPos",
+		VALUE_INTERVAL_N : 1,
+		ID_TARGET_LABEL : "#progressbarLabel",
+		CHECK_STOP : false,
+		TIME : 50
+	};
+
+	var progressbarBasicView = {
+			
+
+	setChange : function(target, interval) {
+			$("#interval").text(interval);
+
+			function changeVal() {
+
+				var val = $(target).progressbar("value") || 0;
+				$(target).progressbar("option", "value", val + interval);
+
+				if (val <= 99 && ENV.CHECK_STOP == false) {
+					setTimeout(changeVal, ENV.TIME);
+				};
+			}
+			setTimeout(changeVal, 100);
+		},
+
+		setStartBtn : function(startBtn, target) {
+			$(startBtn).bind("click", function() {
+				ENV.CHECK_STOP = false;
+				progressbarBasicView.setChange(target, ENV.VALUE_INTERVAL_N);
+				var val = $(target).progressbar("option", "value");
+				if (val == 100) {
+					$(target).progressbar("option", "value", 0);
+				}
+			});
+		},
+
+		setStopBtn : function(stopBtn, target) {
+			$(stopBtn).on("click", function() {
+				ENV.CHECK_STOP = true;
+				progressbarBasicView.setChange(target, ENV.VALUE_INTERVAL_N);
+			});
+		},
+
+		setState : function(target, value) {
+			$(target).progressbar("option", "value", value);
+		},
+
+		setIntervalVal : function(targetId) {
+
+			switch (targetId) {
+			case "intervalValUp":
+				ENV.VALUE_INTERVAL_N++;
+				break;
+			case "intervalValDown":
+				ENV.VALUE_INTERVAL_N--;
+				break;
+			default:
+				ENV.VALUE_INTERVAL_N;
+			}
+			;
+
+			$("#interval").text(ENV.VALUE_INTERVAL_N);
+		},
+
+		setLabel : function(target, value) {
+			$(target).children().first().text(value);
+		},
+
+		setCompleteTxt : function(text, target) {
+			$(target).on("progressbarcomplete", function(event, ui) {
+				progressbarBasicView.setLabel(target, text);
+			});
+		},
+
+		setChangeLabel : function(target) {
+			$(target).on("progressbarchange", function(event, ui) {
+				var val = $(target).progressbar("option", "value");
+				progressbarBasicView.setLabel(target, val + "%");
+			});
+		}
+
+	};
+
+	$(document).ready(
+			function() {
+
+				$("button").button();
+
+				$(ENV.ID_PROGRESSBAR_LOAD).progressbar();
+				$(ENV.ID_PROGRESSBAR_CHNG).progressbar({
+					value : 35
+				});
+				$(ENV.ID_PROGRESSBAR_LBPOS).progressbar({
+					value : 100
+				});
+
+				progressbarBasicView.setLabel(ENV.ID_PROGRESSBAR_CHNG, 35 + "%");
+				progressbarBasicView.setState(ENV.ID_PROGRESSBAR_LOAD, false);
+
+				$("#loadingTxtBtn").on(
+						"click",
+						function() {
+							progressbarBasicView.setLabel(
+									ENV.ID_PROGRESSBAR_LOAD, $("#loadingTxt")
+											.val());
+						});
+
+				$("#initialValBtn").on(
+						"click",
+						function() {
+							var value = parseInt($("#initialVal").val());
+							progressbarBasicView.setState(	ENV.ID_PROGRESSBAR_CHNG, value);
+						});
+
+				progressbarBasicView.setStartBtn("#startBtn",
+						ENV.ID_PROGRESSBAR_CHNG);
+				progressbarBasicView.setStopBtn("#stopBtn",
+						ENV.ID_PROGRESSBAR_CHNG);
+
+				$("#intervalValUp, #intervalValDown").on("click", function() {
+					progressbarBasicView.setIntervalVal($(this).attr("id"));
+				});
+
+				$("#completeTxtBtn").on(
+						"click",
+						function() {
+							progressbarBasicView.setCompleteTxt($(
+									"#completeTxt").val(),
+									ENV.ID_PROGRESSBAR_CHNG);
+						});
+
+				progressbarBasicView.setChangeLabel(ENV.ID_PROGRESSBAR_CHNG);
+
+			});
+</script>
+</head>
+<body>
+
+	<div class="title">로딩 상태</div>
+	<div id="progressbarLoad" class="display-area">
+		<div id="progressbarLoadLabel" class="progressbar-label">Loading...</div>
+	</div>
+
+
+	<div>
+		<div class="text-area">로딩 텍스트 :</div>
+		<div class="input-area">
+			<input id="loadingTxt" type="text" name="labelText" value="wait..."
+				size="10" />
+			<button id="loadingTxtBtn" type="button">change</button>
+		</div>
+	</div>
+
+	<div class="title">변화 상태</div>
+	<div id="progressbarChange" class="display-area">
+		<div id="progressbarChangeLabel" class="progressbar-label"></div>
+	</div>
+
+	<div>
+		<ul>
+			<li>
+				<div class="sub-div">
+					<button id="startBtn" type="button">start</button>
+					<button id="stopBtn" type="button">stop</button>
+				</div>
+			</li>
+			<li>
+				<div class="text-area">초기값 :</div>
+				<div class="input-area">
+					<input id="initialVal" value="35" size="10" />
+					<button id="initialValBtn" type="button">change</button>
+				</div>
+			</li>
+			<li>
+				<div class="text-area">변화간격 :</div>
+				<div class="input-area">
+					<button id="intervalValUp" type="button">+</button>
+					<button id="intervalValDown" type="button">-</button>
+					(value interval : <span id="interval"></span>)
+				</div>
+			</li>
+			<li>
+				<div class="text-area">완료 텍스트 :</div>
+				<div class="input-area">
+					<input id="completeTxt" type="text" name="labelText"
+						value="success!" size="10" />
+					<button id="completeTxtBtn" type="button">change</button>
+				</div>
+		</ul>
+	</div>
+
+</body>
+</html>

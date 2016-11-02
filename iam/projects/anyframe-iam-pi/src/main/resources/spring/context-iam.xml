@@ -1,0 +1,363 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<b:beans xmlns="http://www.springframework.org/schema/security"
+    xmlns:b="http://www.springframework.org/schema/beans" xmlns:aop="http://www.springframework.org/schema/aop"
+    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+    xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-3.2.xsd
+                        http://www.springframework.org/schema/security http://www.springframework.org/schema/security/spring-security-3.0.xsd
+                        http://www.springframework.org/schema/aop http://www.springframework.org/schema/aop/spring-aop-3.2.xsd">
+
+    <b:bean id="securedObjectService" class="org.anyframe.iam.core.securedobject.impl.SecuredObjectServiceImpl">
+        <b:property name="securedObjectDAO" ref="securedObjectDAO" />
+    </b:bean>
+
+    <b:bean id="securedObjectDAO" class="org.anyframe.iam.core.securedobject.impl.SecuredObjectDAO">
+        <b:property name="dataSource" ref="dataSource" />
+        <b:property name="systemName" value="SAMPLE" />
+    </b:bean>
+
+    <b:bean id="roleHierarchy" class="org.springframework.security.access.hierarchicalroles.RoleHierarchyImpl">
+        <b:property name="hierarchy" ref="hierarchyStrings" />
+    </b:bean>
+
+    <b:bean id="hierarchyStrings" class="org.anyframe.iam.core.userdetails.hierarchicalroles.HierarchyStringsFactoryBean"
+            init-method="init">
+        <b:property name="securedObjectService" ref="securedObjectService" />
+    </b:bean>
+
+    <b:bean id="userDetailsServiceWrapper" class="org.springframework.security.access.hierarchicalroles.UserDetailsServiceWrapper">
+        <b:property name="roleHierarchy" ref="roleHierarchy" />
+        <b:property name="userDetailsService" ref="jdbcUserService" />
+    </b:bean>
+
+    <b:bean id="accessDecisionManager" class="org.springframework.security.access.vote.AffirmativeBased">
+        <b:property name="allowIfAllAbstainDecisions" value="false" />
+        <b:property name="decisionVoters">
+            <b:list>
+            	<!--
+                <b:bean class="org.springframework.security.access.vote.RoleVoter">
+                    <b:property name="rolePrefix" value="" />
+                </b:bean>
+                -->
+				<!-- RoleHierarchyVoter -->
+                <b:bean class="org.springframework.security.access.vote.RoleHierarchyVoter">
+					<b:constructor-arg ref="roleHierarchy" />
+                </b:bean>
+                <b:bean class="org.springframework.security.access.vote.AuthenticatedVoter" />
+            </b:list>
+        </b:property>
+    </b:bean>
+
+    <b:bean id="filterSecurityInterceptor" class="org.springframework.security.web.access.intercept.FilterSecurityInterceptor">
+        <!-- Namespace 에서 기본으로 FilterSecurityInterceptor 는 들어가는데  observeOncePerRequest 를 설정하지 않으면 기본으로 같은 Filter 타입인 경우에는 수행을 하지 않음에 유의함.-->
+        <b:property name="observeOncePerRequest" value="false" />
+        <b:property name="authenticationManager" ref="authenticationManager" />
+        <b:property name="accessDecisionManager" ref="accessDecisionManager" />
+        <b:property name="securityMetadataSource" ref="databaseSecurityMetadataSource" />
+    </b:bean>
+
+    <b:bean id="databaseSecurityMetadataSource" class="org.springframework.security.web.access.intercept.AnyframeReloadableDefaultFilterInvocationSecurityMetadataSource">
+        <b:constructor-arg ref="regexUrlPathMatcher" />
+        <b:constructor-arg ref="requestMap" />
+        <b:property name="securedObjectService" ref="securedObjectService" />
+    </b:bean>
+
+    <b:bean id="regexUrlPathMatcher" class="org.springframework.security.web.util.RegexUrlPathMatcher" />
+
+    <b:bean id="requestMap" class="org.anyframe.iam.core.intercept.ResourcesMapFactoryBean" init-method="init">
+        <b:property name="securedObjectService" ref="securedObjectService" />
+        <b:property name="resourceType" value="url" />
+    </b:bean>
+
+	<http access-denied-page="/directorAccessDenied.do"
+		path-type="regex" lowercase-comparisons="false">
+		<intercept-url pattern="\A/restweb/.*\Z" filters="none" />
+		<intercept-url pattern="\A/sample/images/.*\Z" filters="none" />
+		<intercept-url pattern="\A/sample/common/.*\Z" filters="none" />
+		<intercept-url pattern="\A/sample/css/.*\Z" filters="none" />
+		<intercept-url pattern="\A/sample/javascript/.*\Z" filters="none" />
+		<intercept-url pattern="\A/directorLogin\.do.*\Z" access="IS_AUTHENTICATED_ANONYMOUSLY" />
+		<!-- intercept-url pattern="\A/.*\.do.*\Z" access="ROLE_RESTRICTED" /-->
+		<intercept-url pattern="\A/.*\Z" access="IS_AUTHENTICATED_ANONYMOUSLY" />
+		
+		<!-- For HTTP Invoker IAM Admin -->
+		<intercept-url pattern="\A/assist/resourceGatherAssist\.do.*\Z" filters="none" />
+		<intercept-url pattern="\A/reload/resourceReload\.do.*\Z" filters="none" />		
+		
+        <custom-filter after="FILTER_SECURITY_INTERCEPTOR" ref="filterSecurityInterceptor"/>
+		<custom-filter after="EXCEPTION_TRANSLATION_FILTER" ref="restrictedTimesFilterSecurityInterceptor"/>
+		
+		<form-login login-page="/directorLogin.do" login-processing-url="/j_spring_security_check"
+			authentication-failure-url="/directorLogin.do?login_error=1"
+			default-target-url="/iamListDirector.do" />
+		<anonymous />
+		<http-basic/>
+		
+		<logout logout-success-url="/directorLogin.do" />
+		<session-management>
+			<concurrency-control max-sessions="1" error-if-maximum-exceeded="true"/>
+		</session-management>
+	</http>
+
+	<authentication-manager alias="authenticationManager">
+		<!-- <authentication-provider user-service-ref="userDetailsServiceWrapper"> -->
+		<authentication-provider user-service-ref="jdbcUserService">
+			<!-- password-encoder hash="md5" / -->
+		</authentication-provider>
+	</authentication-manager>
+
+    <!--
+    <jdbc-user-service id="jdbcUserService" data-source-ref="dataSource"
+        users-by-username-query="SELECT USER_ID,PASSWORD,ENABLED FROM USERS WHERE USER_ID = ?"
+        authorities-by-username-query="SELECT USER_ID,AUTHORITY FROM AUTHORITIES WHERE USER_ID = ?" />
+    -->
+
+	<b:bean id="jdbcUserService" class="org.anyframe.iam.core.userdetails.jdbc.ExtJdbcUserDetailsManager" >
+        <!-- USER_ID, PASSWORD, ENABLED 는 항상 1,2,3 번째 순서로 나타나야 함! -->
+        <b:property name="usersByUsernameQuery" value="SELECT USER_ID, PASSWORD, CASE WHEN ENABLED = 'Y' THEN 1 ELSE 0 END ENABLED, USER_NAME, CREATE_DATE, MODIFY_DATE FROM USERS WHERE USER_ID = ?"/>
+        <b:property name="authoritiesByUsernameQuery">
+        	<b:value>
+        	SELECT USER_ID,ROLE_ID,GROUP_ID,SUBJECT_ID,TYPE
+			  FROM AUTHORITIES C, (
+			          SELECT A.USER_ID,B.GROUP_ID
+			            FROM USERS A LEFT OUTER JOIN GROUPS_USERS B ON ( A.USER_ID = B.USER_ID )
+			           WHERE A.USER_ID = ? ) D
+			 WHERE ( C.SUBJECT_ID = D.USER_ID
+			              OR C.SUBJECT_ID = D.GROUP_ID )
+        	</b:value>
+        </b:property>
+        <b:property name="dataSource" ref="dataSource"/>
+    </b:bean>
+
+	<!-- <global-method-security> -->
+	<!--  see annotation sample : CategoryService.updateCategory -->
+	<!--
+	<global-method-security secured-annotations="enabled" jsr250-annotations="enabled">
+		<protect-pointcut expression="execution(* com.sds.emp.user..*Service.update*(..))" access="ROLE_USER"/>
+	</global-method-security>
+	 -->
+
+	<!-- customizing method security start -->
+    <b:bean id="methodMap" class="org.anyframe.iam.core.intercept.ResourcesMapFactoryBean" init-method="init">
+        <b:property name="securedObjectService" ref="securedObjectService" />
+        <b:property name="resourceType" value="method" />
+    </b:bean>
+
+    <b:bean id="methodSecurityMetadataSources" class="org.springframework.security.access.method.MapBasedMethodSecurityMetadataSource">
+        <b:constructor-arg ref="methodMap" />
+    </b:bean>
+
+    <b:bean id="_delegatingMethodSecurityMetadataSource" class="org.springframework.security.access.method.DelegatingMethodSecurityMetadataSource">
+        <b:property name="methodSecurityMetadataSources">
+            <b:list>
+                <b:ref bean="methodSecurityMetadataSources" />
+                <b:bean class="org.springframework.security.access.annotation.SecuredAnnotationSecurityMetadataSource" />
+                <b:bean class="org.springframework.security.access.annotation.Jsr250MethodSecurityMetadataSource" />
+            </b:list>
+        </b:property>
+    </b:bean>
+
+    <b:bean id="_methodSecurityMetadataSourceAdvisor" class="org.springframework.security.access.intercept.aopalliance.MethodSecurityMetadataSourceAdvisor">
+        <b:constructor-arg value="_methodSecurityInterceptor" />
+        <b:constructor-arg ref="_delegatingMethodSecurityMetadataSource" />
+		<b:constructor-arg value="_delegatingMethodSecurityMetadataSource" />
+    </b:bean>
+
+    <b:bean id="_methodSecurityInterceptor" class="org.springframework.security.access.intercept.aopalliance.MethodSecurityInterceptor">
+        <b:property name="validateConfigAttributes" value="false" />
+        <b:property name="authenticationManager" ref="authenticationManager" />
+        <b:property name="accessDecisionManager" ref="accessDecisionManager" />
+        <!--b:property name="afterInvocationManager" ref="afterInvocationManager" /-->
+        <b:property name="securityMetadataSource" ref="_delegatingMethodSecurityMetadataSource" />
+    </b:bean>
+
+    <b:bean id="pointcutMap" class="org.anyframe.iam.core.intercept.ResourcesMapFactoryBean" init-method="init">
+        <b:property name="securedObjectService" ref="securedObjectService" />
+        <b:property name="resourceType" value="pointcut" />
+    </b:bean>
+
+    <b:bean id="_protectPointcutPostProcessor" class="org.springframework.security.config.method.ProtectPointcutPostProcessor">
+        <b:constructor-arg ref="methodSecurityMetadataSources" />
+        <b:property name="pointcutMap" ref="pointcutMap" />
+    </b:bean>
+
+    <!-- customizing method security end -->
+
+    <!-- restrictedTimes -->
+
+	<b:bean id="restrictedTimesAccessDecisionManager" class="org.springframework.security.access.vote.AffirmativeBased">
+		<b:property name="allowIfAllAbstainDecisions" value="false" />
+		<b:property name="decisionVoters">
+			<b:list>
+				<b:bean
+					class="org.springframework.security.access.vote.AnyframeRoleHierarchyRestrictedVoter">
+					<b:property name="rolePrefix" value="" />
+					<b:property name="roleHierarchy" ref="roleHierarchy" />
+				</b:bean>
+				<b:bean class="org.springframework.security.access.vote.AuthenticatedVoter" />
+			</b:list>
+		</b:property>
+	</b:bean>
+
+	<b:bean id="restrictedTimesFilterSecurityInterceptor" class="org.anyframe.iam.core.intercept.web.RestrictedTimesFilterSecurityInterceptor">
+		<!-- custom-filter before="FILTER_SECURITY_INTERCEPTOR"/ -->
+		<b:property name="authenticationManager" ref="authenticationManager" />
+		<b:property name="accessDecisionManager" ref="restrictedTimesAccessDecisionManager" />
+		<b:property name="securityMetadataSource" ref="restrictedTimesSecurityMetadataSource" />
+	</b:bean>
+
+	<b:bean id="restrictedTimesSecurityMetadataSource" class="org.anyframe.iam.core.intercept.web.ReloadableRestrictedTimesFilterInvocationSecurityMetadataSource">
+		<b:property name="urlMatcher" ref="regexUrlPathMatcher" />
+		<b:property name="securedObjectService" ref="securedObjectService" />
+	</b:bean>
+
+    <!-- restrictedTimes -->
+
+    <!--
+    <b:bean id="aclManager" class="org.springframework.security.acl.AclManager" />
+    -->
+
+
+
+	<!-- ============== "AFTER INTERCEPTION" AUTHORIZATION DEFINITIONS =========== -->
+	<!--
+	<b:bean id="afterInvocationManager" class="org.springframework.security.afterinvocation.AfterInvocationProviderManager">
+		<b:property name="providers">
+			<b:list>
+				<b:ref local="afterAclRead"/>
+				<b:ref local="afterAclCollectionRead"/>
+			</b:list>
+		</b:property>
+	</b:bean>
+    -->
+
+	<!-- Processes AFTER_ACL_COLLECTION_READ configuration settings -->
+	<!--
+	<b:bean id="afterAclCollectionRead" class="org.springframework.security.afterinvocation.AclEntryAfterInvocationCollectionFilteringProvider">
+		<b:property name="aclManager"><b:ref local="aclManager"/></b:property>
+		<b:property name="requirePermission">
+			<b:list>
+				<b:ref local="org.springframework.security.acls.domain.BasePermission.ADMINISTRATION"/>
+				<b:ref local="org.springframework.security.acls.domain.BasePermission.READ"/>
+			</b:list>
+		</b:property>
+	</b:bean>
+	-->
+
+	<!-- Processes AFTER_ACL_READ configuration settings -->
+	<!--
+	<b:bean id="afterAclRead" class="org.springframework.security.afterinvocation.AclEntryAfterInvocationProvider">
+		<b:property name="aclManager"><b:ref local="aclManager"/></b:property>
+		<b:property name="requirePermission">
+		<b:list>
+			<b:ref local="org.springframework.security.acls.domain.BasePermission.ADMINISTRATION"/>
+			<b:ref local="org.springframework.security.acls.domain.BasePermission.READ"/>
+		</b:list>
+		</b:property>
+	</b:bean>
+	-->
+
+	<!-- Remote HttpInvoker Call -->
+	<b:bean class="org.springframework.web.servlet.mvc.HttpRequestHandlerAdapter" />
+
+	<b:bean id="resourceReloadService"
+		class="org.anyframe.iam.core.reload.impl.ResourceReloadServiceImpl">
+		<b:property name="databaseSecurityMetadataSource" ref="databaseSecurityMetadataSource" />
+		<b:property name="restrictedTimesSecurityMetadataSource" ref="restrictedTimesSecurityMetadataSource" />
+		<b:property name="restrictedTimesAccessDecisionManager" ref="restrictedTimesAccessDecisionManager" />
+	</b:bean>
+
+	<b:bean id="viewResourceAccessService"
+		class="org.anyframe.iam.core.acl.impl.ViewResourceAccessServiceImpl">
+		<b:property name="securedObjectService" ref="securedObjectService" />
+		<b:property name="registeredPermissions">
+			<b:list>
+				<b:ref local="org.anyframe.iam.core.acl.ExtBasePermission.READ" />
+				<b:ref local="org.anyframe.iam.core.acl.ExtBasePermission.WRITE" />
+				<b:ref local="org.anyframe.iam.core.acl.ExtBasePermission.CREATE" />
+				<b:ref local="org.anyframe.iam.core.acl.ExtBasePermission.DELETE" />
+				<!--
+				<b:ref local="org.anyframe.iam.core.acl.ExtBasePermission.ADMINISTRATION" />
+				<b:ref local="org.anyframe.iam.core.acl.ExtBasePermission.LIST" />
+				<b:ref local="org.anyframe.iam.core.acl.ExtBasePermission.PRINT" />
+				<b:ref local="org.anyframe.iam.core.acl.ExtBasePermission.REPORT" />
+				<b:ref local="org.anyframe.iam.core.acl.ExtBasePermission.POPUP" />
+				-->
+				<b:ref local="org.anyframe.iam.core.acl.ExtBasePermission.DOWNLOAD" />
+				<!--
+				<b:ref local="org.anyframe.iam.core.acl.ExtBasePermission.UPLOAD" />
+				<b:ref local="org.anyframe.iam.core.acl.ExtBasePermission.HELP" />
+				-->
+			</b:list>
+		</b:property>
+	</b:bean>
+
+	<!-- 현재 Application 에서 사용하는 Permission 정의 -->
+	<b:bean id="org.anyframe.iam.core.acl.ExtBasePermission.READ"
+		class="org.springframework.beans.factory.config.FieldRetrievingFactoryBean">
+		<b:property name="staticField"
+			value="org.anyframe.iam.core.acl.ExtBasePermission.READ" />
+	</b:bean>
+	<b:bean id="org.anyframe.iam.core.acl.ExtBasePermission.WRITE"
+		class="org.springframework.beans.factory.config.FieldRetrievingFactoryBean">
+		<b:property name="staticField"
+			value="org.anyframe.iam.core.acl.ExtBasePermission.WRITE" />
+	</b:bean>
+	<b:bean id="org.anyframe.iam.core.acl.ExtBasePermission.CREATE"
+		class="org.springframework.beans.factory.config.FieldRetrievingFactoryBean">
+		<b:property name="staticField"
+			value="org.anyframe.iam.core.acl.ExtBasePermission.CREATE" />
+	</b:bean>
+	<b:bean id="org.anyframe.iam.core.acl.ExtBasePermission.DELETE"
+		class="org.springframework.beans.factory.config.FieldRetrievingFactoryBean">
+		<b:property name="staticField"
+			value="org.anyframe.iam.core.acl.ExtBasePermission.DELETE" />
+	</b:bean>
+	<!--
+	<b:bean id="org.anyframe.iam.core.acl.ExtBasePermission.ADMINISTRATION"
+		class="org.springframework.beans.factory.config.FieldRetrievingFactoryBean">
+		<b:property name="staticField"
+			value="org.anyframe.iam.core.acl.ExtBasePermission.ADMINISTRATION" />
+	</b:bean>
+
+	<b:bean id="org.anyframe.iam.core.acl.ExtBasePermission.LIST"
+		class="org.springframework.beans.factory.config.FieldRetrievingFactoryBean">
+		<b:property name="staticField"
+			value="org.anyframe.iam.core.acl.ExtBasePermission.LIST" />
+	</b:bean>
+
+	<b:bean id="org.anyframe.iam.core.acl.ExtBasePermission.PRINT"
+		class="org.springframework.beans.factory.config.FieldRetrievingFactoryBean">
+		<b:property name="staticField"
+			value="org.anyframe.iam.core.acl.ExtBasePermission.PRINT" />
+	</b:bean>
+	<b:bean id="org.anyframe.iam.core.acl.ExtBasePermission.REPORT"
+		class="org.springframework.beans.factory.config.FieldRetrievingFactoryBean">
+		<b:property name="staticField"
+			value="org.anyframe.iam.core.acl.ExtBasePermission.REPORT" />
+	</b:bean>
+	<b:bean id="org.anyframe.iam.core.acl.ExtBasePermission.POPUP"
+		class="org.springframework.beans.factory.config.FieldRetrievingFactoryBean">
+		<b:property name="staticField"
+			value="org.anyframe.iam.core.acl.ExtBasePermission.POPUP" />
+	</b:bean>
+	-->
+	<b:bean id="org.anyframe.iam.core.acl.ExtBasePermission.DOWNLOAD"
+		class="org.springframework.beans.factory.config.FieldRetrievingFactoryBean">
+		<b:property name="staticField"
+			value="org.anyframe.iam.core.acl.ExtBasePermission.DOWNLOAD" />
+	</b:bean>
+	<!--
+	<b:bean id="org.anyframe.iam.core.acl.ExtBasePermission.UPLOAD"
+		class="org.springframework.beans.factory.config.FieldRetrievingFactoryBean">
+		<b:property name="staticField"
+			value="org.anyframe.iam.core.acl.ExtBasePermission.UPLOAD" />
+	</b:bean>
+	<b:bean id="org.anyframe.iam.core.acl.ExtBasePermission.HELP"
+		class="org.springframework.beans.factory.config.FieldRetrievingFactoryBean">
+		<b:property name="staticField"
+			value="org.anyframe.iam.core.acl.ExtBasePermission.HELP" />
+	</b:bean>
+	-->
+
+
+</b:beans>

@@ -1,0 +1,208 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+
+<!DOCTYPE book PUBLIC "-//OASIS//DTD DocBook XML V4.5//EN" "http://www.oasis-open.org/docbook/xml/4.5/docbookx.dtd"
+[
+<!ENTITY jasperreports_installation SYSTEM "jasperreports/installation.xml">
+<!ENTITY jasperreports_integration SYSTEM "jasperreports/integration.xml">
+<!ENTITY jasperreports_integration_configuration SYSTEM "jasperreports/integration/configuration.xml">
+<!ENTITY jasperreports_integration_controller SYSTEM "jasperreports/integration/controller.xml">
+<!ENTITY jasperreports_integration_resources SYSTEM "jasperreports/integration/resources.xml">
+<!ENTITY jasperreports_designer SYSTEM "jasperreports/designer.xml">
+<!ENTITY jasperreports_designer_installation SYSTEM "jasperreports/designer/installation.xml">
+<!ENTITY jasperreports_designer_report SYSTEM "jasperreports/designer/report.xml">
+]
+>
+
+<!--
+		Licensed to the Apache Software Foundation (ASF) under one or more
+		contributor license agreements. See the NOTICE file distributed with
+		this work for additional information regarding copyright ownership.
+		The ASF licenses this file to you under the Apache License, Version
+		2.0 (the "License"); you may not use this file except in compliance
+		with the License. You may obtain a copy of the License at
+
+		http://www.apache.org/licenses/LICENSE-2.0 Unless required by
+		applicable law or agreed to in writing, software distributed under the
+		License is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR
+		CONDITIONS OF ANY KIND, either express or implied. See the License for
+		the specific language governing permissions and limitations under the
+		License.
+-->
+    
+<book lang="en">
+	<title>Anyframe JasperReports Plugin</title>
+	
+	<bookinfo>
+		<copyright>
+			<year>2007-2012</year>
+			<holder>Samsung SDS</holder>
+		</copyright>
+		<releaseinfo>Version 1.0.3-SNAPSHOT</releaseinfo>
+
+		<productname>Anyframe JasperReports Plugin</productname>
+
+		<authorgroup>
+			<corpauthor></corpauthor>
+		</authorgroup>
+
+		<mediaobject>
+			<imageobject>
+				<!-- logo 변경 -->
+				<imagedata fileref="../image/common/logo_pdf.jpg"/>
+			</imageobject>
+		</mediaobject>
+		<legalnotice>
+			<para>
+			The copyright of this document is the property of Samsung SDS. 
+			Permission is granted to use this document for free only for the purpose of open source community activity. 
+			The copyright holder should be clearly stated in case this document is copied or distributed, and changed contents should be specified. 
+			Permission is not granted for the commercial use of the modification of the original document. 
+			Should there be parts considered to have errors in this document, please register the issue for which we will take proper action.
+			</para>
+		</legalnotice>
+	</bookinfo>
+	
+	<part id="jasperreports_Introduction_part">
+		<title>Introduction</title>
+		<partintro id="jasperreports_Introduction_part_intro">
+			<para>
+				jasperreports plugin is composed of sample codes to guide how to execute the Reporting function by connecting Spring MVC and JasperReports <ulink url="http://jasperforge.org/projects/jasperreports">
+				(http://jasperforge.org/projects/jasperreports)</ulink> and reference libraries necessary to use these open sources. 
+				
+			</para>
+			<para role="introduction_title"><emphasis role="bold">Installation</emphasis></para>
+			<para>Install jasperreports plugin by entering the following command in the Command window.</para>
+			<programlisting language="java"><![CDATA[mvn anyframe:install -Dname=jasperreports]]></programlisting>
+			<para>
+				The installation result can be checked by using the installed (mvn anyframe:installed) or the jetty:run (mvn clean jetty:run) commands. 
+			</para>
+			<informaltable>
+				<caption>Dependent Plugins</caption>
+				<tgroup cols="2">
+					<colspec colnum="1" colname="col1" colwidth="5*" />
+					<colspec colnum="2" colname="col2" colwidth="5*" />
+					<thead>
+						<row>
+							<entry align="center">Plugin Name</entry>
+							<entry align="center">Version Range</entry>
+						</row>
+					</thead>
+					<tbody>
+						<row>
+							<entry align="center"><ulink url="http://dev.anyframejava.org/docs.en/anyframe/plugin/essential/core/1.5.0-SNAPSHOT/reference/htmlsingle/core.html">core</ulink></entry>
+							<entry align="center" valign="middle">2.0.0 > * > 1.4.0</entry>
+						</row>
+					</tbody>
+				</tgroup>
+			</informaltable>	
+		</partintro>
+	</part>	
+	
+	<part id="jasperreports_integration_part">
+		<title>JasperReports Integration</title>
+		<partintro id="jasperreports_integration_part_intro">
+			<mediaobject>
+		    	<imageobject>    
+		      		<imagedata align="left"
+		                 		fileref="../image/jasperreports/jasperreports-logo.jpg" />
+		    	</imageobject>
+			</mediaobject>
+
+			<para>
+				A Reporting tool that shows various open source contents in PDF, HTML, XLS, CSV, etc. form. 
+				Overall, it is written in java, and  can be used by various applications to create contents in many formats. 
+				You can develop a design in XML format, compile it, and by binding data with RDBMS and JDBC, 
+				create various reports.
+		  	</para>
+		
+		  	<para>
+		  		The characteristics of JasperReports are as follows:
+		  	</para>
+
+		  	<itemizedlist>
+		    	<listitem>
+		      		<para>
+		      			Provides various reporting output forms (PDF, HTML, XLS, CSV, etc.)
+		      		</para>
+		    	</listitem>
+		
+		    	<listitem>
+		      		<para>
+		      			Composes reporting data using various data sources.
+		      		</para>
+		    	</listitem>
+		
+		    	<listitem>
+		      		<para>
+		      			Can report in various layouts, and provides a graphical view that includes charts.
+		      		</para>
+		    	</listitem>
+		
+		    	<listitem>
+		      		<para>
+		      			Provides graphical report designer. (Various tools can be used for free or for charge.)
+		      		</para>
+		    	</listitem>
+		  	</itemizedlist>
+
+		  	<para>
+		  		The following figure shows the entire process from designing the report of XML format, 
+		  		to creating the final result report with JasperRepoting Engine.
+		  	</para>
+
+		  	<mediaobject>
+		    	<imageobject>
+		      		<imagedata align="center"
+		           		      fileref="../image/jasperreports/jasperreports.jpg" />
+		    	</imageobject>
+		  	</mediaobject>
+
+		  	<para>
+		  		Developer can implement Reporting easily after developing business component 
+		  		by providing tools that create Jasper XML(jrxml) file. JasperReports described in this manual 
+		  		<ulink url="http://jasperforge.org/projects/jasperreports">(http://jasperforge.org/projects/jasperreports)</ulink> gives examples based on integration with Spring MVC. 
+		  		The Reporting function provided by Anyframe basically provides JasperReports functions, 
+		  		but because it is integrated with Spring MVC, 
+		  		there can be some JasperReports functions that are not provided through Spring MVC. 
+		  		In this case, an extended form of Spring MVC can be implemented if necessary.
+		  	</para>
+		
+		  	<para>
+		  		For instance, the following cases are included:
+		  	</para>
+
+		  	<itemizedlist>
+		    	<listitem>
+		      		<para>
+		      			<emphasis role="bold">HTML file Reporting</emphasis> - 
+		      			View class provided by Spring MVC is extended to display image file within HTML.
+		      		</para>
+		    	</listitem>
+		  	</itemizedlist>
+
+		  	<para>
+		  		If you use the Reporting function after installing Anyframe, 
+		  		you can use the above functions without additional coding when following the guidelines in this manual.
+		  	</para>
+
+	    	<para>
+	    		Install JasperReports according to the following, design JRXML, and execute sample application.
+	    	</para>
+		</partintro>
+		&jasperreports_integration_configuration;
+		&jasperreports_integration_controller;
+	</part>			
+	
+	<part id="jasperreports_designer_part">
+		<title>JasperReports Designer</title>
+		<partintro id="jasperreports_designer_part_intro">
+			<para>
+				JasperAssistant is a commercial tool that is a Visual Report Designer for JasperReports. 
+				It is provided in Eclipse Plugin form and supports jrxml file development with a graphical interface.
+		    </para>
+		</partintro>
+		&jasperreports_designer_installation;
+		&jasperreports_designer_report;
+	</part>		
+
+</book>

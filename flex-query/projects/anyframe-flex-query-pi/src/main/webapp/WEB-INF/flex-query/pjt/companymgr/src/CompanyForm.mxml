@@ -1,0 +1,136 @@
+<?xml version="1.0" encoding="utf-8"?>
+<mx:Canvas xmlns:fx="http://ns.adobe.com/mxml/2009" 
+		   xmlns:s="library://ns.adobe.com/flex/spark" 
+		   xmlns:mx="library://ns.adobe.com/flex/mx" 
+		   xmlns:local="*" 
+		   xmlns:data="org.anyframe.flex.messaging.data.*"
+		   width="100%" height="100%"
+		   label="{company['id']>0?company['name']:'New Company'}" >
+	
+	<fx:Metadata>
+        [Event(name="companyCreated", type="CompanyEvent")]
+        [Event(name="companyUpdated", type="CompanyEvent")]
+        [Event(name="companyDeleted", type="CompanyEvent")]
+    </fx:Metadata>
+	
+	<fx:Script> 
+		<![CDATA[
+			import mx.collections.ArrayCollection;
+			import mx.controls.Alert;
+			import mx.rpc.events.FaultEvent;
+			import mx.rpc.events.ResultEvent;
+			import mx.utils.ObjectProxy;
+			
+			import org.anyframe.flex.messaging.data.DataRow;
+			
+			[Bindable] 
+			public var industries:ArrayCollection;
+			
+			[Bindable] 
+			public var company:DataRow = new DataRow;
+			
+			private function save():void
+			{
+				company["name"] = companyName.text;
+				company["address"] = address.text;
+				company["city"] = city.text;
+				company["state"] = state.text;
+				company["zip"]= zip.text;
+				company["phone"] = phone.text;
+				try{
+					company["industry_id"] = (industry.selectedItem as Object)["id"];
+				}catch(e:Error){
+					Alert.show("Industry 값을 선택해 주세요.");
+					return;
+				}
+				if (company["id"] == 0)
+				{
+					ro.insertDataRow("createFlexQueryCompany", company, {}, create_resultHandler );	
+				}
+				else
+				{
+					ro.updateDataRow("updateFlexQueryCompany", company, {}, update_resultHandler);
+				}
+			}
+			
+			private function deleteItem():void
+			{
+				ro.removeDataRow("removeFlexQueryCompany", company, {}, delete_resultHandler );		
+			}
+			
+			private function create_resultHandler(event:ResultEvent):void
+			{
+				ro.removeEventListener(ResultEvent.RESULT, create_resultHandler);
+				findItem();
+			}
+			
+			private function findItem():void{
+				ro.getDataRow("findFlexQueryCompanyListByName", company, {}, select_resultHandler);
+			}
+			
+			private function select_resultHandler(event:ResultEvent):void
+			{
+				var newCompany:DataRow = new DataRow(event.result as ObjectProxy);
+				company["id"] = newCompany["id"];
+				this.label = company["name"];
+				dispatchEvent(new CompanyEvent(CompanyEvent.CREATED, company));			
+			}
+			
+			private function update_resultHandler(event:ResultEvent):void
+			{
+				this.label = company["name"];
+				dispatchEvent(new CompanyEvent(CompanyEvent.UPDATED, company));			
+			}
+			
+			private function delete_resultHandler(event:ResultEvent):void
+			{
+				dispatchEvent(new CompanyEvent(CompanyEvent.DELETED, company));			
+			}
+			
+			private function faultHandler(event:FaultEvent):void
+			{
+				Alert.show(event.fault.faultDetail);
+			}
+			
+		]]>
+	</fx:Script>
+	
+	<fx:Declarations>
+		<!-- Place non-visual elements (e.g., services, value objects) here -->
+		<data:DataService id="ro" fault="faultHandler(event)" />
+	</fx:Declarations>
+	
+	<mx:Form>
+		<mx:FormItem label="Id">
+			<mx:TextInput id="txtId" text="{company['id']}" enabled="false"/>
+		</mx:FormItem>
+		<mx:FormItem label="Name">
+			<mx:TextInput id="companyName" text="{company['name']}"/>
+		</mx:FormItem>
+		<mx:FormItem label="Industry">
+			<local:BindableComboBox id="industry" dataProvider="{industries}" labelField="name" valueField="id" value="{company['industry_id']}"/>
+		</mx:FormItem>
+		<mx:FormItem label="Address">
+			<mx:TextInput id="address" text="{company['address']}"/>
+		</mx:FormItem>
+		<mx:FormItem label="City">
+			<mx:TextInput id="city" text="{company['city']}"/>
+		</mx:FormItem>
+		<mx:FormItem label="State">
+			<mx:TextInput id="state" text="{company['state']}"/>
+		</mx:FormItem>
+		<mx:FormItem label="Zip">
+			<mx:TextInput id="zip" text="{company['zip']}"/>
+		</mx:FormItem>
+		<mx:FormItem label="Phone">
+			<mx:TextInput id="phone" text="{company['phone']}"/>
+		</mx:FormItem>
+	</mx:Form>
+
+	<mx:HBox left="8" bottom="8">
+		<mx:Button label="Close" click="parent.removeChild(this)"/>
+		<mx:Button label="Save" click="save()"/>
+		<mx:Button label="Delete" click="deleteItem()"/>
+	</mx:HBox>
+	
+</mx:Canvas>

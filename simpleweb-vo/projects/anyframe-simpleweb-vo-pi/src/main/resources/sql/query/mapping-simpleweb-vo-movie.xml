@@ -1,0 +1,65 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<queryservice xmlns="http://www.anyframejava.org/schema/query/mapping" 
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" 
+	xsi:schemaLocation="http://www.anyframejava.org/schema/query/mapping http://www.anyframejava.org/schema/query/mapping/anyframe-query-mapping-1.0.xsd ">
+
+	<queries>
+		<query id="createVoMovie">
+			<statement>
+				INSERT INTO VO_MOVIE (movie_id, title, director, genre_id, actors, runtime, release_date, ticket_price, now_playing, simple_upload_file_path)
+				VALUES (:vo.movieId, :vo.title, :vo.director, :vo.genre.genreId, :vo.actors, :vo.runtime, :vo.releaseDate, :vo.ticketPrice, :vo.nowPlaying, :vo.filePaths)
+			</statement>
+		</query>
+
+		<query id="updateVoMovie">
+			<statement>
+				UPDATE VO_MOVIE 
+				SET title = :vo.title,
+				    director = :vo.director,
+				    genre_id = :vo.genre.genreId,
+				    actors = :vo.actors, 
+				    runtime = :vo.runtime,
+				    release_date = :vo.releaseDate,
+				    ticket_price = :vo.ticketPrice,
+				    now_playing = :vo.nowPlaying,
+				    simple_upload_file_path = :vo.filePaths
+				WHERE movie_id = :vo.movieId
+			</statement>
+		</query>
+
+		<query id="removeVoMovie">
+			<statement>
+				DELETE FROM VO_MOVIE 
+				WHERE movie_id = :vo.movieId
+			</statement>
+		</query>
+
+		<query id="findVoMovieByPk">
+			<statement>
+				SELECT movie_id, title, director, genre_id, actors, runtime, release_date, ticket_price, now_playing, simple_upload_file_path
+				FROM VO_MOVIE
+				WHERE movie_id = :vo.movieId
+			</statement>
+			<result class="org.anyframe.plugin.simpleweb.vo.domain.Movie">
+				<result-mapping column="{genre_id}" attribute="{genre.genreId}" />
+				<result-mapping column="SIMPLE_UPLOAD_FILE_PATH" attribute="filePaths"/>
+			</result>
+		</query>
+		
+		<query id="findVoMovieList" isDynamic="true">
+			<statement>
+			    <!--simpleweb-vo-findVoMovieList-START-->
+				SELECT movie.movie_id, movie.title, movie.director, genre.name, movie.actors, movie.release_date, movie.ticket_price, movie.now_playing
+				FROM VO_MOVIE movie, VO_GENRE genre
+				WHERE movie.genre_id = genre.genre_id 
+				AND title like '%' || :vo.searchKeyword || '%'
+				AND movie.now_playing = :vo.nowPlayingCondition
+				<!--simpleweb-vo-findVoMovieList-END-->
+			</statement>
+			<result class="org.anyframe.plugin.simpleweb.vo.domain.Movie">
+				<result-mapping column="{name}" attribute="{genre.name}" />
+			</result>
+		</query>			
+	</queries>
+</queryservice>
+

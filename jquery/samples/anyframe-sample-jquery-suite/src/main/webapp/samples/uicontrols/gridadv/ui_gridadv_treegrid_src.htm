@@ -1,0 +1,84 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
+<html>
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+<title>Grid-Advanced Sample - TreeGrid</title>
+
+<link href="../../../common/css/smoothness/jquery-ui-1.10.0.custom.css" rel="stylesheet">
+<link href="../../../common/css/smoothness/jquery.jqgrid.css" rel="stylesheet">
+<script src="../../../common/exlibs/jquery-1.9.0.js"></script>
+<script src="../../../common/exlibs/jquery-ui-1.10.0.custom.js"></script>
+<script src="../../../common/exlibs/jquery.jqGrid.src.modified.js"></script>
+
+<script type="text/javascript">
+
+	var ENV = {
+			ID_GRID : "#grid"
+	};
+	
+	var GRID_DATA = [ 
+                        {id: 1, name: "Level0-1", balance: 100, etc: "", level: 0, parent: null, isLeaf: false, loaded: true},
+                        {id: 3, name: "Level1-1A", balance: 200, etc: "", level: 1, parent: 1, isLeaf: true, loaded: true, icon: "ui-icon-alert"},
+                        {id: 4, name: "Level1-1B", balance: 200, etc: "", level: 1, parent: 1, isLeaf: true, loaded: true},
+                        {id: 9, name: "Level2-1B-A", balance: 300, etc: "", level: 2, parent: 4, isLeaf: true, loaded: true},
+                        {id: 10, name: "Level2-1B-B", balance: 300, etc: "", level: 2, parent: 4, isLeaf: true, loaded: true},
+                        {id: 2, name: "Level0-2", balance: 100, etc: "", level: 0, parent: null, isLeaf: true, loaded: true, icon: "ui-icon-info"},
+                        {id: 5, name: "Level0-3", balance: 100, etc: "", level: 0, parent: null, isLeaf: false, loaded: true},
+                        {id: 6, name: "Level1-3A", balance: 200, etc: "", level: 1, parent: 5, isLeaf: true, loaded: true},
+                        {id: 7, name: "Level1-3B", balance: 200, etc: "", level: 1, parent: 5, isLeaf: true, loaded: true},
+                        {id: 8, name: "Level1-3C", balance: 200, etc: "", level: 1, parent: 5, isLeaf: false, loaded: true},
+                        {id: 11, name: "Level2-3C-A", balance: 300, etc: "", level: 2, parent: 8, isLeaf: true, loaded: true},
+                        {id: 12, name: "Level0-4", balance: 100, etc: "", level: 0, parent: null, isLeaf: false, loaded: true, expanded: true},
+                        {id: 13, name: "Level1-4A", balance: 200, etc: "", level: 1, parent: 12, isLeaf: false, loaded: true, expanded: true},
+                        {id: 14, name: "Level2-4A-A", balance: 300, etc: "", level: 2, parent: 13, isLeaf: false, loaded: true, expanded: true},
+                        {id: 15, name: "Level3-4A-A-A", balance: 400, etc: "", level: 3, parent: 14, isLeaf: true, loaded: true, icon: "ui-icon-info"}
+	                  ];
+
+	var mainView = {
+			
+			init : function()
+			{
+				// TreeGrid 초기화
+				$(ENV.ID_GRID).jqGrid({
+
+					datatype: "local",
+					data: GRID_DATA,
+                    colNames:["Name", "Id", "Balance", "Etc"],
+                    colModel:[
+                        {name:'name',index:'name', sortable:false, width: 200},
+                        {name:'id',index:'id', key:true, sortable:false, hidden:true },
+                        {name:'balance',index:'balance', sortable:false},
+                        {name:'etc',index:'etc', sortable:false}
+                        ],
+
+                    sortable: false,
+
+                    treeGrid: true,
+                    treeGridModel: 'adjacency',     // or 'nested'
+                    treedatatype: 'local',
+                    treeIcons: { plus: "ui-icon-plusthick", minus: "ui-icon-minusthick", leaf: "ui-icon-bullet" },
+                    ExpandColumn: "name",
+                    ExpandColClick: true,
+
+                    height: 'auto'
+
+				});
+			}
+			
+	};
+
+	$(document).ready(function() {
+		mainView.init();
+	});
+	
+</script>
+
+</head>
+<body class="grid_demo">
+
+	<div id="grid_container">
+		<table id="grid"></table>
+	</div>
+
+</body>
+</html>

@@ -1,0 +1,40 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:tx="http://www.springframework.org/schema/tx" xmlns:util="http://www.springframework.org/schema/util"
+	xmlns:aop="http://www.springframework.org/schema/aop"
+	xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-4.0.xsd
+						http://www.springframework.org/schema/tx http://www.springframework.org/schema/tx/spring-tx-4.0.xsd
+						http://www.springframework.org/schema/util http://www.springframework.org/schema/util/spring-util-4.0.xsd
+						http://www.springframework.org/schema/aop http://www.springframework.org/schema/aop/spring-aop-4.0.xsd">
+
+  	<bean id="parentDataSource" class="org.apache.commons.dbcp.BasicDataSource" abstract="true">
+  		<property name="driverClassName" value="#{contextProperties.driver}" />
+  		<property name="username" value="#{contextProperties.username}" />
+  		<property name="password" value="#{contextProperties.password}"/>
+  	</bean>
+  	
+  	<bean id="ABCCinema" parent="parentDataSource">
+  		<property name="url" value="#{contextProperties.url}" />
+  	</bean>
+  	
+  	<bean id="GoodMovieCinema" parent="parentDataSource">
+  		<property name="url" value="jdbc:hsqldb:hsql://localhost:9002/sampledb2nd" />
+  	</bean>
+  	
+  	<bean id="MovieHouseCinema" parent="parentDataSource">
+  		<property name="url" value="jdbc:hsqldb:hsql://localhost:9003/sampledb3rd" />
+  	</bean>
+  	
+  	<bean id="customDataSource" class="org.anyframe.plugin.routingdatasource.common.CustomRoutingDataSource">
+  		<property name="targetDataSources">
+  			<map key-type="java.lang.String">
+  				<entry key="ABCCinema" value-ref="ABCCinema" />
+  				<entry key="GoodMovieCinema" value-ref="GoodMovieCinema" />
+  				<entry key="MovieHouseCinema" value-ref="MovieHouseCinema" />
+  			</map>
+  		</property>
+  		<property name="defaultTargetDataSource" ref="ABCCinema" />
+  	</bean>
+  	
+  	
+</beans>

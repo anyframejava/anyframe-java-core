@@ -1,0 +1,175 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN"
+"http://www.w3.org/TR/html4/loose.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+ 
+ <!-- Start of head-->
+<head>
+<meta http-equiv="content-type" content="text/html; charset=UTF-8" />
+<title>Grid 기본 </title>
+
+
+<!-- include required common files  ----------------------------------------------------->
+<script type="text/javascript" src="../../../common/exlibs/jquery-1.9.0.js" ></script>
+
+<script type="text/javascript" src="../../../common/exlibs/highlighter/scripts/shCore.js" ></script>
+<script type="text/javascript" src="../../../common/exlibs/highlighter/scripts/shBrushJScript.js" ></script>
+
+<script type="text/javascript" src="../../../common/js/template_common.js" ></script>
+
+<!--  stylesheet  -->
+<link type="text/css" rel="stylesheet" href="../../../common/exlibs/highlighter/styles/shCore.css"/>
+<link type="text/css" rel="stylesheet" href="../../../common/exlibs/highlighter/styles/shCoreDefault.css"/>
+<link rel="stylesheet" type="text/css" href="../../../common/css/style.css" /> 
+
+
+<!-- scripts to support sample page  ----------------------------------------------------->
+<script type="text/javascript">
+
+$(function() {
+	$("#common").load("../../../common/basicinfo.htm");			//common : basic informations	
+})
+
+
+$(function() {
+	JTemplate.load("ui_grid_basic_src.htm");					//{TODO} source url 수정
+	JTemplate.loadDemo2("ui_grid_basic_src.htm", {height:"450px"});			//{TODO} source url 수정, show visaul demo sample
+}); 
+	
+</script> 
+</head>
+<!-- End of head -->
+
+<!-- Start of body -->
+<body>
+ 
+<!-- HEADER BAR -------------------------------------------------------------->
+	<div class="content-title">Grid - Grid</div>
+
+<!-- START OF PAGE ... -------------------------------------------------------->
+	<div id="page">
+		<p class="header-title">Grid 기본기능</p>
+		<p class="header-desc">: 기본적인 Grid 구성(생성)에 대한 예를 보여준다.</p>
+
+<!-- DEMO ----------------------------------------------------------------------->
+		<div class="demo">
+			<h3 >Demo</h3>
+			<div id="visualExample"></div>
+		</div>
+        
+<!-- DEMO DESCRIPTION----------------------------------------------------->
+		<div class="desc">
+			<h3>Demo Description</h3>
+			<hr>
+			<p class="desc-overall">
+			초기에 구성되는 정보는 Grid의 기본적인 생성과 관련된 사항들을 중심으로 구성 및 초기화 한다.				<br><br>
+			아래는, Grid에 전체적으로 적용되는 Option 들에 대한 처리를 <strong>동적변경 가능한 것</strong>과 
+			<strong>불가능한 것</strong>들로 나누어 조회 또는 수정해 볼 수 있다.								<br><br>
+			GET 버튼을 실행하여, 각각의 Option 에 대한 현재 적용 값을 조회할 수 있다.							<br>
+			SET 버튼을 실행하여, 신규로 입력 또는 수정된 Option 값을 적용할 수 있다.
+			</p>
+		</div>
+                        
+<!-- CODE------------------------------------------------------------------------>
+		<div class="code">
+			<h3>Code Source</h3>
+			<pre id="codeExample" class="brush: js"></pre>
+        </div>
+        
+<!-- CODE DESCRIPTION------------------------------------------------------>
+		<div class="desc">
+			<h3>Code Description</h3>
+			<hr>
+			
+			<p class="desc-title">초기화</p>
+			<span class="code-line">#228,</span>
+			<span class="code-line">#40 ~ #84</span>
+			<div class="code-block">
+			<pre>
+&lt;table id="grid"&gt;&lt;/table&gt;
+</pre>			
+			</div>
+			<p class="desc-overall">
+			Grid 의 초기화를 위해서는 table 태그를 사용해야 한다.
+			</p>
+			
+			<span class="code-line">#45 ~ #57</span>
+			<div class="code-block">
+			<pre>
+$(ENV.ID_GRID).jqGrid({
+                    datatype: "local", 
+                    data: GRID_DATA, 
+                    colModel: [ 
+                                {name:"id", sortable:false}, 
+                                {name:"date"}, 
+                                {name:"name"}, 
+                                {name:"balance"}, 
+                                {name:"deposit"}, 
+                                {name:"notes"}                               
+                              ]                  
+                });
+</pre></div>
+			
+			<p class="desc-overall">
+			local 데이타(Array 형태)를 이용하여 Grid 를 초기화 한다.										<br><br>
+			위 코드에서 알 수 있듯이, 기본적으로 Grid 를 구성하기위한 필수 Option 들을 볼 수 있다.					<br>
+			데이타와 관련된 <strong>"datatype", "data"</strong> 과 
+			Grid 컬럼 구성을 위한 <strong>"colModel"</strong>												<br>
+			<strong class="bold underline">
+			즉, 컬럼구성 정보와 데이타관련 Option 들이 필수임을 알 수 있으며, 다시 말해서 이 부분에 문제가 있다면
+			Grid 가 화면에 정상적으로 보여지지 않을 것이다.
+			</strong> 
+			</p>
+			
+			<p class="desc-overall">
+			<strong>
+			컬럼정보(colModel) 구성 시, 각 컬럼정보는 object 로 정의되며 이때 name 값은 실제 data 에 정의된 이름과 같아야 한다. 
+			</strong>																							<br>
+			실제로, 서버로부터 어떠한 형태의 데이타구조가 넘어온다 할 지라도 javascript 의 object 형태를 벗어나지 않으므로, 	<br>
+			"object[property] = value" 형태에서 <strong>property 이름</strong>이, 
+			바로 <strong>colModel 의 name</strong> 과 <strong>일치</strong>해야 함을 알 수 있다. 
+			</p>
+			
+			<p class="desc-title pupspace">Grid Options</p>
+			<div class="code-block">
+			<pre>
+$(ENV.ID_GRID).jqGrid('getGridParam', prop)
+$(ENV.ID_GRID).jqGrid('setGridParam', prop, newval)
+</pre>
+			</div>
+			<p class="desc-overall">
+			"getGridParam" 과 "setGridParam" 의 메소드를 이용하여, 기본적으로 Option 값을 조회 및 수정할 수 있다.		<br>
+			특정, Option 값들은 "SET" 의 경우 다른 함수를 사용해야 한다. (width, height 등)							<br>
+			또한 Option 들 중에는 초기화시에만 적용되고, 동적으로 변경되지 않는 것들이 존재한다. (colNames, direction 등) 이러한 Option 들은 Grid 생성 전에 설정되도록 권장한다.   
+			</p>
+			<ul class="desc-ul">
+				<li><span>- caption</span>: 값 설정 시, Grid 상단에 Title 바가 생성되고, 입력된 문자열로 Title 을 구성한다.</li>
+				<li><span>- direction</span>: 컬럼 텍스트 방향을 지정한다. 기본값으로 "ltr" (Left to Right) 이며, "rtl" (Right To Left) 를 선택 가능하다.</li>
+				<li><span>- multiselec</span>: 여러 row 를 선택가능하게 한다. 기본값은 "false" 이다. "true" 설정 시, checkbox 컬럼이 추가된다.</li>
+				<li><span>- colNames</span>: 각 컬럼의 Header(Label) 텍스트를 지정할 수 있다. 만일 colNames가 미 지정 시, colModel 에 지정된 "name" 값이 기본으로 설정된다. <br> 
+					<span></span>: <u>이 옵션의 데이타 형태는 문자열 Array 이며, 이 Array 의 개수와 colModel 지정된 Array 의 개수는 <strong>반드시 일치</strong>해야 된다.</u>
+				</li>
+				<li><span>- rownumbers</span>: row 의 개수를 알 수 있게하는 컬럼이 추가되며, 그 number 값은 1 부터 시작된다. 기본값은 "false" 이다. </li>
+				<li><span>- sortable</span>:  기본값은 "false" 이다. 값 설정 시 컬럼을 Drag & Drop 하여, 컬럼의 순서를 동적으로 변경할 수 있다. </li>
+			</ul>
+			
+		</div>
+     
+<!-- RELATED LINKS ----------------------------------------------------------->
+        <div class="related">
+			<h3>Related Links</h3>
+			<hr>
+			<ul class="desc-hypl">
+				<li>
+					<span>Grid Doc</span>
+					<a href="http://www.trirand.com/jqgridwiki/doku.php?id=wiki:jqgriddocs"></a>
+				</li>
+			</ul>            
+		</div>
+
+	</div>      
+<!-- End of Page-->
+
+</body>
+<!-- End of body-->
+
+</html>

@@ -1,0 +1,137 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN"
+"http://www.w3.org/TR/html4/loose.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+
+<!-- Start of head-->
+<head>
+<meta http-equiv="content-type" content="text/html; charset=UTF-8" />
+<title>Dialog : Basics</title>
+<!-- TODO: 타이틀 작성 -->
+<!-- include required common files  ----------------------------------------------------->
+<script type="text/javascript" src="../../../common/exlibs/jquery-1.9.0.js" ></script>
+
+<script type="text/javascript" src="../../../common/exlibs/highlighter/scripts/shCore.js" ></script>
+<script type="text/javascript" src="../../../common/exlibs/highlighter/scripts/shBrushJScript.js" ></script>
+
+<script type="text/javascript" src="../../../common/js/template_common.js" ></script>
+
+<!--  stylesheet  -->
+<link type="text/css" rel="stylesheet" href="../../../common/exlibs/highlighter/styles/shCore.css"/>
+<link type="text/css" rel="stylesheet" href="../../../common/exlibs/highlighter/styles/shCoreDefault.css"/>
+<link type="text/css" rel="stylesheet" href="../../../common/css/style.css"/>
+
+<!-- scripts to support sample page  ----------------------------------------------------->
+<script type="text/javascript">
+
+$(function() {
+	JTemplate.load("ui_dialog_basic_src.htm");				
+	JTemplate.loadDemo2("ui_dialog_basic_src.htm", {height:"350px"});			
+});  
+
+</script>
+
+</head>
+<!-- End of head -->
+
+<!-- Start of body -->
+<body >
+
+ <!-- HEADER BAR -------------------------------------------------------------->
+<div class="content-title">Component - Dialog</div>
+ 
+ <!-- START OF PAGE ... -------------------------------------------------------->
+<div id="page">
+	<p class = "header-title">Dialog 기본기능</p>
+	<p class="header-desc">: dialog가 열리고 닫히는 기본 동작과 dialog 내부의 구성요소에 대해 조작하는 예를 보여준다. </p>
+<!-- DEMO ----------------------------------------------------------------------->
+	<div class="demo">
+		<h3 >Demo</h3>
+		<div id="visualExample"></div>
+	</div>
+
+<!-- DEMO DESCRIPTION----------------------------------------------------->
+	<div class="desc">
+		<h3>Demo Description </h3>
+		<hr>
+		
+		<p class="desc-title">다이얼로그 기본동작</p>
+		<p class="desc-overall">  
+		: open, close의 버튼을 통해 다이얼로그가 열리고 닫히는 기본동작을 확인해 볼 수 있다. <br>
+		또한, buttonbar의 여부, modal상태, 사이즈조절가능, 드래그가능 의 여부를 체크해보며 동작되는 것을 알아볼 수 있다.
+		</p>
+		
+		<p class="desc-title">다이얼로그 기본동작</p>
+		<p class="desc-overall">  
+		: 다이얼로그의 내부 구성요소 중 타이틀과 콘텐츠부분에 텍스트를 써서 바꾸어 볼 수 있다.
+		</p>
+		
+	</div>
+		
+
+<!-- CODE------------------------------------------------------------------------>
+	<div class="code">
+		<h3>Code Source </h3>
+		<pre id="codeExample" class="brush: js"></pre>
+	</div>
+	
+	
+<!-- CODE DESCRIPTION------------------------------------------------------>
+	<div class="desc">
+		<h3>Code Description </h3>
+		<hr>
+		
+		<p class="desc-title">Dialog의 구성요소</p>
+		<p class="desc-overall">  
+		: 다이얼로그는 크게  title, content, button bar 의 3개로 구성요소를 나누어 볼 수 있으며 텍스트 조작방법은 다음과 같다.
+		</p>
+		<ul class ="desc-hypl">
+			<li><span>title bar</span> 
+			: div 태그 아래, 타이틀을 쓰는 span태그와 닫기버튼의 button 태그가 존재한다. 타이틀같은 경우, title  옵션으로 텍스트를 쉽게 정해 줄 수 있다.</li>
+			<li><span>content</span> 
+			:  div 태그 아래, p 태그로 써주게 되며, 본 예제에서는 동적으로 내용을 바꾸어 볼 수 있도록 이전 내용을 remove, 새로운 내용을 append 하도록 하였다.</li>
+			<li><span>button bar</span> 
+			: div 태그 아래, 여러개의 버튼을 묶어주는 div, 그리고 그 아래 button 태그가 존재하도록 틀이 정해져 있다. buttons 옵션을 통해 정해줄 수 있으며, 상세방법은 아래 옵션내용을 참조.</li>
+		</ul>
+		
+		<p class="desc-title">Dialog 옵션</p>
+		<p class="desc-overall">  
+		: 다음의 옵션들을 모두 true/false로 그 여부를 지정해 줄 수 있다.
+		</p>
+		<ul class ="desc-hypl">
+			<li><span>Button bar</span> 
+			: buttons 옵션으로 여러개의 버튼과 기능을 구현할 수 있다. 즉, 버튼텍스트와 기능함수가 쌍으로 주어져야 하며, Array 와 Object 타입이 가능하다.
+			</li>
+			<li><span>Buttons</span> 
+			:   [ {text : "button text 1", click : function(){...} }, {text : "button text 2", click : function(){...}  } ]</li>
+			<li><span>Modal</span> 
+			: modal 옵션을 true/false 로 설정하여 모달상태를 조작할 수 있다.
+			</li>
+			<li><span>Resizable</span> 
+			: resizable 옵션을 true/false 로 설정하여 사이즈의 조절가능여부를 조작할 수 있다.
+			</li>
+			<li><span>Draggable</span> 
+			: draggable 옵션을 true/false로 설정하여 다이얼로그 창을 드래그하여 움직이게 혹은 고정시키도록 조작할 수 있다.
+			</li>
+		</ul>
+		
+	</div>
+
+<!-- RELATED LINKS ----------------------------------------------------------->
+	<div class="related">
+		<h3>Related Links</h3>
+		<hr>
+		 <ul class="desc-hypl">
+           	<li>
+           		<span>Dialog API</span>
+           		<a href = "http://api.jqueryui.com/dialog/"></a>
+           	</li>      	
+		</ul>
+	</div>
+
+</div>
+
+<!-- End of Page-->
+</body>
+<!-- End of body-->
+
+</html>

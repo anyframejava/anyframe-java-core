@@ -1,0 +1,33 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<plugin name="board" description="Board Plugin consists of sample code, libraries and configurations needed to use functionality of generating board with Anyframe.">
+  <groupId>org.anyframe.plugin</groupId>
+  <artifactId>anyframe-board-pi</artifactId>
+  <version>1.1.1-SNAPSHOT</version>
+  <dependent-plugins>
+    <dependent-plugin name="jquery" version="2.0.0&gt;*&gt;1.0.4"/>
+    <dependent-plugin name="fileupload" version="2.0.0&gt;*&gt;1.0.0"/>
+  </dependent-plugins>
+  <resources>
+    <resource dir="src/main/java" filtered="true" packaged="true">
+      <include name="**/board/**/*.java"/>
+    </resource>
+    <resource dir="src/main/resources" filtered="true" packaged="false">
+      <include name="**/*board*.xml"/>
+      <include name="**/*board*.properties"/>
+      <exclude name="**/context-message.xml" merged="true"/>
+      <exclude name="context.properties" merged="true"/>
+    </resource>
+    <resource dir="src/test/java" filtered="true" packaged="true">
+      <include name="**/board/**/*.java"/>
+    </resource>
+    <resource dir="src/main/webapp" filtered="false" packaged="false">
+      <include name="**/board/**/*.*"/>
+      <exclude name="anyframe.jsp" merged="true"/>
+    </resource>
+    <resource dir="templates" filtered="false" packaged="false">
+      <include name="**/*.*"/>
+    </resource>
+  </resources>
+  <samples>true</samples>
+  <essential>false</essential>
+</plugin>

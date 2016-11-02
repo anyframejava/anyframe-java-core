@@ -1,0 +1,596 @@
+<chapter id="core_spring_javaconfig">
+	<title>Java based Configuration</title>
+	<para>
+		Spring 3에서는 <ulink url="http://www.springsource.org/javaconfig">Spring Java Configuration 프로젝트</ulink>의 일부 주요 특징들을 추가함으로써 
+		Java 기반의 Configuration 정의가 가능하도록 지원하고 있다. 
+		Java 기반의 속성 정의는 Java 코드를 중심으로 이루어지므로 Injection 속성 정의시 Type 오류가 있으면 컴파일부터 수행되지 않으므로 Type Safety를 보장하게 된다. 
+		또한 Bean 인스턴스 관리를 로직으로 직접 구현해주기 때문에 Bean 구현체가 Spring에 의존되지 않고, 순수한 Java 코드로만 구현될 수 있도록 보장해준다.
+	</para>
+	<itemizedlist>
+   		<listitem><para>@Configuration</para></listitem>
+   		<listitem><para><link linkend="core_spring_javaconfig_bean">@Bean</link></para></listitem>
+   		<listitem><para><link linkend="core_spring_javaconfig_bean_lifecycle">@Lazy</link></para></listitem>   		
+   		<listitem><para><link linkend="core_spring_javaconfig_bean_di">@DependsOn</link></para></listitem>
+   		<listitem><para><link linkend="core_spring_javaconfig_bean_di">@Primary</link></para></listitem>
+   		<listitem><para><link linkend="core_spring_javaconfig_bean_spel">@Value</link></para></listitem>
+   		<listitem><para><link linkend="core_spring_javaconfig_combine_java">@Import</link></para></listitem>
+   		<listitem><para><link linkend="core_spring_javaconfig_combine_xml">@ImportResource</link></para></listitem>
+    </itemizedlist>
+    <para>
+    	활용 가능한 Annotation들은 위에서 나열한 바와 같으며, 본 섹션에서는 이러한 Annotation들에 대해 예제와 함께 자세히 살펴보도록 하자.
+    </para>
+	<para>
+		Java 기반의 Configuration 정의시 가장 기본이 되는 Annotation은 @Configuration과 @Bean이다.
+		@Configuration은 클래스 레벨에 정의가능한 Annotation이다. @Configuration 정의를 포함한 클래스는 Bean 정의 정보를 담고 있어 Spring Container에 의해 처리되는 
+		Configuration 클래스임을 의미한다. @Bean은 메소드 레벨에 정의 가능한 Annotation으로 XML 기반의 속성 정보 중 <![CDATA[<bean/>]]>과 동일한 역햘을 수행한다. 
+	</para>		
+	<programlisting language="java"><emphasis role="bold">@Configuration</emphasis>
+public class MovieFinderConfig {
+    // ...
+    <emphasis role="bold">@Bean</emphasis>
+    public MovieFinder movieFinder() {
+        return new MovieFinderImpl(movieDao);
+    }
+}</programlisting>	
+	<para>
+		위 코드에서 언급한 MovieFinderConfig 클래스는 Configuration 클래스로써 'movieFinder'라는 이름을 가진 Bean을 정의하고 있음을 알 수 있다. 위 코드 내용을 XML 형태로
+		변경해 보면 다음과 같다.
+	</para>
+	<programlisting language="xml"><![CDATA[<bean id="movieFinder" class="org.anyframe.sample.javaconfig.moviefinder.service.impl">
+	<constructor-arg ref="movieDao"/>
+</bean>]]></programlisting>	
+	<section id="core_spring_javaconfig_bean">
+		<title>Bean Management</title>
+		<para>
+			앞서 언급한 바와 같이 @Bean은 메소드 레벨에 정의 가능한 Annotation으로 특정 Bean을 정의하기 위해 사용한다. XML 기반의 속성 정보 중 <![CDATA[<bean/>]]>과 동일한 역햘을 
+			수행하며, @Configuration 또는 @Component 클래스 내에 정의 가능하다. 
+			@Bean 정의가 추가된 메소드는 해당하는 Bean의 인스턴스 생성하여 전달하는 로직을 포함하고 있어야 하며 기본적으로 Spring Container는 메소드명을 Bean 이름으로 등록한다.
+		</para>
+		<programlisting language="java"><emphasis role="bold">@Bean</emphasis>
+public MovieFinder movieFinder() {
+    return new MovieFinderImpl(movieDao);
+}</programlisting>	
+		<para>
+			위 코드에 의하면 @Bean 정의가 추가된 movieFinder() 메소드로 인해 'movieFinder'라는 이름의 Bean이 Spring Container에 등록될 것이다. 또한 'movieFinder' Bean을 
+			요청하면 정의된 메소드 로직에 의해 MovieDao 객체가 셋팅된 MovieFinderImpl 객체가 전달될 것이다.
+		</para>	
+		<section id="core_spring_javaconfig_bean_naming">
+			<title>Naming</title>
+			<para>
+				@Bean Annotation은 'name'이라는 속성 정보를 가지고 있다. name 속성에 대해 값을 부여하는 경우 이 값이 해당 Bean의 이름이 된다. 
+			</para>
+			<programlisting language="java"><emphasis role="bold">@Bean(name="movieFinderImpl")</emphasis>
+public MovieFinder movieFinder() {
+    return new MovieFinderImpl(movieDao);
+}</programlisting>				
+		</section>
+		<section id="core_spring_javaconfig_bean_lifecycle">
+			<title>Lifecycle Management</title>
+			<para>
+				@Bean을 이용하여 정의된 Bean들에 대해서도 XML이나 Annotation 기반의 Bean들과 동일하게 기본 Lifecycle 관리가 가능하다. 즉, 해당 Bean이 @PreDestroy, 
+				@PostConstruct와 같은 JSR-250 Annotation을 포함하고 있거나 Spring의 InitializingBean, DisposableBean 등과 같은 인터페이스르 구현하였을 경우 
+				Spring Container에 의해 해당 Bean의 Lifecycle이 관리된다.
+				이 외에도 @Bean은 'init-method', 'destroy-method'라는 속성 정보를 가질 수 있어서 속성값을 부여하는 경우 초기화/소멸화시에 정의된 메소드가 실행된다.
+				이것은 <![CDATA[<bean/>]]>의 init-method, destroy-method와 동일한 역할을 수행한다.
+			</para>
+			<programlisting language="java">@Bean(<emphasis role="bold">initMethod = "initialize", destroyMethod = "destroy"</emphasis>)
+public MovieFinder movieFinder() {
+    return new MovieFinderImpl(movieDao);
+}</programlisting>		
+			<para>
+				위 코드에 의하면 'movieFinder'라는 Bean의 초기화 시점에는 MovieFinderImpl.initialize(), 소멸화 시점에는 MovieFinderImpl.destroy() 메소드가 각각 실행될 
+				것이다.
+			</para>	
+			<para>
+				Spring Container는 시작 시점에 모든 Singleton Bean을 미리 로딩함으로써, 그 Bean이 필요할 때 즉시 사용될 수 있도록 보장해준다. 
+				그러나 Container 시작 시점에 특정 Singleton Bean을 인스턴스화 시키지 않고 처음으로 해당 Bean에 대해 요청이 들어왔을 때 인스턴스화 시키기 위해서는 @Lazy 설정을
+				부여해 주어야 한다. 이것은 <![CDATA[<bean/>]]>의 lazy-init과 동일한 역할을 수행한다.
+			</para>
+			<programlisting language="java">@Bean
+<emphasis role="bold">@Lazy</emphasis>
+public MovieFinder movieFinder() {
+    return new MovieFinderImpl(movieDao);
+}</programlisting>			
+		</section>			
+		<section id="core_spring_javaconfig_bean_Scope">
+			<title>Scope</title>
+			<para>
+				@Bean과 함께 @Scope 정의를 추가하는 경우 해당 Bean에 대해 특정 Scope을 부여할 수 있다. @Scope을 부여하지 않는 경우 기본적으로 Singleton Scope이 적용된다.
+			</para>
+			<programlisting language="java">@Bean
+<emphasis role="bold">@Scope("prototype")</emphasis>
+public MovieFinder movieFinder() {
+    return new MovieFinderImpl(movieDao);
+}</programlisting>	
+			<para>
+				또한 request, session, globalSession Scope의 Bean에 대한 요청시 전달될 AOP Proxy 객체를 만들기 위해서 'proxyMode'라는 속성값을 추가적으로 부여할 수 
+				있다. 'proxyMode'는 기본적으로 ScopedProxyMode.NO로 지정되며 ScopedProxyMode.TARGET_CLASS 또는 ScopedProxyMode.INTERFACES으로 정의 가능하다.
+				이것은 <![CDATA[<bean/>]]> 하위의 <![CDATA[<aop:scoped-proxy/>]]>와 동일한 역할을 수행한다.
+			</para>	
+			<programlisting language="java">@Bean
+<emphasis role="bold">@Scope(value = "session", proxyMode = ScopedProxyMode.TARGET_CLASS)</emphasis>
+public MoviePreferences moviePreferences() {
+    return new MoviePreferences();
+}
+
+@Bean
+public MovieFinder movieFinder() {
+    return new MovieFinderImpl(moviePreferences);
+}</programlisting>		
+		</section>		
+		<section id="core_spring_javaconfig_bean_di">
+			<title>Dependency Injection</title>
+			<para>
+				Bean 사이에 참조 관계가 성립될 경우 기본적으로 Injection은 참조하려는 Bean에 해당하는 메소드를 호출함으로써 이루어진다. 
+			</para>
+			<programlisting language="java">@Configuration
+public class MovieFinderConfig {
+    @Bean
+    public MovieFinder movieFinder() {
+        return <emphasis role="bold">new MovieFinderImpl(movieDao())</emphasis>;
+    }
+    
+    @Bean
+    public MovieDao <emphasis role="bold">movieDao()</emphasis> {
+        return new MovieDao();
+    }    
+}</programlisting>
+			<para>
+				'movieFinder' Bean이 'movieDao' Bean을 참조하고 있다라고 가정해 보자. 이를 Java 기반의 Configuration으로 표현하기 위해서는 위의 코드에서와 같이
+				movieFinder() 메소드 내에서 MovieFinderImpl 인스턴스 생성시 movieDao()라는 메소드를 호출함으로써 'movieDao' Bean을 Injection 할 수 있다.
+				또는 MovieFinderImpl 객체의 setter를 호출할 때 movieDao() 호출 결과를 전달함으로써 'movieDao' Bean을 Injection할 수도 있을 것이다.
+			</para>
+			<programlisting language="java">@Configuration
+public class MovieFinderConfig {
+    @Bean
+    public MovieFinder movieFinder() {
+        MovieFinderImpl movieFinder = new MovieFinderImpl();
+        <emphasis role="bold">movieFinder.setMovieDao(movieDao());</emphasis>
+        return movierFinder;
+    }
+    
+    @Bean
+    public MovieDao <emphasis role="bold">movieDao()</emphasis> {
+        return new MovieDao();
+    }    
+}</programlisting>	
+			<para>
+				참조 대상 Bean이 XML/Annotation 기반으로 정의되었거나 다른 Configuration 클래스에 정의된 경우 Spring에서 Dependency Injection 처리를 위해 지원하는 
+				Annotation(@Inject, @Autowired, @Resource)을 그대로 적용할 수도 있다. 
+			</para>		
+			<programlisting language="java">@Configuration
+public class MovieDaoConfig {
+
+    @Bean
+    public MovieDao movieDao() {
+        MovieDao movieDao = new MovieDao();
+        return movieDao;
+    }
+}</programlisting>
+			<programlisting language="java">@Configuration
+@Import(value = { MovieDaoConfig.class })
+public class MovieFinderConfig {
+    <emphasis role="bold">@Autowired</emphasis>
+    private MovieDao movieDao;
+
+    @Bean
+    public MovieFinder movieFinder() {
+        return new MovieFinderImpl(movieDao);
+    }
+}</programlisting>
+			<para>
+				해당 Bean 이전에 초기화되어야 하는 하나 이상의 Bean을 명시적으로 강제하기 위해서는 @DependsOn을 활용할 수 있다. 
+				이것은 <![CDATA[<bean/>]]>의 depends-on와 동일한 역할을 수행한다.
+			</para>
+			<programlisting language="java">@Configuration
+public class MovieFinderConfig {
+    @Bean
+    public MovieService movieService(){
+        return new MovieServiceImpl();
+    }
+
+    @Bean
+    <emphasis role="bold">@DependsOn(value = { "movieService" })</emphasis>		
+    public MovieFinder movieFinder() {
+        return new MovieFinderImpl(movieDao());
+    }
+
+    // ...
+}</programlisting>
+			<para>
+				위 코드에 의하면 @DependsOn 속성 부여에 의해 'movieFinder' Bean이 초기화되기 전에 'movieService' Bean이 초기화 될 것을 짐작할 수 있다.
+			</para>
+			<para>
+				동일한 Type을 가지는 Bean이 여러개 정의되어 있어서 Type Injection 대상이 되는 Bean이 여러개 식별되었을 경우 @Primary를 부여한 Bean이 우선적으로 Injection 후보가 된다.
+				이것은 <![CDATA[<bean/>]]>의 primary와 동일한 역할을 수행한다.
+			</para>
+			<programlisting language="java">@Configuration
+public class MovieDaoConfig {
+    @Bean
+    public MovieDao defaultMovieDao() {
+        return new MovieDaoImpl();
+    }
+
+    @Bean
+    <emphasis role="bold">@Primary</emphasis>
+    public MovieDao anotherMovieDao() {
+        return new AnotherMovieDaoImpl();
+    }
+}</programlisting>
+			<para>
+				위와 같이 Configuration을 정의한 경우 <emphasis role="bold">@Autowired MovieDao movieDao;</emphasis>와 같은 코드에 의해 Injection되는 Bean은 @Primary 속성을 
+				부여한 'anotherMovieDao' Bean이 될 것이다.
+			</para>
+		</section>	
+		<section id="core_spring_javaconfig_bean_method">
+			<title>Method Injection</title>
+			<para>
+				Setter injection과 Constructor injection을 사용할 경우, 기본적으로 Singleton Bean은 참조하는 Bean들을 Singleton 형태로 유지하게 된다. 그런데 Singleton Bean이 
+				Non Singleton Bean(즉, Prototype Bean)과 참조 관계가 있을 경우에는 다음과 같이 처리해야 한다.
+			</para>
+			<orderedlist numeration="arabic">
+				<listitem>
+					<para>
+						Singleton Bean의 구현체 내에는 참조하려는 Non Singleton Bean 타입을 리턴하는 abstract 메소드 정의.
+					</para>
+				</listitem>
+				<listitem>
+					<para>
+						Singleton Bean의 구현체 내의 비즈니스 메소드에서는 abstract 메소드를 이용해 Non Singleton Bean을 Injection하여 로직 수행.
+					</para>
+				</listitem>
+				<listitem>
+					<para>
+						Java 기반 Configuration 정의시 Singleton Bean에 해당하는 메소드 내에서 인스턴스 생성과 함께 앞서 정의한 abstract 메소드 구현 로직 추가.
+						이 때 abstract 메소드 구현 로직에서는 Non Singleton Bean의 인스턴스 생성하여 리턴.
+					</para>
+				</listitem>
+				<listitem>
+					<para>
+						위와 같은 순서로 처리된 경우 Singleton Bean의 비즈니스 메소드 내에서 abstract 메소드가 호출될 때마다 해당 Bean의 인스턴스가 가진 abstract 메소드 구현 
+						로직에 의해 새로운 Non Singleton Bean의 인스턴스 전달이 가능해짐. 즉, Singleton Bean에서 Non Singleton Bean에 대한 참조가 가능해짐.
+					</para>
+				</listitem> 
+			</orderedlist>
+			<para>
+				다음은 Singleton Bean('movieFinder')에서 Non Singleton Bean('movieDao')에 대한 참조가 이루어질 수 있도록 하기 위해 정의된 Configuration 클래스의 내용이다. 
+			</para>
+			<programlisting language="java">@Configuration
+public class MovieFinderConfig {
+    @Bean
+    @Scope("prototype")
+    public MovieDao movieDao() {
+        return new MovieDaoImpl();
+    }
+
+    @Bean
+    public MovieFinder movieFinder() {
+        <emphasis role="bold">return new MovieFinderImpl() {
+            protected MovieDao getMovieDao() {
+                return movieDao();
+            }
+        };</emphasis>
+    }
+}</programlisting>
+			<para>
+				위 Configuration 클래스에서 언급한 MovieFinderImpl 클래스는 다음과 같은 모습을 취할 것이다.
+			</para>
+			<programlisting language="java">public abstract class MovieFinderImpl implements MovieFinder {
+    <emphasis role="bold">protected abstract MovieDao getMovieDao();</emphasis>
+
+    public <![CDATA[List<Movie>]]> getPagingList(Movie movie, int pageIndex) 
+        throws Exception{
+        return <emphasis role="bold">getMovieDao()</emphasis>.getPagingList(movie, pageIndex);
+    }
+}</programlisting>
+		</section>
+		<section id="core_spring_javaconfig_bean_spel">
+			<title>Spring Expression Language</title>
+			<para>
+				Java 기반 Configuration 정의시 @Value와 함꼐 <link linkend="core_spring_spel">Spring Expression Language</link>를 정의하면 Expression 처리 결과를 
+				Bean의 인스턴스 생성시 반영하는 것도 가능하다.
+			</para>
+			<programlisting language="java">@Configuration
+public class MovieFinderConfig {
+    <emphasis role="bold">private @Value("${jdbc.url}") String dbUrl;</emphasis>
+    <emphasis role="bold">private @Value("${jdbc.username}") String userName;</emphasis>
+    <emphasis role="bold">private @Value("${jdbc.password}") String password;</emphasis>
+
+    @Bean
+    public MovieDao movieDao() {
+        return new MovieDaoImpl(dbUrl, userName, password);
+    }
+}</programlisting>
+		</section>
+
+		<section id="core_spring_javaconfig_bean_description">
+			<title>Description Annotation</title>
+			<para>
+				Spring 4에서부터는 Java 기반 Configuration 정의 시 @Description Annotation을 이용하여 Bean에 정보를 기록할 수 있다. 주요 용도로는 Debugging 시의 정보 획득 등이 예상된다.
+				다음은 Configuration 시 Description을 준 예제이다.
+			</para>
+			<programlisting language="java"><![CDATA[@Configuration
+public class MovieDaoConfig {
+
+	@Bean
+	@Description("Provides a MovieFinderDao bean")
+	public MovieFinderDao movieFinderDao() {
+		MovieFinderDao movieFinderDao = new MovieFinderDao();
+		return movieFinderDao;
+	}
+}]]></programlisting>
+		</section>
+
+		<section id="core_spring_javaconfig_bean_codeequivalents">
+			<title>Code Equivalents for Spring's XML namespaces</title>
+			<para>
+				코드 기반으로 Spring의 XML 네임스페이스(<![CDATA[<context:component-scan/>, <tx:annotation-driven/> and <mvc:annotation-driven>]]>)에 대응하는 @Enable Annotation이 Spring 3.1 버전부터 추가되었다. 
+				이러한 Annotation은 Spring 3.0부터 도입된 @Configuration 태그와 같이 사용하도록 설계되어 있다.
+			</para>
+			<section id="core_spring_javaconfig_bean_codeequivalents_componentscan">
+				<title>@ComponentScan</title>
+				<para>@Configuration 태그와 함께 사용하며 <![CDATA[<context:component-scan>]]>과 동일한 기능을 수행할 수 있다.</para>
+				<programlisting language="java">@Configuration
+@ComponentScan("com.acme.app.services")
+public class AppConfig {
+    // various @Bean definitions ...
+}</programlisting>
+			</section>
+			<section id="core_spring_javaconfig_bean_codeequivalents_txannotationdriven">
+				<title>@EnableTransactionManagement</title>
+				<para>Spring에서 제공하는 Annotation 기반의 트랜잭션 관리 기능을 활성화시킨다. @Configuration 태그와 함께 사용하며, <![CDATA[<tx:*>]]>과 동일한 기능을 수행할 수 있다.</para>
+				<programlisting language="java">@Configuration
+@EnableTransactionManagement
+public class AppConfig {
+    @Bean
+    public FooRepository fooRepository() {
+        // configure and return a class having @Transactional methods
+        return new JdbcFooRepository(dataSource());
+    }
+
+    @Bean
+    public DataSource dataSource() {
+        // configure and return the necessary JDBC DataSource
+    }
+
+    @Bean
+    public PlatformTransactionManager txManager() {
+        return new DataSourceTransactionManager(dataSource());
+    }
+}</programlisting>
+			</section>
+			<section id="core_spring_javaconfig_bean_codeequivalents_mvcannotationdriven">
+				<title>@EnableWebMvc</title>
+				<para>@Configuration 태그와 함께 사용하여 WebMvcConfigurationSupport클래스에 정의된 Spring MVC의 설정을 다음과 같이 불러올 수 있다.</para>
+				<programlisting language="java">@Configuration
+@EnableWebMvc
+@ComponentScan(basePackageClasses = { MyConfiguration.class })
+public class MyWebConfiguration {
+
+}</programlisting>
+				<para>WebMvcConfigurer 인터페이스를 구현하거나, WebMvcConfigurerAdapter 기반의 클래스를 확장하고 메소드를 오버라이딩 하여 불러들여진 설정을 다음과 같이 사용자화 할 수 있다.</para>
+				<programlisting language="java">@Configuration
+@EnableWebMvc
+@ComponentScan(basePackageClasses = { MyConfiguration.class })
+public class MyConfiguration extends WebMvcConfigurerAdapter {
+
+       @Override
+       public void addFormatters(FormatterRegistry formatterRegistry) {
+               formatterRegistry.addConverter(new MyConverter());
+       }
+
+       @Override
+       public void configureMessageConverters(List<![CDATA[<HttpMessageConverter<?>>]]> converters) {
+               converters.add(new MyHttpMessageConverter());
+       }
+
+       // More overridden methods ...
+}</programlisting>
+			</section>
+		</section>
+	</section>
+	<section id="core_spring_javaconfig_combine">
+		<title>Combining Java and XML Configuration</title>
+		<para>
+			@Import/@ImportResource를 활용하면 XML 또는 다른 @Configuration 클래스에 정의된 Bean 정보를 참조할 수 있게 된다.
+		</para>
+		<section id="core_spring_javaconfig_combine_java">
+			<title>Combine Java Configuration</title>
+			<para>
+				@Import 정의시 다른 @Configuration 클래스를 속성값으로 부여해주면 현재 @Configuration 클래스에서 다른 @Configuration 클래스 내에 정의된 @Bean 정보를 
+				참조할 수 있게 된다. Import 대상이 되는 @Configuration 클래스가 다수일 경우 { } 내에 ','를 식별자로 하여 클래스를 명시해주면 된다.
+				@Import는 <![CDATA[<import/>]]>와 동일한 역할을 수행한다.
+			</para>
+			<programlisting language="java">@Configuration
+<emphasis role="bold">@Import(value = { MovieDaoConfig.class })</emphasis>
+public class <emphasis role="bold">MovieFinderConfig</emphasis> {
+    <emphasis role="bold">@Autowired
+    private MovieDao movieDao;</emphasis>
+
+    @Bean
+    public MovieFinder movieFinder() {
+        return new MovieFinderImpl(movieDao);
+    }
+}
+
+@Configuration
+public class <emphasis role="bold">MovieDaoConfig</emphasis> {
+    // ...
+
+    @Bean
+    public MovieDao movieDao() {
+        MovieDao movieDao = new MovieDao();
+        return movieDao;
+    }
+}</programlisting>
+			<para>
+				위에서 언급한 @Configuration MovieFinderConfig 클래스는 MovieDaoConfig 클래스를 @Import하고 있어서 이 클래스 내에 정의된 Bean 'movieDao'를 참조할 수 있게 된다.
+				다른 @Configuration 클래스 내에 정의된 @Bean을 참조하기 위해서는 @Autowired를 사용하고 있음을 알 수 있다. @Inject, @Resource를 사용하는 것 또한 가능하다.
+			</para>
+		</section>
+		<section id="core_spring_javaconfig_combine_xml">
+			<title>Combine XML Configuration</title>
+			<para>
+ 				@ImportResource 정의시 XML 속성 파일의 위치를 속성값으로 부여해주면 현재 @Configuration 클래스에서 XML 내에 정의된 Bean 정보를 참조할 수 있게 된다.
+ 				Import 대상이 되는 XML 파일이 다수일 경우 @Import와 동일한 형태로 { } 내에 ','를 식별자로 하여 XML 파일명을 명시해주면 된다.
+			</para>
+			<programlisting language="java">@Configuration
+public class MovieDaoConfig {
+
+    @Bean
+    public MovieDao movieDao() {
+        MovieDao movieDao = new MovieDao();
+        return movieDao;
+    }
+}</programlisting>
+			<para>
+				위 코드에서는 다른 XML 내에 정의된 Bean을 참조하기 위해 @Autowired를 사용하고 있음을 알 수 있다. @Inject, @Resource를 
+				사용하는 것 또한 가능하다.
+			</para>
+		</section>		
+	</section>
+	<section id="core_spring_javaconfig_instantiation">
+		<title>Instantiating spring container</title>
+		<para>
+			Spring 3에서는 @Configuration 클래스를 인식하여 정의된 Bean들을 관리할 수 있도록 하기 위해 ApplicationContext의 구현체인 AnnotationConfigApplicationContext를 추가적으로 
+			제공하고 있다. AnnotationConfigApplicationContext는 @Configuration 클래스 외에도 Stereotype Annotation, JSR-330 Annotation에 대해 인식 가능하다.
+			다음에서는 @Configuration 클래스를 기반으로 Spring Container를 시작시키는 방법에 대해서 살펴보도록 하자.
+		</para>
+		<section id="core_spring_javaconfig_instantiation_server">
+			<title>AnnotationConfigApplicationContext</title>
+			<para>
+				XML/Annotation 기반에서 Spring Container를 시작시키기 위해서는 XmlWebApplicationContext, FileSystemXmlApplicationContext, ClassPathXmlApplicationContext와 같은
+				구현체를 활용했었다.
+			</para>
+			<programlisting language="java">String[] locations = new String[] { "classpath:spring/context-*.xml" };
+ClassPathXmlApplicationContext context = <emphasis role="bold">new ClassPathXmlApplicationContext(locations, false);</emphasis>
+context.refresh();</programlisting>
+			<para>
+				그러나 @Configuration 클래스를 인식할 수 있도록 하기 위해서는 AnnotationConfigApplicationContext 구현체를 이용하여 Spring Container를 시작시켜야 한다.
+				인식해야 할 @Configuration 클래스가 다수일 경우 해당되는 클래스들을 입력 인자의 값으로 정의해주면 된다.
+			</para>
+			<programlisting language="java">AnnotationConfigApplicationContext context = <emphasis role="bold">new AnnotationConfigApplicationContext(MovieFinderConfig.class, ...);</emphasis></programlisting>
+			<para>
+				또는 AnnotationConfigApplicationContext의 Default Constructor를 호출하여 인스턴스를 생성한 뒤 인식 대상이 되는 @Configuration 클래스들을 register할 
+				수도 있다.
+			</para>
+			<programlisting language="java">AnnotationConfigApplicationContext context = <emphasis role="bold">new AnnotationConfigApplicationContext();</emphasis>
+<emphasis role="bold">context.register(MovieFinderConfig.class, ...);</emphasis>
+context.register(...);
+context.refresh();
+</programlisting>
+			<para>
+				Spring Container가 Annotation 기반의 Bean을 검색할 수 있게 하기 위해 정의한 <![CDATA[<context:component-scan/>]]>과 유사하게 AnnotationConfigApplicationContext을
+				이용하여 특정 패키지 하위에 대한 scan도 가능하다. 이렇게 하는 경우 해당 패키지 하위에 속한 모든 @Configuration 클래스가 검색되어 Container에 의해 처리된다.
+			</para>
+			<programlisting language="java">AnnotationConfigApplicationContext context = <emphasis role="bold">new AnnotationConfigApplicationContext();</emphasis>
+<emphasis role="bold">context.scan("org.anyframe.sample");</emphasis>
+context.refresh();
+</programlisting>			
+		</section>
+		<section id="core_spring_javaconfig_instantiation_web">
+			<title>AnnotationConfigWebApplicationContext</title>
+			<para>
+				웹어플리케이션에서 @Configuration 클래스를 인식하여 Spring Container를 시작시키기 위해서는 ContextLoaderListener Listener의 속성 정보인
+				contextClass, contextConfigLocation의 값을 입력해주면 된다. 이 때, contextClass는 AnnotationConfigWebApplicationContext로 정의해주고,
+				이를 통해 로드될 @Configuration 클래스들을 contextConfigLocation의 속성값으로 부여해주도록 한다.
+			</para>
+			<programlisting language="xml"><![CDATA[<context-param>
+    <param-name>]]><emphasis role="bold">contextClass</emphasis><![CDATA[</param-name>
+    <param-value>]]><emphasis role="bold">org.springframework.web.context.support.AnnotationConfigWebApplicationContext</emphasis><![CDATA[</param-value>
+</context-param>
+
+<context-param>
+    <param-name>]]><emphasis role="bold">contextConfigLocation</emphasis><![CDATA[</param-name>
+    <param-value>]]><emphasis role="bold">org.anyframe.samples.moviefinder.basic.config.MovieFinderConfig</emphasis><![CDATA[</param-value>
+</context-param>
+
+<listener>
+    <listener-class>org.springframework.web.context.ContextLoaderListener</listener-class>
+</listener>]]></programlisting>
+		</section>
+	</section>
+	<important>
+		<title>Java 기반 Configuration 정의시 유의사항</title>
+		<para>
+			다음 코드에서는 'movieFinder1', 'movieFinder2' Bean이 'movieDao' Bean을 참조하고 있다. 'movieDao' Bean을 참조하기 위해 movieDao() 메소드를 호출하고 있기 때문에
+			'movieFinder1', 'movieFinder2' Bean이 참조하는 MovieDao의 인스턴스가 다를 것이라고 기대할 것이다. 
+		</para>
+		<programlisting language="java">@Configuration
+public class MovieFinderConfig {
+			
+    @Bean 
+    public MovieFinder movieFinder1() {
+        return new MovieFinderImpl(movieDao());
+    }
+    
+    @Bean 
+    public MovieFinder movieFinder2() {
+        return new MovieFinderImpl(movieDao());
+    }
+		
+    @Bean
+    public MovieDao movieDao() {
+        return new MovieDao();
+    }
+}</programlisting>			
+		<para>
+			그러나 Spring에서는 초기화시에 CGLIB을 이용하여 모든 @Configuration 클래스에 대해 subclass화하고 subclass 내의 메소드에서는 특정 Bean의 인스턴스를 생성하기 전에
+			Container가 Caching된 Singleton Bean의 인스턴스가 있는지 체크하도록 처리하고 있기 때문에 'movieFinder1', 'movieFinder2'는 동일한 'movieDao' 인스턴스를 
+			참조하게 된다.
+		</para>
+		<para>
+			설명한 바와 같이 Spring에서 @Configuration 클래스를 처리하기 위해 CGLIB을 사용하므로 해당 프로젝트에는 CGLIB 라이브러리가 반드시 필요하며, CGLIB을 이용하여 @Configuration 
+			클래스에 대해 subclass화하는 작업을 위해 @Configuration 클래스는 Default Constructor를 반드시 가져야 하고 final로 정의되지 않도록 해야 함에 유의하도록 한다.  
+		</para>
+	</important>
+	<section id="core_spring_javaconfig_resource">
+  		<title>Resources</title>
+		<para>
+			<itemizedlist>
+				<listitem>
+					<para>다운로드</para>
+					<para>
+						다음에서 sample 코드를 포함하고 있는 Eclipse 프로젝트 파일을 다운받은 후, 압축을 해제한다.
+					</para>
+					<itemizedlist>
+						<listitem>
+							<para>Maven 기반 실행</para>
+							<para>
+								Command 창에서 압축 해제 폴더로 이동한 후, mvn compile exec:java -Dexec.mainClass=...이라는 명령어를 실행시켜 결과를 확인한다.
+								각 Eclipse 프로젝트 내에 포함된 Main 클래스의 JavaDoc을 참고하도록 한다.
+							</para>
+						</listitem>
+						<listitem>
+							<para>Eclipse 기반 실행</para>
+							<para>
+								Eclipse에서 압축 해제 프로젝트를 import한 후, src/main/java 폴더 하위의 Main.java를 선택하고 마우스 오른쪽 버튼 클릭하여 컨텍스트 메뉴에서 
+								Run As > Java Application을 클릭한다. 	그리고 실행 결과를 확인한다.
+							</para>
+						</listitem>									
+					</itemizedlist>						
+					<informaltable>
+						<caption>Download List</caption>
+						<tgroup cols="2">
+							<colspec colnum="1" colname="col1" colwidth="4*"/>
+							<colspec colnum="2" colname="col2" colwidth="6*"/>
+							<thead>
+								<row>
+									<entry align="center">Name</entry>
+									<entry align="center">Download</entry>
+								</row>
+							</thead>
+							<tbody>										
+								<row>
+									<entry align="center">anyframe-sample-javaconfig.zip</entry>
+									<entry align="center"><ulink url="http://dev.anyframejava.org/docs/anyframe/plugin/essential/core/1.6.1-SNAPSHOT/reference/sample/anyframe-sample-javaconfig.zip">Download</ulink>
+									</entry>
+								</row>														
+							</tbody>
+						</tgroup>
+					</informaltable> 
+				</listitem>
+			</itemizedlist>
+		</para>	
+	</section>
+</chapter>

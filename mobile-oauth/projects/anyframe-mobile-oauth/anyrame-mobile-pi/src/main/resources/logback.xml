@@ -1,0 +1,53 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<configuration scan="true" scanPeriod="60 seconds">
+
+	<contextName>anyframe-mobile-oauth-pi</contextName>
+	<jmxConfigurator />
+
+	<appender name="console" class="ch.qos.logback.core.ConsoleAppender">
+		<filter class="ch.qos.logback.classic.filter.ThresholdFilter">
+			<level>debug</level>
+		</filter>
+		<encoder>
+			<pattern>[%d] %-5level %logger{0} : %msg%n
+			</pattern>
+		</encoder>
+	</appender>
+	
+	<logger name="org.anyframe.plugin" level="debug" additivity="false">
+        <appender-ref ref="console" />
+    </logger>
+    
+    <logger name="org.anyframe" level="debug" additivity="false">
+        <appender-ref ref="console" />
+    </logger>
+    
+    <logger name="com.anyframe" level="debug" additivity="false">
+        <appender-ref ref="console" />
+    </logger>
+    
+    <logger name="org.springframework" level="info" additivity="false">
+        <appender-ref ref="console" />
+    </logger>
+    
+     <logger name="org.springframework.transaction" level="debug" additivity="false">
+        <appender-ref ref="console" />
+    </logger>
+    
+    <logger name="org.springframework.jdbc.datasource.DataSourceTransactionManager" level="debug" additivity="false">
+        <appender-ref ref="console" />
+    </logger>
+    
+    <logger name="org.anyframe.jdbc.support.CompleteQueryPostProcessor" level="info" additivity="false">
+    	<appender-ref ref="console" />
+	</logger>
+	
+	<logger name="org.anyframe.jdbc.support.InjectionPatternPostProcessor" level="WARN" additivity="false">
+	    <appender-ref ref="console" />
+	</logger>
+
+	<root level="error">
+		<appender-ref ref="console" />
+	</root>
+
+</configuration>

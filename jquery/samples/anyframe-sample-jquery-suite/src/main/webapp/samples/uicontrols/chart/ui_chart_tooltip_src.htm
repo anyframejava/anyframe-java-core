@@ -1,0 +1,217 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
+<html>
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+<title>Chart Sample - Label</title>
+
+<link href="../../../common/css/smoothness/jquery-ui-1.10.0.custom.css" rel="stylesheet">
+<link href="../../../common/css/smoothness/jquery.jqplot.css" rel="stylesheet">
+<script src="../../../common/exlibs/jquery-1.9.0.js"></script>
+<script src="../../../common/exlibs/jquery-ui-1.10.0.custom.js"></script>
+<script src="../../../common/exlibs/jquery.jqplot.js"></script>
+<script src="../../../common/exlibs/excanvas.js" ></script>
+<script src="../../../common/exlibs/jqplot.plugins.js"></script>
+
+<link type="text/css" rel="stylesheet" href="../../../common/css/style.css"/>
+<link href="sub_css/tooltip.css" rel="stylesheet">
+
+<script type="text/javascript">
+
+	var RENDERER = {
+			AXIS_LABEL : $.jqplot.CanvasAxisLabelRenderer,
+			AXIS_CATEGORY : $.jqplot.CategoryAxisRenderer,
+			AXIS_TICK : $.jqplot.CanvasAxisTickRenderer,
+			AXIS_DATE : $.jqplot.DateAxisRenderer
+	};
+	
+	var ENV = {
+			ID_LINE_CHART : "lineChart"
+	};
+	
+	var CHART_DATA = {
+			TYPE_XY_FLAT :  [ [
+			                   ['06/15/2009 16:00:00', 136], ['06/08/2009 16:00:00', 143],
+			                   ['06/01/2009 16:00:00', 136], ['05/26/2009 16:00:00', 124],
+			                   ['05/18/2009 16:00:00', 123], ['05/11/2009 16:00:00', 127]
+							] ]
+	};
+	
+	var mainView = {
+			
+			_jqoLineChart : null,
+	
+			init : function() {
+				this._jqoLineChart = this._initLineChart('Tooltip', CHART_DATA.TYPE_XY_FLAT , 1.2);
+				
+				this.setTooltipBGColor();
+				this.setTooltipTextColor();
+			},
+			
+			_initLineChart : function(title, data, padSize){
+				
+				var options = {
+							title : title,							
+							axesDefaults: {
+											labelRenderer: RENDERER.AXIS_LABEL,
+											pad : padSize
+							},
+							axes : {
+								xaxis : {
+									renderer: RENDERER.AXIS_DATE,
+									tickOptions : {
+										formatString : '%#m/%#d/%y'
+									}
+								},
+								yaxis : {
+									tickOptions : {
+										formatString :  '$%.0f'	
+									}
+								}
+							},
+							highlighter : {
+								show : true,
+						         tooltipLocation: 'n',
+						         tooltipAxes: 'both',
+						         useAxesFormatters: true
+							}
+				};
+						
+				return $.jqplot (ENV.ID_LINE_CHART, data, options);
+			},
+			
+			setHighlightLocation : function(value){
+				this._jqoLineChart.options.highlighter.tooltipLocation = value;
+				this._jqoLineChart.replot(this._jqoLineChart.options);
+			},
+			
+			setTooltip : function(value, textValue){
+				if (value == "x" || value =="y" || value=="xy") {
+					this._jqoLineChart.options.highlighter.useAxesFormatters = true;
+					this._jqoLineChart.options.highlighter.tooltipAxes = value;
+				}
+				else if (value == "string") {
+					this._jqoLineChart.options.highlighter.useAxesFormatters = false;
+					this._jqoLineChart.options.highlighter.tooltipAxes = 'y';
+					this._jqoLineChart.options.highlighter.tooltipFormatString = '<span style="font-weight:bold;">'+textValue+' %d </span>';
+				}
+				
+				this._jqoLineChart.replot(this._jqoLineChart.options);
+			},
+			
+			setTooltipBGColor : function() {
+				this._setTooltipCSS("background-color", $("input[name='bgColor']:checked").val() );
+			},
+			
+			setTooltipTextColor : function() {
+				this._setTooltipCSS("color", $("input[name='txtColor']:checked").val() );
+			},
+			
+			_setTooltipCSS : function(cssProperty, cssValue){
+				$(".jqplot-highlighter-tooltip").css(cssProperty, cssValue);
+			}
+	};
+
+	$(document).ready(function() {
+				
+				$("button").button();
+				
+				mainView.init();
+				
+				$("input:radio[name='location']").on("click", function(){
+					mainView.setHighlightLocation($(this).val());
+				});
+				
+				$("input:radio[name='tooltip']").on("click", function(){
+					mainView.setTooltip($(this).val(), $("#strTooltipVal").val());
+				});
+				
+				$("input:radio[name='bgColor']").on("click", function(){
+					mainView.setTooltipBGColor();
+				});
+				
+				$("input:radio[name='txtColor']").on("click", function(){
+					mainView.setTooltipTextColor();
+				});
+				
+	});
+	
+</script>
+
+</head>
+<body>
+
+<div >
+	<div style="float : left">
+
+		<div>
+			<div class="title">Tooltip 정보</div>
+			<div class="text-area">value :  </div>
+			<div  class = "input-area">
+				<input id="xTooltip" type="radio"  name="tooltip" value="x" checked/>x value  
+				<input id="yTooltip" type="radio"  name="tooltip" value ="y" checked/>y value
+				<input id="xyTooltip" type="radio"  name="tooltip" value ="xy" checked/>x value, y value
+				<input id="strTooltip" type="radio"  name="tooltip" value ="string" size="10" />문자열 : 
+				<input id="strTooltipVal" type="text" value ="value : $ " size="10" /> 
+			</div>
+		</div>
+		
+		<div>
+			<div class="title">Tooltip 위치</div>
+			<div class="text-area">정방향: </div>
+			<div  class = "input-area">
+				<input name="location" type="radio" value="n" checked/> Top
+				<input name="location" type="radio" value ="e" />Right
+				<input name="location" type="radio" value="s" /> Bottom
+				<input name="location" type="radio" value ="w" /> Left
+			</div>
+			<br>
+			<div class="text-area">혼합방향: </div>
+			<div class = "input-area">
+				<input name="location" type="radio" value ="nw" /> Top Left
+				<input name="location" type="radio" value ="ne" />Top Right
+				<input name="location" type="radio" value ="se" />Bottom Right
+				<input name="location" type="radio" value ="sw" /> Bottom Left
+			</div>
+		</div>
+		
+		<div>
+			<div class="title">Tooltip스타일</div>
+			<div class="text-area">배경색 : </div>
+			<div  class = "input-area">
+				<input name="bgColor" type="radio" value="#CCCCCC" checked/>
+				<div style = "background-color: #CCCCCC;"></div>
+				<input name="bgColor" type="radio" value="#FFFFFF" />
+				<div style = "background-color: #FFFFF;"></div>
+				<input name="bgColor" type="radio" value ="#0085D3" />
+				<div style = "background-color: #0085D3;"></div>
+				<input name="bgColor" type="radio" value="#FF0074" /> 
+				<div style = "background-color: #FF0074;"></div>
+				<input name="bgColor" type="radio" value ="#FFF255" /> 
+				<div style = "background-color: #FFF255;"></div>
+			</div>
+			<br>
+			<div class="text-area">텍스트색 : </div>
+			<div  class = "input-area">
+				<input name="txtColor" type="radio" value="#000000" checked/>
+				<div style = "background-color: #000000;"></div>
+				<input name="txtColor" type="radio" value="#CCCCCC" />
+				<div style = "background-color: #CCCCCC;"></div>				
+				<input name="txtColor" type="radio" value ="#0085D3" />
+				<div style = "background-color: #0085D3;"></div>
+				<input name="txtColor" type="radio" value="#FF0074" /> 
+				<div style = "background-color: #FF0074;"></div>
+				<input name="txtColor" type="radio" value ="#FFF255" /> 
+				<div style = "background-color: #FFF255;"></div>
+			</div>
+			
+		</div>
+
+	</div>
+	<div class="chart-container">
+		<div id="lineChart"></div>
+	</div>
+	
+</div>
+
+</body>
+</html>

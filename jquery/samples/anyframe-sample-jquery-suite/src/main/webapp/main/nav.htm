@@ -1,0 +1,175 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
+<html>
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+<title>Insert title here</title>
+<link rel="stylesheet" href="../common/css/smoothness/jquery-ui-1.10.0.custom.css">
+<script type="text/javascript" src="../common/exlibs/jquery-1.9.0.js"></script>
+<script type="text/javascript" src="../common/exlibs/jquery-ui-1.10.0.custom.js"></script>
+
+<!--  stylesheet  -->
+<link type="text/css" rel="stylesheet" href="../common/css/suite.css"/>
+
+<script type="text/javascript">
+
+    var frameglobal = parent.frameglobal;
+	
+	var ENV = {
+			ID_NAV_MENU : "#nav-left-menu",
+			ID_NAV_MENU_TITLE : "#nav-left-menu-title",
+			SELECT_MENU_HEADER : "#nav-left-menu > h3",
+			SELECT_MENU_CONTENT_LIST : ".ui-accordion-content a",
+			CLASS_MENU_CLICKED : "left-menu-content-clicked"
+			
+	};
+
+	function updateframe()
+	{
+		mainView.setNavMenu( frameglobal.getSelectedCategory(), frameglobal.getSelectedSampleSet() );
+	}
+	
+	var mainView = {
+			
+		_SampleDS : parent.SampleDS,
+		
+		init : function()
+		{
+			
+		},
+		
+		setNavMenu : function(newCate, newSS)
+		{
+			newCate = $.trim(newCate);
+			if (newCate === "") return;
+			
+			var sampleSet = this._SampleDS.getSampleSetArry(newCate),
+				rhtml = "";
+			
+			$(ENV.ID_NAV_MENU_TITLE).text(newCate);
+			
+			for (var ssx = 0, len = sampleSet.length; ssx < len; ssx++)
+			{
+				var ssone = sampleSet[ssx];
+				var ssone_list = this._SampleDS.getSampleArray(newCate, ssone);
+				
+				rhtml += this._makeAccordionItem(ssone, ssone_list, frameglobal.targetname.FRAME_CONTENT);				
+			}
+			
+			this._rebuildAccordion(rhtml, newSS);
+			
+			frameglobal.updateframe( frameglobal.targetname.FRAME_CONTENT );			
+		},
+		
+		
+		_rebuildAccordion : function(newhtml, newSS)
+		{
+			var owner = this;
+			
+			$(ENV.ID_NAV_MENU).html(newhtml);
+			
+			if (newSS == "") {
+				$(ENV.ID_NAV_MENU).accordion('refresh').accordion('option', 'active', 0);
+			}
+			else {
+				var selindex = 0;
+				$(ENV.SELECT_MENU_HEADER).each(function(idx, elm) {
+					if ($(elm).text() == newSS)
+						selindex = idx;
+				});
+				
+				$(ENV.ID_NAV_MENU).accordion('refresh').accordion('option', 'active', selindex);
+			}
+			
+			// register event-handlers
+			$(ENV.SELECT_MENU_CONTENT_LIST).click(function(evt) {
+                if ( $(evt.target).hasClass('disable') )
+                {
+                    evt.preventDefault();
+                    evt.stopPropagation();
+
+                    alert('준비 중 입니다.');
+                }
+                else
+				    owner.selectAccordionItemContent(evt.target);
+			});
+			
+			$(ENV.ID_NAV_MENU).on("accordionactivate", function(evt, ui) {
+				//owner.selectAccordionItem(evt, ui.newPanel);
+			});
+			
+		},
+		
+		_makeAccordionItem : function(title, datalist, target)
+		{
+			var rhtml = "";
+			
+			//title
+			rhtml += "<h3>" + title + "</h3>\n";
+			
+			//contents
+			rhtml += "<div>\n<ul>\n";
+			for (var dx = 0, len = datalist.length; dx < len; dx++)		// data { link: "xxx", name: "xxx" }
+			{
+				var dataone = datalist[dx],
+                    typeDisp = "";
+
+                switch (dataone.type.toLowerCase()) {
+                    case "ux":
+                            typeDisp = "<span style='font-weight:bold;color:red; '><img style='vertical-align: middle; margin-right: 3px;' src= '../common/css/icons/ux_square.png' width='30' height='18' ></span>";
+                        break;
+                    case "aui":
+                            typeDisp = "<span style='font-weight:bold;color:blue'><img style='vertical-align: middle; margin-right: 3px;' src= '../common/css/icons/aui_square.png' width='30' height='18' ></span>";
+                        break;
+                    case "local":
+                    case "server":
+                            //TODO: will be implemented in future.
+                        break;
+                }
+
+				rhtml += "<li>"+typeDisp+"<a target='" + target + "'" + (dataone.disable ? (" class='disable' ") : ("") ) + " href='" + dataone.link + "'>" + dataone.name + "</a></li>\n";
+			}
+			rhtml += "</ul>\n</div>\n";
+			
+			return rhtml;
+		},
+		
+		selectAccordionItem : function(evt, newpanel)
+		{
+			this.selectAccordionItemContent( $(newpanel).find("a").eq(0) );
+		},
+		
+		selectAccordionItemContent : function(elm)
+		{
+			$(ENV.SELECT_MENU_CONTENT_LIST).removeClass(ENV.CLASS_MENU_CLICKED);			
+			$(elm).toggleClass(ENV.CLASS_MENU_CLICKED);
+		}
+	};
+	
+	$(document).ready(function() {
+		
+		$(ENV.ID_NAV_MENU).accordion( { active : 0,
+										icons : false,
+										heightStyle : "content" } );
+		
+		mainView.init();
+	});
+
+</script>
+</head>
+<body>
+
+	<!--  SUB MENU 부분 ---------------------------------------------- -->
+	<div id="left">
+	
+		<div id="nav-left-menu-title" class="left-menu-title"></div>
+
+		<!--  	Start of Accordion  -->
+		<div id="nav-left-menu" class="left-menu">
+		
+		
+		</div> <!-- End of Accordion -->
+
+	</div>	<!-- End of Left -->
+
+</body>
+</html>

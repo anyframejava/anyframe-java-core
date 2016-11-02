@@ -1,0 +1,158 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN"section
+"http://www.w3.org/TR/html4/loose.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+
+<head>
+<meta http-equiv="content-type" content="text/html; charset=UTF-8" />
+<title>[Button] SET</title>
+<link href="../../../common/css/smoothness/jquery-ui-1.10.0.custom.css" rel="stylesheet">
+<script src="../../../common/exlibs/jquery-1.9.0.js"></script>
+<script src="../../../common/exlibs/jquery-ui-1.10.0.custom.js"></script>
+
+<link type="text/css" rel="stylesheet" href="../../../common/css/style.css" />
+<link type="text/css" rel="stylesheet" href="sub_css/set.css">
+
+<style>
+#toolbar {
+	padding: 4px;
+	display: inline-block;
+	
+	*display: inline;
+	zoom: 1;
+}
+</style>
+
+<script type="text/javascript">
+
+	var ENV = {
+			ID_SET_ALL : "#radio, #checkbox, #toolbar",
+			ID_RADIO_RESULT: "#radio_result",
+			ID_CHECKBOX_RESULT: "#checkbox_result",
+			ID_TOOLBAR_RESULT: "#toolbar_result",
+			SELECT_SET_RADIO: "input[name='radio']",
+			SELECT_SET_CHECKBOX: "input[name='checkbox']",
+			SELECT_SET_FONTSIZE: "input[name='fontsize']",
+			SELECT_SET_FONTCOLOR: "input[name='fontcolor']"
+	}
+	
+	function setCSS(target, property, value){
+		$(target).css(property, value);
+	};
+	
+	function getCSS(target, property){
+		return $(target).css(property);
+	};
+
+	var mainView = {
+			
+		init : function() {			
+			this.applyRadioSet();
+			this.applyCheckboxSet();
+			this.applyToolbarSet();
+		},
+		
+		applyRadioSet : function() {
+
+			switch ($(ENV.SELECT_SET_RADIO+":checked").val())
+			{
+			case "show": $(ENV.ID_RADIO_RESULT).show();	break;
+			case "hide": $(ENV.ID_RADIO_RESULT).hide(); break;
+			}
+		},
+		
+		applyCheckboxSet : function() {
+			
+			var chkArry = [];
+			
+			$(ENV.SELECT_SET_CHECKBOX).each(function(evt) {
+				if (this.checked) chkArry.push( $(this).val() );
+			});
+			
+			if (chkArry.length > 0)
+				$(ENV.ID_CHECKBOX_RESULT).text( chkArry.join(" ") );
+			else
+				$(ENV.ID_CHECKBOX_RESULT).text( "NONE" );
+		},
+		
+		applyToolbarSet : function() {
+			var fontsize = $(ENV.SELECT_SET_FONTSIZE+":checked").val(),
+				fontcolor = $(ENV.SELECT_SET_FONTCOLOR+":checked").val();
+			
+			$(ENV.ID_TOOLBAR_RESULT).css('font-size', fontsize)
+									.css('color', fontcolor);
+		}
+
+	};
+
+	$(document).ready(function() {
+		
+		$(ENV.ID_SET_ALL).buttonset();
+		
+		mainView.init();
+		
+		$(ENV.SELECT_SET_RADIO).on('click', function(evt) {
+			mainView.applyRadioSet();
+		});
+		
+		$(ENV.SELECT_SET_CHECKBOX).on('click', function(evt) {
+			mainView.applyCheckboxSet();
+		});
+		
+		$(ENV.SELECT_SET_FONTSIZE+","+ENV.SELECT_SET_FONTCOLOR).on('click', function(evt) {
+			mainView.applyToolbarSet();
+		});
+	});
+</script>
+
+</head>
+
+<body>
+
+	<div class="title">라디오버튼 형태</div>
+	<div class="input-area">
+		<div id="radio">
+			<input type="radio" id="radio1" name="radio" value="show" checked /><label for="radio1">show</label> 
+			<input type="radio" id="radio2" name="radio" value="hide" /><label for="radio2">hide</label>
+		</div>
+	</div>
+	:
+	<div id="radio_result" class="display-area">A</div>
+
+	<div class="title">체크박스버튼 형태</div>
+	<div class="input-area">
+		<div id="checkbox">
+			<input type="checkbox" id="checkbox1" name="checkbox" value="A" checked /><label for="checkbox1">A</label> 
+			<input type="checkbox" id="checkbox2" name="checkbox" value="B" /><label for="checkbox2">B</label>
+			<input type="checkbox" id="checkbox3" name="checkbox" value="C" /><label for="checkbox3">C</label> 
+			<input type="checkbox" id="checkbox4" name="checkbox" value="D" /><label for="checkbox4">D</label>
+		</div>
+	</div>
+	:
+	<div id="checkbox_result" class="display-area" ></div>
+
+
+	<div class="title">툴바 버튼 형태</div>
+	<div class="input-area">
+		<div id="toolbar" class="ui-widget-header ui-corner-all">
+			font size :
+			<div id=size style="margin-right: 20px;">
+				<input type="radio" id="small" name="fontsize" value="10" /><label for="small">small</label> 
+				<input type="radio" id="medium" name="fontsize" value="16" checked /><label for="medium">medium</label>
+				<input type="radio" id="large" name="fontsize" value="22" /><label for="large">large</label>
+			</div>
+
+			color :
+			<div id="color">
+				<input type="radio" id="red" name="fontcolor" value="red" /><label for="red">red</label> 
+				<input type="radio" id="yellow" name="fontcolor" value="yellow" /><label for="yellow">yellow</label>
+				<input type="radio" id="blue" name="fontcolor" value="blue" checked /><label for="blue">blue</label>
+				<br>
+			</div>
+		</div>
+	</div>
+	:
+	<div id="toolbar_result" class="display-area">A</div>
+</body>
+
+</html>
+

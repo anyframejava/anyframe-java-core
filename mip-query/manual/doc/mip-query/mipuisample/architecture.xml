@@ -1,0 +1,122 @@
+<chapter id="mip_query_mipuisample_architecture">
+	<title>Architecture</title>
+	
+	<para>
+		본 문서의 이해를 돕기 위하여 Anyframe 기반의 MiPlatform UI Sample 전체 소프트웨어 아키텍처를 나타내면 다음과 같다. 
+	</para>
+	
+	
+	<mediaobject>
+		<imageobject>
+			<imagedata align="center" fileref="../image/mip-query/mipuisample/architecture.png" />
+		</imageobject>
+		<textobject>
+			<phrase>Anyframe 기반의 MiPlatform UI Sample 전체 소프트웨어 아키텍처</phrase>
+		</textobject>
+	</mediaobject>
+	<para>
+		위의 아키텍처는 공통 Controller와 공통 Service, 공통 Dao에 의해서 최적화되며, 일반적인 CRUD 형태의 작업은 
+		이들을 이용하는 공통 Flow(Common Flow)를 통해서 수행이 된다. 만약 단순 CRUD가 아닌 복잡한 비즈니스 로직을 구현하는
+		경우에 대해서는 공통 Service를 대체하는 별도의 Service (예: Service A, Service B)를 구현하면 되며, 
+		파일업로드/다운로드, 로그인 등과 같이 공통 Controller 의 범위를 벗어나는 Controller의 경우에는 Service 와
+		마찬가지로 별도의 Controller(예: Controller A)를 구현하여 수행한다.
+	</para>
+	<para>
+		위의 그림에서 볼 수 있듯이 Model 2 MVC 구조에 기반한 프레젠테이션, 비즈니스 레이어는 각 레이어 별로 개발 생산성을
+		향상시키기 위한 공통 클래스를 사용하기 때문에, 경우에 따라서 다음과 같이 3가지 유형으로 개발할 수 있다.
+	</para>
+	<para>
+		(1) 단일 테이블에 대한 단순 CRUD의 경우에는 UI XML + Query XML 만을 작성
+	</para>
+	<para>
+		(2) 복잡한 로직을 가진 기능의 경우에는 UI XML + Service + Query XML 을 작성
+	</para>
+	<para>
+		(3) 파일 업로드, 다운로드 등과 같이 표준적인 인터페이스를 가지지 않은 웹 컨트롤러를 개발하는 경우에는
+		공통 Controller 대신 별도의 Controller + UI XML + Service + Query XML을 작성
+	</para>
+	<para>
+		본 샘플에서는 각각의 화면 샘플은 (1)의 방식을, 사용자 로그인 기능은 (3)의 방식을 사용하여 개발되어 있다.
+	</para>
+	
+	<section id="mip_query_mipuisample_architecture_presentation">
+		<title>Presentation Layer</title>
+		<para>
+			본 샘플에 적용된 Web 프레임워크는 MVC 모델의 View와 Controller 영역을 담당하며, 이는 프레젠테이션 레이어에 해당된다. 
+			본 절에서는 프레임워크 기반 개발 시 기본적으로 필요한 설정 파일 구성에 대해서 기술하도록 한다.
+		</para>
+		<para>
+			web.xml, *-servlet.xml 파일의 설정은 다음과 같다.
+		</para>
+		<itemizedlist>
+			<listitem>
+				<para>
+					web.xml
+				</para>
+				<para>
+					web.xml은 Web Application배포 지시자로써, JavaEE환경에서 해당 Web Application이 서버상에 어떻게 배포되어야
+					하는지에 대하여 기술하는 XML 파일이다. 프레임워크 기반 개발과 관련하여 web.xml 작성 방법은 Anyframe 매뉴얼을
+					참조하도록 한다. <ulink url="http://www.anyframejava.org">(http://www.anyframejava.org)</ulink>
+				</para>
+			</listitem>
+			
+			<listitem>
+				<para>
+					common-servlet.xml
+				</para>
+				<para>
+					본 샘플에서는 각각의 샘플 화면들은 공통 Controller인 MiPController를 사용하고 있고, 로그인 기능에 대해서만
+					LoginController를 생성하였으므로 common-servlet.xml 파일에 모두 정의하였다.
+					<programlisting language="xml"><![CDATA[<bean name="/mipController.do"
+        class="org.anyframe.mip.query.web.MiPController">
+</bean>
+<bean name="/mipQueryLogin.do" class="org.anyframe.plugin.mip.query.security.web.LoginController" />]]></programlisting>
+					위의 Controller 정의에서 볼 수 있듯이, 단순 CRUD 기능의 경우에는 개발자가 별도의 Controller를 구현할 필요 없이
+					MiPController를 사용하면 된다. 다만 파일 업로드/다운로드와 같이 UI와의 인터페이스가 별도로 구성되거나, 또는
+					MiPController에서 지원하지 못하는 기능을 추가하고자 하는 경우, 개발자의 필요에 따라 AnyframeMiPController나
+					AnyframeMiPDispatchController 상속을 통해 Controller를 신규로 작성할 수 있다 . 본 샘플의 LoginController가
+					그 예이다.
+				</para>
+			</listitem>
+		</itemizedlist>
+	</section>
+	
+	<section id="mip_query_mipuisample_architecture_business">
+		<title>Business Layer</title>
+		<para>
+			본 샘플은 Anyframe에서 제공하는 MiPlatform 연계 공통 모듈인 Anyframe Ria MiPlatform을 기반으로 구현되어 비즈니스
+			레이어에는 로그인 처리를 위한 클래스만 존재한다. 따라서 본 절에서는 Anyframe Ria MiPlatform을 사용하기 위해 필요한
+			기본적인 설정 파일 구성에 대해서만 기술한다.
+		</para>
+		<para>
+			주요 설정 파일은 다음과 같다.
+		</para>
+		<itemizedlist>
+			<listitem>
+				<para>
+					mapping-xxx-xxx.xml
+				</para>
+				<para>
+					QueryService를 사용할 경우 실행하고자 하는 쿼리를 정의한 파일로, 작성방법은 Anyframe 매뉴얼을 참조하도록 한다.
+					<ulink url="http://www.anyframejava.org">(http://www.anyframejava.org)</ulink>
+				</para>
+			</listitem>
+			<listitem>
+				<para>
+					context-miplatform.xml
+				</para>
+				<para>
+					context-xxx.xml은 Spring에서 관리하는 Bean 속성 정의 파일로, context-miplatform.xml에는 
+					Anyframe Ria MiPlatform의 공통 Service, 공통 Dao에 대한 Bean 정의가 명시되어 있다.
+					<programlisting language="xml"><![CDATA[<bean name="mipService" class="org.anyframe.mip.query.service.impl.MiPServiceImpl">
+	<constructor-arg index="0" ref="mipDao" />
+</bean>
+
+<bean name="mipDao" class="org.anyframe.mip.query.dao.impl.MiPDaoQuery">
+	<constructor-arg index="0" ref="mipQueryService" />
+</bean>]]></programlisting>
+				</para>
+			</listitem>
+		</itemizedlist>
+	</section>
+</chapter>

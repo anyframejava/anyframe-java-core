@@ -1,0 +1,93 @@
+<?xml version="1.0" encoding="utf-8"?>
+<mx:TitleWindow xmlns:fx="http://ns.adobe.com/mxml/2009" 
+				xmlns:s="library://ns.adobe.com/flex/spark" 
+				xmlns:mx="library://ns.adobe.com/flex/mx"
+				xmlns:brd="anyframe.samples.domain.*"
+				layout="vertical" 
+				width="378" height="270" 
+				showCloseButton="true"
+				close="PopUpManager.removePopUp(this)" 
+				creationComplete="create()" 
+				title="게시글" color="#FFFFFF"
+				verticalScrollPolicy="off" 
+				titleBackgroundSkin="@Embed('../../assets/images/bg_title.png')" 
+				horizontalScrollPolicy="off">
+	<fx:Script>
+		<![CDATA[
+			import mx.controls.List;
+			import mx.events.FlexEvent;
+			import mx.controls.Alert;
+			import mx.collections.ArrayCollection;
+			import mx.events.ListEvent;
+			import samples.domain.Board;
+			import mx.rpc.events.ResultEvent;
+			import mx.managers.PopUpManager;
+			import samples.domain.Community;
+			import samples.domain.SearchVO;
+			import samples.event.BoardEvent;
+			
+			[Bindable]
+			public var communityList:ArrayCollection;
+
+			[Bindable]
+			public var board:Board;
+			
+			private function create():void{
+				comboCommumity.text = board.communityName;
+				if ( board.regId == null ){
+					board.regId = parentDocument.loginId;
+				}
+			}
+			
+			private function comboChange(event:ListEvent):void{
+            	    board.communityName = comboCommumity.selectedItem.communityName;
+            		board.communityId = comboCommumity.selectedItem.communityId;
+            }
+            
+			private function confirm():void{
+				board.title = boardTitle.text;
+				board.contents = contents.text;
+				board.regId = regId.text;
+				if( board.communityId == null ){
+					board.communityId = "COMMUNITY-0002";
+				}
+				dispatchEvent( new BoardEvent ( BoardEvent.UPDATE, board ) );
+				PopUpManager.removePopUp(this);
+			}
+			
+			private function cancel():void{
+				PopUpManager.removePopUp(this);
+			}
+			
+		]]>
+	</fx:Script>
+
+	<mx:Form id="boardDetailForm" width="370" color="#000000" horizontalScrollPolicy="off"
+			 paddingBottom="10" paddingLeft="10" paddingRight="10" paddingTop="10"
+			 verticalScrollPolicy="off">
+		<mx:FormItem label="게시글 ID">
+			<mx:TextInput id="postId" text="{board.postId}" width="276" editable="false"/> 
+		</mx:FormItem>
+	
+		<mx:FormItem label="제목">
+			<mx:TextInput id="boardTitle" text="{board.title}" width="276"/> 
+		</mx:FormItem>
+		
+		<mx:FormItem label="내용">
+			<mx:TextArea id="contents" text="{board.contents}" width="276" height="90%"/>   
+		</mx:FormItem>
+		
+		<mx:FormItem label="등록자">
+			<mx:TextInput id="regId" text="{board.regId}" width="276" editable="false"/> 
+		</mx:FormItem>
+		
+		<mx:FormItem label="커뮤니티">
+	    	<mx:ComboBox id="comboCommumity" text="{board.communityName}" editable="false" 
+						 dataProvider="{communityList}" labelField="communityName" change="comboChange(event)"  width="217"/>
+	    </mx:FormItem>
+	</mx:Form>
+	<mx:ControlBar horizontalAlign="center" color="#000000">
+		<mx:Button label="확인" click="confirm()"/>
+		<mx:Button id="btnCancel" label="취소" click="cancel()"/>
+    </mx:ControlBar>
+</mx:TitleWindow>

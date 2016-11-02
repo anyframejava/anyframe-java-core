@@ -1,0 +1,1527 @@
+<chapter id="util_stringutil">
+	<title>StringUtil의 활용</title>
+	<para>
+		문자열 관련 검색, 변환, 치환, 유효성 체크 등의 기능을 제공한다.
+	</para>
+	<para>다음은 StringUtil이 가지고 있는 메소드에 대한 설명이다.</para>
+	<informaltable>
+		<caption>StringUtil 메소드</caption>
+		<tgroup cols="4">
+			<colspec colnum="1" colname="col1" colwidth="2*" />
+			<colspec colnum="2" colname="col2" colwidth="3*" />
+			<colspec colnum="3" colname="col3" colwidth="4*" />
+			<colspec colnum="4" colname="col4" colwidth="1*" />
+			<thead>
+				<row>
+					<entry align="center">Method</entry>
+					<entry align="center">Description</entry>
+					<entry align="center">Example</entry>
+					<entry align="center">Remarks</entry>
+				</row>
+			</thead>
+			<tbody>
+				<row>
+					<entry>
+						<emphasis role="bold">addSpace</emphasis>
+						(String str, int length)
+					</entry>
+					<entry>주어진 String에 주어진 길이만큼 공백 문자열을 붙인다. - 주어진 길이가 0보다 작을 경우 무시된다.
+					</entry>
+					<entry>StringUtil.addSpace("12345", 5)="12345 "</entry>
+					<entry>since core 1.0.4</entry>
+				</row>
+				<row>
+					<entry>
+						<emphasis role="bold">addStringToArray</emphasis>
+						(String array[], String str)
+					</entry>
+					<entry>주어진 String[]에 하나의 String을 추가한다.</entry>
+					<entry>StringUtil.addStringToArray(test, "ddd")</entry>
+					<entry>since core 1.0.4</entry>
+				</row>
+				<row>
+					<entry>
+						<emphasis role="bold">applyInitialLaw</emphasis>
+						(String str)
+					</entry>
+					<entry>입력된 문자열에 두음법칙을 적용하여 반환한다.</entry>
+					<entry>StringUtil.applyInitialLaw("림업례제")="임업예제"</entry>
+					<entry>since core 1.0.4</entry>
+				</row>
+				<row>
+					<entry>
+						<emphasis role="bold">arrayToDelimitedString</emphasis>
+						(Object array[], String delimiter)
+					</entry>
+					<entry>Object[]를 입력으로 받아 delimiter로 각 element를 연결하여 String을 생성한다.
+					</entry>
+					<entry>String[] test = {"aaa", "bbb", "ccc"};
+						StringUtil.arrayToDelimitedString(test,",")="aaa,bbb,ccc"</entry>
+					<entry>since core 1.0.4</entry>
+				</row>
+				
+				<row>
+					<entry>
+						<emphasis role="bold">arrayToCommaDelimitedString</emphasis>
+						(Object array[])
+					</entry>
+					<entry></entry>
+					<entry></entry>
+					<entry><emphasis role="bold">deprecated</emphasis> since core 1.5.0 <para>arrayToDelimitedString(Object[] array) 사용</para></entry>
+				</row>
+				
+				<row>
+					<entry>
+						<emphasis role="bold">asteriskToSpace</emphasis>
+						(String str)
+					</entry>
+					<entry>입력인자로 전달된 문자열에 '*'나 '**'가 있으면 공백으로 변환한다.</entry>
+					<entry>StringUtil.convertAsteriskToSpace("test**test")="test test"
+					</entry>
+					<entry>since core 1.0.4</entry>
+				</row>
+				<row>
+					<entry>
+						<emphasis role="bold">changeFirstCharacterCase</emphasis>
+						(boolean capitalize, String str)
+					</entry>
+					<entry>주어진 String의 첫번째 글자를 대문자나 소문자로 변환한다.</entry>
+					<entry>StringUtil.changeFirstCharacterCase(true, "abcd")="Abcd"
+					</entry>
+					<entry>since core 1.0.4</entry>
+				</row>
+				<row>
+					<entry>
+						<emphasis role="bold">collectionToCommaDelimitedString
+						</emphasis>
+						<![CDATA[(Collection<String> collection)]]>
+					</entry>
+					<entry></entry>
+					<entry></entry>
+					<entry><emphasis role="bold">deprecated</emphasis> since core 1.5.0 <para>collectionToDelimitedString <![CDATA[(Collection<String> collection)]]> 사용</para></entry>
+				</row>
+				
+				<row>
+					<entry>
+						<emphasis role="bold">commaDelimitedStringToSet</emphasis>
+						(String str)
+					</entry>
+					<entry>주어진 String에 대해서 ","(delimiter)를 이용하여 tokenize한 후 Set으로 뽑아낸다.
+					</entry>
+					<entry>StringUtil.commaDelimitedStringToSet("aaa,bbb,ccc")
+					</entry>
+					<entry>since core 1.0.4</entry>
+				</row>
+				<row>
+					<entry>
+						<emphasis role="bold">commaDelimitedStringToStringArray
+						</emphasis>
+						(String str)
+					</entry>
+					<entry></entry>
+					<entry></entry>
+					<entry><emphasis role="bold">deprecated</emphasis> since core 1.5.0 <para>tokenizeToStringArray(String str) 사용</para> </entry>
+				</row>
+				<row>
+					<entry>
+						<emphasis role="bold">compareTo</emphasis>
+						(String sourceStr, String anotherStr)
+					</entry>
+					<entry>두 스트링을 비교한다.</entry>
+					<entry>StringUtil.compareTo(String sourceStr, String anotherStr)
+					</entry>
+					<entry></entry>
+				</row>
+				
+				<row>
+					<entry>
+						<emphasis role="bold">containsInvalidChars</emphasis>
+						(String str, char[] invalidChars)
+					</entry>
+					<entry></entry>
+					<entry></entry>
+					<entry><emphasis role="bold">deprecated</emphasis> since core 1.5.0 <para>containsAny(String str, char[] chars) 사용</para> </entry>
+				</row>
+				
+				<row>
+					<entry>
+						<emphasis role="bold">containsInvalidChars</emphasis>
+						(String str, String invalidChars)
+					</entry>
+					<entry></entry>
+					<entry></entry>
+					<entry><emphasis role="bold">deprecated</emphasis> since core 1.5.0 <para>containsAny(String str, String chars) 사용</para></entry>
+				</row>
+				
+				<row>
+					<entry>
+						<emphasis role="bold">containsMaxSequence</emphasis>
+						(String str, String maxSeqNumber)
+					</entry>
+					<entry></entry>
+					<entry></entry>
+					<entry><emphasis role="bold">deprecated</emphasis> since core 1.5.0 <para>containsMaxOccurences(String str, String maxSeqNumber) 사용</para></entry>
+				</row>
+				<row>
+					<entry>
+						<emphasis role="bold">convertToCamelCase</emphasis>
+						(String underscore)
+					</entry>
+					<entry>입력된 under socre 형태의 문자열을 camel case 형태로 변환</entry>
+					<entry>StringUtil.convertToCamelCase("anyframe_java_test")="anyframeJavaTest"
+					</entry>
+					<entry></entry>
+				</row>
+				<row>
+					<entry>
+						<emphasis role="bold">convertToCamelCase</emphasis>
+						(String targetString, char posChar)
+					</entry>
+					<entry>주어진 char의 형태에 맞게 잘라진 문자열을 camel case 형태로 변환</entry>
+					<entry>StringUtil.convertToCamelCase("anyframe-java-test",
+						'-')="anyframeJavaTest"</entry>
+					<entry></entry>
+				</row>
+				<row>
+					<entry>
+						<emphasis role="bold">convertToUnderScore</emphasis>
+						(String camelCase)
+					</entry>
+					<entry>camel case 형태의 문자열을 under score 형태의 문자열로 변환</entry>
+					<entry>StringUtil.convertToUnderScore("anyframeJavaTest")="anyframe_java_test"
+					</entry>
+					<entry></entry>
+				</row>
+				<row>
+					<entry>
+						<emphasis role="bold">countPattern</emphasis>
+						(String str, String pattern)
+					</entry>
+					<entry></entry>
+					<entry></entry>
+					<entry><emphasis role="bold">deprecated</emphasis> since core 1.5.0 <para>countMatches(String str, String sub) 사용</para></entry>
+				</row>
+				<row>
+					<entry>
+						<emphasis role="bold">decode</emphasis>
+						(String source, String target, String result, String base)
+					</entry>
+					<entry>첫번째 문자열과 두번째 문자열을 비교해서 같으면 세번째 문자열을 다르면 네번재 문자열을 반환한다.
+					</entry>
+					<entry>StringUtil.decode("Java", "Test", "Good", "Bad")="bad"
+					</entry>
+					<entry></entry>
+				</row>
+				<row>
+					<entry>
+						<emphasis role="bold">deleteChars</emphasis>
+						(String str, String chars)
+					</entry>
+					<entry></entry>
+					<entry></entry>
+					<entry><emphasis role="bold">deprecated</emphasis> since core 1.5.0 <para>deleteAny(String str, String charsToDelete) 사용</para></entry>
+				</row>
+				<row>
+					<entry>
+						<emphasis role="bold">deletePattern</emphasis>
+						(String str, String pattern)
+					</entry>
+					<entry></entry>
+					<entry></entry>
+					<entry><emphasis role="bold">deprecated</emphasis> since core 1.5.0 <para>deleteMatches(String str, String substr) 사용</para></entry>
+				</row>
+				<row>
+					<entry>
+						<emphasis role="bold">delimitedStringToStringArray</emphasis>
+						(String str, String delim)
+					</entry>
+					<entry></entry>
+					<entry></entry>
+					<entry><emphasis role="bold">deprecated</emphasis> since core 1.5.0 <para>tokenizeToStringArray(String str, String delimiter) 사용</para></entry>
+				</row>
+				<row>
+					<entry>
+						<emphasis role="bold">fillString</emphasis>
+						(String originalStr, char ch, int ciphers)
+					</entry>
+					<entry></entry>
+					<entry></entry>
+					<entry><emphasis role="bold">deprecated</emphasis> since core 1.5.0 <para>leftPad(String str, int size, String padStr) 사용</para></entry>
+				</row>
+				<row>
+					<entry>
+						<emphasis role="bold">getByteLength</emphasis>
+						(char charat)
+					</entry>
+					<entry>인자로 받은 character 의 바이트 길이를 반환한다.</entry>
+					<entry>StringUtil.getByteLength('a')</entry>
+					<entry></entry>
+				</row>
+				<row>
+					<entry>
+						<emphasis role="bold">getByteLength</emphasis>
+						(String str)
+					</entry>
+					<entry>인자로 받은 문자열에 대해서 byte 단위에 대해서 길이 계산해서 총 길이 반환</entry>
+					<entry>StringUtil.getByteLength("abc")</entry>
+					<entry>since core 1.0.4</entry>
+				</row>
+				<row>
+					<entry>
+						<emphasis role="bold">getContainsCount</emphasis>
+						(String str, char[] chars)
+					</entry>
+					<entry></entry>
+					<entry></entry>
+					<entry><emphasis role="bold">deprecated</emphasis> since core 1.5.0 <para><emphasis role="bold"> 대체메소드 지원하지 않음. </emphasis></para></entry>
+				</row>
+				<row>
+					<entry>
+						<emphasis role="bold">getContainsCount</emphasis>
+						(String str, String sub)
+					</entry>
+					<entry></entry>
+					<entry></entry>
+					<entry><emphasis role="bold">deprecated</emphasis> since core 1.5.0 <para>countMatches(String str, String sub)사용</para></entry>
+				</row>
+				<row>
+					<entry>
+						<emphasis role="bold">getContainsCountIgnoreCase</emphasis>
+						(String str, String sub)
+					</entry>
+					<entry></entry>
+					<entry></entry>
+					<entry><emphasis role="bold">deprecated</emphasis> since core 1.5.0 <para>countMatchesIgnoreCase(String str, String sub) 사용</para></entry>
+				</row>
+				
+				<row>
+					<entry>
+						<emphasis role="bold">getContainsCountIgnoreCase</emphasis>
+						(String str, char[] chars)
+					</entry>
+					<entry></entry>
+					<entry></entry>
+					<entry><emphasis role="bold">deprecated</emphasis> since core 1.5.0 <para><emphasis role="bold"> 대체메소드 지원하지 않음. </emphasis></para></entry>
+				</row>
+				
+				<row>
+					<entry>
+						<emphasis role="bold">getCutString</emphasis>
+						(String str, int length)
+					</entry>
+					<entry></entry>
+					<entry></entry>
+					<entry><emphasis role="bold">deprecated</emphasis> since core 1.5.0 <para>left(String str, int length) 사용</para></entry>
+				</row>
+				
+				<row>
+					<entry>
+						<emphasis role="bold">getLastString</emphasis>
+						(String origStr, String strToken)
+					</entry>
+					<entry>입력된 문자열을 주어진 token에 대해서 분리 후 마지막 문자열 반환</entry>
+					<entry>StringUtil.getLastString("Anyframe_Java_Test", "_")="Test"
+					</entry>
+					<entry></entry>
+				</row>
+				<row>
+					<entry>
+						<emphasis role="bold">getLength</emphasis>
+						(String str)
+					</entry>
+					<entry>전달받은 스트링의 길이를 반환한</entry>
+					<entry>StringUtil.getgetLength("길이")=2</entry>
+					<entry></entry>
+				</row>
+				<row>
+					<entry>
+						<emphasis role="bold">getRandomString</emphasis>
+						(int count)
+					</entry>
+					<entry>특정한 길이 만큼의 랜덤한 문자열을 반환한다.</entry>
+					<entry>StringUtil.getRandomString(8)</entry>
+					<entry></entry>
+				</row>
+				<row>
+					<entry>
+						<emphasis role="bold">getRandomString</emphasis>
+						(int minSize, int maxSize)
+					</entry>
+					<entry>최소, 최대 자리수 사이의 랜덤한 문자열을 반환한다.</entry>
+					<entry>StringUtil.getRandomString(10, 15)</entry>
+					<entry></entry>
+				</row>
+				<row>
+					<entry>
+						<emphasis role="bold">getRandomString</emphasis>
+						(int count, char startChar, char endChar)
+					</entry>
+					<entry>특정한 알파벳 사이의 지정된 길이만큼의 랜덤한 문자열을 반환한다.</entry>
+					<entry>StringUtil.getRandomString(10, 'a', 'e')</entry>
+					<entry></entry>
+				</row>
+				<row>
+					<entry>
+						<emphasis role="bold">getRandomStringByCharset</emphasis>
+						(int count, String charset)
+					</entry>
+					<entry>특정한 길이만큼의 주어진 캐릭터 셋 문자열을 반환한다.</entry>
+					<entry>StringUtil.getRandomStringByCharset(20, "UTF-8")</entry>
+					<entry></entry>
+				</row>
+				<row>
+					<entry>
+						<emphasis role="bold">getRandomStringByKorean</emphasis>
+						(int count)
+					</entry>
+					<entry>특정한 길이만큼의 한글 문자열을 반환한다.</entry>
+					<entry>StringUtil.getRandomStringByKorean(20)</entry>
+					<entry></entry>
+				</row>
+				<row>
+					<entry>
+						<emphasis role="bold">getStringArray</emphasis>
+						(String str, String strToken)
+					</entry>
+					<entry></entry>
+					<entry></entry>
+					<entry><emphasis role="bold">deprecated</emphasis> since core 1.5.0 <para>tokenizeToStringArray(String str, String delimiter) 사용</para></entry>
+				</row>
+				<row>
+					<entry>
+						<emphasis role="bold">getTokens</emphasis>
+						(String lst)
+					</entry>
+					<entry>
+						입력된 문자열을 ,(콤마)에 대해서 분리 후 <![CDATA[List<String>]]>으로 반환
+					</entry>
+					<entry>StringUtil.getTokens("Anyframe,Java,Test")</entry>
+					<entry></entry>
+				</row>
+				<row>
+					<entry>
+						<emphasis role="bold">getTokens</emphasis>
+						(String lst, String separator)
+					</entry>
+					<entry>
+						입력된 문자열을 주어진 separator에 대해서 분리 후 <![CDATA[List<String>]]>으로 반환
+					</entry>
+					<entry>StringUtil.getTokens("Anyframe/Java/Test", "/")</entry>
+					<entry></entry>
+				</row>
+				<row>
+					<entry>
+						<emphasis role="bold">hasLength</emphasis>
+						(String inputString)
+					</entry>
+					<entry>주어진 String 객체가 0보다 큰 길이를 가지고 있는지 검사한다. </entry>
+					<entry>StringUtil. hasLength("222")</entry>
+					<entry></entry>
+				</row>
+				<row>
+					<entry>
+						<emphasis role="bold">hasText</emphasis>
+						(String str)
+					</entry>
+					<entry>주어진 String 객체가 Whitespace가 아닌 문자를 가지고 있는지 검사한다.</entry>
+					<entry>StringUtil.hasText(" test ") = true , hasText(" ") = false
+					</entry>
+					<entry>since core 1.0.4</entry>
+				</row>
+				<row>
+					<entry>
+						<emphasis role="bold">hexToString</emphasis>
+						(String str)
+					</entry>
+					<entry>코드를 받아 문자열로 변환함 (유니코드)</entry>
+					<entry>StringUtil.hexToString("1111")="ㅍ"</entry>
+					<entry>since core 1.0.4</entry>
+				</row>
+				<row>
+					<entry>
+						<emphasis role="bold">indexOf</emphasis>
+						(String str, String search)
+					</entry>
+					<entry>기준 문자열에서 찾고자 하는 문자열이 포함되어 있는 경우 그 첫번째 문자열의 인덱스를 반환한다.
+					</entry>
+					<entry>StringUtil.indexOf("Anyframe Java Test", "Java")=9</entry>
+					<entry></entry>
+				</row>
+				<row>
+					<entry>
+						<emphasis role="bold">indexOfIgnoreCase</emphasis>
+						(String str, String search)
+					</entry>
+					<entry>대소문자를 구분없이 기준 문자열에서 찾고자 하는 문자열이 포함되어 있는 경우 그 첫번째 문자열의 인덱스를
+						반환한다.</entry>
+					<entry>StringUtil.indexOfIgnoreCase("Anyframe Java Test", "java")=9
+					</entry>
+					<entry></entry>
+				</row>
+				<row>
+					<entry>
+						<emphasis role="bold">integer2string</emphasis>
+						(int integer)
+					</entry>
+					<entry></entry>
+					<entry></entry>
+					<entry><emphasis role="bold">deprecated</emphasis> since core 1.5.0 <para>NumberUtil.intToString(int integer) 사용</para></entry>
+				</row>
+				<row>
+					<entry>
+						<emphasis role="bold">isAlpha</emphasis>
+						(String str)
+					</entry>
+					<entry></entry>
+					<entry></entry>
+					<entry><emphasis role="bold">deprecated</emphasis> since core 1.5.0 <para>isLetter(String str) 사용</para></entry>
+				</row>
+				
+				<row>
+					<entry>
+						<emphasis role="bold">isAlphaNumeric</emphasis>
+						(String str)
+					</entry>
+					<entry></entry>
+					<entry></entry>
+					<entry><emphasis role="bold">deprecated</emphasis> since core 1.5.0 <para>isLetterOrDigit(String str) 사용</para></entry>
+				</row>
+				
+				<row>
+					<entry>
+						<emphasis role="bold"> isDigit</emphasis>
+						(String str)
+					</entry>
+					<entry></entry>
+					<entry></entry>
+					<entry><emphasis role="bold">deprecated</emphasis> since core 1.5.0 <para>NumberUtil.isDigit(String str) 사용</para></entry>
+				</row>
+				
+				<row>
+					<entry>
+						<emphasis role="bold">isEmpty</emphasis>
+						(String str)
+					</entry>
+					<entry>주어진 문자열이 null 또는 공백일 경우 참 반환</entry>
+					<entry>StringUtil.isEmpty("")=true</entry>
+					<entry></entry>
+				</row>
+				<row>
+					<entry>
+						<emphasis role="bold">isEmptyTrimmed</emphasis>
+						(String str)
+					</entry>
+					<entry>trim한 문자열이 null 또는 공백일 경우 참 반환</entry>
+					<entry>StringUtil.isEmptyTrimmed(" ")</entry>
+					<entry></entry>
+				</row>
+				<row>
+					<entry>
+						<emphasis role="bold">isFormattedString</emphasis>
+						(String str, String pattern)
+					</entry>
+					<entry>주어진 String이 특정한 포맷(Regular Expression) 으로 구성되었는지를 검사한다.
+					</entry>
+					<entry>StringUtil.isFormattedString("no", "false|no")=true</entry>
+					<entry>since core 1.0.4</entry>
+				</row>
+				<row>
+					<entry>
+						<emphasis role="bold">isHangul</emphasis>
+						(char str)
+					</entry>
+					<entry>주어진 character가 한글인지의 여부를 판별한다.</entry>
+					<entry>StringUtil.isHangul("가")=true</entry>
+					<entry>since core 1.0.4</entry>
+				</row>
+				<row>
+					<entry>
+						<emphasis role="bold">isHangul</emphasis>
+						(String str, boolean checkForAll)
+					</entry>
+					<entry>주어진 String에 대해서, 한글로만 되어 있는지 혹은 한글이 포함되어 있는지를 판별한다.</entry>
+					<entry>StringUtil.isHangul("가abc", false)=true</entry>
+					<entry>since core 1.0.4</entry>
+				</row>
+				<row>
+					<entry>
+						<emphasis role="bold">isLetter</emphasis>
+						(String str)
+					</entry>
+					<entry>주어진 String이 '문자'로만 구성되어 있는지를 판별한다.</entry>
+					<entry>StringUtil.isLetter("test가나")=true</entry>
+					<entry>since core 1.0.4 <para><emphasis role="bold">since core 1.5.0 : "" 에 대해서 false를 리턴하도록 변경</emphasis> </para> </entry>
+				</row>
+				<row>
+					<entry>
+						<emphasis role="bold">isLetterOrDigit</emphasis>
+						(String str)
+					</entry>
+					<entry>주어진 String이 '문자'나 '숫자'로만 구성되어 있는지를 판별한다.</entry>
+					<entry>StringUtil.isLetterOrDigit("12가나@#%")=false</entry>
+					<entry>since core 1.0.4 <para><emphasis role="bold">since core 1.5.0 : "" 에 대해서 false를 리턴하도록 변경</emphasis></para></entry>
+				</row>
+				<row>
+					<entry>
+						<emphasis role="bold">isNotEmpty</emphasis>
+						(String str)
+					</entry>
+					<entry>주어진 문자열이 null 또는 공백이 아닐 경우 참 반환</entry>
+					<entry>StringUtil.isNotEmpty("abc")=true</entry>
+					<entry></entry>
+				</row>
+				<row>
+					<entry>
+						<emphasis role="bold">isNotNumeric</emphasis>
+						(String str)
+					</entry>
+					<entry></entry>
+					<entry></entry>
+					<entry><emphasis role="bold">deprecated</emphasis> since core 1.5.0 <para>NumberUtil.isNotDigit(String str) 사용</para></entry>
+				</row>
+				<row>
+					<entry>
+						<emphasis role="bold">isSpaceOnly</emphasis>
+						(String str)
+					</entry>
+					<entry></entry>
+					<entry></entry>
+					<entry><emphasis role="bold">deprecated</emphasis> since core 1.5.0 <para>isWhiteSpaceOnly(String str) 사용</para></entry>
+				</row>
+				
+				<row>
+					<entry>
+						<emphasis role="bold">left</emphasis>
+						(String str, int len)
+					</entry>
+					<entry>주어진 String 객체에 대해서 주어진 길이만큼 왼쪽 부분을 떼어 반환한다.</entry>
+					<entry>StringUtil.left("1234567", 3)="123"</entry>
+					<entry>since core 1.0.4</entry>
+				</row>
+				<row>
+					<entry>
+						<emphasis role="bold">leftPad</emphasis>
+						(String str, int size)
+					</entry>
+					<entry>해당하는 문자열에 대해서 입력된 길이만큼 부족한 길이를 왼쪽부터 공백으로 채워넣음</entry>
+					<entry>StringUtil.leftPad("Anyframe", 12)=" Anyframe"</entry>
+					<entry></entry>
+				</row>
+				<row>
+					<entry>
+						<emphasis role="bold">leftPad</emphasis>
+						(String str, int size, char padChar)
+					</entry>
+					<entry>해당하는 문자열에 대해서 입력된 길이만큼 부족한 길이를 왼쪽부터 지정된 character로 채워넣는다.
+					</entry>
+					<entry>StringUtil.leftPad("Anyframe", 12, 'a')="aaaaAnyframe"
+					</entry>
+					<entry></entry>
+				</row>
+				<row>
+					<entry>
+						<emphasis role="bold">leftPad</emphasis>
+						(String str, int size, String padStr)
+					</entry>
+					<entry>해당하는 문자열에 대해서 입력된 길이만큼 부족한 길이를 왼쪽부터 지정된 문자열로 채워넣는다.</entry>
+					<entry>StringUtil.leftPad("Anyframe", 12, "Java")="JavaAnyframe"
+					</entry>
+					<entry></entry>
+				</row>
+				<row>
+					<entry>
+						<emphasis role="bold">leftTrim</emphasis>
+						(String str)
+					</entry>
+					<entry>문자열의 왼쪽의 공백 문자열 제거</entry>
+					<entry>StringUtil.leftTrim(" Anyframe Java Test")="Anyframe Java
+						Test"</entry>
+					<entry></entry>
+				</row>
+				<row>
+					<entry>
+						<emphasis role="bold">newLineToSpace</emphasis>
+						(String str)
+					</entry>
+					<entry>CRLF(newLine)가 포함된 문자열을 입력인자로 받아 CRLF(개행문자)를 SPACE로 변환하여
+						리턴한다.</entry>
+					<entry>StringUtil.newLineToSpace("\r\ntest")=" test"</entry>
+					<entry>since core 1.0.4</entry>
+				</row>
+				<row>
+					<entry>
+						<emphasis role="bold">null2str</emphasis>
+						(String org, String converted)
+					</entry>
+					<entry></entry>
+					<entry></entry>
+					<entry><emphasis role="bold">deprecated</emphasis> since core 1.5.0 <para>nullToString(String str, String defaultStr) 사용</para></entry>
+				</row>
+				<row>
+					<entry>
+						<emphasis role="bold">null2str</emphasis>
+						(String org)
+					</entry>
+					<entry></entry>
+					<entry></entry>
+					<entry><emphasis role="bold">deprecated</emphasis> since core 1.5.0 <para>nullToString(String str) 사용</para></entry>
+				</row>
+				<row>
+					<entry>
+						<emphasis role="bold">nullToEmpty</emphasis>
+						(String str)
+					</entry>
+					<entry>주어진 String 객체를 검사하여 null일 경우 "" 을 반환하고, 아니면 원본을 반환한다.
+					</entry>
+					<entry>StringUtil.nullToEmpty(test) = ""</entry>
+					<entry>since core 1.0.4</entry>
+				</row>
+				<row>
+					<entry>
+						<emphasis role="bold">numberFormat</emphasis>
+						(double d, String format)
+					</entry>
+					<entry></entry>
+					<entry></entry>
+					<entry><emphasis role="bold">deprecated</emphasis> since core 1.5.0 <para>NumberUtil.formatNumber(double d, String format) 사용</para></entry>
+				</row>
+				<row>
+					<entry>
+						<emphasis role="bold">numberFormat</emphasis>
+						(float f, String format)
+					</entry>
+					<entry></entry>
+					<entry></entry>
+					<entry><emphasis role="bold">deprecated</emphasis> since core 1.5.0 <para>NumberUtil.formatNumber(float f, String format) 사용</para></entry>
+				</row>
+				<row>
+					<entry>
+						<emphasis role="bold">numberFormat</emphasis>
+						(int i, String format)
+					</entry>
+					<entry></entry>
+					<entry></entry>
+					<entry><emphasis role="bold">deprecated</emphasis> since core 1.5.0 <para>NumberUtil.formatNumber(int i, String format) 사용</para></entry>
+				</row>
+				<row>
+					<entry>
+						<emphasis role="bold">numberFormat</emphasis>
+						(long l, String format)
+					</entry>
+					<entry></entry>
+					<entry></entry>
+					<entry><emphasis role="bold">deprecated</emphasis> since core 1.5.0 <para>NumberUtil.formatNumber(long l, String format) 사용</para></entry>
+				</row>
+				<row>
+					<entry>
+						<emphasis role="bold">numberFormat</emphasis>
+						(short s, String format)
+					</entry>
+					<entry></entry>
+					<entry></entry>
+					<entry><emphasis role="bold">deprecated</emphasis> since core 1.5.0 <para>NumberUtil.formatNumber(short s, String format) 사용</para></entry>
+				</row>
+				<row>
+					<entry>
+						<emphasis role="bold">nvl</emphasis>
+						(Object inputObject, Object defaultObject)
+					</entry>
+					<entry></entry>
+					<entry></entry>
+					<entry><emphasis role="bold">deprecated</emphasis> since core 1.5.0 <para>nullToObject(Object inputObject, Object defaultObject) 사용</para></entry>
+				</row>
+				
+				<row>
+					<entry>
+						<emphasis role="bold">nvl</emphasis>
+						(String inputString, String defaultString)
+					</entry>
+					<entry></entry>
+					<entry></entry>
+					<entry><emphasis role="bold">deprecated</emphasis> since core 1.5.0 <para>nullToString(String inputString, String defaultString) 사용</para></entry>
+				</row>
+				
+				<row>
+					<entry>
+						<emphasis role="bold">padding</emphasis>
+						(int size, char padChar)
+					</entry>
+					<entry></entry>
+					<entry></entry>
+					<entry><emphasis role="bold">deprecated</emphasis> since core 1.5.0 <para>repeat(int size, char ch) 사용</para></entry>
+				</row>
+				<row>
+					<entry>
+						<emphasis role="bold">pathClean</emphasis>
+						(String path)
+					</entry>
+					<entry>String으로 표현된 path 정보를 표준화한다.</entry>
+					<entry>StringUtil.pathClean("../aaaa\\bbbb\\cccc\\dddd")="aaaa/bbbb/cccc/dddd"
+					</entry>
+					<entry>since core 1.0.4</entry>
+				</row>
+				<row>
+					<entry>
+						<emphasis role="bold">pathEquals</emphasis>
+						(String path1, String path2)
+					</entry>
+					<entry>주어진 두 개의 path 정보 String에 대해서, 표준화 후 같은 경로인지를 판별한다.</entry>
+					<entry>StringUtil.pathEquals("../aaaa\\bbbb\\cccc\\dddd",
+						"aaaa/bbbb/cccc/dddd")=true</entry>
+					<entry>since core 1.0.4</entry>
+				</row>
+				<row>
+					<entry>
+						<emphasis role="bold">randomAlphabetic</emphasis>
+						(int randomLength)
+					</entry>
+					<entry>인자로 주어진 길이만큼의 랜덤 알파벳 문자열을 생성한다.</entry>
+					<entry>StringUtil.randomAlphabetic(10)</entry>
+					<entry>since core 1.0.4</entry>
+				</row>
+				<row>
+					<entry>
+						<emphasis role="bold">removeAll</emphasis>
+						(String str, String charsToDelete)
+					</entry>
+					<entry></entry>
+					<entry></entry>
+					<entry><emphasis role="bold">deprecated</emphasis> since core 1.5.0 <para>deleteAny(String str, String charsToDelete)</para></entry>
+				</row>
+				<row>
+					<entry>
+						<emphasis role="bold">removeChar</emphasis>
+						(String str, char remove)
+					</entry>
+					<entry></entry>
+					<entry></entry>
+					<entry><emphasis role="bold">deprecated</emphasis> since core 1.5.0 <para>deleteAny(String str, char charToDelete) 사용</para></entry>
+				</row>
+				<row>
+					<entry>
+						<emphasis role="bold">removeCharAll</emphasis>
+						(String str)
+					</entry>
+					<entry></entry>
+					<entry></entry>
+					<entry><emphasis role="bold">deprecated</emphasis> since core 1.5.0 <para>deleteAny(String str, char[] charsToDelete) 사용</para></entry>
+				</row>
+				
+				<row>
+					<entry>
+						<emphasis role="bold">removeCharAll</emphasis>
+						(String str, char[] chars)
+					</entry>
+					<entry></entry>
+					<entry></entry>
+					<entry><emphasis role="bold">deprecated</emphasis> since core 1.5.0 <para>deleteAny(String str, char[] charsToDelete) 사용</para></entry>
+				</row>
+				
+				<row>
+					<entry>
+						<emphasis role="bold">removeEscapeChar</emphasis>
+						(String input)
+					</entry>
+					<entry></entry>
+					<entry></entry>
+					<entry><emphasis role="bold">deprecated</emphasis> since core 1.5.0 <para>htmlUnEscape(String input) 사용</para></entry>
+				</row>
+				<row>
+					<entry>
+						<emphasis role="bold">removeWhitespace</emphasis>
+						(String str)
+					</entry>
+					<entry>문자열의 모둔 공백 문자열 제거</entry>
+					<entry>StringUtil.removeWhitespace("Anyframe Java
+						Test")="AnyframeJavaTest"</entry>
+					<entry></entry>
+				</row>
+				<row>
+					<entry>
+						<emphasis role="bold">replace</emphasis>
+						(String str, String replacedStr, String replaceStr)
+					</entry>
+					<entry>입력된 문자열에 대해서 해당하는 character를 찾아 주어진 문자열로 변경</entry>
+					<entry>StringUtil.replace("Anyframe/Common", "/",
+						"|")="Anyframe|Common"</entry>
+					<entry><emphasis role="bold">deprecated</emphasis> since core 1.5.0 <para><emphasis role="bold">찾는 문자열이 존재하지 않는 경우 입력된 문자열을 그대로 리턴하도록 수정. 대체메소드 지원하지 않음.</emphasis></para>  </entry>
+				</row>
+				<row>
+					<entry>
+						<emphasis role="bold">replaceAll</emphasis>
+						(String source, String regex, String replacement)
+					</entry>
+					<entry>입력된 문자열이 주어진 문자열과 일치하는 모든 문자열을 바꿔야할 문자열로 변경</entry>
+					<entry>StringUtil.replaceAll("Anyframe Java Test", "Anyframe",
+						"Enterprise")="Enterprise Java Test"</entry>
+					<entry></entry>
+				</row>
+				<row>
+					<entry>
+						<emphasis role="bold">replaceFirst</emphasis>
+						(String source, String regex, String replacement)
+					</entry>
+					<entry>입력된 문자열이 주어진 문자열과 일치하는 첫번째 문자열을 바꿔야할 문자열로 변경</entry>
+					<entry>StringUtil.replaceFirst("Anyframe Java Test Anyframe Java
+						Test", "Anyframe", "Enterprise")="Enterprise Java Test Anyframe
+						Java Test"</entry>
+					<entry></entry>
+				</row>
+				<row>
+					<entry>
+						<emphasis role="bold">replaceHtmlEscape</emphasis>
+						(String input)
+					</entry>
+					<entry></entry>
+					<entry></entry>
+					<entry><emphasis role="bold">deprecated</emphasis> since core 1.5.0 <para>htmlEscape(String input) 사용</para></entry>
+				</row>
+				<row>
+					<entry>
+						<emphasis role="bold">replaceLast</emphasis>
+						(String source, String regex, String replacement)
+					</entry>
+					<entry>입력된 문자열이 주어진 문자열과 일치하는 마지막 문자열을 바꿔야할 문자열로 변경</entry>
+					<entry>StringUtil.replaceLast("Anyframe Java Test Anyframe Java
+						Test", "Anyframe", "Enterprise")="Anyframe Java Test Enterprise
+						Java Test"</entry>
+					<entry></entry>
+				</row>
+				<row>
+					<entry>
+						<emphasis role="bold">replacePattern</emphasis>
+						(String text, String searchString, String replacement)
+					</entry>
+					<entry></entry>
+					<entry></entry>
+					<entry><emphasis role="bold">deprecated</emphasis> since core 1.5.0 <para>replaceAll(String str, String regex, String replacement) 사용</para></entry>
+				</row>
+				<row>
+					<entry>
+						<emphasis role="bold">reverse</emphasis>
+						(String str)
+					</entry>
+					<entry>입력된 문자열의 순서를 반대로 바꿈</entry>
+					<entry>StringUtil.reverse("Anyframe Java Test")="tseT avaJ
+						emarfynA"</entry>
+					<entry>since core 1.0.4</entry>
+				</row>
+				<row>
+					<entry>
+						<emphasis role="bold">right</emphasis>
+						(String str, int len)
+					</entry>
+					<entry>주어진 String 객체에 대해서 주어진 길이만큼 오른쪽 부분을 떼어 반환한다.</entry>
+					<entry>StringUtil.right("1234567", 3)="567"</entry>
+					<entry>since core 1.0.4</entry>
+				</row>
+				<row>
+					<entry>
+						<emphasis role="bold">rightPad</emphasis>
+						(String str, int size)
+					</entry>
+					<entry>해당하는 문자열에 대해서 입력된 길이만큼 부족한 길이를 오른쪽부터 공백으로 채워넣는다.</entry>
+					<entry>StringUtil.rightPad("bat", 5) = "bat "</entry>
+					<entry></entry>
+				</row>
+				<row>
+					<entry>
+						<emphasis role="bold">rightPad</emphasis>
+						(String str, int size, char padChar)
+					</entry>
+					<entry>해당하는 문자열에 대해서 입력된 길이만큼 부족한 길이를 오른쪽부터 지정된 문자로 채워넣는다.</entry>
+					<entry>StringUtil.rightPad("bat", 5, 'z') = "batzz"</entry>
+					<entry></entry>
+				</row>
+				<row>
+					<entry>
+						<emphasis role="bold">rightPad</emphasis>
+						(String str, int size, String padChar)
+					</entry>
+					<entry>해당하는 문자열에 대해서 입력된 길이만큼 부족한 길이를 오른쪽부터 지정된 문자로 채워넣는다.</entry>
+					<entry>StringUtil.rightPad("bat", 5, "yz") = "batyz"</entry>
+					<entry></entry>
+				</row>
+				<row>
+					<entry>
+						<emphasis role="bold">rightTrim</emphasis>
+						(String str)
+					</entry>
+					<entry>문자열의 오른쪽의 공백 문자열 제거</entry>
+					<entry>StringUtil.rightTrim("Anyframe Java Test ")="Anyframe Java
+						Test"</entry>
+					<entry></entry>
+				</row>
+				<row>
+					<entry>
+						<emphasis role="bold">split</emphasis>
+						(String str, char separator)
+					</entry>
+					<entry></entry>
+					<entry></entry>
+					<entry><emphasis role="bold">deprecated</emphasis> since core 1.5.0 <para>tokenizeToStringArray(String str, char delimeter) 사용</para></entry>
+				</row>
+				<row>
+					<entry>
+						<emphasis role="bold">splitHead</emphasis>
+						(String str, int size)
+					</entry>
+					<entry></entry>
+					<entry></entry>
+					<entry><emphasis role="bold">deprecated</emphasis> since core 1.5.0 <para>left(String str, int size) 사용</para></entry>
+				</row>
+				<row>
+					<entry>
+						<emphasis role="bold">splitHeadWithEllipsis</emphasis>
+						(String str, int len)
+					</entry>
+					<entry></entry>
+					<entry></entry>
+					<entry><emphasis role="bold">deprecated</emphasis> since core 1.5.0 <para>abbreviateFromLeft(String str, int size) 사용</para></entry>
+				</row>
+				<row>
+					<entry>
+						<emphasis role="bold">splitTail</emphasis>
+						(String str, int size)
+					</entry>
+					<entry></entry>
+					<entry></entry>
+					<entry><emphasis role="bold">deprecated</emphasis> since core 1.5.0 <para>right(String str, int size) 사용</para></entry>
+				</row>
+				<row>
+					<entry>
+						<emphasis role="bold">splitTailWithEllipsis</emphasis>
+						(String str, int len)
+					</entry>
+					<entry></entry>
+					<entry></entry>
+					<entry><emphasis role="bold">deprecated</emphasis> since core 1.5.0 <para>abbreviateFromRight(String str, int size) 사용</para></entry>
+				</row>
+				<row>
+					<entry>
+						<emphasis role="bold">string2integer</emphasis>
+						(String str)
+					</entry>
+					<entry></entry>
+					<entry></entry>
+					<entry><emphasis role="bold">deprecated</emphasis> since core 1.5.0 <para>NumberUtil.stringToInt(String str) 사용</para></entry>
+					
+				</row>
+				<row>
+					<entry>
+						<emphasis role="bold">stringToBigDecimal</emphasis>
+						(String str)
+					</entry>
+					<entry></entry>
+					<entry></entry>
+					<entry><emphasis role="bold">deprecated</emphasis> since core 1.5.0 <para>NumberUtil.stringToBigDecimal(String str) 사용</para></entry>
+				</row>
+				<row>
+					<entry>
+						<emphasis role="bold">stringToBigDecimal</emphasis>
+						(String str, int pos, int len)
+					</entry>
+					<entry></entry>
+					<entry></entry>
+					<entry><emphasis role="bold">deprecated</emphasis> since core 1.5.0 <para>NumberUtil.substringToBigDecimal(String str, int pos, int len) 사용</para></entry>
+				</row>
+				<row>
+					<entry>
+						<emphasis role="bold">stringToHex</emphasis>
+						(String str)
+					</entry>
+					<entry>문자열을 받아 해당하는 hex 코드로 만들어 반환한다.</entry>
+					<entry>StringUtil.stringToHex("123")="003100320033"</entry>
+					<entry>since core 1.0.4</entry>
+				</row>
+				
+				<row>
+					<entry>
+						<emphasis role="bold">stringToNumn</emphasis>
+						(String str)
+					</entry>
+					<entry></entry>
+					<entry></entry>
+					<entry><emphasis role="bold">deprecated</emphasis> since core 1.5.0 <para>NumberUtil.stringToInt(String number) 사용</para></entry>
+				</row>
+				
+				<row>
+					<entry>
+						<emphasis role="bold">stringToNumn</emphasis>
+						(String str, int pos, int len)
+					</entry>
+					<entry></entry>
+					<entry></entry>
+					<entry><emphasis role="bold">deprecated</emphasis> since core 1.5.0 <para>NumberUtil.substringToInt(String number, int beginIndex, int size) 사용</para></entry>
+				</row>
+				<row>
+					<entry>
+						<emphasis role="bold">swapFirstLetterCase</emphasis>
+						(String str)
+					</entry>
+					<entry>첫번째 문자를 대문자로 변경</entry>
+					<entry>StringUtil.swapFirstLetterCase("java")="Java"</entry>
+					<entry></entry>
+				</row>
+				<row>
+					<entry>
+						<emphasis role="bold">toBusinessNoPattern</emphasis>
+						(String str)
+					</entry>
+					<entry>주어진 String이 10자리가 아닐 경우, ""를 return한다.</entry>
+					<entry>StringUtil.toBusinessNoPattern("1111111111")="111-11-11111"
+					</entry>
+					<entry>since core 1.0.4</entry>
+				</row>
+				<row>
+					<entry>
+						<emphasis role="bold">tokenizeToStringArray</emphasis>
+						(String str, String separator, boolean trimTokens, boolean
+						ignoreEmptyTokens)
+					</entry>
+					<entry>주어진 String에 대해서 delimiter를 이용하여 tokenize한 후 String[]로 뽑아낸다.
+					</entry>
+					<entry>String[] test; test =
+						StringUtil.tokenizeToStringArray("aaa.bbb.ccc.ddd", ".", true,
+						true) => test[0]="aaa", test[1]="bbb"…</entry>
+					<entry>since core 1.0.4</entry>
+				</row>
+				<row>
+					<entry>
+						<emphasis role="bold">toLowercase</emphasis>
+						(String str)
+					</entry>
+					<entry></entry>
+					<entry></entry>
+					<entry><emphasis role="bold">deprecated</emphasis> since core 1.5.0 <para>toLowerCaseFirstLetter(String str) 사용</para></entry>
+				</row>
+				<row>
+					<entry>
+						<emphasis role="bold">toSocialSecuNoPattern</emphasis>
+						(String str)
+					</entry>
+					<entry>주어진 13자리 숫자 String을 "111111-1111111" 형태의 주민등록번호 포맷으로 변환한다.
+					</entry>
+					<entry>StringUtil.toSocialSecuNoPattern("1111111111111")="111111=1111111"
+					</entry>
+					<entry>since core 1.0.4</entry>
+				</row>
+				<row>
+					<entry>
+						<emphasis role="bold">toTelephoneNumberFormat</emphasis>
+						(String str)
+					</entry>
+					<entry>입력된 문자열로 부터 숫자만 추출하여 '-'가 포함된 전화번호 형태의 문자열로 포매팅하여 리턴한다.
+					</entry>
+					<entry>StringUtil.toTelephoneNumberFormat(&quot;1234567&quot;)="23-4567"
+					</entry>
+					<entry>since core 1.0.4</entry>
+				</row>
+				<row>
+					<entry>
+						<emphasis role="bold">toUpperCase</emphasis>
+						(String inputString)
+					</entry>
+					<entry></entry>
+					<entry></entry>
+					<entry><emphasis role="bold">deprecated</emphasis> since core 1.5.0 <para>toUpperCaseFirstLetter(String inputString) 사용</para></entry>
+				</row>
+				<row>
+					<entry>
+						<emphasis role="bold">toZipCodePattern</emphasis>
+						(String str)
+					</entry>
+					<entry>주어진 6자리 숫자 String을 "111-111" 형태의 우편번호 포맷으로 변환한다.</entry>
+					<entry>StringUtil.toZipCodePattern("111111")="111-111"</entry>
+					<entry>since core 1.0.4</entry>
+				</row>
+				<row>
+					<entry>
+						<emphasis role="bold">trim</emphasis>
+						(String origString, String trimString)
+					</entry>
+					<entry></entry>
+					<entry></entry>
+					<entry><emphasis role="bold">deprecated</emphasis> since core 1.5.0 <para>deleteFirstMatches(String str, String deletedStr) 사용</para></entry>
+				</row>
+				<row>
+					<entry>
+						<emphasis role="bold">trimEquals</emphasis>
+						(String str1, String str2)
+					</entry>
+					<entry>주어진 두 개의 String 객체에 대해서, trim()후 같은지를 비교한다.</entry>
+					<entry>StringUtil.trimEquals(" test ","test")=true</entry>
+					<entry>since core 1.0.4</entry>
+				</row>
+				<row>
+					<entry>
+						<emphasis role="bold">unqualify</emphasis>
+						(String qualifiedName)
+					</entry>
+					<entry>Qualified Name으로 표현된 String을 받아서 Unqualified Name 형태의
+						String으로 변환한다. 기본 구분자는 '.'</entry>
+					<entry>StringUtil.unqualify("A-11")="A-11" ,
+						StringUtil.unqualify("B.10")="11"</entry>
+					<entry>since core 1.0.4</entry>
+				</row>
+				<row>
+					<entry>
+						<emphasis role="bold">String unqualify</emphasis>
+						(String qualifiedName, char separator)
+					</entry>
+					<entry>Qualified Name으로 표현된 String을 받아서 Unqualified Name 형태의
+						String으로 변환한다.</entry>
+					<entry>StringUtil.unqualify("A-11",'-')="11"</entry>
+					<entry>since core 1.0.4</entry>
+				</row>
+				<row>
+					<entry>
+						<emphasis role="bold">decodeString</emphasis>
+						(String str)
+					</entry>
+					<entry></entry>
+					<entry></entry>
+					<entry><emphasis role="bold">deprecated</emphasis> since core 1.0.4</entry>
+				</row>
+				<row>
+					<entry>
+						<emphasis role="bold">encodePassword</emphasis>
+						(String password, String algorithm)
+					</entry>
+					<entry></entry>
+					<entry></entry>
+					<entry><emphasis role="bold">deprecated</emphasis> since core 1.0.4</entry>
+				</row>
+				<row>
+					<entry>
+						<emphasis role="bold">encodeString</emphasis>
+						(String str)
+					</entry>
+					<entry></entry>
+					<entry></entry>
+					<entry><emphasis role="bold">deprecated</emphasis> since core 1.0.4</entry>
+				</row>
+				<row>
+					<entry>
+						<emphasis role="bold">isNumeric</emphasis>
+						(String str)
+					</entry>
+					<entry></entry>
+					<entry></entry>
+					<entry><emphasis role="bold">deprecated</emphasis> since core 1.0.4</entry>
+				</row>
+				<row>
+					<entry>
+						<emphasis role="bold">isPatternMatching</emphasis>
+						(String str, String pattern)
+					</entry>
+					<entry>문자열이 입력된 정규식 패턴에 맞는지 체크한다. *는 전체 문자를 표현한다.</entry>
+					<entry>StringUtil.isPatternMatching("abc", "*-*")=true</entry>
+					<entry>at core 1.0.4 deprecated, since core 1.5.0 변경된 명명규칙 적용에 따른 deprecated 해제</entry>
+				</row>
+				
+				<!--  1.5.0 신규 메소드 -->
+				
+				<row>
+					<entry>
+						<emphasis role="bold">countMatches</emphasis>
+						(String str, char[] chars)
+					</entry>
+					<entry>주어진 문자열에 대해서 해당하는 캐릭터배열이 포함되어 있는 숫자 반환</entry>
+					<entry>StringUtil.countMatches("Anyframe Java Test", new char[] {'a'})=3</entry>
+					<entry>since core 1.5.0</entry>
+				</row>
+				
+				<row>
+					<entry>
+						<emphasis role="bold">countMatches</emphasis>
+						(String str, String sub)
+					</entry>
+					<entry>주어진 문자열에 대해서 해당하는 문자열이 포함되어 있는 숫자 반환</entry>
+					<entry>StringUtil.countMatches("Anyframe Java Test", "a")=3</entry>
+					<entry>since core 1.5.0</entry>
+				</row>
+				
+				<row>
+					<entry>
+						<emphasis role="bold">countMatchesIgnoreCase</emphasis>
+						(String str, char[] chars)
+					</entry>
+					<entry>대소문자 구분없이 주어진 문자열에 대해서 해당하는 캐릭터 배열이 포함되어 있는 숫자를 반환</entry>
+					<entry>StringUtil.getContainsCountIgnoreCase("Anyframe Java Test", new char[] { 't', 'e' })=1</entry>
+					<entry>since core 1.5.0</entry>
+				</row>
+				
+				<row>
+					<entry>
+						<emphasis role="bold">countMatchesIgnoreCase</emphasis>
+						(String str, String sub)
+					</entry>
+					<entry>대소문자 구분없이 주어진 문자열에 대해서 해당하는 문자열이 포함되어 있는 갯수를 반환</entry>
+					<entry>StringUtil.getContainsCountIgnoreCase("Anyframe Java Test", "test") = 1</entry>
+					<entry>since core 1.5.0</entry>
+				</row>
+				
+				<row>
+					<entry>
+						<emphasis role="bold">nullToObject</emphasis>
+						(Object obj, Object defaultObj)
+					</entry>
+					<entry>주어진 Object가 null이 아닐 경우 그 Object를 반환하고, null일 경우 default Object를 반환한다.</entry>
+					<entry>String test = null; System.out.println(StringUtil.nvl(test, "NULL TEST"))="NULL TEST"</entry>
+					<entry>since core 1.5.0</entry>
+				</row>
+				
+				<row>
+					<entry>
+						<emphasis role="bold">toLowerCaseFirstLetter</emphasis>
+						(String str)
+					</entry>
+					<entry>주어진 String의 첫번째 글자를 소문자로 변환한다.</entry>
+					<entry>StringUtil.toUpperCase("Abcd")="bbcd"</entry>
+					<entry>since core 1.5.0</entry>
+				</row>
+				
+				<row>
+					<entry>
+						<emphasis role="bold">toUpperCaseFirstLetter</emphasis>
+						(String str)
+					</entry>
+					<entry>주어진 String의 첫번째 글자를 대문자로 변환한다.</entry>
+					<entry>StringUtil.toUpperCase("abcd")="Abcd"</entry>
+					<entry>since core 1.5.0</entry>
+				</row>
+				
+				<row>
+					<entry>
+						<emphasis role="bold">arrayToDelimitedString</emphasis>
+						(Object[] objects)
+					</entry>
+					<entry>Object[]를 입력받아 각 element를 ","로 구분하여 String을 생성한다. </entry>
+					<entry>String[] test = {"aaa", "bbb", "ccc"}; StringUtil.arrayToDelimitedString(test)="aaa,bbb,ccc"</entry>
+					<entry>since core 1.5.0</entry>
+				</row>
+				
+				<row>
+					<entry>
+						<emphasis role="bold">collectionToDelimitedString</emphasis>
+						(Collection&lt;String&gt; collection)
+					</entry>
+					<entry>Collection을 입력으로 받아 ","(delimiter)로 각 element를 연결하여 String을 생성한다. </entry>
+					<entry>String[] test = {"aaa", "bbb"}; StringUtil.collectionToCommaDelimitedString(Arrays.asList(test),",")="aaa,bbb" </entry>
+					<entry>since core 1.5.0</entry>
+				</row>
+				
+				<row>
+					<entry>
+						<emphasis role="bold">containsAny</emphasis>
+						(String str, char[] chars)
+					</entry>
+					<entry>char[]에 존재하는 문자중에 하나라도 String에 포함되어 있는지 검사한다. </entry>
+					<entry>StringUtil.containsAny("Anyframe", new char[]{'a', 'x'}) = true</entry>
+					<entry>since core 1.5.0</entry>
+				</row>
+				
+				<row>
+					<entry>
+						<emphasis role="bold">containsAny</emphasis>
+						(String str, String chars)
+					</entry>
+					<entry>chars에 존재하는 문자중에 하나라도 str에 존재하는지 여부를검사한다.</entry>
+					<entry>StringUtil.containsAnry("Anyframe", "ax") = true</entry>
+					<entry>since core 1.5.0</entry>
+				</row>
+				
+				<row>
+					<entry>
+						<emphasis role="bold">deleteAny</emphasis>
+						(String str, String charsToDelete)
+					</entry>
+					<entry>하나의 String 객체 안에서 삭제할 문자열 안에 포함된 모든 character들을 제거하여 반환한다.</entry>
+					<entry>StringUtil.deleteAny("AbbzzB", "bz") == "AB"</entry>
+					<entry>since core 1.5.0</entry>
+				</row>
+				
+				<row>
+					<entry>
+						<emphasis role="bold">deleteAny</emphasis>
+						(String str, char[] charsToDelete)
+					</entry>
+					<entry>하나의 String 객체 안에서 삭제할 char[] 안에 포함된 모든 character들을 제거하여 반환한다.</entry>
+					<entry>StringUtil.deleteAny("AbbzzB", new char[]{'b', 'z'}) == "AB"</entry>
+					<entry>since core 1.5.0</entry>
+				</row>
+				
+				<row>
+					<entry>
+						<emphasis role="bold">deleteAny</emphasis>
+						(String str, char charToDelete)
+					</entry>
+					<entry>하나의 String 객체 안에서 입력된 문자를 모두 제거하여 반환한다.</entry>
+					<entry>StringUtil.deleteAny("ABBBBBC", 'B') => "AC"</entry>
+					<entry>since core 1.5.0</entry>
+				</row>
+				
+				<row>
+					<entry>
+						<emphasis role="bold">deleteMatches</emphasis>
+						(String str, String subStr)
+					</entry>
+					<entry>하나의 문자열에서 입력된 문자열을 모두 제거하여 반환한다.</entry>
+					<entry>StringUtil.deletePattern("zzABCcc", "ABC") = "zzcc"</entry>
+					<entry>since core 1.5.0</entry>
+				</row>
+				
+				<row>
+					<entry>
+						<emphasis role="bold">deleteFirstMatches</emphasis>
+						(String, String)
+					</entry>
+					<entry>하나의 문자열에서 입력된 문자열 중 첫번째를 제거하여 반환한다.</entry>
+					<entry>StringUtil.deleteFirstMatches("aaaaxxxxccc", "xx") = "aaaaxccc"</entry>
+					<entry>since core 1.5.0</entry>
+				</row>
+				
+				<row>
+					<entry>
+						<emphasis role="bold">abbreviateFromLeft</emphasis>
+						(String str, int len)
+					</entry>
+					<entry>주어진 String 객체에대해 왼쪽에서부터 len만큼 길이를 얻어내고 문자열 끝에 ...를 붙여서 반환한다.</entry>
+					<entry>StringUtil.abbreviateFromLeft("anyframejava", 8) = "anyframe..."</entry>
+					<entry>since core 1.5.0</entry>
+				</row>
+				
+				<row>
+					<entry>
+						<emphasis role="bold">abbreviateFromRight</emphasis>
+						(String str, int len)
+					</entry>
+					<entry>주어진 String 객체에대해 왼쪽에서부터 len만큼 길이를 얻어내고 문자열 앞에...를 붙여서 반환한다.</entry>
+					<entry>StringUtil.abbreviateFromRight("anyframejava", 4) = "...java" </entry>
+					<entry>since core 1.5.0</entry>
+				</row>
+				
+				<row>
+					<entry>
+						<emphasis role="bold">tokenizeToStringArray</emphasis>
+						(String str, char delimeter)
+					</entry>
+					<entry>문자열을 입력받은 구분자로 분리하여 String[]로 반환한다.</entry>
+					<entry>StringUtil.tokenizeToStringArray("aaa,bbb", ',')</entry>
+					<entry>since core 1.5.0</entry>
+				</row>
+				
+				<row>
+					<entry>
+						<emphasis role="bold">tokenizeToStringArray</emphasis>
+						(String str, String delimiter)
+					</entry>
+					<entry>문자열을 입력받은 구분자로 분리하여 String[]로 반환한다.</entry>
+					<entry>StringUtil.tokenizeToStringArray("aaa.bbb.ccc.ddd", ".");</entry>
+					<entry>since core 1.5.0</entry>
+				</row>
+				
+				<row>
+					<entry>
+						<emphasis role="bold">tokenizeToStringArray</emphasis>
+						(String str)
+					</entry>
+					<entry>문자열을 ','로 분리하여 String[]로 반환한다.</entry>
+					<entry>StringUtil.tokenizeToStringArray("aaa,bbb")</entry>
+					<entry>since core 1.5.0</entry>
+				</row>
+				
+				<row>
+					<entry>
+						<emphasis role="bold">containsMaxOccurences</emphasis>
+						(String str, String maxSeqNumber)
+					</entry>
+					<entry>입력인자로 전달된 String에 maxSeqNumber만큼 반복하는 문자가 있는지 검사한다.</entry>
+					<entry>StringUtil.containsMaxOccurences("my000", "3")=true,StringUtil.containsMaxOccurences("abbbbc", "5")=false </entry>
+					<entry>since core 1.5.0</entry>
+				</row>
+				
+				<row>
+					<entry>
+						<emphasis role="bold">isWhiteSpaceOnly</emphasis>
+						(String str)
+					</entry>
+					<entry>주어진 String이 white space만을 가지고 있는지를 검사한다</entry>
+					<entry>StringUtil.isWhiteSpaceOnly(" ")=true</entry>
+					<entry>since core 1.5.0</entry>
+				</row>
+				
+				<row>
+					<entry>
+						<emphasis role="bold">repeat</emphasis>
+						(int size, char ch)
+					</entry>
+					<entry>특정한 문자(char)와 일정한 길이 값을 입력으로 받아 해당 크기만큼 문자가 반복되는 문자열을 생성한다. </entry>
+					<entry>repeat(5, 'e') = "eeeee"</entry>
+					<entry>since core 1.5.0</entry>
+				</row>
+				
+				<row>
+					<entry>
+						<emphasis role="bold">htmlEscape</emphasis>
+						(String input)
+					</entry>
+					<entry>html 태그를 입력으로 받아 escape 문자열로 변경해준다.</entry>
+					<entry>StringUtil.htmlEscape("&lt;html&gt;") = <![CDATA[&lt;html&gt;]]>  </entry>
+					<entry>since core 1.5.0</entry>
+				</row>
+				<row>
+					<entry>
+						<emphasis role="bold">htmlUnescape</emphasis>
+						(String input)
+					</entry>
+					<entry>html에서 사용가능한 escape 문자열을 입력받아 html태그 형태의 문자열로 변환한다. </entry>
+					<entry>StringUtil.htmlEscape("<![CDATA[&lt;html&gt;]]>") =  "&lt;html&gt;"   </entry>
+					<entry>since core 1.5.0</entry>
+				</row>
+				
+				<row>
+					<entry>
+						<emphasis role="bold">isRegexPatternMatch</emphasis>
+						(String str, String pattern)
+					</entry>
+					<entry>전체 문자열이 입력된 정규식 패턴에 맞는지 체크한다.</entry>
+					<entry>StringUtil.isRegexPatternInclude("cabbbb", "a*b")=true   </entry>
+					<entry>since core 1.5.0</entry>
+				</row>
+				
+				<row>
+					<entry>
+						<emphasis role="bold">isUserFormat</emphasis>
+						(String str, String pattern)
+					</entry>
+					<entry>사용자가 지정한 포맷에 맞는 글자가 들어왔는지 체크한다. #은 숫자를 S는 문자를 표현한다.</entry>
+					<entry>ValidationUtil.isUserFormat("123,456", "###,###")=true</entry>
+					<entry>since core 1.5.0</entry>
+				</row>
+				
+				<row>
+					<entry>
+						<emphasis role="bold">isPatternInclude</emphasis>
+						(String str, String param)
+					</entry>
+					<entry>입력된 문자열이 주어진 필터 패턴에 맞는 문자열인지 확인</entry>
+					<entry>StringUtil.isPatternInclude("asdf@5456", "s")=true</entry>
+					<entry>since core 1.5.0</entry>
+				</row>
+				
+				<row>
+					<entry>
+						<emphasis role="bold">isRegexPatternInclude</emphasis>
+						(String str, String pattern)
+					</entry>
+					<entry>전체 문자열 중에 일부 문자열이 패턴에 맞는지 체크한다</entry>
+					<entry>StringUtil.isRegexPatternInclude("cabbbb", "a*b")=true</entry>
+					<entry>since core 1.5.0</entry>
+				</row>
+				
+			</tbody>
+		</tgroup>
+	</informaltable>
+</chapter>

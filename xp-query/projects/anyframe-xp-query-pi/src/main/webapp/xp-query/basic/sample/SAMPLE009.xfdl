@@ -1,0 +1,297 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<FDL version="1.4">
+  <TypeDefinition url="..\default_typedef.xml"/>
+  <Form id="frmSAMPLE009" classname="SAMPLE009" inheritanceid="" position="absolute 0 0 765 540" titletext="SAMPLE009" onload="SAMPLE009_onload" onbeforeclose="SAMPLE009_onbeforeclose" style="background:#f2f2efff;">
+    <Layouts>
+      <Layout>
+        <Div id="divSearch" taborder="2" text="search" position="absolute 0 40 765 80" style="background:#fff0f5ff;border:1 solid #906d3bff ;">
+          <Layouts>
+            <Layout>
+              <Static id="Static00" text="global.domain.communityname" position="absolute 2 5 90 36"/>
+              <Edit id="edtSearchKeyword" taborder="16" position="absolute 83 9 240 31" onkeydown="divSearch_edtSearchKeyword_onkeydown"/>
+              <Button id="btDoSearch" taborder="17" position="absolute 242 9 265 31" onclick="divSearch_btDoSearch_onclick" style="background:URL('image::btn_TP_SearchDrop_N.png') left middle;cursor:hand;"/>
+            </Layout>
+          </Layouts>
+        </Div>
+        <Grid id="grdTreeCommunity" taborder="3" useinputpanel="false" position="absolute 0 82 380 540" binddataset="dsTrvCommunity" formats="&lt;Formats&gt;&#10;  &lt;Format id=&quot;default&quot;&gt;&#10;    &lt;Columns&gt;&#10;      &lt;Col size=&quot;80&quot;/&gt;&#10;      &lt;Col size=&quot;80&quot;/&gt;&#10;      &lt;Col size=&quot;80&quot;/&gt;&#10;      &lt;Col size=&quot;80&quot;/&gt;&#10;      &lt;Col size=&quot;80&quot;/&gt;&#10;      &lt;Col size=&quot;80&quot;/&gt;&#10;      &lt;Col size=&quot;80&quot;/&gt;&#10;      &lt;Col size=&quot;80&quot;/&gt;&#10;      &lt;Col size=&quot;80&quot;/&gt;&#10;      &lt;Col size=&quot;80&quot;/&gt;&#10;      &lt;Col size=&quot;80&quot;/&gt;&#10;    &lt;/Columns&gt;&#10;    &lt;Rows&gt;&#10;      &lt;Row band=&quot;head&quot; size=&quot;24&quot;/&gt;&#10;      &lt;Row band=&quot;body&quot; size=&quot;24&quot;/&gt;&#10;    &lt;/Rows&gt;&#10;    &lt;Band id=&quot;head&quot;&gt;&#10;      &lt;Cell col=&quot;0&quot; disptype=&quot;normal&quot; text=&quot;COMMUNITY_ID&quot;/&gt;&#10;      &lt;Cell col=&quot;1&quot; disptype=&quot;normal&quot; text=&quot;TEXT_NAME&quot;/&gt;&#10;      &lt;Cell col=&quot;2&quot; disptype=&quot;normal&quot; text=&quot;COMMUNITY_DESC&quot;/&gt;&#10;      &lt;Cell col=&quot;3&quot; disptype=&quot;normal&quot; text=&quot;CATEGORY_ID&quot;/&gt;&#10;      &lt;Cell col=&quot;4&quot; disptype=&quot;normal&quot; text=&quot;REG_ID&quot;/&gt;&#10;      &lt;Cell col=&quot;5&quot; disptype=&quot;normal&quot; text=&quot;REG_DATE&quot;/&gt;&#10;      &lt;Cell col=&quot;6&quot; disptype=&quot;normal&quot; text=&quot;DEPTH&quot;/&gt;&#10;      &lt;Cell col=&quot;7&quot; disptype=&quot;normal&quot; text=&quot;CATEGORY_DESC&quot;/&gt;&#10;      &lt;Cell col=&quot;8&quot; disptype=&quot;normal&quot; text=&quot;COMMUNITY_NAME&quot;/&gt;&#10;      &lt;Cell col=&quot;9&quot; disptype=&quot;normal&quot; text=&quot;CATEGORY_NAME&quot;/&gt;&#10;      &lt;Cell col=&quot;10&quot; disptype=&quot;normal&quot; text=&quot;CATE_REGDATE&quot;/&gt;&#10;    &lt;/Band&gt;&#10;    &lt;Band id=&quot;body&quot;&gt;&#10;      &lt;Cell col=&quot;0&quot; disptype=&quot;normal&quot; text=&quot;bind:COMMUNITY_ID&quot;/&gt;&#10;      &lt;Cell col=&quot;1&quot; disptype=&quot;normal&quot; text=&quot;bind:TEXT_NAME&quot;/&gt;&#10;      &lt;Cell col=&quot;2&quot; disptype=&quot;normal&quot; text=&quot;bind:COMMUNITY_DESC&quot;/&gt;&#10;      &lt;Cell col=&quot;3&quot; disptype=&quot;normal&quot; text=&quot;bind:CATEGORY_ID&quot;/&gt;&#10;      &lt;Cell col=&quot;4&quot; disptype=&quot;normal&quot; text=&quot;bind:REG_ID&quot;/&gt;&#10;      &lt;Cell col=&quot;5&quot; disptype=&quot;normal&quot; text=&quot;bind:REG_DATE&quot;/&gt;&#10;      &lt;Cell col=&quot;6&quot; disptype=&quot;normal&quot; text=&quot;bind:DEPTH&quot;/&gt;&#10;      &lt;Cell col=&quot;7&quot; disptype=&quot;normal&quot; text=&quot;bind:CATEGORY_DESC&quot;/&gt;&#10;      &lt;Cell col=&quot;8&quot; disptype=&quot;normal&quot; text=&quot;bind:COMMUNITY_NAME&quot;/&gt;&#10;      &lt;Cell col=&quot;9&quot; disptype=&quot;normal&quot; text=&quot;bind:CATEGORY_NAME&quot;/&gt;&#10;      &lt;Cell col=&quot;10&quot; disptype=&quot;normal&quot; text=&quot;bind:CATE_REGDATE&quot;/&gt;&#10;    &lt;/Band&gt;&#10;  &lt;/Format&gt;&#10;&lt;/Formats&gt;&#10;" cantreestatuschange="grdTreeCommunity_cantreestatuschange" treeusecheckbox="false" oncelldblclick="grdTreeCommunity_oncelldblclick" autofittype="col" selecttype="treecell" treeuseline="false">
+          <Formats>
+            <Format id="default">
+              <Columns>
+                <Column size="342"/>
+              </Columns>
+              <Rows>
+                <Row size="24"/>
+              </Rows>
+              <Band id="body">
+                <Cell displaytype="tree" edittype="tree" text="bind:TEXT_NAME" treelevel="bind:DEPTH"/>
+              </Band>
+            </Format>
+          </Formats>
+        </Grid>
+        <Div id="divCategory" taborder="4" text="Div00" position="absolute 386 82 765 542">
+          <Layouts>
+            <Layout>
+              <GroupBox id="grbxCategory" text="global.domain.category" position="absolute 0 0 377 456" style="titlealign:topleft;"/>
+              <Static id="stCategoryId" text="global.domain.categoryid.ko" position="absolute 4 39 92 63"/>
+              <Edit id="edCategoryId" taborder="1" position="absolute 124 39 372 63" enable="false"/>
+              <Static id="stCategoryName" text="global.domain.name" position="absolute 4 79 92 103"/>
+              <Edit id="edCategoryName" taborder="2" position="absolute 124 79 372 103" enable="false"/>
+              <Static id="stCategoryDesc" text="global.domain.desc" position="absolute 4 119 92 143"/>
+              <TextArea id="txaCategoryDesc" taborder="3" position="absolute 124 119 372 454" enable="false" wordwrap="char"/>
+            </Layout>
+          </Layouts>
+        </Div>
+        <Div id="Div00" taborder="6" text="Div00" position="absolute 0 0 765 40">
+          <Layouts>
+            <Layout>
+              <Static id="stTitle" text="global.domain.communityinfo" position="absolute 18 10 219 32"/>
+              <Button id="btSaveAll" taborder="1" text="global.domain.save" onclick="btSaveAll_onclick" position="absolute 692 7 765 32"/>
+            </Layout>
+          </Layouts>
+        </Div>
+        <Div id="divCommunity" taborder="7" text="Div01" visible="false" position="absolute 386 82 765 542">
+          <Layouts>
+            <Layout>
+              <GroupBox id="grbxCommunity" text="global.domain.community" position="absolute 0 0 377 456"/>
+              <Static id="stCommunityId" text="global.domain.communityid" position="absolute 4 39 92 63"/>
+              <Edit id="edtCommunityId" taborder="10" enable="false" position="absolute 124 39 372 63"/>
+              <Static id="stCommunityName" text="global.domain.name" position="absolute 4 79 92 103"/>
+              <Edit id="edtCommunityName" taborder="11" position="absolute 124 79 372 103"/>
+              <Static id="stCommunityDesc" text="global.domain.desc" position="absolute 4 119 92 143"/>
+              <TextArea id="txaCommunityDesc" taborder="12" wordwrap="char" position="absolute 124 119 372 454"/>
+            </Layout>
+          </Layouts>
+        </Div>
+        <Static id="Static00" position="absolute 2 10 16 32" style="background:URL('image::bullet_WF_Lev1.png') left middle; " text=""/>
+      </Layout>
+    </Layouts>
+    <Objects>
+      <Dataset id="dsTrvCommunity" firefirstcount="0" firenextcount="0" useclientlayout="false" updatecontrol="true" enableevent="true" loadkeymode="keep" loadfiltermode="keep" reversesubsum="false" onrowposchanged="dsTrvCommunity_onrowposchanged" canrowposchange="dsTrvCommunity_canrowposchange">
+        <ColumnInfo>
+          <Column id="COMMUNITY_ID" type="STRING" size="16"/>
+          <Column id="TEXT_NAME" type="STRING" size="256"/>
+          <Column id="COMMUNITY_DESC" type="STRING" size="256"/>
+          <Column id="CATEGORY_ID" type="STRING" size="16"/>
+          <Column id="REG_ID" type="STRING" size="256"/>
+          <Column id="REG_DATE" type="STRING" size="10"/>
+          <Column id="DEPTH" type="STRING" size="256"/>
+          <Column id="CATEGORY_DESC" type="STRING" size="256"/>
+          <Column id="COMMUNITY_NAME" type="STRING" size="256"/>
+          <Column id="CATEGORY_NAME" type="STRING" size="256"/>
+          <Column id="CATE_REGDATE" type="STRING" size="256"/>
+        </ColumnInfo>
+      </Dataset>
+      <Dataset id="dsService" firefirstcount="0" firenextcount="0" useclientlayout="false" updatecontrol="true" enableevent="true" loadkeymode="keep" loadfiltermode="keep" reversesubsum="false">
+        <ColumnInfo>
+          <Column id="SVC_ID" type="STRING" size="100"/>
+          <Column id="QUERY_LIST" type="STRING" size="256"/>
+          <Column id="SERVICE" type="STRING" size="100"/>
+          <Column id="IN_DATASET_LIST" type="STRING" size="256"/>
+          <Column id="OUT_DATASET_LIST" type="STRING" size="256"/>
+          <Column id="CONTROLLER" type="STRING" size="512"/>
+          <Column id="CALLBACK" type="STRING" size="100"/>
+          <Column id="SYNC_YN" type="STRING" size="1"/>
+        </ColumnInfo>
+        <Rows>
+          <Row>
+            <Col id="SVC_ID">getListCommunity</Col>
+            <Col id="QUERY_LIST">querySet1=findXPCommunityListForTree</Col>
+            <Col id="IN_DATASET_LIST"/>
+            <Col id="OUT_DATASET_LIST">dsTrvCommunity=querySet1</Col>
+          </Row>
+          <Row>
+            <Col id="SVC_ID">saveAllCommunity</Col>
+            <Col id="QUERY_LIST">querySet1=createXPCommunity,updateXPCommunity,deleteXPCommunity</Col>
+            <Col id="IN_DATASET_LIST">querySet1=dsTrvCommunity:U</Col>
+            <Col id="OUT_DATASET_LIST"/>
+          </Row>
+        </Rows>
+      </Dataset>
+      <Dataset id="dsTrvCommunityValid" firefirstcount="0" firenextcount="0" useclientlayout="false" updatecontrol="true" enableevent="true" loadkeymode="keep" loadfiltermode="keep" reversesubsum="false" onrowposchanged="dsTrvCommunity_onrowposchanged" canrowposchange="dsTrvCommunity_canrowposchange">
+        <ColumnInfo>
+          <Column id="COMMUNITY_ID" type="STRING" size="16"/>
+          <Column id="TEXT_NAME" type="STRING" size="256"/>
+          <Column id="COMMUNITY_DESC" type="STRING" size="256"/>
+          <Column id="CATEGORY_ID" type="STRING" size="16"/>
+          <Column id="REG_ID" type="STRING" size="256"/>
+          <Column id="REG_DATE" type="STRING" size="10"/>
+          <Column id="DEPTH" type="STRING" size="256"/>
+          <Column id="CATEGORY_DESC" type="STRING" size="256"/>
+          <Column id="COMMUNITY_NAME" type="STRING" size="256"/>
+          <Column id="CATEGORY_NAME" type="STRING" size="256"/>
+          <Column id="CATE_REGDATE" type="STRING" size="256"/>
+        </ColumnInfo>
+        <Rows>
+          <Row>
+            <Col id="COMMUNITY_ID"/>
+            <Col id="TEXT_NAME"/>
+            <Col id="COMMUNITY_DESC">title:communitydesc,maxlength:300</Col>
+            <Col id="CATEGORY_ID"/>
+            <Col id="REG_ID"/>
+            <Col id="REG_DATE"/>
+            <Col id="DEPTH"/>
+            <Col id="CATEGORY_DESC"/>
+            <Col id="COMMUNITY_NAME">title:name,required:true,maxlength:150</Col>
+            <Col id="CATEGORY_NAME"/>
+            <Col id="CATE_REGDATE"/>
+          </Row>
+        </Rows>
+      </Dataset>
+    </Objects>
+    <Bind>
+      <BindItem id="item0" compid="divCommunity.edtCommunityId" propid="value" datasetid="dsTrvCommunity" columnid="COMMUNITY_ID"/>
+      <BindItem id="item1" compid="divCommunity.edtCommunityName" propid="value" datasetid="dsTrvCommunity" columnid="COMMUNITY_NAME"/>
+      <BindItem id="item2" compid="divCommunity.txaCommunityDesc" propid="value" datasetid="dsTrvCommunity" columnid="COMMUNITY_DESC"/>
+      <BindItem id="item3" compid="divCategory.edCategoryId" propid="value" datasetid="dsTrvCommunity" columnid="CATEGORY_ID"/>
+      <BindItem id="item4" compid="divCategory.edCategoryName" propid="value" datasetid="dsTrvCommunity" columnid="CATEGORY_NAME"/>
+      <BindItem id="item5" compid="divCategory.txaCategoryDesc" propid="value" datasetid="dsTrvCommunity" columnid="CATEGORY_DESC"/>
+    </Bind>
+    <Script type="xscript4.0"><![CDATA[include "lib::commonScript.xjs";
+
+var nCurRow = 0;
+var treeStatus = 0;
+
+// Form onload 이벤트 처리
+function SAMPLE009_onload(obj:Form, e:LoadEventInfo)
+{
+	// 커뮤니티 목록 조회
+	gfnService("getListCommunity");
+	
+	// 각 컴포넌트 타이틀 국제화 적용
+	gfnSetTitle();
+}
+
+// 트리 더블 클릭 이벤트 처리
+function grdTreeCommunity_oncelldblclick(obj:Grid, e:GridClickEventInfo)
+{
+	var objDs = this[obj.binddataset];
+	
+	if(treeStatus == 1){
+		treeStatus = 0;
+		return;
+	}
+	
+	var childRow = obj.getTreeChildRow(objDs.rowposition, 0, true);
+	
+	// 자식 노드가 존재할 경우
+	if(childRow >= 0) {
+		var gridRow = obj.getTreeRow(objDs.rowposition);
+		if(obj.isTreeCollapsedRow(childRow, true)) {
+			obj.setTreeStatus(gridRow, true);
+		} else {
+			obj.setTreeStatus(gridRow, false);
+		}
+	}
+	treeStatus = 0;
+}
+
+// 
+function grdTreeCommunity_cantreestatuschange(obj:Grid, e:GridTreeStatusEventInfo)
+{
+	treeStatus = 1;
+}
+
+// 카테고리, 커뮤니티 영역 숨김 처리
+function fnshowCategory(bVisible) {
+	divCategory.visible = bVisible;
+	divCommunity.visible = !bVisible;
+}
+
+// 검색 버튼 클릭 이벤트
+function divSearch_btDoSearch_onclick(obj:Button,  e:ClickEventInfo)
+{
+	// 주어진 키워드와 정확하게 일치하는 Row가 있는 경우
+	// 해당 Row로 Focus 이동
+	var nRow = dsTrvCommunity.findRow("COMMUNITY_NAME", divSearch.edtSearchKeyword.text);
+	
+	if(nRow >= 0) {
+		var gridRow = grdTreeCommunity.getTreeParentRow(nRow);
+		var parentRow = 0;
+		
+		for(var i = 0 ; i < gridRow ; i++) {
+			if(!grdTreeCommunity.isTreeCollapsedRow(i)){
+				parentRow++;
+			}
+		}
+		var bGrd = grdTreeCommunity.setTreeStatus(parentRow, true);
+		dsTrvCommunity.rowposition = nRow;
+	} else {
+		gfnAlertMsg("msg.search.nodata");
+	}
+}
+
+// 저장 버튼 클릭 이벤트
+function btSaveAll_onclick(obj:Button,  e:ClickEventInfo)
+{
+	if(gfnDsCheckValid(dsTrvCommunity)){
+		nCurRow = dsTrvCommunity.rowposition;
+		gfnService("saveAllCommunity");
+	}
+}
+
+// 커뮤니티 목록 Row Position 변경 이벤트 처리
+function dsTrvCommunity_onrowposchanged(obj:Dataset, e:DSRowPosChangeEventInfo)
+{
+	// 커뮤니티ID가 있는 경우 - 커뮤니티 상세 정보 화면 출력
+	if(gfnIsNull(dsTrvCommunity.getColumn(e.newrow, "COMMUNITY_ID"))){
+		fnshowCategory(true);
+	// 커뮤니티 ID가 없는 경우 - 카테고리 상세 정보 화면 출력
+	} else {
+		fnshowCategory(false);
+	}
+}
+
+// 커뮤니티 목록 Row Position 변경 후 이벤트 처리
+function dsTrvCommunity_canrowposchange(obj:Dataset, e:DSRowPosChangeEventInfo)
+{
+	// 유효성 검증
+	if(gfnIsNull(obj.getColumn(e.oldrow, "COMMUNITY_NAME")) && gfnIsNull(obj.getColumn(e.oldrow, "CATEGORY_NAME"))){
+		gfnAlertMsg("err.validator.required", "WARN", gfnGetMessage("global.domain.name"));
+		obj.rowposition = e.oldrow;
+		return false;
+	} else {
+		return true;
+	}
+}
+
+// 검색어 입력 후 엔터키 입력 이벤트 처리
+function divSearch_edtSearchKeyword_onkeydown(obj:Edit, e:KeyEventInfo)
+{
+	if(e.keycode == 13){
+		divSearch_btDoSearch_onclick();
+	}
+}
+
+// Form을 닫기 전, 변경된 데이터가 있는 경우 경고창 생성
+function SAMPLE009_onbeforeclose(obj:Form, e:CloseEventInfo)
+{
+	if(gfnDsGetUpdate(dsTrvCommunity)){
+		var resultValue = gfnConfirm("msg.before.movepage", "YN");
+		
+		if(resultValue == "N") {
+			return;
+		} else if(resultValue == "Y") {
+			if(gfnDsCheckValid(dsTrvCommunity)){
+				btSaveAll_onclick();
+			} else {
+			 return false;
+			}
+		}
+	}
+}
+
+// gfnService 실행 후 Callback 처리
+function fnCallback(strServiceId, strErrorCode, strErrorMsg){
+	if(strErrorCode == -1){
+		gfnAlertMsg(strErrorMsg, "ERR");
+	} else {
+		if (strServiceId == "saveAllCommunity") {
+			gfnAlertMsg("msg.save.success");
+		} else if(strServiceId == "getListCommunity") {
+			dsTrvCommunity.rowposition = nCurRow;
+		}
+	
+	}
+}]]></Script>
+  </Form>
+</FDL>

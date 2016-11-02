@@ -1,0 +1,56 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<queryservice xmlns="http://www.anyframejava.org/schema/query/mapping" 
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" 
+	xsi:schemaLocation="http://www.anyframejava.org/schema/query/mapping http://www.anyframejava.org/schema/query/mapping/anyframe-query-mapping-1.0.xsd ">
+
+	<queries>
+		<query id="findXPBoardList" isDynamic="true" mappingStyle="upper">
+			<statement>
+			<!--np-query-findXPBoardList-START-->
+			SELECT
+			TITLE, CONTENTS, REG_ID, REG_DATE, COMMUNITY_ID, POST_ID
+			FROM XP_BOARD
+			<!--Velocity-Support-findXPBoardList-START-->
+			#if ($SEARCH_CONDITION.length() &gt; 0 &amp;&amp; "0" == $SEARCH_CONDITION)
+				WHERE TITLE like '%' || :SEARCH_KEYWORD || '%'
+			#elseif ($SEARCH_CONDITION.length() &gt; 0 &amp;&amp; "1" == $SEARCH_CONDITION)
+			    WHERE REG_ID like '%' || :SEARCH_KEYWORD || '%'
+			#end
+			<!--Velocity-Support-findXPBoardList-END-->
+			ORDER BY REG_DATE DESC		
+			<!--np-query-findXPBoardList-END-->
+			</statement>
+		</query>
+		<query id="createXPBoard" isDynamic="true" mappingStyle="upper">
+			<statement>
+			<!--np-query-createXPBoard-START-->
+			INSERT INTO XP_BOARD
+			(TITLE, CONTENTS, REG_ID, REG_DATE, COMMUNITY_ID, POST_ID)
+			VALUES (:TITLE, :CONTENTS, :REG_ID, sysdate, :COMMUNITY_ID, 'POST-'|| NEXT VALUE FOR XP_POST_ID_SEQ)		
+			<!--np-query-createXPBoard-END-->
+			</statement>
+		</query>
+		<query id="updateXPBoard" isDynamic="true" mappingStyle="upper">
+			<statement>
+				UPDATE XP_BOARD
+				SET
+				TITLE = :TITLE, CONTENTS = :CONTENTS, REG_ID =:REG_ID, COMMUNITY_ID = :COMMUNITY_ID
+				WHERE POST_ID = :POST_ID
+			</statement>
+		</query>
+		<query id="removeXPBoard" isDynamic="true" mappingStyle="upper">
+			<statement>
+				DELETE FROM XP_BOARD
+				WHERE POST_ID = :POST_ID
+			</statement>
+		</query>
+		<query id="findXPBoardByPk" isDynamic="true" mappingStyle="upper">
+			<statement>
+				SELECT
+				TITLE, CONTENTS, REG_ID, REG_DATE, COMMUNITY_ID, POST_ID
+				FROM XP_BOARD
+				WHERE POST_ID = :POST_ID
+			</statement>
+		</query>
+	</queries>
+</queryservice>

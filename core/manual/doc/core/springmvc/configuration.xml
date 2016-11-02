@@ -1,0 +1,541 @@
+<chapter id="core_springmvc_configuration">
+	<title>Configuration</title>
+	<para>
+		먼저, Spring MVC 기반의 웹 어플리케이션을 개발하기 위해서 반드시 정의되어야 하는 설정들을 알아보자.
+		하나는 Front Controller 역할을 하는 DispatcherServlet 등록을 위한 web.xml 파일이고
+		다른 하나는 Spring MVC의 구성 요소를 정의하기 위한 [servlet-name]-servlet.xml(예. action-servlet.xml) 파일이다.
+	</para>
+
+	<section id="core_springmvc_configuration_webxml">
+		<title>web.xml 작성</title>
+		<para>
+			JavaEE 웹 어플리케이션은 반드시 WEB-INF 디렉토리 하위에, 배포 기술서인 web.xml 파일이 존재해야 한다. 
+			Spring MVC를 이용한 웹 어플리케이션을 개발하기 위해서는 이 web.xml 파일에 DispatcherServlet을 등록하고,
+			Spring MVC 기반의 웹 어플리케이션 구성요소들이 정의되어 있는 XML 설정 파일의 위치를 지정해주어야 한다. 작성 방법은 아래와 같다.
+    	</para>
+
+		<section id="core_springmvc_configuration_webxml_dispatcherservlet">
+			<title>DispatcherServlet 등록</title>
+			<para>
+				다음은 web.xml 파일에 DispatcherServlet을 정의한 모습이다.
+				<programlisting language="xml"><![CDATA[<servlet>
+    <servlet-name>]]><emphasis role="bold">action</emphasis><![CDATA[</servlet-name>
+    <servlet-class>]]><emphasis role="bold">org.springframework.web.servlet.DispatcherServlet</emphasis><![CDATA[</servlet-class>
+    <load-on-startup>1</load-on-startup>
+</servlet>
+<servlet-mapping>
+    <servlet-name>]]><emphasis role="bold">action</emphasis><![CDATA[</servlet-name>
+    <url-pattern>]]><emphasis role="bold">*.do</emphasis><![CDATA[</url-pattern>
+</servlet-mapping>]]></programlisting>
+			</para>
+
+			<para>
+				위와 같이 정의할 경우 서블릿의 이름은 'action'이 된다. DispatchserServlet은 디폴트로 '[servlet-name]-servlet.xml' 파일을 WebApplicationContext로 로드하므로, 
+				Web Contents Root 폴더 아래의 WEB-INF 폴더에서 'action-servlet.xml' 파일을 찾아 WebApplicationContext를 구성하게 될 것이다.
+			</para>
+
+			<para>또한 위의 서블릿 매핑 설정으로 인해서 URL의 확장자가 ".do"인 모든 URL에 대한 요청은 DispatcherServlet이 처리하게 된다.</para>
+		</section>
+
+		<section id="core_springmvc_configuration_webxml_contextconfiglocation">
+			<title>Spring MVC 설정 파일 위치 등록</title>
+			<para>
+				위에서 언급하였듯이 DispatcherServlet은 기본적으로 Web Contents Root 폴더 하위의 WEB-INF 폴더에 있는 [servlet-name]-servlet.xml 파일을 로딩하여 WebApplicationContext를 구성하게 되는데,
+				이를 임의의 위치에 존재하는 임의의 이름을 가진 파일 또는 다중의 파일로 정의하기 위해서는 아래와 같이 <![CDATA[<servlet> 하위에 <init-param>]]>을 이용하여 contextConfigLocations
+				라는 초기화 파라미터를 정의해 준다.
+				<programlisting language="xml"><![CDATA[<init-param>
+    <param-name>]]><emphasis role="bold">contextConfigLocation</emphasis><![CDATA[</param-name>
+    <param-value>/config/springmvc/common-servlet.xml, /config/springmvc/user-servlet.xml</param-value>
+</init-param>]]></programlisting>
+			</para>
+		</section>
+	</section>
+	
+	<section id="core_springmvc_configuration_actionservletxml">
+    	<title>action-servlet.xml 작성</title>
+    	<para>
+    		Spring MVC 프레임워크에서 각각의 DispatcherServlet은 고유의 WebApplicationContext를 가지고 있고, 각각의 WebApplicationContext는 상위의 WebApplicationContext에 정의된 모든 Bean 정보를 상속받아 사용할 수 있다.
+    		이와 같이 WebApplicationContext는 계층구조를 가질 수 있는데, 그 모습을 Spring의 reference 문서에서는 다음 그림과 같이 표현하고 있다.
+    	</para>
+	    <mediaobject>
+	      <imageobject>
+	        <imagedata align="center" fileref="../image/core/springmvc/mvc-context.jpg" />
+	      </imageobject>
+	      <textobject>
+	      	<phrase>Spring MVC 프레임워크에서 각각의 DispatcherServlet은 고유의 WebApplicationContext를 가지고 있고, 각각의 WebApplicationContext는 상위의 
+	      	WebApplicationContext에 정의된 모든 Bean 정보를 상속받아 사용할 수 있음을 표현한 그림이다.
+	      	</phrase>
+	      </textobject>
+	    </mediaobject>
+	    <para>
+	    	WebApplicationContext는 웹 어플리케이션에 필요한 몇몇 기능들을 추가하여 ApplicationContext를 확장한 것으로 Spring의 IoC 컨테이너의 한 종류이다. 
+	    	WebApplicationContext에는 웹 어플리케이션을 구성하고 있는 여러가지 Bean들이 등록되어 관리된다. 
+	    	필요한 경우 RequestContextUtils 클래스를 통해 WebApplicationContext를 직접 룩업해서 사용할 수도 있다.
+	    	Spring MVC의 DispatcherServlet은 Request를 처리하고 적절한 View를 전달해 주기 위해서 아래 표와 같은 특별한 Bean 들을 사용하는데, 
+	    	이러한 Bean 들을 일반 Bean 처럼 WebApplicationContext에 설정할 수 있다.
+	    </para>
+	    <informaltable>
+	    	<caption>웹 어플리케이션을 구성하고 있는 여러가지 Bean 목록</caption>
+	      <tgroup cols="2">
+	        <thead>
+	          <row>
+	            <entry align="center">Bean type</entry>
+	            <entry align="center">설명</entry>
+	          </row>
+	        </thead>
+	        <tbody>
+	          <row>
+	            <entry>Controllers</entry>
+	            <entry>요청을 처리하는 컨트롤러들</entry>
+	          </row>
+	          <row>
+	            <entry>Handler mappings</entry>
+	            <entry>요청된 URL과 해당 URL을 처리할 컨트롤러와의 매칭을 처리</entry>
+	          </row>
+	          <row>
+	            <entry>View resolvers</entry>
+	            <entry>View 이름을 이용해 View를 결정</entry>
+	          </row>
+	          <row>
+	            <entry>Locale resolver</entry>
+	            <entry>국제화(i18n) 지원을 위해 사용자의 locale 알아냄</entry>
+	          </row>
+	          <row>
+	            <entry>Theme resolver</entry>
+	            <entry>웹 어플리케이션이 사용하는 테마를 결정</entry>
+	          </row>
+	          <row>
+	            <entry>Multipart file resolver</entry>
+	            <entry>HTML 폼으로 부터 업로드된 파일을 처리하는 기능을 가짐</entry>
+	          </row>
+	          <row>
+	            <entry>Exception resolver</entry>
+	            <entry>특정 예외와 각각의 예외에 맞는 view를 매핑하는 기능을 가짐</entry>
+	          </row>
+	        </tbody>
+	      </tgroup>
+	    </informaltable>
+    	<para>위와 같은 Bean들을 action-servlet.xml 파일에 정의하여 사용하게 된다.</para>
+    	<para>
+			web.xml 설정이 끝나면 위에서 설명한 특별한 Bean들을 action-servlet.xml 파일에 정의해주어야 한다. 
+			이 장에서는 위 표의 요소들 중 Handler Mapping과 View Resolver를 정의하는 방법에 대해만 알아보고 다른 요소
+			(<link linkend="core_springmvc_controller">Controller</link> , <link linkend="core_springmvc_internationalization">Locale Resolver</link> , 
+			<link linkend="core_springmvc_fileupload">Multipart File Resolver </link>, <link linkend="core_springmvc_exceptionhandling">Exception Resolver</link>)들에 대해서는 
+			각각의 상세 페이지에서 설명하도록 한다.
+		</para>
+    	
+   		<section id="core_springmvc_configuration_actionservletxml_handlermapping">
+   			<title>Handler Mapping</title>
+			<para>
+				 Front Controller인 DispatcherServlet으로 요청이 들어왔을 때, 그 요청을 실제로 어떤 Controller가 처리할 것인지는 Handler Mapping을 통해서 알아낼 수 있다.
+				 Spring MVC에서는 여러가지 Handler Mapping을 제공하는데, 그 중 대표적인 것들만 알아보도록 하겠다.
+			</para>
+   			<itemizedlist>
+   				<listitem>
+   					<para>RequestMappingHandlerMapping</para>
+   					<para>
+   						RequestMappingHandlerMapping은 Spring 3.1 버전부터 DefaultAnnotationHandlerMapping을 대체하여 제공되는 Class로, 
+   						@RequestMapping annotation을 기반으로 
+   						구현된 Controller와 요청 URL을 매핑시켜주는 HandlerMapping 구현클래스이다.
+   						Java 5 이상인 경우 DispatcherServlet이 디폴트로 등록해준다. 
+   						따라서 사용자가 명시적으로 정의할 필요가 없지만, RequestMappingHandlerMapping 클래스가 가진 
+   						디폴트 속성들을 변경하고자 할때는 action-servlet.xml에 명시적으로 정의할 수 있다.
+   						다음은 사용자가 변경할 수 있는 RequestMappingHandlerMapping의 속성들이다.
+   					</para>
+   					<para>
+   						<informaltable>
+   							<caption>RequestMappingHandlerMapping 속성 목록</caption>
+   							<tgroup cols="2">
+   								<thead>
+   									<row>
+   										<entry align="center">Property</entry>
+   										<entry align="center">설명</entry>
+   									</row>
+   								</thead>
+   								<tbody>
+   									<row>
+   										<entry>interceptors</entry>
+   										<entry>사용할 interceptor들의 목록</entry>
+   									</row>
+   									<row>
+   										<entry>defaultHandler</entry>
+   										<entry>요청을 처리할 Controller를 찾지 못했을 때 디폴트로 사용할 Controller</entry>
+   									</row>
+   									<row>
+   										<entry>order</entry>
+   										<entry>여러가지 Handler mapping을 사용할 경우 order 속성에 정의된 값을 기반으로 순서대로 동작</entry>
+   									</row>
+   									<row>
+										<entry>alwaysUseFullPath</entry>
+										<entry>이 속성의 값이 true인 경우, servlet context 하위의 전체 URL path를 가지고 요청을 처리할 Controller를 찾고,
+											디폴트 값인 false인 경우 DispatcherServlet과 mapping한 URL path 하위의 path로 요청을 처리할 Controller를 찾는다.
+											예를 들어, 현재 DispatcherServlet이 '/rest/*'와 매핑되어있고, 이 속성값이 true로 셋팅되어 있다면,
+											'/rest/welcome.jsp' 전체가 사용되고, false인 경우 'welcome.jsp'만 사용될 것이다.
+										</entry>
+									</row>
+								</tbody>
+							</tgroup>
+						</informaltable>
+					</para>
+					<para>
+						다음은 interceptors 속성을 오버라이드하여 RequestMappingHandlerMapping을 정의한 예이다.
+						<programlisting language="xml"><![CDATA[<beans>
+    <bean class="org.springframework.web.servlet.mvc.method.annotation.RequestMappingHandlerMapping">
+        <property name="]]><emphasis role="bold">interceptors</emphasis><![CDATA[">
+            <bean class="example.MyInterceptor"/>
+        </property>
+    </bean>
+<beans>]]></programlisting>
+   					</para>
+				</listitem>
+   				<listitem>
+   					<para>DefaultAnnotationHandlerMapping</para>
+   					<para>
+   						DefaultAnnotationHandlerMapping은 Spring 3.0 이하 버전에서 제공되던 HandlerMapping 구현클래스로, 
+   						Spring 3.1 버전부터는 위에서 소개한 RequestMappingHandlerMapping 클래스를 기본으로 등록하여 사용 하고 있다.
+   						기본적인 사용법은 RequestMappingHandlerMapping 클래스와 동일하다.
+   					</para>
+				</listitem>
+   				<listitem>
+   					<para>BeanNameUrlHandlerMapping</para>
+   					<para>
+   						BeanNameUrlHandlerMapping은 요청 URL과 정의된 Controller Bean의 이름을 비교하여 해당 요청을 처리할 Controller를 매핑해준다. 다음은 BeanNameUrlHandlerMapping을 정의한 action-servlet.xml 파일의 일부이다. 
+   						<programlisting language="xml"><![CDATA[
+<bean class="]]><emphasis role="bold">org.springframework.web.servlet.handler.BeanNameUrlHandlerMapping</emphasis><![CDATA[" />]]></programlisting>
+   							<programlisting language="xml"><![CDATA[
+<bean name="/login.do" class="org.anyframe.sample.springmvc.web.controller.basic.LoginController"></bean>]]></programlisting>
+					</para>
+					<para>action-servlet.xml에 위와 같이 정의되어 있는 경우, "/login.do"라는 요청이 들어왔을 때, org.anyframe.sample.springmvc.web.controller.basic.LoginController가 처리하게 된다.</para>
+				</listitem>
+				<listitem>
+					<para>SimpleUrlHandlerMapping</para>
+					<para>
+						SimpleUrlHandleMapping은 요청 URL과 요청을 처리할 Controller간의 매핑 정보를 하나의 저장소에서 관리할 수 있도록 해준다. 
+						사용자는 Controller를 일반 Bean으로 정의해 주고, SimpleUrlHandleMapping의 mappings 속성에 요청 URL과 요청을 처리할 Controller Bean의 ID를 정의한다.
+						다음은 위의 BeanNameUrlHandlerMapping 예시를 SimpleUrlHandlerMapping을 이용해 나타낸 것이다. 
+						<programlisting language="xml"><![CDATA[
+<bean id="simpleUrlHandlerMapping" class="org.springframework.web.servlet.handler.]]><emphasis role="bold">SimpleUrlHandlerMapping</emphasis><![CDATA[">
+    <property name="]]><emphasis role="bold">mappings</emphasis><![CDATA[">
+        <value>]]><emphasis role="bold">/login.do = loginController</emphasis><![CDATA[</value>
+    </property>
+</bean>
+<bean id="]]><emphasis role="bold">loginController</emphasis><![CDATA[" class="org.anyframe.sample.springmvc.web.controller.basic.LoginController"></bean>]]></programlisting>
+					</para>
+					<para>또한 SimplerUrlHandlerMapping을 사용할 경우 매핑 정보를 빈 설정 파일이 아닌 별도의 파일에서 관리하는 것이 가능하다. 예는 다음과같다.
+						<programlisting language="xml"><![CDATA[<bean id="simpleUrlHandlerMapping" class="org.springframework.web.servlet.handler.SimpleUrlHandlerMapping">
+    <property name="]]><emphasis role="bold">mappings</emphasis><![CDATA[">
+        <bean class="]]><emphasis role="bold">org.springframework.beans.factory.config.PropertiesFactoryBean</emphasis><![CDATA[">
+            <property name="]]><emphasis role="bold">location</emphasis><![CDATA[">
+                <value>]]><emphasis role="bold">/mapping.properties</emphasis><![CDATA[</value>
+            </property>
+        </bean>
+    </property></bean>]]></programlisting>
+					</para>
+					<para>다음은 위에서 정의된 mapping.properties파일의 내용이다.
+						<programlisting language="xml">/login.do = loginController</programlisting>
+					</para>
+				</listitem>
+				<listitem>
+					<para>Intercepting requests</para>
+					<para>
+						handler mapping에는 interceptor를 정의할 수 있으며 해당 handler mapping에 의해 처리되는 요청은 정의한 interceptor가 적용되게 된다.
+						이러한 interceptor는 요청을 가로채서 요청이 들어오기 전, 들어온 후, 완료된 후에 특정 작업을 추가할 수 있다.
+						interceptor 클래스는 org.springframework.web.servlet.HandlerInterceptorAdapter 클래스를 상속받아 생성하고 preHandle(), postHandle(),
+						afterCompletion() 메소드를 구현하여 각 시점에 따라 처리 로직을 추가할 수 있다.
+					</para>
+					<para>
+						다음은 LoginInterceptor.java 파일의 일부이다.
+						<programlisting language="java">public class LoginInterceptor extends <emphasis role="bold">HandlerInterceptorAdapter</emphasis> {
+    @Override
+    public boolean <emphasis role="bold">preHandle</emphasis>(HttpServletRequest request, HttpServletResponse response, Object hadler) throws Exception {
+        if(request.getSession().getAttribute("userId") != null)
+            return true;
+        else {
+            response.sendRedirect("login.jsp");
+            return false;
+        }
+    }
+}</programlisting>
+						위의 예에서는 preHandle() 메소드를 오버라이딩 하여 요청이 들어오기 전에 해당 로직을 수행하게 된다.
+			            session에 userId 값이 존재할 경우 true를 리턴하고 이어서 Controller가 요청을 처리하게 될 것이고,
+			            userId 값이 존재 하지 않는다면 login.jsp 페이지를 출력하게 될것이다. 
+					</para>
+					<para>다음은 빈 설정파일에 interceptor를 설정한 user-servlet.xml 파일의 일부이다. 
+						<programlisting language="xml"><![CDATA[<bean id="simpleUrlHandlerMapping" class="org.springframework.web.servlet.handler.SimpleUrlHandlerMapping">
+    <property name="mappings">
+        <value>/userForm.do = userController</value>
+    </property>
+    <]]><emphasis role="bold">property name="interceptors" ref="loginInterceptor"</emphasis><![CDATA[/>
+    <!-- 여러개의 handler mapping이 정의되어 있을 시에 order를 정의하여 우선순위를 부여할 수 있다.
+        숫자가 작을수록 높은 우선순위를 갖는다.-->
+    <property name="order">
+        <value>1</value>
+    </property>
+</bean>
+
+<bean id="]]><emphasis role="bold">loginInterceptor</emphasis><![CDATA[" class="org.anyframe.sample.springmvc.web.interceptor.LoginInterceptor" />]]></programlisting>
+						위와 같이 interceptor 클래스를 빈으로 설정하고 handler mapping에서 해당 빈을 참조하여 interceptor를 적용시킬 수 있다.
+					</para>
+          		</listitem>
+			</itemizedlist>
+		</section>
+		
+		<section id="core_springmvc_configuration_actionservletxml_viewresolver">
+			<title>View Resolver</title>
+			<para>
+				모든 MVC Framework에서는 요청을 처리한 후 돌아갈 View를 지정하기 위한 방법을 제공한다. Spring MVC에서는 특정 View 기술에 종속되지 않고 Model 데이터들을 보여줄 수 있도록 View Resolver를 제공한다.
+				앞에서 설명했듯이 핸들러(Controller)는 요청을 처리한 뒤 다시 DispatcherServlet에게 ModelAndView 객체를 넘겨준다. 
+				이 때 ModelAndView는 View의 이름을 포함하고 있는데, 이 이름으로 실제 View를 찾아주는 역할을 하는 것이 View Resolver이다.
+			</para>
+			<para>
+				<ulink url="http://static.springsource.org/spring/docs/4.0.x/javadoc-api/org/springframework/web/servlet/ViewResolver.html">ViewResolver</ulink>와 
+				<ulink url="http://static.springsource.org/spring/docs/4.0.x/javadoc-api/org/springframework/web/servlet/View.html">View</ulink>는 Spring MVC에서 View 처리와 관련된 가장 중요한 인터페이스이다.
+				ViewResolver는 View 이름과 실제 View를 매핑해준다. Spring MVC에서 제공하는 View Resolver에는 다음과 같은 것들이 있다.
+          	</para>
+          	<para>
+          		<informaltable>
+          			<caption>Spring MVC에서 제공하는 View Resolver 목록</caption>
+          			<tgroup cols="2">
+          				<thead>
+          					<row>
+          						<entry align="center">ViewResolver</entry>
+          						<entry align="center">설명</entry>
+          					</row>
+          				</thead>
+          				<tbody>
+          					<row>
+          						<entry>AbstractCachingViewResolver</entry>
+          						<entry>View들을 caching하는 기능 제공</entry>
+          					</row>
+          					<row>
+          						<entry>XmlViewResolver</entry>
+          						<entry>View를 결정할 때 XML 파일의 설정 내용을 기반으로 판단 (/WEB-INF/view.xml을 기본 설정 파일로 사용)</entry>
+          					</row>
+          					<row>
+          						<entry>ResourceBundleViewResolver</entry>
+          						<entry>View를 결정할 때 리소스 파일의 설정 내용을 기반으로 판단 (views.properties를 기본 리소스 파일로 사용)</entry>
+          					</row>
+          					<row>
+          						<entry>UrlBasedViewResolver</entry>
+          						<entry>View를 결정할 때 특정 맵핑 정보를 사용하지 않고, View 이름으로 URL을 사용(View 이름과 실제 View 자원을 동일하게 사용하고자 할 때 사용)</entry>
+          					</row>
+          					<row>
+			                	<entry>InternalResourceViewResolver</entry>
+			                	<entry>UrlBasedViewResolver를 상속 받았으며 InternalResourceView(Servlet, JSP)를 사용</entry>
+			                </row>
+			                <row>
+			                	<entry>VelocityViewResolver/FreeMarkerViewResolver</entry>
+			                	<entry>UrlBasedViewResolver를 상속 받았으며 각각 VelocityView와 FreeMarkerView를 사용</entry>
+			                </row>
+			                <row>
+			                	<entry>ContentNegotiatingViewResolver</entry>
+			                	<entry>요청 URL의 파일명이나 HTTP Request의 Accepter 헤더값을 기반으로 View를 판단.자세한 사용법은 본 매뉴얼의 
+			                	<ulink url="http://dev.anyframejava.org/docs/anyframe/plugin/optional/springrest/1.1.1-SNAPSHOT/reference/htmlsingle/springrest.html#springrest_restsupport_contentnegotiation">SpringREST Plugin >> Content Negotiation</ulink>을 참조</entry>
+			                </row>
+						</tbody>
+					</tgroup>
+				</informaltable>
+			</para>
+					
+			<para>사용하려는 View 기술에 따라 위와 같은 View Resolver를 적절히 선택해야 한다.</para>
+			<itemizedlist>
+          		<listitem>
+          			<para>JSP를 View 기술로 사용할 경우 ViewResolver 설정 예 
+          				<programlisting language="xml"><![CDATA[<bean id="viewResolver" class="]]><emphasis role="bold">org.springframework.web.servlet.view.UrlBasedViewResolver</emphasis><![CDATA[">
+    <property name="prefix" value="/WEB-INF/jsp/"/>
+    <property name="suffix" value=".jsp"/>
+</bean>]]></programlisting>
+					</para>
+					<para>
+						UrlBasedViewResolver에는 prefix와 suffix 속성을 지정해 줄 수 있다.
+						만약 Controller에서 넘겨준 View 이름이 'index'이고 prefix를 "/jsp/", suffix를 ".jsp"라고 정의했다면 이 ViewResolver는 "/jsp/index.jsp"라는 이름의 View를 찾아준다.
+					</para>
+				</listitem>
+						
+				<listitem>
+					<para>JSTL 사용 시의 ViewResolver 설정 예</para>
+					<para>단순 JSP인 경우 UrlBasedViewResolver는 InternalResourceView를 사용하지만, 
+					JSTL을 사용할 경우에는 다음과 같이 viewClass 속성을 통해 JstlView를 사용하도록 명시적으로 정의해주어야 한다.
+						<programlisting language="xml"><![CDATA[<bean id="jstlViewResolver" class="org.springframework.web.servlet.view.UrlBasedViewResolver">
+    <!-- view class for jstl -->
+    <property name="]]><emphasis role="bold">viewClass</emphasis><![CDATA[" value="]]><emphasis role="bold">org.springframework.web.servlet.view.JstlView</emphasis><![CDATA[" />
+    <property name="order" value="1" />
+</bean>]]></programlisting>
+					</para>
+				</listitem>
+			</itemizedlist>
+		</section>
+		<section id="core_springmvc_configuration_actionservletxml_configsimplification">
+			<title>Configuration Simplification</title>
+			<para>
+				Spring 3 에서는 Annotation 기반의 Controller 처리를 위해 반드시 필요한 RequestMappingHandlerAdapter 등록 등의 Spring MVC 관련 설정을 간편하게 할 수 있도록 
+				<ulink url="http://static.springsource.org/schema/mvc/spring-mvc.xsd">mvc</ulink> 네임스페이스를 제공하기 시작했다.
+				mvc 네임스페이스에서 제공하는 태그는 다음과 같이 3가지가 있다.
+			</para>
+			<itemizedlist>
+				<listitem>
+					<para><emphasis role="bold">mvc:annotation-driven</emphasis></para>
+					<para>
+						Annotation 기반으로 구현된 Controller로 HTTP 요청을 처리하기 위해서 필요한 클래스들을 쉽게 등록해주는 태그이다.
+						이 태그는 HTTP 요청을 읽어 실행시킬 Controller - Method를 선택(select)하는 RequestMappingHandlerMapping,
+						선택된 Method를 실행(invoke)시키는 RequestMappingHandlerAdapter,
+						Controller 내에서 발생한 예외를 처리하기 위한 ExceptionHandlerExceptionResolver를 bean으로 등록한다.
+						기본으로 등록되는 3개의 클래스 외에 다음의 몇 가지 설정들이 기본으로 등록된다.
+					</para>
+					<orderedlist>
+						<listitem>
+							<para>
+								Spring 3의 Type ConversionService를 사용할 수 있도록 org.springframework.format.support.FormattingConversionServiceFactoryBean에 
+								의해 생성된	ConversionService 인스턴스를 등록해준다. ConversionService를 변경하고자 하는 경우 <emphasis role="bold">conversion-service</emphasis> 속성을 사용하여 설정해준다. 
+							</para>
+						</listitem>
+						<listitem>
+							<para>
+								@NumberFormat을 사용한 Number 타입의 formatting 지원
+							</para>
+						</listitem>
+						<listitem>
+							<para>
+								@DateTimeForm을 사용한 Date, Calendar Joda Time 타입의 필드의 formatting 지원 (단, 현재 classpath에 Joda Time 라이브러리가 존재할 경우)
+							</para>
+						</listitem>
+						<listitem>
+							<para>
+								Annotaion 기반으로 구현된 Controller에서 @Valid를 사용한 선언적인 Validation 기능 지원 (단, 현재 classpath에 Hibernate Validator와 같은 JSR-303을 구현체가 존재하는 경우)
+							</para>
+						</listitem>
+						<listitem>
+							<para>
+								XML의 Read/Write 지원 (단, 현재 classpath에 JAXB 라이브러리가 존재하는 경우)
+							</para>
+						</listitem>
+						<listitem>
+							<para>
+								JSON 객체의 Read/Write 지원 (단, 현재 classpath에 <ulink url="http://jackson.codehaus.org/">Jackson</ulink> 라이브러리가 존재하는 경우)
+							</para>
+						</listitem>
+					</orderedlist>
+					<programlisting language="xml"><![CDATA[<mvc:annotation-driven conversion-service="conversionService" />
+    
+<bean id="conversionService" class="org.springframework.format.support.FormattingConversionServiceFactoryBean">
+    <property name="converters">
+        <list>
+            <bean class="org.anyframe.sample.moviefinder.StringToFilmRatingConverter" />
+            <bean class="org.anyframe.sample.moviefinder.FilmRatingToStringConverter" />
+        </list>
+    </property>
+</bean>]]></programlisting>
+					<para>
+						<note>
+							<title>Spring @MVC 3.1 new infrastructure</title>
+							<para>
+								<para>
+									Spring 3.1에서는 보다 쉽고 다양한 설정을 사용할 수 있도록 다음 세 개의 새로운 Class를 제공한다.
+								</para>
+								<para>
+									<itemizedlist>
+										<listitem>
+											<para>RequestMappingHandlerMapping</para>
+										</listitem>
+										<listitem>
+											<para>RequestMappingHandlerAdapter</para>
+										</listitem>
+										<listitem>
+											<para>ExceptionHandlerExceptionResolver</para>
+										</listitem>
+									</itemizedlist>
+								</para>
+								<para>
+									위의 Class들은 기존에 존재하던 아래의 Class를 대체한다.
+								</para>
+								<para>
+									<itemizedlist>
+										<listitem>
+											<para>DefaultAnnotationHandlerMapping</para>
+										</listitem>
+										<listitem>
+											<para>AnnotationMethodHandlerAdapter</para>
+										</listitem>
+										<listitem>
+											<para>AnnotationMethodHandlerExceptionResolver</para>
+										</listitem>
+									</itemizedlist>
+								</para>
+								<para>
+									Spring 3.1의 mvc:annotation-driven 설정을 등록하게 되면 기존의 DefaultAnnotationHandlerMapping, AnnotationMethodHandlerAdapter
+									를 대신해 RequestMappingHandlerMapping, RequestMappingHandlerAdapter, ExceptionHandlerExceptionResolver가 
+									기본으로 등록된다.
+								</para>
+								<para>
+									Spring 3.0 이하의 버전에서는 실제 수행 될 Controller의 Method를 찾아서 실행 시키기 위해 2번의 select, 1번의 invoke 동작을
+									내부적으로 수행 하고 있었다.
+								</para>
+								<para>
+									Spring 3.1에서는 RequestMappingHandlerMapping class가 Controller의 Method를 select하고,
+									RequestMappingHandlerAdapter가 선택 된 Method를 invoke하도록 구조가 변경 되었다.
+								</para>
+								<para>
+									다음은 기존의 class와 새로 제공되는 class간의 차이점을 그림으로 나타낸 것이다.
+					            	<mediaobject>
+					            		<imageobject>
+					            			<imagedata align="center" fileref="../image/core/springmvc/oldmvcinfrastructure.png"/>
+					            		</imageobject>
+					            		<textobject>
+					            			<phrase>3.0 클래스의 흐름을 표현한 그림으로써, DispatcherServlet은 실제 수행 될 Controller의 Method를 찾아서 실행 시키기 위해 
+					            			2번의 select, 1번의 invoke 동작을 내부적으로 수행함을 표현하고 있다.</phrase>
+					            		</textobject>
+					            	</mediaobject>
+					            	<mediaobject>
+					            		<imageobject>
+					            			<imagedata align="center" fileref="../image/core/springmvc/newmvcinfrastructure.png"/>
+					            		</imageobject>
+					            		<textobject>
+					            			<phrase>3.1 클래스의 흐름을 표현한 그림으로써, RequestMappingHandlerMapping class가 Controller의 Method를 select하고,
+											RequestMappingHandlerAdapter가 선택 된 Method를 invoke하도록 구조가 변경되었음을 나타내고 있다.</phrase>
+					            		</textobject>
+					            	</mediaobject>
+								</para>
+								<para>
+									mvc:annotation-driven 설정을 사용하거나, @EnableWebMvc Java-based configuration 설정을 사용한 경우
+									앞서 살펴본 새로운 class들이 기본값으로 설정되며, 
+									기존의 class도 여전히 사용 가능하지만 새로 제공되는 class를 사용할 것을 권장한다.
+								</para>
+							</para>
+							
+						</note>
+					</para>
+				</listitem>
+				
+				<listitem>
+					<para><emphasis role="bold">mvc:interceptors</emphasis></para>
+					<para>
+						Spring 2.x 까지는 요청 처리 전에 특정 기능 수행을 목적으로 Interceptor를 적용하기 위해서는 
+						각각의 HandlerMapping Bean 정의 시에 interceptors 속성을 이용하여 적용할 Interceptor를 추가해 주어야만 했다.
+						그러나 Spring 3 부터는 <![CDATA[<mvc:interceptors>]]>를 사용하면 모든 HandlerMapping에 Interceptor를 간편하게 적용할 수 있다.
+					</para>
+					<para>
+						다음은 모든 URL에 LocaleChangeInterceptor를 적용한 예이다.
+						<programlisting language="xml"><![CDATA[<mvc:interceptors>
+    <bean class="org.springframework.web.servlet.i18n.LocaleChangeInterceptor" />
+</mvc:interceptors>]]></programlisting>
+						특정 URL에만 Interceptor를 적용하려면 아래와 같이 설정해주면 된다.
+						<programlisting language="xml"><![CDATA[<mvc:interceptors>
+    <mvc:interceptor>
+        <mapping path="/admin/*"/>
+        <bean class="sample.LoginInterceptor" />
+    </mvc:interceptor>
+</mvc:interceptors>]]></programlisting>
+					</para>
+				</listitem>
+				<listitem>
+					<para><emphasis role="bold">mvc:view-controller</emphasis></para>
+					<para>
+						이 태그는 Spring 3 이전에 Controller 없이 바로 View로 포워딩하는 URL에 대해서 
+						ParameterizableViewController를 사용하여 Bean으로 정의했던 것을 아래와 같이 간편하게 설정할 수 있도록 해준다.
+						<programlisting language="xml"><![CDATA[<mvc:view-controller path="/" view-name="welcome"/>]]></programlisting>
+					</para>
+				</listitem>
+			</itemizedlist>
+		</section>
+	</section>
+</chapter>

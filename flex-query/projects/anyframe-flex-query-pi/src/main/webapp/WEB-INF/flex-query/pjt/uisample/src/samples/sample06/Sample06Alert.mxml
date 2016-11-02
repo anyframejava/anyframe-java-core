@@ -1,0 +1,41 @@
+<?xml version="1.0" encoding="utf-8"?>
+<mx:TitleWindow xmlns:fx="http://ns.adobe.com/mxml/2009" 
+				xmlns:s="library://ns.adobe.com/flex/spark" 
+				xmlns:mx="library://ns.adobe.com/flex/mx"
+				xmlns:brd="anyframe.samples.domain.*"
+				layout="vertical" 
+				width="262" height="100" showCloseButton="true"
+				close="PopUpManager.removePopUp(this)">
+	
+	<fx:Metadata>
+        [Event(name="boardSave", type="DetailEvent")]
+        [Event(name="boardCancel", type="DetailEvent")]
+    </fx:Metadata>
+    
+	<fx:Script>
+    	<![CDATA[
+    	import mx.managers.PopUpManager; 
+    	import samples.event.BoardEvent;
+    	
+    	private function confirm():void
+		{
+			dispatchEvent(new BoardEvent(BoardEvent.SAVE));
+			PopUpManager.removePopUp(this);
+		}
+
+		private function cancel():void
+		{
+			dispatchEvent(new BoardEvent(BoardEvent.CANCEL));
+			PopUpManager.removePopUp(this)			
+		}
+    	]]>
+    </fx:Script>
+    
+    <mx:Label text="변경된 데이터가 있습니다. 저장하시겠습니까?"/>
+	
+	<mx:ControlBar horizontalAlign="center">
+        <mx:Button label="예" click="confirm()"/>
+        <mx:Button label="아니오" click="cancel()"/>
+    </mx:ControlBar>
+    
+</mx:TitleWindow>

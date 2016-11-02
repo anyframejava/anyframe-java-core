@@ -1,0 +1,122 @@
+<?xml version="1.0" encoding="utf-8"?>
+<s:Application xmlns:fx="http://ns.adobe.com/mxml/2009" 
+			   xmlns:s="library://ns.adobe.com/flex/spark" 
+			   xmlns:mx="library://ns.adobe.com/flex/mx" 
+			   xmlns:data="org.anyframe.flex.messaging.data.*"
+			   xmlns:local="*"
+			   minWidth="955" minHeight="600"
+			   applicationComplete="init()">
+	<fx:Script>
+		<![CDATA[
+			import mx.collections.ArrayCollection;
+			import mx.controls.Alert;
+			import mx.rpc.events.FaultEvent;
+			import mx.rpc.events.ResultEvent;
+			
+			import org.anyframe.flex.messaging.data.DataRow;
+			import org.anyframe.flex.messaging.data.DataSet;
+			
+			[Bindable]
+			public var dsCompany:DataSet;
+			
+			[Bindable]
+			public var dsIndustry:DataSet;
+			
+			private function init():void
+			{
+				dsCompany = new DataSet;
+				dsCompany.dataSetName="dsCompany";
+				dsCompany.selectQueryId="findFlexQueryCompanyListByName";
+				
+				dsIndustry = new DataSet;
+				dsIndustry.dataSetName="dsIndustry";
+				dsIndustry.selectQueryId="findFlexQueryIndustryList";
+				
+				roIndustry.getList(["dsIndustry"], {} ); 
+			}
+			
+			private function faultHandler(event:FaultEvent):void
+			{
+				Alert.show(event.fault.faultDetail);
+			}
+			
+			public function openCompany(company:DataRow):void
+			{
+				var children:Array = tn.getChildren();
+				for (var i:int = 0; i<children.length; i++)
+				{
+					if (CompanyForm(children[i]).company["id"] == company["id"])
+					{
+						
+						tn.selectedChild = children[i];
+						return;
+					}
+				}
+				
+				var form:CompanyForm = new CompanyForm();
+				form.addEventListener(CompanyEvent.CREATED, companyCreatedHandler);
+				form.addEventListener(CompanyEvent.UPDATED, companyUpdatedHandler);
+				form.addEventListener(CompanyEvent.DELETED, companyDeletedHandler);
+				tn.addChild(form);
+				if( company["id"] == null ){
+					company["id"] = 0;
+				}
+				form.company = company;
+				form.industries = dsIndustry;
+				tn.selectedChild = form;
+			}
+			
+			private function search():void
+			{
+				var searchParam:Object = new Object;
+				searchParam["name"] = searchStr.text;
+				roCompany.getList(["dsCompany"], searchParam ); 
+			}
+			
+			private function companyCreatedHandler(event:CompanyEvent):void
+			{
+				search();				
+			}
+			
+			private function companyUpdatedHandler(event:CompanyEvent):void
+			{
+				search();				
+			}
+			
+			private function companyDeletedHandler(event:CompanyEvent):void
+			{
+				tn.removeChild(event.target as CompanyForm);
+				search();				
+			}
+		]]>
+	</fx:Script>
+	
+	<fx:Declarations>
+		<!-- Place non-visual elements (e.g., services, value objects) here -->
+		<data:DataService id="roCompany"/>
+		<data:DataService id="roIndustry"/>
+	</fx:Declarations>
+	
+	<s:layout>
+		<s:VerticalLayout gap="0" horizontalAlign="center"/>
+	</s:layout>
+	
+	<mx:ApplicationControlBar width="100%">
+		<mx:TextInput id="searchStr"/>
+		<mx:Button label="Search" click="search()"/>
+		<mx:Button label="New Company" click="openCompany(new DataRow)"/>
+	</mx:ApplicationControlBar>
+	
+	
+	<mx:HDividedBox width="100%" height="100%">
+		<mx:DataGrid id="dg" dataProvider="{dsCompany}" width="30%" height="100%"
+					 doubleClickEnabled="true" 
+					 doubleClick="openCompany(dg.selectedItem as DataRow)">
+			<mx:columns>
+				<mx:DataGridColumn dataField="name" headerText="Name"/>
+				<mx:DataGridColumn dataField="city" headerText="City"/>
+			</mx:columns>
+		</mx:DataGrid>
+		<mx:TabNavigator id="tn" width="70%" height="100%"/>
+	</mx:HDividedBox>
+</s:Application>

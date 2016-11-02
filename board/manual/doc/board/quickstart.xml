@@ -1,0 +1,506 @@
+<chapter id="board_quick_start">
+	<title>Quick Start</title>
+	<para>
+		본 Quick Start는 화면의 흐름에 따라 사용자가 게시판 생성을 할 수 있도록 작성하였다.
+		화면을 통한 게시판 생성 및 게시판 생성 전/후 의 환경설정 파일 셋팅에 대한 방법이 설명되어  있으며,
+		아래와 같은 흐름을 따라 게시판을 생성할 수 있다. 
+		<orderedlist numeration="arabic" inheritnum="inherit">
+			<listitem>
+				<para>Project Home 설정 : 게시판 생성작업을 하기 전에 자신의 로컬 환경 정보 셋팅을 한다.</para>
+			</listitem>
+			<listitem>
+				<para>게시판 기본 정보 설정 : 게시판 종류(리스트형, 블로그형)와 게시판 소스코드가 생성되게 될 패키지 위치를 설정한다. </para>
+			</listitem>
+			<listitem>
+				<para>컬럼 정보 설정 : 게시판에서 사용할 추가 컬럼(필드)에 대해 정의할 수 있다.</para>
+			</listitem>
+			<listitem>
+				<para>화면 구성 설정 : 화면 구성 정보를 토대로 목록/등록 화면 레이아웃(필드정렬)을 정의할 수 있다.</para>
+			</listitem>
+			<listitem>
+				<para>설정 파일 수정 : 생성한 게시판이 현재 프로젝트에서 함께 구동될 수 있도록, context-message.xml 파일 및 context-annotaion.xml 설정에 게시판 관련 설정을 추가한다.</para>
+			</listitem>
+			<listitem>
+				<para>테이블 생성 스크립트 실행 : 자동 생성된 테이블 생성 스크립트를 실행하여 테이블을 생성한다.</para>
+			</listitem>
+			<listitem>
+				<para>WAS 기동후 확인 : 소스 생성 및 설정 작업이 끝난후 WAS를 기동해 기능을 확인한다.</para>
+			</listitem>
+		</orderedlist>
+	</para>
+	<section id="board_quick_start_project_home_setting">
+		<title>Project Home, Disk Path 설정</title>
+		<para>
+			Board Plugin 설치 후 개인 로컬 환경설정 정보를 등록해 준다. Project Home은 실제로 게시판이 생성될 프로젝트를 지정해 주는 것이며
+			context.properties 의 projectHome 속성을 게시판 코드를 생성할 프로젝트 위치(Board Plugin을 설치한 프로젝트 위치)로 projectHome path를 변경해 준다.
+			또한 파일첨부 기능 설정 시에는 추가적으로 파일이 저장될 Disk Path를 지정해 줄 필요가 있으며 이 또한 context.properties에 disk.path 속성을 첨부파일들이 저장될 위치로 변경해주면 된다.(파일첨부 기능 미사용시 설정하지 않아도 무방하다.) 
+			설정 예는 아래와 같다.
+		</para>
+		<programlisting language="xml">
+<![CDATA[projectHome=D:\\workspace\\mypjt
+disk.path=C:/Temp]]></programlisting>
+	</section>
+		
+	<section id="board_quick_start_basicinfo_setting">
+		<title>기본 정보 설정</title>
+		<para>
+			기본 정보 탭 에서는 게시판의 기본 정보 및 설치 정보를 입력 확인할 수 있다.
+		</para>
+		<para>
+			기본 정보 설정부 에서는 게시판 명, 게시판 종류, 댓글 기능 사용 여부, 첨부파일 사용 여부, 익명기능 사용 여부 등에 대한 작성이 가능하며,
+			설치 정보에서는 패키지명 및 서비스명을 입력할 수 있다.				
+		</para>
+		<para>
+			기본정보 탭 클릭시 보여지는 화면은 아래와 같다.
+		</para>
+		<mediaobject>
+			<imageobject>
+          		<imagedata align="center" fileref="../image/board/board_ui_tab_baseinfo_first.png" width="620px"/>
+        	</imageobject>
+        </mediaobject>
+		<itemizedlist>
+			<listitem>
+				<para><emphasis role="bold">게시판 명(필수)</emphasis></para>
+				<itemizedlist>
+					<listitem>
+						<para>게시판 이름을 입력하는 영역이며, 입력한 값은 게시판의 제목이 된다. (ex&gt; 자유게시판)</para>
+					</listitem>
+				</itemizedlist>
+			</listitem>
+			<listitem>
+				<para><emphasis role="bold">게시물 종류(Default:리스트 타입)</emphasis></para>
+				<itemizedlist>
+					<listitem>
+						<para>리스트형 게시판, 블로그형 게시판 중 선택하여 생성할 수 있다.</para>
+					</listitem>
+				</itemizedlist>
+			</listitem>
+			<listitem>
+				<para><emphasis role="bold">익명 여부(Default:미사용)</emphasis></para>
+				<itemizedlist>
+					<listitem>
+						<para>익명 여부를 설정할 수 있다. 익명 여부를 설정할 경우 등록자에 대한 정보가 화면에 출력되지 않는다. </para>
+					</listitem>
+				</itemizedlist>
+			</listitem>
+			<listitem>
+				<para><emphasis role="bold">댓글 여부(Default:사용)</emphasis></para>
+				<itemizedlist>
+					<listitem>
+						<para>댓글 사용 여부를 설정할 수 있다. 블로그형 게시판을 선택했을 경우에는 댓글 기능을 사용할 수 없다.</para>
+					</listitem>
+				</itemizedlist>
+			</listitem>
+			<listitem>
+				<para><emphasis role="bold">파일첨부 사용여부(Default:미사용)</emphasis></para>
+				<itemizedlist>
+					<listitem>
+						<para>파일첨부 사용여부를 설정할 수 있다.</para>
+						<para>만약 첨부되는 파일에 용량제한을 두고 싶다면 src/main/resources/fileupload.properties 파일 내의 'common.file.maxsize' 속성을 제한하고 싶은 값(byte 기준)으로 설정하여 주면 된다.</para>
+					</listitem>
+				</itemizedlist>
+			</listitem>
+			<listitem>
+				<para><emphasis role="bold">패키지명(필수)</emphasis></para>
+				<itemizedlist>
+					<listitem>
+						<para>패키지명을 작성할 수 있다. 영문과 dot(.)만 사용가능하며 abc.def의 형태로 정의한다. </para>
+					</listitem>
+				</itemizedlist>
+			</listitem>
+			<listitem>
+				<para><emphasis role="bold">서비스명(필수)</emphasis></para>
+				<itemizedlist>
+					<listitem>
+						<para>서비스명을 입력할 수 있다. 이는 JavaClass 명, 폴더명, 패키지 명에 각각쓰이며 영문 소문자로 작성하는 것을 권고한다.(ex&gt;notice)</para>
+					</listitem>
+				</itemizedlist>
+			</listitem>
+			<listitem>
+				<para><emphasis role="bold">설치정보 확인</emphasis></para>
+				<itemizedlist>
+					<listitem>
+						<para>설치 정보 확인 버튼을 클릭하면 입력한 기본정보, 설치정보에 따른 실제 파일 생성 정보를 미리 볼 수 있다.</para>
+					</listitem>
+				</itemizedlist>
+			</listitem>
+		</itemizedlist>
+		<mediaobject>
+		<imageobject>
+		    	<imagedata align="center" fileref="../image/board/board_ui_tab_baseinfo_install_info.png"/>
+	    	</imageobject>
+       	</mediaobject>		
+	</section>
+	
+	<section id="board_quick_start_column_information">
+		<title>컬럼 정보 설정</title>
+		<para>생성되는 게시판에 등록될 게시물이 저장되는 DB 테이블, DB 컬럼 정보 및 해당 컬럼들의 속성을 정의할 수 있다. 다음은 컬럼정보를 설정할 수 있는 화면이다.</para>
+ 	 	<mediaobject>
+		 		<imageobject>
+          			<imagedata align="center"
+                     	fileref="../image/board/board_ui_tab_columninfo_first.png" />
+        		</imageobject>
+        		<textobject>
+        			<phrase>컬럼정보를 설정할 수 있는 Tab을 나타내는 화면으로써 테이블 명, 필수 컬럼의 필드명, 확장컬럼 설정 화면이 존재한다.</phrase>
+        		</textobject>
+        </mediaobject>
+		<itemizedlist>
+			<listitem>
+				<para><emphasis role="bold">테이블 설정</emphasis></para>
+				<para>생성되는 게시판이 실제로 사용하는 DB 테이블의 이름을 설정한다. 해당 테이블에는 게시판에서 생성된 게시물의 데이터가 입력된다. 여기서는 영문 및 숫자와 일부 특수문자만 입력이 가능하다.</para>
+ 	 			<mediaobject>
+		 			<imageobject>
+          				<imagedata align="center"
+           	          	fileref="../image/board/board_ui_tab_columninfo_update_table_set.png" />
+        			</imageobject>
+        			<textobject>
+        				<phrase>컬럼정보를 설정할 수 있는 Tab에서 테이블 정보를 설정하는 부분을 나타내는 화면이다.</phrase>
+        			</textobject>
+        		</mediaobject>
+     	   	</listitem>
+			<listitem>
+	        	<para><emphasis role="bold">필수컬럼 설정</emphasis></para>
+	        	<para>게시판 생성 시 테이블에 필수적으로 생성되는 컬럼의 정보를 설정한다. 다음 화면에서는 생성되는 게시판 화면에 나타나는 필드명을 변경하는 것이 가능하다.</para>
+	        	<mediaobject>
+		 			<imageobject>
+          				<imagedata align="center"
+           	          	fileref="../image/board/board_ui_tab_columninfo_update_essential_column_set.png" />
+        			</imageobject>
+        			<textobject>
+        				<phrase>Board plugin에서 컬럼정보를 설정할 수 있는 Tab에서 필수컬럼 정보를 설정하는 표를 나타내는 화면이다.</phrase>
+        			</textobject>
+        		</mediaobject>
+	        	<note>
+	        		<title>필수컬럼 추가방법</title>
+					<para>
+						필수컬럼 표에서는 기존에 존재하는 '필드명'에 대해서만 변경이 가능하며 board.columns.definition.xml을 수정함으로서 필수컬럼에 대한 새 컬럼 추가 및 기존 컬럼정보 수정이 가능하다. 
+						다음과 같은 속성들을 변경할 수 있다.				
+					</para>	 
+ 				   	<informaltable>
+						<caption>필수 컬럼 속성</caption>
+	     			 	<tgroup cols="3">
+	     			    	<colspec colnum="1" colname="col1" colwidth="2*"/>
+	        				<colspec colnum="2" colname="col2" colwidth="6*"/>
+	        				<colspec colnum="3" colname="col3" colwidth="2*"/>
+	        				<thead>
+	          				<row>
+	            				<entry align="center">속성</entry>
+	            				<entry align="center">설명</entry>
+ 	            				<entry align="center">비고</entry>
+	          				</row>
+	        				</thead>
+	        				<tbody>
+	         					<row>
+	            					<entry>columnId</entry>
+	            					<entry>필수컬럼의 ID를 설정한다. DB TABLE의 컬럼ID가 된다.</entry>
+			            			<entry>ex&gt;POST_TITLE</entry>
+	          					</row>	        				
+	         					<row>
+	            					<entry>fieldName</entry>
+	            					<entry>컬럼ID를 화면상에서 표시하여 줄 필드명으로 정의한다.</entry>
+	            					<entry>ex&gt;제목</entry>	            					
+	          					</row>
+	          					<row>
+		            				<entry>columnType</entry>
+		            				<entry>필수컬럼의 타입을 설정한다. VARCHAR, DATE 등 DB에서 사용되는 컬럼타입을 설정할 수 있다.</entry>
+		            				<entry>ex&gt;VARCHAR</entry>
+		          				</row>
+		          				<row>
+		            				<entry>columnSize</entry>
+		            				<entry>필수컬럼의 사이즈를 설정한다.</entry>
+	            					<entry>ex&gt;330</entry>		            				
+		          				</row>
+		          				<row>
+		            				<entry>isEssential</entry>		            				
+		            				<entry>필수컬럼의 필수여부를 설정한다. 0으로 설정하면 필수가 아니며, 1로 설정하면 필수이다. 1로 설정 시 해당 컬럼의 데이터는 null값을 가질 수 없다.</entry>
+	            					<entry>0 또는 1</entry>
+		          				</row>
+		          				<row>
+		            				<entry>useScreen</entry>			            				
+		            				<entry>화면 내에 존재하는 필수컬럼 표에서의 표시여부를 설정한다. 0으로 설정 시 컬럼 설정 부분에서 나타나지 않으며, 1로 설정하면 나타난다.</entry>
+	            					<entry>0 또는 1</entry>	
+		          				</row>
+		          				<row>
+		            				<entry>useList</entry>			            				
+		            				<entry>해당 컬럼을 생성된 게시판에 존재하는 '목록화면'에서 출력할 지 여부를 설정한다. 0으로 설정할 시 '목록화면'에 표시되지 않으며, 1로 설정할 시에는 표시된다. 게시판이 '리스트형'일 경우만 적용된다.</entry>
+	            					<entry>0 또는 1</entry>	
+		          				</row>
+		          				<row>
+		            				<entry>useView</entry>				            				
+		            				<entry>해당 컬럼을 생성된 게시판에 존재하는 '등록화면' 및 '상세화면(게시판이 '리스트형'일 경우)'에서 표시하여줄 지 여부를 설정한다. 0으로 설정할 시에는 화면에 표시되지 않으며, 1로 설정시에는 표시된다.</entry>
+	            					<entry>0 또는 1</entry>
+		          				</row>		          				
+	        				</tbody>
+	      				</tgroup>
+	    			</informaltable>       	
+	    			<para>
+						위의 속성값을 새로 설정하여 새 컬럼을 추가할 수 있다. 또한 기존의 필수컬럼을 수정 혹은 삭제하는 것도 가능하나 기존컬럼에 대한 로직이 기본적으로 코드에 포함되어 있으므로 기존 컬럼에 대한 정보를 수정 및 삭제 하는 것은 권고하지 않는다.
+					</para>	 	
+	        	</note>
+	       	</listitem>
+	       	<listitem>
+	        	<para><emphasis role="bold">확장컬럼 설정</emphasis></para>
+	        	<para>
+					게시판 생성 시 테이블에 필수컬럼과 같이 추가적으로 생성할 컬럼의 정보를 설정한다. '행추가'버튼을 클릭하여 새로운 컬럼를 정의할 수 있으며, '삭제'버튼을 클릭하여 선언한 컬럼을 삭제할 수 있다. 
+					확장컬럼의 모든 컬럼타입은 VARCHAR형으로 생성되며 다른 컬럼타입을 가지는 컬럼을 생성하고자 한다면 board.columns.definition.xml파일에서 다른 컬럼타입을 가지는 새로운 컬럼을 선언하면 된다. 
+					다음은 확장컬럼을 설정해줄 수 있는 표를 나타내는 화면이다.
+				</para>	 
+	        	<mediaobject>
+		 			<imageobject>
+	         				<imagedata align="center"
+	          	          	fileref="../image/board/board_ui_tab_columninfo_update_expand_column_set.png" />
+	       			</imageobject>
+	       			<textobject>
+	       				<phrase>다음은 컬럼정보를 설정할 수 있는 Tab에서 확장컬럼 정보를 설정하는 표를 나타내는 화면이다.</phrase>
+	       			</textobject>
+	       		</mediaobject>
+	       		<para>위 화면의 확장컬럼 표에 있는 각각의 속성은 아래와 같다.</para>
+					<informaltable>
+					<caption>확장 컬럼 속성</caption>
+	     			 	<tgroup cols="3">
+	     			    	<colspec colnum="1" colname="col1" colwidth="2.5*"/>
+	        				<colspec colnum="2" colname="col2" colwidth="5*"/>
+	        				<colspec colnum="3" colname="col3" colwidth="2.5*"/>
+	        				<thead>
+	          				<row>
+	            				<entry align="center">속성</entry>
+	            				<entry align="center">설명</entry>
+		            				<entry align="center">비고</entry>
+	          				</row>
+	        				</thead>
+	        				<tbody>
+	         					<row>
+	            					<entry>컬럼ID</entry>
+	            					<entry>확장컬럼의 ID를 설정한다. 이는 DB TABLE의 컬럼ID가 되며 영문 및 숫자와 일부 특수문자만이 입력 가능하다.</entry>
+	            					<entry>ex&gt;POST_TYPE</entry>	            					
+	          					</row>	        				
+	         					<row>
+	            					<entry>필드명</entry>
+	            					<entry>컬럼ID를 화면상에서 표시하여 줄 필드명으로 정의한다.</entry>
+	            					<entry>ex&gt;종류</entry>
+	          					</row>
+	          					<row>
+		            				<entry>컬럼사이즈</entry>
+		            				<entry>범위 1~4000의 컬럼의 사이즈를 설정한다. 숫자만 입력 가능하다.</entry>
+	            					<entry>ex&gt;20</entry>
+		          				</row>
+		          				<row>
+		            				<entry>컬럼타입</entry>
+		            				<entry>'등록화면' 및 '상세화면(게시판이 '리스트형'일 경우)'의 화면을 설정한다. 텍스트(한 줄)을 선택 시 '등록화면' 및 '상세화면'에서는 한 줄로 입/출력이 되며, 텍스트(여러 줄)을 선택 시 '등록화면' 및 '상세화면'에서 여러 줄로 입/출력이 된다.</entry>
+	            					<entry>텍스트(한 줄) 또는 텍스트(여러 줄)</entry>
+		          				</row>
+		          				<row>
+		            				<entry>필수여부</entry>		            				
+		            				<entry>해당 컬럼의 필수여부를 설정한다. 체크박스 체크 시 해당 컬럼의 데이터에는 null값 입력이 불가능하며, 체크박스를 체크하지 않을 시 해당 데이터의 null값 입력이 가능하다. 또한  이 체크박스를 체크할 시 데이터에 null값을 허용하지 않으므로 '등록화면'에서 무조건 값을 입력할 수 있게끔 자동으로 '등록화면표시'체크박스 또한 체크된다.</entry>
+	            					<entry></entry>
+		          				</row>
+		          				<row>
+		            				<entry>목록화면표시</entry>
+		            				<entry>해당 컬럼을 생성된 게시판에 존재하는 '목록화면'에서 표시하여줄 지 여부를 설정한다. 0으로 설정할 시 '목록화면'에 표시되지 않으며, 1로 설정할 시에는 표시된다. 게시판 종류가 '리스트형'일 경우만 적용되며 또한 '블로그형'으로 설정 시에는 체크박스 설정창이 사라지고 설정을 할 수 없다.</entry>
+	            					<entry></entry>
+		          				</row>
+		          				<row>
+		            				<entry>등록화면표시</entry>			            				
+		            				<entry>해당 컬럼을 생성된 게시판에 존재하는 '등록화면' 및 '상세화면(게시판이 '리스트형'일 경우)'에서 표시하여줄 지 여부를 설정한다. 체크박스 체크시에는 해당화면에 표시되지 않으며, 체크박스 미체크시에는 해당화면에 표시된다.</entry>
+	            					<entry></entry>	
+		          				</row>
+	        				</tbody>
+	      				</tgroup>
+	    			</informaltable>    
+	       	</listitem>
+		</itemizedlist>
+		<para>컬럼정보 화면에서 설정한 값을 바탕으로 DB 내에 테이블이 자동으로 생성되지는 않으며 테이블을 생성할 수 있는 쿼리문이 생성된다. 경로는 db/hsqldb이고 sql파일이며 다음은 위 화면의 정보를 바탕으로 생성된 sql문의 내용이다.</para>
+	    <mediaobject>
+			<imageobject>
+		     		<imagedata align="center"
+		           		fileref="../image/board/board_ui_tab_columninfo_created_sqlfile.png" />
+		     	</imageobject>
+	  	 		<textobject>
+	  				<phrase>db/hsqldb/createtable-${boardName}.sql 파일 내에 생성된 sql문이다. 해당하는 쿼리문을 사용자가 직접 적용함으로서 테이블을 생성할 수 있다.</phrase>
+	  			</textobject>
+	  		</mediaobject>
+	</section>
+	
+    <section id="board_quick_start_screen_arrange">
+		<title>화면 구성 설정</title>
+		<para>생성되는 게시판에서 각 컬럼(필드)들이 화면에 나타나는 순서 및 위치를 설정할 수 있다. '등록화면' 및 '목록화면' 두 가지로 나누어 설정할 수 있으며, 만약 게시판 종류를 '블로그형'으로 설정한다면 여기서는 '목록화면'이 존재하지 않으므로 이에 대한 화면구성을 할 수 없다.</para>
+		<itemizedlist>
+			<listitem>
+				<para><emphasis role="bold">등록 화면 설정</emphasis></para>
+				<para>
+					생성된 게시판에 존재하는 '등록화면' 및 '상세화면(게시판 종류가 리스트형일 경우)'에서의 각 컬럼(필드)의 위치를 설정한다. 설정한 순서에 따라 각각의 화면에서 상/하단 기준으로 새로운 게시판에서의 컬럼(필드)가 배치된다. 
+					여기서는 board.columns.definition.xml파일에서 useView 속성값을 1로 가지는 필수컬럼과 확장컬럼 표에서 '등록화면표시'를 체크한 확장컬럼에 대해서만 순서를 설정하여 줄 수 있으며 또한 두 개 이상의 중복된 컬럼을 설정할 시 게시판 생성이 불가능하다. 
+					다음은 등록화면 구성을 할 수 있는 화면이다.
+				</para>
+			    <mediaobject>
+					<imageobject>
+   		     		<imagedata align="center"
+   	            		fileref="../image/board/board_ui_tab_screen_arrange_view_update.png" />
+   			     	</imageobject>
+   	 	   	 		<textobject>
+   	     				<phrase>Anyframe board plugin에서 '등록화면' 및 '상세화면'에 대한 화면구성을 설정할 수 있는 Tab을 나타내는 화면이다. 셀렉트박스 내의 값을 수정함으로서 등록 및 상세화면에서의 각 컬럼의 배치가 가능하다.</phrase>
+   	     			</textobject>
+        		</mediaobject>
+        		<para>다음은 상단화면의 설정이 반영된 게시판 '등록화면'의 일부이다.</para>
+			    <mediaobject>
+					<imageobject>
+   		     		<imagedata align="center"
+   	            		fileref="../image/board/board_ui_tab_screen_arrange_view_form_screen.png" />
+   			     	</imageobject>
+   	 	   	 		<textobject>
+   	     				<phrase>Anyframe board plugin에서 생성된 등록화면 중의 일부이다. 상단에서 설정한 화면 배치가 적용되어 있다.</phrase>
+   	     			</textobject>
+        		</mediaobject>
+     	   	</listitem>
+			<listitem>
+	        	<para><emphasis role="bold">목록 화면 설정</emphasis></para>
+				<para>
+					생성된 게시판에 존재하는 '목록화면'에서의 각 컬럼(필드)의 위치를 설정한다. 마우스 드래그를 이용하여 각 컬럼(필드)를 이동시켜 순서를 설정할 수 있으며, 설정한 순서에 따라 '목록화면'에서 좌/우측를 기준으로 새로운 게시판에서의 컬럼(필드)가 배치된다. 
+					board.columns.definition.xml파일에서 useList 속성값을 1로 가지는 필수컬럼과 확장컬럼 표에서 '목록화면표시'을 체크한 확장컬럼에 대해서만 순서를 설정하여 줄 수 있으며 만약 게시판 종류가 '블로그형'일 시에는 이 창은 활성화되지 않고 설정 또한 불가능하다.
+					다음은 목록화면 구성을 할 수 있는 화면이다.
+				</para>
+			    <mediaobject>
+					<imageobject>
+   		     		<imagedata align="center"
+   	            		fileref="../image/board/board_ui_tab_screen_arrange_list_update.png" />
+   			     	</imageobject>
+   	 	   	 		<textobject>
+   	     				<phrase>Anyframe board plugin에서 목록에 대한 화면구성을 설정할 수 있는 Tab을 나타내는 화면이다. 마우스 드래그로 위치를 조정하여 레이아웃을 설정하여 줄 수 있다.</phrase>
+   	     			</textobject>
+        		</mediaobject>	        	
+	       		<para>다음은 상단화면의 설정이 반영된 게시판 '목록화면'의 일부이다.</para>
+			    <mediaobject>
+					<imageobject>
+   		     		<imagedata align="center"
+   	            		fileref="../image/board/board_ui_tab_screen_arrange_list_screen.png" />
+   			     	</imageobject>
+   	 	   	 		<textobject>
+   	     				<phrase>Anyframe board plugin에서 생성된 목록화면 중의 일부이다. 상단에서 설정한 화면 배치가 적용되어 있다.</phrase>
+   	     			</textobject>
+        		</mediaobject>	       		
+        	</listitem>
+		</itemizedlist>
+	</section>
+	
+	<section id="board_quick_start_configuration_add2">
+		<title>설정파일 수정</title>
+		<para>게시판 소스가 생성된 후 몇 설정파일 수정, 테이블 생성 스크립트 실행, WAS를 재기동 작업을 거쳐, 서비스 동작을 확인한다. 게시판 소스코드가 정상적으로 생성된 이후에 서비스 등록을 위하여, xml 파일에 생성된 소스코드에 대한 정보를 설정한다.
+		설정 작업을 해주어야 하는 파일은 아래 2파일이다.</para>
+		<programlisting language="xml"><![CDATA[context-annotation.xml
+context-message.xml]]></programlisting>
+		<itemizedlist>
+			<listitem>
+				<para>우선 context-annotation.xml 파일을 수정한다. 파일을 열어 아래 내용을 확인한다.</para>
+				<programlisting language="xml"><![CDATA[<context:component-scan base-package="]]><emphasis role="bold"><![CDATA[test,]]></emphasis><![CDATA[org.anyframe" use-default-filters="false">
+	<context:include-filter type="annotation" expression="org.springframework.stereotype.Service" />
+	<context:include-filter type="annotation" expression="org.springframework.stereotype.Repository" />
+</context:component-scan>]]></programlisting>
+				<para>context:component-scan 속성의 base-package 옵션에 게시판 생성시 입력한 패키지명을 추가한다. 
+				예제에서는 패키지명을 <emphasis role="bold">test</emphasis> 로 지정하였다.</para>
+			</listitem>
+			<listitem>
+				<para>context-message.xml 파일을 수정을 위해 파일을 열고 아래 내용을 확인한다.</para>
+				<programlisting language="xml"><![CDATA[<property name="basenames">
+	<list>
+		<value>classpath:message/message-generation</value>
+		<value>classpath:message/message-moviefinder</value>
+		<value>classpath:message/message-converter</value>
+		<!--Add new configuration here-->
+		<!--board-configuration-START-->
+		<value>classpath:message/message-board</value>
+		<!--board-configuration-END-->
+		]]><emphasis role="bold"><![CDATA[<value>classpath:message/message-test</value>]]></emphasis><![CDATA[
+	</list>
+</property>]]></programlisting>
+				<para>list에 게시판 생성으로 인해 생성된 message property 파일을 지정한다. 	message 파일명은 게시판 생성시 화면에 입력한, 서비스명을 기준으로 생성된다.
+  				입력시에는 파일종류(properties) 을 제외한 파일명으로 입력한다.
+				예제에서는 패키지명을 <emphasis role="bold">message-test</emphasis> 를 추가하였다.</para>
+			</listitem>
+		</itemizedlist>
+		<note>
+			<title>파일첨부 기능 사용 시 유의사항</title>
+			<para>파일첨부 기능을 사용으로 체크 후 게시판 생성 시 src/main/resources/spring/jquery-servlet.xml에 선언되어 있는 multipartResolver를 지워줘야만 정상적으로 파일첨부 기능을 사용할 수 있다. 삭제해줘야할 코드는 아래와 같다.</para>
+			<programlisting language="xml"><![CDATA[	<bean id="multipartResolver"
+		class="org.springframework.web.multipart.commons.CommonsMultipartResolver">
+		<property name="maxUploadSize">
+			<value>10000000</value>
+		</property>
+	</bean>]]></programlisting>
+			<para>위의 코드를 삭제 혹은 주석처리 후 생성된 게시판의 기능을 사용하면 된다. 파일첨부 기능을 사용하지 않을 시 에는 이 해당하는 부분을 삭제 혹은 주석처리하지 않아도 무방하다.</para>
+		</note>
+	</section>
+	<section id="board_quick_start_run_db_script">
+		<title>테이블 생성 스크립트 실행</title>
+		<para>xml 설정작업까지  완료되면 테이블을 생성 스크립트를 실행하여, 테이블을 생성한다. 테이블 생성 스크립트 위치는 [projectHome]\db\hsqldb\createtable-test.sql 이다. (현재, Board Plugin에서는 HsqlDB용 DDL문만 제공한다.)
+		스크립트를 실행시키기 위해서 [projectHome]\db\hsqldb\start.cmd 실행하여 HsqlDB를 구동한다.</para>
+		<mediaobject>
+			<imageobject>
+				<imagedata align="center" fileref="../image/board/board_ui_tab_baseinfo_hsqldb_run.PNG" width="620" scalefit="1"/>
+			</imageobject>
+		</mediaobject>
+		<para>hsqldb 에서 쿼리 실행을 위한 [projectHome]\db\hsqldb\sqltool.cmd 실행 후 기동 완료 메시지를 확인한다.</para>
+		<mediaobject>
+			<imageobject>
+				<imagedata align="center" fileref="../image/board/board_ui_tab_baseinfo_hsqldb_run_sqlTool.PNG"/>
+			</imageobject>
+		</mediaobject>
+		<para>createtable-test.sql 파일을 열어 쿼리 내용을 확인 한다.
+게시판 테이블 생성 Script와 댓글 테이블 생성 Script를 확인할 수 있다.</para>
+		<mediaobject>
+			<imageobject>
+ 	     		<imagedata align="center"
+ 	           		fileref="../image/board/board_ui_tab_columninfo_created_sqlfile.png" />
+		     	</imageobject>
+   	 		<textobject>
+   				<phrase>db/hsqldb/createtable-${boardName}.sql 파일 내에 생성된 sql문이다. 해당하는 쿼리문을 사용자가 직접 적용함으로서 테이블을 생성할 수 있다.</phrase>
+   			</textobject>
+   		</mediaobject>
+		<para>sqltool.cmd 를 통해 테이블 생성 쿼리를 실행한 후 테이블 생성 완료 메시지를 확인한다.</para>
+		<mediaobject>
+			<imageobject>
+				<imagedata align="center" fileref="../image/board/board_ui_tab_baseinfo_run_create_table_sql.PNG"/>
+			</imageobject>
+		</mediaobject>
+	</section>
+	<section id="board_quick_start_was_run_and_check2">
+		<title>WAS 기동 후 확인</title>
+		<para>테이블 생성작업까지  완료되면 WAS를 기동하여, Web Application 으로서의 동작을 확인한다. 본 메뉴얼에서는 Tomcat 서버를 기준으로 WAS 기동 방법을 설명한다.
+		Tocmcat 으로 서비스를 확인할 수 있는 방법은 2가지 방법이 있다.</para>
+		<itemizedlist>
+			<listitem>
+				<para>이클립스 프로젝트 에서 Run As... 로 실행 : 아래 그림처럼 게시판 생성 Plug In이 설치된 프로젝트에서, Run on Server를 클릭하여
+				등록한 서비스의 실행을 확인한다.
+				<mediaobject>
+					<imageobject>
+			        	<imagedata align="center" fileref="../image/board/board_ui_tab_configuration_run_as_tomcat.png" />
+			        </imageobject>
+			    </mediaobject>
+				접속 URL은 본 메뉴얼 대로 했을시 "http://localhost:port/anyframe-board-pi/test/listView.do"이며,그렇지 않을 경우 
+				"http://localhost:port/anyframe-board-pi/서비스명/listView.do"
+				이다. 이 때 서비스명, 기본정보 탭에서 입력한 서비스명이 기준이 된다. URL 접속후 아래와 같은 목록조회 화면을 확인할 수 있다.</para>
+				<mediaobject>
+					<imageobject>
+			        	<imagedata align="center" fileref="../image/board/board_ui_tab_configuration_result.png" width="620" scalefit="1"/>
+			        </imageobject>
+			    </mediaobject>
+			</listitem>
+			<listitem>
+				<para>maven 명령어를 통해 war파일 생성후 Tomcat에 직접 배포 : 로컬 콘솔 창에서 Board Plugin이 설치된 프로젝트로 이동 후 아래 명령어를 수행한다.
+					<programlisting language="xml"><![CDATA[mvn clean compile war:war]]></programlisting>
+				콘솔 창에서 아래와 같은 종료메시가 출력된다면, war 파일이 정상적으로 생성된 것이다.
+				<mediaobject>
+					<imageobject>
+			        	<imagedata align="center" fileref="../image/board/board_ui_tab_configuration_build_success.png" width="620" scalefit="1"/>
+			        </imageobject>
+			    </mediaobject>
+			    생성된 war파일을 tomcat에 배포하고, tomcat을 재기동 한 후 http://localhost:port/anyframe-board-pi/서비스명/listView.do 링크로 이동하여 결과를 확인한다. 
+				이 때 서비스명, 기본정보 탭에서 입력한 서비스명이 기준이 된다. 서버 기동이 완료되면 URL 접속후 아래와 같은 목록조회 화면을 확인할 수 있다.</para>
+				<mediaobject>
+					<imageobject>
+			        	<imagedata align="center" fileref="../image/board/board_ui_tab_configuration_result.png" />
+			        </imageobject>
+			    </mediaobject>
+			</listitem>
+		</itemizedlist>
+	</section>
+</chapter>

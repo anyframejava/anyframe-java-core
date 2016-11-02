@@ -1,0 +1,340 @@
+<?xml version="1.0" encoding="utf-8"?>
+<mx:TitleWindow xmlns:fx="http://ns.adobe.com/mxml/2009" 
+				xmlns:s="library://ns.adobe.com/flex/spark" 
+				xmlns:mx="library://ns.adobe.com/flex/mx" 
+				xmlns:local="*"
+				layout="vertical" 
+				width="350" height="500" 
+				showCloseButton="true" 
+				close="PopUpManager.removePopUp(this)" 
+				title="Movie Add" 
+				creationComplete="create()"
+				verticalScrollPolicy="off" 
+				horizontalScrollPolicy="off">
+	<fx:Script>
+		<![CDATA[
+			import mx.controls.List;
+			import mx.events.FlexEvent;
+			import mx.controls.Alert;
+			import mx.collections.ArrayCollection;
+			import mx.events.ListEvent;
+			import mx.rpc.events.ResultEvent;
+			import mx.managers.PopUpManager;
+			import mx.events.ListEvent;
+			
+			[Bindable]
+			public var genreList:ArrayCollection;
+			
+			private var createAttachedList:ArrayCollection = new ArrayCollection;
+			
+			[Bindable]
+			public var movie:Movie;
+
+			private var refId:String;
+			
+			private var uploadUrl:String = "./../../flexQueryUpload.do";
+			private var addFileRefList:FileReferenceList;    
+			private var uploadFile:FileReference;
+			private var arrUploadFiles:Array;
+			private var cntCurrentUpload:Number = 0;     
+			
+			private function create():void{
+				var date:Date = new Date;
+				this.refId = "REF-" + date.getFullYear() + date.getMonth() + date.getDay() + date.getHours() + date.getMinutes() + date.getSeconds() + date.getMilliseconds();
+				movie.fileRefId = this.refId;
+				arrUploadFiles = new Array();
+				
+			}
+			
+			private function cmbGenreListChange(event:ListEvent):void{
+           		movie.genreId = cmbGenreList.selectedItem.genreId;
+           		movie.genreName = cmbGenreList.selectedItem.name;
+            }
+            
+            private function cmbNowPlayingChange(event:ListEvent):void{
+           		movie.nowPlaying = cmbNowPlaying.selectedItem.data;
+            }
+            
+			private function confirm():void{
+				startUpload();
+			}
+			
+			private function movieCreateResultHandler(event:ResultEvent):void{
+				dispatchEvent( new MovieEvent ( MovieEvent.CREATE, movie ) );
+				PopUpManager.removePopUp(this);
+			}
+			
+			private function cancel():void{
+				dispatchEvent( new MovieEvent ( MovieEvent.CANCEL, movie ) );
+				PopUpManager.removePopUp(this);
+			}
+			
+			private function btnFileAddClick(event:MouseEvent):void{
+				addFileRefList = new FileReferenceList();
+				addFileRefList.addEventListener(Event.SELECT, onSelectFile);
+				addFileRefList.browse();
+			}
+			
+			private function btnFileRemoveClick(event:MouseEvent):void{
+				var arrSelected:Array = listFiles.selectedIndices;
+				if (arrSelected.length >= 1) {
+					for (var i:Number = 0; i < arrSelected.length; i++) {
+						arrUploadFiles[Number(arrSelected[i])] = null;
+					}
+					for (var j:Number = 0; j < arrUploadFiles.length; j++) {
+						if (arrUploadFiles[j] == null) {
+							arrUploadFiles.splice(j, 1);
+							j--;
+						}
+					}
+					listFiles.dataProvider = arrUploadFiles;
+					listFiles.selectedIndex = 0;                    
+				}
+				updateProgBar();
+				scrollFiles();
+			}
+			
+			private function startUpload():void {
+				progBar.visible = true;
+				if (arrUploadFiles.length > 0) {
+					btnAdd.enabled = false;
+					btnRemove.enabled = false;
+					
+					listFiles.selectedIndex = cntCurrentUpload;
+					scrollFiles();
+					
+					var sendVars:URLVariables = new URLVariables();
+					var request:URLRequest = new URLRequest();
+					request.data = sendVars;
+					request.url = uploadUrl;
+					request.method = URLRequestMethod.POST;
+					uploadFile = new FileReference();
+					uploadFile = listFiles.selectedItem.file;
+					uploadFile.addEventListener(ProgressEvent.PROGRESS, onUploadProgress);
+					uploadFile.addEventListener(DataEvent.UPLOAD_COMPLETE_DATA, onUploadComplete);
+					uploadFile.addEventListener(IOErrorEvent.IO_ERROR, onUploadIoError);
+					uploadFile.addEventListener(SecurityErrorEvent.SECURITY_ERROR, onUploadSecurityError);
+					uploadFile.upload(request, "file", false);
+				}else{
+					movieService.create(movie);
+				}
+			}
+			
+			private function onUploadComplete(event:DataEvent):void {
+				cntCurrentUpload++;   
+				
+				createAttachedList.addItem(setAttachedInfo(event.currentTarget as FileReference, event.data));
+				
+				if (cntCurrentUpload < arrUploadFiles.length) {
+					startUpload();
+				} else {
+					clearUpload();
+					dispatchEvent(new Event("uploadComplete"));
+					uploadInfoService.create(createAttachedList);
+				}
+				progBar.visible = false;
+			}
+			
+			private function createAttachedListResultHandler(event:Event):void {
+				movieService.create(movie);
+			}
+			
+			private function setAttachedInfo(file:FileReference, id:String):Attached{
+				var createAttached:Attached = new Attached;
+				createAttached.id = id;
+				createAttached.name = file.name;
+				createAttached.fileSize = file.size;
+				createAttached.refId = this.refId;
+				
+				return createAttached
+			}
+			
+			private function clearUpload():void {
+				uploadFile.removeEventListener(ProgressEvent.PROGRESS, onUploadProgress);
+				uploadFile.removeEventListener(Event.COMPLETE, onUploadComplete);
+				uploadFile.removeEventListener(IOErrorEvent.IO_ERROR, onUploadIoError);
+				uploadFile.removeEventListener(SecurityErrorEvent.SECURITY_ERROR, onUploadSecurityError);
+				uploadFile.cancel();
+				cntCurrentUpload = 0;
+				updateProgBar();
+				enableUI();
+			}
+			
+			private function disableUI():void {
+				btnAdd.enabled = false;
+				btnRemove.enabled = false;
+				listFiles.enabled = false;
+				listFiles.verticalScrollPolicy = "off";
+			}
+			
+			private function enableUI():void {
+				btnAdd.enabled = true;
+				btnRemove.enabled = true;
+				listFiles.enabled = true;
+				listFiles.verticalScrollPolicy = "on";
+			}
+			
+			private function onUploadIoError(event:IOErrorEvent):void {
+				clearUpload();
+				var evt:IOErrorEvent = new IOErrorEvent("uploadIoError", false, false, event.text);
+				dispatchEvent(evt);
+			}
+			
+			private function onUploadSecurityError(event:SecurityErrorEvent):void {
+				clearUpload();
+				var evt:SecurityErrorEvent = new SecurityErrorEvent("uploadSecurityError", false, false, event.text);
+				dispatchEvent(evt);
+			}
+			
+			private function onUploadProgress(event:ProgressEvent):void {
+				var numPerc:Number = Math.round((event.bytesLoaded / event.bytesTotal) * 100);
+				updateProgBar(numPerc);
+				var evt:ProgressEvent = new ProgressEvent("uploadProgress", false, false, event.bytesLoaded, event.bytesTotal);
+				dispatchEvent(evt);
+			}
+			
+			private function onSelectFile(event:Event):void {
+				var arrFoundList:Array = new Array();
+				for (var i:Number = 0; i < arrUploadFiles.length; i++) {
+					for (var j:Number = 0; j < addFileRefList.fileList.length; j++) {
+						if (arrUploadFiles[i].name == addFileRefList.fileList[j].name) {
+							arrFoundList.push(addFileRefList.fileList[j].name);
+							addFileRefList.fileList.splice(j, 1);
+							j--;
+						}
+					}
+				}
+				if (addFileRefList.fileList.length >= 1) {                
+					for (var k:Number = 0; k < addFileRefList.fileList.length; k++) {
+						arrUploadFiles.push({
+							name:addFileRefList.fileList[k].name,
+							size:formatFileSize(addFileRefList.fileList[k].size),
+							file:addFileRefList.fileList[k]});
+					}
+					listFiles.dataProvider = arrUploadFiles;
+					listFiles.selectedIndex = arrUploadFiles.length - 1;
+				}                
+				if (arrFoundList.length >= 1) {
+					Alert.show("The file(s): \n\n• " + arrFoundList.join("\n• ") + "\n\n...are already on the upload list. Please change the filename(s) or pick a different file.", "File(s) already on list");
+				}
+				updateProgBar();
+				scrollFiles();
+			}
+			
+			private function scrollFiles():void {
+				listFiles.verticalScrollPosition = listFiles.selectedIndex;
+				listFiles.validateNow();
+			}
+			
+			
+			private function updateProgBar(numPerc:Number = 0):void {
+				var strLabel:String = (cntCurrentUpload + 1) + "/" + arrUploadFiles.length;
+				strLabel = (cntCurrentUpload + 1 <= arrUploadFiles.length && numPerc > 0 && numPerc < 100) ? numPerc + "% - " + strLabel : strLabel;
+				strLabel = (cntCurrentUpload + 1 == arrUploadFiles.length && numPerc == 100) ? "Upload Complete - " + strLabel : strLabel;
+				strLabel = (arrUploadFiles.length == 0) ? "" : strLabel;
+				progBar.label = strLabel;
+				progBar.setProgress(numPerc, 100);
+				progBar.validateNow();
+			}
+			
+			private function formatFileSize(numSize:Number):String {
+				var strReturn:String;
+				numSize = Number(numSize / 1000);
+				strReturn = String(numSize.toFixed(1) + " KB");
+				if (numSize > 1000) {
+					numSize = numSize / 1000;
+					strReturn = String(numSize.toFixed(1) + " MB");
+					if (numSize > 1000) {
+						numSize = numSize / 1000;
+						strReturn = String(numSize.toFixed(1) + " GB");
+					}
+				}                
+				return strReturn;
+			}
+			
+		]]>
+	</fx:Script>
+	
+	<fx:Declarations>
+		
+		<mx:ArrayCollection id="nowPlaying">
+			<fx:Object label="Y" data="Y"/>
+			<fx:Object label="N" data="N"/>
+		</mx:ArrayCollection> 
+		
+		<mx:RemoteObject id="movieService" destination="flexQueryMovieService">
+			<mx:method name="create" result="movieCreateResultHandler(event)"/>
+		</mx:RemoteObject>
+		
+		<mx:RemoteObject id="uploadInfoService" destination="flexQueryUploadInfoService">
+			<mx:method name="create" result="createAttachedListResultHandler(event)"/>
+		</mx:RemoteObject>
+		
+		<mx:Validator id="val_title"  source="{txtTitle}"  property="text" requiredFieldError="Title을 입력하세요!"/>		
+		<mx:Validator id="val_director"  source="{txtDirector}"  property="text" requiredFieldError="Director를 입력하세요!"/>	
+		<mx:Validator id="val_actors"  source="{txtActors}"  property="text" requiredFieldError="Actors를 입력하세요!"/>
+		<mx:NumberValidator id="val_ticketPrice"  source="{txtTicketPrice}"  property="text" minValue="0" maxValue="9999" domain="int"
+							invalidCharError="숫자를 입력하세요" 
+							lowerThanMinError="작은값을 입력했습니다." exceedsMaxError="값이 너무 큽니다."/>
+		<mx:NumberValidator id="val_runtime"  source="{txtRuntime}"  property="text" minValue="0" maxValue="999" domain="int"
+							invalidCharError="숫자를 입력하세요" 
+							lowerThanMinError="작은값을 입력했습니다." exceedsMaxError="값이 너무 큽니다."/>
+	</fx:Declarations>
+	
+	
+    
+	<mx:Form id="movieDetailForm" verticalScrollPolicy="off" horizontalScrollPolicy="off">
+		<mx:FormItem label="ID">
+			<mx:TextInput id="txtMovieId" text="{movie.movieId}" width="202" editable="false"/> 
+		</mx:FormItem>
+		<mx:FormItem label="Genre">
+			<mx:ComboBox id="cmbGenreList" text="{movie.genreName}" editable="true" dataProvider="{genreList}" labelField="name" change="cmbGenreListChange(event)"  width="202"/>
+		</mx:FormItem>
+		<mx:FormItem label="Title">
+			<mx:TextInput id="txtTitle" text="{movie.title}" width="202" editable="true"/> 
+		</mx:FormItem>
+		<mx:FormItem label="Director">
+			<mx:TextInput id="txtDirector" text="{movie.director}" width="202" editable="true"/> 
+		</mx:FormItem>
+		<mx:FormItem label="Actors">
+			<mx:TextInput id="txtActors" text="{movie.actors}" width="202" editable="true"/> 
+		</mx:FormItem>
+		<mx:FormItem label="Ticket Price">
+			<mx:TextInput id="txtTicketPrice" text="{movie.ticketPrice}" maxChars="4" width="202" editable="true"/> 
+		</mx:FormItem>
+		<mx:FormItem label="Runtime">
+			<mx:TextInput id="txtRuntime" text="{movie.runtime}" maxChars="3" width="202" editable="true"/> 
+		</mx:FormItem>
+		<mx:FormItem label="Now Playing">
+			<mx:ComboBox id="cmbNowPlaying" text="{movie.nowPlaying}" editable="true" dataProvider="{nowPlaying}" labelField="data" change="cmbNowPlayingChange(event)"  width="202"/>
+		</mx:FormItem>
+	</mx:Form>
+	<mx:VBox width="319" height="250">
+		<mx:DataGrid id="listFiles"  width="319" height="50%" allowMultipleSelection="true" verticalScrollPolicy="on"
+					 draggableColumns="false" resizableColumns="false" sortableColumns="false">
+			<mx:columns>
+				<mx:DataGridColumn dataField="name" headerText="File Name" width="250" textAlign="center"/>
+				<mx:DataGridColumn dataField="size" headerText="Size"   width="100" textAlign="center"/>
+			</mx:columns>
+		</mx:DataGrid>
+		
+		<mx:ControlBar horizontalAlign="right" verticalAlign="middle" width="100%">
+			<mx:ProgressBar id="progBar" mode="manual" label="" labelPlacement="center" width="100%" visible="false"/>
+			<mx:Button id="btnAdd" toolTip="Add file(s)" click="btnFileAddClick(event)" icon="@Embed('assets/images/add.png')" width="26"/>
+			<mx:Button id="btnRemove" toolTip="Remove file(s)" click="btnFileRemoveClick(event)" icon="@Embed('assets/images/cancel.png')" width="26"/>
+		</mx:ControlBar>
+		
+	</mx:VBox>	
+	 <mx:ControlBar horizontalAlign="center">
+        <mx:Button label="Add" click="confirm()"/>
+        <mx:Button id="btnCancel" label="CANCEL" click="cancel()"/>
+    </mx:ControlBar> 
+    
+    <fx:Binding source="txtTitle.text" destination="movie.title"/>
+	<fx:Binding source="txtDirector.text" destination="movie.director"/>
+	<fx:Binding source="txtActors.text" destination="movie.actors"/>
+	<fx:Binding source="cmbGenreList.selectedItem.genreId" destination="movie.genreId"/>
+	<fx:Binding source="cmbNowPlaying.selectedItem.data" destination="movie.nowPlaying"/>
+	<fx:Binding source="Number(txtTicketPrice.text)" destination="movie.ticketPrice"/>
+	<fx:Binding source="Number(txtRuntime.text)" destination="movie.runtime"/>
+</mx:TitleWindow>

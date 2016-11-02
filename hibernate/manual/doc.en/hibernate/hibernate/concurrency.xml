@@ -1,0 +1,416 @@
+<chapter id="hibernate_hibernate_concurrency">
+	<title>Concurrency</title>
+    <para>
+		Hibernate provides optimistic locking or pessimistic locking to
+			control the access to the data when the same data is accessed simultaneously.
+		</para>
+
+	<section id="hibernate_hibernate_concurrency_optimistic">
+		<title>Optimistic Locking</title>
+
+		<para>
+			<programlisting language="java"><![CDATA[public void updateMovieWithoutOptimisticLocking() throws Exception {
+    // 1. insert a new country, movies information
+    newSession(); // first transaction
+    addCountryMovieAtOnce();
+    closeSession();
+
+    // 2. select a country
+    newSession(); // second transaction]]>
+    <emphasis role="bold"><![CDATA[/* #1 */ Movie fstMovie = (Movie) session.get(Movie.class, "MV-00001");]]></emphasis>
+    <emphasis role="bold"><![CDATA[/* #2 */ Movie scdMovie = (Movie) session.get(Movie.class, "MV-00001");]]></emphasis>
+
+    <![CDATA[closeSession();]]>
+
+    // 3. set country name
+    <emphasis role="bold"><![CDATA[/* #3 */ fstMovie.setTitle("First : My Sassy Girl");]]></emphasis>
+
+
+    // 4. select a country again with same id and update country name
+    <![CDATA[newSession(); // third transaction]]>
+    <emphasis role="bold"><![CDATA[/* #4 */ scdMovie.setTitle("Second : My Sassy Girl");]]></emphasis>
+
+    <![CDATA[closeSession();]]>
+
+    // 5. try to update with detached object
+    <![CDATA[newSession(); // fourth transaction]]>
+    <emphasis role="bold"><![CDATA[/* #5 */ session.update(fstMovie);]]></emphasis>
+
+    <![CDATA[closeSession();
+}]]></programlisting>
+			Let's take a close look at updateMovieWithoutOptimisticLocking() logic mentioned above.				
+		</para>
+
+		<orderedlist>
+			<listitem>
+				<para>Search same data using the same identifier by code #1 and #2 
+				</para>
+        	</listitem>
+
+        	<listitem>
+          		<para>
+          			After the second transaction is completed, update the title of fstMovie object of detached status in code #3.     
+          		</para>
+        	</listitem>
+
+        	<listitem>
+          		<para>
+          			Update the title of scdMovie object in code #4 in the third transaction, 
+          			the update is applied to DB when the third transaction is completed.					
+          		</para>
+        	</listitem>
+
+        	<listitem>
+          		<para>
+          			Update fstMovie object which was updated through code #3 in the fourth transaction.						
+          		</para>
+        	</listitem>
+
+        	<listitem>
+          		<para>
+          			Also perform update successfully for fstMovie.          			
+          		</para>
+        	</listitem>
+      	</orderedlist>
+
+      	<para>
+      		In conclusion, the title of Movie whose MOVIE_ID is "MV-00001"
+				becomes "First : My Sassy Girl". So, the update requested at scdMovie is ignored. 
+				This situation is called Lost Update, and there are three ways to resolve this.		
+		      	</para>
+
+      	<orderedlist>
+        	<listitem>
+				<para>
+          			Last Commit Wins : This is basically performed when optimistic locking
+						is not performed. Both of the two transactions are committed successfully.
+						Therefore, the second commit can override content of the first commit.          		
+          		</para>
+			</listitem>
+
+        	<listitem>
+				<para>
+					First Commit Wins : This is a type where optimistic locking was applied. 
+					Only the first one is committed successfully, while the second one gets an error.				
+				</para>
+        	</listitem>
+
+        	<listitem>
+          		<para>
+          			Merge : Only first commit is successful, while second commit gets an error. However, unlike Fist Commit Wins, the process for
+						the second commit is not performed from the beginning but can be updated by developer
+						selectively. But this is a best strategy, UI or method to merge
+						updates must be directly provided. (additional implementation is needed.)          		
+         		</para>
+        	</listitem>
+      	</orderedlist>
+
+      	<para>
+      		Hibernate provides First Commit Wins through Versioning-based Automatic Optimistic Locking. 
+      		<emphasis role="bold">To perform optimistic locking in Hibernate,
+					Version or Timestamp column must be added in a target table.</emphasis>
+				In this case, Version or Timestamp information is also loaded when loading mapped object with target table.		
+      	</para>
+
+      	<para>
+      		The following is an example of optimistic locking using Version.	
+      	</para>
+
+		<para>
+			The attribute of int type for managing version is defined in persistence class targeted for optimistic locking.
+				By using <![CDATA[<version> next to <id>]]> tag in hibernate mapping xml file,
+				mapping information on version is defined.		
+            <programlisting language="java"><![CDATA[1. Country.java
+
+public class Country implements java.io.Serializable {
+
+    private int version;
+
+    private String countryCode;
+    private String countryId;
+    private String countryName;
+    private Set movies = new HashSet(0);
+	
+    //...
+}
+
+2. Country.hbm.xml
+
+<class name="org.anyframe.sample.model.bidirection.concurrency.optimistic.Country" 
+        table="COUNTRY" lazy="true" schema="PUBLIC">
+    <id name="countryCode" type="string">
+        <column name="COUNTRY_CODE" length="12" />
+        <generator class="assigned" />
+    </id>
+    <version name="version" access="field" column="COUNTRY_VERSION"/>
+    ...
+</class>]]></programlisting>
+			In this case, the first update is made successfully when executing updateCountryWithOptimisticLocking() method, 
+			but for the second update, StaleObjectStateException will be thrown like code #6.			
+            <programlisting language="java"><![CDATA[1. HibernateOptimisticLocking.java
+			
+public void updateCountryWithOptimisticLocking() throws Exception {
+    // 1. insert a new country, movies information
+    newSession();
+    addCountryMovieAtOnce();
+    closeSession();
+
+    // 2. select a country
+    newSession();]]>
+    <emphasis role="bold"><![CDATA[/* #1 */ Country fstCountry = (Country) session.get(Country.class,]]></emphasis>
+            <emphasis role="bold">"COUNTRY-0001");</emphasis>
+
+    <emphasis role="bold"><![CDATA[/* #2 */ Country scdCountry = (Country) session.get(Country.class,]]></emphasis>
+            <emphasis role="bold">"COUNTRY-0001");</emphasis>
+
+    <![CDATA[closeSession();]]>
+
+    // 3. set country name
+    <emphasis role="bold"><![CDATA[/* #3 */ fstCountry.setCountryName("First : Republic of Korea.");]]></emphasis>
+
+    // 4. select a country again with same id and update country name
+    <![CDATA[newSession();]]>
+    <emphasis role="bold"><![CDATA[/* #4 */ scdCountry.setCountryName("Second : Republic of Korea.");]]></emphasis>
+
+    <![CDATA[closeSession();
+
+    // 5. try to update with detached object
+    newSession();
+    try {]]>
+        <emphasis role="bold"><![CDATA[/* #5 */ session.update(fstCountry);]]></emphasis>
+        <![CDATA[closeSession();
+    } catch (Exception e) {
+        e.printStackTrace();
+    }
+}]]></programlisting>
+		</para>
+
+		<para>
+			Using Timestamp is not as safe as using Version. In general, as JVM is not accurate in millisecond level, 
+			simultaneous control with Timestamp	may be difficult.
+				To resolve this issue, you can fetch Timestamp value from DB by
+				defining as source="db" in the <![CDATA[<timestamp>]]> type column.
+				However, such method results in additional cost for accessing DB whenever
+				getting Timestamp value. For this reason, Hibernate recommends the use of Version
+				rather than Timestamp. Other than this, by defining the value of optimistic-lock in <![CDATA[<class>]]>
+				as "all" or "dirty", optimistic locking can be done without
+				additional definition on Version or Timestamp column.
+				However, this function is not also recommended due to performance issue and complexities.
+	      	</para>
+
+      	<itemizedlist>
+        	<listitem>
+          		<para>
+          			optimistic-lock="all" : Compared with when searching the object, apply optimistic locking by trying update stating the un-updated column
+						values as a condition (WHERE phrase)          		
+          		</para>
+        	</listitem>
+
+        	<listitem>
+          		<para>
+          			optimistic-lock="dirty" : Apply Optimistic Locking when update was performed for the same value in two transactions. Therefore the case when two
+						transactions updated different column value is not included here.
+          		</para>
+			</listitem>
+		</itemizedlist>
+    </section>
+
+    <section id="hibernate_hibernate_concurrency_pessimistic">
+		<title>Pessimistic Locking</title>
+
+		<para>
+			Considering scalability of application, it is not recommended 
+			/to raise the isolation level of application to read committed or over for simultaneous access control. It is ideal to better guarantee isolation for specific work.
+				Hibernate-based Pessimistic Locking is performed for specific transaction
+				by using locking mode defined by developer among the following locking modes.				
+		</para>
+
+		<itemizedlist>
+        	<listitem>
+          		<para>
+          			<emphasis role="bold">LockMode.NONE</emphasis> : (Default) Locking is not performed. If object exists in
+						cache, the object in cache is used.						
+          		</para>
+        	</listitem>
+
+        	<listitem>
+          		<para>
+          			<emphasis role="bold">LockMode.READ</emphasis> : Data is fetched not from cache but from DB where the current
+						transaction is included. After then, the data is checked whether it is same to the object in the memory.          		
+          		</para>
+        	</listitem>
+
+        	<listitem>
+          		<para>
+          			<emphasis role="bold">LockMode.UPGRADE</emphasis> : When searching, as query like SELECT .. FOR UPDATE is performed,
+						when the same object is tried to be accessed in another thread,
+						locking is made by row. This is supported only for DBMS providing
+						SELECT .. FOR UPDATE. When using DB does not supporting SELECT ..
+						FOR UPDATE, it is converted to LockMode.READ.					
+          		</para>
+        	</listitem>
+
+        	<listitem>
+          		<para>
+          			<emphasis role="bold">LockMode.UPGRADE_NOWAIT</emphasis> : When searching, as query like SELECT .. FOR UPDATE NO WAIT is
+						performed, locking is performed by row, and when the same object is tried to be accessed in another thread, exception occurs
+						immediately instead of blocking. If using DB doesn't support SELECT .. FOR UPDATE NO
+						WAIT, it is converted to LockMode.UPGRADE.					
+         		</para>
+        	</listitem>
+
+        	<listitem>
+          		<para>
+          			<emphasis role="bold">LockMode.FORCE</emphasis> : Increases the object version in DB forcefully to be able
+						to notice that the object was updated by the current transaction.
+          		</para>
+        	</listitem>
+
+			<listitem>
+          		<para>
+          			<emphasis role="bold">LockMode.WRITE</emphasis> : It is automatically given when a row was added in the current
+						transaction by Hibernate. (This is a mode used in Hibernate, so there is no need to state this in application.)
+					          		</para>
+
+          		<mediaobject>
+            		<imageobject>
+	              		<imagedata align="center"
+							fileref="../image/hibernate/pessimistic-locking.png" />
+	            	</imageobject>
+	          	</mediaobject>
+	
+	          	<para>
+	          		In the picture above, client 1 and 2 are accessing the same
+						data. In this case, as client 1 locks first, another client cannot
+						access the data until client 1 unlocks the data. 
+						In other words, the other client will be able to access the data only after the transaction of client 1 is competed and the data becomes unlocked.
+						Unlike optimistic locking where exception occurs once update
+						was not applied first even when the data was accessed first, pessimistic locking
+						is a strong locking as it provides safe data update because it
+						can't accesses to the data by another transaction until the transaction which has lock is
+						completed.	          		
+				</para>
+
+	          	<para>
+	          		By using HibernatePessimisticLocking, an example code for testing
+						Pessimistic Locking, let's compare <emphasis role="bold">LockMode.NONE, LockMode.UPGRADE,
+							LockMode.UPGRADE_NOWAIT</emphasis> in detail.	          
+	          	</para>
+
+				<para>
+	          		To perform simultaneous access to one object, tread has been
+						implemented as the following. By giving sleep-time to the second thread in all
+						test methods, the first thread is explicitly started first to
+						forcefully ensure access can be made by the first thread for one object.
+						In addition, before applying the update of the first thread to DB, set sleep
+						and delay applying updates of the first thread.
+                    <programlisting language="java"><![CDATA[public class CountryThread extends Thread {
+    ... 
+    public void run() {
+        try {
+            Session session = initialSessionFactory.openSession();
+            session.beginTransaction();]]>
+
+            <emphasis role="bold"><![CDATA[Country country = (Country) session.get(Country.class,]]></emphasis>
+                    <emphasis role="bold"><![CDATA["COUNTRY-0001", this.lockMode);]]></emphasis>
+            <![CDATA[this.beforeCountryName = country.getCountryName();
+
+            country.setCountryName(id + " : Republic of Korea");]]>
+            <emphasis role="bold"><![CDATA[this.sleep(sleepTime);]]></emphasis>
+
+            <emphasis role="bold"><![CDATA[session.flush();]]></emphasis>
+
+            <![CDATA[country = (Country) session.get(Country.class, "COUNTRY-0001");
+            this.afterCountryName = country.getCountryName();
+
+            session.getTransaction().commit();
+            session.close();
+        } catch (Exception e) {
+            if (this.lockMode == LockMode.UPGRADE_NOWAIT
+                    && id.equals("second")) {
+                e instanceof LockAcquisitionException);
+            }
+        }
+    }
+    //...
+}]]></programlisting>
+				</para>
+			</listitem>
+
+			<listitem>
+          		<para>
+          			<emphasis role="bold">In the case of LockMode.NONE</emphasis>
+						: select ... is performed first through the first thread,
+						but it is not locked due to LockMode.NONE.
+						And, as the first thread will sleep() for a given time before
+						performing session.flush(), perform select through the second thread
+						immediately and commit the update.
+						sleep() for a given time in the first thread and then ignore
+						the update of the second thread and commit the update.
+						In other words, in the case of LockMode.NONE, pessimistic locking is not performed.
+          		</para>
+        	</listitem>
+
+        	<listitem>
+          		<para>
+          			<emphasis role="bold">In the case of LockMode.UPGRADE
+						</emphasis>
+						: As select ... for update is performed first through the
+						first thread, the row is locked. As the first thread will sleep()
+						for a given time before performing session.flush(), the second thread
+						will be blocked until the update of the first thread is completed,
+						and then commit the update based on the value updated in
+						the first thread.          			
+          		</para>
+        	</listitem>
+
+        	<listitem>
+          		<para>
+          			<emphasis role="bold">In the case of LockMode.UPGRADE_NOWAIT
+						</emphasis>
+						: As select ... for update nowait is performed first through the
+						first thread, the row is locked. Then the first thread will sleep()
+						for a given time before performing session.flush(). When the second
+						thread tries select ... for update nowait, LockAcquisitionException is thrown without blocking and
+						the update of the the second thread is not performed.
+          		</para>
+        	</listitem>
+      	</itemizedlist>
+    </section>
+
+    <section id="hibernate_hibernate_concurrency_offline">
+		<title>Offline Locking</title>
+
+      	<para>
+      		We have looked at how to handle simultaneous access in one
+				transaction. In Offline Lokcing, we will have a look at how to handle
+				simultaneous access when one request must be made through several transactions.
+				Let's assume a general UI composition of web application.
+				To modify the information for a specific movie in the web application providing the list of movies on UI, search for the
+				selected movie is made first and then update will follow.
+				In other words, by performing two transactions, you can perform the work you want.
+				Assuming that such works are carried out by multi-users, unless there is proper simultaneous control, work of a user can be lost. To perform simultaneous access control
+				through many transactions, the following process is needed.
+		</para>
+
+		<itemizedlist>
+			<listitem>
+				<para>
+					<emphasis role="bold">Offline Optimistic Locking</emphasis> :
+					Way of using version like Optimistic Locking. Save detached object (containing version info) from the first transaction
+					at HTTP session. When user requests the reflection of update, get detached object saved in HTTP session and set with updated info,
+					and when session.update() method is called at the second transaction,  it is returned as input parameter.
+					By doing so, it is possible to control the simultaneous access based on Version info like Optimistic Locking.
+          		</para>
+        	</listitem>
+
+        	<listitem>
+          		<para>
+          			<emphasis role="bold">Offline Pessimistic Locking</emphasis>
+						: Based on the same principle as pessimistic locking, LockMagager
+						implementation is needed to manage locking at application level, not DB level.</para>
+        	</listitem>
+      	</itemizedlist>
+    </section>
+ </chapter>
+

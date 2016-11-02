@@ -1,0 +1,670 @@
+<chapter id="hibernate_hibernate_hql">
+	<title>HQL(Hibernate Query Language)</title>
+	
+
+	<para>
+		Hibernate은 별도 Query Language를 제공함으로써 객체 지향 관점에서 객체의 속성 또는 Relation 정보를 기반으로 특정 객체에 
+		대한 조회와 DB 유형에 독립적인 Query 정의를 가능하도록 한다. HQL의 구성요소 및 작성 방법은 아래와 같다.
+	</para>
+
+	<section id="hibernate_hibernate_hql_component">
+		<title>구성 요소</title>
+
+		<section id="hibernate_hibernate_hql_component_select">
+			<title>[선택] SELECT 절</title>
+
+        	<para>
+        		전달받고자 하는 조회 결과값을 구체적으로 명시하고자 할 경우 정의한다. 
+        		<programlisting><![CDATA[SELECT [object 또는  property], …        ]]></programlisting>
+        	</para>
+
+        	<para>
+        		여러 건의 데이터를 조회할 경우 조회 결과값을 List, Map 또는 사용자 정의 Type으로 정의 가능하다.
+        		(Default = Object[]) 
+                <programlisting><![CDATA[SELECT new List(prop1, prop2, …)]]></programlisting></para>
+
+			<para>
+				Hibernate에서 제공하는 다양한 aggregate function(sum, avg, min, max, count, count(distinct), count(all),
+				arithmetic operator(+, -, …), concatenation) 그리고 일반 SQL에서 사용 가능한 keyword(distinct, …)들도 정의
+        		가능하다.
+        	</para>
+
+        	<para>
+        		이외에도 Hibernate은 문자열, 숫자, 날짜 및 시간 처리를 위한 함수를 제공하며 자세한 사항은 아래와 같다.
+        	</para>
+
+        	<itemizedlist>
+				<listitem>
+            		<para><emphasis role="bold">문자열 처리를 위한 함수</emphasis></para>
+
+            		<informaltable>
+            			<caption>문자열 처리를 위한 함수 목록</caption>
+              			<tgroup cols="2">
+              				<colspec colnum="1" colname="col1" colwidth="1*"/>
+							<colspec colnum="2" colname="col2" colwidth="3*"/>
+                			<thead>
+                  				<row>
+                    				<entry align="center">함수명</entry>
+
+                    				<entry align="center">설명</entry>
+                  				</row>
+                 			</thead>
+                 			<tbody>
+                  				<row>
+                    				<entry>UPPER(str)</entry>
+
+                    				<entry>대문자로 변환한다.</entry>
+                  				</row>
+
+                  				<row>
+                    				<entry>LOWER(str)</entry>
+
+                    				<entry>소문자로 변환한다.</entry>
+                  				</row>
+
+                  				<row>
+                    				<entry>SUBSTRING(str, idx, length)</entry>
+
+                    				<entry>문자열의 지정한 idx 위치에서 length만큼의 문자열을 얻어낸다</entry>
+                  				</row>
+
+                  				<row>
+                    				<entry>CONCAT(str1, str2)</entry>
+
+                    				<entry>두개의 문자열을 연결한다.</entry>
+                  				</row>
+
+                  				<row>
+                    				<entry>LENGTH(str)</entry>
+
+                    				<entry>문자열의 전체 길이를 구한다.</entry>
+                  				</row>
+
+                  				<row>
+                    				<entry>LENGTH(str, s, idx)</entry>
+
+                    				<entry>해당 문자열 str에서 정의된 문자열 s가 포함되어 있는 위치를 구한다. 검색 시작 위치는 idx이다.</entry>
+                  				</row>
+
+                  				<row>
+                    				<entry>TRIM([type] str)</entry>
+
+                    				<entry>
+                    					문자열의 앞뒤 공백을 삭제한다. (Type이 BOTH일 경우 앞뒤공백 삭제, Type이 LEADING일 경우 앞 
+                    					공백 삭제, Type이 TRAILING일 경우 뒤 공백 삭제)
+                    				</entry>
+                  				</row>
+                			</tbody>
+              			</tgroup>
+            		</informaltable>
+				</listitem>
+
+				<listitem>
+            		<para><emphasis role="bold">숫자 처리를 위한 함수</emphasis></para>
+
+            		<informaltable>
+            			<caption>숫자 처리를 위한 함수 목록</caption>
+              			<tgroup cols="2">
+              				<colspec colnum="1" colname="col1" colwidth="4*"/>
+							<colspec colnum="2" colname="col2" colwidth="6*"/>
+                			<thead>
+                  				<row>
+                    				<entry align="center">함수명</entry>
+
+                    				<entry align="center">설명</entry>
+                  				</row>
+                 			</thead>
+                 			<tbody>
+                  				<row>
+                    				<entry>ABS(num)</entry>
+
+                    				<entry>숫자의 절대값을 구한다.</entry>
+                  				</row>
+
+                  				<row>
+                    				<entry>SQRT(num)</entry>
+
+                    				<entry>숫자의 제곱근을 구한다.</entry>
+                  				</row>
+
+                  				<row>
+                    				<entry>MOD(num1, num2)</entry>
+
+                    				<entry>num1을 num2로 나눈 나머지값을 구한다.</entry>
+                  				</row>
+
+                  				<row>
+                    				<entry>BIT_LENGTH(str)</entry>
+
+                    				<entry>문자열의 비트 길이를 구한다.</entry>
+                  				</row>
+                			</tbody>
+              			</tgroup>
+            		</informaltable>
+				</listitem>
+
+          		<listitem>
+            		<para><emphasis role="bold">날짜 및 시간 처리를 위한 함수</emphasis></para>
+
+            		<informaltable>
+            			<caption>날짜 및 시간 처리를 위한 함수 목록</caption>
+              			<tgroup cols="2">
+                			<thead>
+                 				 <row>
+                    				<entry align="center">함수명</entry>
+
+                    				<entry align="center">설명</entry>
+                  				</row>
+                 			</thead>
+                 			<tbody>
+                  				<row>
+                    				<entry>CURRENT_DATE()</entry>
+
+                    				<entry>현재 날짜를 구한다.</entry>
+                  				</row>
+
+                  				<row>
+                    				<entry>CURRENT_TIME()</entry>
+
+                    				<entry>현재 시간을 구한다.</entry>
+                 				</row>
+
+                  				<row>
+                    				<entry>CURRENT_TIMESTAMP()</entry>
+
+                    				<entry>현재 날짜 및 시간을 구한다.</entry>
+                  				</row>
+
+                  				<row>
+                    				<entry>HOUR(date), MINUTE(date), SECOND(date)</entry>
+
+                    				<entry>시,분,초 값을 구한다.</entry>
+                  				</row>
+
+                  				<row>
+                    				<entry>YEAR(date), MONTH(date), DAY(date)</entry>
+
+                    				<entry>년,월,일 값을 구한다.</entry>
+                  				</row>
+                			</tbody>
+              			</tgroup>
+            		</informaltable>
+          		</listitem>
+        	</itemizedlist>
+		</section>
+
+		<section id="hibernate_hibernate_hql_component_from">
+			<title>[필수] FROM 절</title>
+
+        	<para>
+        		조회 대상 객체를 정의하며, SELECT 절이 생략되었을 경우 FROM 절에 정의된 객체가 전달 대상이 된다.
+                <programlisting><![CDATA[FROM [object] ((as) alias), …        ]]></programlisting>
+			</para>
+		</section>
+
+		<section id="hibernate_hibernate_hql_component_where">
+        	<title>[선택] WHERE 절</title>
+
+        	<para>
+        		조회 결과 영역을 보다 상세히 구분하고자 할 경우 정의한다. 
+                <programlisting><![CDATA[WHERE [condition], …        ]]></programlisting>
+            </para>
+
+        	<para>
+        		Mapping XML 파일에 정의한 특정 객체의 식별자 값을 추출하기 위해 "id"를 사용할 수 있다. (Hibernate 3.2.2 이상부터 
+        		해당 클래스의 식별자 필드가 아닌 다른 필드명이 id일 경우 id라는 이름을 가진 필드의 값을 전달한다) 
+        		<programlisting><![CDATA[WHERE user.id = 'test'        ]]></programlisting>
+        	</para>
+
+        	<para>
+        		또한 Discriminator 값에 접근하기 위해서는 아래와 같이 "class"를 사용할 수 있다. 이 외에도 Hibernate에서 제공하는 
+        		다양한 expression을 활용하여 WHERE 절 정의가 가능하다.
+                <programlisting><![CDATA[WHERE user.class = 'MEMBER'        ]]></programlisting>
+            </para>
+
+            <para>
+            	HQL WHERE 절에서 사용 가능한 Operation은 다음과 같은 것들이 있다.
+            </para>
+
+        	<itemizedlist>
+          		<listitem>
+            		<para>
+            			<emphasis role="bold">수학연산자</emphasis> : +, -, *, /
+            		</para>
+          		</listitem>
+
+          		<listitem>
+            		<para>
+            			<emphasis role="bold">비교연산자</emphasis> : <![CDATA[<>, <, >, <=, =>, !]]></para>
+          		</listitem>
+
+          		<listitem>
+            		<para>
+            			<emphasis role="bold">논리연산자</emphasis> : and, or, not
+            		</para>
+          		</listitem>
+
+          		<listitem>
+            		<para>
+            			<emphasis role="bold">Grouping </emphasis>: in, not in, between, is null, is not null, 
+            			is empty, is not empty, member of, not member of
+            		</para>
+          		</listitem>
+
+          		<listitem>
+            		<para>
+            			<emphasis role="bold">Case</emphasis> : case … when … then … else … end
+            		</para>
+          		</listitem>
+
+          		<listitem>
+            		<para>
+            			<emphasis role="bold">문자열 concatenation</emphasis> : … || …, concat (…,…)
+            		</para>
+          		</listitem>
+
+          		<listitem>
+           	 		<para>
+           	 			<emphasis role="bold">날짜처리</emphasis> : current_date(), current_time(), current_timestamp(),
+						second(...), minute(…), hour(…), day(…), month(…), year(…)
+					</para>
+          		</listitem>
+
+          		<listitem>
+            		<para>
+            			<emphasis role="bold">str()</emphasis> : 주어진 값을 문자열로 변환
+            		</para>
+          		</listitem>
+        	</itemizedlist>
+
+        	<para>
+        		SELECT 또는 WHERE 절에서 괄호 사이에 Sub Query 형태의 또다른 HQL을 정의할 수 있다.
+        	</para>
+		</section>
+
+		<section id="hibernate_hibernate_hql_component_orderby">
+        	<title>[선택] ORDER BY 절</title>
+
+        	<para>
+        		조회 결과의 정렬 방법을 정의한다. 
+                <programlisting><![CDATA[ORDER BY [condition] (ASC 또는 DESC), …        ]]></programlisting>
+            </para>
+      	</section>
+
+      	<section id="hibernate_hibernate_hql_comonent_groupby">
+        	<title>[선택] GROUP BY 절</title>
+
+        	<para>
+        		조회 결과를 특정 기준으로 그룹핑하고자 할 경우 정의한다. <programlisting><![CDATA[GROUP BY [condition], …        ]]>
+</programlisting>
+			</para>
+
+        	<para>
+        		※ Order By, Group By 절에 수식 정의는 불가하며, 일반 SQL처럼 Having 절을 추가하는 것은 가능하다.
+        	</para>
+      	</section>
+	</section>
+
+	<section id="hibernate_hibernate_hql_instruction">
+		<title>기본적인 사용 방법</title>
+
+      	<para>HQL을 이용한 기본적인 CRUD 방법과 Join 방법은 다음과 같다.</para>
+
+      	<section id="hibernate_hibernate_hql_instruction_basic">
+        	<title>Case 1. Basic</title>
+
+        	<para>
+        		HQL을 통해 하나의 테이블을 대상으로 조회 작업을 수행할 수 있다. 
+                <programlisting language="java"><![CDATA[StringBuilder hqlBuf = new StringBuilder();
+hqlBuf.append("FROM Country country ");
+hqlBuf.append("WHERE country.countryName like :condition ");
+hqlBuf.append("ORDER BY country.countryName");
+Query hqlQuery = session.createQuery(hqlBuf.toString());
+hqlQuery.setParameter("condition", "%%");
+List countryList = hqlQuery.list();]]></programlisting></para>
+
+        	<para>
+        		위와 같이 정의된 HQL문을 통해 조회 조건에 맞는 Country 객체의 List가 리턴된다. WHERE절의 조회 조건은 
+        		객체명.Attribute명(country.countryName)으로 정의할 수 있으며 ':'을 사용하여 정의된 속성과 값을 전달하여 
+        		조회 조건을 완성할 수 있다. 조회 조건의 값은 org.hibernate.Query의 setParameter() 메소드를 통해 지정해 
+        		주고 있다.
+        	</para>
+		</section>
+
+		<section id="hibernate_hibernate_hql_instruction_join">
+			<title>Case 2. Join</title>
+
+        	<para>
+        		HQL을 이용하여 테이블 간의 JOIN을 수행하고자 할 경우 Explicit Join, Implicit Join으로 처리 가능하다. 
+        		Hibernate에서는 (inner) join, left (outer) join, right (outer) join, full join을 지원하며, 
+        		Explicit Join은 FROM 절에 join 키워드를 명시적으로 정의하여 사용하는 방법이다. Implicit Join은 join 
+        		키워드를 별도로 사용하지 않고 "." 을 이용하여 HQL 어느 절에서나 정의할 수 있으며, Inner Join으로 처리된다.
+        	</para>
+
+        	<para>
+        		다음은 Relation 관계에 놓여 있는 두개의 테이블을 대상으로 Inner Join을 수행한 조회 작업의 예이다.
+                <programlisting language="java"><![CDATA[StringBuilder hqlBuf = new StringBuilder();
+hqlBuf.append("SELECT movie ");
+hqlBuf.append(]]><emphasis role="bold"><![CDATA["FROM Movie movie join movie.categories category "]]></emphasis>);
+<![CDATA[hqlBuf.append("WHERE category.categoryName = ?"); 
+Query query = session.createQuery(hqlBuf.toString());
+query.setParameter(0, "Romantic");...]]></programlisting>
+			</para>
+
+        	<para>
+        		위의 코드와 같이 'join'을 이용해 relation 관계에 놓여있는 MOVIE 테이블과 CATEGORY 테이블을 Inner Join할 수 있으며 
+        		기본적인 HQL 사용 때와 마찬가지로 검색 조건을 정의할 수 있다. 또한 Relation 관계에 놓여 있는 두개의 테이블을 대상으로 
+        		Right Outer Join을 수행할 수 있다. 
+                <programlisting language="java"><![CDATA[StringBuilder hqlBuf = new StringBuilder();
+hqlBuf.append("SELECT distinct category ");
+hqlBuf.append(]]><emphasis role="bold"><![CDATA["FROM Movie movie right join movie.categories category "]]></emphasis>);
+<![CDATA[hqlBuf.append("ORDER BY category.categoryName ASC ");
+...   ]]></programlisting></para>
+
+        	<para>
+        		Inner Join과 마찬가지로 'right join' 또는 'left join'을 사용할 수 있으며 위의 예는 right join을 사용하였다.
+        	</para>
+
+        	<para>
+        		두 테이블 간의 Relation 관계가 정의되어 있지 않을시 ','를 통해 두 테이블을 Join 할 수 있으며 WHERE 절에 
+        		'movie.country.countryCode = country.countryCode'와 같이 join을 위한 조건문을 정의하여 사용한다. 
+                <programlisting language="java"><![CDATA[StringBuilder hqlBuf = new StringBuilder();
+hqlBuf.append("SELECT distinct movie ");
+hqlBuf.append(]]><emphasis role="bold"><![CDATA["FROM Movie movie, Country country "]]></emphasis>);
+<![CDATA[hqlBuf.append(]]><emphasis role="bold"><![CDATA["WHERE movie.country.countryCode = country.countryCode "]]></emphasis>);
+<![CDATA[hqlBuf.append("AND country.countryId = :condition1 ");
+hqlBuf.append("AND movie.title like :condition2 ");
+
+Query query = session.createQuery(hqlBuf.toString());
+query.setParameter("condition1", "KR");
+query.setParameter("condition2", "%%");
+... ]]></programlisting></para>
+
+        	<para>
+        		위에서 설명된 코드를 포함하는 HQL을 이용한 기본적인 조회 방법에 대한 예제는 HibernateBasicHQL.java 에서 확인할 수 있다.
+        	</para>
+		</section>
+	</section>
+
+	<section id="hibernate_hibernate_hql_transformer">
+		<title>원하는 객체 형태로 전달</title>
+
+		<para>
+			HQL을 통해 조회 작업을 수행한 후, 조회 작업의 결과를 원하는 객체 형태로 전달받을 수 있다. 이는 여러 테이블을
+      		Join할 경우 한 테이블에 매핑되는 Persistence 클래스가 아닌 composite 클래스로 리턴받고자 할 때 사용할 수
+      		있다.
+      	</para>
+
+		<section id="hibernate_hibernate_hql_transformer_movie">
+        	<title>Case 1. 특정 객체 형태로 전달</title>
+
+        	<para>
+        		Relation 관계에 놓여 있는 두개의 테이블을 대상으로 HQL(Inner Join)을 이용한 조회 결과를 특정
+        		객체(예에선 Movie 객체)형태로 전달받는다. 
+                <programlisting language="java"><![CDATA[StringBuilder hqlBuf = new StringBuilder();
+hqlBuf.append(]]><emphasis role="bold"><![CDATA["SELECT new Movie(movie.movieId as movieId, "]]></emphasis>);
+<![CDATA[hqlBuf.append(]]><emphasis role="bold"><![CDATA["movie.title as title, movie.director as director, "]]></emphasis>);
+<![CDATA[hqlBuf.append(]]><emphasis role="bold"><![CDATA["category.categoryName as categoryName, "]]></emphasis>);
+<![CDATA[hqlBuf.append(]]><emphasis role="bold"><![CDATA["movie.country.countryName as countryName) "]]></emphasis>);
+<![CDATA[hqlBuf.append("FROM Movie movie join movie.categories category ");
+...]]></programlisting>
+			</para>
+
+        	<para>
+        		위와 같이 정의할 경우 Movie라는 객체의 형태로 결과값이 리턴되는데 정의된 클래스에 해당 Constructor가
+				존재해야 함에 유의하도록 한다. 다음은 Movie.java 의 Constructor 정의 부분의 일부이다.
+                <programlisting language="java"><![CDATA[public Movie(String movieId, String title, String director,
+        String categoryName, String countryName) {
+    this.movieId = movieId;
+    this.title = title;
+    this.director = director;
+    this.categoryName = categoryName;
+    this.countryName = countryName;
+}]]></programlisting></para>
+
+			<para>
+				또한 리턴된 결과값에서 각각의 attribute에 해당하는 값을 꺼낼 때에는 List에서 각 Movie 객체를 꺼낸
+       			 다음 getter 메소드를 사용하도록 한다. 
+                <programlisting language="java"><![CDATA[List movieList = query.list();]]>
+<emphasis role="bold">Movie</emphasis> movie1 = <emphasis role="bold"><![CDATA[(Movie) movieList.get(0);]]></emphasis>
+<emphasis role="bold"><![CDATA[movie1.getTitle();]]></emphasis>
+<emphasis role="bold">Movie</emphasis> movie2 = <emphasis role="bold"><![CDATA[(Movie) movieList.get(1);]]></emphasis>
+<emphasis role="bold"><![CDATA[movie2.getTitle();]]></emphasis>
+<emphasis role="bold">...</emphasis>        </programlisting>
+			</para>
+		</section>
+
+		<section id="hibernate_hibernate_hql_transformer_map">
+        	<title>Case 2. Map 형태로 전달</title>
+
+        	<para>
+        		Relation 관계에 놓여 있는 두개의 테이블을 대상으로 HQL(Inner Join)을 이용한 조회 결과를 Map
+       			형태로 전달받는다. 
+                <programlisting language="java"><![CDATA[StringBuilder hqlBuf = new StringBuilder();
+hqlBuf.append("]]><emphasis role="bold"><![CDATA[SELECT new Map]]></emphasis><![CDATA[(movie.movieId as movieId, ");
+hqlBuf.append("movie.title as title, movie.director as director, ");
+hqlBuf.append("category.categoryName as categoryName, ");
+hqlBuf.append("movie.country.countryName as countryName) ");
+hqlBuf.append("FROM Movie movie join movie.categories category ");
+... ]]></programlisting>
+			</para>
+
+        	<para>
+        		위와 같이 정의할 경우 조회 결과는 Map의 List 형태가 된다. 이때 alias로 정의한 movieId, title, director, 
+        		categoryName, countryName이 Map의 Key 값이 된다. 따라서 다음과 같이 Map으로 정의된 Key 값을 통해 결과값을 
+        		조회할 수 있다. 
+                <programlisting language="java"><![CDATA[List movieList = query.list();]]>
+<emphasis role="bold">Map</emphasis> movie1 = <emphasis role="bold"><![CDATA[(Map) movieList.get(0);]]></emphasis>
+<emphasis role="bold"><![CDATA[movie1.get("title");]]></emphasis>
+<emphasis role="bold"><![CDATA[movie1.get("director");]]></emphasis>
+<emphasis role="bold">Map </emphasis>movie2 = <emphasis role="bold"><![CDATA[(Map) movieList.get(1);]]></emphasis>
+<emphasis role="bold"><![CDATA[movie2.get("title");]]></emphasis>
+<emphasis role="bold"><![CDATA[movie2.get("director");]]></emphasis>        </programlisting>
+			</para>
+		</section>
+
+		<section id="hibernate_hibernate_hql_transformer_list">
+			<title>Case 3. List 형태로 전달</title>
+
+        	<para>
+        		Relation 관계에 놓여 있는 두개의 테이블을 대상으로 HQL(Inner Join)을 이용한 조회 결과를
+        		List 형태로 전달받을 수 있다. 
+                <programlisting language="java"><![CDATA[hqlBuf.append("]]><emphasis role="bold"><![CDATA[SELECT new List]]></emphasis><![CDATA[(movie.movieId as movieId, ")]]>;
+<![CDATA[hqlBuf.append("movie.title as title, movie.director as director, ");
+hqlBuf.append("category.categoryName as categoryName, ");
+hqlBuf.append("movie.country.countryName as countryName) ");
+hqlBuf.append("FROM Movie movie join movie.categories category ");]]></programlisting>
+			</para>
+
+        	<para>
+        		위와 같이 정의할 경우 조회 결과는 List의 List 형태가 된다. List에서 결과값을 꺼낼 때에는 정의된 순서에 따르면 된다. 
+                <programlisting language="java"><![CDATA[List movieList = query.list();]]>
+<emphasis role="bold">List</emphasis><![CDATA[ movie1 = (List) ]]><emphasis role="bold"><![CDATA[movieList.get(0);]]></emphasis>
+<emphasis role="bold"><![CDATA[movie1.get(1);]]></emphasis> //title
+<emphasis role="bold"><![CDATA[movie1.get(2);]]></emphasis> //director
+<emphasis role="bold">List</emphasis> movie2 = <emphasis role="bold"><![CDATA[(List) movieList.get(1);]]></emphasis>
+<emphasis role="bold"><![CDATA[movie2.get(1);]]></emphasis> //title
+<emphasis role="bold"><![CDATA[movie2.get(2);]]></emphasis> //director  </programlisting>
+			</para>
+
+        	<para>
+        		위에서 설명된 HQL을 이용하여 결과값을 특정 객체로 전달받는 전체 테스트 코드는 HibernateHQLWithDefinedResult.java 
+        		에서 확인할 수 있다.
+        	</para>
+      	</section>
+    </section>
+
+    <section id="hibernate_hibernate_hql_xml">
+		<title>XML에 HQL 정의하여 사용</title>
+
+      	<para>
+      		HQL을 별도 Hibernate Mapping XML 파일 내에 정의하고 정의된 HQL문의 name을 입력하여 실행시킬 수 있다. 이는 HQL이 변경될 
+      		경우 소스 코드 변경없이 XML문에 정의된 HQL만 변경함으로써 소스 코드 재컴파일이 불필요하며 HQL문만을 따로 관리 할 수 있도록 
+      		한다. 
+            <programlisting language="java"><![CDATA[Query hqlQuery = ]]><emphasis
+role="bold"><![CDATA[session.getNamedQuery("findCountryList");]]></emphasis>
+<![CDATA[hqlQuery.setParameter("condition", "%%");
+List countryList = hqlQuery.list();   ]]></programlisting>
+		</para>
+
+      	<para>
+      		위와 같이 org.hibernate.Session의 getNamedQuery() 메소드에 query name을 넘겨주면 Hibernate은 이 이름에 맞는 HQL문을 
+      		XML에서 찾아서 실행하게 된다. 다음은 HQL이 정의되어 있는 Country.hbm.xml 의 일부이다. 
+            <programlisting language="xml"><![CDATA[<query name=]]><emphasis role="bold">"findCountryList"</emphasis><![CDATA[>
+    FROM Country country
+    WHERE country.countryName like :condition 
+    ORDER BY country.countryName
+</query>]]></programlisting>
+		</para>
+
+      	<para>
+      		HQL의 작성 방법은 앞서 설명한 방법과 동일하며 위에서 설명한 테스트 코드는 HibernateNamedHQL.java 에서 확인할 수 있다.
+      	</para>
+	</section>
+
+    <section id="hibernation_hibernate_hql_pagination">
+		<title>Pagination</title>
+
+      	<para>
+      		Pagination은 한 페이지에 보여줘야 할 조회 목록에 제한을 둠으로써 DB 또는 어플리케이션 메모리의 부하를 감소시키고자 하는데 
+      		목적이 있다. HQL 수행시 페이징 처리된 조회 결과를 얻기 위한 방법에 대해 알아보도록 한다. 특정 테이블을 대상으로(예에서는 
+      		MOVIE 테이블) HQL을 이용한 조회 작업을 수행한다. 이때, 조회를 시작해야 하는 Row의 Number(FirstResult)와 조회 목록의 
+      		개수(MaxResult)를 정의함으로써, 페이징 처리가 가능해진다.
+            <programlisting language="java"><![CDATA[StringBuilder hqlBuf = new StringBuilder();
+hqlBuf.append("FROM Movie movie ");
+Query hqlQuery = session.createQuery(hqlBuf.toString());]]>
+// 첫번째로 조회해야 할 항목의 번호
+<emphasis role="bold"><![CDATA[hqlQuery.setFirstResult(1);]]></emphasis>
+// 조회 항목의 전체 개수
+<emphasis role="bold"><![CDATA[hqlQuery.setMaxResults(2);]]></emphasis>
+<![CDATA[List movieList = hqlQuery.list(); ]]></programlisting></para>
+
+		<para>
+			위와 같이 정의할 경우 HQL에서는 Hibernate Configuration 파일(hibernate.cfg.xml)에 정의된 hibernate.dialect 속성에 
+			따라 각각의 DB에 맞는 SQL을 생성한다. 이는 Pagination을 할 때 모든 데이터를 읽은 후 해당 페이지에 속한 데이터 갯수를 결과값
+			으로 전달하는 것이 아니라 조회해야 할 데이터 즉, 해당 페이지에 속한 갯수만큼의 데이터만 읽어오게 된다. 다음은 hibernate.
+			dialect를 HSQL DB로 정의하였을 때 페이징 처리가 되어 수행된 쿼리문이다. 
+            <programlisting>select <emphasis role="bold">limit 1 2</emphasis><![CDATA[ movie0_.MOVIE_ID as MOVIE1_3_, movie0_.COUNTRY_CODE as COUNTRY2_3_, 
+movie0_.TITLE as TITLE3_, movie0_.DIRECTOR as DIRECTOR3_, 
+movie0_.RELEASE_DATE as RELEASE5_3_ from PUBLIC.MOVIE movie0_]]></programlisting>
+		</para>
+
+      	<para>
+      		위의 코드에서 정의한 것처럼 첫번째로 조회해야 할 항목의 번호를 1, 조회 항목의 전체 개수를 2로 정의하였으므로 Hibernate
+      		에서는 HSQL DB의 특성에 맞게 'limit 1 2'가 추가된 SQL을 실행하여 페이징 처리를 수행하였다. 또한 아래의 코드와 같이 
+      		ResultSet 내에서 앞,뒤로 이동할 수 있는 ScrollableResults를 얻어 코드 내에서 직접 페이징 처리를 수행하는 것도 가능하다. 
+      		(단, 해당 JDBC 드라이버가 Scroll 가능한 ResultSet을 지원하는 경우에만 가능) 
+            <programlisting language="java"><![CDATA[Query query = session.createQuery(“from Users as user”);]]>
+<emphasis role="bold"><![CDATA[ScrollableResults userList = query.scroll();]]></emphasis></programlisting>
+		</para>
+
+      	<para>
+      		위에서 사용된 org.hibernate.Query 클래스는 데이터 조회를 위한 3가지 메소드를 제공한다.
+      	</para>
+
+      	<itemizedlist>
+        	<listitem>
+          		<para>
+          			<emphasis role="bold">list()</emphasis> : DB 테이블로부터 모든 데이터를 한번에 로딩한다.
+          		</para>
+        	</listitem>
+
+        	<listitem>
+          		<para>
+          			<emphasis role="bold">iterate()</emphasis> : 식별자 값만을 로딩한 뒤, 데이터가 실제로 필요한 시점에 
+          			데이터를 로딩한다. 이는 캐쉬를 사용하기 위함으로 iterator() 메소드가 전달한 Iterator 객체의 next() 메소드는 
+          			캐쉬에 동일한 식별값을 갖는 객체가 존재하는지 체크하여 해당 객체가 존재하면 객체를, 존재하지 않으면 Proxy 객체를 
+          			리턴한다.
+          		</para>
+        	</listitem>
+
+        	<listitem>
+          		<para><emphasis role="bold">scroll()</emphasis> : Cursor를 이용하여 데이터를 로딩한다.</para>
+        	</listitem>
+		</itemizedlist>
+
+		<para>
+			위와 같이 HQL을 이용한 Page 처리 방법에 대한 코드는 HibernateHQLPaging.java 파일을 참고한다.
+		</para>
+	</section>
+
+    <section id="hibernation_hibernate_hql_cud">
+		<title>HQL을 이용한 CUD</title>
+
+      	<para>
+      		기본적으로 Hibernate을 이용한 CUD(Create, Update, Delete)를 할 때에는 Hibernate에서 제공하는 기본 API를 사용하게 된다. 
+      		(<link linkend="hibernate_hibernate_basiccrud">Hibernate Basic CRUD</link> 참고) 그러나 특이한 경우 HQL을 통해
+      		기본 CUD를 수행해야 하는 경우가 발생할 수 있다. (ex> 특정 한 컬럼에 대한 Update) 이를 위해 HQL을 이용한 기본적인 CUD 방법
+      		에 대해 알아보도록 하자.
+      	</para>
+
+		<section id="hibernate_hibernate_hql_cud_insert">
+        	<title>등록 (Insert)</title>
+
+        	<para>
+        		다음은 HQL을 사용한 Insert문의 예이다. 
+                <programlisting language="java"><![CDATA[StringBuilder hql = new StringBuilder();
+hql.append("]]><emphasis role="bold">INSERT INTO</emphasis><![CDATA[ Country (countryCode,countryId,countryName) ");
+hql.append("]]><emphasis role="bold">SELECT</emphasis><![CDATA[ CONCAT(countryCode,'UPD'), CONCAT(countryId,'UPD'), countryName ");
+hql.append("FROM Country country ");
+hql.append("WHERE countryCode = :countryCode");
+Query query = session.createQuery(hql.toString());
+query.setParameter("countryCode", "COUNTRY-0001");
+
+query.executeUpdate();
+closeSession();]]></programlisting>
+			</para>
+
+        	<para>
+        		위와 같이 작성할 경우 HQL을 이용하여 신규 Country 정보를 등록할 수 있다. 단, Hibernate에서는 INSERT INTO ... VALUES 
+        		형태의 INSERT문은 지원되지 않으며, INSERT INTO ... SELECT 형태의 INSERT문만 지원됨에 유의하도록 한다.
+        	</para>
+		</section>
+
+		<section id="hibernate_hibernate_hql_cud_update">
+        	<title>수정 (Update)</title>
+
+        	<para>
+        		다음은 HQL을 사용한 Update문의 예이다. 
+                <programlisting language="java"><![CDATA[newSession();
+StringBuilder hql = new StringBuilder();
+hql.append("UPDATE Country country ");
+hql.append("SET country.countryName = :countryName ");
+hql.append("WHERE country.countryCode = :countryCode and country.countryId = :countryId ");
+
+Query query = session.createQuery(hql.toString());
+query.setParameter("countryName", "Republic of Korea");
+query.setParameter("countryCode", "COUNTRY-0001");
+query.setParameter("countryId", "KR");
+
+query.executeUpdate();
+closeSession(); ]]></programlisting>
+			</para>
+
+        	<para>
+        		위의 예는 HQL을 사용하여 Country 정보를 수정한 것이며 Query의 setParameter() 메소드를 통해 인자값을 셋팅하고 있다.
+        	</para>
+		</section>
+
+		<section id="hibernate_hibernate_hql_cud_delete">
+			<title>삭제 (Delete)</title>
+
+        	<para>
+        		다음은 HQL을 사용한 Delete문의 예이다. 
+                <programlisting language="java"><![CDATA[newSession();
+StringBuilder hql = new StringBuilder();
+hql.append("DELETE Country country ");
+hql.append("WHERE country.countryCode = :countryCode ");
+
+Query query = session.createQuery(hql.toString());
+query.setParameter("countryCode", "COUNTRY-0001");
+
+query.executeUpdate();
+closeSession();  ]]></programlisting></para>
+
+        	<para>
+        		또한 위에서 언급된 HQL을 이용한 CUD를 위한 코드는 HibernateCUDHQL.java 에서 확인할 수 있다.
+        	</para>
+      	</section>
+	</section>
+</chapter>

@@ -1,0 +1,94 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
+<html>
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+<title>Tab Sample - 이미지 로딩</title>
+
+<link href="../../../common/css/smoothness/jquery-ui-1.10.0.custom.css" rel="stylesheet">
+<script src="../../../common/exlibs/jquery-1.9.0.js"></script>
+<script src="../../../common/exlibs/jquery-ui-1.10.0.custom.js"></script>
+
+<style type="text/css">
+
+	body {
+		font-size: 12px;
+	}
+	
+	.ui-tabs {
+		font-size: 11px;
+	}
+	
+	.section {
+		margin-bottom: 15px;
+		padding: 5px;
+		width: 600px;
+	}
+	
+</style> 
+
+<script type="text/javascript">
+
+	function load(url, panel)
+	{
+		$.ajax( {
+			url: url,
+			type: 'GET',
+			async: true,
+			error: function(jqXHR, textStatus, errorThrow)
+			{
+				$("#loading").hide();
+			},
+			success: function(data, textStatus, jqXHR)
+			{
+				setTimeout(function() {
+								panel.html(data);
+								$("#loading").hide();
+							}, 1500);				
+			}
+		});
+	}
+
+	$(document).ready(function() {
+		
+		$("#tabtype_url").tabs()
+						 .on("tabsload", function(evt, ui) {
+							 
+								//reload for simulating
+								if ( $(ui.tab).attr('aria-controls')  === "ui-tabs-2" )	{
+									$("#loading").show().position({my: "center", at: "center", of: "#tabtype_url" });
+									load("sub/layout_tab_loading_image_src_sub2.htm", ui.panel);
+								}
+								else {
+									$("#loading").hide();
+								}
+						})
+						.on("tabsbeforeactivate", function(evt, ui) {
+							
+							//clear previous html
+							if ( $(ui.newTab).attr('aria-controls')  === "ui-tabs-2" ) {
+								ui.newPanel.contents().hide();
+							}
+						});
+		
+	});
+	
+</script>
+
+</head>
+<body>
+
+<div class="section">
+	<div id="tabtype_url" style="height:400px">
+			<ul>
+				<li><a href="sub/layout_tab_url_loading_src_sub1.htm">기본 탭</a></li>
+				<li><a href="sub/layout_tab_loading_image_src_sub1.htm">로딩 탭</a></li>
+			</ul>
+	</div>
+</div>
+
+<div id="loading" align="center" style='display:none;'>
+	<img src="../../../common/css/icons/loading.gif" /> 
+</div>
+
+</body>
+</html>

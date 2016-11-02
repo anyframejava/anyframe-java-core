@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<plugin name="stomp" description="anyframe-stomp-pi plugin">
+	<groupId>org.anyframe.plugin</groupId>
+	<artifactId>anyframe-stomp-pi</artifactId>
+	<version>1.0.1-SNAPSHOT</version>
+	<dependent-plugins>
+		<dependent-plugin name="core" version="1.6.1-SNAPSHOT" />
+	</dependent-plugins>
+	<resources>
+		<resource dir="src/main/java" filtered="true" packaged="true">
+			<include name="**/stomp/**/*.java" />
+		</resource>
+		<resource dir="src/main/resources" filtered="true" packaged="false">
+			<include name="**/*stomp*.xml" />
+		</resource>
+		<resource dir="src/test/java" filtered="true" packaged="true">
+			<include name="**/stomp/**/*.java" />
+		</resource>
+		<resource dir="src/main/webapp" filtered="false" packaged="false">
+			<include name="**/stomp/**/*.*" />
+			<exclude name="**/anyframe.jsp" merged="true" />
+			<exclude name="**/web.xml" merged="true"/>
+		</resource>
+	</resources>
+	<samples>true</samples>
+	<essential>false</essential>
+</plugin>

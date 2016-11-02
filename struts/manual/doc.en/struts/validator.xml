@@ -1,0 +1,320 @@
+<chapter id="struts_validator">
+	<title>Validator</title>
+
+  		<para>
+  			Among the various ways of validating user input value, 
+  			the most widely used is validating user input value in JSP page using javascript function. 
+  			However, this method cannot be completely validated, 
+  			so there should be another validation process on the server side. 
+  			Validator is a framework deployed from Struts 1.1 onwards and helps the validation of ActionForm. 
+  			This document introduces plug-in registration and validator-rule provided by Struts to use validator. 
+  		</para>
+
+		<section id="struts_validator_plugin">
+    	<title>Register Plug-in</title>
+
+    		<section id="struts_validator_plugin_regist">
+      		<title>Register plug-in in struts-config.xml</title>
+
+	      		<para>
+	      			To use validator, register org.apache.struts.validator.ValidatorPlugIn in struts-config.xml. 
+	      			ValidatorPlugIn has property as pathname, 
+	      			and as pathname value, set validator-rules.xml that defines validation rules provided by Struts 
+	      			and xml file that defines validation rules of ActionForm validated by user.
+	      		</para>
+    		</section>
+
+    		<section id="struts_validator_plugin_sample">
+      		<title>Samples</title>
+
+      			<para>
+      				The following is a part of struts-config-validator.xml that has set Validator Plug-in.
+      				<programlisting
+      				language="xml"><![CDATA[<plug-in className="org.apache.struts.validator.ValidatorPlugIn">
+    <set-property property="pathnames"
+        value="/org/apache/struts/validator/validator-rules-compressed.xml,
+        /WEB-INF/validator/validation-sample.xml" />
+</plug-in>]]></programlisting>
+				</para>
+			    <para>
+      				Struts deploys validator-rules.xml and validator-rules-compressed.xml that includes definitions on validation rules that are generally used 
+      				along with struts-core-1.3.x.jar file. 
+      				validation-sample.xml includes <link linkend="struts_validator_formset">formset setting</link> on ActionForm to be validated. 
+      			</para>
+    		</section>
+  		</section>
+
+		<section id="struts_validator_rule">
+    	<title>Validator Rules</title>
+
+    		<section id="struts_validator_rule_function">
+      		<title>Basic functions of Struts Validator Rules</title>
+
+      			<para>
+      			    Because many validation rules are basically provided in Struts, 
+      				user does not have to go through much trouble to newly develop validation rules. 
+      				The following is an example of validation rule setting. 
+      				<programlisting language="xml"><![CDATA[<validator name="minlength"
+    classname="org.apache.struts.validator.FieldChecks"
+    method="validateMinLength"
+    methodParams="java.lang.Object,
+            org.apache.commons.validator.ValidatorAction,
+            org.apache.commons.validator.Field,
+            org.apache.struts.action.ActionErrors,
+            javax.servlet.http.HttpServletRequest"
+        epends="required"
+        msg="errors.minlength">
+    <javascript>[function validateMinLength(form) {
+    // Define here when using javascript.
+    }
+    </javascript>
+</validator>]]></programlisting>
+				</para>
+
+      			<para>
+      				The name should be unique, and used when referred to by other rules. 
+      				Classname and method is a class and method name that includes validation logic. 
+      				Depends is the priority among validator rules. 
+      				The example above shows that validation rule named required is executed before checking minlength. 
+      				depends="required,integer" means that it will be checked if it is null, if it is Integer, and then the minlength will be checked. 
+      				Msg is the key value to be used when bringing the message to send when a validation error occurs, to resource bundle. 
+     			</para>
+      			
+      			<para>
+      				Basically, the following values are used. 
+      				<programlisting language="java"># Struts Validator Error Messages 
+errors.required={0} is required.
+errors.minlength={0} can not be less than {1} characters.
+errors.maxlength={0} can not be greater than {1} characters.
+errors.invalid={0} is invalid.
+errors.byte={0} must be a byte.
+errors.short={0} must be a short.
+errors.integer={0} must be an integer.
+errors.long={0} must be a long.
+errors.float={0} must be a float.
+errors.double={0} must be a double.
+errors.date={0} is not a date.
+errors.range={0} is not in the range {1} through {2}.
+errors.creditcard={0} is an invalid credit card number.
+errors.email={0} is an invalid e-mail address.</programlisting>
+				</para>
+
+      			<para>The following is an explanation on the validation rules included in validator-rules.xml.</para>
+
+			    <informaltable>
+			        <tgroup cols="3">
+			        <colspec colnum="1" colname="col1" colwidth="3*"/>
+					<colspec colnum="2" colname="col2" colwidth="6*"/>
+					<colspec colnum="3" colname="col3" colwidth="3*"/>
+			          <thead>
+			            <row>
+			              <entry align="center">Name</entry>
+			              <entry align="center">Description</entry>
+			              <entry align="center"><![CDATA[<var-name>]]></entry>
+			            </row>
+			          </thead>
+			          <tbody>
+			            <row>
+			              <entry>required</entry>
+			              <entry>An input value should exist.</entry>
+			              <entry>-</entry>
+			            </row>
+			            <row>
+			              <entry>validwhen</entry>
+			              <entry>Compares other field values.</entry>
+			              <entry>test</entry>
+			            </row>
+			            <row>
+			              <entry>minlength</entry>
+				          <entry>Limits the minimum number of characters of input value.</entry>
+			              <entry>minlength</entry>
+			            </row>
+			            <row>
+			              <entry>maxlength</entry>
+			              <entry>Limits the maximum number of characters of input value.</entry>
+			              <entry>maxlength</entry>
+			            </row>
+			            <row>
+			              <entry>mask</entry>
+			              <entry>Should satisfy the set regular expression.</entry>
+			              <entry>mask</entry>
+			            </row>
+			            <row>
+			              <entry>date</entry>
+			              <entry>Should be able to change into date format.</entry>
+			              <entry>datePatternStrice or datePattern</entry>
+			            </row>
+			            <row>
+			              <entry>creditCard</entry>
+			              <entry>Should satisfy credit card number rules.</entry>
+			              <entry>-</entry>
+			            </row>
+			            <row>
+			              <entry>email</entry>
+			              <entry>Should satisfy e-mail rules.</entry>
+			              <entry>-</entry>
+			            </row>
+			          </tbody>
+			        </tgroup>
+			    </informaltable>
+    		</section>
+		</section>
+
+		<section id="struts_validator_actionform">
+    	<title>ActionForm</title>
+
+  			<section id="struts_validator_actionform_inherit">
+   			<title>Inherit ValidatorForm</title>
+
+      			<para> 
+      				When using validator, org.apache.struts.validator.ValidatorForm, not ActionForm, should be inherited. 
+      				ValidatorForn includes validate() method that is needed for validation, 
+      				and error message is set in ActionErrors and returned when validation fails. 
+      			</para>
+    		</section>
+
+    		<section id="struts_validator_actionform_samples">
+      		<title>Samples</title>
+
+      			<para>
+      				The following is a part of ValidatorSampleForm.java that inherits ValidatorForm.
+      				<programlisting language="java">public class ValidatorSampleForm extends <emphasis
+      				role="bold">ValidatorForm</emphasis>{
+
+    private String userName;
+    private String userId;
+    private String password;
+    private String phoneNumber;
+    private String email;
+    public String getUserName() {
+        return userName;
+    }
+
+    public void setUserName(String userName) {
+        this.userName = userName;
+    }
+    //...
+    }
+}</programlisting>
+				</para>
+			</section>
+		</section>
+
+		<section id="struts_validator_formset">
+    	<title>formset setting</title>
+
+    		<section id="struts_validator_formset_setting">
+      		<title>How to set formset</title>
+
+      			<para>
+      				<![CDATA[To map validation rules registered in validator-rules.xml with ActionForm, formset should be defined. 
+      				The following are the attributes of <form>.]]></para>
+
+			    <informaltable>
+			        <tgroup cols="2">
+			        <colspec colnum="1" colname="col1" colwidth="3*"/>
+			        <colspec colnum="2" colname="col2" colwidth="6*"/>
+			          <thead>
+			            <row>
+			              <entry align="center">Attribute</entry>
+			              <entry align="center">Description</entry>
+			            </row>
+			          </thead>
+			          <tbody>
+			            <row>
+			              <entry>property</entry>
+			              <entry>Is related to property of ActionForm subclass.</entry>
+			            </row>
+			            <row>
+			              <entry>depends</entry>
+			              <entry>Defines more than one validation rule.</entry>
+			            </row>
+			            <row>
+			              <entry>page</entry>
+			              <entry>Used when defining page number in Multi-page ActionForm.</entry>
+			            </row>
+			            <row>
+			              <entry>indexedListProperty</entry>
+			              <entry>Property name that returned Collection from ActionForm.</entry>
+			            </row>
+			          </tbody>
+			        </tgroup>
+			    </informaltable>
+    		</section>
+
+			<section id="struts_validator_formset_sample">
+			<title>Sample</title>
+
+				<para>
+					The following is a part of validation-sample.xml set to apply the validation rules provided by Struts of ValidatorSampleForm.
+					<programlisting language="xml"><![CDATA[<form name="validatorSampleForm">
+    <field property="userName" depends="required,minlength,maxlength">
+        <arg key="validator.sample.userName" position="0"/>
+        <arg name="minlength" key="${var:minlength}" resource="false" position="1"/>
+        <arg name="maxlength" key="${var:maxlength}" resource="false" position="1"/>
+        <var>
+            <var-name>minlength</var-name>
+            <var-value>4</var-value>
+        </var>
+        <var>
+            <var-name>maxlength</var-name>
+            <var-value>10</var-value>
+        </var>
+    </field>
+        <!-- ...  -->
+    <field property="email" depends="email">
+        <arg key="validator.sample.email" position="0"/>
+    </field>
+</form>]]></programlisting>
+				</para>
+
+				<para>
+					<![CDATA[In name atrribute of <form>, register the form name of ActionForm registered in struts-config.xml, 
+      				and register the attribute settings to perform ActionForm validation on <field> which is under <form>. 
+      				In the sample above, userName is set as required input value in 4 to 10 digits, 
+      				and e-mail address validation rules were applied to e-mail. 
+      			    If validation fails, set arg values as arguements of error message, and return. 
+      			    Basically, arg0-arg3 element is found from message resources as related key value, 
+      			    and when resource value is set as false, values should be directly returned and not found from message resources. 
+      			    validation.xml is largely divided into global and formset, 
+      			    Global defines values to be used as constant in file. 
+      			    Formset is again devided into constant and forms, and constant is the same as global, 
+      			    and forms is mapped in ActionForm to be applied to validation. 
+      			    For your reference, formset has attributes that are language and country, so many languages are supported.]]>
+      			</para>
+    		</section>
+		</section>
+
+		<section id="struts_validator_actionmapping">
+    	<title>Action mapping setting</title>
+
+    		<section id="struts_validator_actionmapping_struts-config.xml">
+      		<title>struts-config.xml Action mapping setting</title>
+
+      			<para>
+      				<![CDATA[When using request information including RequestProcessor to create ActionForm, 
+      				validation should be executed by setting <action> of struts-config.xml]]> as <emphasis
+      				role="bold">validate</emphasis>="<emphasis role="bold">true</emphasis>".
+      			</para>
+   			</section>
+
+    		<section id="struts_validator_actionmapping_sample">
+      		<title>Sample</title>
+
+			    <para>
+			    	<![CDATA[The following is a part of struts-config-validator.xml 
+       				which shows the setting to apply validator to <action> of struts-config.xml]]>
+      				<programlisting language="xml"><![CDATA[<action
+    path="/validatorSample"
+    type="org.anyframe.sample.struts.basic.ValidatorSampleAction"]]>
+    <emphasis role="bold">validate</emphasis>="<emphasis role="bold">true</emphasis>"
+    <![CDATA[cancellable="true"
+    scope="request"
+    input="/basic/validatorSample.jsp" 
+    name="validatorSampleForm">
+    <forward name="success" path="/basic/validatorSuccess.jsp"></forward>
+</action>]]></programlisting>
+				</para>
+    		</section>
+		</section>
+</chapter>

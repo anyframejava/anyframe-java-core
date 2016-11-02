@@ -1,0 +1,152 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+
+<!DOCTYPE book PUBLIC "-//OASIS//DTD DocBook XML V4.5//EN" "http://www.oasis-open.org/docbook/xml/4.5/docbookx.dtd"
+[
+<!ENTITY springrest_whatisrest_architecture SYSTEM "springrest/whatisrest/architecture.xml">
+<!ENTITY springrest_whatisrest_keyprinciple SYSTEM "springrest/whatisrest/keyprinciple.xml">
+<!ENTITY springrest_restsupport_multiplerepresentation SYSTEM "springrest/restsupport/multiplerepresentation.xml">
+<!ENTITY springrest_restsupport_httpmessageconversion SYSTEM "springrest/restsupport/httpmessageconversion.xml">
+<!ENTITY springrest_restsupport_exceptionhandling SYSTEM "springrest/restsupport/exceptionhandling.xml">
+<!ENTITY springrest_restsupport_httpmethodconversion SYSTEM "springrest/restsupport/httpmethodconversion.xml">
+<!ENTITY springrest_restsupport_oxm SYSTEM "springrest/restsupport/oxm.xml">
+<!ENTITY springrest_restsupport_client SYSTEM "springrest/restsupport/client.xml">
+<!ENTITY springrest_restsupport_requestmapping SYSTEM "springrest/restsupport/requestmapping.xml">
+<!ENTITY springrest_restsupport_views SYSTEM "springrest/restsupport/views.xml">
+<!ENTITY springrest_restsupport_urisupportutils SYSTEM "springrest/restsupport/urisupportutils.xml">
+<!ENTITY springrest_restsupport_redirection SYSTEM "springrest/restsupport/redirection.xml">
+]
+>
+
+<!--
+		Licensed to the Apache Software Foundation (ASF) under one or more
+		contributor license agreements. See the NOTICE file distributed with
+		this work for additional information regarding copyright ownership.
+		The ASF licenses this file to you under the Apache License, Version
+		2.0 (the "License"); you may not use this file except in compliance
+		with the License. You may obtain a copy of the License at
+
+		http://www.apache.org/licenses/LICENSE-2.0 Unless required by
+		applicable law or agreed to in writing, software distributed under the
+		License is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR
+		CONDITIONS OF ANY KIND, either express or implied. See the License for
+		the specific language governing permissions and limitations under the
+		License.
+-->
+    
+<book lang="ko">
+	<title>Anyframe Spring REST Plugin</title>
+	
+	<bookinfo>
+		<copyright>
+			<year>2007-2014</year>
+			<holder>삼성SDS</holder>
+		</copyright>
+		<releaseinfo>Version 1.1.1-SNAPSHOT</releaseinfo>
+
+		<productname>Anyframe Spring REST Plugin</productname>
+
+		<authorgroup>
+			<corpauthor></corpauthor>
+		</authorgroup>
+
+		<mediaobject>
+			<imageobject>
+				<!-- logo 변경 -->
+				<imagedata fileref="../image/common/logo_pdf.jpg"/>
+			</imageobject>
+			<textobject>
+				<phrase>Anyframe Java 로고</phrase>
+			</textobject>
+		</mediaobject>
+		<legalnotice>
+			<para>본 문서의 저작권은 삼성SDS에 있으며 Anyframe 오픈소스 커뮤니티 활동의 목적하에서 자유로운 이용이 가능합니다.
+			본 문서를 복제, 배포할 경우에는 저작권자를 명시하여 주시기 바라며 본 문서를 변경하실 경우에는 원문과 변경된 내용을 표시하여 주시기 바랍니다. 
+			원문과 변경된 문서에 대한 상업적 용도의 활용은 허용되지 않습니다. 본 문서에 오류가 있다고 판단될 경우 이슈로 등록해 주시면 적절한 조치를 취하도록 하겠습니다.
+			</para>
+		</legalnotice>
+	</bookinfo>
+	<part id="springrest_introduction_part">
+		<title>Introduction</title>
+		<partintro id="springrest_introduction_part_intro">
+			<para>
+				Spring REST Plugin은 Spring 3부터 제공되는 Spring MVC 기반의 RESTful 웹서비스 구현 기능을 활용하는 방법을 
+				가이드하기 위한 샘플 코드와 필요한 참조 라이브러리들로 구성되어 있다.
+			</para>
+			<para role="introduction_title">
+				<emphasis role="bold">Installation</emphasis>
+			</para>
+			<para>Command 창에서 다음과 같이 명령어를 입력하여 springrest plugin을 설치한다.</para>
+			<programlisting language="java"><![CDATA[mvn anyframe:install -Dname=springrest]]></programlisting>
+			<para>
+				installed(mvn anyframe:installed) 혹은 jetty:run(mvn clean
+				jetty:run) command를 이용하여 설치 결과를 확인해볼 수 있다. 
+			</para>
+			<informaltable>
+				<caption>Dependent Plugins</caption>
+				<tgroup cols="2">
+					<colspec colnum="1" colname="col1" colwidth="5*" />
+					<colspec colnum="2" colname="col2" colwidth="5*" />
+					<thead>
+						<row>
+							<entry align="center">Plugin Name</entry>
+							<entry align="center">Version Range</entry>
+						</row>
+					</thead>
+					<tbody>
+						<row>
+							<entry align="center">
+								<ulink
+									url="http://dev.anyframejava.org/docs/anyframe/plugin/optional/query/1.6.1-SNAPSHOT/reference/htmlsingle/query.html">Query</ulink>
+							</entry>
+							<entry align="center" valign="middle">2.0.0 > * > 1.4.0</entry>
+						</row>
+					</tbody>
+				</tgroup>
+			</informaltable>
+			<para>
+			</para>
+		</partintro>
+	</part>
+	<part id="springrest_restintro">
+		<title>What is REST?</title>
+		<partintro id="springrest_restintro_part_intro">
+			<para>
+				설치한 Spring REST plugin의 샘플 코드를 이용해서 Spring에서 제공하는 REST 지원 기능들을 살펴보기 전에
+				먼저 REST라는 개념이 무엇인지에 대해서 간단히 살펴보도록 하자.
+			</para>
+			<para>
+				REST는 <emphasis role="bold">REpresentational State Transfer</emphasis>의 약자로, 통식 규약이나 표준 또는 스펙이 아니라
+				분산 하이퍼미디어 시스템을 위한 www같은 소프트웨어 아키텍처의 한 형식이다.
+				REST라는 용어는 2000년  로이필딩(Roy Fielding)의 박사학위 논문에서 처음 소개된 것으로 
+				<emphasis role="bold">네트워크 상에서 클라이언트와 서버 사이의 통신 방식</emphasis>에 대해서 서술하고 있다.
+			</para>
+		</partintro>
+		&springrest_whatisrest_architecture;
+		&springrest_whatisrest_keyprinciple;
+	</part>
+	
+	<part id="springrest_restsupport_part">
+		<title>Spring REST Supports</title>
+		<partintro id="springrest_restsupport_part_intro">
+			<para>
+				이제 위에서 설명한 REST 아키텍처를 적용한 서비스를 구현하기 위해서 Spring 3에서는 어떤 기능을 추가적으로 지원하는지 springrest plugin의 소스 코드와 함께 하나씩 자세히 살펴보도록 하자.
+			</para>
+			<para>
+				Spring의 REST를 위한 기능은 모두 Spring MVC를 기반으로 지원된다. 
+				다양한 Annotation과 HTTP Request/Response Body 메세지 처리를 위한 HttpMessageConverter, Content Negotiation 지원을 위한 ViewResolver, 모든 HTTP method 사용을 위한 Filter,
+				그리고 REST 클라이언트 어플리케이션 개발에 도움을 주는 RestTemplate 등이 있다.
+			</para>
+		</partintro>
+		&springrest_restsupport_requestmapping;
+		&springrest_restsupport_urisupportutils;
+		&springrest_restsupport_redirection;
+		&springrest_restsupport_multiplerepresentation;
+		&springrest_restsupport_views;
+		&springrest_restsupport_exceptionhandling;
+		&springrest_restsupport_httpmethodconversion;
+		&springrest_restsupport_client;
+		&springrest_restsupport_httpmessageconversion;
+		&springrest_restsupport_oxm;
+	</part>		
+
+</book>

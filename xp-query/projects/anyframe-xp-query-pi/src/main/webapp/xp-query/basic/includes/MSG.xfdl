@@ -1,0 +1,48 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<FDL version="1.4">
+  <TypeDefinition url="..\default_typedef.xml"/>
+  <Form id="MSG" classname="MSG" inheritanceid="" position="absolute 0 0 408 120" titletext="MSG" onload="MSG_onload" style="background:#f2f2efff;">
+    <Layouts>
+      <Layout>
+        <TextArea id="txaMsg" taborder="0" position="absolute 34 22 374 73" wordwrap="char" readonly="true" style="background:transparent URL('theme://images/edit_bg_N.png') stretch 4,4 center middle;"/>
+        <Button id="btConfirm" taborder="1" text="확인" position="absolute 34 75 146 101" onclick="fnBtn_OnClick" userData="Y"/>
+        <Button id="btCancle" taborder="2" text="취소" onclick="fnBtn_OnClick" position="absolute 262 75 374 101" userData="N" visible="false"/>
+        <Button id="btSave" taborder="3" text="저장" onclick="fnBtn_OnClick" position="absolute 148 75 260 101" userData="S" visible="false"/>
+      </Layout>
+    </Layouts>
+    <Script type="xscript4.0"><![CDATA[include "lib::commonScript.xjs";
+
+// form onload 이벤트 처리
+function MSG_onload(obj:Form, e:LoadEventInfo)
+{
+	// 부모창으로부터 전달받은 파라미터 설정
+	var strMsg = this.getOwnerFrame().paramMsg;
+	var strType = this.getOwnerFrame().paramType;
+	var strConfirmYn = this.getOwnerFrame().paramConfirmYn;
+	
+	txaMsg.value = strMsg;
+	
+	// "확인" 버튼만 있는 일반 경고창
+	if(strConfirmYn == "N") {		
+		btConfirm.position = "absolute 143 80 255 106";
+		btConfirm.text = gfnGetMessage("global.domain.popupmsg.confirm");
+	} else {
+		// "확인", "취소" 버튼 선택 가능한 경고창
+		btCancle.visible = true;
+		btCancle.text = gfnGetMessage("global.domain.popupmsg.cancle");
+		if(strType == "OSC"){
+			// "열기", "저장", "취소" 버튼이 있는 경고창
+			btConfirm.text = gfnGetMessage("global.domain.popupmsg.open");
+			btSave.visible = true;
+		}
+	}
+	
+	btConfirm.setFocus();
+}
+
+// 버튼 클릭한 경우 부모창으로 결과값 리턴 후 팝업 제거
+function fnBtn_OnClick(obj) {
+	close(obj.userData);
+}]]></Script>
+  </Form>
+</FDL>

@@ -1,0 +1,19 @@
+		<!--mip-query-findCategoryList-START-->
+			SELECT 
+			CATEGORY_ID, CATEGORY_NAME, CATEGORY_DESC, REG_DATE
+			FROM MIP_CATEGORY
+			<!--Velocity-Support-findCategoryList-START-->
+			#if ($SEARCH_CONDITION.length() &gt; 0 &amp;&amp; "0" == $SEARCH_CONDITION) 				    
+				WHERE CATEGORY_NAME like '%' + :SEARCH_KEYWORD + '%'
+			#elseif ($SEARCH_CONDITION.length() &gt; 0 &amp;&amp; "1" == $SEARCH_CONDITION)
+			    WHERE CATEGORY_DESC like '%' + :SEARCH_KEYWORD + '%'
+			#end
+			<!--Velocity-Support-findCategoryList-END-->
+			ORDER BY REG_DATE DESC		
+		<!--mip-query-findCategoryList-END-->
+		<!--mip-query-createCategory-START-->
+			INSERT INTO MIP_CATEGORY
+			(CATEGORY_ID, CATEGORY_NAME, CATEGORY_DESC, REG_DATE)
+			VALUES ('CATEGORY-'+ CAST(IDENT_CURRENT('MIP_CATEGORY') AS VARCHAR(16)), :CATEGORY_NAME, :CATEGORY_DESC, GETDATE())		
+		<!--mip-query-createCategory-END-->
+		

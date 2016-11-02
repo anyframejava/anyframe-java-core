@@ -1,0 +1,118 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
+<html>
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+<title>Sample Studio</title>
+<script type="text/javascript" src="../common/exlibs/jquery-1.9.0.js" ></script>
+<script type="text/javascript" src="data.js"></script>
+<script>
+
+	if (navigator.appName.indexOf("Microsoft") >= 0)
+		alert("Chrome Browser 에 최적화 되어 있습니다.");
+	
+	var frameglobal = {
+		
+			targetname : { FRAME_TOP: "frame_top", 
+						   FRAME_NAV: "frame_nav",
+						   FRAME_CONTENT: "frame_content",
+						   FRAME_FOOTER: "frame_footer"			
+						  },
+						  
+			_selected_category : "",
+			_selected_sampleset : "",
+		
+			
+			clearSelectedInfo : function()
+			{
+				this._selected_category = "";
+				this._selected_sampleset = "";
+			},			
+			
+			getSelectedCategory : function()
+			{
+				return this._selected_category;
+			},
+			
+			setSelectedCategory : function(newCate)
+			{
+				this._selected_category = newCate;
+				frame_content.location = "contents.htm";
+			},
+			
+			getSelectedSampleSet : function()
+			{
+				return this._selected_sampleset;
+			},
+			
+			setSelectedSampleSet : function(newSSet)
+			{
+				this._selected_sampleset = newSSet;
+			},
+						  
+			updateframe : function(targets)
+			{
+				var listarry = [];
+				
+				if ( typeof (targets) !== typeof([]) )
+				{
+					listarry.push( targets );	
+				}
+				else
+					listarry.push( targets.valueOf() );
+				
+				
+				for (var lx = 0; lx < listarry.length; lx++)
+				{
+					var targetFrame = null,
+					    compName = listarry[lx];					
+					
+					if (compName == this.targetname.FRAME_NAV) {
+						targetFrame = frame_nav;	
+					} 
+					else if (compName == this.targetname.FRAME_CONTENT) {
+						targetFrame = frame_content;	
+					} 
+					
+					if (targetFrame !== null && targetFrame.updateframe !== undefined)
+					{
+						targetFrame.updateframe();
+					}
+					else
+						;//throw (listarry[lx] + " updateframe method undefined... or target-frame is null");
+				}
+			}
+			
+	}
+	
+</script>
+
+
+</head>
+
+<!--[if IE]>
+<frameset border="1" frameborder="1" framespacing="1" noresize rows="100, *, 50">
+	<frame name="frame_top" src="top.htm" frameborder="0" />
+	
+	<frameset border="1" frameborder="1" framespacing="1" noresize cols="300, *">
+		<frame name="frame_nav" src="nav.htm" frameborder="0" />
+		<frame name="frame_content" src="contents.htm" frameborder="0"/>	
+	</frameset>
+	
+	<frame name="frame_footer" src="footer.htm" frameborder="0" />	
+</frameset>
+<![endif]-->
+
+<![if !IE]>
+<frameset border="1" noresize rows="100, *, 50">
+	<frame name="frame_top" src="top.htm" />
+	
+	<frameset border="1" noresize cols="300, *">
+		<frame name="frame_nav" src="nav.htm" />
+		<frame name="frame_content" src="contents.htm" />	
+	</frameset>
+	
+	<frame name="frame_footer" src="footer.htm" />	
+</frameset>
+<![endif]>
+
+</html>

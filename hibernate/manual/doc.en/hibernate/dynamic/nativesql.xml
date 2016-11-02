@@ -1,0 +1,102 @@
+<chapter id="hibernate_dynamic_nativesql">
+	<title>Dynamic Native SQL</title>
+	<para>
+		<![CDATA[Dynamic Native SQL, like Dynamic HQL definition, is defined in xml file which was defined as fileNames value
+		within DynamicHibernateService configuration file.
+		However, <sql-query> tag, not <query> is used.
+		It can define various <sql-query> under <dynamic-hibernate> tag.]]>		
+	</para>
+       
+	<para>
+		<![CDATA[The following is a part of dynamic-hibernate.xm which contains Dynamic Native SQL.
+		If director information is included in input condition, HQL which searches for director information in "like" condition will be created.
+		Otherwise, HQL which searches for title information in "like" condition will be created.
+		In addition, as threre is no defintion for <return> type, it will be returned as Object[] List.]]> 		
+        <programlisting language="xml"><![CDATA[<dynamic-hibernate>
+    <sql-query name="dynamicFindMovieListWithoutReturn">
+        SELECT movie.* 
+        FROM Movie movie
+        WHERE]]> 
+            <emphasis role="bold">#if(${director})</emphasis>
+                <emphasis role="bold">movie.DIRECTOR like :director</emphasis>
+            <emphasis role="bold">#else</emphasis>
+                <emphasis role="bold">movie.TITLE	like :title</emphasis>
+            <emphasis role="bold">#end</emphasis>
+            <emphasis role="bold">ORDER BY {{sortColumn}} {{sortDirection}}</emphasis>		
+    <![CDATA[</sql-query>
+</dynamic-hibernate>>]]]></programlisting>
+	</para>   
+
+	<para>
+		<![CDATA[The following is an example of Dynamic Native SQL which defines return type by using
+		<return alias="movie" class="org.anyframe.sample.model.bidirection.Movie"/>.
+		The execution result of Native SQL below is user-defined List of (Movie).]]>
+		<programlisting language="xml"><![CDATA[<dynamic-hibernate>
+    <sql-query name="dynamicFindMovieListWithSQL">]]>
+        <emphasis role="bold"><![CDATA[<return alias="movie" class="org.anyframe.sample.model.bidirection.Movie"/>]]></emphasis>
+        SELECT movie.*
+        FROM Movie movie
+        WHERE 
+            #if(${director})
+                movie.DIRECTOR like :director
+            #else
+                movie.TITLE	like :title
+            #end
+        ORDER BY {{sortColumn}} {{sortDirection}}		
+    <![CDATA[</sql-query>
+</dynamic-hibernate>]]></programlisting>
+	</para>
+
+	<para>
+			<![CDATA[The following is an example of Dynamic Native SQL which searches for specific column value by using
+		<return-scalar>. The execution result of Native SQL below is Object[] List.]]>	
+		<programlisting language="xml"><![CDATA[<dynamic-hibernate>
+    <sql-query name="dynamicFindMovieListWithScalar">]]>
+        <emphasis role="bold"><![CDATA[<return-scalar column="DIRECTOR" type="string"/>]]></emphasis>
+        <emphasis role="bold"><![CDATA[<return-scalar column="TITLE"/>]]></emphasis>
+        <emphasis role="bold"><![CDATA[<return-scalar column="COUNTRY_CODE" type="string"/>]]></emphasis>
+        SELECT DIRECTOR, TITLE, COUNTRY_CODE 
+        FROM Movie movie
+        WHERE 
+            #if(${director})
+                movie.DIRECTOR like :director
+            #else
+                movie.TITLE	like :title
+            #end
+        ORDER BY {{sortColumn}} {{sortDirection}}		
+    <![CDATA[</sql-query>
+</dynamic-hibernate>]]></programlisting>
+	</para>
+	
+	<para>
+		<![CDATA[The following is an example of Dynamic Native SQL which defines <return-join> in the case of join.
+		The execution result of  Native SQL below is  Object[] List
+		and other joined Object[] is included in Object[].]]>
+		<programlisting language="xml"><![CDATA[<dynamic-hibernate>
+    <sql-query name="dynamicFindMovieListByCountry">]]>
+        <emphasis role="bold"><![CDATA[<return alias="movie" class="org.anyframe.sample.model.bidirection.Movie"/>]]></emphasis>
+        <emphasis role="bold"><![CDATA[<return-join alias="country" property="movie.country"/>]]></emphasis>
+        SELECT movie.*, country.*
+        FROM Movie movie join COUNTRY country ON movie.COUNTRY_CODE = country.COUNTRY_CODE 
+        WHERE country.COUNTRY_CODE like :countryCode
+        ORDER BY {{sortColumn}} {{sortDirection}}		
+    <![CDATA[</sql-query>
+</dynamic-hibernate>]]></programlisting>
+	</para>
+	<para>
+		Dynamic Native SQL uses DynamicHibernateService in the following way.		
+	 	<programlisting language="java">public List findMovieListWithSQL(int conditionType, String condition) {
+    Object[] args = new Object[3];
+    if (conditionType == 0) {
+        <emphasis role="bold">args[0] = "director=%" + condition</emphasis> + "%";
+        <emphasis role="bold">args[1] = "sortColumn=movie.director";</emphasis>
+    } else {
+        <emphasis role="bold">args[0] = "title=%" + condition</emphasis> + "%";
+        <emphasis role="bold">args[1] = "sortColumn=movie.title";</emphasis>
+    }
+    <emphasis role="bold">args[2] = "sortDirection=ASC";</emphasis>
+
+    return <emphasis role="bold">dynamicHibernateService.findList("dynamicFindMovieListWithSQL", args);</emphasis>
+	</programlisting>
+	</para>
+</chapter>

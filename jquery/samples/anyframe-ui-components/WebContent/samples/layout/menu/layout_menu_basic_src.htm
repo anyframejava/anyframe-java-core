@@ -1,0 +1,165 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
+<html>
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+<title>Menu Sample - Basic</title>
+
+<link href="../../../common/css/smoothness/jquery-ui-1.10.0.custom.css" rel="stylesheet">
+<script src="../../../common/exlibs/jquery-1.9.0.js"></script>
+<script src="../../../common/exlibs/jquery-ui-1.10.0.custom.js"></script>
+
+<style type="text/css">
+
+	.ui-menu {
+		font-size: 12px;
+	}
+	
+	#hmenu {
+		width: 600px;
+	}
+	
+	#hmenu, 
+	#hmenu ul {
+		display: inline-block;
+	}
+	
+	#hmenu > .ui-menu-item {
+		display: inline;
+		margin-right: 15px;
+		zoom: 1;
+	}
+	
+	#hmenu a {
+		display: inline-block;
+	} 
+	
+	#hmenu li {		
+		/*display: block;*/
+		width: 120px;
+	}
+	
+	#vmenu, #vmenu li {
+		width: 150px;
+	} 
+
+</style> 
+
+<script type="text/javascript">
+
+	$(document).ready(function() {
+		
+		$("#hmenu").menu( { position: { my: "left top", at: "right+2 top+2" } } );		
+		
+		$("#hmenu").on("menufocus", function(evt, ui) {
+			
+			var total_top_menu_count = $("#hmenu > li").size();
+			var current_id = $(evt.target).attr('aria-activedescendant');
+			var current_val = parseInt( current_id.slice( current_id.lastIndexOf('-') + 1 ) );
+			
+			if ( total_top_menu_count < current_val) 
+			{
+				var position = $(evt.target).menu('option', 'position');
+				position.at = "right+2 top+2";
+				$(evt.target).menu('option', 'position', position);				
+			}
+			else 
+			{
+				var position = $(evt.target).menu('option', 'position');
+				position.at = "left bottom+5";
+				$(evt.target).menu('option', 'position', position);
+			}
+		});		
+		
+		$("#vmenu").menu( { position: { my: "left top", at: "right+2 top+2" } } );
+				
+		$['ui']['menu'].prototype['delay'] = 100;
+	});
+	
+</script>
+
+</head>
+<body>
+<div>
+		<ul id="hmenu">
+			<li><a href="#">Level1 메뉴 A</a>
+				<ul>
+					<li><a href="#">Level2 메뉴 A</a></li>
+					<li><a href="#">Level2 메뉴 B</a>
+						<ul>
+							<li><a href="#">Level3 메뉴 A</a></li>
+							<li><a href="#">Level3 메뉴 B</a></li>					
+						</ul>
+					</li>
+					<li><a href="#">Level2 메뉴 C</a>
+						<ul>
+							<li><a href="#">Level3 메뉴 A</a></li>
+							<li><a href="#">Level3 메뉴 B</a></li>					
+						</ul>			
+					</li>
+				</ul>
+			</li>
+			<li><a href="#">Level2 메뉴 B</a>
+				<ul>
+					<li><a href="#">Level2 메뉴 A</a></li>
+					<li><a href="#">Level2 메뉴 B</a>
+						<ul>
+							<li><a href="#">Level3 메뉴 A</a></li>
+							<li><a href="#">Level3 메뉴 B</a></li>					
+						</ul>
+					</li>
+					<li><a href="#">Level2 메뉴 C</a>
+						<ul>
+							<li><a href="#">Level3 메뉴 A</a></li>
+							<li><a href="#">Level3 메뉴 B</a></li>					
+						</ul>			
+					</li>
+				</ul>
+			</li>
+			<li><a href="#">Level3 메뉴 C</a></li>
+			<li><a href="#">Level4 메뉴 D</a></li>
+		</ul>
+</div>
+<div style="height:100px"></div>
+<div>
+		<ul id="vmenu">
+			<li><a href="#">Level1 메뉴 A</a>
+				<ul>
+					<li><a href="#">Level2 메뉴 A</a></li>
+					<li><a href="#">Level2 메뉴 B</a>
+						<ul>
+							<li><a href="#">Level3 메뉴 A</a></li>
+							<li><a href="#">Level3 메뉴 B</a></li>					
+						</ul>
+					</li>
+					<li><a href="#">Level2 메뉴 C</a>
+						<ul>
+							<li><a href="#">Level3 메뉴 A</a></li>
+							<li><a href="#">Level3 메뉴 B</a></li>					
+						</ul>			
+					</li>
+				</ul>
+			</li>
+			<li><a href="#">Level1 메뉴 B</a>
+				<ul>
+					<li><a href="#">Level2 메뉴 A</a></li>
+					<li><a href="#">Level2 메뉴 B</a>
+						<ul>
+							<li><a href="#">Level3 메뉴 A</a></li>
+							<li><a href="#">Level3 메뉴 B</a></li>					
+						</ul>
+					</li>
+					<li><a href="#">Level2 메뉴 C</a>
+						<ul>
+							<li><a href="#">Level3 메뉴 A</a></li>
+							<li><a href="#">Level3 메뉴 B</a></li>					
+						</ul>			
+					</li>
+				</ul>
+			</li>
+			<li><a href="#">Level1 메뉴 C</a></li>
+			<li><a href="#">Level1 메뉴 D</a></li>
+		</ul>	
+</div>
+
+</body>
+</html>

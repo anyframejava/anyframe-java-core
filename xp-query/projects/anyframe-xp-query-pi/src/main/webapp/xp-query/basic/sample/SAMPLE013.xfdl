@@ -1,0 +1,451 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<FDL version="1.4">
+  <TypeDefinition url="..\default_typedef.xml"/>
+  <Form id="frmSAMPLE013" classname="SAMPLE013" inheritanceid="" position="absolute 0 0 765 540" titletext="FILEATTACHMENT" onload="SAMPLE013_onload" onbeforeclose="SAMPLE013_onbeforeclose" style="background:#f2f2efff;">
+    <Layouts>
+      <Layout>
+        <Div id="divBoardForm" taborder="2" text="divBoardForm" position="absolute 0 40 765 539" anchor="all">
+          <Layouts>
+            <Layout>
+              <Static id="stPostId" text="global.domain.boardid" position="absolute 0 1 85 27" style="background:#edeee6ff;border:1 solid #c6c6c5ff ;"/>
+              <Static id="stTitle" text="global.domain.title" position="absolute 0 26 85 52" style="background:#edeee6ff;border:1 solid #c6c6c5ff ;"/>
+              <Static id="stContents" text="global.domain.contents" position="absolute 0 51 85 113" style="background:#edeee6ff;border:1 solid #c6c6c5ff ;"/>
+              <Static id="stRegId" text="global.domain.regid" position="absolute 392 1 477 27" style="background:#edeee6ff;border:1 solid #c6c6c5ff ;"/>
+              <Static id="stRegDate" text="global.domain.regdate" position="absolute 0 112 85 138" style="background:#edeee6ff;border:1 solid #c6c6c5ff ;"/>
+              <Static id="stCommunityId" text="global.domain.community" position="absolute 392 112 477 138" style="background:#edeee6ff;border:1 solid #c6c6c5ff ;"/>
+              <Static id="Static00" position="absolute 84 1 392 27" style="background:#ffffffff; border:1 solid #c6c6c5ff ; align:center middle; " text=""/>
+              <Edit id="edtPostId" taborder="7" readonly="true" position="absolute 86 3 334 25"/>
+              <Static id="Static01" position="absolute 476 1 765 27" style="background:#ffffffff; border:1 solid #c6c6c5ff ; align:center middle; " text=""/>
+              <Edit id="edtRegId" taborder="8" position="absolute 478 3 731 25" readonly="true"/>
+              <Static id="Static02" position="absolute 84 26 765 52" style="background:#ffffffff; border:1 solid #c6c6c5ff ; align:center middle; " text=""/>
+              <Edit id="edtTitle" taborder="9" readonly="true" position="absolute 86 28 731 50" style="background:transparent URL('theme://images/edit_bg_N.png') stretch 4,4 center middle;"/>
+              <Static id="Static03" position="absolute 84 51 765 113" style="background:#ffffffff; border:1 solid #c6c6c5ff ; align:center middle; " text=""/>
+              <TextArea id="txaContents" taborder="10" wordwrap="char" readonly="true" position="absolute 86 53 731 111" style="background:transparent URL('theme://images/edit_bg_N.png') stretch 4,4 center middle; "/>
+              <Static id="Static04" position="absolute 84 112 392 138" style="background:#ffffffff; border:1 solid #c6c6c5ff ; align:center middle; " text=""/>
+              <Calendar id="calRegDate" taborder="11" readonly="true" dateformat="yyyy-MM-dd" position="absolute 86 114 334 136" style="align:left middle; " enable="false"/>
+              <Static id="Static05" position="absolute 476 112 765 138" style="background:#ffffffff; border:1 solid #c6c6c5ff ; align:center middle; " text=""/>
+              <GroupBox id="grbxAttFile" text="global.domain.attachedfile" position="absolute 0 178 765 499" anchor="all"/>
+              <Combo id="cmbCommunityId" taborder="12" innerdataset="dsCboCommunity" codecolumn="COMMUNITY_ID" datacolumn="COMMUNITY_NAME" position="absolute 478 114 731 136" readonly="true" enable="false"/>
+              <Static id="stFileSize" text="0KB" position="absolute 668 192 740 216" style="align:right; "/>
+              <Grid id="grdBoardFile" taborder="13" binddataset="dsBoardFile" useinputpanel="false" cellsizingtype="col" autofittype="col" onrbuttonup="divBoardForm_grdBoardFile_onrbuttonup" onheadclick="divBoardForm_grdBoardFile_onheadclick" oncelldblclick="divBoardForm_grdBoardFile_oncelldblclick" position="absolute 3 220 762 496" anchor="all">
+                <Formats>
+                  <Format id="default">
+                    <Columns>
+                      <Column size="25"/>
+                      <Column size="40"/>
+                      <Column size="538"/>
+                      <Column size="108"/>
+                    </Columns>
+                    <Rows>
+                      <Row size="24" band="head"/>
+                      <Row size="24"/>
+                    </Rows>
+                    <Band id="head">
+                      <Cell displaytype="checkbox" edittype="checkbox" text="0"/>
+                      <Cell col="1"/>
+                      <Cell col="2" text="global.domain.filename"/>
+                      <Cell col="3" text="global.domain.filesize"/>
+                    </Band>
+                    <Band id="body">
+                      <Cell displaytype="checkbox" edittype="checkbox" text="bind:_chk"/>
+                      <Cell col="1" style="align:center;" expr="currow+1"/>
+                      <Cell col="2" style="align:left;" text="bind:NAME"/>
+                      <Cell col="3" style="align:left;" text="bind:FILE_SIZE"/>
+                    </Band>
+                  </Format>
+                </Formats>
+              </Grid>
+              <Button id="btAdd" taborder="14" text="global.domain.add" onclick="btAdd_onclick" position="absolute 3 192 76 216"/>
+              <Button id="btDelete" taborder="15" text="global.domain.delete" onclick="btDelete_onclick" position="absolute 78 192 151 216"/>
+            </Layout>
+          </Layouts>
+        </Div>
+        <FileUpload id="fupAttachedFile" taborder="6" timeout="0" retry="0" async="true" index="0" onload="FileUpload00_onload" position="absolute 0 179 307 222" visible="false" itemcount="0"/>
+        <FileDownload id="fdnAttatchedFile" taborder="7" timeout="0" retry="0" async="true" visible="false" position="absolute 489 179 763 222"/>
+        <Div id="Div00" taborder="8" text="Div00" position="absolute 0 0 765 40">
+          <Layouts>
+            <Layout>
+              <Static id="stTitle" text="global.domain.boarddetail" position="absolute 18 10 219 32"/>
+              <Button id="btSaveAll" taborder="1" text="global.domain.save" onclick="btSaveAll_onclick" position="absolute 692 7 765 32"/>
+            </Layout>
+          </Layouts>
+        </Div>
+        <PopupMenu id="popupMenuGrd" position="absolute 30 307 178 364"/>
+        <Static id="Static00" position="absolute 2 10 16 32" style="background:URL('image::bullet_WF_Lev1.png') left middle; " text=""/>
+      </Layout>
+    </Layouts>
+    <Objects>
+      <Dataset id="dsService" firefirstcount="0" firenextcount="0" useclientlayout="false" updatecontrol="true" enableevent="true" loadkeymode="keep" loadfiltermode="keep" reversesubsum="false">
+        <ColumnInfo>
+          <Column id="SVC_ID" type="STRING" size="100"/>
+          <Column id="QUERY_LIST" type="STRING" size="256"/>
+          <Column id="SERVICE" type="STRING" size="100"/>
+          <Column id="IN_DATASET_LIST" type="STRING" size="256"/>
+          <Column id="OUT_DATASET_LIST" type="STRING" size="256"/>
+          <Column id="CONTROLLER" type="STRING" size="512"/>
+          <Column id="CALLBACK" type="STRING" size="100"/>
+          <Column id="SYNC_YN" type="STRING" size="1"/>
+        </ColumnInfo>
+        <Rows>
+          <Row>
+            <Col id="SVC_ID">getListBoardFile</Col>
+            <Col id="QUERY_LIST">querySet1=findXPBoardFileList querySet2=findXPBoardByPk</Col>
+            <Col id="OUT_DATASET_LIST">dsBoardFile=querySet1 dsGrdBoard=querySet2</Col>
+            <Col id="IN_DATASET_LIST">querySet1=dsSearch querySet2=dsSearch</Col>
+            <Col id="SERVICE"/>
+            <Col id="CONTROLLER"/>
+            <Col id="CALLBACK"/>
+            <Col id="SYNC_YN"/>
+          </Row>
+          <Row>
+            <Col id="SVC_ID">saveAllBoardFile</Col>
+            <Col id="QUERY_LIST">querySet1=createXPBoardFile,updateXPBoardFile,removeXPBoardFile</Col>
+            <Col id="SERVICE"/>
+            <Col id="CONTROLLER"/>
+            <Col id="CALLBACK"/>
+            <Col id="SYNC_YN"/>
+            <Col id="IN_DATASET_LIST">querySet1=dsBoardFile:U</Col>
+            <Col id="OUT_DATASET_LIST"/>
+          </Row>
+          <Row>
+            <Col id="SERVICE"/>
+            <Col id="CONTROLLER"/>
+            <Col id="CALLBACK"/>
+            <Col id="SYNC_YN"/>
+            <Col id="SVC_ID">getListCommunity</Col>
+            <Col id="QUERY_LIST">querySet1=findXPCommunityList</Col>
+            <Col id="IN_DATASET_LIST"/>
+            <Col id="OUT_DATASET_LIST">dsCboCommunity=querySet1</Col>
+          </Row>
+        </Rows>
+      </Dataset>
+      <Dataset id="dsGrdBoard" firefirstcount="0" firenextcount="0" useclientlayout="false" updatecontrol="true" enableevent="true" loadkeymode="keep" loadfiltermode="keep" reversesubsum="false">
+        <ColumnInfo>
+          <Column id="_chk" type="STRING" size="1"/>
+          <Column id="TITLE" type="STRING" size="256"/>
+          <Column id="CONTENTS" type="STRING" size="256"/>
+          <Column id="REG_ID" type="STRING" size="256"/>
+          <Column id="REG_DATE" type="STRING" size="256"/>
+          <Column id="POST_ID" type="STRING" size="256"/>
+          <Column id="COMMUNITY_ID" type="STRING" size="256"/>
+        </ColumnInfo>
+      </Dataset>
+      <Dataset id="dsCboCommunity" firefirstcount="0" firenextcount="0" useclientlayout="false" updatecontrol="true" enableevent="true" loadkeymode="keep" loadfiltermode="keep" reversesubsum="false">
+        <ColumnInfo>
+          <Column id="COMMUNITY_ID" type="STRING" size="256"/>
+          <Column id="COMMUNITY_NAME" type="STRING" size="256"/>
+          <Column id="COMMUNITY_DESC" type="STRING" size="256"/>
+          <Column id="CATEGORY_ID" type="STRING" size="256"/>
+          <Column id="REG_ID" type="STRING" size="256"/>
+          <Column id="REG_DATE" type="STRING" size="256"/>
+        </ColumnInfo>
+        <Rows>
+          <Row>
+            <Col id="COMMUNITY_ID"/>
+            <Col id="COMMUNITY_NAME"/>
+            <Col id="COMMUNITY_DESC"/>
+            <Col id="CATEGORY_ID"/>
+            <Col id="REG_ID"/>
+            <Col id="REG_DATE"/>
+          </Row>
+        </Rows>
+      </Dataset>
+      <Dataset id="dsSearch" firefirstcount="0" firenextcount="0" useclientlayout="false" updatecontrol="true" enableevent="true" loadkeymode="keep" loadfiltermode="keep" reversesubsum="false">
+        <ColumnInfo>
+          <Column id="POST_ID" type="STRING" size="100"/>
+        </ColumnInfo>
+        <Rows>
+          <Row>
+            <Col id="POST_ID"/>
+          </Row>
+        </Rows>
+      </Dataset>
+      <Dataset id="dsBoardFile" firefirstcount="0" firenextcount="0" useclientlayout="false" updatecontrol="true" enableevent="true" loadkeymode="keep" loadfiltermode="keep" reversesubsum="false" onrowposchanged="dsBoardFile_onrowposchanged" canrowposchange="dsBoardFile_canrowposchange">
+        <ColumnInfo>
+          <Column id="_chk" type="STRING" size="1"/>
+          <Column id="POST_ID" type="STRING" size="256"/>
+          <Column id="ID" type="STRING" size="256"/>
+          <Column id="NAME" type="STRING" size="256"/>
+          <Column id="REF_ID" type="STRING" size="256"/>
+          <Column id="FILE_SIZE" type="STRING" size="256"/>
+          <Column id="prog_bar" type="STRING" size="256"/>
+        </ColumnInfo>
+      </Dataset>
+      <Dataset id="dsAttachedFile" firefirstcount="0" firenextcount="0" useclientlayout="false" updatecontrol="true" enableevent="true" loadkeymode="keep" loadfiltermode="keep" reversesubsum="false">
+        <ColumnInfo>
+          <Column id="FILE_PATH" type="STRING" size="256"/>
+        </ColumnInfo>
+      </Dataset>
+    </Objects>
+    <Bind>
+      <BindItem id="item0" compid="divBoardForm.edtPostId" propid="value" datasetid="dsGrdBoard" columnid="POST_ID"/>
+      <BindItem id="item1" compid="divBoardForm.edtRegId" propid="value" datasetid="dsGrdBoard" columnid="REG_ID"/>
+      <BindItem id="item2" compid="divBoardForm.edtTitle" propid="value" datasetid="dsGrdBoard" columnid="TITLE"/>
+      <BindItem id="item3" compid="divBoardForm.txaContents" propid="value" datasetid="dsGrdBoard" columnid="CONTENTS"/>
+      <BindItem id="item4" compid="divBoardForm.calRegDate" propid="value" datasetid="dsGrdBoard" columnid="REG_DATE"/>
+      <BindItem id="item5" compid="divBoardForm.cmbCommunityId" propid="value" datasetid="dsGrdBoard" columnid="COMMUNITY_ID"/>
+    </Bind>
+    <Script type="xscript4.0"><![CDATA[include "lib::commonScript.xjs";
+
+var strPostId = "";
+var nMaxSize, nMaxRow, nTotalSize;
+var strUploadURL = "/xpQueryUpload.do";
+var strDownloadURL = "/xpQueryDownload.do";
+var objFocusedGrd;
+
+// Form onload 처리 이벤트 처리
+function SAMPLE013_onload(obj:Form, e:LoadEventInfo)
+{
+	strPostId = "POST-00001";
+	dsSearch.setColumn(0, "POST_ID", strPostId);
+	
+	// 커뮤니티 정보, 첨부파일 정보 수신
+	gfnService("getListCommunity");
+	gfnService("getListBoardFile");
+	
+	// 각 컴포넌트 국제화 처리
+	gfnSetTitle();		
+	
+	// 팝업 메뉴 초기화
+	popupMenuGrd.innerdataset = gdsPopupMenu;
+	popupMenuGrd.captioncolumn = "CAPTION";
+	popupMenuGrd.idcolumn = "ID";
+	popupMenuGrd.levelcolumn = "LEVEL";
+	
+	popupMenuGrd.onmenuclick.addHandler(fnPopupMenu_onmenuclick);
+}
+
+// 팝업 메뉴 선택 이벤트
+function fnPopupMenu_onmenuclick(obj:PopupMenu, e:MenuClickEventInfo){
+	switch(e.id){
+		case "find":
+			fnFindForm();
+			break;
+		case "excelexport":
+			fnExcelExport();
+			break;
+		default:
+			break;
+	}
+}
+
+// "검색" 메뉴 클릭시
+function fnFindForm(){
+	popupMenuGrd.closePopup();
+	var resultForm = gfnShowModal("includes::GRDFIND.xfdl", {objGrd:objFocusedGrd}, "global.domain.popupmenu.find", 525, 300);
+}
+
+// "엑셀 다운로드" 메뉴 클릭시
+function fnExcelExport(){
+	popupMenuGrd.closePopup();
+	var resultForm = gfnConfirm(gfnGetMessage("global.domain.popup.excelsave"), "OSC");
+	
+	if(resultForm == "S"){
+		gfnExportSaveAsExcel(objFocusedGrd);
+	} else if(resultForm == "Y"){
+		gfnExportExcelEx(objFocusedGrd);
+	}
+}
+
+// 저장 버튼 클릭 이벤트
+function btSaveAll_onclick(obj:Button,  e:ClickEventInfo)
+{
+	// 기존의 item이 있는 경우 reset
+	if(fupAttachedFile.itemcount > 0){
+		fupAttachedFile.innerdataset = "";
+		for(var i = fupAttachedFile.itemcount - 1 ; i >= 0 ; i--){
+			fupAttachedFile.deleteItem(i);
+		}
+	}
+	
+	dsAttachedFile.clearData();
+	var nRow = 0;
+	
+	// dsBoardFile 행수(rowcount)만큼 FileUpload 객체에 item 추가
+	for(var j = 0 ; j < dsBoardFile.rowcount ; j++){
+		if(dsBoardFile.getRowType(j) == Dataset.ROWTYPE_INSERT){
+			fupAttachedFile.appendItem();
+			nRow = dsAttachedFile.addRow();
+			dsAttachedFile.setColumn(nRow, "FILE_PATH", dsBoardFile.getColumn(j, "FULL_PATH"));
+		}
+	}
+	
+	// dsAttachedFile dataset을 FileUpload 객체의 innerdataset으로 설정
+	fupAttachedFile.innerdataset = dsAttachedFile;
+	fupAttachedFile.filecolumn = "FILE_PATH";
+		
+	// 정해진 URL(/xpQueryUpload.do) 로 Upload 수행
+	if(fupAttachedFile.itemcount > 0){
+		fupAttachedFile.uploadurl = gvDataGroup + "::" + strUploadURL;
+		fupAttachedFile.upload();
+	} else {
+		gfnService("saveAllBoardFile");
+	}
+}
+
+// 첨부파일 목록 더블클릭 이벤트 처리
+function divBoardForm_grdBoardFile_oncelldblclick(obj:Grid, e:GridClickEventInfo)
+{
+	var strFileId = dsBoardFile.getColumn(e.row, "ID");
+	var strFileName = dsBoardFile.getColumn(e.row, "NAME");
+	var strFileSize = dsBoardFile.getColumn(e.row, "FILE_SIZE");
+	var strFileExt = gfnGetFileExt(strFileName);
+	var objFileDialog = new FileDialog;
+	
+	// 사용자가 선택한 위치로 파일 다운로드
+	strFilePath  = objFileDialog.open(gfnGetMessage("global.domain.popup.filedownload"), FileDialog.SAVE, "%DOCUMENT%", strFileName);
+	
+	var objHttpObj = new HttpObject;
+	var strDownloadUrl = gvDataGroup + "::" + strDownloadURL + "?fileId=" + strFileId + "&fileName=" + strFileName;
+	var bSucc = objHttpObj.download(strDownloadUrl, strFilePath, true);
+	
+}
+
+// 추가 버튼 클릭 이벤트 처리
+function btAdd_onclick(obj:Button,  e:ClickEventInfo)
+{
+	// 사용자가 파일을 선택
+	var objFileDialog = new FileDialog;
+	var objAttatchedFile = objFileDialog.open(gfnGetMessage("global.domain.popup.fileupload"), FileDialog.LOAD);
+	
+	// 선택한 파일의 사이즈 정보를 얻기 위해 File Open
+	if(objAttatchedFile){
+		objAttatchedFile.open(VirtualFile.openRead | VirtualFile.openText);
+	} else {
+		return;
+	}
+	
+	var strFilePath = objAttatchedFile.path;
+	var strFileName = objAttatchedFile.filename;
+	var strFileExt = gfnGetFileExt(strFileName);
+	var nFileSize = objAttatchedFile.getFileSize();
+	
+	// 최대 첨부 파일 사이즈를 5MB로 제한
+	if(nFileSize >= 5242880){
+		gfnAlertMsg("msg.toobigdata", "WARN");
+		return;
+	}
+	
+	// File Upload를 위해 dsBoardFile DataSet에 필요 정보 설정
+	if(gfnIndexOf(strFileName, "(") == -1 || gfnIndexOf(strFileName, ")") == -1){
+		dsBoardFile.addColumn("POST_ID", "string", 256);
+		dsBoardFile.addColumn("FILE_PATH", "string", 256);
+		dsBoardFile.addColumn("FULL_PATH", "string", 256);
+		
+		var nNewRow = dsBoardFile.addRow();
+		
+		dsBoardFile.setColumn(nNewRow, "NAME", strFileName);
+		dsBoardFile.setColumn(nNewRow, "FILE_SIZE", nFileSize);
+		dsBoardFile.setColumn(nNewRow, "FILE_PATH", strFilePath);
+		dsBoardFile.setColumn(nNewRow, "POST_ID", strPostId);
+		dsBoardFile.setColumn(nNewRow, "FULL_PATH", strFilePath + strFileName);
+		fnCalcTotalFileSize();
+		
+	}else{
+		gfnAlertMsg("msg.invalid.filename");
+	}
+}
+
+// 삭제 버튼 클릭 이벤트
+function btDelete_onclick(obj:Button,  e:ClickEventInfo)
+{
+
+	for(var i = dsBoardFile.rowcount - 1 ; i >= 0 ; i--){
+		var bIsChecked = dsBoardFile.getColumn(i, "_chk");
+		if(bIsChecked){
+//			dsAttachedFile.deleteRow(i);	
+		}
+	}
+	
+	gfnCheckedRowDelete(dsBoardFile);
+
+}
+
+// Upload 성공 후 Callback method - Dataset의 ID Column Set
+function FileUpload00_onload(obj:FileUpload,  e:FileUploadLoadEventInfo)
+{
+	var objResultDs = e.datasets[0];
+	var nRow = 0;
+	
+	for(var i = 0 ; i < dsBoardFile.rowcount ; i++){
+		if(gfnIsNull(dsBoardFile.getColumn(i, "ID"))){
+			dsBoardFile.setColumn(i, "REF_ID", strPostId);
+			dsBoardFile.setColumn(i, "ID", objResultDs.getColumn(nRow, "ID"));
+			nRow++;
+		}
+	}
+	
+	gfnService("saveAllBoardFile");
+}
+
+// 첨부 파일 목록 그리드 헤더 클릭 이벤트 처리
+function divBoardForm_grdBoardFile_onheadclick(obj:Grid, e:GridClickEventInfo)
+{
+	// 그리드 정렬
+	if(e.cell > 1){
+		gfnGridSort(obj, e);
+	}
+	
+	// 체크 버튼 전체 선택/해제
+	gfnSetGridCheckAll(obj, e);
+}
+
+// 첨부 파일 목록 Row Position 변경 이벤트 처리
+function dsBoardFile_onrowposchanged(obj:Dataset, e:DSRowPosChangeEventInfo)
+{
+	// 전체 파일 사이즈 계산
+	fnCalcTotalFileSize();
+}
+
+// 전체 파일 사이즈 계산
+function fnCalcTotalFileSize(){
+	nTotalSize = 0;
+	
+	for(var i = 0 ; i < dsBoardFile.rowcount ; i++){
+		nTotalSize += parseInt(dsBoardFile.getColumn(i, "FILE_SIZE"));
+	}
+	
+	divBoardForm.stFileSize.text = Math.ceil(nTotalSize / 1024) + "KB";
+}
+
+// 첨부 파일 그리드 우클릭 이벤트 처리
+function divBoardForm_grdBoardFile_onrbuttonup(obj:Grid, e:GridMouseEventInfo)
+{
+	nSelectedCol = e.col;
+	nSelectedRow = e.row;
+	objFocusedGrd = obj;
+	var nGridX = system.cursorx;
+	var nGridY = system.cursory;
+	
+	// 현재 마우스 위치에 팝업메뉴 생성
+	popupMenuGrd.trackPopup(nGridX, nGridY);
+}
+
+// Form을 닫기 전 변경 내용이 있는 경우 알림 창 생성
+function SAMPLE013_onbeforeclose(obj:Form, e:CloseEventInfo)
+{
+	if(gfnDsGetUpdate(dsBoardFile)){
+		var resultValue = gfnConfirm("msg.before.movepage", "YN");
+		
+		if(resultValue == "N") {
+			return;
+		} else if(resultValue == "Y") {
+			btSaveAll_onclick();
+		}
+	}
+}
+
+// gfnService 호출 후 Callback 처리
+function fnCallback(strServiceId, strErrorCode, strErrorMsg){
+	if(strErrorCode == -1){
+		gfnAlertMsg(strErrorMsg, "ERR");
+		dsBoardFile.reset();
+	} else {
+		if(strServiceId == "saveAllBoardFile"){
+			gfnService("getListBoardFile");
+			gfnAlertMsg("msg.save.success");
+		}
+	}
+}]]></Script>
+  </Form>
+</FDL>

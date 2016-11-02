@@ -1,0 +1,138 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN"
+"http://www.w3.org/TR/html4/loose.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<!-- Start of head-->
+<head>
+<meta http-equiv="content-type" content="text/html; charset=UTF-8" />
+<title>Accordion : Basics</title>
+
+<!-- include required common files  ----------------------------------------------------->
+<script type="text/javascript"	src="../../../common/exlibs/jquery-1.9.0.js"></script>
+<script type="text/javascript" src="../../../common/exlibs/highlighter/scripts/shCore.js"></script>
+<script type="text/javascript" src="../../../common/exlibs/highlighter/scripts/shBrushJScript.js"></script>
+<script type="text/javascript" src="../../../common/js/template_common.js"></script>
+
+<!--  stylesheet  -->
+<link type="text/css" rel="stylesheet" href="../../../common/exlibs/highlighter/styles/shCore.css" />
+<link type="text/css" rel="stylesheet" href="../../../common/exlibs/highlighter/styles/shCoreDefault.css" />
+<link type="text/css" rel="stylesheet" href="../../../common/css/style.css" />
+
+<!-- scripts to support sample page  ----------------------------------------------------->
+<script type="text/javascript">
+
+$(function() {
+	JTemplate.load("ui_accordion_basic_src.htm");				
+	JTemplate.loadDemo2("ui_accordion_basic_src.htm", {height:"550px"});		
+});  
+
+</script>
+</head>
+
+<style>
+#set-width li span {
+	width : 60px;
+}
+</style>
+
+<!-- Start of body -->
+<body >
+<!-- HEADER BAR -------------------------------------------------------------->
+<div class="content-title">Component - Accordion</div>
+
+<!-- START OF PAGE ... -------------------------------------------------------->
+<div id="page">
+	<p class = "header-title">Accordion 기본기능</p>
+	<p class="header-desc">: accordion의 기본적인 기능으로, 두가지 옵션을 사용한 컨트롤을 제공하는 예이다.</p>
+<!-- DEMO ----------------------------------------------------------------------->
+	<div class="demo">
+		<h3 >Demo</h3>
+		<div id="visualExample"></div>
+	</div>
+
+<!-- DEMO DESCRIPTION----------------------------------------------------->
+	<div class="desc">
+		<h3>Demo Description </h3>
+		<hr>
+		<p class="desc-title">Accordion 형태</p>
+		<p class="desc-overall">  
+		: 각 섹션은 bar 처럼 생긴 헤더(header)부분이 존재하며, 클릭과 같은 이벤트로 하위콘텐트(content)부분이 된다.<br> 
+		이벤트의 종류나 상세 애니메이션 동작 등은 조절가능하며, 아래 형태 옵션 동작으로 세부형태는 바뀔 수 있다.
+		</p>
+		<p class="desc-title">형태 옵션 동작</p>
+		<p class = "desc-overall">: collapsible, heightStyle 옵션조절을 통해 기본형태의 세부적인 부분을 바꿀 수 있다.</p>
+		<ul class ="desc-ol" id="set-width">
+		<li><span>모두닫힘 여부</span> : 적어도 하나의 콘텐트가 펼쳐져 있어야 하는지, 모든 콘텐트가 접혀져(닫아져) 있을 수 있는지 설정한다. </li>
+		<li><span>이벤트 변경</span> : 아코디언이 작동하는 인터랙션의 이벤트로써, 마우스 클릭, 오버 등으로 변경 가능한다. </li>
+		<li><span>현재창 제어</span> : 아코디언 내에서의 이벤트를 통하지 않고 외부의 다른 UI요소를 통해 열리고 닫힘을 제어할 수 있다.(본 예제에서는 버튼으로 제어) </li>
+		<li><span>heightStyle</span> : 각 섹션의 콘텐트의 높이를 조작한다. <br>
+			<ul class="sub-desc-hypl" id="set-width">
+				<li> <span>auto</span> : 가장 많은 콘텐츠를 가지고 있는 섹션의 높이에 기초하여 그 최대높이값을 기준으로 모든 섹션에 적용하여 보여준다.</li>
+				<li> <span>fill </span>: accordion의 부모높이에 기초하여 가능한 높이로 보여준다.</li>
+				<li> <span>content</span> : 각 섹션의 콘텐츠의 길이에 맞추어 높이가 변하며, 이를 적용하여 보여준다.</li>
+			</ul>
+		</li>
+		</ul>
+		
+	</div>
+	
+<!-- CODE------------------------------------------------------------------------>
+	<div class="code">
+		<h3>Code Source </h3>
+		<pre id="codeExample" class="brush: js"></pre>
+	</div>
+
+<!-- CODE DESCRIPTION------------------------------------------------------>
+	<div class="desc">
+		<h3>Code Description </h3>
+		<hr>
+		<p class="desc-title">Accordion 구조</p>
+		<p class="desc-overall">
+		: accordion은 타이틀이 쓰여지는 header 부분과 그 아래 내용물이 들어있는 panel이 있다. <br>
+		즉, (header + panel) 이 한 세트로써 동작하며, 이것이 여러개 나열되며 아코디언이 구성되는 것이다.
+		</p>
+		
+		<p class="desc-title">생성가능한 태그</p>
+		<p class="desc-overall">
+		: 아코디언을 생성하기 위해 임의의 마크업 모두가 가능하다. 단지, 각 panel 은 header 바로 다음에 존재해야 한다.
+		header 옵션에 header로 동작할 태그를 선택자로 넣어주어야 한다.
+		</p>		
+		
+		<p class="desc-title">옵션: 초기화 설정</p>
+		<p class="desc-overall">: 다음과 같이 accordion 컴포넌트를 처음에 생성할 때, 적용하고자 하는 옵션값을 설정할 수 있다.</p>
+		<div class="code-block">
+			<pre>
+$("#accordion").accordion({
+	collapsible : true,
+	heightStyle : "content"
+});</pre>
+		</div>
+		<p>(옵션 값을 따로 설정하지 않고 컴포넌트를 생성하면 default값으로,	collapsible은 false로, heightStyle은 "auto"로 설정된다.)</p>
+		<p class="desc-title">옵션: 재설정</p>
+		<p class="desc-overall"> 
+		초기화된 후, 옵션을 재설정하여 사용가능하다. 본 예제 참조 : <span class="code-line">#29,</span><span class="code-line">#33</span> <br>
+		다음은 일반적인 옵션설정방식이다.
+		</p>
+		<div class="code-block">
+			<pre>
+$("#accordion").accordion("option", "collapsible", true);</pre>
+		</div>
+	
+	</div>
+
+<!-- RELATED LINKS ----------------------------------------------------------->
+	<div class="related">
+		<h3>Related Links</h3>
+		 <ul class="desc-hypl">
+           	<li>
+           		<span>Accordion API</span>
+           		<a href = "http://api.jqueryui.com/accordion"></a>
+           	</li>
+		</ul>
+	</div>
+
+</div>
+<!-- END OF PAGE------------------------------------------------------------->
+</body>
+<!-- End of body-->
+
+</html>

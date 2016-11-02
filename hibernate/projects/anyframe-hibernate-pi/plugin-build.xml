@@ -1,0 +1,61 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<plugin name="hibernate" description="Hibernate Plugin consists of sample code which is to guide how to use Hibernate and reference libraries which are needed to use these open sources.">
+	<groupId>org.anyframe.plugin</groupId>
+	<artifactId>anyframe-hibernate-pi</artifactId>
+	<version>1.6.1-SNAPSHOT</version>
+	<dependent-plugins>
+		<dependent-plugin name="core" version="2.0.0&gt;*&gt;1.4.0" />
+	</dependent-plugins>
+	<resources>
+		<resource dir="src/main/java" filtered="true" packaged="true">
+			<include name="**/hibernate/**/*.java" />
+		</resource>
+		<resource dir="src/main/resources" filtered="true" packaged="false">
+			<include name="**/hibernate/*.xml" />
+			<include name="**/spring/context-hibernate.xml" />
+			<exclude name="**/hibernate/hibernate.cfg.xml" />
+		</resource>
+		<resource dir="src/test/java" filtered="true" packaged="true">
+			<include name="**/hibernate/**/*.java" />
+		</resource>
+		<resource dir="src/test/resources" filtered="true" packaged="false">
+			<include name="**/*anyframe-hibernate-pi*.xml" />
+		</resource>
+		<resource dir="src/main/webapp" filtered="false" packaged="false">
+			<include name="**/hibernate/**/*.*" />
+			<exclude name="**/anyframe.jsp" merged="true"/>
+		</resource>
+		<resource dir="db" filtered="false" packaged="false">
+			<include name="**/*.xml" />
+		</resource>
+	</resources>
+	<samples>true</samples>
+	<interceptor>
+		<class>org.anyframe.plugin.interceptor.HibernatePluginInterceptor</class>
+		<dependencies>
+			<dependency>
+				<groupId>org.anyframe</groupId>
+				<artifactId>anyframe-ide-command-common</artifactId>
+				<version>2.3.1-SNAPSHOT</version>
+				<scope>interceptor</scope>
+			</dependency>
+			<dependency>
+				<groupId>org.slf4j</groupId>
+				<artifactId>slf4j-api</artifactId>
+				<version>1.6.4</version>
+			</dependency>
+			<dependency>
+				<groupId>org.slf4j</groupId>
+				<artifactId>slf4j-log4j12</artifactId>
+				<version>1.6.4</version>
+			</dependency>
+			<dependency>
+				<groupId>org.slf4j</groupId>
+				<artifactId>jcl-over-slf4j</artifactId>
+				<version>1.6.4</version>
+			</dependency>
+		</dependencies>
+	</interceptor>
+	<essential>false</essential>
+	<checked>false</checked>
+</plugin>

@@ -1,0 +1,90 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<plugin name="flex-query"
+	description="Flex-Query Plugin consists of BlazeDS installation for communicating Flex Client and Server, and libraries and configuration file for integrating Spring to BlazeDS.">
+	<groupId>org.anyframe.plugin</groupId>
+	<artifactId>anyframe-flex-query-pi</artifactId>
+	<version>1.6.1-SNAPSHOT</version>
+	<dependent-plugins>
+		<dependent-plugin name="query" version="2.0.0&gt;*&gt;1.4.0" />
+	</dependent-plugins>
+	<resources>
+		<resource dir="src/main/java" filtered="true" packaged="true">
+			<include name="**/flex/query/**/*.java" />
+			<exclude name="**/common/aspect/LoggingAspect.java" merged="true" />
+		</resource>
+		<resource dir="src/main/resources" filtered="true" packaged="false">
+			<include name="**/query/*flex*.xml" />
+			<include name="**/spring/flex.xml" />
+			<include name="**/spring/*flex-query*.xml" />
+			<exclude name="**/spring/context-transaction.xml" merged="true" />
+			<exclude name="**/spring/context-message.xml" merged="true" />
+		</resource>
+		<resource dir="src/test/java" filtered="true" packaged="true">
+			<include name="**/flex/query/**/*.java" />
+		</resource>
+
+		<resource dir="src/main/webapp" filtered="false" packaged="false">
+			<include name="**/flex-query/**/*.*" />
+			<exclude name="**/flex-query/pjt/**/*.mxml" />
+			<exclude name="**/flex-query/pjt/**/*.as" />
+			<exclude name="**/anyframe.jsp" merged="true" />
+			<exclude name="**/web.xml" merged="true" />
+		</resource>
+		
+		<resource dir="src/main/webapp/WEB-INF/flex-query/pjt"
+			filtered="true" packaged="false">
+			<include name="**/src/**/*.mxml" />
+			<include name="**/src/**/*.as" />
+		</resource>
+
+		<resource dir="db" filtered="false" packaged="false">
+			<include name="**/*.sql" />
+			<include name="**/*flex*.xml" />
+		</resource>
+	</resources>
+	<samples>true</samples>
+	<interceptor>
+		<class>org.anyframe.plugin.interceptor.FlexPluginInterceptor</class>
+		<dependencies>
+			<dependency>
+				<groupId>commons-collections</groupId>
+				<artifactId>commons-collections</artifactId>
+				<version>3.2</version>
+			</dependency>
+			<dependency>
+				<groupId>org.slf4j</groupId>
+				<artifactId>slf4j-api</artifactId>
+				<version>1.6.4</version>
+			</dependency>
+			<dependency>
+				<groupId>org.slf4j</groupId>
+				<artifactId>slf4j-log4j12</artifactId>
+				<version>1.6.4</version>
+			</dependency>
+			<dependency>
+				<groupId>org.slf4j</groupId>
+				<artifactId>jcl-over-slf4j</artifactId>
+				<version>1.6.4</version>
+			</dependency>
+			<dependency>
+				<groupId>log4j</groupId>
+				<artifactId>log4j</artifactId>
+				<version>1.2.15</version>
+			</dependency>
+			<dependency>
+				<groupId>ant</groupId>
+				<artifactId>ant</artifactId>
+				<version>1.8.1</version>
+				<scope>interceptor</scope>
+			</dependency>
+			<dependency>
+				<groupId>ant</groupId>
+				<artifactId>flex</artifactId>
+				<version>4.5.0</version>
+				<scope>interceptor</scope>
+			</dependency>
+		</dependencies>
+	</interceptor>
+	<essential>false</essential>
+	<checked>false</checked>
+</plugin>

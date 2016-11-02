@@ -1,0 +1,548 @@
+<chapter id="cxf_databinding">
+  	<title>Databinding</title>
+
+  	<para>
+  		XML 문서의 XSD Schema를 기준으로 XML문서와 JavaBeans 객체를 매핑하는 것을 Databinding이라고
+  		하며, Web Services에서 서버와 클라이언트 간의 XML 문서를 주고 받아서 일을 수행하려고 할때 사용 되는 기술이다.
+  		Apache CXF는 Databinding을 위해 JAXB를 디폴트로 사용하며 Aegis, MTOM을 추가적으로 지원한다.
+  		Databinding의 종류는 다음과 같다.
+  	</para>
+	<itemizedlist>
+    	<listitem>
+      		<para><emphasis role="bold">JAXB</emphasis></para>
+      		<para>
+      			Java Architecture for XML Binding의 약자로 XML Schema로부터 클래스 데이터를 바인딩하여 XML로부터
+      			객체를 Unmarshalling 하거나, 반대로 객체를 XML로 저장하는 Marshalling을 수행할 수 있도록 해 준다.
+      		</para>
+    	</listitem>
+	    <listitem>
+      		<para><emphasis role="bold">Aegis</emphasis></para>
+		    <para>
+		    	Aegis는 JAXB와 다르게 표준(Spec.)이 아니며, Apache CXF에서만 제공되는 기능으로 JAXB와 역할이 동일하다.
+		    	Xfire 프로젝트의 일부로 시작되었으나 Celtix와 Xfire의 합체로 현재 Apache CXF에 포함되어 발전되고 있다.
+		    	Anyframe에서는 JAXB Databinding 방식을 채택하여 사용하도록 권고하고 있으므로 
+		    	Aegis Databinding에 관한 상세한 내용은 매뉴얼에서 언급하고 있지 않다. 
+		    </para>
+    	</listitem>
+    	<listitem>
+      		<para><emphasis role="bold">MTOM</emphasis></para>
+      		<para>
+      			Message Transmission Optimization Mechanism의 약자로 SOAP 메시지 통신 최적화 메커니즘이다.
+      			웹 서비스를 통해 바이너리 데이터를 효과적으로 편리하게 전송할 수 있도록 하는 표준이다.
+      		</para>
+    	</listitem>
+  	</itemizedlist>
+
+  	<para>
+  		Databinding 기술 종류를 그림으로 살펴보면 다음과 같다. 보통 JAXB, <emphasis
+  		role="bold">JAXB+MTOM, Aegis, Aegis+MTOM</emphasis>의 형태로 Databinding 기술이 사용된다. 그림에서
+  		JAXB와 Aegis의 공통 영역이 존재하는 이유는 Aegis를 사용하면서 몇가지 JAXB Annotation을 함께 사용할 수 있기 때문이다.
+  	</para>
+
+	<mediaobject>
+	  <imageobject>
+	    <imagedata align="center" fileref="../image/cxf/webservices/databind.jpg" />
+	  </imageobject>
+	  <textobject>
+	  	<phrase>Databinding 기술 종류를 표현한 그림이다. Databinding 기술 종류에는 JAXB, JAXB+MTOM, Aegis, Aegis+MTOM이 있다.</phrase>
+	  </textobject>
+	</mediaobject>
+
+  	<para>다음은 각각의 Databinding 기술 별로 어떻게 사용하는지에 대한 사용법이다.</para>
+
+  	<section id="webservices_databinding_jaxb">
+    	<title>JAXB Databinding</title>
+
+    	<para>
+    		JAXB는 Java Architecture for XML Binding의 약자로 XML Schema로부터 클래스 데이터를 바인딩하여 XML로부터
+    		객체를 Unmarshalling 하거나, 반대로 객체를 XML로 저장하는 Marshalling을 수행할 수 있도록 해 준다.
+    	</para>
+
+    <para><emphasis role="bold">JAXB의 특징</emphasis> 을 살펴보면 다음과 같다.</para>
+    <itemizedlist>
+		<listitem>
+        	<para>Apache CXF 사용 시 디폴트 Databinding 방식이 JAXB이므로, JAXB 사용을 위한 추가 설정이 필요없다.</para>
+      	</listitem>
+      	<listitem>
+        	<para>JavaBeans 코드에 @XmlElement와 같은 Annotation을 설정하여 element 명을 변경시킬 수 있다.</para>
+      	</listitem>
+      	<listitem>
+        	<para>JavaBeans 코드에 Annotation 설정 없이도 JAXB를 사용할 수 있다.</para>
+      	</listitem>
+      	<listitem>
+        	<para>
+        		List 형태의 타입은 지원하나 Map 형태의 타입에 대해서는 Databinding을 기본적으로 지원하지 않으므로
+        		Map 형태의 타입을 이용하여 Databinding 하기 위해서는 XmlAdapter 클래스를 추가로 작성해줘야 한다.
+        	</para>
+      	</listitem>
+    </itemizedlist>
+
+    <para><emphasis role="bold">JavaBeans 객체와 XML Schema 간의 매핑 관계</emphasis> 를 보면 다음과 같다.</para>
+
+    <mediaobject>
+      <imageobject>
+        <imagedata align="center" fileref="../image/cxf/webservices/databind-mapping.jpg" />
+      </imageobject>
+      <textobject>
+	  	<phrase>JavaBeans 객체와 XML Schema 간의 매핑 관계를 표현한 그림으로 JavaBeans 클래스와 멤버 변수에 @XmlRootElement, @XmlElement를 정의하게 되면,
+	  	XML 스키마 파일 내에 정의된 element들이 매핑되어 표현되어진다.</phrase>
+	  </textobject>
+    </mediaobject>
+
+    <para>JAXB의 역할 수행 모습을 그림을 통해 살펴보면 다음과 같다.</para>
+
+    <mediaobject>
+      <imageobject>
+        <imagedata align="center" fileref="../image/cxf/webservices/jaxb.jpg" />
+      </imageobject>
+      <textobject>
+	  	<phrase>JAXB의 역할 수행 모습을 나타내는 그림이다. XML과 Java 객체 사이에서 JAXB API를 통해 객체와 XML 간의 Marshalling/Unmarshalling이 수행된다.</phrase>
+	  </textobject>
+    </mediaobject>
+
+    <para>다음은 JAXB 기능을 Server와 Client 단에서 어떻게 사용해야 하는지에 대한 사용법이다.</para>
+
+	    <section id="webservices_databinding_jaxb_serverconfig">
+	    	<title>Server Configuration</title>
+	
+	      	<para>
+	      		Movie Service를 JAX-WS Frontend를 사용하여 Web Services로 노출시킬 때 인터페이스
+	      		메소드의 파라인터 인자와 리턴 값의 타입을 다양한 타입으로 선언하여 테스트해보도록 한다.
+	      	</para>
+	
+	      	<section id="webservices_databinding_jaxb_serverconfig_samples">
+	        	<title>Samples</title>
+	
+		        <para>
+		        	다음은 Movie Service의 인터페이스 클래스 정의와 Map 타입 사용을 위한 XmlAdapter 클래스
+		        	정의에 대한 예제이다.
+		        </para>
+		        <itemizedlist>
+		          	<listitem>
+		            	<para>Interface Class</para>
+		            	<para>다음은 Movie Service의 인터페이스 클래스를 작성한 MovieService.java의 일부이다.</para>
+						<para>이때 유의할 사항은 @XmlSeeAlso annotation인데, JAXB Databinding 수행 시 Map 객체 내에 저장된 Movie 클래스 타입을 알아야 하기 때문에 @XmlSeeAlso annotation을 
+						      설정하고 있는 것에 유의하도록 한다. 만약 이 웹서비스의 다른 메소드에서 Movie 객체를 Input 혹은 Output parameter 클래스 타입으로 사용하고 있다면 @XmlSeeAlso annotation을 설정할 
+						      필요가 없다. 
+						</para>
+		            	<programlisting language="java"><![CDATA[@WebService
+@XmlSeeAlso(Movie.class)		            	
+public interface MovieFinder {
+
+    @XmlJavaTypeAdapter(CXFMapAdapter.class)
+    Map<String, Movie> get(String movieId) throws Exception;
+    중략...]]></programlisting>
+	          		</listitem>
+	
+	          		<listitem>
+	            		<para>XmlAdapter Class [Anyframe 제공 클래스]</para>
+	
+		            	<para>
+		            		Movie Service의 인터페이스 메소드 중 리턴 타입이 Map인 경우, XmlAdapter 클래스가
+		            		추가 작성되어야 한다. Map 타입을 사용하지 않는 경우 작성할 필요 없다. 다음은 XmlAdapter 클래스를 상속받아 구현한
+		            		CXFMapAdapter.java 의 일부이다. 개발자들은 따로 구현할 필요없이 Anyframe에서 제공하는 org.anyframe.cxf.adapter.CXFMapAdapter 클래스를 사용한다. 
+		            		<programlisting
+		            		language="java"><![CDATA[public class CXFMapAdapter extends XmlAdapter<CXFMap, Map<String, Object>> {
+    public CXFMap ]]><emphasis role="bold">marshal</emphasis><![CDATA[(Map<String, Object> v) throws Exception {
+        CXFMap map = new CXFMap();
+        for (Map.Entry<String, Object> e : v.entrySet()) {
+            CXFMap.CXFEntry iue = new CXFMap.CXFEntry();
+            iue.setValue(e.getValue());
+            iue.setKey(e.getKey());
+            map.getEntries().add(iue);
+        }
+        return map;
+    }
+
+    public Map<String, Object> ]]><emphasis role="bold">unmarshal</emphasis><![CDATA[(CXFMap v) throws Exception {
+        Map<String, Object> map = new LinkedHashMap<String, Object>();
+        for (CXFMap.CXFEntry e : v.getEntries()) {
+            map.put(e.getKey(), e.getValue());
+        }
+        return map;
+    }
+}
+중략...]]></programlisting>
+						</para>
+	          		</listitem>
+	          		<listitem>
+		            	<para>XmlAdapter Class에서 사용하는 부가 클래스 [Anyframe 제공 클래스]</para>
+		
+		            	<para>
+		            		위에서 작성한 XmlAdapter 클래스 내에서 marshalling/unmarshalling 작업 시
+		            		사용되는 CXFMap 클래스 또한 추가 작성되어야 한다. Map 타입을 사용하지 않는 경우 작성할 필요
+		            		없다. 다음은 CXFMap 클래스를 작성한 CXFMap.java 의 일부이다.
+		            		개발자들은 따로 구현할 필요없이 Anyframe에서 제공하는 org.anyframe.cxf.adapter.CXFMap 클래스를 사용한다. 
+		            		<programlisting language="java"><![CDATA[@XmlType(name = "CXFMap")
+@XmlAccessorType(XmlAccessType.FIELD)
+public class CXFMap {
+    @XmlElement(nillable = false, name = "entry")
+    private List<CXFEntry> entries = new ArrayList<CXFEntry>();
+
+    public List<CXFEntry> getEntries() {
+        return entries;
+    }
+
+    @XmlAccessorType(XmlAccessType.FIELD)
+    @XmlType(name = "IdentifiedCXF")
+    static class CXFEntry {
+        // Map keys cannot be null
+        @XmlElement(required = true, nillable = false)
+        private String key;
+        private Object value;
+
+        public String getKey() {
+            return key;
+        }
+        public void setKey(String key) {
+            this.key = key;
+        }
+        public Object getValue() {
+            return value;
+        }
+        public void setValue(Object value) {
+            this.value = value;
+        }
+        중략...]]></programlisting>
+						</para>
+					</listitem>
+				</itemizedlist>
+			</section>
+		</section>
+
+    	<section id="webservices_databinding_jaxb_caution">
+      		<title>유의 사항</title>
+
+      		<para>
+      			JAXB Databinding 방식을 사용하여 Web Services로 노출된 메소드에 접근하여 사용 시 유의해야 하는
+      			사항이다.
+      		</para>
+
+      		<section id="webservices_databinding_jaxb_caution_nondefinedSEIclass">
+        		<title>SEI 클래스에서 정의되지 않은 Java Type 클래스가 Runtime시 Databinding되어야 하는 경우</title>
+
+        		<para>
+        			SEI 클래스에 정의된 메소드의 입력값이나 리턴값으로 참조되지 않은 Java Type 클래스의 경우, Runtime
+        			시 Databinding이 일어날 때 다음과 같은 에러 메시지가 나오게 됩니다.
+        		</para>
+
+        		<para>
+        			org.apache.cxf.interceptor.Fault: Marshalling Error: class
+        			org.anyframe.sample.domain.Movie nor any of its super class is known to this
+        			context.
+        		</para>
+        		<para> 아래 방법을 통해서 해결하도록 한다.</para>
+
+        		<itemizedlist>
+          			<listitem>
+            			<para>Interface Class</para>
+
+            			<para>
+            				SEI(Service Endpoint Interface) 클래스의 메소드에서 List 형태의 결과값을 리턴하는 메소드가 존재하고
+            				해당 List내에 저장된 Java Type 클래스에 대해서는 참조하지 않을  때, 클라이언트가 해당 메소드를
+            				호출할 때 Runtime시에 JAXB Databinding을 시도하려고 하면서 Marshalling Error가 발생하게 된다.
+            				이를 방지하기 위해서 @XmlSeeAlso Annotation 혹은 JDK1.5의 Generic Type을 설정하도록 한다.
+            			</para>
+
+            			<para>
+            				@XmlSeeAlso 사용 예제
+            				<programlisting language="java">@WebService
+@<emphasis role="bold">XmlSeeAlso({Movie.class})</emphasis>
+public interface MovieService {
+
+    public List getMovieList(SearchVO searchVO);
+    중략...</programlisting>
+    					</para>
+
+            			<para>
+            				JDK 1.5의 Generic Type 사용 예제
+            				<programlisting language="java"><![CDATA[@WebService
+public interface MovieService {
+
+    public List<]]><emphasis role="bold">Movie</emphasis><![CDATA[> getMovieList(SearchVO searchVO);
+    중략...]]></programlisting>
+    					</para>
+					</listitem>
+				</itemizedlist>
+			</section>
+		</section>
+	</section>
+
+  	<section id="webservices_databinding_mtom">
+    	<title>MTOM Databinding</title>
+
+    	<para>
+    		MTOM은 Message Transmission Optimization Mechanism의 약자로 SOAP 메시지 통신
+    		최적화 메커니즘이다. 웹 서비스를 통해 바이너리 데이터를 효과적으로 편리하게 전송할 수 있도록 하는 표준이다. JAXB
+    		Databinding 혹은 Aegis Databinding과 함께 사용될 수 있다. 서비스를 통해 바이너리 데이터를 효과적으로
+    		편리하게 전송할 수 있도록 하는 표준으로 XML 문서의 일부가 아닌 첨부파일(Attachment) 형태로 생성되어 전송되며
+    		Schema Type 혹은 자바 코드에 Annotation으로 설정한다. Schema Type에
+    		xmime:expectedContentTypes="application/octet-stream" 을 추가 설정하면
+    		base64Binary element를 위한 byte[] array 형태를 생성하지 않고 데이터를 스트림하는데 쓰이는
+    		DataHandler를 생성한다.
+    	</para>
+
+   		<para><emphasis role="bold">MTOM의 특징</emphasis>을 살펴보면 다음과 같다.</para>
+
+    	<itemizedlist>
+      		<listitem>
+        		<para>Apache CXF 사용 시 디폴트로 MTOM 기능이 동작하지 않으므로, MTOM 사용을 위한 추가 설정이 필요하다.</para>
+      		</listitem>
+      		<listitem>
+        		<para>XML 문서의 일부가 아닌 첨부파일(Attachment) 형태로 생성되어 전송한다.</para>
+      		</listitem>
+      		<listitem>
+        		<para>
+        			바이너리 데이터를 나타내는 JavaBeans의 attribute를 javax.activation.DataHandler type으로 정의하고,
+        			@XmlMimeType("application/octet-stream") Annotation 설정을 추가해주도록 한다.
+        		</para>
+      		</listitem>
+    	</itemizedlist>
+
+    	<para>
+    		다음은 MTOM 기능을 Server와 Client 단에서 어떻게 사용해야 하는지에 대한 사용법이다. 예제는 JAX-WS
+    		Frontend, JAXB, MTOM을 함께 사용하는 것으로 구성되어 있다.
+    	</para>
+
+    	<itemizedlist>
+      		<listitem>
+        		<para>Server Configuration</para>
+      		</listitem>
+      		<listitem>
+        		<para>Client Configuration</para>
+      		</listitem>
+      		<listitem>
+        		<para>참고 - MTOM에 관련된 내용</para>
+      		</listitem>
+    	</itemizedlist>
+    	<section id="webservices_databinding_mtom_serverconfig">
+      		<title>Server Configuration</title>
+
+      		<para>
+      			Movie Service를 JAX-WS Frontend를 사용하여 Web Services로 노출시키는 예제로,
+      			MTOM을 테스트하기 위해서 추가 작업한 부분을 중심으로 살펴본다. 또한 MTOM을 사용하지 않고 기존에 XML 문서의 일부로
+      			바이너리 데이터를 전송하는 경우와 MTOM을 이용하여 XML 문서 일부가 아닌 첨부파일 형태로 전송하는 경우에 대해서 바이너리
+      			데이터의 전송과 수신이 올바르게 동작하는지 알아본다.
+      		</para>
+
+      		<section id="webservices_databinding_mtom_serverconfig_samples">
+        		<title>Samples</title>
+
+        		<para>
+        			다음은 Movie Service의 인터페이스 메소드를 통해 클라이언트와 서버 간 주고받는 데이터인 Movie 클래스
+        			정의에 대한 예제이다.
+        		</para>
+
+        		<itemizedlist>
+          			<listitem>
+            			<para>JavaBeans Class</para>
+
+            			<para>
+            				다음은 Movie Service의 인터페이스 메소드를 통해 클라이언트와 서버 간 주고받는 데이터인 Movie
+            				클래스를 작성한 Movie.java 의 일부이다.
+            				<programlisting language="java"><![CDATA[public class Movie implements Serializable {
+    private String movieId = "";
+    private String title = "";
+    private String director = "";
+
+    <!-- MTOM을 사용하지 않고 기존에 XML 문서의 일부로 바이너리 데이터를 전송하는 경우 -->
+    private byte[] posterImgByteArray = null;
+
+    <!-- MTOM을 이용하여 XML 문서 일부가 아닌 첨부파일 형태로 바이너리 데이터를 전송하는 경우 -->
+    @]]><emphasis role="bold">XmlMimeType</emphasis>("<emphasis role="bold">application/octet-stream</emphasis>")
+    private <emphasis role="bold">DataHandler</emphasis> posterImgDataHandler = null;
+
+    public byte[] getPosterImgByteArray() {
+        return posterImgByteArray;
+    }
+
+    public void setPosterImgByteArray(byte[] posterImgByteArray) {
+        this.posterImgByteArray = posterImgByteArray;
+    }
+
+    public DataHandler getPosterImgMTOM() {
+        return posterImgDataHandler;
+    }
+
+    public void setPosterImgDataHandler(DataHandler posterImgDataHandler) {
+        this.posterImgDataHandler = posterImgDataHandler;
+    }
+        중략...</programlisting>
+        				</para>
+          			</listitem>
+
+          			<listitem>
+            			<para>Test case</para>
+            			<para>
+            				<emphasis
+            				role="bold">Spring Configuration XML Server 설정 이용(JAX-WS Frontend)</emphasis>
+            			</para>
+
+            			<para>
+            				Spring Configuration XML 설정을 통해 MTOM Databinding 사용을 정의할 수 있다.
+            				<programlisting
+            				language="xml"><![CDATA[<!-- JAX-WS Frontend to expose MovieService with MTOM Databinding -->
+<jaxws:endpoint id="movieService" implementor="org.anyframe.sample.cxf.jaxws.movie.impl.MovieServiceImpl" address="/ws">
+     <jaxws:properties>
+        <]]><emphasis role="bold">entry key</emphasis>="<emphasis role="bold">mtom-enabled</emphasis>" <emphasis
+                  role="bold">value</emphasis>="<emphasis role="bold">true</emphasis><![CDATA["/>
+     </jaxws:properties>
+</jaxws:endpoint>
+중략...]]></programlisting>
+						</para>
+          			</listitem>
+        		</itemizedlist>
+      		</section>
+    	</section>
+
+    	<section id="webservices_databinding_mtom_clientconfig">
+			<title>Client Configuration</title>
+
+      		<para>
+      			Web Services에 접근하기 위한 클라이언트 작성 방식 중 Spring Configuration XML 설정 방식을 사용하면
+       			간편하고 편리하게 사용할 수 있다.
+       		</para>
+
+      		<section id="webservices_databinding_mtom_clientconfig_samples">
+ 		       	<title>Samples</title>
+
+        		<para>다음은 Web Services로 노출된 Movie Service에 접근하는 예제이다.</para>
+
+        		<itemizedlist>
+          			<listitem>
+            			<para>Test Case</para>
+            			<para>
+            				MTOM을 이용하여 XML 문서 일부가 아닌 첨부파일 형태로 바이너리 데이터를 전송하는 경우에 MTOM
+            				Databinding 기능이 올바로 동작하여 Movie의 poster image 바이너리 파일을 조회하고 수정이 되는지
+            				테스트한다.
+            			</para>
+            			<para>
+            				<emphasis
+            				role="bold">Spring Configuration XML Client 설정 이용(JAX-WS Frontend)</emphasis>
+            			</para>
+
+            			<para>
+            				Spring Configuration XML 설정을 통해 MTOM Databinding 사용을 정의할 수 있다.
+            				<programlisting
+            				language="xml"><![CDATA[<!-- JAX-WS Frontend to access MovieService with MTOM Databinding -->
+<jaxws:client id="movieService" serviceClass="org.anyframe.sample.cxf.jaxws.movie.MovieService" 
+     address="http://localhost:8080/myproject/cxf-jaxws/ws">
+     <jaxws:properties>
+        <]]><emphasis role="bold">entry key</emphasis>="<emphasis role="bold">mtom-enabled</emphasis>" <emphasis
+                  role="bold">value</emphasis>="<emphasis role="bold">true</emphasis><![CDATA["/>
+     </jaxws:properties>
+</jaxws:client>
+중략...]]></programlisting>
+						</para>
+          			</listitem>
+        		</itemizedlist>
+      		</section>
+    	</section>
+
+    	<section id="webservices_databinding_mtom_comment">
+      		<title>참고 - MTOM에 관련된 내용</title>
+
+      		<itemizedlist>
+        		<listitem>
+          			<para>Web Services 성능 향상을 위해 W3C에서 제시한 스펙</para>
+          			<itemizedlist>
+            			<listitem>
+              				<para>
+              					2005년 1월 W3C(World Wide Web Consortium)는 다음과 같이 3가지의 Web
+              					Services 스펙을 제시하였다. 이들은 SOAP 1.2 메시지를 참조하거나 포함하는 바이너리 데이터를
+              					효율적으로 패키징하거나 송신하는 방법을 제공한다.
+              				</para>
+            			</listitem>
+			            <listitem>
+              				<para>
+              					XOP (XML-binary Optimized Packaging), MTOM (SOAP Message
+              					Transmission Optimization Mechanism), RRSHB (Resource
+              					Representation SOAP Header Block)
+              				</para>
+            			</listitem>
+          			</itemizedlist>
+        		</listitem>
+        		<listitem>
+          			<para>바이너리 데이터 전송</para>
+	          		<itemizedlist>
+            			<listitem>
+              				<para>
+              					XML 문서의 일부가 바이너리 데이터인 경우, base64로 인코딩 되어야 하는데 이는 CPU 점유
+              					시간을 증가시키고 Payload 사이즈를 증가시키는 문제가 있다. Web Services의 특징 중 하나는
+              					전송되는 메시지가 XML로 구성되어 이기종간의 통신을 원활하게 한 것이다. 이는 XML이 일종의
+              					텍스트 문서이므로 이기종 사이에서 이식성이 좋기 때문이다. 하지만 텍스트인 XML 문서에 바이너리
+              					데이터를 추가하기 위해서는 base64 방식으로 인코딩해야 하며 이러한 인코딩 과정에서 바이너리
+              					데이터의 용량은 50%이상 증가하고, 인코딩과 디코딩을 처리하기 위해서 발생하는 CPU의 부하도
+              					5~10% 정도 추가된다는 통계가 있다. 즉, 바이너리 데이터를 전송하는데  있어 Web Services를
+              					이용하게 되면 성능이 저하되는 문제가 발생하게 된다.
+              				</para>
+            			</listitem>
+				           <listitem>
+              				<para>
+              					MTOM을 사용하면 XML 문서의 일부가 아닌 첨부파일(SOAP-Attachment) 형태로 생성되어
+              					전송되어지므로 위와 같은 문제를 해소시킬 수 있다.
+              				</para>
+            			</listitem>
+				           <listitem>
+              				<para>
+              					Schema Type에 xmime:expectedContentTypes="application/octet-stream" 을 추가 설정하면
+              					base64Binary element를 위한 byte[] 형태를 생성하지 않고 데이터를 스트림하는데
+              					쓰이는 DataHandler를 생성한다.
+              				</para>
+            			</listitem>
+          			</itemizedlist>
+        		</listitem>
+ 		    	<listitem>
+          			<para>대용량 바이너리 데이터의 송신을 위한 표준적인 수단과 방법 제공</para>
+          			<itemizedlist>
+            			<listitem>
+              				<para>XOP와 MTOM을 이용하여 보다 효율적인 SOAP 메시지의 직렬화와 송신이 가능해진다.</para>
+            			</listitem>
+            			<listitem>
+              				<para>
+              					XOP는 바이너리 데이터를 그대로 통신 패킷에 포함되도록 하는 표준적인 수단을 제공함으로써 작은 데이터
+              					저장공간이나 좁은 데이터 통신 대역에서도 효율적으로 동작하게 하며 XML Information
+              					Set(InfoSet)을 이용하여 다양한 방법으로 XML 문서를 직렬화시킨다.
+              				</para>
+            			</listitem>
+            			<listitem>
+              				<para>
+              					XOP를 구현하는 MTOM은 XOP가 제공하는 기능을 활용하여 SOAP 통신을 처리한다. SOAP 바인딩과
+              					송신을 최적화하는 전송 메커니즘을 정의하여 필요한 통신 대역을 축소하고 대용량 바이너리 데이터의
+              					인코딩과 디코딩에 필요한 시간을 단축한다. 또한 다양한 바이너리 데이터 송신 시 MIME 첨부 형식으로
+              					SOAP 통신을 한다.
+              				</para>
+            			</listitem>
+            			<listitem>
+              				<para>
+              					RRSHB(Resource Representation SOAP Header Block)는 SOAP 메시지 수신자가 원격에 위치한
+              				 	자원의 로컬 캐시에 접근하게 한다. MTOM과 함께 사용됨으로써
+              					메시지 수신자는 원격에 위치한 데이터에 대한 로컬 캐시가 이미 존재하고 있다면 요청 처리 속도는
+              					현격하게 향상될 것이다. 참고로, 메시지 수신자는 URI에 의해 식별된 파일과 SOAP 통신으로 함께
+              				 	보내진 데이터에 대한 로컬 캐시 중 하나를 선택하여 이용할 수 있다.
+              				</para>
+            			</listitem>
+          			</itemizedlist>
+        		</listitem>
+      		</itemizedlist>
+    	</section>
+  	</section>
+  
+  	<section id="webservices_databinding_resources">
+  		<title>Resources</title>
+		<para>
+			<itemizedlist>
+				<listitem>
+					<para>참고자료</para>
+					<itemizedlist>
+						<listitem><para><ulink url="http://jcp.org/en/jsr/detail?id=222">JSR 222: Java Architecture for XML Binding (JAXB) 2.0</ulink></para></listitem>
+						<listitem><para><ulink url="http://java.sun.com/developer/technicalArticles/WebServices/jaxb/">Java Architecture for XML Binding (JAXB)</ulink></para></listitem>
+						<listitem><para><ulink url="http://www.w3.org/TR/soap12-mtom/">SOAP Message Transmission Optimization Mechanism</ulink></para></listitem>
+						<listitem><para><ulink url="http://cxf.apache.org/docs/jaxb.html">Apache CXF User's Guide - JAXB Databinding</ulink></para></listitem>
+						<listitem><para><ulink url="http://cxf.apache.org/docs/mtom-attachments-with-jaxb.html">Apache CXF User's Guide - MTOM Attachments with JAXB</ulink></para></listitem>
+					</itemizedlist>
+				</listitem>
+			</itemizedlist>
+		</para>
+	</section>	
+</chapter>

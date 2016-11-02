@@ -1,0 +1,396 @@
+<chapter id="webflow_webflow_flow">
+	<title>Flow</title>
+	<para>
+		flow가 시작되어 종료될 때 까지의 재사용 가능한 범위가 Flow 정의 파일의 단위가 된다.
+		이러한 flow를 정의하기 위해서 작성해야할 요소에 대해 알아보도록 한다.
+	</para>
+	
+	<section id="webflow_webflow_flow_factor">
+		<title>필수 요소</title>
+		<para>
+			view-state, transition, end-state 세 요소를 통해 기본적인 view navigation을 구성할 수 있다.
+		</para>
+		 
+		<section id="webflow_webflow_flow_factor_view">
+			<title>view-state</title>
+			<para>
+				view-state는 flow의 step을 정의하며 해당 view를 출력해주는 역할을 한다.
+				<programlisting language="xml"><![CDATA[<view-state id="addProductView" model="product"
+        view="/WEB-INF/jsp/webflow/sales/product/viewProduct.jsp">
+</view-state>]]></programlisting>
+				위와 같이 정의할 수 있으며 view-state의 id는 플로우내에서 유일해야 한다. model attribute로 model 객체를 정의해 줄 수 있으며 해당 변수에 대한 선언은
+				<![CDATA[<var>]]>를 이용해서 할 수 있다.
+				<programlisting language="xml"><![CDATA[<var name="product" class="domain.Product" />]]></programlisting>
+				또한, view를 사용하여 출력해 줄 view 이름을 정의해 줄 수 있으며 정의해 주지 않을 시에는 view-state의 id가 view 이름이 된다. 
+				위의 코드에서 view 이름을 따로 정의해 주지 않았다면 출력해 줄 view 이름은 addProductView가 된다. 플로우 정의 파일에
+				여러 개의 view-state가 정의되어있다면 플로우가 시작될 때 실행되는 view-state는 맨 처음에 정의되어 있는 view-state가 된다. 
+			</para>
+		</section>
+		
+		<section id="webflow_webflow_flow_factor_event">
+			<title>transition</title>
+			<para>
+				화면에서 일어난 event에 의해 다음으로 진행해야할 view-state에 대해 정의해준다.
+				<programlisting language="xml"><![CDATA[<view-state id="confirmAddProduct"
+    view="/WEB-INF/jsp/webflow/sales/product/reviewProduct.jsp">
+    <transition on="revise" to="addProductView" />
+    <transition on="confirm" to="backtolist" history="invalidate">
+        <evaluate expression="coreProductService.add(product)" />
+    </transition>
+    <transition on="cancel" to="backtolist" />
+</view-state>]]></programlisting>
+				event id에 따라 위와 같이 각각의 view-state로 분기할 수 있다. 이 때, on에는 event id를 to에는 
+				분기시킬 view-state id를 정의해 준다.
+				<note>
+					<title>view에서 event id는 어떻게 지정해 줄까?</title>
+					<para>
+						Spring MVC와 연동하기 위해서는 JSP 페이지 내에 특정 화면에서 발생하는 각 event에 대해 event id를 부여해 주어야 한다.
+						일반적으로 폼을 포함한 JSP 페이지에서는 "_eventId"라는 키의 값이 event id가 되며 아래와 같이 정의할 수 있다.
+						<programlisting lang="jsp"><![CDATA[<input type="submit" value="save"/>
+]]><emphasis role="bold"><![CDATA[<input type="hidden" name="_eventId" value="success" />]]></emphasis></programlisting>
+						submit 타입의 input 태그인 경우에는 name 속성을 "_eventId" + "_" + "transition의 on에 속하는 속성값"과 같이 정의할 수 있다.						 
+						<programlisting language="jsp"><![CDATA[<input type="submit" ]]><emphasis role="bold"><![CDATA[name="_eventId_success"]]></emphasis><![CDATA[ value="save" />]]></programlisting>
+						단순한 HTML 링크 형식의 event일 경우에는 아래와 같이 <![CDATA[<a href ... >]]> 태그를 사용하여 event id를 정해줄 수 있다.
+						<programlisting language="jsp"><![CDATA[<a href=]]><emphasis role="bold"><![CDATA["${flowExecutionUrl}&_eventId=success"]]></emphasis><![CDATA[>success</a>]]></programlisting>
+						위에서 사용한 Expression Language인 flowExecutionUrl을 사용하여 현재의 flowExcutionUrl을 가지고 올 수 있다. 
+					</para>
+				</note>
+			</para>
+		</section>
+					
+		<section id="webflow_webflow_flow_factor_end">
+			<title>end-state</title>
+			<para>
+				플로우를 종료시키기 위해 end-state를 정의해준다.
+				<programlisting language="xml"><![CDATA[<end-state id="cancel" />]]></programlisting>
+			</para>
+			<note>
+				<title>execution과 snapshot 갯수의 제한</title>
+				<para>
+					보통 플로우를 작성하게 되면 end-state로 플로우를 종료시키게 되고 이 때, 해당 플로우에 대한 정보와 데이터가 메모리에서 지워지게 된다.
+					하지만 사용자의 메뉴이동이나 기타 다른 이유에 의해 플로우가 end-state로 정상 종료 되지 않았을 때는 관련 데이터가 삭제되지 않으며
+					메모리 오버헤드가 발생 하거나 OutOfMemory exception이 발생할 수도 있다. 이에 Spring Web Flow에서는 사용자 당 execution과 snapshot의 갯수를 제한할 수 있다.
+					<programlisting language="xml"><![CDATA[<webflow:flow-execution-repository max-executions="5" max0execution-snapshots="30" />]]></programlisting>
+					위와 같이 정의 할 경우 사용자 당 execution 갯수를 5개로, execution 당 snapshot의 갯수를 30개로 제한하게 된다. 
+				</para>
+			</note>
+		</section>
+	</section>
+	
+	<section id="webflow_webflow_flow_method">
+		<title>메소드 호출</title>
+		<para>
+			플로우에서는 대부분 화면 이동에 대한 로직이 들어가게 되며 아래와 같은 시점에서
+			Business Service를 호출하거나 다른 클래스의 메소드를 호출할 수 있다.
+			<itemizedlist>
+				<listitem>
+					<para>
+						플로우가 시작될 때
+						<programlisting language="xml"><![CDATA[<on-start>
+    <evaluate expression="..." />
+</on-start>]]></programlisting>
+					</para>
+				</listitem>
+				<listitem>
+					<para>
+						state에 진입할 때
+						<programlisting language="xml"><![CDATA[<view-state id="addProductView" model="product"
+        view="/WEB-INF/jsp/webflow/sales/product/viewProduct.jsp">
+    <on-entry>
+        <evaluate expression="..." />
+    </on-entry>
+    ....
+</view-state>]]></programlisting>
+					</para>
+				</listitem>
+				<listitem>
+					<para>
+						view가 출력될 때
+						<programlisting language="xml"><![CDATA[<view-state id="addProductView" model="product"
+        view="/WEB-INF/jsp/webflow/sales/product/viewProduct.jsp">
+    <on-render>
+        <evaluate expression="..." />
+    </on-render>
+    ....
+</view-state>]]></programlisting>
+					</para>
+				</listitem>
+				<listitem>
+					<para>
+						transition이 실행될 때
+						<programlisting language="xml"><![CDATA[<view-state id="addProductView" model="product"
+        view="/WEB-INF/jsp/webflow/sales/product/viewProduct.jsp">
+    <transition on="add" to="confirmAddProduct">
+        <evaluate expression="..." />
+    </transition>
+    ....
+</view-state>]]></programlisting>
+					</para>
+				</listitem>
+				<listitem>
+					<para>
+						state가 끝날 때
+						<programlisting language="xml"><![CDATA[<view-state id="addProductView" model="product"
+        view="/WEB-INF/jsp/webflow/sales/product/viewProduct.jsp">
+    ....
+    <on-exit>
+        <evaluate expression="..." />
+    </on-exit>
+</view-state>]]></programlisting>
+					</para>
+				</listitem>
+				<listitem>
+					<para>
+						flow가 끝날 때
+						<programlisting language="xml"><![CDATA[<on-end>
+    <evaluate expression="..." />
+</on-end>]]></programlisting>
+					</para>
+				</listitem>
+			</itemizedlist>
+			보통 Spring Bean으로 등록된 클래스의 메소드를 실행 시킬 수 있으며 이 경우 해당 bean을 Autowired 방식으로 찾게 된다.
+			또한, 일반 클래스의 메소드도 variable로 정의한 후 호출해서 쓸 수 있다.
+		</para>
+		
+		<section id="webflow_webflow_flow_method_action">
+			<title>evaluate</title>
+				<para>
+					action을 실행시키기 위해서는 위에서 언급한 시점에서 <![CDATA[<evaluate>]]>를 사용하면 된다.
+					<programlisting language="xml"><![CDATA[<evaluate expression="coreProductService.save(product)" />]]></programlisting>
+					<programlisting language="xml"><![CDATA[<var name="list" class="java.util.ArrayList" />
+<evaluate expression="list.add(product)" />]]></programlisting>
+					위에서 처럼 Spring Bean으로 정의되지 않은 클래스를 variable로 정의하여 호출할 때에는  variable로 정의된 클래스가 플로우 요청 간 인스턴스의 상태를 유지하기 위해서 java.io.Serializable를 구현하여야 한다.
+					메소드 실행 후 결과값을 받아야 한다면 result를 사용한다. 
+					<programlisting language="xml"><![CDATA[<evaluate expression="coreProductService.get(prodNo)" result="flowScope.product" />]]></programlisting>
+				</para>
+		</section>     
+	</section>
+			
+	<section id="webflow_webflow_flow_transition">
+		<title>Transition Decision</title>
+		<para>
+			view-state에서 transition을 결정 할 때 단순히 사용자의 입력 값을 받아 처리할 수도 있지만 어떠한 action을
+			실행시킨 후 그 결과에 따라 transition을 결정할 수도 있다. 이 때, 사용할 수 있는것이 action-state와 decision-state이다.
+		</para>
+		
+		<section id="webflow_webflow_flow_transition_action">
+			<title>action-state</title>
+			<para>
+				action-state를 사용하면 action을 실행시킨 후 리턴 값에 의해 다음으로 진행될 transition을 정할 수 있다.
+				<programlisting language="xml"><![CDATA[<]]><emphasis role="bold"><![CDATA[action-state]]></emphasis><![CDATA[ id="checkUserLogin">
+    <evaluate expression="userService.isUserLogin(userId)"/>
+    <transition on="yes" to="getCategory"/>
+    <transition on="no" to="backtolist"/>
+</action-state>]]></programlisting>
+				위와 같이 정의할 경우 userService의 isUserLogin() 메소드를 실행 시킨 후 리턴 값이 true일 경우 event id는 yes가 되어  getCategory로 이동하게 되고
+				false일 event id가 no가 되어 backtolist로 이동하게 될 것이다. action 수행 후 리턴 값에 매핑 되는 event id는 아래와 같다.
+				<informaltable> 
+					<caption>action 수행 후 리턴 값에 매핑 되는 event id</caption>
+					<tgroup cols="2">
+						<thead>
+							<row>
+								<entry align="center">메소드 리턴 타입</entry>
+								<entry align="center">event id</entry>
+							</row>
+						</thead>
+						<tbody>
+							<row>
+								<entry>java.lang.String</entry>
+								<entry>String 값</entry>
+							</row>
+							<row>
+								<entry>java.lang.Boolean</entry>
+								<entry>yes(true일 경우), no(false일 경우)</entry>
+							</row>
+							<row>
+								<entry>java.lang.Enum</entry>
+								<entry>Enum 이름</entry>
+							</row>
+							<row>
+								<entry>그 밖의 타입</entry>
+								<entry>success</entry>
+							</row>
+						</tbody>
+					</tgroup>
+				</informaltable>
+			</para>
+		</section>
+		
+		<section id="webflow_webflow_flow_transition_decision">
+			<title>decision-state</title>
+			<para>
+				decision-state는 action-state와 같은 역할을 하지만 if/else 문을 사용할 수 있다.
+				위에서 정의한 코드를 decision-state로 정의하면 아래와 같은 코드가 된다.
+				<programlisting language="xml"><![CDATA[<]]><emphasis role="bold"><![CDATA[decision-state]]></emphasis><![CDATA[ id="checkUserLogin">
+    <if test="UserService.isUserLogin(userId)" then="getCategory" else="backtolist" />
+</decision-state>]]></programlisting>
+			</para>
+		</section>
+	</section>
+	
+	<section id="webflow_webflow_flow_el">
+		<title>Expression Language</title>
+		<para>
+			Spring Web Flow에서는 Expression Language(EL)을 통해 모델 객체에 접근하거나 action을 실행시킬 수 있다.
+			이 때, Unified EL을 사용하며 현재 Spring Web Flow에서는 구현체로 jboss-el을 사용하고 있다. 개발자는 이러한 
+			EL문을 사용하여 client가 입력한 input 데이터나 request parameter에 담겨온 데이터들에 접근할 수 있고 flowScope
+			같이 플로우 내부에서 사용하는 데이터에 접근할 수 있다. 또한, Spring Bean으로 정의된 class를 호출할 수도 있다.
+		</para>
+		
+		<section id="webflow_webflow_flow_el_special">
+			<title>Special EL variables</title>
+			<para>
+				다음은 flow 파일 내에서 유용하게 사용할 수 있는 변수들이다.
+				<itemizedlist>
+					<listitem>
+						<para>
+							flowScope : flow 내에서 사용할 수 있는 변수에 할당할 수 있다. flowScope은 플로우가 요청을 처리하는
+							동안 존재 하게 되며 플로우가 호출될 때 생성되며 플로우가 응답을 반환하고 나면 파괴된다.
+							<programlisting language="xml"><![CDATA[<evaluate expression="coreProductService.get(prodNo)" result="]]><emphasis role="bold"><![CDATA[flowScope.product]]></emphasis><![CDATA["/>]]></programlisting>
+						</para>
+					</listitem>
+					<listitem>
+						<para>
+							viewScope : view에서 사용할 수 있는 변수에 할당할 수 있다. view 상태가 시작되서 존재하는 동안 지속된다.
+							또한 외부에서는 참조할 수 었다.
+							<programlisting language="xml"><![CDATA[<evaluate expression="coreProductService.get(prodNo)" result="]]><emphasis role="bold"><![CDATA[viewScope.product]]></emphasis><![CDATA["/>]]></programlisting>
+							<note>
+								<title>view에서는 viewScope에 있는 변수를 어떻게 접근 할까?</title>
+								<para>
+									jsp에서 viewScope에 선언되어 있는 변수를 꺼내어 쓰고 싶을 때 JSP 내부에서 Expression Language를 사용하면 쉽게 사용할 수 있다.
+									<programlisting language="jsp"><![CDATA[${product}]]></programlisting>
+								</para>
+							</note>
+						</para>
+					</listitem>
+					<listitem>
+						<para>
+							requestScope : request 내에서 사용할 수 있는 변수에 할당할 수 있다. 플로우가 요청을 처리하는
+							동안에 존재하며 플로우가 호출될 때 생성되고 플로우가 응답을 반환하면 파괴된다. 
+							<programlisting language="xml"><![CDATA[<evaluate expression="coreProductService.get(prodNo)"
+        result="]]><emphasis role="bold"><![CDATA[requestScope.product]]></emphasis><![CDATA["/>]]></programlisting>
+						</para>
+					</listitem>
+					<listitem>
+						<para>
+							flashScope : 플로우가 시작될 때 생성되며 값이 할당된 후에는 다음 뷰가 출력될 때 값이 지워진다. 
+							<programlisting language="xml"><![CDATA[<evaluate expression="coreProductService.get(prodNo)"
+        result="]]><emphasis role="bold"><![CDATA[flashScope.product]]></emphasis><![CDATA["/>]]></programlisting>
+						</para>
+					</listitem>
+					<listitem>
+						<para>
+							conversationScope : 최상위 플로우가 시작될 때 할당되며 최상위 플로우가 종료될 때 파괴된다.
+							그러므로 최상위 플로우가 가지고 있는 subflow에서도 conversationScope으로 설정된 변수에 접근할 수 있다.
+							<programlisting language="xml"><![CDATA[<evaluate expression="coreProductService.get(prodNo)"
+        result="]]><emphasis role="bold"><![CDATA[conversationScope.product]]></emphasis><![CDATA["/>]]></programlisting>
+						</para>
+					</listitem>
+					<listitem>
+						<para>
+							requestParameters : client단에서 request parameter로 넘어온 값들에 대해 접근할 수 있다.
+							<programlisting language="xml"><![CDATA[<set name="flowScope.userId" value="]]><emphasis role="bold"><![CDATA[requestParameters.userId"]]></emphasis><![CDATA[ />]]></programlisting>
+							위와 같이 정의할 시 Java에서 HttpServletRequest의 getParameter("userId")한 것과 같다.  
+						</para>
+					</listitem>
+				</itemizedlist>
+				Spring Web Flow에서 제공하는 Expression Langugae에 대한 더 많은 정보는 <ulink
+									url="http://static.springsource.org/spring-webflow/docs/2.0.x/reference/htmlsingle/spring-webflow-reference.html">Spring Web Flow Reference</ulink>를 참고 한다.
+			</para>
+		</section>
+	</section>
+	
+	<section id="webflow_webflow_flow_subflow">
+		<title>Subflow</title>
+		<para>
+			플로우내에서 하위 플로우를 호출하려고 할 때 subflow를 이용한다. 이 때,
+			하위의 flow가 결과를 리턴할 때 까지 상위 플로우는 대기하게 된다.
+		</para>
+		
+		<section id="webflow_webflow_flow_subflow_state">
+			<title>subflow-state</title>
+			<para>
+				먼저 subflow를 호출하게될 state에서 subflow-state를 정의하고 실행시킬 subflow의 id를 지정해 준다.
+				아래의 코드는 상위 플로우 정의 부분의 일부이다. 
+				<programlisting language="xml"><![CDATA[<]]><emphasis role="bold"><![CDATA[subflow-state]]></emphasis><![CDATA[ id="viewCategory" subflow="viewCategorySubFlow">
+    <!-- transition 정의 -->
+    <transition ... />
+</subflow-state>]]></programlisting>
+				위에서 정의한것 처럼 viewCategory state에 오게 되면 viewCategorySubFlow라는 ID를 가진 플로우를 subflow로 실행시키게 된다.</para>
+		</section>
+		
+		<section id="webflow_webflow_flow_subflow_input">
+			<title>input</title>
+			<para>
+				subflow에 전달해줄 객체가 있으면 input을 사용한다.
+				<programlisting language="xml"><![CDATA[<subflow-state id="viewCategory" subflow="viewCategory">
+    <!-- subflow에서 필요한 data를 input 값으로 정의  -->
+    ]]><emphasis role="bold"><![CDATA[<input name="categoryNo" value="product.category.categoryNo"/>]]></emphasis><![CDATA[
+    <!-- transition 정의 -->
+    <transition ... />
+</subflow-state>]]></programlisting>
+				상위 플로우에서 전달해준 input값을 전달받기 위해서는 하위 플로우에서도 input을 정의해주어야 한다. 아래의 코드는 하위 플로우 정의 부분의 일부이다.
+				<programlisting language="xml"><![CDATA[<!-- 상위 플로우에서 받게 될 input값 정의  -->
+]]><emphasis role="bold"><![CDATA[<input name="categoryNo"/>]]></emphasis><![CDATA[
+<view-state id="viewCategory"
+        view="/WEB-INF/jsp/webflow/sales/category/viewCategoryForFlow.jsp">
+    <on-render>
+        <evaluate 
+            expression="coreCategoryService.get(categoryNo)" 
+            result="category"/>
+        <set name="viewScope.category" value="category"/>
+    </on-render>
+    <transition ... />
+</view-state>]]></programlisting></para>
+		</section>
+		
+		<section id="webflow_webflow_flow_subflow_output">
+			<title>output</title>
+			<para>
+				하위 플로우에서 플로우를 진행시킨 후에 상위 플로우에 전달해 줄 객체가 있을 경우는 output으로 정의한다.
+				<programlisting language="xml"><![CDATA[<end-state id="submit">
+    <!-- 상위플로우에 전달해 줄 data를 output으로 셋팅 -->
+    ]]><emphasis role="bold"><![CDATA[<output name="category" value="category" />]]></emphasis><![CDATA[
+</end-state>]]></programlisting>
+				input과 마찬가지로 하위 플로우에서 전달받은 output 객체를 상위 플로우에서도  output으로 정의해줘야 한다.
+				<programlisting language="xml"><emphasis role="bold"><![CDATA[<output name="category" />]]></emphasis></programlisting>
+			</para>
+		</section>		
+	</section>
+	
+	<section id="webflow_webflow_flow_inheritance">
+		<title>플로우 상속</title>
+		<para>
+			플로우 파일을 작성할 때 한 플로우에서 다른 플로우를 상속받아 구현할 수 있으며 flow 레벨과 state 레벨로 가능하다.
+			보통 global transition이나 global exception을 parent로 정의하여 사용한다. child 플로우에서 parent 플로우를 상속받을 경우
+			해당 element는 override되는 것이 아니라 merge되게 된다. 단, bean-import, evaluate, exception-handler,
+			persistence-context, render 속성에 대해서는 merge가 불가능하다.
+		</para>
+		
+		<section id="webflow_webflow_flow_inheritance_flowlevel">
+			<title>flow 레벨 상속</title>
+			<para>
+				flow 레벨 상속은 여러개의 플로우 상속이 가능하다. 이 때 콤마(,)로 구분하여 정의한다.
+				<programlisting language="xml"><![CDATA[<flow xmlns="http://www.springframework.org/schema/webflow"
+    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+    xsi:schemaLocation="http://www.springframework.org/schema/webflow  
+    http://www.springframework.org/schema/webflow/spring-webflow-2.0.xsd" ]]>
+    <emphasis role="bold"><![CDATA[parent="webflowParent1, webflowParent2"]]></emphasis><![CDATA[>]]></programlisting>
+			</para>
+		</section>
+		
+		<section id="webflow_webflow_flow_inheritance_statelevel">
+			<title>state 레벨 상속</title>
+			<para>
+				state 레벨 상속은 한 개의 state에서 한 개의 state만 상속받을 수 있다. 또한, child state와
+				parent state는 같은 타입이어야 한다. 예를 들어 child state가 view-state 이면 parent state도
+				view-state여야 한다. flow id와 state id간의 구분자는 "#"이다.
+				<programlisting language="xml"><![CDATA[<view-state id="getProduct" model="product"
+        view="/WEB-INF/jsp/webflow/sales/product
+        /viewProduct.jsp" ]]><emphasis role="bold"><![CDATA[parent="webflowParent#stateParent"]]></emphasis><![CDATA[>
+        ...
+</view-state>]]></programlisting>
+			</para>
+		</section>
+	</section>	
+</chapter>

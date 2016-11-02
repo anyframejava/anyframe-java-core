@@ -1,0 +1,160 @@
+<chapter id="springrest_restsupport_exceptionhandling">
+	<title>Exception Handling</title>
+	
+	<para>
+		Spring MVC에서는 컨트롤러의 메소드에서 특정 Exception이 발생했을 경우에 해당 Exception을 처리할 수 있도록 <emphasis role="bold">HandlerExceptionResolver</emphasis> 인터페이스를 제공한다.
+		HandlerExceptionResolver 인터페이스의 resolveException(Exception, Handler) 메소드를 구현하여 DispatcherServlet에 등록하면
+		해당 Exception이 발생했을 때 구현한 메소드가 호출된다.
+		기존에 web.xml에서 <![CDATA[<error-page>]]>를 이용해서 에러를 보여주는 페이지를 정의하는 방식과 비슷하지만 좀 더 유연한 기능들을 제공한다.
+	</para>
+	<para>
+		Spring MVC에서는 몇가지 HandlerExceptionResolver 구현체를 제공하고 있다.
+		core plugin 샘플에서 볼 수 있는 <emphasis role="bold">SimpleMappingExceptionResolver</emphasis>가 그 중 하나이다.
+		SimpleMappingExceptionResolver의 exceptionMappings속성에 Exception 클래스와 해당 Exception이 발생했을 때 보여줄 View를 매핑하면된다.		
+		core plugin에서는 모든 Exception에 대해서 error라는 이름의 View로 화면을 렌더링하도록 설정되어있다.
+	</para>
+	<para>	
+		그 밖에 Exception 처리 방법에는 어떤 것들이 있는지 알아보자.		
+	</para>
+	
+	<section id="springrest_restsupport_exceptionhandling_exceptionhandler">
+		<title>@ExceptionHandler</title>
+		<para>
+			HandlerExceptionResolver 인터페이스를 직접 구현하지 않고 @ExceptionHandler를 이용할 수도 있다.
+			컨트롤러 메소드에 @ExceptionHandler를 붙이면 지정한 Exception이 발생했을 때 해당 예외를 처리하게 할 수 있다.			
+			<programlisting language="java">@Controller
+@RequestMapping("/movies")
+public class MovieController {
+    // ...
+    
+    <emphasis role="bold">@ExceptionHandler(NotFoundException.class)</emphasis>
+    public void handleNotFoundException(NotFoundException ex) {
+        // ...
+    }
+}</programlisting>
+			위 컨트롤러에서 NotFoundException이 발생하면 handleNotFoundException() 메소드가 호출될 것이다.
+		</para>
+		<para>
+			다음과 같이 적절한 Response Status Code를 전달하기 위해서 @ResponseStatus와 함께 사용할 수도 있다.
+			<programlisting language="java">@Controller
+@RequestMapping("/movies")
+public class MovieController {
+    // ...
+    
+    <emphasis role="bold">@ExceptionHandler(NotFoundException.class)
+    @ResponseStatus(value=HttpStatus.NOT_FOUND)</emphasis>
+    public void handleNotFoundException(NotFoundException ex) {
+        // ...
+    }
+}</programlisting>
+		</para>
+			위의 Annotation을 이용한 Exception 핸들링이 정상적으로 동작하기 위해서는, 
+			반드시 org.springframework.web.servlet.mvc.method.annotation.ExceptionHandlerExceptionResolver가 등록되어 있어야만 한다.
+		<para>
+		</para>
+	</section>
+	
+	<section id="springrest_restsupport_exceptionhandling_responsestatus">
+		<title>@ResponseStatus</title>
+		<para>
+			@ResponseStatus를 사용하면 컨트롤러 메소드나 Exception 클래스가 Status Code를 리턴하도록 정의할 수 있다. 
+			
+			<programlisting language="java"><emphasis role="bold">@ResponseStatus(value=HttpStatus.NOT_FOUND)</emphasis>
+public class NotFoundException extends BaseException {
+        // ...
+}</programlisting>			 
+		</para>
+		<para>
+			위의 같이 정의한 경우, NotFoundException이 발생하면 클라이언트로 '404 Not Found' Status Code가 전달된다.
+		</para>
+	</section>
+	
+	<section id="springrest_restsupport_exceptionhandling_defaulthandlerexceptionresolver">
+		<title>DefaultHandlerExceptionResolver</title>
+		
+		<para>
+			DispatcherServlet이 디폴트로 등록하는 HandlerExceptionResolver로 
+			<emphasis role="bold"><ulink url="http://static.springsource.org/spring/docs/3.0.x/javadoc-api/org/springframework/web/servlet/mvc/support/DefaultHandlerExceptionResolver.html">DefaultHandlerExceptionResolver</ulink></emphasis>가 있다.
+			DefaultHandlerExceptionResolver는 Spring에서 내부적으로 발생하는 주요 Exception들을 적절한 Response Status Code로 전환해 준다.
+		</para>
+		<para>
+			예를 들면, Request로 들어온 데이터를 처리하다가 타입이 맞지 않으면 TypeMismatchException이 발생하는데, 이것을 '400 Bad Request' Status Code로 리턴한다.
+			DefaultHandlerExceptionResolver는 디폴트로 등록되지만 다른 HandlerExceptionResolver를 등록할 경우에는 명시적으로 등록하는 것이 좋다.
+		</para>
+		
+		<informaltable>
+			<caption>HandlerExceptionResolverdp 명시적으로 등록하는 Exception</caption>
+      		<tgroup cols="2">
+        		<colspec colnum="1" colname="col1" colwidth="2*"/>
+        		<colspec colnum="2" colname="col2" colwidth="8*"/>
+        		<thead>
+          			<row>
+	            		<entry align="center">Exception</entry>
+	            		<entry align="center">HTTP Status Code</entry>
+          			</row>
+        		</thead>
+
+        		<tbody>
+          			<row>
+            		<entry>ConversionNotSupportedException</entry>
+            		<entry>500 (Internal Server Error)</entry>
+          			</row>
+          			<row>
+            		<entry>HttpMediaTypeNotAcceptableException</entry>
+            		<entry>406 (Not Acceptable)</entry>
+          			</row>
+          			<row>
+            		<entry>HttpMediaTypeNotSupportedException</entry>
+            		<entry>415 (Unsupported Media Type)</entry>
+          			</row>
+          			<row>
+            		<entry>HttpMessageNotReadableException</entry>
+            		<entry>400 (Bad Request)</entry>
+          			</row>
+          			<row>
+            		<entry>HttpMessageNotWritableException</entry>
+            		<entry>500 (Internal Server Error)</entry>
+          			</row>
+          			<row>
+            		<entry>HttpRequestMethodNotSupportedException</entry>
+            		<entry>405 (Method Not Allowed)</entry>
+          			</row>
+          			<row>
+            		<entry>MissingServletRequestParameterException</entry>
+            		<entry>400 (Bad Request)</entry>
+          			</row>
+          			<row>
+            		<entry>NoSuchRequestHandlingMethodException</entry>
+            		<entry>404 (Not Found)</entry>
+          			</row>
+          			<row>
+            		<entry>TypeMismatchException</entry>
+            		<entry>400 (Bad Request)</entry>
+          			</row>
+        		</tbody>
+      		</tgroup>
+   		</informaltable>
+	</section>
+	
+	<!--note id="springrest_restsupport_exceptionhandling_errorresponsehandling"-->
+	<note>
+		<title>Response Status Code와 HandlerExceptionResolver</title>
+		<para>
+			기존의 웹 어플리케이션에서는 Error가 발생했을 때 에러의 정보를 보여주는 페이지로 이동하였다.
+			이 경우 REST 클라이언트에서는 에러가 발생했음에도 불구하고 '200 OK'라는 Response Status와 함께 error 페이지 HTML 내용이 리턴되는 문제가 있다.
+			반대로 REST 클라이언트에게 Error Status Code를 리턴하도록 설정을 바꿀 경우 기존 웹 어플리케이션에서는 에러를 위한 페이지를 사용할 수 없다.
+		</para>
+		<para>이와 같은 경우 ExceptionHandlerExceptionResolver를 컨테이너에 등록하고,
+		 다음과 같이 @ExceptionHandler와 @ResponseStatus를 이용하여 REST 클라이언트와 웹어플리케이션을 동시에 만족시킬 수 있다. <programlisting language="java">@ResponseStatus(value = HttpStatus.NOT_FOUND)
+@ExceptionHandler(NotFoundException.class)
+public ModelAndView handleException(NotFoundException ex) {
+    ModelMap model = new ModelMap();
+    model.addAttribute("class", ClassUtils.getShortName(ex.getClass()));
+    model.addAttribute("message", ex.getMessage());
+    model.addAttribute("exception", ex);
+    
+    return new ModelAndView("error", model);
+}</programlisting>
+		</para>
+	</note>
+</chapter>

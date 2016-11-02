@@ -1,0 +1,561 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<FDL version="1.4">
+  <TypeDefinition url="..\default_typedef.xml"/>
+  <Form id="frmSAMPLE011" classname="SAMPLE011" inheritanceid="" position="absolute 0 0 765 540" titletext="SAMPLE011" onload="SAMPLE011_onload" style="background:#f2f2efff;">
+    <Layouts>
+      <Layout>
+        <Div id="divSearch" taborder="1" text="Div00" position="absolute 0 40 765 80">
+          <Layouts>
+            <Layout>
+              <Button id="btLeft" taborder="0" position="absolute 0 11 30 33" text="◀" onclick="divSearch_btLeft_onclick"/>
+              <Combo id="cmbYear" taborder="1" position="absolute 32 11 125 33" index="29" innerdataset="@dsCmbYear" codecolumn="CODE" datacolumn="DATA" value="2012" text="2012"/>
+              <Static id="stYear" text="년" position="absolute 127 11 144 33"/>
+              <Combo id="cmbMonth" taborder="2" text="01" position="absolute 143 11 223 33" innerdataset="@dsCmbMonth" codecolumn="CODE" datacolumn="DATA" index="0" value="01"/>
+              <Static id="stMonth" text="월" position="absolute 225 11 240 33"/>
+              <Button id="btMoveTo" taborder="3" text="global.domain.movecalandar" position="absolute 241 11 315 33" onclick="divSearch_btMoveTo_onclick"/>
+              <Button id="btRight" taborder="4" text="▶" position="absolute 317 11 347 33" onclick="divSearch_btRight_onclick"/>
+            </Layout>
+          </Layouts>
+        </Div>
+        <Grid id="grdCalendar" taborder="3" useinputpanel="false" position="absolute 0 80 765 540" userdata="" binddataset="dsGrdCalendar" formats="&lt;Formats&gt;&#10;  &lt;Format id=&quot;default&quot;&gt;&#10;    &lt;Columns&gt;&#10;      &lt;Col size=&quot;80&quot;/&gt;&#10;      &lt;Col size=&quot;80&quot;/&gt;&#10;      &lt;Col size=&quot;80&quot;/&gt;&#10;      &lt;Col size=&quot;80&quot;/&gt;&#10;      &lt;Col size=&quot;80&quot;/&gt;&#10;      &lt;Col size=&quot;80&quot;/&gt;&#10;      &lt;Col size=&quot;80&quot;/&gt;&#10;      &lt;Col size=&quot;80&quot;/&gt;&#10;      &lt;Col size=&quot;80&quot;/&gt;&#10;      &lt;Col size=&quot;80&quot;/&gt;&#10;      &lt;Col size=&quot;80&quot;/&gt;&#10;      &lt;Col size=&quot;80&quot;/&gt;&#10;      &lt;Col size=&quot;80&quot;/&gt;&#10;      &lt;Col size=&quot;80&quot;/&gt;&#10;      &lt;Col size=&quot;80&quot;/&gt;&#10;      &lt;Col size=&quot;80&quot;/&gt;&#10;      &lt;Col size=&quot;80&quot;/&gt;&#10;      &lt;Col size=&quot;80&quot;/&gt;&#10;      &lt;Col size=&quot;80&quot;/&gt;&#10;      &lt;Col size=&quot;80&quot;/&gt;&#10;      &lt;Col size=&quot;80&quot;/&gt;&#10;      &lt;Col size=&quot;80&quot;/&gt;&#10;      &lt;Col size=&quot;80&quot;/&gt;&#10;      &lt;Col size=&quot;80&quot;/&gt;&#10;      &lt;Col size=&quot;80&quot;/&gt;&#10;      &lt;Col size=&quot;80&quot;/&gt;&#10;      &lt;Col size=&quot;80&quot;/&gt;&#10;      &lt;Col size=&quot;80&quot;/&gt;&#10;      &lt;Col size=&quot;80&quot;/&gt;&#10;      &lt;Col size=&quot;80&quot;/&gt;&#10;      &lt;Col size=&quot;80&quot;/&gt;&#10;      &lt;Col size=&quot;80&quot;/&gt;&#10;      &lt;Col size=&quot;80&quot;/&gt;&#10;      &lt;Col size=&quot;80&quot;/&gt;&#10;      &lt;Col size=&quot;80&quot;/&gt;&#10;    &lt;/Columns&gt;&#10;    &lt;Rows&gt;&#10;      &lt;Row band=&quot;head&quot; size=&quot;24&quot;/&gt;&#10;      &lt;Row band=&quot;body&quot; size=&quot;24&quot;/&gt;&#10;    &lt;/Rows&gt;&#10;    &lt;Band id=&quot;head&quot;&gt;&#10;      &lt;Cell col=&quot;0&quot; disptype=&quot;normal&quot; text=&quot;DAY0&quot;/&gt;&#10;      &lt;Cell col=&quot;1&quot; disptype=&quot;normal&quot; text=&quot;DAY1&quot;/&gt;&#10;      &lt;Cell col=&quot;2&quot; disptype=&quot;normal&quot; text=&quot;DAY2&quot;/&gt;&#10;      &lt;Cell col=&quot;3&quot; disptype=&quot;normal&quot; text=&quot;DAY3&quot;/&gt;&#10;      &lt;Cell col=&quot;4&quot; disptype=&quot;normal&quot; text=&quot;DAY4&quot;/&gt;&#10;      &lt;Cell col=&quot;5&quot; disptype=&quot;normal&quot; text=&quot;DAY5&quot;/&gt;&#10;      &lt;Cell col=&quot;6&quot; disptype=&quot;normal&quot; text=&quot;DAY6&quot;/&gt;&#10;      &lt;Cell col=&quot;7&quot; disptype=&quot;normal&quot; text=&quot;INFO0&quot;/&gt;&#10;      &lt;Cell col=&quot;8&quot; disptype=&quot;normal&quot; text=&quot;INFO1&quot;/&gt;&#10;      &lt;Cell col=&quot;9&quot; disptype=&quot;normal&quot; text=&quot;INFO2&quot;/&gt;&#10;      &lt;Cell col=&quot;10&quot; disptype=&quot;normal&quot; text=&quot;INFO3&quot;/&gt;&#10;      &lt;Cell col=&quot;11&quot; disptype=&quot;normal&quot; text=&quot;INFO4&quot;/&gt;&#10;      &lt;Cell col=&quot;12&quot; disptype=&quot;normal&quot; text=&quot;INFO5&quot;/&gt;&#10;      &lt;Cell col=&quot;13&quot; disptype=&quot;normal&quot; text=&quot;INFO6&quot;/&gt;&#10;      &lt;Cell col=&quot;14&quot; disptype=&quot;normal&quot; text=&quot;BASE_INFO0&quot;/&gt;&#10;      &lt;Cell col=&quot;15&quot; disptype=&quot;normal&quot; text=&quot;BASE_INFO1&quot;/&gt;&#10;      &lt;Cell col=&quot;16&quot; disptype=&quot;normal&quot; text=&quot;BASE_INFO2&quot;/&gt;&#10;      &lt;Cell col=&quot;17&quot; disptype=&quot;normal&quot; text=&quot;BASE_INFO3&quot;/&gt;&#10;      &lt;Cell col=&quot;18&quot; disptype=&quot;normal&quot; text=&quot;BASE_INFO4&quot;/&gt;&#10;      &lt;Cell col=&quot;19&quot; disptype=&quot;normal&quot; text=&quot;BASE_INFO5&quot;/&gt;&#10;      &lt;Cell col=&quot;20&quot; disptype=&quot;normal&quot; text=&quot;BASE_INFO6&quot;/&gt;&#10;      &lt;Cell col=&quot;21&quot; disptype=&quot;normal&quot; text=&quot;SCHD_ID0&quot;/&gt;&#10;      &lt;Cell col=&quot;22&quot; disptype=&quot;normal&quot; text=&quot;SCHD_ID1&quot;/&gt;&#10;      &lt;Cell col=&quot;23&quot; disptype=&quot;normal&quot; text=&quot;SCHD_ID2&quot;/&gt;&#10;      &lt;Cell col=&quot;24&quot; disptype=&quot;normal&quot; text=&quot;SCHD_ID3&quot;/&gt;&#10;      &lt;Cell col=&quot;25&quot; disptype=&quot;normal&quot; text=&quot;SCHD_ID4&quot;/&gt;&#10;      &lt;Cell col=&quot;26&quot; disptype=&quot;normal&quot; text=&quot;SCHD_ID5&quot;/&gt;&#10;      &lt;Cell col=&quot;27&quot; disptype=&quot;normal&quot; text=&quot;SCHD_ID6&quot;/&gt;&#10;      &lt;Cell col=&quot;28&quot; disptype=&quot;normal&quot; text=&quot;HOL0&quot;/&gt;&#10;      &lt;Cell col=&quot;29&quot; disptype=&quot;normal&quot; text=&quot;HOL1&quot;/&gt;&#10;      &lt;Cell col=&quot;30&quot; disptype=&quot;normal&quot; text=&quot;HOL2&quot;/&gt;&#10;      &lt;Cell col=&quot;31&quot; disptype=&quot;normal&quot; text=&quot;HOL3&quot;/&gt;&#10;      &lt;Cell col=&quot;32&quot; disptype=&quot;normal&quot; text=&quot;HOL4&quot;/&gt;&#10;      &lt;Cell col=&quot;33&quot; disptype=&quot;normal&quot; text=&quot;HOL5&quot;/&gt;&#10;      &lt;Cell col=&quot;34&quot; disptype=&quot;normal&quot; text=&quot;HOL6&quot;/&gt;&#10;    &lt;/Band&gt;&#10;    &lt;Band id=&quot;body&quot;&gt;&#10;      &lt;Cell col=&quot;0&quot; disptype=&quot;normal&quot; text=&quot;bind:DAY0&quot;/&gt;&#10;      &lt;Cell col=&quot;1&quot; disptype=&quot;normal&quot; text=&quot;bind:DAY1&quot;/&gt;&#10;      &lt;Cell col=&quot;2&quot; disptype=&quot;normal&quot; text=&quot;bind:DAY2&quot;/&gt;&#10;      &lt;Cell col=&quot;3&quot; disptype=&quot;normal&quot; text=&quot;bind:DAY3&quot;/&gt;&#10;      &lt;Cell col=&quot;4&quot; disptype=&quot;normal&quot; text=&quot;bind:DAY4&quot;/&gt;&#10;      &lt;Cell col=&quot;5&quot; disptype=&quot;normal&quot; text=&quot;bind:DAY5&quot;/&gt;&#10;      &lt;Cell col=&quot;6&quot; disptype=&quot;normal&quot; text=&quot;bind:DAY6&quot;/&gt;&#10;      &lt;Cell col=&quot;7&quot; disptype=&quot;normal&quot; text=&quot;bind:INFO0&quot;/&gt;&#10;      &lt;Cell col=&quot;8&quot; disptype=&quot;normal&quot; text=&quot;bind:INFO1&quot;/&gt;&#10;      &lt;Cell col=&quot;9&quot; disptype=&quot;normal&quot; text=&quot;bind:INFO2&quot;/&gt;&#10;      &lt;Cell col=&quot;10&quot; disptype=&quot;normal&quot; text=&quot;bind:INFO3&quot;/&gt;&#10;      &lt;Cell col=&quot;11&quot; disptype=&quot;normal&quot; text=&quot;bind:INFO4&quot;/&gt;&#10;      &lt;Cell col=&quot;12&quot; disptype=&quot;normal&quot; text=&quot;bind:INFO5&quot;/&gt;&#10;      &lt;Cell col=&quot;13&quot; disptype=&quot;normal&quot; text=&quot;bind:INFO6&quot;/&gt;&#10;      &lt;Cell col=&quot;14&quot; disptype=&quot;normal&quot; text=&quot;bind:BASE_INFO0&quot;/&gt;&#10;      &lt;Cell col=&quot;15&quot; disptype=&quot;normal&quot; text=&quot;bind:BASE_INFO1&quot;/&gt;&#10;      &lt;Cell col=&quot;16&quot; disptype=&quot;normal&quot; text=&quot;bind:BASE_INFO2&quot;/&gt;&#10;      &lt;Cell col=&quot;17&quot; disptype=&quot;normal&quot; text=&quot;bind:BASE_INFO3&quot;/&gt;&#10;      &lt;Cell col=&quot;18&quot; disptype=&quot;normal&quot; text=&quot;bind:BASE_INFO4&quot;/&gt;&#10;      &lt;Cell col=&quot;19&quot; disptype=&quot;normal&quot; text=&quot;bind:BASE_INFO5&quot;/&gt;&#10;      &lt;Cell col=&quot;20&quot; disptype=&quot;normal&quot; text=&quot;bind:BASE_INFO6&quot;/&gt;&#10;      &lt;Cell col=&quot;21&quot; disptype=&quot;normal&quot; text=&quot;bind:SCHD_ID0&quot;/&gt;&#10;      &lt;Cell col=&quot;22&quot; disptype=&quot;normal&quot; text=&quot;bind:SCHD_ID1&quot;/&gt;&#10;      &lt;Cell col=&quot;23&quot; disptype=&quot;normal&quot; text=&quot;bind:SCHD_ID2&quot;/&gt;&#10;      &lt;Cell col=&quot;24&quot; disptype=&quot;normal&quot; text=&quot;bind:SCHD_ID3&quot;/&gt;&#10;      &lt;Cell col=&quot;25&quot; disptype=&quot;normal&quot; text=&quot;bind:SCHD_ID4&quot;/&gt;&#10;      &lt;Cell col=&quot;26&quot; disptype=&quot;normal&quot; text=&quot;bind:SCHD_ID5&quot;/&gt;&#10;      &lt;Cell col=&quot;27&quot; disptype=&quot;normal&quot; text=&quot;bind:SCHD_ID6&quot;/&gt;&#10;      &lt;Cell col=&quot;28&quot; disptype=&quot;normal&quot; text=&quot;bind:HOL0&quot;/&gt;&#10;      &lt;Cell col=&quot;29&quot; disptype=&quot;normal&quot; text=&quot;bind:HOL1&quot;/&gt;&#10;      &lt;Cell col=&quot;30&quot; disptype=&quot;normal&quot; text=&quot;bind:HOL2&quot;/&gt;&#10;      &lt;Cell col=&quot;31&quot; disptype=&quot;normal&quot; text=&quot;bind:HOL3&quot;/&gt;&#10;      &lt;Cell col=&quot;32&quot; disptype=&quot;normal&quot; text=&quot;bind:HOL4&quot;/&gt;&#10;      &lt;Cell col=&quot;33&quot; disptype=&quot;normal&quot; text=&quot;bind:HOL5&quot;/&gt;&#10;      &lt;Cell col=&quot;34&quot; disptype=&quot;normal&quot; text=&quot;bind:HOL6&quot;/&gt;&#10;    &lt;/Band&gt;&#10;  &lt;/Format&gt;&#10;&lt;/Formats&gt;&#10;" selecttype="cell" oncelldblclick="grdCalendar_oncelldblclick" autofittype="allboth" anchor="all">
+          <Formats>
+            <Format id="default">
+              <Columns>
+                <Column size="110"/>
+                <Column size="110"/>
+                <Column size="110"/>
+                <Column size="110"/>
+                <Column size="110"/>
+                <Column size="110"/>
+                <Column size="110"/>
+              </Columns>
+              <Rows>
+                <Row size="27" band="head"/>
+                <Row size="29"/>
+                <Row size="29"/>
+                <Row size="29"/>
+              </Rows>
+              <Band id="head">
+                <Cell style="barcolor:darksalmon;" text="global.domain.sunday"/>
+                <Cell col="1" text="global.domain.monday"/>
+                <Cell col="2" text="global.domain.tuesday"/>
+                <Cell col="3" text="global.domain.wednesday"/>
+                <Cell col="4" text="global.domain.thursday"/>
+                <Cell col="5" text="global.domain.friday"/>
+                <Cell col="6" text="global.domain.saturday"/>
+              </Band>
+              <Band id="body">
+                <Cell rowspan="3">
+                  <Cell text="bind:DAY0"/>
+                  <Cell row="1" text="bind:INFO0"/>
+                  <Cell row="2" text="bind:BASE_INFO0"/>
+                </Cell>
+                <Cell col="1" rowspan="3">
+                  <Cell text="bind:DAY1"/>
+                  <Cell row="1" text="bind:INFO1"/>
+                  <Cell row="2" text="bind:BASE_INFO1"/>
+                </Cell>
+                <Cell col="2" rowspan="3">
+                  <Cell text="bind:DAY2"/>
+                  <Cell row="1" text="bind:INFO2"/>
+                  <Cell row="2" text="bind:BASE_INFO2"/>
+                </Cell>
+                <Cell col="3" rowspan="3">
+                  <Cell text="bind:DAY3"/>
+                  <Cell row="1" text="bind:INFO3"/>
+                  <Cell row="2" text="bind:BASE_INFO3"/>
+                </Cell>
+                <Cell col="4" rowspan="3">
+                  <Cell text="bind:DAY4"/>
+                  <Cell row="1" text="bind:INFO4"/>
+                  <Cell row="2" text="bind:BASE_INFO4"/>
+                </Cell>
+                <Cell col="5" rowspan="3">
+                  <Cell text="bind:DAY5"/>
+                  <Cell row="1" text="bind:INFO5"/>
+                  <Cell row="2" text="bind:BASE_INFO5"/>
+                </Cell>
+                <Cell col="6" rowspan="3">
+                  <Cell text="bind:DAY6"/>
+                  <Cell row="1" text="bind:INFO6"/>
+                  <Cell row="2" text="bind:BASE_INFO6"/>
+                </Cell>
+              </Band>
+            </Format>
+          </Formats>
+        </Grid>
+        <Div id="Div00" taborder="4" text="Div00" position="absolute 0 0 765 40">
+          <Layouts>
+            <Layout>
+              <Static id="stTitle" text="global.domain.monthlyschd" position="absolute 18 10 219 32"/>
+            </Layout>
+          </Layouts>
+        </Div>
+        <Static id="Static00" position="absolute 2 10 16 32" style="background:URL('image::bullet_WF_Lev1.png') left middle; " text=""/>
+      </Layout>
+    </Layouts>
+    <Objects>
+      <Dataset id="dsBaseInfo" firefirstcount="0" firenextcount="0" useclientlayout="false" updatecontrol="true" enableevent="true" loadkeymode="keep" loadfiltermode="keep" reversesubsum="false">
+        <ColumnInfo>
+          <Column id="DATE" type="STRING" size="256"/>
+          <Column id="INFO" type="STRING" size="256"/>
+        </ColumnInfo>
+      </Dataset>
+      <Dataset id="dsGrdCalendar" firefirstcount="0" firenextcount="0" useclientlayout="false" updatecontrol="true" enableevent="true" loadkeymode="keep" loadfiltermode="keep" reversesubsum="false">
+        <ColumnInfo>
+          <Column id="DAY0" type="STRING" size="256"/>
+          <Column id="DAY1" type="STRING" size="256"/>
+          <Column id="DAY2" type="STRING" size="256"/>
+          <Column id="DAY3" type="STRING" size="256"/>
+          <Column id="DAY4" type="STRING" size="256"/>
+          <Column id="DAY5" type="STRING" size="256"/>
+          <Column id="DAY6" type="STRING" size="256"/>
+          <Column id="INFO0" type="STRING" size="256"/>
+          <Column id="INFO1" type="STRING" size="256"/>
+          <Column id="INFO2" type="STRING" size="256"/>
+          <Column id="INFO3" type="STRING" size="256"/>
+          <Column id="INFO4" type="STRING" size="256"/>
+          <Column id="INFO5" type="STRING" size="256"/>
+          <Column id="INFO6" type="STRING" size="256"/>
+          <Column id="BASE_INFO0" type="STRING" size="256"/>
+          <Column id="BASE_INFO1" type="STRING" size="256"/>
+          <Column id="BASE_INFO2" type="STRING" size="256"/>
+          <Column id="BASE_INFO3" type="STRING" size="256"/>
+          <Column id="BASE_INFO4" type="STRING" size="256"/>
+          <Column id="BASE_INFO5" type="STRING" size="256"/>
+          <Column id="BASE_INFO6" type="STRING" size="256"/>
+          <Column id="SCHD_ID0" type="STRING" size="256"/>
+          <Column id="SCHD_ID1" type="STRING" size="256"/>
+          <Column id="SCHD_ID2" type="STRING" size="256"/>
+          <Column id="SCHD_ID3" type="STRING" size="256"/>
+          <Column id="SCHD_ID4" type="STRING" size="256"/>
+          <Column id="SCHD_ID5" type="STRING" size="256"/>
+          <Column id="SCHD_ID6" type="STRING" size="256"/>
+          <Column id="HOL0" type="STRING" size="256"/>
+          <Column id="HOL1" type="STRING" size="256"/>
+          <Column id="HOL2" type="STRING" size="256"/>
+          <Column id="HOL3" type="STRING" size="256"/>
+          <Column id="HOL4" type="STRING" size="256"/>
+          <Column id="HOL5" type="STRING" size="256"/>
+          <Column id="HOL6" type="STRING" size="256"/>
+        </ColumnInfo>
+      </Dataset>
+      <Dataset id="dsSchd" firefirstcount="0" firenextcount="0" useclientlayout="false" updatecontrol="true" enableevent="true" loadkeymode="keep" loadfiltermode="keep" reversesubsum="false">
+        <ColumnInfo>
+          <Column id="SCHD_ID" type="STRING" size="16"/>
+          <Column id="SCHD_STARTDATE" type="STRING" size="16"/>
+          <Column id="SCHD_ENDDATE" type="STRING" size="16"/>
+          <Column id="SCHD_TITLE" type="STRING" size="256"/>
+          <Column id="SCHD_CONTENTS" type="STRING" size="256"/>
+          <Column id="SCHD_PLACE" type="STRING" size="256"/>
+          <Column id="USER_ID" type="STRING" size="16"/>
+        </ColumnInfo>
+      </Dataset>
+      <Dataset id="dsService" firefirstcount="0" firenextcount="0" useclientlayout="false" updatecontrol="true" enableevent="true" loadkeymode="keep" loadfiltermode="keep" reversesubsum="false">
+        <ColumnInfo>
+          <Column id="SVC_ID" type="STRING" size="100"/>
+          <Column id="QUERY_LIST" type="STRING" size="256"/>
+          <Column id="SERVICE" type="STRING" size="100"/>
+          <Column id="IN_DATASET_LIST" type="STRING" size="256"/>
+          <Column id="OUT_DATASET_LIST" type="STRING" size="256"/>
+          <Column id="CONTROLLER" type="STRING" size="512"/>
+          <Column id="CALLBACK" type="STRING" size="100"/>
+          <Column id="SYNC_YN" type="STRING" size="1"/>
+        </ColumnInfo>
+        <Rows>
+          <Row>
+            <Col id="SVC_ID">getListSchedule</Col>
+            <Col id="QUERY_LIST">querySet1=findXPScheduleList</Col>
+            <Col id="IN_DATASET_LIST">querySet1=dsSearch</Col>
+            <Col id="OUT_DATASET_LIST">dsSchd=querySet1</Col>
+          </Row>
+        </Rows>
+      </Dataset>
+      <Dataset id="dsSearch" firefirstcount="0" firenextcount="0" useclientlayout="false" updatecontrol="true" enableevent="true" loadkeymode="keep" loadfiltermode="keep" reversesubsum="false">
+        <ColumnInfo>
+          <Column id="SEARCH_CONDITION" type="STRING" size="256"/>
+          <Column id="SEARCH_KEYWORD" type="STRING" size="256"/>
+        </ColumnInfo>
+      </Dataset>
+      <Dataset id="dsCmbYear" firefirstcount="0" firenextcount="0" useclientlayout="false" updatecontrol="true" enableevent="true" loadkeymode="keep" loadfiltermode="keep" reversesubsum="false">
+        <ColumnInfo>
+          <Column id="CODE" type="STRING" size="256"/>
+          <Column id="DATA" type="STRING" size="256"/>
+        </ColumnInfo>
+        <Rows>
+          <Row>
+            <Col id="CODE">2000</Col>
+            <Col id="DATA">2000</Col>
+          </Row>
+          <Row>
+            <Col id="CODE">2001</Col>
+            <Col id="DATA">2001</Col>
+          </Row>
+          <Row>
+            <Col id="CODE">2002</Col>
+            <Col id="DATA">2002</Col>
+          </Row>
+          <Row>
+            <Col id="CODE">2003</Col>
+            <Col id="DATA">2003</Col>
+          </Row>
+          <Row>
+            <Col id="CODE">2004</Col>
+            <Col id="DATA">2004</Col>
+          </Row>
+          <Row>
+            <Col id="CODE">2005</Col>
+            <Col id="DATA">2005</Col>
+          </Row>
+          <Row>
+            <Col id="CODE">2006</Col>
+            <Col id="DATA">2006</Col>
+          </Row>
+          <Row>
+            <Col id="CODE">2007</Col>
+            <Col id="DATA">2007</Col>
+          </Row>
+          <Row>
+            <Col id="CODE">2008</Col>
+            <Col id="DATA">2008</Col>
+          </Row>
+          <Row>
+            <Col id="CODE">2009</Col>
+            <Col id="DATA">2009</Col>
+          </Row>
+          <Row>
+            <Col id="CODE">2010</Col>
+            <Col id="DATA">2010</Col>
+          </Row>
+          <Row>
+            <Col id="CODE">2011</Col>
+            <Col id="DATA">2011</Col>
+          </Row>
+          <Row>
+            <Col id="CODE">2012</Col>
+            <Col id="DATA">2012</Col>
+          </Row>
+          <Row>
+            <Col id="CODE">2013</Col>
+            <Col id="DATA">2013</Col>
+          </Row>
+          <Row>
+            <Col id="CODE">2014</Col>
+            <Col id="DATA">2014</Col>
+          </Row>
+          <Row>
+            <Col id="CODE">2015</Col>
+            <Col id="DATA">2015</Col>
+          </Row>
+          <Row>
+            <Col id="CODE">2016</Col>
+            <Col id="DATA">2016</Col>
+          </Row>
+          <Row>
+            <Col id="CODE">2017</Col>
+            <Col id="DATA">2017</Col>
+          </Row>
+          <Row>
+            <Col id="CODE">2018</Col>
+            <Col id="DATA">2018</Col>
+          </Row>
+          <Row>
+            <Col id="CODE">2019</Col>
+            <Col id="DATA">2019</Col>
+          </Row>
+          <Row>
+            <Col id="CODE">2020</Col>
+            <Col id="DATA">2020</Col>
+          </Row>
+          <Row>
+            <Col id="CODE">2021</Col>
+            <Col id="DATA">2021</Col>
+          </Row>
+          <Row>
+            <Col id="CODE">2022</Col>
+            <Col id="DATA">2022</Col>
+          </Row>
+          <Row>
+            <Col id="CODE">2023</Col>
+            <Col id="DATA">2023</Col>
+          </Row>
+          <Row>
+            <Col id="CODE">2024</Col>
+            <Col id="DATA">2024</Col>
+          </Row>
+          <Row>
+            <Col id="CODE">2025</Col>
+            <Col id="DATA">2025</Col>
+          </Row>
+          <Row>
+            <Col id="CODE">2026</Col>
+            <Col id="DATA">2026</Col>
+          </Row>
+          <Row>
+            <Col id="CODE">2027</Col>
+            <Col id="DATA">2027</Col>
+          </Row>
+          <Row>
+            <Col id="CODE">2028</Col>
+            <Col id="DATA">2028</Col>
+          </Row>
+          <Row>
+            <Col id="CODE">2029</Col>
+            <Col id="DATA">2029</Col>
+          </Row>
+          <Row>
+            <Col id="CODE">2030</Col>
+            <Col id="DATA">2030</Col>
+          </Row>
+        </Rows>
+      </Dataset>
+      <Dataset id="dsCmbMonth" firefirstcount="0" firenextcount="0" useclientlayout="false" updatecontrol="true" enableevent="true" loadkeymode="keep" loadfiltermode="keep" reversesubsum="false">
+        <ColumnInfo>
+          <Column id="CODE" type="STRING" size="256"/>
+          <Column id="DATA" type="STRING" size="256"/>
+        </ColumnInfo>
+        <Rows>
+          <Row>
+            <Col id="CODE">01</Col>
+            <Col id="DATA">01</Col>
+          </Row>
+          <Row>
+            <Col id="CODE">02</Col>
+            <Col id="DATA">02</Col>
+          </Row>
+          <Row>
+            <Col id="CODE">03</Col>
+            <Col id="DATA">03</Col>
+          </Row>
+          <Row>
+            <Col id="CODE">04</Col>
+            <Col id="DATA">04</Col>
+          </Row>
+          <Row>
+            <Col id="CODE">05</Col>
+            <Col id="DATA">05</Col>
+          </Row>
+          <Row>
+            <Col id="CODE">06</Col>
+            <Col id="DATA">06</Col>
+          </Row>
+          <Row>
+            <Col id="CODE">07</Col>
+            <Col id="DATA">07</Col>
+          </Row>
+          <Row>
+            <Col id="CODE">08</Col>
+            <Col id="DATA">08</Col>
+          </Row>
+          <Row>
+            <Col id="CODE">09</Col>
+            <Col id="DATA">09</Col>
+          </Row>
+          <Row>
+            <Col id="CODE">10</Col>
+            <Col id="DATA">10</Col>
+          </Row>
+          <Row>
+            <Col id="CODE">11</Col>
+            <Col id="DATA">11</Col>
+          </Row>
+          <Row>
+            <Col id="CODE">12</Col>
+            <Col id="DATA">12</Col>
+          </Row>
+        </Rows>
+      </Dataset>
+    </Objects>
+    <Script type="xscript4.0"><![CDATA[include "lib::commonScript.xjs";
+
+var strCurrentMonth = gfnSubStr(gfnToday(), 0, 6);
+
+// Form onload 이벤트 처리
+function SAMPLE011_onload(obj:Form, e:LoadEventInfo)
+{
+	// 스케쥴 정보를 수신
+	gfnService("getListSchedule");
+	
+	// 각 컴포넌트 타이틀 국제화 처리
+	gfnSetTitle(obj);
+}
+
+// Grid에 달력을 그리는 함수
+function fnDrawCalendar(objGridDataset, objGrid, objBaseInfoDataset, objScheduleDataset) {
+	var strYearMonth = gfnIsNull(strCurrentMonth) ? gfnSubStr(gfnToday(), 0, 6) : strCurrentMonth;
+	var i, nCellPos, nNewRow, colid;
+	var nDayOfStart, nLastDay;
+	
+	divSearch.cmbYear.value = gfnSubStr(strYearMonth, 0, 4);
+	divSearch.cmbMonth.value = gfnSubStr(strYearMonth, 4, 2);
+	
+	fnMakeBaseInfo(objBaseInfoDataset, strYearMonth);
+	
+	objGrid.userData = strYearMonth;
+	
+	objGrid.binddataset = "";
+	objGridDataset.clearData();
+	nDayOfStart = gfnGetDay(strYearMonth + "01");
+	nLastDay = parseInt(gfnLastDateNum(strYearMonth));
+	nNewRow = objGridDataset.addRow();
+	
+	for(i = 1, nCellPos = nDayOfStart ; i <= nLastDay ; i++) {
+		objGridDataset.setColumn(nNewRow, "DAY" + nCellPos, i);
+		
+		// 휴일 처리
+//		if(gfnIsHoliday(strYearMonth + gfnLPad(i, "0", 2)) != "") {
+//			objGridDataset.setColumn(nNewRow, "HOL" + nCellPos, "1");
+//		}
+		
+		// dsBaseInfo : 달력 Data
+		var nBaseInfoRow = objBaseInfoDataset.findRow("DATE", strYearMonth + gfnLPad(i, "0", 2));
+		
+		if(nBaseInfoRow >= 0){
+			objGridDataset.setColumn(nNewRow, "BASE_INFO" + nCellPos, objBaseInfoDataset.getColumn(nBaseInfoRow, "INFO"));
+		}
+		
+		nCellPos = (nCellPos + 1) % 7;
+		
+		if(nCellPos == 0 && i != nLastDay){
+			nNewRow = objGridDataset.addRow();
+		}
+	}
+	
+	var nScheduleRow, nCalendarRow;
+	var strScheduleStartDate, strScheduleEndDate, strScheduledDate;
+	var nCellPos;
+	
+	for(nScheduleRow = 0 ; nScheduleRow < objScheduleDataset.rowcount; nScheduleRow++){
+		strScheduleStartDate = objScheduleDataset.getColumn(nScheduleRow, "SCHD_STARTDATE");
+		strScheduleEndDate = objScheduleDataset.getColumn(nScheduleRow, "SCHD_ENDDATE");
+		
+		strScheduledDate = strScheduleStartDate + "";
+
+		nDayOfScheduledDate = parseInt(gfnSubStr(strScheduledDate, 6, 2));
+		// 스케쥴 시작일 ~ 끝까지 SCHD_TITLE로 setColumn
+		for(i = 1 ; i <= gfnGetDiffDay(strScheduleStartDate, strScheduleEndDate) ; i++){
+			// 이번달 스케쥴인지 확인
+			if(gfnIndexOf(strScheduledDate, strYearMonth) >= 0){
+				nCellPos = gfnGetDay(strScheduledDate);
+				nCalendarRow = objGridDataset.findRow("DAY" + nCellPos, nDayOfScheduledDate + "");
+				if(nCalendarRow >= 0) {
+					objGridDataset.setColumn(nCalendarRow, "INFO" + nCellPos, objScheduleDataset.getColumn(nScheduleRow, "SCHD_TITLE"));
+					objGridDataset.setColumn(nCalendarRow, "SCHD_ID" + nCellPos, objScheduleDataset.getColumn(nScheduleRow, "SCHD_ID"));
+				}
+			}
+			
+			nCellPos++;
+			strScheduledDate = gfnAddDate(strScheduledDate, 1);
+			nDayOfScheduledDate = parseInt(gfnSubStr(strScheduledDate, 6, 2));
+		}
+	}
+	
+	objGrid.binddataset = objGridDataset.name;
+}
+
+// 달력 기본 정보 처리(공휴일, 음력)
+function fnMakeBaseInfo(objBaseInfoDataset, strYearMonth) {
+	var strHolidayName, strLunar, nMonthOfLunar, nDayOfLunar;
+	var nNewRow;
+	var strDate;
+	var nLastDay = parseInt(gfnLastDateNum(strYearMonth));
+	
+	objBaseInfoDataset.clearData();
+	
+	// 공휴일 지정
+//	for(var i = 1 ; i <= nLastDay ; i++){
+//		strDate = strYearMonth + gfnLPad(i, "0", 2);
+//		strHolidayName = gfnIsHoliday(strDate);
+		
+//		if(strHolidayName != ""){
+//			nNewRow = objBaseInfoDataset.addRow();
+//			objBaseInfoDataset.setColumn(nNewRow, "DATE", strDate);
+//			objBaseInfoDataset.setColumn(nNewRow, "INFO", strHolidayName);
+//		}
+		
+		// 음력 표기
+//		if(i % 5 == 1) {
+//			strLunar = gfnSolar2Lunar(strDate);
+//			nMonthOfLunar = parseInt(gfnSubStr(strLunar, 5, 2));
+//			nDayOfLunar = parseInt(gfnSubStr(strLunar, 7, 2));
+//			nNewRow = objBaseInfoDataset.addRow();
+//			objBaseInfoDataset.setColumn(nNewRow, "DATE", strDate);
+//			objBaseInfoDataset.setColumn(nNewRow, "INFO", "(" + nMonthOfLunar + "." + nDayOfLunar + ")");
+//		}
+//	}
+}
+
+// ◀ 버튼 클릭 이벤트
+function divSearch_btLeft_onclick(obj:Button,  e:ClickEventInfo)
+{
+	// 지난달 정보로 달력을 다시 그림
+	strCurrentMonth = gfnSubStr(gfnAddMonth(grdCalendar.userData + "01", -1), 0, 6);
+	if(parseInt(grdCalendar.userData) <= 200001){
+		gfnAlertMsg("msg.gt.maxdate", "ERR");
+		return;
+	} else {
+		fnDrawCalendar(dsGrdCalendar, grdCalendar, dsBaseInfo, dsSchd);
+	}
+	fnDrawCalendar(dsGrdCalendar, grdCalendar, dsBaseInfo, dsSchd);
+}
+
+// ▶ 버튼 클릭 이벤트
+function divSearch_btRight_onclick(obj:Button,  e:ClickEventInfo)
+{
+	// 다음달 정보로 달력을 다시 그림
+	strCurrentMonth = gfnSubStr(gfnAddMonth(grdCalendar.userData + "01", 1), 0, 6);
+	if(parseInt(strCurrentMonth) >= 203101){
+		gfnAlertMsg("msg.gt.maxdate", "ERR");
+		return;
+	} else {
+		fnDrawCalendar(dsGrdCalendar, grdCalendar, dsBaseInfo, dsSchd);
+	}
+}
+
+// 날짜 이동 버튼 클릭
+function divSearch_btMoveTo_onclick(obj:Button,  e:ClickEventInfo)
+{
+	// Combo Box에 표시한 날짜로 달력 정보를 다시 그림
+	strCurrentMonth = gfnGetComponentValue("cmbYear", "text") + gfnGetComponentValue("cmbMonth", "text");
+	fnDrawCalendar(dsGrdCalendar, grdCalendar, dsBaseInfo, dsSchd);
+}
+
+// 달력 날짜 더블클릭 이벤트
+function grdCalendar_oncelldblclick(obj:Grid, e:GridClickEventInfo)
+{
+	if(dsGrdCalendar.getColumn(e.row, "DAY" + e.cell) != null){
+		var strSelectDate = gfnSubStr(strCurrentMonth, 0, 4) + gfnSubStr(strCurrentMonth, 4) + gfnLPad(dsGrdCalendar.getColumn(e.row, "DAY" + e.cell), "0", 2);
+		var strScheduleId = dsGrdCalendar.getColumn(e.row, "SCHD_ID" + e.cell);
+		var retStr;
+		
+		// 스케쥴이 없는 경우 새로운 스케쥴을 등록하는 팝업 생성
+		// 스케쥴이 있는 경우 해당 스케쥴을 수정하는 팝업 생성
+		if(gfnIsNull(strScheduleId)){
+			retStr = gfnShowModal("sample::SAMPLE011_POPUP.xfdl", {paramMode:"C", paramDate:strSelectDate}, "global.domain.schddetail", 525, 300);
+		} else {
+			dsSchd.rowposition = dsSchd.findRow("SCHD_ID", strScheduleId);
+			retStr = gfnShowModal("sample::SAMPLE011_POPUP.xfdl", {paramMode:"U", dsArg:dsSchd}, "global.domain.schddetail", 525, 300);
+		}
+		
+		if(retStr == "Y"){
+			gfnService("getListSchedule");
+		}
+	}
+}
+
+// gfnService 실행 후 Callback 처리
+function fnCallback(strServiceId, strErrorCode, strErrorMsg){
+	if(strErrorCode == -1){
+		gfnAlertMsg(strErrorMsg, "ERR");
+	} else {
+		if(strServiceId == "getListSchedule"){
+			fnDrawCalendar(dsGrdCalendar, gfnGetComponent("grdCalendar"), dsBaseInfo, dsSchd);
+		} else {
+			frm11CALMTLY_OnLoadCompleted();
+		}
+	}
+}
+
+]]></Script>
+  </Form>
+</FDL>

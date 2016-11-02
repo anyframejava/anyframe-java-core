@@ -1,0 +1,161 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN"
+"http://www.w3.org/TR/html4/loose.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+ 
+ <!-- Start of head-->
+<head>
+<meta http-equiv="content-type" content="text/html; charset=UTF-8" />
+<title>TreeGrid </title>
+
+
+<!-- include required common files  ----------------------------------------------------->
+<script type="text/javascript" src="../../../common/exlibs/jquery-1.9.0.js" ></script>
+
+<script type="text/javascript" src="../../../common/exlibs/highlighter/scripts/shCore.js" ></script>
+<script type="text/javascript" src="../../../common/exlibs/highlighter/scripts/shBrushJScript.js" ></script>
+
+<script type="text/javascript" src="../../../common/js/template_common.js" ></script>
+
+<!--  stylesheet  -->
+<link type="text/css" rel="stylesheet" href="../../../common/exlibs/highlighter/styles/shCore.css"/>
+<link type="text/css" rel="stylesheet" href="../../../common/exlibs/highlighter/styles/shCoreDefault.css"/>
+<link rel="stylesheet" type="text/css" href="../../../common/css/style.css" /> 
+
+
+<!-- scripts to support sample page  ----------------------------------------------------->
+<script type="text/javascript">
+
+$(function() {
+	$("#common").load("../../../common/basicinfo.htm");			//common : basic informations	
+})
+
+
+$(function() {
+	JTemplate.load("ui_gridadv_treegrid_src.htm");					                  //{TODO} source url 수정
+	JTemplate.loadDemo2("ui_gridadv_treegrid_src.htm", {height:"350px"});			  //{TODO} source url 수정, show visaul demo sample
+}); 
+	
+</script> 
+</head>
+<!-- End of head -->
+
+<!-- Start of body -->
+<body>
+ 
+<!-- HEADER BAR -------------------------------------------------------------->
+	<div class="content-title">Grid Advanced - TreeGrid</div>
+
+<!-- START OF PAGE ... -------------------------------------------------------->
+	<div id="page">
+		<p class="header-title">TreeGrid 기본구성</p>
+		<p class="header-desc">: 기본적인 TreeGrid 구성(생성)에 대한 예를 보여준다.</p>
+
+<!-- DEMO ----------------------------------------------------------------------->
+		<div class="demo">
+			<h3 >Demo</h3>
+			<div id="visualExample"></div>
+		</div>
+        
+<!-- DEMO DESCRIPTION----------------------------------------------------->
+		<div class="desc">
+			<h3>Demo Description</h3>
+			<hr>
+            <p class="desc-title">주의사항</p>
+			<p class="desc-overall">
+            <span class="alert-color">본 예제는 jqGrid 소스 일부를 수정하여 로컬 Data 처리를 가능</span>하게 하였으며,<br>
+            jqGrid 버전 4.4.4 자체적으로는 TreeGrid 구성을 위해 로컬데이타 입력에 대한 가이드 및 완성된 기능을 갖고 있지 않은것으로 보인다.<br>
+            따라서 소스 수정은 본 예제가 돌아갈 수 있는 수준에 맞춰 이루어졌다. 수정된 소스는 <span class="noted-color">jquery.jqGrid.src.modified.js </span> 로 명명하여 include 처리하였다.
+			</p>
+
+            <p class="desc-title">Demo</p>
+            <p class="desc-overall">
+            본 예제에서는 계층적 데이타 표현 방식 중 Adjacency Model 을 채택하여 데이타를 구성하였으며, TreeGrid 구성, Icon 변경, Depth 처리, 확장된 상태로 로딩되는 방식들을 볼 수 있도록 개발되었다.
+            </p>
+
+		</div>
+                        
+<!-- CODE------------------------------------------------------------------------>
+		<div class="code">
+			<h3>Code Source</h3>
+			<pre id="codeExample" class="brush: js"></pre>
+        </div>
+        
+<!-- CODE DESCRIPTION------------------------------------------------------>
+		<div class="desc">
+			<h3>Code Description</h3>
+			<hr>
+
+            <p class="desc-title">초기화</p>
+            <span class="code-line">#58 ~ #63</span>
+            <div class="code-block">
+<pre>
+treeGrid: true,
+treeGridModel: 'adjacency',     // or 'nested'
+treedatatype: 'local',
+treeIcons: { plus: "ui-icon-plusthick", minus: "ui-icon-minusthick", leaf: "ui-icon-bullet" },
+ExpandColumn: "name",
+ExpandColClick: true,
+</pre>
+            </div>
+			<p class="desc-overall">
+            TreeGrid 구성을 위한 Option 들을 정의한다.
+
+                <ul class="desc-ul">
+                    <li><span>treeGrid</span>TreeGrid 형태를 사용할지를 지정한다. (true/false) </li>
+                    <li><span>treeGridModel</span>Tree 형태를 표현하는 방식을 지정한다. (nested/adjacency) 선택된 모델에 따라서 입력되어야 할 데이타가 달라진다.</li>
+                    <li><span></span>본 예제에서는 "adjacency" 모델을 사용함.</li>
+                    <li><span>ExpandColumn</span>Tree 로 표현될 기준 컬럼을 지정한다. 본 예제에서는 "name" 을 기준으로 Tree 를 구성하였다. </li>
+                    <li><span>treedatatype</span>처리될 데이타의 형태를 지정한다. <span class="noted-color">datatype 의 옵션 값을 기준으로 처리되므로 무시하거나, 같은 값을 지정하여 준다.</span></li>
+                </ul>
+            </p>
+
+            <p class="desc-title">데이타 구성 (Adjacency Model)</p>
+            <span class="code-line">#22 ~ #36</span>
+            <p class="desc-overall">
+            위에서 언급한 것 처럼 본 예제에서는 <strong>Adjacency Model</strong> 을 채택하여 Tree 를 구성하는 데이타를 생성하였다. <br>
+            해당 데이타의 형태는 Tree 를 표현하기 위한( Node 와 Node 간의 관계를 표현 ) 정보들로 생각하면 된다. TreeGrid 가 지원하는 형태는 2가지이며, 각 형태에 대해서는 Link 섹션을 참조하길 바란다. <br>
+
+                <ul class="desc-ul">
+                    <li><span>level</span>RootNode 에서 자신의 Node 까지의 Depth 를 의미한다. 기본값은 0 부터 시작된다.</li>
+                    <li><span>parent</span>부모 Node 의 Key 값을 지정한다. <span class="alert-color">기본적으로 id 값을 의미한다.</span> Parent - Child 관계를 연결짓는 값이며, Nested Model 과 유일하게 다른 부분이다.</li>
+                    <li><span>isLeaf</span>하위 Node 값이 있는지 여부를 지정한다. (true/false)</li>
+                    <li><span>loaded</span>하위 Node 가 있을 때, 해당 데이타들이 모두 Load 되었는지 여부를 지정한다. (true/false) 로컬 Data 의 경우엔 모두 true 로 설정 해 주어야 한다.</li>
+                    <li><span>expanded</span>하위 Node 가 초기 로딩 시, 펼쳐져 있을지 여부를 지정한다. (true/false)</li>
+                    <li><span>icon</span>Leaf Node 의 경우에만 적용되며, 아이콘 변경시 사용된다.<span class="code-line">#23</span></li>
+                </ul>
+            </p>
+
+            <p class="desc-title">주의사항</p>
+            <p class="desc-overall">
+                본 예제는 로컬 Data 를 기준으로 처리되도록 하여, 초기 데이타가 모든 Tree 의 Node 가 구성되었을 때를 가정하여 설정 및 구성되었다. <br>
+                그러나 실제 서버 URL 를 사용하여 통신 시에는, Node 가 Expand 되어질 때 마다 Http Request 를 하여 처리되는 방식임을 주의하자.
+            </p>
+		</div>
+     
+<!-- RELATED LINKS ----------------------------------------------------------->
+        <div class="related">
+			<h3>Related Links</h3>
+			<hr>
+			<ul class="desc-hypl">
+				<li>
+					<span>TreeGrid Doc</span>
+					<a href="http://www.trirand.com/jqgridwiki/doku.php?id=wiki:treegrid"></a>
+				</li>
+                <li>
+                    <span>TreeGrid Adjacency Model</span>
+                    <a href="http://www.trirand.com/jqgridwiki/doku.php?id=wiki:adjacency_model"></a>
+                </li>
+                <li>
+                    <span>TreeGrid Nested Set Model</span>
+                    <a href="http://www.trirand.com/jqgridwiki/doku.php?id=wiki:nested_set_model"></a>
+                </li>
+			</ul>            
+		</div>
+
+	</div>      
+<!-- End of Page-->
+
+</body>
+<!-- End of body-->
+
+</html>

@@ -1,0 +1,772 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Script type="xscript4.0"><![CDATA[ 
+/********************************************************************************
+ * Function Name	: gfnGetMessage												*
+ * Desc				: 메세지 코드에 따른 실제 메세지값을 반환				*
+ * Parameter		: code(MessageId)											*
+ *					  strMsgParam[](메세지값으로 치환될 Parameter Array)		*
+ * Return 			: 등록된 MessageId에 해당하는 실제 메세지값				*
+ *					  등록된 MessageId가 없을 경우 code를 그대로 반환		*
+ ********************************************************************************/
+function gfnGetMessage(code, strMsgParam1, strMsgParam2, strMsgParam3, strMsgParam4, strMsgParam5, strMsgParam6){
+	code = code.trim();
+
+	var value = '';
+	for ( var i = 0; i <= gdsMessage.rowcount; i++) {
+	    var msgCol = gdsMessage.getColumn(i, "msgId");
+		if (msgCol == code + "." + gvLanguage || msgCol == code) {
+			value = gdsMessage.getColumn(i, "msg");
+			break;
+		}
+	}
+	
+	if (value == '') {
+//		trace("["+code+"] 해당 메시지 코드가 등록되지 않았습니다.");
+		return code;
+	}
+	
+	if(!gfnIsNull(strMsgParam1)) value = value.replace("$1", strMsgParam1);
+	if(!gfnIsNull(strMsgParam2)) value = value.replace("$2", strMsgParam2);
+	if(!gfnIsNull(strMsgParam3)) value = value.replace("$3", strMsgParam3);
+	if(!gfnIsNull(strMsgParam4)) value = value.replace("$4", strMsgParam4);
+	if(!gfnIsNull(strMsgParam5)) value = value.replace("$5", strMsgParam5);
+	if(!gfnIsNull(strMsgParam6)) value = value.replace("$6", strMsgParam6);
+	
+	return value;
+}
+
+ 
+/********************************************************************************
+ * Function Name	: gfnAlertMsg												*
+ * Desc				: 메세지 코드에 따른 실제 메세지값을 찾은 후 팝업창을	*
+ *					  생성해서 해당 값을 보여주는 함수						*
+ * Parameter		: strMsgId(MessageId)										*
+ *					  strMsgType(메세지 종류 : ERR, WARN, INFO)				*
+ *					  strMsgParam[](메세지값으로 치환될 Parameter Array)		*
+ * Return 			: 팝업에 해당 메세지값을 표현							*
+ ********************************************************************************/
+function gfnAlertMsg(strMsgId, strMsgType, strMsgParam1, strMsgParam2, strMsgParam3, strMsgParam4, strMsgParam5, strMsgParam6) {
+	//strMsgType : INFO (default), WARN, ERR
+	if(gfnIsNull(strMsgType)) {
+		strMsgType = "INFO";
+	}
+	
+	var strResultMsg = gfnGetMessage(strMsgId, strMsgParam1, strMsgParam2, strMsgParam3, strMsgParam4, strMsgParam5, strMsgParam6);
+
+	if(!strResultMsg)
+		return false;
+		
+	//팝업 띄우기
+	return gfnShowModal("includes::MSG.xfdl", {paramMsg:strResultMsg, paramType:strMsgType, paramConfirmYn:"N"}, strMsgType, 400, 120);
+}
+
+/********************************************************************************
+ * Function Name	: gfnConfirm												*
+ * Desc				: 메세지 코드에 따른 실제 메세지값을 찾은 후 팝업창을	*
+ *					  생성해서 해당 값을 보여주는 함수						*
+ * Parameter		: strMsgId(MessageId)										*
+ *					  strMsgType(메세지 종류 : ERR, WARN, INFO)				*
+ *					  strMsgParam[](메세지값으로 치환될 Parameter Array)		*
+ * Return 			: 팝업에 해당 메세지값을 표현							*
+ ********************************************************************************/
+function gfnConfirm(strMsgId, strMsgType, strMsgParam1, strMsgParam2, strMsgParam3, strMsgParam4, strMsgParam5, strMsgParam6) {
+	//strMsgType : YN-YesNo, YNC-YesNoCancel, OSC-OpenSaveCancel
+	if(gfnIsNull(strMsgType)) {
+		strMsgType = "YN";
+	}
+	
+	var strResultMsg = gfnGetMessage(strMsgId, strMsgParam1, strMsgParam2, strMsgParam3, strMsgParam4, strMsgParam5, strMsgParam6);
+	
+	//팝업 띄우기
+	return gfnShowModal("includes::MSG.xfdl", {paramMsg:strResultMsg, paramType:strMsgType, paramConfirmYn:"Y"}, "INFO", 400, 120);
+}
+
+/********************************************************************************
+ * Function Name	: gfnIsNull													*
+ * Desc				: 값이 null 이거나 white space 문자로만 이루어진 경우	*
+ *					  true를 리턴한다											*
+ * Parameter		: sValue(String)											*
+ * Return 			: true = 입력값이 null, undefined, 빈문자열("")일 경우	*
+ *					  false = 그 외 입력값이 존재할 경우						*
+ ********************************************************************************/
+function gfnIsNull(sValue) {
+	if (new String(sValue).valueOf() == "undefined")
+		return true;
+	if (sValue == null)
+		return true;
+	var v_ChkStr = new String(sValue);
+
+	if (v_ChkStr == null)
+		return true;
+
+	if (v_ChkStr.toString().length == 0)
+		return true;
+
+	return false;
+}
+
+/********************************************************************************
+ * Function Name	: gfnCheckURL												*
+ * Desc				: 입력값이 URL Type인지 체크하는 함수					*
+ * Parameter		: strValue(String)											*
+ * Return 			: true = 입력값이 URL형태일 경우							*
+ ********************************************************************************/
+function gfnCheckURL(strValue){
+	if(gfnIsNull(strValue)){
+		return false;
+	} else if(strValue.indexOf(".") == -1) {
+		return false;
+	} else {
+		return true;
+	}
+}
+
+
+/********************************************************************************
+ * Function Name	: gfnCheckEmail												*
+ * Desc				: 입력값이 e-mail Type인지 체크하는 함수					*
+ * Parameter		: strValue(String)											*
+ * Return 			: true = 입력값이 email형태일 경우						*
+ ********************************************************************************/
+function gfnCheckEmail(strValue) {
+
+	if(gfnIsNull(strValue)) {
+		return false;
+	}
+	
+	var nIndexOfAt = strValue.indexOf("@");
+	var nIndexOfDot = strValue.indexOf(".");
+	var nLength = strValue.length;
+	
+	// "@" 이 하나도 없거나 맨 끝에 위치한  경우
+	if (nIndexOfAt <= 0 || nIndexOfAt == nLength) {
+		return false;
+	}
+	
+	// "." 이 하나도 없거나 맨 끝에 위치한 경우
+	if (nIndexOfDot <=0 || nIndexOfDot == nLength){
+		return false;
+	}
+	
+	// "@"이 두개 이상 존재하는 경우
+	if (strValue.indexOf("@", nIndexOfAt + 1) != -1){
+		return false;
+	}
+	
+	// ".@" 인 경우 또는 "@."인 경우 
+	if (strValue.substr(nIndexOfAt - 1, 1) == "." || strValue.substr(nIndexOfAt + 1, 1) == ".") {
+		return false;
+	}
+	
+	// "@" 이후에 "."이 존재하지 않는 경우
+	if (strValue.indexOf(".", (nIndexOfAt + 2)) == -1){
+		return false;
+	}
+	
+	// 공백문자가 존재하는 경우
+	if (strValue.indexOf(" ") != -1){
+		return false;
+	}
+	
+	return true;
+}
+
+/********************************************************************************
+ * Function Name	: gfnCheckPhone												*
+ * Desc				: 입력값이 전화번호 format 인지 체크하는 함수			*
+ * Parameter		: strValue(String)											*
+ * Return 			: true = 입력값이 전화번호 형태일 경우					*
+ ********************************************************************************/
+function gfnCheckPhone(strValue) {
+	
+	// null 이거나 "-"이 존재하지 않는 경우 
+    if(gfnIsNull(strValue) || (!gfnIsNull(strValue) && strValue.indexOf("-") == -1)){
+    	return false;
+    	
+    } else if (strValue.indexOf(".") >= 0) {
+		return false;
+		
+	} else {
+		// "-" 사이의 값이 숫자가 아닌 경우
+		var arrNumbers = strValue.split("-");
+		for(var i = 0; i < arrNumbers.length ; i++){
+			
+			if(!gfnCheckNumber(arrNumbers[i], "+")) {
+				return false;
+			}
+		}
+	}	
+	return true;
+}
+
+/********************************************************************************
+ * Function Name	: gfnCheckNumber											*
+ * Desc				: 입력값이 숫자 인지 체크하는 함수						*
+ * Parameter		: strValue(String)											*
+ *					  strSign(String - 음수(-), 소수점(.) 등 표시문자)		*
+ * Return 			: true = 입력값이 숫자 형태일 경우						*
+ ********************************************************************************/
+function gfnCheckNumber(strValue, strSign) {
+	var strBase = "1234567890";
+    var bReturn = true;
+   
+    if (!gfnIsNull(strSign)){
+        strBase += strSign;
+    }
+    
+    if (gfnIsNull(strValue)) {
+        bReturn = false;
+    } else {
+		for(var i = 0 ; i < gfnLength(strValue) ; i++){
+			if(strBase.indexOf(gfnSubStr(strValue, i, 1)) < 0){
+				bReturn=false;
+				break;
+		    }
+		}
+    }
+    return bReturn;
+}
+
+/********************************************************************************
+ * Function Name	: gfnCheckDate8												*
+ * Desc				: 입력값이 날짜 형태 인지 체크하는 함수					*
+ * Parameter		: strValue(String)											*
+ * Return 			: true = 입력값이 8자리 날짜(yyyyMMdd) 형태일 경우		*
+ ********************************************************************************/ 
+function gfnCheckDate8(strValue) {
+	if(gfnLength(strValue) != 8) {
+		return false;
+	} else if(!gfnDateCheck(strValue)) {
+		return false;
+	}	
+	return true;
+}
+
+/********************************************************************************
+ * Function Name	: gfnCheckDate10											*
+ * Desc				: 입력값이 날짜 형태 인지 체크하는 함수					*
+ * Parameter		: strValue(String)											*
+ * Return 			: true = 입력값이 10자리 날짜 형태일 경우				*
+ *					  허용 입력 타입(yyyy-MM-dd, yyyy/MM/dd, yyyy.MM.dd)		* 
+ ********************************************************************************/ 
+function gfnCheckDate10(strValue) {
+	return gfnCheckDate8(gfnReplace(gfnReplace(gfnReplace(strValue, "/", ""), "-", ""), "." , ""));
+}
+
+/********************************************************************************
+ * Function Name	: gfnCheckTime12											*
+ * Desc				: 12시 기준 시간포맷 유효성 체크							*
+ * Parameter		: strValue(String)											*
+ * Return 			: true = 입력값이 주어진 시간 형태일 경우				*
+ *					  허용 입력 타입(hh:mm:ss (am,Am,AM,aM)|(pm,pM,Pm,PM)	)	* 
+ ********************************************************************************/ 
+function gfnCheckTime12(strValue) {
+	var pattern = "^(([0]?[1-9]|1[0-2]):[0-5][0-9](:[0-5][0-9])?( )?(AM|am|aM|Am|PM|pm|pM|Pm))$";
+	
+	if(strValue.match(pattern)) {
+		return true;
+	} else {
+		return false;
+	}
+}
+
+/********************************************************************************
+ * Function Name	: gfnCheckTime24											*
+ * Desc				: 24시 기준 시간포맷 유효성 체크							*
+ * Parameter		: strValue(String)											*
+ * Return 			: true = 입력값이 주어진 시간 형태일 경우				*
+ *					  허용 입력 타입(hh:mm:ss)								* 
+ ********************************************************************************/ 
+function gfnCheckTime24(strValue) {
+	var pattern = "^(([0]?[0-9]|1[0-9]|2[0-3]):[0-5][0-9](:[0-5][0-9])?)$";
+	
+	if(strValue.match(pattern)) {
+		return true;
+	} else {
+		return false;
+	}
+}
+
+/********************************************************************************
+ * Function Name	: gfnSchParameterSetting									*
+ * Desc				: 화면 객체를 모두 찾아 id=value로 매핑하여				*
+ *					  parameter를 만들어 string으로 return					*
+ * Parameter		: 															*
+ * Return 			: String(id1=value1 id2=value2 id3=value3 ...)				* 
+ ********************************************************************************/ 
+function gfnGetFileExt(strFileName){
+	var arrFileName = gfnSplit(strFileName, ".");
+	var strFileExt = arrFileName[arrFileName.length - 1];
+	
+	return gfnTrim(strFileExt);
+}
+
+/********************************************************************************
+ * Function Name	: gfnSchParameterSetting									*
+ * Desc				: 화면 객체를 모두 찾아 id=value로 매핑하여				*
+ *					  parameter를 만들어 string으로 return					*
+ * Parameter		: 															*
+ * Return 			: String(id1=value1 id2=value2 id3=value3 ...)				* 
+ ********************************************************************************/ 
+function gfnSchParameterSetting()
+{
+	var s_retrunVal ="";
+	var obj = this.objects ;
+	
+	
+	var o_components = this.components;
+	for(var i= 0; i < o_components.length; i++){
+		//trace(complist[i]);
+		//trace(o_components[i].name );
+		//trace(o_components[i].name);
+		if (
+			o_components[i] instanceof Combo    || o_components[i] instanceof CheckBox || 
+			o_components[i] instanceof ListBox  || o_components[i] instanceof Edit     || 
+			o_components[i] instanceof MaskEdit || o_components[i] instanceof TextArea || 
+			o_components[i] instanceof Radio    || o_components[i] instanceof Calendar || 
+			o_components[i] instanceof Static
+		   ){
+			if (o_components[i] instanceof Static)
+				var sVal = o_components[i].text;
+			else
+				var sVal = o_components[i].value;
+				
+			var s_id  = call_gfnStripSchChange(o_components[i].name,"_").toUpperCase();
+			if (sVal != undefined && gfnTrim(sVal) != "") 
+				s_retrunVal = s_retrunVal + s_id +"=\'"+sVal+"\' ";
+		}else if (o_components[i] instanceof Div){
+			s_retrunVal = call_gfnGetchildDivComponents(o_components[i].components, s_retrunVal);
+		}
+	}
+	
+	//trace("s_retrunVal:"+s_retrunVal);
+		
+	return s_retrunVal;
+	
+}
+
+/********************************************************************************
+ * Function Name	: call_gfnGetchildDivComponents								*
+ * Desc				: Div등 자식 component를 가진 경우 재귀적으로 사용		*
+ * 					  gfnSchParameterSetting에서 사용하는 함수 				*
+ *					  private function											*
+ * Parameter		: obj_comList(Component[]), s_val(id=value 형태의 String)	*
+ * Return 			: String(id1=value1 id2=value2 id3=value3 ...)				* 
+ ********************************************************************************/ 
+function call_gfnGetchildDivComponents(obj_comList, s_val){
+	var o_components = obj_comList;
+	
+	var s_retrunVal = s_val;
+	
+	//var obj_comList = o_components[i].components;
+	//trace("obj_comList.name:"+obj_comList.name);
+	for(var i=0; i < o_components.length; i++){
+		if (
+			o_components[i] instanceof Combo    || o_components[i] instanceof CheckBox || 
+			o_components[i] instanceof ListBox  || o_components[i] instanceof Edit     || 
+			o_components[i] instanceof MaskEdit || o_components[i] instanceof TextArea || 
+			o_components[i] instanceof Radio    || o_components[i] instanceof Calendar ||  
+			o_components[i] instanceof Static
+		   ){
+			//trace("o_components[i].name:"+o_components[i].name);
+			if (o_components[i] instanceof Static)
+				var sVal = o_components[i].text;
+			else
+				var sVal = o_components[i].value;
+			var s_id  = call_gfnStripSchChange(o_components[i].name,"_").toUpperCase();
+			if (sVal != undefined && gfnTrim(sVal) != "") 
+				s_retrunVal = s_retrunVal + s_id +"=\'"+sVal+"\' ";
+		}else if (o_components[i] instanceof Div){
+			s_retrunVal = call_gfnGetchildDivComponents(o_components[i].components, s_retrunVal);
+		}
+	}
+	
+	return s_retrunVal;
+}
+
+/********************************************************************************
+ * Function Name	: gfnSchDataSetSetting										*
+ * Desc				: 모든 컴포넌트의 값을 지정한 DataSet에 담는 함수		*
+ * 					  (ex) gfnSchDataSetSetting("dsSearch")		 				*
+ * Parameter		: strDsId(DataSet Id)										*
+ * Return 			: 															* 
+ ********************************************************************************/ 
+function gfnSchDataSetSetting(strDsId)
+{
+	var o_components = this.components;
+	var o_hashMap = new call_HashMap();
+	
+	for(var i= 0; i < o_components.length; i++){
+		
+		if (
+			o_components[i] instanceof Combo    || o_components[i] instanceof CheckBox || 
+			o_components[i] instanceof ListBox  || o_components[i] instanceof Edit     || 
+			o_components[i] instanceof MaskEdit || o_components[i] instanceof TextArea || 
+			o_components[i] instanceof Radio    || o_components[i] instanceof Calendar || 
+			o_components[i] instanceof Static
+		   ){
+			if (o_components[i] instanceof Static)
+				var sVal = o_components[i].text;
+			else
+				var sVal = o_components[i].value;
+				
+			if (sVal != undefined && gfnTrim(sVal) != "") {
+				var s_id  = call_gfnStripSchChange(o_components[i].name,"_").toUpperCase();
+				o_dataSet.addColumn(s_id,"string",256);
+				o_hashMap.put(s_id, sVal );
+			}
+		}else if (o_components[i] instanceof Div){
+			call_gfnSchDataSetChildDivComponents(o_components[i].components, o_hashMap);
+		}
+	}
+	
+	
+	
+	var o_dataSet = eval(strDsId);
+	o_dataSet.clear(); //Dataset 의 Column 정보와 Row 를 모두 제거
+	
+	//해당 DataSet에 column 생성
+	for( var i=0; i<o_hashMap.size(); i++ ){
+		var s_colID = o_hashMap.getKey(i);
+		o_dataSet.addColumn(s_colID,"string",256);
+	}
+	
+	o_dataSet.addRow(); //Dataset 의 마지막에 새로운 Row 를 추가
+	
+	//해당 DataSet의 column에 값 setting
+	for( var i=0; i<o_dataSet.getColCount(); i++ ){
+		var s_colID = o_dataSet.getColID(i);
+		var s_colID_sub = call_gfnStripSchChange(s_colID,"_");
+		o_dataSet.setColumn(0, s_colID, o_hashMap.get(s_colID) );
+	}	
+}
+
+/********************************************************************************
+ * Function Name	: call_gfnSchDataSetChildDivComponents						*
+ * Desc				: call_gfnSchDataSetChildDivComponents에서 사용하는 		*
+ * 					  내부 함수 private function				 				*
+ * Parameter		: obj_comList(Component[]), obj_hashMap(Hash Map)			*
+ * Return 			: 															* 
+ ********************************************************************************/ 
+function call_gfnSchDataSetChildDivComponents(obj_comList, obj_hashMap){
+	var o_components = obj_comList;	
+	var o_hashMap = obj_hashMap;
+	
+	for(var i=0; i < o_components.length; i++){
+		if (
+			o_components[i] instanceof Combo    || o_components[i] instanceof CheckBox || 
+			o_components[i] instanceof ListBox  || o_components[i] instanceof Edit     || 
+			o_components[i] instanceof MaskEdit || o_components[i] instanceof TextArea || 
+			o_components[i] instanceof Radio    || o_components[i] instanceof Calendar ||  
+			o_components[i] instanceof Static
+		   ){
+			//trace("o_components[i].name:"+o_components[i].name);
+			
+			if (o_components[i] instanceof Static)
+				var sVal = o_components[i].text;
+			else
+				var sVal = o_components[i].value;
+				
+			if (sVal != undefined && gfnTrim(sVal) != "") {
+				trace(o_components[i].name+":"+sVal);
+				var s_id  = call_gfnStripSchChange(o_components[i].name,"_").toUpperCase();
+				o_hashMap.put(s_id, sVal );
+			}
+			
+		}else if (o_components[i] instanceof Div){
+			call_gfnSchDataSetChildDivComponents(o_components[i].components, o_hashMap);
+		}
+	}
+	
+}
+
+/******************************************************************************
+ * 함수명        : HashMap
+ * 설명          : 자바스크립트에서 HashMap 형태를 사용가능하게하는 함수
+ *                  
+ * argument       : 
+ * return         : 
+ 
+ ******************************************************************************/
+var call_HashMap = function()
+{
+    var mapVal  = {};    // private
+    var pos     = new Array();
+
+ 
+	this.getKey = function( key )
+    {
+        return pos[ key ];
+    }
+    
+    this.get = function( key )
+    {
+        return mapVal[ key ];
+    }
+
+    this.getPos = function( n )
+    {
+        return mapVal[ pos[n] ];
+    }
+
+    this.remove = function( n )
+    {
+        var ary = new Array();
+        for( var i=0; i<map.size(); i++ )
+        {
+            if( i != n )
+            {
+                ary.push( pos[i] );
+            }
+        }
+        pos = ary;
+    }
+
+    this.put = function( key, val )
+    {
+        mapVal[key] = val;
+
+        var flg = true;
+        for( var i=0; i<pos.length; i++ )
+        {
+            if( key == pos[i] )
+                flg = false;
+        }
+
+        if( flg )
+            pos.push( key );
+    }
+
+    this.size = function()
+    {
+        return pos.length;
+    }
+}
+
+/********************************************************************************
+ * Function Name	: gfnGetComponent											*
+ * Desc				: 프로그램의 특정 컴포넌트를 컴포넌트의 id값을  		*
+ * 					  이용하여 찾아내는 함수									*
+ * Parameter		: componentId(Component의 ID값)								*
+ * Return 			: Component Object											* 
+ ********************************************************************************/ 
+ function gfnGetComponent(componentId, formObj){
+	var o_components = null;
+	var returnObj;
+	
+	if(gfnIsNull(formObj)){
+		o_components = this.components;
+	} else {
+		o_components = formObj.components;
+	}
+	
+	for(var i = 0 ; i < o_components.length ; i++){
+		if(
+			o_components[i] instanceof Combo    || o_components[i] instanceof CheckBox || 
+			o_components[i] instanceof ListBox  || o_components[i] instanceof Edit     || 
+			o_components[i] instanceof MaskEdit || o_components[i] instanceof TextArea || 
+			o_components[i] instanceof Radio    || o_components[i] instanceof Calendar || 
+			o_components[i] instanceof Static   || o_components[i] instanceof Grid     ||
+			o_components[i] instanceof GroupBox
+		) {
+			var s_id = o_components[i].name;
+			if(s_id == componentId){
+				return o_components[i];
+			}
+		} else if(o_components[i] instanceof Div) {
+			returnObj = gfnGetChildComponent(componentId, o_components[i].components);
+			if(!gfnIsNull(returnObj))
+				break;
+		}  else if(o_components[i] instanceof Tab) {
+			returnObj = gfnGetTabComponent(componentId, o_components[i].components);
+			if(!gfnIsNull(returnObj))
+				break;
+		}
+	}
+	return returnObj;
+}
+
+/********************************************************************************
+ * Function Name	: gfnGetChildComponent										*
+ * Desc				: gfnGetComponent에서 사용하는 내부함수(private function)*
+ *					  Div component 하위에 존재하는 컴포넌트를 검색			*
+ * Parameter		: strID(Component의 ID값), obj(Component List)				*
+ * Return 			: Component Object											* 
+ ********************************************************************************/ 
+function gfnGetChildComponent(strID, obj){
+	var o_components = obj;	
+	var returnObj = null;
+	for(var i=0; i < o_components.length; i++){
+		if (
+			o_components[i] instanceof Combo    || o_components[i] instanceof CheckBox || 
+			o_components[i] instanceof ListBox  || o_components[i] instanceof Edit     || 
+			o_components[i] instanceof MaskEdit || o_components[i] instanceof TextArea || 
+			o_components[i] instanceof Radio    || o_components[i] instanceof Calendar ||  
+			o_components[i] instanceof Static   || o_components[i] instanceof Grid     ||
+			o_components[i] instanceof GroupBox
+		   ){
+			var s_id  = o_components[i].name;
+			if ( s_id == strID){
+				return o_components[i];
+			}
+		} else if (o_components[i] instanceof Div){
+			returnObj = gfnGetChildComponent(strID, o_components[i].components);
+			if(!gfnIsNull(returnObj))
+				break;
+		}  else if(o_components[i] instanceof Tab) {
+			returnObj = gfnGetTabComponent(strID, o_components[i].components);
+			if(!gfnIsNull(returnObj))
+				break;
+		}
+	}
+	return returnObj;
+}
+
+/********************************************************************************
+ * Function Name	: gfnGetTabComponent										*
+ * Desc				: gfnGetComponent에서 사용하는 내부함수(private function)*
+ *					  Tab component 하위에 존재하는 컴포넌트를 검색			*
+ * Parameter		: strID(Component의 ID값), obj(Component List)				*
+ * Return 			: Component Object											* 
+ ********************************************************************************/ 
+function gfnGetTabComponent(strID, obj){
+	var returnObj = null;
+	for(var i = 0 ; i < obj.length ; i++){
+		var s_id = obj[i].name;
+		if ( s_id == strID){
+			return obj[i];
+		}
+		returnObj = gfnGetChildComponent(strID, obj[i].components);
+		if(!gfnIsNull(returnObj))
+			break;
+	}
+	return returnObj;
+}
+ 
+/********************************************************************************
+ * Function Name	: gfnGetComponentValue										*
+ * Desc				: 프로그램의 특정 컴포넌트의 Attribute값을 찾는 함수	*
+ *					  (ex) gfnGetComponent("stInputBox", "value")				*
+ * Parameter		: strID(Component의 ID값), strAttributeNM(Attribute Name)	*
+ * Return 			: String													* 
+ ********************************************************************************/ 
+function gfnGetComponentValue(strID, strAttributeNM)
+{
+	var s_attVal;
+	var o_components = this.components;
+	
+	for(var i= 0; i < o_components.length; i++){
+		
+		if (
+			o_components[i] instanceof Combo    || o_components[i] instanceof CheckBox || 
+			o_components[i] instanceof ListBox  || o_components[i] instanceof Edit     || 
+			o_components[i] instanceof MaskEdit || o_components[i] instanceof TextArea || 
+			o_components[i] instanceof Radio    || o_components[i] instanceof Calendar || 
+			o_components[i] instanceof Static   || o_components[i] instanceof Grid
+		   ){
+			var s_id  = o_components[i].name;
+			if ( s_id == strID){
+				s_attVal = eval("o_components[i]."+strAttributeNM);
+				s_attVal = gfnBlankStr(s_attVal);
+				return s_attVal;
+			}			
+		}else if (o_components[i] instanceof Div){
+			s_attVal = call_gfnGetComponentChildDiv(strID, strAttributeNM, o_components[i].components);
+			s_attVal = gfnBlankStr(s_attVal);
+			if (s_attVal != "") return s_attVal;
+		}
+	}
+	return gfnBlankStr(s_attVal);
+}
+
+/********************************************************************************
+ * Function Name	: call_gfnGetComponentChildDiv								*
+ * Desc				: gfnGetComponentValue함수에서 내부적으로 사용하는 함수	*
+ * Parameter		: strID(Component의 ID값), strAttributeNM(Attribute Name)	*
+ *					  obj_comList(component list)								*
+ * Return 			: String													* 
+ ********************************************************************************/ 
+function call_gfnGetComponentChildDiv(strID, strAttributeNM, obj_comList){
+	var s_attVal;
+	var o_components = obj_comList;	
+	
+	
+	for(var i=0; i < o_components.length; i++){
+		if (
+			o_components[i] instanceof Combo    || o_components[i] instanceof CheckBox || 
+			o_components[i] instanceof ListBox  || o_components[i] instanceof Edit     || 
+			o_components[i] instanceof MaskEdit || o_components[i] instanceof TextArea || 
+			o_components[i] instanceof Radio    || o_components[i] instanceof Calendar ||  
+			o_components[i] instanceof Static
+		   ){
+			var s_id  = o_components[i].name;
+			//trace("s_id:"+s_id+"/strID:"+strID);
+			if ( s_id == strID){
+				
+				s_attVal = eval("o_components[i]."+strAttributeNM);
+				s_attVal = gfnBlankStr(s_attVal);
+				return s_attVal;
+			}
+		}else if (o_components[i] instanceof Div){
+			s_attVal = call_gfnGetComponentChildDiv(strID, strAttributeNM, o_components[i].components);	
+			s_attVal = gfnBlankStr(s_attVal);
+			if (s_attVal != "") return s_attVal;
+		}
+	}
+	return gfnBlankStr(s_attVal)
+}
+
+/********************************************************************************
+ * Function Name	: gfnGetFrame												*
+ * Desc				: 주어진 ID값을 가지는 Frame을 찾아 반환하는 함수		*
+ * Parameter		: strID(Frame의 ID값)										*
+ * Return 			: Frame object												* 
+ ********************************************************************************/ 
+function gfnGetFrame(strId){
+	var frameList = application.mainframe.all;
+	var returnFrame = null;
+	
+	for(var i = 0 ; i < frameList.length ; i++){
+		if(frameList[i].name == strId){
+			return frameList[i];
+		} else if(!(frameList[i] instanceof ChildFrame) && (frameList[i].frames.length != 0)){
+			returnFrame = gfnGetChildFrame(strId, frameList[i].frames);
+			
+			if(!gfnIsNull(returnFrame)){
+				break;
+			}
+		}
+		
+	}
+	
+	return returnFrame;
+}
+
+/********************************************************************************
+ * Function Name	: gfnGetChildFrame											*
+ * Desc				: gfnGetFrame에서 내부적으로 사용하는 함수				*
+ *					  ChildFrame등 하위 Frame을 가질 경우 재귀적 호출		*
+ * Parameter		: strID(Frame의 ID값), obj(Frame object)					*
+ * Return 			: Frame object												* 
+ ********************************************************************************/
+function gfnGetChildFrame(strId, obj){
+	var frameList = obj;
+	var returnFrame = null;
+	var arrayLength = frameList.length;
+	
+	for(var i = 0 ; i < arrayLength ; i++){
+		if(frameList[i].name == strId){
+			return frameList[i];
+		} 
+		else if(!(frameList[i] instanceof ChildFrame) && (frameList[i].frames.length != 0)){
+			returnFrame = gfnGetChildFrame(strId, frameList[i].frames);
+			
+			if(!gfnIsNull(returnFrame)){
+				break;
+			}
+		}
+	}
+	
+	return returnFrame;
+}
+]]></Script>

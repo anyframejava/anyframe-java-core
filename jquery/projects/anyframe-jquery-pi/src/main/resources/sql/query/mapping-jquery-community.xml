@@ -1,0 +1,44 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<queryservice xmlns="http://www.anyframejava.org/schema/query/mapping" 
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" 
+	xsi:schemaLocation="http://www.anyframejava.org/schema/query/mapping http://www.anyframejava.org/schema/query/mapping/anyframe-query-mapping-1.0.xsd ">
+
+	<queries>
+		<query id="updateJqueryCommunity">
+			<statement>
+				UPDATE JQUERY_COMMUNITY
+				SET COMMUNITY_NAME = :vo.communityName,
+					COMMUNITY_DESC = :vo.communityDesc
+				WHERE COMMUNITY_ID = :vo.communityId
+			</statement>
+		</query>
+		<query id="findJqueryCommunityList" isDynamic="true">
+			<statement>
+			<![CDATA[
+				SELECT 
+					community.COMMUNITY_ID, community.COMMUNITY_NAME, community.COMMUNITY_DESC, community.CATEGORY_ID, community.REG_ID, community.REG_DATE
+				FROM JQUERY_COMMUNITY community
+			]]>
+			</statement>
+			<result class="org.anyframe.plugin.jquery.communityfinder.domain.Community"/>
+		</query>
+		<query id="findJqueryCommunityByPk">
+			<statement>
+				SELECT 
+					community.COMMUNITY_ID, community.COMMUNITY_NAME, community.COMMUNITY_DESC, community.CATEGORY_ID, community.REG_ID, community.REG_DATE
+				FROM JQUERY_COMMUNITY community
+				WHERE COMMUNITY_ID = :vo.communityId
+			</statement>
+			<result class="org.anyframe.plugin.jquery.communityfinder.domain.Community"/>
+		</query>
+        <query id="findDropDownJqueryCommunityNameList" isDynamic="true">
+            <statement>
+                SELECT
+                COMMUNITY_ID, COMMUNITY_NAME
+                FROM JQUERY_COMMUNITY
+                ORDER BY COMMUNITY_NAME
+            </statement>
+            <result class="org.anyframe.plugin.jquery.communityfinder.domain.Community"/>
+        </query>
+	</queries>
+</queryservice>

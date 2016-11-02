@@ -1,0 +1,262 @@
+<chapter id="core_logging_configuration">
+	<title>Configuration</title>
+    <para>
+    	이번 절에서는 log4j.xml 파일을 구성하는 Tag 중, 주로 사용될 일부 Tag에 대해 설명하고자 한다.
+    	보다 자세한 내용에 대해서는 <ulink url="http://logging.apache.org/log4j/">Log4j </ulink>를
+   		참조하도록 한다. log4j.xml 파일의 root tag인 <![CDATA[<log4j:configuration>]]>은 하위에
+   	 	appender, logger, root등의 tag를 가질 수 있다.
+   	 </para>
+
+  	<informaltable>
+  		<caption>log4j.xml를 구성하는 Tag 목록</caption>
+		<tgroup cols="3">
+       		<colspec colnum="1" colname="col1" colwidth="2*"/>
+    		<colspec colnum="2" colname="col2" colwidth="7*"/>
+       		<colspec colnum="3" colname="col3" colwidth="1*"/>       
+       		<thead>
+          		<row>
+	           	 	<entry align="center">Tag 명</entry>
+
+	            	<entry align="center">설명</entry>
+	
+    	        	<entry align="center">필수 여부</entry>
+      	 	   	</row>
+       		 </thead>
+
+        	<tbody>
+          		<row>
+            		<entry>appender</entry>
+
+           			<entry>로그가 출력될 대상과 방법을 정의한다. 여러 appender 정의 가능.</entry>
+
+            		<entry align="center">N</entry>
+          		</row>
+
+          		<row>
+            		<entry>logger</entry>
+
+            		<entry>어플리케이션에서 사용될 Logger를 정의한다. 여러 logger 정의 가능</entry>
+
+            		<entry align="center">N</entry>
+          		</row>
+
+          		<row>
+            		<entry>root</entry>
+	
+            		<entry>모든 logger의 상위 logger를 정의한다.</entry>
+
+            		<entry align="center">N</entry>
+          		</row>
+        	</tbody>
+      	</tgroup>
+    </informaltable>
+
+    <para>
+		위 표에서 열거한 각 Tag에 대해 보다 자세히 알아보도록 하자.
+	</para>
+
+	<section id="core_logging_configuration_appender">
+		<title>appender</title>
+
+     	<para>
+			Log4j는 다양한 로그 방식을 지원한다. 가장 단순한 Console부터 시작해서 파일, DB, SMTP 등의 방식들을
+			지원한다.
+    	</para>
+
+    	<itemizedlist>
+			<listitem>
+				<para>
+					<emphasis role="bold">org.apache.log4j.ConsoleAppender
+   					</emphasis>: Console 화면으로 출력하기 위한 Appender. 다음은 log4j.xml 파일 내의
+      				ConsoleAppender에 대한 속성 정의 내용이다. 
+        			<programlisting language="xml"><![CDATA[<appender name="console" class="org.apache.log4j.ConsoleAppender">
+    <layout class="org.apache.log4j.PatternLayout">
+        <param name="ConversionPattern" value="%d %p [%c] - %m%n" />
+    </layout>   
+</appender>]]></programlisting>
+				</para>
+        	</listitem>
+
+        	<listitem>
+				<para>
+					<emphasis role="bold">org.apache.log4j.FileAppender
+          			</emphasis>: 특정 파일에 로그를 출력하기 위한 Appender로 하위에 File, Append와 같은
+          			parameter를 정의할 수 있다. 다음은 log4j.xml 파일 내의 FileAppender에 대한 속성 정의
+         			내용이다.
+         			<programlisting language="xml"><![CDATA[<appender name="file" class="org.apache.log4j.FileAppender">
+    <!-- 로그 파일명 정의를 위한 parameter -->
+    <param name="File" value="./logs/file/sample.log"/>
+    <!-- 이전 로그 파일에 로그를 덧붙여 쓸 것인지를 정의하기 위한 parameter -->
+    <param name="Append" value="true"/>    	  
+    <layout class="org.apache.log4j.PatternLayout">
+        <param name="ConversionPattern" value="%d %p [%c] - %m%n" />
+    </layout>   
+</appender>]]></programlisting>
+				</para>
+        	</listitem>
+						
+        	<listitem>
+				<para>
+					<emphasis role="bold">org.apache.log4j.RollingFileAppender
+          			</emphasis>: FileAppender는 지정한 파일에 로그가 계속 남으므로 한 파일의 크기가 지나치게 커질 수
+          			있으며 계획적인 로그 관리가 어렵다. 따라서 파일의 크기 또는 파일 백업 인덱스 등의 지정을 통해 특정 크기 이상 파일의
+         			크기가 커지게 되면 기존 파일을 백업 파일로 바꾸고 처음부터 다시 로깅을 시작한다. 하위에 File, Append,
+         			MaxFileSize, MaxBackupIndex와 같은 parameter를 정의할 수 있다. 다음은 log4j.xml
+          			파일 내의 RollingFileAppender에 대한 속성 정의 내용이다.
+          			<programlisting language="xml"><![CDATA[<appender name="rollingFile" class="org.apache.log4j.RollingFileAppender">
+    <!-- 로그 파일명 정의를 위한 parameter -->
+    <param name="File" value="./logs/rolling/sample.log"/>
+    <!-- 이전 로그 파일에 로그를 덧붙여 쓸 것인지를 정의하기 위한 parameter -->
+    <param name="Append" value="true"/> 
+    <!-- 로그 파일의 최대 크기를 정의하기 위한 parameter -->    
+    <param name="MaxFileSize" value="1KB"/>    
+    <!-- 로그 파일 백업 인덱스를 정의하기 위한 parameter -->
+    <param name="MaxBackupIndex" value="2"/>    
+    <layout class="org.apache.log4j.PatternLayout">
+        <param name="ConversionPattern" value="%d %p [%c] - %m%n" />
+    </layout>   
+</appender>]]></programlisting></para>
+	        </listitem>
+	        <listitem>
+				<para>
+					<emphasis role="bold">org.apache.log4j.DailyRollingFileAppender
+   					</emphasis>: 로그 파일을 설정한 스케줄에 맞춰 생성하기 위한 Appender로, 매월 첫번째날, 매주 시작일, 매일 자정 및 정오, 매 시간마다 등으로 설정이 
+   					가능하다. DailyRollingFileAppender 파일에서 사용할 수 있는 몇가지 날짜 포맷은 다음과 같다. 
+   					<itemizedlist>
+	   					<listitem><para>'.'yyyy-MM : 매달 첫번째 날에 로그파일 변경</para></listitem>
+	   					<listitem><para>'.'yyyy-ww : 매주 시작시 로그파일 변경</para></listitem>
+	   					<listitem><para>'.'yyyy-MM-dd : 매일 자정에 로그파일 변경</para></listitem>
+	   					<listitem><para>'.'yyyy-MM-dd-a : 자정과 정오에 로그파일 변경</para></listitem>
+	   					<listitem><para>'.'yyyy-MM-dd-HH : 매시간의 시작마다 로그파일 변경</para></listitem>
+	   					<listitem><para>'.'yyyy-MM-dd-HH-mm : 매분마다 로그파일 변경</para></listitem>
+   					</itemizedlist>
+   					보다 자세한 사항은 <ulink url="http://logging.apache.org/log4j/1.2/apidocs/index.html">Log4j API</ulink>를 참조한다.
+   					다음은 log4j.xml 파일 내의 DailyRollingFileAppender에 대한 속성 정의 내용이다. 
+        			<programlisting language="xml"><![CDATA[<appender name="dailyRollingFile" class="org.apache.log4j.DailyRollingFileAppender">
+    <!-- 로그 파일명 정의를 위한 parameter -->
+    <param name="File" value="./logs/daily/sample"/>
+    <!-- 로그 파일 생성 스케줄을 위한 parameter -->
+    <param name="DatePattern" value="'.'yyyy-MM-dd"/>
+    <!-- 이전 로그 파일에 로그를 덧붙여 쓸 것인지를 정의하기 위한 parameter -->
+    <param name="Append" value="true"/>
+    <layout class="org.apache.log4j.PatternLayout">
+        <param name="ConversionPattern" value="%d %p [%c] - %m%n"/>
+    </layout>
+</appender>]]></programlisting>
+				</para>
+        	</listitem>        	
+        	<listitem>
+			<para>
+          		<emphasis role="bold">org.apache.log4j.jdbc.JDBCAppender
+          		</emphasis> : DB에 로그를  출력하기 위한 Appender로 하위에 Driver, URL, User, Password, Sql과 같은
+         	 	parameter를 정의할 수 있다. 다음은 log4j.xml 파일 내의 JDBCAppender에 대한 속성 정의
+				내용이다. 
+				<programlisting language="xml"><![CDATA[<appender name="db" class="org.apache.log4j.jdbc.JDBCAppender">
+    <!-- JDBC Driver를 정의하기 위한 parameter -->
+    <param name="Driver" value="org.hsqldb.jdbcDriver"/>
+    <!-- DB URL을 정의하기 위한 parameter -->
+    <param name="URL" value="jdbc:hsqldb:hsql://localhost/sampledb"/>
+    <!-- DB User를 정의하기 위한 parameter -->
+    <param name="User" value="sa"/>
+    <!-- DB Password를 정의하기 위한 parameter -->
+    <param name="Password" value=""/>
+    <!-- 로그를 남길때 수행할 쿼리를 정의하기 위한 parameter -->
+    <param name="Sql" value="insert into STMR_LOG (msg)
+            values('%d %p [%c] - %m%n')"/>
+</appender>]]></programlisting>
+				</para>
+        	</listitem>
+      	</itemizedlist>
+
+      	<para>
+      		<emphasis role="bold">Appender Layout</emphasis>
+      	</para>
+
+      	<para>
+      		로그를 남길때 단순한 메시지 외에도 현재 로그 대상의 쓰레드명, 로그 시간 등 많은 정보들을 조합할 수 있다.
+      		Layout에는 org.apache.log4j.HTMLLayout, org.apache.log4j.PatternLayout,
+      		org.apache.log4j.SimpleLayout, org.apache.log4j.xml.XMLLayout 등이 있다. 이중
+      		가장 많이 사용하는 Layout은 PatternLayout으로서 C 함수의 printf처럼 다양한 로그 메시지 조합을 만들어 낼
+      		수 있다.
+      	</para>
+      			
+      	<itemizedlist>
+			<listitem>
+          		<para>
+          			%p : debug, infor, warn, error, fatal 등의 Priority 출력
+         		</para>
+        	</listitem>
+
+        	<listitem>
+          		<para>
+          			%m : debug(), info(), warn(), error(), fatal() 등의 함수로 지정한 로그
+         			내용 출력
+         		</para>
+        	</listitem>
+
+        	<listitem>
+          		<para>
+          			%d : 로깅 이벤트가 발생한 시간 기록. 출력 포맷은 %d 후의 {}내에 지정된 형태를 따른다.
+          			%d{HH:mm:ss, SSS} 라든가 %d{yyyy MMM dd HH:mm:ss, SSS}와 같은 형태로 사용할 수
+          			있다. Java의 SimpleDateFormat의 형식을 따라 정의할 수 있다.
+          		</para>
+        	</listitem>
+
+        	<listitem>
+          		<para>
+          			%t : 로깅 이벤트가 발생된 쓰레드의 이름 출력
+          		</para>
+        	</listitem>
+
+        	<listitem>
+          		<para>
+          			%% : % 표시를 출력하기 위해 사용
+          		</para>
+        	</listitem>
+
+        	<listitem>
+          		<para>
+          			%n : 플랫폼 종속적인 개행 문자 출력. \r\n 또는 \n이 될 것이다.
+          		</para>
+        	</listitem>
+      	</itemizedlist>
+	    <warning>
+	    	<title>log4j-1.2.x 버전 사용 시 유의점</title>
+	    	<para>
+	    		JDBCAppender를 사용할 때 log4j-1.3.x 버전에서는 Connection pool에서 connection을 얻어오지만 log4j-1.2.x 버전에서는 
+	    		매번 connection 객체를 생성하게  되므로 리소스 문제가 생길 수 있음을 유의한다.
+	    	</para>
+	    </warning>      	
+    </section>
+
+	<section id="core_logging_configuration_logger">
+      	<title>logger</title>
+		<para>
+      		로깅 이벤트 발생시 같은 이름으로 선언된 logger를 찾아 해당 logger에게 로그 메시지를 보내고
+      		additivity가 true일 경우, 상위 logger에게도 로그 메시지를 보낸다. 다음은 log4j.xml 파일 내의
+      		logger에 대한 속성 정의 내용이다. 
+      		<programlisting language="xml"><![CDATA[<!-- 해당 logger명이 anyframe.services로 시작할 경우
+          Console에 DEBUG level로 로그를 남긴다.-->
+<logger name="anyframe.services">
+    <!-- DEBUG, INFO, WARN, ERROR, FATAL, OFF 중 택일 -->
+    <level value="DEBUG"/>
+    <!-- 여러 appender-ref 정의 가능 -->
+    <appender-ref ref="console"/>
+</logger>]]></programlisting>
+		</para>
+    </section>
+    
+ 	<section id="core_logging_configuration_root">
+		<title>root</title>
+
+		<para>
+      		해당 logger가 존재하지 않거나 상위 logger가 존재하지 않을 경우 모든 로그는 root logger의 정책에
+      		따라 출력된다. 다음은 log4j.xml 파일 내의 root에 대한 속성 정의 내용이다. 
+      		<programlisting language="xml"><![CDATA[<root>
+    <level value="INFO"/>
+    <appender-ref ref="console"/>
+</root>]]></programlisting>
+		</para>
+ 	</section>
+ 	
+</chapter>

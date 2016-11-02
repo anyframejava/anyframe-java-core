@@ -1,0 +1,1191 @@
+<chapter id="core_spring_annotation">
+	<title>Annotation</title>
+
+	<para>
+		Spring XML 만을 독립적으로 사용할 경우 때때로 방대하고 복잡한 속성 파일들로 인해 시스템 개발 및 유지보수의 지연을 초래할 가능성이 높아진다. 이러한 문제점을 해결하기 위해 
+		Spring Framework에서는 별도 XML 정의없이도 사용 가능한 annotation 지원에 주력하고 있는 실정이다. Spring 2.0에서는 @Transactional, @Required, @PersistenceConetxt
+		/@PersistenceUnit과 같은 Transaction 관리 또는 Persistence 관리 영역에 대한 annotation들을 지원했다면 Spring 2.5부터는 Bean 또는 Dependency 정의 등과 같이 Spring 
+		속성 정의 XML과 직접적으로 관련된 annotation들을 선보이고 있다. 
+		또한 Spring 3에서는 Spring 특화된 Annotation 외에 Dependency Injection에 관한 표준 Annotation인 JSR-330(Dependency Injection for Java) Annotation 사용을 
+		지원하기 시작했다. 본 문서에서는 annotation 사용 용도를 Bean Management, Dependency Injection, Life Cycle로 구분하고 각각의 경우에 따른 사용법에 대해 상세히 살펴보도록 하자.
+ 	</para>
+
+  	<para>
+  		기본적으로, Annotation은 JDK 1.5 이상에서 활용이 가능하며, Spring Container가 Annotation을 인식할 수 있도록 하기 
+  		위해서는 속성 정의 XML 파일 내에 다음과 같은 정의가 추가되어야 함에 유의해야 한다.
+        <programlisting language="xml"><![CDATA[<beans xmlns="http://www.springframework.org/schema/beans"
+    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"]]>
+    <emphasis role="bold"><![CDATA[xmlns:context="http://www.springframework.org/schema/context"]]></emphasis>
+    <![CDATA[xsi:schemalLocation="http://www.springframework.org/schema/beans
+        http://www.springframework.org/schema/beans/spring-beans-4.0.xsd>]]>
+        <emphasis role="bold">http://www.springframework.org/schema/context</emphasis>
+        <emphasis role="bold">http://www.springframework.org/schema/context/spring-context-4.0.xsd"></emphasis>
+        <emphasis role="bold"><![CDATA[<context:annotation-config/>]]></emphasis>	                            
+<![CDATA[</beans>]]></programlisting></para>
+
+	<itemizedlist>
+    	<listitem>
+      		<para>
+      			<emphasis role="bold">XML vs. Annotation</emphasis></para>
+
+      		<para>
+      			다음은 특정 서비스를 구성하는 구현 클래스, DAO 클래스, 속성 정의 XML에 대해 XML을 이용하는 경우와
+      			Annotation을 이용하는 경우로 나누어 비교해 본 그림이다.
+      		</para>
+
+			<mediaobject>
+				<imageobject>
+          			<imagedata align="center" fileref="../image/core/spring/annotation_comp.jpg" />
+				</imageobject>
+				<textobject>
+					<phrase>특정 서비스를 구성하는 UserServiceImpl, UserDAO, 속성 정의 XML에 대해 XML을 이용하는 경우와
+      			Annotation을 이용하는 경우로 나누어 비교해 본 그림으로써 Annotation을 이용하는 경우에는 @Service, @Resource, @Repository만을 이용하여
+      			Bean 간의 참조 관계를 정의하고 있으며 XML을 이용하는 경우에는 참조할 Bean에 대해 Setter 메소드를 구현해주고, XML 정의시 Bean 간의 참조 관계를 
+      			지정해 주어야 함을 표현하고 있다.</phrase>
+				</textobject>
+			</mediaobject>
+		</listitem>
+	</itemizedlist>
+
+	<section id="core_spring_annotation_mc">
+		<title>Bean Management</title>
+
+		<para>
+			Stereotype Annotation을 사용하면 Spring Framework의 컨테이너에 의해 관리되어야 하는 Bean들을 정의할 수 있다. 
+			일반적으로 Parent Stereotype Annotation인 @Component를 활용하면 모든 Bean에 대한 정의가 가능하다. 그러나 
+			Spring Framework에서는 레이어별로 구성 요소를 구분하여 다음과 같은 Annotation을 사용할 것을 권장하고 있고, 향후 
+			지속적으로 레이어별 특성을 반영할 수 있는 속성들을 추가해 나아갈 예정이다. 
+    	</para>
+
+    	<itemizedlist>
+      		<listitem>
+        		<para><emphasis role="bold">@Service</emphasis></para>
+
+        		<para>비즈니스 로직을 처리하는 클래스를 정의하는데 사용한다.</para>
+      		</listitem>
+    	</itemizedlist>
+
+    	<itemizedlist>
+      		<listitem>
+        		<para><emphasis role="bold">@Controller</emphasis></para>
+
+        		<para>
+        			프리젠테이션 레이어를 구성하는 Controller 클래스를 정의하는데 사용하며, Spring MVC 기반인 경우에 한해 활용 
+        			가능하다.
+        		</para>
+      		</listitem>
+
+      		<listitem>
+				<para><emphasis role="bold">@Repository</emphasis></para>
+
+				<para>
+					데이터 접근 로직을 처리하는 클래스를 정의하는데 사용하며, 퍼시스턴스 레이어에서 발생한 Exception에 대한 
+					Translation이 지원된다.
+				</para>
+				<note>
+					<title>[참고] Persistence Layer Exception Translation</title>
+					<para>
+						DAO 구현 시에 Hibernate, JPA, 또는 JDO 같은 프레임워크들을 사용할 경우 
+						각 기술들이 사용하는 고유의 Exception(예: HibernateException, PersistenceException, JDOException 등)이 Run-time시에 발생할 수 있다.
+						Spring에서는 'PersistenceExceptionTranslator'를 제공하여 
+						Data Access 프레임워크 고유 Exception을 Spring의 DataAccessException 타입의 Exception으로 변환해줌으로써, 
+						어플리케이션 코드에서 특정 Data Access 프레임워크의 Exception API에 종속되지 않고 
+						일관성 있게 Exception 처리를 할 수 있도록 도와준다.
+					</para>
+				</note>
+			</listitem>
+		</itemizedlist>
+		
+    	<para>
+    		JSR-330에서는 컴포넌트 식별을 위해 @Named Annotation을 제공하고 있으며 Spring 3에서는 특정 Bean 클래스에 대해 @Named를 부여한 경우 
+    		Stereotype Annotation을 부여한 경우와 마찬가지로 컨테이너에 의해 해당 Bean이 관리될 수 있도록 지원한다. 
+    		단, @Named를 부여한 Bean에 대해서는 기본 Scope인 'Singleton'으로 적용되며 다른 유형의 Scope 처리는 향후 릴리즈 시에 반영될 예정이다.
+    	</para>
+    	
+    	<para>
+    		본 문서에서는 위에서 나열한 annotation을 사용하는 방법에 대해서 자세히 살펴보도록 한다.    	
+    	</para>
+
+		<section id="core_spring_annotation_mc_auto">
+      		<title>Auto Detecting</title>
+
+			<para>
+				Stereotype Annotation을 사용하여 Bean을 정의하면 XML에 따로 Bean 정의를 명시하지 않아도 Spring Container가 
+				Bean을 인식하고 관리할 수 있다. 단, 자동 인식이 되기 위해서는 서비스 속성 정의 XML 내에 <emphasis role="bold">
+				<![CDATA[<context:component-scan/>]]></emphasis> 을 정의해 주어야 한다. 이 설정을 추가하면 Spring Container는 
+				클래스패스 상에 존재하는 클래스들을 스캔하여 Stereotype Annotation이 정의된 클래스들 Bean으로 인식하고 자동으로 
+				등록한다.
+                <programlisting language="xml"><![CDATA[<beans xmlns="http://www.springframework.org/schema/beans"
+    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"]]>
+    <emphasis role="bold"><![CDATA[xmlns:context="http://www.springframework.org/schema/context"]]></emphasis>
+    <![CDATA[xsi:schemalLocation="http://www.springframework.org/schema/beans
+        http://www.springframework.org/schema/beans/spring-beans-4.0.xsd]]>
+        <emphasis role="bold">http://www.springframework.org/schema/context</emphasis>
+        <emphasis role="bold">http://www.springframework.org/schema/context/spring-context-4.0.xsd"></emphasis>
+    <emphasis role="bold"><![CDATA[<context:component-scan base-package="org.anyframe.plugin" />]]></emphasis>	                            
+<![CDATA[</beans>]]></programlisting>
+			</para>
+
+      		<para>
+      			<![CDATA[<context:component-scan />]]>을 정의한 경우 Annotation 인식을 위한 설정<emphasis role="bold">
+      			<![CDATA[<context:annotation-config/>]]></emphasis> 을  별도로 추가하지 않아도 된다.
+      		</para>
+
+      		<para>
+      			다음은 서비스 레이어의 구성 요소인 MovieServiceImpl 클래스에 대해 @Service라는 Stereotype Annotation을 사용한 
+      			예이다. 
+                <programlisting language="java"><emphasis role="bold">@Service</emphasis><![CDATA[
+public class MovieServiceImpl implements MovieService {
+	@Inject
+	@Named("coreMovieDao")
+	private MovieDao movieDao;
+}]]></programlisting>
+			</para>
+
+      		<para>
+      			위 예제에서는 해당 클래스의 클래스명(소문자로 시작)이 Bean name으로 셋팅되어 해당 Bean을 찾을 때
+      			<emphasis role="bold">movieServiceImpl</emphasis> 이라는 문자열을 사용해야 한다.
+                <programlisting language="java">MovieService service = (MovieServiceImpl) context.getBean(<emphasis role="bold">"movieServiceImpl"</emphasis>);</programlisting>
+        	</para>
+
+      		<para>
+      			해당 Annotation에 속성을 부여하면, 원하는 Bean name을 지정하는 것 또한 가능하다.
+                <programlisting language="java"><emphasis role="bold">@Service("movieServiceImpl")</emphasis><![CDATA[
+public class MovieServiceImpl implements MovieService {
+	@Inject
+	@Named("coreMovieDao")
+	private MovieDao movieDao;
+}]]></programlisting>
+			</para>
+
+			<para>
+      			이 경우에 해당되는 Bean을 찾기 위해서는 속성으로 정의한 Name을 활용해야 한다. 
+                <programlisting language="java"><![CDATA[MovieService service = (MovieServiceImpl) context.getBean(]]><emphasis role="bold">"movieServiceImpl"</emphasis>)</programlisting>
+        	</para>
+		</section>
+
+		<section id="core_spring_annotation_mc_filter">
+			<title>Using Filters to customize scanning</title>
+
+      		<para>
+      			<![CDATA[<context:component-scan>]]>의 여러 속성들을 이용하면 검색 대상의 범위를 조정하여 자동으로 검색되어 
+      			Bean으로 등록되는 클래스들을 filtering 할 수 있다. base-package 속성은 <![CDATA[<context:component-scan>]]>
+      			내에 정의 가능한 속성으로 검색 대상 패키지를 정의하는 용도로 사용된다. 이외에도 <![CDATA[<context:component-scan>]]>
+      			은 하위 element로 <![CDATA[<context:include-filter>]]>, <![CDATA[<context:exclude-filter>]]>를 가질 수 있는데, 
+      			다양한 Filter Type(type)에 해당하는 표현식(expression)을 정의함으로써 이에 해당하는 클래스들을 포함 또는 제외시킬 
+      			수가 있다. 다음은 <![CDATA[<context:include-filter>]]>, <![CDATA[<context:exclude-filter>]]> 사용 예이다. 
+                <programlisting language="xml"><![CDATA[<context:component-scan base-package="org.anyframe.plugin">]]>
+    <![CDATA[<context]]><emphasis role="bold"><![CDATA[:include-filter type="regex" expression=".*Stub.*Repository">]]></emphasis>
+    <![CDATA[<context]]><emphasis role="bold"><![CDATA[:exclude-filter type="annotation" 
+        expression="org.springframework.stereotype.Repository"/>]]></emphasis>
+<![CDATA[</context:component-scan>]]></programlisting>
+			</para>
+
+      		<para>
+				정의 가능한 Filter Type은 4가지이며, 다음과 같다.
+			</para>
+
+			<informaltable>
+			    <caption>Filter Type 목록</caption>
+				<tgroup cols="2">
+					<colspec colnum="1" colname="col1" colwidth="3*"/>
+        			<colspec colnum="2" colname="col2" colwidth="7*"/>        
+          			<thead>
+						<row>
+              				<entry align="center">Filter Type</entry>
+              				<entry align="center">Example Expressions</entry>
+            			</row>
+          			</thead>
+
+          			<tbody>
+            			<row>
+              				<entry>
+                				<emphasis role="bold">annotation</emphasis>
+              				</entry>
+
+              				<entry>org.example.SomeAnnotation</entry>
+            			</row>
+
+            			<row>
+              				<entry>
+                				<emphasis role="bold">assignable</emphasis>
+              				</entry>
+
+              				<entry>org.example.SomeClass</entry>
+            			</row>
+
+            			<row>
+							<entry>
+                				<emphasis role="bold">regex</emphasis>
+              				</entry>
+
+              				<entry>org\.example\.Default.*</entry>
+            			</row>
+
+            			<row>
+              				<entry>
+                				<emphasis role="bold">aspectj</emphasis>
+              				</entry>
+
+							<entry>org.example..*Service+</entry>
+            			</row>
+          			</tbody>
+        		</tgroup>
+			</informaltable>
+
+      		<note>
+      			Bean 정의를 위해 Annotation을 부여한 클래스를 auto detection하는 디폴트 설정을 사용하지 않고자 하는
+      			경우에는 <![CDATA[<context:component-scan />]]>태그에 <emphasis role="bold">use-default-filters="false" 
+      			</emphasis>속성을 추가하면 된다.
+      		</note>
+		</section>
+
+		<section id="core_spring_annotation_mc_scope">
+			<title>Scope Definition</title>
+
+			<para>
+				<link linkend="core_spring_ioc_extensions_scope">Spring Framework에서는 Bean의 인스턴스 생성 메커니즘
+				에 따라 5가지 Scope</link> 을 제공하는데 이러한 Bean Scope을 정의하기 위해서는 다음과 같이 @Scope을 사용하도록 한다. 
+                <programlisting language="java"><emphasis role="bold"><![CDATA[@Scope("prototype")]]></emphasis>
+<![CDATA[@Service("movieServiceImpl")
+public class MovieServiceImpl implements MovieService {
+	@Inject
+	@Named("coreMovieDao")
+	private MovieDao movieDao;
+}]]></programlisting>
+			</para>
+		</section>
+	</section>
+
+	<section id="core_spring_annotation_di">
+		<title>Dependency Injection</title>
+
+		<para>
+			특정 Bean의 기능 수행을 위해 다른 Bean을 참조해야 하는 경우 사용하는 Annotation으로는 @Autowired, @Resource 그리고 @Inject가 있다. 
+		</para>
+
+		<itemizedlist>
+			<listitem>
+				<para><emphasis role="bold">@Autowired</emphasis></para>
+
+				<para>
+					Spring Framework에서 지원하는 Dependency 정의 용도의 Annotation으로, Spring
+					Framework에 종속적이긴 하지만 정밀한 Dependency Injection이 필요한 경우에 유용하다.
+				</para>
+			</listitem>
+
+			<listitem>
+ 				<para><emphasis role="bold">@Resource</emphasis></para>
+
+				<para>
+					JSR-250 표준 Annotation으로 Spring Framework 2.5.* 부터 지원하는 Annotation이다.
+					@Resource는 JNDI 리소스(datasource, java messaging service destination or environment entry)와 연관지어 생각할 수 있으며, 
+					특정 Bean이 JNDI 리소스에 대한 Injection을 필요로 하는 경우에는 @Resource를 사용할 것을 권장한다.
+				</para>
+      		</listitem>
+      		
+      		<listitem>
+      			<para><emphasis role="bold">@Inject</emphasis></para>
+      			
+      			<para>
+      				JSR-330 표준 Annotation으로 Spring 3 부터 지원하는 Annotation이다. 특정 Framework에 종속되지
+					않은 어플리케이션을 구성하기 위해서는 @Inject를 사용할 것을 권장한다. @Inject를 사용하기 위해서는 클래스
+					패스 내에 JSR-330 라이브러리인 javax.inject-x.x.x.jar 파일이 추가되어야 함에 유의해야 한다.
+      			</para>
+      		</listitem>
+    	</itemizedlist>
+
+		<para>
+			@Autowired, @Resource, @Inject를 사용할 수 있는 위치는 다음과 같이 약간의 차이가 있으므로 필요에 따라 적절히 사용하면 된다.
+    	</para>
+
+		<itemizedlist>
+			<listitem>
+        		<para>@Autowired : 멤버변수, setter 메소드, 생성자, 일반 메소드에 적용 가능</para>
+			</listitem>
+
+			<listitem>
+				<para>@Resource : 멤버변수, setter 메소드에 적용가능</para>
+			</listitem>
+			
+			<listitem>
+				<para>@Inject : 멤버변수, setter 메소드, 생성자, 일반 메소드에 적용 가능</para>
+			</listitem>
+		</itemizedlist>
+
+		<para>
+			@Autowired, @Resource, @Inject를 멤버변수에 직접 정의하는 경우 별도 setter 메소드는 정의하지 않아도 된다.
+		</para>
+		
+		<section id="core_spring_annotation_di_inject">
+			<title>@Inject</title>
+			<para>
+				Spring의 @Autowired와 동일한 역할을 수행하는 표준 Annotation이다. 단, @Autowired와 달리 'required' 속성을 가지고 있지 않다.
+				또한 @Named와 같이 사용하였을 경우 정의된 Bean 이름을 이용하여 Injection이 수행된다.
+				다음은Core Plugin 설치로 추가된 서비스 클래스 ~/moviefinder/service/impl/MovieServiceImpl.java의 일부로써 @Inject를 사용한 예이다.
+			</para>
+			<programlisting language="java">@Service("movieServiceImpl")
+@Transactional(rollbackFor = { Exception.class }, propagation = Propagation.REQUIRED)
+public class MovieServiceImpl implements MovieService {
+
+    <emphasis role="bold">@Inject</emphasis>
+    @Named("coreMovieDao")
+    private MovieDao movieDao;
+
+    // ...	
+}</programlisting>
+		</section>
+    
+		<section id="core_spring_annotation_di_autowired">
+			<title>@Autowired</title>
+			<para>
+				@Autowired는 Spring에 종속적이긴 하지만, 적용할 수 있는 위치가 @Resource나 @Inject보다 다양하고, 
+				정밀한 Dependency Injection이 필요한 경우에 유용하다.
+			</para>
+
+			<para>
+				다음은 @Autowired를 사용한 예이다.
+                <programlisting language="java"><![CDATA[@Service("movieServiceImpl")]]>
+<![CDATA[public class MovieServiceImpl implements MovieService {]]>
+     <emphasis role="bold"><![CDATA[@Autowired]]></emphasis>
+     <![CDATA[MovieDao movieDao;
+}]]></programlisting></para>
+			<para>@Autowired 적용 위치 별로 사용 예를 들면 다음과 같다.</para>
+			<itemizedlist>
+				<listitem>
+        			<para>
+        				생성자 및 멤버 변수
+                        <programlisting language="java"><![CDATA[@Service("movieServiceImpl")]]>
+<![CDATA[public class MovieServiceImpl implements MovieService {]]>
+    <emphasis role="bold">@Autowired</emphasis>
+    <![CDATA[MovieDao movieDao;
+    MessageSource messageSource;]]>
+		
+    <emphasis role="bold"><![CDATA[@Autowired
+    public MovieServiceImpl(MessageSource messageSource) {]]></emphasis>
+        <![CDATA[this.messageSource = messageSource;
+    }
+}]]></programlisting>
+						위의 예제와 같이 @Autowired를 사용하면 MovieServiceImpl 클래스가 생성될 때 Spring Container에 의해서 
+						MessageSource 타입의 Bean이 생성자의 argument로 자동으로 injection 된다. 또한 movieDao 멤버변수에도 
+						@Autowired가 적용되어 있으므로 MovieDao 타입의 Bean이 자동 injection된다.
+        			</para>
+        		</listitem>
+        
+        		<listitem>
+        			<para>setter 메소드
+                        <programlisting language="java"><![CDATA[@Service("movieServiceImpl")]]>
+<![CDATA[public class MovieServiceImpl implements MovieService {
+    MovieDao movieDao;]]>
+    <emphasis role="bold"><![CDATA[@Autowired
+    public void setMovieDao(MovieDao movieDao) {]]></emphasis>
+        <![CDATA[this.movieDao = movieDao;
+    }
+}]]></programlisting>
+						Spring Container에 의해서 자동으로 setMovieDao() 메소드가 호출되어 MovieDao 타입의 Bean이 
+						movieDao 멤버변수로 injection된다.
+					</para>
+        		</listitem>
+        
+        		<listitem>
+        			<para>
+        				일반 메소드
+                        <programlisting language="java"><![CDATA[@Service("movieServiceImpl")
+public class MovieServiceImpl implements MovieService {
+    MovieDao movieDao;
+    MessageSource messageSource;]]>
+    <emphasis role="bold"><![CDATA[@Autowired
+    public void prepare(MovieDao movieDao, MessageSource messageSource) {]]></emphasis>
+        <![CDATA[this.movieDao = movieDao;
+        this.messageSource = messageSource;
+    }
+}]]></programlisting>
+						@Resource 와는 달리 위의 prepare()와 같은 일반 메소드에도 @Autowired를 적용함으로써  Spring Container에
+						의한 Dependency Injection 처리를 할 수 있다. 위의 예제에서는 MovieDao 타입의 Bean이 movieDao로, 
+						MessageSource 타입의 Bean이 messageSource로 injection된다.
+					</para>
+        		</listitem>
+        
+        		<listitem>
+        			<para>
+        				배열이나 Collection 형태의 멤버변수와 메소드
+                        <programlisting language="java"><![CDATA[@Service("movieServiceImpl")]]>
+<![CDATA[public class MovieServiceImpl implements MovieService {
+    MovieDao movieDao;]]>
+    <emphasis role="bold"><![CDATA[@Autowired
+    Genre[] genres;]]></emphasis>
+}</programlisting>
+		
+                        <programlisting language="java"><![CDATA[@Service("movieServiceImpl")
+public class MovieServiceImpl implements MovieService {
+    MovieDao movieDao;
+    Set<Genre> genres;]]>
+    <emphasis role="bold"><![CDATA[@Autowired
+    public void setGenres(MovieDao movieDao, Set<Genre> genres) {]]></emphasis>
+        <![CDATA[this.movieDao = movieDao;
+        this.genres = genres;
+    }
+}]]></programlisting>
+						위 예제 소스의 경우, Spring Container에 등록된 Genre 타입의 Bean들이 모두 genres 배열
+						(또는 collection)에 injection된다.
+					</para>
+        		</listitem>
+        
+        		<listitem>
+        			<para>
+        				Map(key=Bean Name, value=Bean 객체) 형태의 멤버변수와 메소드
+                        <programlisting language="java"><![CDATA[@Service("movieServiceImpl")
+public class MovieServiceImpl implements MovieService {
+    MovieDao movieDao;
+    Map<String, Genre> genres;]]>
+    <emphasis role="bold"><![CDATA[@Autowired
+    public void setGenre(MovieDao movieDao, Map<String, Genre> genres) {]]></emphasis>
+        <![CDATA[this.movieDao = movieDao;
+        this.genres = genres;
+    }
+}]]></programlisting>
+						위 예제 소스의 경우, Spring Container에 등록된 Genre 타입의 Bean들이 Bean name이 key로, Bean 객체가
+						value인 쌍으로 모두 genres Map에 injection된다.
+        			</para>
+        		</listitem>
+    		</itemizedlist>
+    
+    		<para>
+    			기본적으로 @Autowired가 적용된 참조 관계는 반드시 해당 빈이 존재해야 하지만, <emphasis role="bold">required
+      			속성을 false로 설정</emphasis>하는 경우에는 해당되는 Bean을 찾지 못하더라도 에러가 발생하지 않는다. 
+                <programlisting language="java"><![CDATA[@Service
+public MovieServiceImpl implements MovieService {]]>
+    <emphasis role="bold"><![CDATA[@Autowired(required=false)]]></emphasis>
+    <![CDATA[private MovieDao movieDao;
+}]]></programlisting></para>
+
+			<para>
+				또한, @Resource에서 설명했던 바와 같이 @Autowired도 BeanFactory, ApplicationContext, ResourceLoader, 
+				ApplicationEventPublisher, MessageSource 인터페이스와 하위 인터페이스들을 별도 설정 없이 바로 사용할 수 있게 
+				해준다.
+                <programlisting language="java"><![CDATA[@Service("movieServiceImpl")
+public class MovieServiceImpl implements MovieService {]]>
+    <emphasis role="bold"><![CDATA[@Autowired]]></emphasis>
+    <![CDATA[ApplicationContext context;
+}]]></programlisting></para>       
+	     
+		</section>
+		
+		<section id="core_spring_annotation_di_resource">
+			<title>@Resource</title>
+
+			<para>
+				@Resource는 Bean name을 지정하여 Dependency Injection을 하고자 하는 경우에 사용한다. @Resource는 
+				name이라는 속성을 가지고 있어서, Spring Container가 @Resource로 정의된 요소에 injection하기 위한 Bean을 검색할 때,
+				name 속성에 지정한 이름을 검색할 Bean Name으로 사용한다.
+                <programlisting language="java"><![CDATA[@Service("movieServiceImpl")
+public class MovieServiceImpl implements MovieService {
+    @Resource
+    MessageSource messageSource;]]>
+    <emphasis role="bold"><![CDATA[@Resource (name="movieDao")]]></emphasis>
+    <![CDATA[MovieDao movieDao;]]></programlisting>
+    		</para>
+			<para>
+				명시적으로 name 속성에 이름을 지정하지 않는 경우, 검색할 Bean Name은 다음과 같은 규칙을 따른다.
+			</para>
+			<itemizedlist>
+      			<listitem>
+        			<para>@Resource가 멤버 변수에 정의되었을 때 : 멤버 변수의 이름</para>
+      			</listitem>
+
+      			<listitem>
+        			<para>
+        				@Resource가 setter 메소드에 정의되었을 때 : 해당 setter 메소드의 이름에서 'set'을 제외한 이름(첫 글자는
+						소문자) 
+					</para>
+					<para>
+						예) setFoo(...) --> 'foo'
+					</para>
+      			</listitem>
+    		</itemizedlist>
+    		<para>
+    			해당하는 Bean Name으로 injection할 Bean을 찾지 못했을 경우에는 @Autowired 처럼 Bean의 type으로 검색한다.</para>
+    		<para>
+    			@Resource를 이용하면 BeanFactory, ApplicationContext, ResourceLoader, ApplicationEventPublisher, 
+    			MessageSource 인터페이스와 하위 인터페이스들을 별도 설정 없이 바로 사용 가능하다.
+                <programlisting language="java"><![CDATA[@Service("movieServiceImpl")]]>
+<![CDATA[public class MovieServiceImpl implements MovieService {]]>
+    <emphasis role="bold"><![CDATA[@Resource]]></emphasis>
+    <![CDATA[ApplicationContext context;
+}]]></programlisting></para>
+		</section>		
+		
+		<section id="core_spring_annotation_di_qualifier">
+			<title>@Qualifier</title>
+			<para>
+				type-driven injection의 경우 Spring Container가 해당 Bean을 찾을 때 객체의 type을 기준으로 검색을 수행하게 된다. 
+				이와 같은 경우 동일한 type의 Bean이 여러 개 검색되었을 때 injection 대상이 되는 Bean을 결정하기 위한 세밀한 제어가 필요하며
+				이 때 @Qualifier를 사용할 수 있다.
+			</para>
+			<section id="core_spring_annotation_di_qualifier_spring">
+				<title>Spring @Qualifier</title>
+				<para>
+					기본적으로 @Autowired는 type-driven injection 형태로 동작하여, 동일한 객체 type의 Bean이 여러 개 검색되었을 때 
+					injection 대상이 되는 Bean을 결정하기 위해 @Qualifier를 사용할 수 있다.
+				</para>
+	    		<para>
+	    			다음은 @Autowired와 함께 @Qualifier를 사용한 예이다.
+                	<programlisting language="java"><![CDATA[@Service("movieServiceImpl")
+public class MovieServiceImpl implements MovieService {
+    @Autowired]]>
+    <emphasis role="bold"><![CDATA[@Qualifier("sports")]]></emphasis>
+    <![CDATA[Movie sportsMovie;
+}]]></programlisting>
+    			</para>
+    			<para>
+    				위와 같이 정의하면 "sports"라는 qualifier 속성 값이 정의된 Bean이 sportsMovie 멤버변수로 injection된다.
+    			</para>
+    	
+	    		<para>
+	    			위의 @Qualifier에 의해 연결될 Bean은 다음과 같이 정의할 수 있다.
+	                <programlisting language="xml"><![CDATA[<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+        xmlns:context="http://www.springframework.org/schema/context"
+        xsi:schemaLocation="http://www.springframework.org/schema/beans 
+                http://www.springframework.org/schema/beans/spring-beans-4.0.xsd
+                http://www.springframework.org/schema/context 
+                http://www.springframework.org/schema/context/spring-context-4.0.xsd">
+        				
+    <context:annotation-config/>
+
+    <bean class="org.anyframe.sample.di.qualifier.moviefinder.domain.Movie">]]>
+        <emphasis role="bold"><![CDATA[<qualifier value="sportsMovie"/>]]></emphasis>
+        <![CDATA[<!-- inject any dependencies required by this bean -->
+    </bean>
+    <bean class="org.anyframe.sample.di.qualifier.moviefinder.domain.Movie">]]>
+         <emphasis role="bold"><![CDATA[<qualifier value="livingMovie"/>]]></emphasis>
+         <![CDATA[<!-- inject any dependencies required by this bean -->
+    </bean>
+
+    <bean id="movieServiceImpl" 
+        class="org.anyframe.sample.di.qualifier.moviefinder.service.MovieServiceImpl"/>
+</beans>]]></programlisting>
+	    		</para>
+			</section>
+			<section id="core_spring_annotation_di_qualifier_jsr330">
+				<title>JSR-330 @Qualifier</title>
+	    		<para>
+	    			JSR-330 @Qualifier는 앞서 언급한 Spring @Qualifier 또한 type driven injection 수행시 정밀한 제어를 위해 사용될 수 있다. 
+	    			단 Spring @Qualifier와 다르게 Qualifier Annotation을 정의하는데만 적용될 수 있다. 
+	    			다음은 javax.inject.Qualifier를 사용하여 정의된 @Qualifier의 예로 'type'이라는 속성을 가지고 있다.
+	    		</para>
+	    		<programlisting language="java">//...
+<emphasis role="bold">import javax.inject.Qualifier;</emphasis>
+
+@Target( { ElementType.FIELD, ElementType.PARAMETER, ElementType.TYPE })
+@Retention(RetentionPolicy.RUNTIME)
+<emphasis role="bold">@Qualifier</emphasis>
+public @interface DaoQualifier {
+    public abstract String type() default "query";
+}</programlisting>
+				<para>
+					MovieDao라는 인터페이스가 2개의 구현체(MovieDaoQueryImpl, MovieDaoHibernateImpl)를 가지고 있다라고 가정해보자.
+					다른 Bean에서 MovieDao의 구현체들에 대해 Type Injection할 수 있도록 하기 위해서 해당 Bean을 정의할 때 @Named와 함께 @DaoQualifier를 
+					사용할 수 있을 것이다.
+				</para>
+				<programlisting language="java">@Named
+<emphasis role="bold">@DaoQualifier(type = "hibernate")</emphasis>
+public class MovieDaoHibernateImpl implements MovieDao {
+    // ...
+}
+
+@Named
+<emphasis role="bold">@DaoQualifier</emphasis>
+public class MovieDaoQueryImpl implements MovieDao {
+    // ...
+}</programlisting>
+				<para>
+					앞서 정의한 Bean을 Injection하기 위해서는 다음과 같이 @Inject와 함께 @DaoQualifier를 사용하면 된다.
+				</para>
+				<programlisting language="java">@Named
+public class MovieServiceImpl implements MovieService {
+
+    @Inject
+    <emphasis role="bold">@DaoQualifier(type = "hibernate")</emphasis>
+    private MovieDao hibernateMovieDao;
+
+    @Inject
+    <emphasis role="bold">@DaoQualifier</emphasis>
+    private MovieDao queryMovieDao;
+	
+    // ...	
+}</programlisting>	
+				<para>
+					위에서 언급한 JSR-330 qualifier 샘플 코드는 본 섹션 내의 <link linkend="core_spring_annotation_resources">다운로드 - anyframe-sample-di-qualifier</link>를 통해 다운로드받을 수 있다.
+				</para> 	    				
+			</section>
+    	</section>
+    	
+    	<section id="core_spring_annotation_di_provider">
+    		<title>Provider</title>
+    		<para>
+    			JSR-303에서 제공하는 인터페이스로, 참조하고자 하는 Bean을 직접 Inject하지 않고 Inject 대상이 되는 클래스 타입 T에 대해 
+    			<![CDATA[Provider<T>]]> 형태로 Inject한다. 
+    			javax.inject.Provider를 통해 Injection을 수행하는 경우 Spring에서는 DefaultListableBeanFactory 내의 DependencyProvider라는 구현체의 
+    			get() 메소드를 이용하여 Generic Type으로 제공된 T 타입의 새로운 인스턴스를 전달해주도록 하고 있다. 따라서, Singleton Bean에서 Prototype Bean을 
+    			참조하고자 할 때 적용할 수 있다.
+    		</para>
+    		<para>
+    			다음은 <![CDATA[Provider<T>]]> 형태로 특정 Bean을 참조한 예이다.
+    		</para>
+    		<programlisting language="java">@Named
+public class MovieServiceImpl implements MovieService {
+    @Inject
+    <emphasis role="bold">private <![CDATA[Provider<MovieDao>]]> movieDaoFactory;</emphasis>
+
+    public Movie get(String movieId) throws Exception {
+        // get movieDao instance calling get()
+        return <emphasis role="bold">movieDaoFactory.get()</emphasis>.get(movieId);
+    }
+}</programlisting>
+			<para>
+				위의 코드에서는 Provider 타입의 movieDaoFactory 객체를 통해 get() 메소드를 호출할 때마다 새로운 MovieDao 인스턴스를 전달받게 될 것이다.
+			</para>
+			<para>
+				특정 Bean을 참조하는 경우 직접 Inject하지 않고 <![CDATA[Provider<T>]]> 형태로 Inject하였을 때 다음과 같은 이점을 제공한다.
+				(출처: JSR-330 Dependency Injection for Java 1.0 Final Release for Documentation)
+			</para>
+			<itemizedlist>
+     			<listitem>
+     				<para>retrieving multiple instances</para>
+     			</listitem>
+     			<listitem>
+     				<para>lazy or optional retrieval of an instance</para>
+     			</listitem>
+     			<listitem>
+     				<para>breaking circular dependencies</para>
+     			</listitem>
+     			<listitem>
+     				<para>abstracting scope so you can look up an instance in a smaller scope from an instance in a containing scope</para>
+     			</listitem>
+     		</itemizedlist>
+     		<para>
+				위에서 언급한 JSR-330 provider 샘플 코드는 본 섹션 내의 <link linkend="core_spring_annotation_resources">다운로드 - anyframe-sample-di-provider</link>를 통해 다운로드받을 수 있다.
+			</para> 
+    	</section>    	
+
+    	<section id="genericqualifier">
+    		<title>Generic Types as a form of Qualifier</title>
+    		<para>
+    			Spring 4에서는 @Qualifier 이외에도 Generic Type을 이용해 Autowiring을 수행하는 기능을 제공한다.
+    			이 기능을 통해 좀 더 유연한 형태로 코드를 구성할 수 있다.
+    		</para>
+    		<para>
+    			다음은 Generic Type을 이용해 특정 Bean을 참조한 예이다.
+    		</para>
+    		<programlisting language="java"><![CDATA[@Service("genreService")
+public class GenreServiceImpl implements GenreService {
+
+	@Autowired
+	private GenericDao<Genre> genreDao;
+
+	public List<Genre> getList() throws Exception {
+		return genreDao.getList();
+	}
+}
+
+public interface GenericDao<T> {
+
+	public void setJdbcDaoDataSource(DataSource dataSource);
+
+	public List<T> getList();
+
+	...
+}
+
+@Repository("genreDao")
+public class GenreDao extends JdbcDaoSupport implements GenericDao<Genre> {
+
+	@Inject
+	public void setJdbcDaoDataSource(DataSource dataSource) {
+		super.setDataSource(dataSource);
+	}
+
+	public List<Genre> getList() {
+		String sql = "SELECT GENRE_ID, NAME FROM GENRE ORDER BY NAME";
+		return super.getJdbcTemplate().query(sql, new BeanPropertyRowMapper<Genre>(Genre.class));
+	}
+
+	...
+}]]>
+</programlisting>
+			<para>
+				위의 코드에서 보듯이 Generic Qualifier의 사용 형태에 따라 기존에 Provider를 이용한 코드 구성을 대체할 수 있다.
+			</para>
+     		<para>
+				Generic Qualifier를 사용하는 샘플 코드는 본 섹션 내의 <link linkend="core_spring_annotation_resources">다운로드 - anyframe-sample-genericqualifier</link>를 통해 다운로드받을 수 있다.
+			</para> 
+    	</section>    	
+
+    	<section id="orderedautowire">
+    		<title>Ordered Autowiring in Arrays</title>
+    		<para>
+    			Spring 4에서는 List나 Array type에 대한 Injection 시에 Element에 대한 정렬을 위해 @Ordered Annotation을 사용할 수 있다.
+    		</para>
+    		<para>
+    			다음의 예제를 보자.
+    		</para>
+    		<programlisting language="java"><![CDATA[@Service("movieService")
+public class MovieServiceImpl implements MovieService {
+
+	// All Daos are injected with @Order value...
+	@Autowired
+	private List<AbstractDao> daos;
+
+	public void showMyDaos() {
+		for (AbstractDao dao : daos) {
+			...
+		}
+	}
+
+}
+
+@Repository
+@Order(value = 2)
+public class MovieDao implements AbstractDao {
+
+	public String getDaoName() {
+		return getClass().getName();
+	}
+
+}
+
+@Repository
+@Order(value = 1)
+public class MovieFinderDao implements AbstractDao {
+
+	public String getDaoName() {
+		return getClass().getName();
+	}
+
+}]]>
+</programlisting>
+			<para>
+				만약에 @Ordered 정보가 없다면, 두 DAO가 어떤 순서로 List에 담길지는 알 수 없다. 덧붙이자면, @Ordered Annotation이 아닌 Ordered Interface를 이용하여 같은 구현이 가능하다.
+			</para>
+     		<para>
+				Ordered Autowiring을 사용하는 샘플 코드는 본 섹션 내의 <link linkend="core_spring_annotation_resources">다운로드 - anyframe-sample-orderedautowiring</link>를 통해 다운로드받을 수 있다.
+			</para> 
+    	</section>    	
+
+    	<section id="core_spring_annotation_di_comp">
+			<title>@Inject / @Autowired / @Resource 비교</title>
+      			<informaltable>
+      			    <caption>@Inject / @Autowired / @Resource 비교</caption>
+        			<tgroup cols="4">
+        				<colspec colnum="1" colname="col1" colwidth="2*"/>
+						<colspec colnum="2" colname="col2" colwidth="4*"/>
+						<colspec colnum="3" colname="col1" colwidth="4*"/>
+						<colspec colnum="3" colname="col1" colwidth="4*"/>
+          			<thead>
+            			<row>
+              				<entry align="center">Annotation</entry>
+              				<entry align="center">@Inject</entry>
+              				<entry align="center">@Autowired</entry>
+              				<entry align="center">@Resource</entry>              				
+            			</row>
+          			</thead>
+
+          			<tbody>
+            			<row>
+							<entry align="center">Injection 방식</entry>
+							<entry>type-driven injection</entry>
+							<entry>type-driven injection</entry>
+              				<entry>name-matching injection</entry>
+            			</row>
+
+            			<row>
+              				<entry align="center">사용가능한 위치</entry>
+							<entry>멤버변수, setter 메소드, 생성자, 일반 메소드</entry>
+              				<entry>멤버변수, setter 메소드, 생성자, 일반 메소드</entry>
+              				<entry>멤버변수, setter 메소드</entry>
+            			</row>
+          			</tbody>
+        		</tgroup>
+      		</informaltable> 
+		</section>
+			
+		<section id="core_spring_annotation_inject_lazy">
+			<title> Inject 시점에 @Lazy 사용</title>
+      			<para>
+      				기존에는 @Component 나 @Bean 객체에 사용하여 해당 객체를 사용시점에 initialize 하고자할 때 사용되었다. 하지만 Spring 4.0 에서 추가된 내용으로, 
+      				lazy-init 으로 설정된 Bean을 다른 Bean 객체에서 @Autowired나 @Inject를 통해 Injection하고자 할때 @Lazy를 명시함으로서 해당 Bean객체를 실제 사용된 시점에 initialize 할 수 있다.   
+      			</para>
+      			
+      			<programlisting>
+//...
+@Repository
+@Lazy
+public class MovieLazyDao {
+	
+	private long time;
+
+	public MovieLazyDao() {
+		System.out.println("class MovieLazyDao initialized");
+		time = new Date().getTime();
+	}
+	
+	public void print()
+	{
+		System.out.println("--> print MovieLazyDao !!!  : " + time);
+	}
+}
+      			</programlisting>
+      			
+      			<para>
+	      			위와 같이 Lazy-init 되도록 선언된 Bean 객체가 있다고 하자. 
+	      			기존에 @Autowired 를 사용하여 다른 Bean 객체에서 Injection하여 사용하였을때는 Bean 객체 생성시에 initialize 가 된다.  
+      			</para>
+      			
+      			<programlisting>
+//...
+@Service
+public class LazyMovieAutowiredLazyServiceImpl implements LazyMovieAutowiredLazyService {
+	
+	@Autowired @Lazy
+	private MovieLazyDao movieLazyDao;
+	
+	/**
+	 * Lazy 로 선언된 Component 의 경우 inject 시점에 lazy-init 을 적용가능하다.
+	 */
+	@Override
+	public void testAutowiredLazy() {
+		System.out.println("==== Autowired Lazy Test ====");
+		System.out.println("call movieLazyDao.print()");
+		movieLazyDao.print();
+	}
+}
+//=====> 결과
+//==== Autowired Lazy Test ====
+//call movieLazyDao.print()
+//class MovieLazyDao initialized
+//--> print MovieLazyDao !!!  : 1393495717313
+      			</programlisting>
+      			
+      			<para>
+	      			하지만 위와 같이 @Autowired @Lazy 로 객체를 Injection하였을 때는 Bean 객체 생성시에 initialize 되지 않고,
+	      			Bean 객체가 실제로 사용되는 movieLazyDao.print() 시에 initialize 됨을 확인할 수가 있다.   
+      			</para>
+      			
+      			<warning>
+      				<title>@Scope(value="prototype") 으로 선언된 Bean 객체 @Lazy 사용 Injection 시 주의사항</title>
+      				<para>
+	      				@Scope(value="prototype") 으로 선언된 Bean의 경우 객체를 사용할 때마다 Bean 객체를 생성한다는 특징이 있다.
+	      				실제로 해당 Bean 객체를 Injection 하게 될 경우에는 Injection한 만큼 Bean 객체가 생성이 된다.
+	      				prototype 의 scope 을 가지는 Bean 의 경우도 위의 @Lazy Annotation 을 통하여 Bean 객체의 사용 시점에 Bean 객체를 생성할 수가 있다. 
+	      				단, 실행 시점마다 Bean 객체가 새로 생성되므로, 용도에 맞게 주의하여 사용해야 한다.  
+	      			</para>	   
+	      			
+	      			<programlisting>
+//...
+@Repository
+@Scope(value="prototype")
+public class MoviePrototypeDao {
+	
+	private long time;
+
+	public MoviePrototypeDao() {
+		System.out.println("class MoviePrototypeDao initialized");
+		time = new Date().getTime();
+	}
+	
+	public void print()
+	{
+		System.out.println("--> print MoviePrototypeDao !!!  : " + time);
+	}
+}
+	      			</programlisting>
+	
+	      			<programlisting>
+//...
+@Service
+public class PrototypeMovieAutowiredLazyServiceImpl implements PrototypeMovieAutowiredLazyService {
+	
+	@Autowired @Lazy
+	private MoviePrototypeDao moviePrototypeDao;
+	
+	/**
+	 * scope=prototype Component 의 경우 inject 시점에 lazy-init 을 적용가능하나
+	 * 실행시마다 Bean 객체가 생성된다. 
+	 */
+	@Override
+	public void testAutowiredLazy() {
+		System.out.println("==== Prototype Movie in Autowired Lazy Test ====");
+		System.out.println("call moviePrototypeDao.print()");
+		moviePrototypeDao.print();
+		System.out.println("call moviePrototypeDao.print()");
+		moviePrototypeDao.print();
+	}
+}	
+//=====> 결과
+//==== Prototype Movie in Autowired Lazy Test ====
+//call moviePrototypeDao.print()
+//class MoviePrototypeDao initialized
+//--> print MoviePrototypeDao !!!  : 1393495675601
+//call moviePrototypeDao.print()
+//class MoviePrototypeDao initialized
+//--> print MoviePrototypeDao !!!  : 1393495675619
+					</programlisting>   			
+      			</warning>
+      			
+      			<important>
+      				<title> Injection 시에 @Lazy 설정시 유의사항</title>
+      				<para>
+      					Injection 시에 사용되는 Annotation 으로는 @Inject / @Autowired / @Resource 세가지가 있으나 
+      					@Lazy 를 통해서 lazy-init 이 설정가능한 Annotation 은 @Inject / @Autowired 두가지임을 염두에 두도록 한다. 
+      				</para>
+      			</important>
+      			
+      			<para>
+      			위의 injection 시점에서의 @Lazy사용에 관한 샘플 코드는 본 섹션 내의 <link linkend="core_spring_annotation_resources">다운로드 - anyframe-sample-lazyinit</link>를 통해 다운로드받을 수 있다.
+      			</para>
+      			
+      			
+		</section>
+		
+	</section>
+
+	<section id="core_spring_annotation_lc">
+		<title>LifeCycle Annotation</title>
+
+		<mediaobject>
+			<imageobject>
+				<imagedata align="center" fileref="../image/core/spring/ioc-lifecycle.jpg" />
+      		</imageobject>
+      		<textobject>
+				<phrase>Spring Bean의 LifeCycle은 Initializaion ->Activation -> Destruction으로 구성되어 있음을 나타내는 그림</phrase>
+			</textobject>
+    	</mediaobject>
+
+    	<para>
+    		<link linkend="core_spring_ioc_extensions_lifecycle">IoC의 Life Cycle</link>
+   			 에서 설명한 바와 같이 Bean의 LifeCycle은 Initializaion ->Activation -> Destruction으로 구성되어 있으며,
+   			LifeCycle 메소드를 정의하는 경우 컨테이너 기동시 또는 종료시 필요한 로직을 수행할 수 있게 된다. Bean을 초기화 또는 
+   			소멸화 하는 시점에 별도 작업이 필요한 경우 기존에는 InitializingBean과 DesposableBean 인터페이스를  상속하거나,
+    		Bean 정의시 명시적으로 초기화 메소드나 소멸화 메소드를 별도로 지정해야 했다. 그러나, 다음과 같은 Annotation을 사용하면 
+    		XML 정의 또는 별도 인터페이스 상속없이 Bean의 LifeCycle 관리가 가능해진다.</para>
+    
+    	<section id="core_spring_annotation_lc_postconstruct">
+			<title>@PostConstruct</title>
+
+      		<para>
+      			JSR-250 표준 Annotation으로 Bean 초기화시 필요한 작업을 담은 메소드에 대해 정의한다.
+      			@PostConstruct를 사용하기 위해서는 클래스패스 내에 jsr250-api.jar 파일이 추가되어 있어야 한다.
+                <programlisting language="java"><emphasis role="bold">@PostConstruct</emphasis>
+// 메소드명은 자유롭게 정의할 수 있다.
+public void initialize() {
+    // ...
+}</programlisting></para>
+		</section>
+
+    	<section id="core_spring_annotation_lc_predestroy">
+			<title>@PreDestroy</title>
+
+			<para>
+				JSR-250 표준 Annotation으로 Bean 소멸시 필요한 작업을 담은 메소드에 대해 정의한다.
+      			@PreDestroy를 사용하기 위해서는 클래스패스 내에 jsr250-api.jar 파일이 추가되어 있어야 한다.
+                <programlisting language="java"><emphasis role="bold">@PreDestroy</emphasis>
+// 메소드명은 자유롭게 정의할 수 있다.
+public void dispose() {
+    // ...
+}</programlisting></para>
+		</section>
+
+		<section id="core_spring_annotation_lc_combine">
+			<title>Combining lifecycle mechanisms</title>
+
+			<para>
+				앞에서 설명한 바와 같이, Spring 2.5에서 bean lifecycle을 관리할 수 있는 방법은 다음과 같이
+      			세가지가 있다.
+      		</para>
+
+			<itemizedlist>
+				<listitem>
+          			<para>InitializingBean과 DisposableBean callback 인터페이스 이용</para>
+        		</listitem>
+
+        		<listitem>
+          			<para>사용자가 작성한 초기화/소멸화 메소드를 XML에서 init-method/destroy-method 속성을 이용하여 정의</para>
+        		</listitem>
+
+        		<listitem>
+          			<para>@PostConstruct와 @PreDestroy annotation 이용</para>
+        		</listitem>
+      		</itemizedlist>
+
+      		<para>
+      			위의 3가지 방법이 동시에 존재하는 경우(예를 들어, 3가지 방법이 각각 정의된 클래스가 Parent-child 관계를
+      			가지는 경우), 실행되는 순서는 다음과 같다.
+      		</para>
+
+      		<para><emphasis role="bold">Initialization 메소드</emphasis></para>
+
+      		<orderedlist>
+        		<listitem>
+          			<para>@PostConstruct를 이용하여 정의한 메소드</para>
+        		</listitem>
+
+        		<listitem>
+          			<para>InitializingBean 인터페이스의 afterPropertiesSet() 메소드</para>
+        		</listitem>
+
+        		<listitem>
+          			<para>XML에서 init-method 속성으로 정의된 초기화 메소드</para>
+        		</listitem>
+      		</orderedlist>
+
+      		<para><emphasis role="bold">Destroy 메소드</emphasis></para>
+
+      		<orderedlist>
+        		<listitem>
+          			<para>@PreDestroy를 이용하여 정의한 메소드</para>
+        		</listitem>
+
+        		<listitem>
+ 					<para>DisposableBean 인터페이스의 destroy() 메소드</para>
+        		</listitem>
+
+        		<listitem>
+          			<para>XML에서 destroy-method 속성으로 정의된 소멸화 메소드</para>
+        		</listitem>
+      		</orderedlist>
+    	</section>
+  	</section>  
+
+	<section id="metaannotation">
+		<title>Meta-Annotation</title>
+    		<para>
+    			Spring에서는 Meta-Annotation을 이용하여 Custom Annotation을 직접 생성하여 사용할 수 있다. (예를 들어, Spring 4에서 새롭게 등장한 @RestController도 @Controller와 @ResponseBody를 조합하여 새로운 Stereo Type Annotation을 만든 것이다.)
+    			이러한 Custom Annotation 생성을 통해 새로운 의미 및 특성을 모듈에 반영하는 것이 가능하다.
+    		</para>
+    		<para>
+    			다음은 Meta-Annotation을 활용해 Custom Annotation을 생성한 예이다.
+    		</para>
+    		<programlisting language="java">@Target({ ElementType.TYPE })
+@Retention(RetentionPolicy.RUNTIME)
+@Documented
+@Repository()
+public @interface Dao {
+
+	String value() default "dao";
+
+	boolean isDatabase() default true;
+
+}
+
+@Dao("movieDao")
+public class MovieDao extends JdbcDaoSupport {
+
+	...
+}
+</programlisting>
+			<para>
+				위의 예제는 단순하게 Custom Annotation을 설명하기 위해 만든 코드이므로 큰 의미가 없어 보이지만, 상황에 따라서는 유용하게 쓰일 수 있다. (위의 예제에서는 isDatabase()를 이용해 DBMS용 Repository인지 아닌지를 판별)
+			</para>
+
+  	</section>  
+
+ 	<section id="core_spring_annotation_resources">
+		<title>Resources</title>
+		<para>
+			<itemizedlist>
+				<listitem>
+					<para>다운로드</para>
+					<para>
+						다음에서 테스트 DB를 포함하고 있는 hsqldb.zip과 sample 코드를 포함하고 있는 anyframe-sample-annotation.zip 
+						파일을 다운받은 후, 압축을 해제한다. 그리고 hsqldb 폴더 내의 start.cmd (or start.sh) 파일을 실행시켜 테스트 
+						DB를 시작시켜 놓는다.
+						<itemizedlist>
+							<listitem>
+								<para>Maven 기반 실행</para>
+								<para>
+									Command 창에서 압축 해제 폴더로 이동한 후 mvn clean jetty:run이라는 명령어를 실행시킨다. 
+									Jetty Server가 정상적으로 시작되었으면 브라우저를 열고 주소창에 http://localhost:8080/
+									anyframe-sample-annotation를 입력하여 실행 결과를 확인한다.
+								</para>
+							</listitem>
+							<listitem>
+								<para>Eclipse 기반 실행 - m2eclipse, WTP 활용</para>
+								<para>
+									Eclipse에서 압축 해제 프로젝트를 import한 후, 해당 프로젝트에 대해 마우스 오른쪽 버튼을 클릭
+									하고 컨텍스트 메뉴에서 Maven > Enable Dependency Management를 선택하여 컴파일 에러를 
+									해결한다. 그리고 해당 프로젝트에 대해 마우스 오른쪽 버튼을 클릭한 후, 컨텍스트 메뉴에서 Run 
+									As > Run on Server (Tomcat 기반)를 클릭한다. Tomcat Server가 정상적으로 시작되었으면 
+									브라우저를 열고 주소창에 http://localhost:8080/anyframe-sample-annotation를 입력하여 
+									실행 결과를 확인한다.
+								</para>
+							</listitem>										
+							<listitem>
+								<para>Eclipse 기반 실행 - WTP 활용</para>
+								<para>
+									Eclipse에서 압축 해제 프로젝트를 import한 후, build.xml 파일을 실행하여 참조 라이브러리를 
+									src/main/webapp 폴더의 WEB-INF/lib내로 복사시킨다. 해당 프로젝트를 선택하고 마우스 오른쪽 
+									버튼을  클릭한 후, 컨텍스트 메뉴에서 Run As > Run on Server를 클릭한다. Tomcat Server가 
+									정상적으로  시작되었으면 브라우저를 열고 주소창에 http://localhost:8080/anyframe-sample-annotation
+									를 입력하여 실행 결과를 확인한다.
+									(* build.xml 파일 실행을 위해서는 ${ANT_HOME}/lib 내에 maven-ant-tasks-2.0.10.jar 
+									파일이 있어야 한다.)
+								</para>
+							</listitem>									
+						</itemizedlist>
+					</para>
+					<informaltable>
+						<caption>Download List</caption>
+						<tgroup cols="2">
+							<colspec colnum="1" colname="col1" colwidth="6*"/>
+							<colspec colnum="2" colname="col2" colwidth="4*"/>
+							<thead>
+								<row>
+									<entry>Name</entry>
+									<entry>Download</entry>
+								</row>
+							</thead>
+							<tbody>
+								<row>
+									<entry align="center">maven-ant-tasks-2.0.10.jar</entry>
+									<entry align="center"><ulink url="http://dev.anyframejava.org/docs/anyframe/plugin/essential/core/1.6.1-SNAPSHOT/reference/sample/maven-ant-tasks-2.0.10.jar">Download</ulink></entry>
+								</row>
+								<row>
+									<entry align="center">anyframe-sample-di-qualifier.zip</entry>
+									<entry align="center"><ulink url="http://dev.anyframejava.org/docs/anyframe/plugin/essential/core/1.6.1-SNAPSHOT/reference/sample/anyframe-sample-di-qualifier.zip">Download</ulink>
+									</entry>
+								</row>	
+								<row>
+									<entry align="center">anyframe-sample-di-provider.zip</entry>
+									<entry align="center"><ulink url="http://dev.anyframejava.org/docs/anyframe/plugin/essential/core/1.6.1-SNAPSHOT/reference/sample/anyframe-sample-di-provider.zip">Download</ulink>
+									</entry>
+								</row>																											
+								<row>
+									<entry align="center">anyframe-sample-genericqualifier.zip</entry>
+									<entry align="center"><ulink url="http://dev.anyframejava.org/docs/anyframe/plugin/essential/core/1.6.1-SNAPSHOT/reference/sample/anyframe-sample-genericqualifier.zip">Download</ulink>
+									</entry>
+								</row>																											
+								<row>
+									<entry align="center">anyframe-sample-metaannotation.zip</entry>
+									<entry align="center"><ulink url="http://dev.anyframejava.org/docs/anyframe/plugin/essential/core/1.6.1-SNAPSHOT/reference/sample/anyframe-sample-metaannotation.zip">Download</ulink>
+									</entry>
+								</row>																											
+								<row>
+									<entry align="center">anyframe-sample-orderedautowiring.zip</entry>
+									<entry align="center"><ulink url="http://dev.anyframejava.org/docs/anyframe/plugin/essential/core/1.6.1-SNAPSHOT/reference/sample/anyframe-sample-orderedautowiring.zip">Download</ulink>
+									</entry>
+								</row>																											
+								<row>
+									<entry align="center">anyframe-sample-lazyinit.zip</entry>
+									<entry align="center"><ulink url="http://dev.anyframejava.org/docs/anyframe/plugin/essential/core/1.6.1-SNAPSHOT/reference/sample/anyframe-sample-lazyinit.zip">Download</ulink>
+									</entry>
+								</row>																											
+							</tbody>						
+						</tgroup>
+					</informaltable> 
+				</listitem>
+			</itemizedlist>
+		</para>
+	</section>  	
+</chapter>

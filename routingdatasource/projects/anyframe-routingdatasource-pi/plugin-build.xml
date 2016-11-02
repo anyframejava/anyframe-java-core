@@ -1,0 +1,36 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<plugin name="routingdatasource" description="RoutingDataSource Plugin consists of simple code that provides basic guidelines on how to use AbstractRoutingDataSource by Spring.">
+	<groupId>org.anyframe.plugin</groupId>
+	<artifactId>anyframe-routingdatasource-pi</artifactId>
+	<version>1.1.1-SNAPSHOT</version>
+	<dependent-plugins>
+		<dependent-plugin name="query" version="2.0.0&gt;*&gt;1.4.0" />
+	</dependent-plugins>
+	<resources>
+		<resource dir="src/main/java" filtered="true" packaged="true">
+			<include name="**/routingdatasource/**/*.java" />
+		</resource>
+		<resource dir="src/main/resources" filtered="true" packaged="false">
+			<include name="**/*routingdatasource*.xml" />
+		</resource>
+		<resource dir="src/test/java" filtered="true" packaged="true">
+			<include name="**/routingdatasource/**/*.java" />
+		</resource>
+		<resource dir="src/main/webapp" filtered="false" packaged="false">
+			<include name="**/routingdatasource/**/*.*" />
+			<exclude name="**/anyframe.jsp" merged="true"/>
+		</resource>
+		<resource dir="db/hsqldb/routingdatasourcedb" filtered="false" packaged="false">
+			<include name="**/*.*" />
+		</resource>
+		<resource dir="db/resources" filtered="false" packaged="false">
+			<include name="**/*.*" />
+		</resource>
+	</resources>
+	<samples>true</samples>
+	<interceptor>
+		<class></class>
+	</interceptor>
+	<essential>false</essential>
+	<checked>false</checked>
+</plugin>

@@ -1,0 +1,99 @@
+<chapter id="springrest_restsupport_requestmapping">
+
+	<title>Request Mapping</title>
+	
+	<para>
+		위에서 언급했듯이, Spring에서 제공하는 REST 지원 기능들은 모두 Spring MVC 기반으로 되어 있다. 
+		REST 방식으로 노출되는 서비스는 곧 Controller의 메소드이기 때문에 기존에 웹 어플리케이션을 개발하던 방식과 크게 다르지 않다.
+	</para>
+	
+	<para>
+		Resource의 ID인 URI를 Controller 클래스나 메소드에 매핑하기 위해서는 @RequestMapping을 사용한다.
+		@RequestMapping이 URI Template을 지원하기 때문에 아래 샘플코드와 같이 사용할 수 있다.
+		<programlisting language="java">@Controller
+<emphasis role="bold">@RequestMapping("/movies")</emphasis>
+public class MovieController {
+    // ...
+    <emphasis role="bold">@RequestMapping(value = "/{movieId}", method = RequestMethod.GET)</emphasis>
+    public String get(@PathVariable String movieId, Model model) throws Exception {
+        // ...
+    }
+}</programlisting>
+		또한 REST 아키텍처에서 가이드하고 있는 원칙 중 하나인, 모든 HTTP method 사용을 위해서 @RequestMapping에서 'method' 속성을 제공한다.
+		따라서, '/movies/MV-00001'이라는 URI가 GET으로 요청이 들어올 경우 위의 get() 메소드가 매핑될 것이다.
+	</para>
+	
+	<note>
+		<title>DispatcherServlet URL 매핑</title>
+		<para>
+			기존에 Spring MVC를 기반으로 개발된 웹 어플리케이션에서는 'xxx.do'라는 형태의 URL을 사용했지만, 
+			위에서 설명했듯이 REST 스타일의 URL은 '/movies', '/movies/MV-00001' 처럼 계층 구조로 사용가능하도록 설계되었다.
+			따라서 web.xml에 DispatcherServlet을 정의하고 매핑할 URL 패턴을 '/'로 지정해야한다.
+		</para>
+		<para>
+			이 경우 css 나 이미지 등의 static 리소스 URL도 DispatcherServlet을 통하게 되어 화면이 정상적으로 동작하지 않는 문제가 있다.
+			그래서 Spring에서는 <emphasis role="bold"><![CDATA[<mvc:default-servlet-handler/>]]></emphasis>를 제공하고 있다.
+			이 태그의 역할은 내부적으로 <emphasis role="bold">DefaultServletHttpRequestHandler</emphasis>를 등록해주는 것이다.
+			이 핸들러는 가장 낮은 우선순위를 가지고 있고, /**로 매핑되어 있다.
+			따라서 다른 handler mapping을 다 거친 후에 실패한 URL만 넘어오게 된다.
+			DefaultServletHttpRequestHandler는 최종적으로 넘어온 요청을 처리하기 위해서 
+			직접 static 리소스를 핸들링하는 것이 아니라 원래 서버가 제공하는 디폴트 서블릿으로 전달한다.
+			그래서 URLRewriteFilter 같은 것을 사용하지 않아도 간단하게 '/'를 DispatcherServlet에 매핑시킬 수 있게 된다. 
+		</para>
+		<para>
+			그러나 springrest plugin의 경우 core plugin 등 다른 plugin들과 함께 섞여서 동작해야하기 때문에 
+			<![CDATA[<mvc:default-servlet-handler/>]]>를 사용하지 않고,
+			기존에 정의된 DispatcherServlet에 아래와 같이 매핑만 추가하도록 설정했다.
+			<programlisting language="xml"><emphasis role="bold"><![CDATA[<servlet-mapping>
+    <servlet-name>action</servlet-name>
+    <url-pattern>/springrest/*</url-pattern>
+</servlet-mapping>]]></emphasis></programlisting> 
+		</para>
+	</note>
+		
+	<para>
+		또한, Spring에서는 URI Template에 포함된 변수 값을 추출할 수 있도록 <emphasis role="bold">@PathVariable</emphasis>이라는 새로운 Annotation을 추가했다.
+	</para>
+	
+	<para>
+		다음은 @PathVariable을 사용한 예이다.
+		<programlisting language="java"><emphasis role="bold">@RequestMapping(value = "/{movieId}"</emphasis>, method = RequestMethod.GET)
+public String get(<emphasis role="bold">@PathVariable String movieId</emphasis>, Model model)
+      throws Exception {
+    Movie movie = this.movieService.get(movieId);
+    // 중략
+    return "springrestViewMovie";
+}</programlisting>
+		'/movies/MV-00001'와 같은 URI로 요청이 들어왔을 때, 위의 get 메소드가 처리하게 되고 'MV-00001' 값은 'movieId' 입력 인자로 바인딩된다.
+	</para>
+	<para>
+		아래와 같이 변수명을 지정하여 사용하거나 여러개의 변수를 사용할 수도 있다.
+		<programlisting language="java"><emphasis role="bold">@RequestMapping(value = "/movies/{movie}/posters/{poster}"</emphasis>, method = RequestMethod.GET)
+public String get(<emphasis role="bold">@PathVariable("movie") String movieId, @PathVariable("poster") String posterId</emphasis>, Model model)
+      throws Exception {
+    // 중략
+    return "springrestViewMovie";
+}</programlisting>
+	</para>
+		
+	<para>
+		'/movies/*/posters/{posterId}'와 같이 Ant-style의 경로에도 사용할 수 있고, 
+		URI Template의 변수를 String이 아닌 다른 타입의 입력 인자로도 바인딩 가능하다.
+		<programlisting language="java">@InitBinder
+public void initBinder(WebDataBinder binder) {
+    SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd");
+    binder.registerCustomEditor(Date.class, new CustomDateEditor(dateFormat, false));
+}
+
+<emphasis role="bold">@RequestMapping("/plans/{date}")</emphasis>
+public void get(<emphasis role="bold">@PathVariable Date date</emphasis>) {
+    // 중략
+}</programlisting>
+		예로 '/plans/2010-09-05' URI로 들어온 요청은 위의 메소드가 처리할 것이고, 
+		'2010-09-05'는 date 입력 인자에 Date 타입으로 바인딩 될 것이다.
+	</para>
+	
+	<para>
+		@RequestMapping에서 사용할 수 있는 속성은 <ulink url="http://dev.anyframejava.org/docs/anyframe/plugin/essential/core/1.6.1-SNAPSHOT/reference/htmlsingle/core.html#core_springmvc_controller_implementation_requestmapping">core plugin 매뉴얼의 컨트롤러 구현 중 @RequestMapping</ulink> 내용을 참조하기 바란다.
+	</para>
+</chapter>

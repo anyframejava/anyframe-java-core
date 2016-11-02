@@ -1,0 +1,642 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<FDL version="1.5">
+  <TypeDefinition url="..\default_typedef.xml"/>
+  <Form id="sample001" classname="sample001" left="0" top="0" width="907" height="736" titletext="CRUD" onload="form_onload">
+    <Layouts>
+      <Layout>
+        <Button id="btn_search" taborder="3" text="조회" onclick="div_search_btn_search_onclick" top="36" right="277" width="112" height="40" cssclass="btn_WF_Search"/>
+        <Edit id="Edit00" taborder="4" left="174" top="43" width="140" height="28" onkeydown="Edit00_onkeydown"/>
+        <Grid id="Grid00" taborder="5" binddataset="ds_list" useinputpanel="false" left="20" top="88" right="20" height="131" autoenter="select" onvscroll="Grid00_onvscroll">
+          <Formats>
+            <Format id="default">
+              <Columns>
+                <Column size="80"/>
+                <Column size="122"/>
+                <Column size="105"/>
+                <Column size="146"/>
+                <Column size="172"/>
+                <Column size="80"/>
+                <Column size="107"/>
+                <Column size="289"/>
+              </Columns>
+              <Rows>
+                <Row size="24" band="head"/>
+                <Row size="24"/>
+              </Rows>
+              <Band id="head">
+                <Cell text="아이디"/>
+                <Cell col="1" text="패스워드"/>
+                <Cell col="2" text="성명"/>
+                <Cell col="3" text="영문명"/>
+                <Cell col="4" text="휴대폰번호"/>
+                <Cell col="5" text="직책"/>
+                <Cell col="6" text="부서"/>
+                <Cell col="7" text="주소"/>
+              </Band>
+              <Band id="body">
+                <Cell edittype="normal" text="bind:USER_ID"/>
+                <Cell col="1" edittype="normal" text="bind:PASSWORD"/>
+                <Cell col="2" edittype="normal" text="bind:USER_NAME"/>
+                <Cell col="3" edittype="normal" text="bind:EN_NAME"/>
+                <Cell col="4" edittype="normal" text="bind:CELL_PHONE"/>
+                <Cell col="5" edittype="normal" text="bind:JOB_POSITION"/>
+                <Cell col="6" edittype="normal" text="bind:DEPT_ID"/>
+                <Cell col="7" edittype="normal" text="bind:ADDRESS"/>
+              </Band>
+            </Format>
+          </Formats>
+        </Grid>
+        <Button id="Button01" taborder="6" text="저장" cssclass="btn_WF_CRUD" top="36" width="80" height="40" right="106" onclick="Button01_onclick"/>
+        <Edit id="Edit01" taborder="7" left="198" top="271" width="140" height="29"/>
+        <Combo id="Combo00" taborder="8" left="25" top="271" width="150" height="29" codecolumn="codecolumn" datacolumn="datacolumn" index="0" value="0" text="제목">
+          <Dataset id="innerdataset">
+            <ColumnInfo>
+              <Column id="codecolumn" size="256"/>
+              <Column id="datacolumn" size="256"/>
+            </ColumnInfo>
+            <Rows>
+              <Row>
+                <Col id="codecolumn">Y</Col>
+                <Col id="datacolumn">바로재생</Col>
+              </Row>
+              <Row>
+                <Col id="codecolumn">N</Col>
+                <Col id="datacolumn">미재생</Col>
+              </Row>
+            </Rows>
+          </Dataset>
+        </Combo>
+        <Button id="btn_search00" taborder="9" text="조회" cssclass="btn_WF_Search" top="265" right="275" width="112" height="40" onclick="btn_search00_onclick"/>
+        <Button id="Button00" taborder="10" text="저장" cssclass="btn_WF_CRUD" top="265" right="104" width="80" height="40" onclick="Button00_onclick"/>
+        <Grid id="Grid01" taborder="11" useinputpanel="false" left="26" top="318" width="862" height="154" binddataset="ds_master" autoenter="select">
+          <Formats>
+            <Format id="default">
+              <Columns>
+                <Column size="103"/>
+                <Column size="80"/>
+                <Column size="113"/>
+                <Column size="80"/>
+                <Column size="80"/>
+                <Column size="80"/>
+                <Column size="143"/>
+                <Column size="80"/>
+                <Column size="80"/>
+                <Column size="80"/>
+              </Columns>
+              <Rows>
+                <Row size="24" band="head"/>
+                <Row size="24"/>
+              </Rows>
+              <Band id="head">
+                <Cell text="아이디"/>
+                <Cell col="1" text="영화명"/>
+                <Cell col="2" text="감독"/>
+                <Cell col="3" text="장르"/>
+                <Cell col="4" text="배우"/>
+                <Cell col="5" text="상영시간"/>
+                <Cell col="6" text="상영일"/>
+                <Cell col="7" text="금액"/>
+                <Cell col="8" text="현재상영작"/>
+                <Cell col="9" text="POSTER_FILE"/>
+              </Band>
+              <Band id="body">
+                <Cell edittype="normal" text="bind:MOVIE_ID"/>
+                <Cell col="1" edittype="normal" text="bind:TITLE"/>
+                <Cell col="2" edittype="normal" text="bind:DIRECTOR"/>
+                <Cell col="3" edittype="normal" text="bind:GENRE_ID"/>
+                <Cell col="4" edittype="normal" text="bind:ACTORS"/>
+                <Cell col="5" edittype="normal" text="bind:RUNTIME"/>
+                <Cell col="6" displaytype="date" edittype="date" text="bind:RELEASE_DATE"/>
+                <Cell col="7" edittype="normal" text="bind:TICKET_PRICE"/>
+                <Cell col="8" edittype="normal" text="bind:NOW_PLAYING"/>
+                <Cell col="9" edittype="normal" text="bind:POSTER_FILE"/>
+              </Band>
+            </Format>
+          </Formats>
+        </Grid>
+        <Static id="Static00" taborder="13" text="공통 Service" cssclass="sta_WF_SearchLabel" left="22" top="6" width="327" height="30"/>
+        <Static id="Static01" taborder="14" text="사용자 Service" cssclass="sta_WF_SearchLabel" left="22" top="232" width="327" height="30"/>
+        <Combo id="cbo_type" taborder="15" left="25" top="43" width="150" height="28" codecolumn="codecolumn" datacolumn="datacolumn" index="0" onitemchanged="Combo01_onitemchanged" value="0" text="이름">
+          <Dataset id="innerdataset">
+            <ColumnInfo>
+              <Column id="codecolumn" size="256"/>
+              <Column id="datacolumn" size="256"/>
+            </ColumnInfo>
+            <Rows>
+              <Row>
+                <Col id="codecolumn">0</Col>
+                <Col id="datacolumn">이름</Col>
+              </Row>
+              <Row>
+                <Col id="codecolumn">1</Col>
+                <Col id="datacolumn">아이디</Col>
+              </Row>
+            </Rows>
+          </Dataset>
+        </Combo>
+        <Button id="Button02" taborder="16" text="신규" cssclass="btn_WF_CRUD" top="36" width="80" height="40" right="191" onclick="Button02_onclick"/>
+        <Button id="Button03" taborder="17" text="삭제" cssclass="btn_WF_CRUD" top="36" right="21" width="80" height="40" onclick="Button03_onclick"/>
+        <Button id="Button04" taborder="18" text="신규" cssclass="btn_WF_CRUD" top="265" right="188" width="80" height="40" onclick="Button04_onclick"/>
+        <Button id="Button05" taborder="19" text="삭제" cssclass="btn_WF_CRUD" top="265" right="21" width="80" height="40" onclick="Button05_onclick"/>
+        <Button id="btn_search01" taborder="20" text="조회" cssclass="btn_WF_Search" top="516" right="21" width="112" height="40" onclick="btn_search01_onclick"/>
+        <Edit id="Edit02" taborder="21" onkeydown="Edit00_onkeydown" left="174" top="523" width="140" height="28"/>
+        <Grid id="Grid02" taborder="22" binddataset="ds_total" autoenter="select" useinputpanel="false" left="20" top="568" right="20" height="131" onvscroll="Grid02_onvscroll">
+          <Formats>
+            <Format id="default">
+              <Columns>
+                <Column size="40"/>
+                <Column size="80"/>
+                <Column size="122"/>
+                <Column size="105"/>
+                <Column size="146"/>
+                <Column size="172"/>
+                <Column size="80"/>
+                <Column size="107"/>
+                <Column size="289"/>
+              </Columns>
+              <Rows>
+                <Row size="24" band="head"/>
+                <Row size="24"/>
+              </Rows>
+              <Band id="head">
+                <Cell/>
+                <Cell col="1" text="아이디"/>
+                <Cell col="2" text="패스워드"/>
+                <Cell col="3" text="성명"/>
+                <Cell col="4" text="영문명"/>
+                <Cell col="5" text="휴대폰번호"/>
+                <Cell col="6" text="직책"/>
+                <Cell col="7" text="부서"/>
+                <Cell col="8" text="주소"/>
+              </Band>
+              <Band id="body">
+                <Cell expr="expr:currow+1"/>
+                <Cell col="1" edittype="normal" text="bind:USER_ID"/>
+                <Cell col="2" edittype="normal" text="bind:PASSWORD"/>
+                <Cell col="3" edittype="normal" text="bind:USER_NAME"/>
+                <Cell col="4" edittype="normal" text="bind:EN_NAME"/>
+                <Cell col="5" edittype="normal" text="bind:CELL_PHONE"/>
+                <Cell col="6" edittype="normal" text="bind:JOB_POSITION"/>
+                <Cell col="7" edittype="normal" text="bind:DEPT_ID"/>
+                <Cell col="8" edittype="normal" text="bind:ADDRESS"/>
+              </Band>
+            </Format>
+          </Formats>
+        </Grid>
+        <Static id="Static02" taborder="24" text="Scroll 시 Paging 조회" cssclass="sta_WF_SearchLabel" left="22" top="486" width="327" height="30"/>
+        <Combo id="cbo_type00" taborder="25" value="0" text="이름" codecolumn="codecolumn" datacolumn="datacolumn" index="0" onitemchanged="Combo01_onitemchanged" left="25" top="523" width="150" height="28">
+          <Dataset id="innerdataset">
+            <ColumnInfo>
+              <Column id="codecolumn" size="256"/>
+              <Column id="datacolumn" size="256"/>
+            </ColumnInfo>
+            <Rows>
+              <Row>
+                <Col id="codecolumn">0</Col>
+                <Col id="datacolumn">이름</Col>
+              </Row>
+              <Row>
+                <Col id="codecolumn">1</Col>
+                <Col id="datacolumn">아이디</Col>
+              </Row>
+            </Rows>
+          </Dataset>
+        </Combo>
+      </Layout>
+    </Layouts>
+    <Objects>
+      <Dataset id="ds_cond" firefirstcount="0" firenextcount="0" useclientlayout="false" updatecontrol="true" enableevent="true" loadkeymode="keep" loadfiltermode="keep" reversesubsum="false">
+        <ColumnInfo>
+          <Column id="ID" type="STRING" size="256"/>
+        </ColumnInfo>
+        <Rows>
+          <Row/>
+        </Rows>
+      </Dataset>
+      <Dataset id="ds_list" firefirstcount="0" firenextcount="0" useclientlayout="false" updatecontrol="true" enableevent="true" loadkeymode="keep" loadfiltermode="keep" reversesubsum="false">
+        <ColumnInfo>
+          <Column id="_chk" type="string" size="256"/>
+          <Column id="USER_ID" type="string" size="16"/>
+          <Column id="USER_NAME" type="string" size="20"/>
+          <Column id="EN_NAME" type="string" size="20"/>
+          <Column id="COMP_PHONE" type="string" size="20"/>
+          <Column id="PHONE" type="string" size="20"/>
+          <Column id="CELL_PHONE" type="string" size="20"/>
+          <Column id="COMPANY" type="string" size="20"/>
+          <Column id="JOB_POSITION" type="string" size="20"/>
+          <Column id="ASSIGNMENT" type="string" size="20"/>
+          <Column id="OFFICER_YN" type="string" size="1"/>
+          <Column id="FAX" type="string" size="20"/>
+          <Column id="ZIP_CODE" type="string" size="10"/>
+          <Column id="ADDRESS" type="string" size="100"/>
+          <Column id="COMP_ZIP_CODE" type="string" size="10"/>
+          <Column id="COMP_ADDRESS" type="string" size="100"/>
+          <Column id="EMAIL" type="string" size="30"/>
+          <Column id="DEPT_ID" type="string" size="16"/>
+          <Column id="PASSWORD" type="string" size="16"/>
+        </ColumnInfo>
+      </Dataset>
+      <Dataset id="ds_master">
+        <ColumnInfo>
+          <Column id="_chk" type="string" size="256"/>
+          <Column id="MOVIE_ID" type="string" size="16"/>
+          <Column id="TITLE" type="string" size="50"/>
+          <Column id="DIRECTOR" type="string" size="50"/>
+          <Column id="GENRE_ID" type="string" size="16"/>
+          <Column id="ACTORS" type="string" size="100"/>
+          <Column id="RUNTIME" type="bigdecimal" size="3"/>
+          <Column id="RELEASE_DATE" type="date" size="10"/>
+          <Column id="TICKET_PRICE" type="bigdecimal" size="6"/>
+          <Column id="NOW_PLAYING" type="string" size="1"/>
+          <Column id="POSTER_FILE" type="string" size="1000"/>
+        </ColumnInfo>
+      </Dataset>
+      <Dataset id="ds_detail"/>
+      <Dataset id="ds_temp"/>
+      <Dataset id="ds_total" firefirstcount="0" firenextcount="0" useclientlayout="false" updatecontrol="true" enableevent="true" loadkeymode="keep" loadfiltermode="keep" reversesubsum="false">
+        <ColumnInfo>
+          <Column id="_chk" type="string" size="256"/>
+          <Column id="USER_ID" type="string" size="16"/>
+          <Column id="USER_NAME" type="string" size="20"/>
+          <Column id="EN_NAME" type="string" size="20"/>
+          <Column id="COMP_PHONE" type="string" size="20"/>
+          <Column id="PHONE" type="string" size="20"/>
+          <Column id="CELL_PHONE" type="string" size="20"/>
+          <Column id="COMPANY" type="string" size="20"/>
+          <Column id="JOB_POSITION" type="string" size="20"/>
+          <Column id="ASSIGNMENT" type="string" size="20"/>
+          <Column id="OFFICER_YN" type="string" size="1"/>
+          <Column id="FAX" type="string" size="20"/>
+          <Column id="ZIP_CODE" type="string" size="10"/>
+          <Column id="ADDRESS" type="string" size="100"/>
+          <Column id="COMP_ZIP_CODE" type="string" size="10"/>
+          <Column id="COMP_ADDRESS" type="string" size="100"/>
+          <Column id="EMAIL" type="string" size="30"/>
+          <Column id="DEPT_ID" type="string" size="16"/>
+          <Column id="PASSWORD" type="string" size="16"/>
+        </ColumnInfo>
+      </Dataset>
+    </Objects>
+    <Bind>
+      <BindItem id="item0" compid="div_Search.edt_id" propid="value" datasetid="ds_con" columnid="ID"/>
+    </Bind>
+    <Script type="xscript5.0"><![CDATA[/**************************************************************************************************
+ * 01. 업무구분				: 
+ * 02. 화 면 명				: 
+ * 03. 화면설명				:  
+ * 04. 관련 화면 및 서비스	: 
+ * 05. 관련 테이블명			: 
+ * 06. 작 성 자				: 
+ * 07. 작 성 일				: 
+ * 08. 수정이력
+ **************************************************************************************************
+ *    수정일            이름        사유
+ **************************************************************************************************
+ *    
+ *************************************************************************************************/
+
+//-------------------------------------------------------------------------------------------------
+// 1. 공통함수 include
+//-------------------------------------------------------------------------------------------------
+include "lib::comForm.xjs";
+include "lib::comTransaction.xjs";
+
+//-------------------------------------------------------------------------------------------------
+// Form 전역변수 선언
+//-------------------------------------------------------------------------------------------------
+
+//페이징 제어변수
+this.bPageSearch = true;
+this.nPageIndex = 1;
+this.nPageUnit = 5;
+this.nPageSize = 5;
+
+//-------------------------------------------------------------------------------------------------
+// 2. Form 함수 정의
+//-------------------------------------------------------------------------------------------------
+this.form_onload = function(obj:Form, e:nexacro.LoadEventInfo)
+{
+	// Form Load 시 필수로 호출
+	this.gfn_formOnLoad(obj);
+
+	//화면 초기설정
+	this.fn_init();
+}
+
+//초기설정
+this.fn_init = function()
+{
+	//공통코드 설정
+}
+
+//화면종료 시 공통호출함수
+this.fn_close = function()
+{
+	//TO-DO : 닫기 전 Validation체크
+	
+	return true;
+}
+
+//-------------------------------------------------------------------------------------------------
+// 3. Transaction 함수 정의
+//-------------------------------------------------------------------------------------------------
+
+//조회
+//1. 조회 함수는 fn_search로 작성한다.
+//2. 조회 Transaction에 대한 구분은 transaction id 로 기술한다.
+//3. 조회 후 Callback 함수는 fn_search 함수 다음에 위치하며 함수명은 fn_searchCallback 으로 작성한다.
+
+
+/**
+ * @class gfn_transaction
+ * @param sSvcId {string} transaction 아이디
+ * @param sInDatasets {string} input datasets
+ * @param sOutDatasets {string} output datasets
+ * @param sCallbackFunc {string} callback 함수
+ * @param oConfig {object} 기타 속성 Object
+ 
+		* Object 속성 목록(controller, service, method, querylist, async, waitcursor, argument)
+		
+		1. 공통속성
+			- async : true(비동기, 기본값), false(동기)
+			- waitcursor : true(사용, 기본값), false(미사용)
+			- argument : 파라미터
+			
+		2. 공통 서비스 속성
+			- method : 서비스 Method 명 (※getList, saveAll, create, get, update 중 사용)
+			- querylist : querySet에 대한 query id 목록 (ex) querySet1=createXPUser,updateXPUser,removeXPUser
+			
+		3. 사용자 서비스 속성
+			- controller : 사용자가 추가한 Controller 명
+			- service : 사용자가 추가한 Service 명
+			- method :  사용자가 추가한 Method 명
+ * @return None
+ */  
+ 
+this.fn_search = function(svcId)
+{
+	switch(svcId)
+	{
+		case "searchlist" :
+			//조회조건 설정
+			this.ds_cond.clear();
+			this.ds_cond.addColumn("SEARCH_KEYWORD", "string");
+			this.ds_cond.addColumn("SEARCH_CONDITION", "string");
+			this.ds_cond.addRow();
+			this.ds_cond.setColumn(0, "SEARCH_KEYWORD", this.Edit00.value);
+			this.ds_cond.setColumn(0, "SEARCH_CONDITION", this.cbo_type.value);
+			
+			//Transaction 호출
+			var sSvcId = svcId;
+			var sInDatasets = "querySet1=ds_cond";
+			var sOutDatasets = "ds_list=querySet1";
+			var sCallbackFunc = "fn_searchCallback";			
+
+			var oConfig = {method:"getList", querylist:"querySet1=findXPUserList"};
+			
+			this.gfn_transaction(sSvcId, sInDatasets, sOutDatasets, sCallbackFunc, oConfig);
+									
+			break;
+			
+		case "searchlist_user" :
+			//조회조건 설정
+			this.ds_cond.clear();
+			this.ds_cond.addColumn("SEARCH_NOW_PLAYING", "string");
+			this.ds_cond.addColumn("SEARCH_TITLE", "string");
+			this.ds_cond.addRow();
+			this.ds_cond.setColumn(0, "SEARCH_NOW_PLAYING", this.Combo00.value);
+			this.ds_cond.setColumn(0, "SEARCH_TITLE", this.Edit01.value);
+			
+			//Transaction 호출
+			var sSvcId = svcId;
+			var sInDatasets = "dsSearch=ds_cond";
+			var sOutDatasets = "ds_master=dsResult";
+			var sCallbackFunc = "fn_searchCallback";
+			var oConfig = {controller:"spp.do", service:"npQueryMovieService", method:"getList"};
+			
+			this.gfn_transaction(sSvcId, sInDatasets, sOutDatasets, sCallbackFunc, oConfig);
+						
+			break;
+			
+		case "searchlist_page" :
+			//조회조건 설정
+			this.ds_cond.clear();
+			this.ds_cond.addColumn("SEARCH_KEYWORD", "string");
+			this.ds_cond.addColumn("SEARCH_CONDITION", "string");
+			this.ds_cond.addRow();
+			this.ds_cond.setColumn(0, "SEARCH_KEYWORD", this.Edit00.value);
+			this.ds_cond.setColumn(0, "SEARCH_CONDITION", this.cbo_type.value);
+			
+			//제어변수 추가
+			this.ds_cond.addConstColumn("pageIndex", this.nPageIndex);
+			this.ds_cond.addConstColumn("pageSize", this.nPageSize);
+			this.ds_cond.addConstColumn("pageUnit", this.nPageUnit);
+			
+			//Transaction 호출
+			var sSvcId = svcId;
+			var sInDatasets = "querySet1=ds_cond";
+			var sOutDatasets = "ds_temp=querySet1";
+			var sCallbackFunc = "fn_searchCallback";			
+
+			var oConfig = {method:"getPagingList", querylist:"querySet1=findXPUserList"};
+			
+			this.gfn_transaction(sSvcId, sInDatasets, sOutDatasets, sCallbackFunc, oConfig);
+									
+			break;				
+		default : 
+			break;
+	}
+}
+
+//조회 callback
+this.fn_searchCallback = function(svcId, errorCode, errorMsg)
+{
+	if(errorCode < 0){
+		return;
+	}
+	
+	switch(svcId)
+	{
+		case "searchlist" :
+			trace(this.ds_list.saveXML());
+			break;
+			
+		case "searchlist_user" :
+			trace(this.ds_master.saveXML());			
+			break;
+			
+		case "searchlist_page" :
+			//조회된 데이타가 있는경우 데이타셋을 Merge한다.
+			if(this.ds_temp.rowcount > 0)
+			{
+				this.bPageSearch = true;
+				this.ds_total.appendData(this.ds_temp);
+			}
+			break;	
+			
+		default : 
+			break;
+	}	
+}
+
+//저장
+//1. 저장 함수는 fn_save로 작성한다.
+//2. 저장 Transaction에 대한 구분은 transaction id 로 기술한다.
+//3. 저장 후 Callback 함수는 fn_save 함수 다음에 위치하며 함수명은 fn_saveCallback 으로 작성한다.
+this.fn_save = function(svcId)
+{
+	switch(svcId)
+	{
+		case "savelist" :
+			//Transaction 호출
+			var sSvcId = svcId;
+			var sInDatasets = "querySet1=ds_list:U";
+			var sOutDatasets = "";
+			var sCallbackFunc = "fn_saveCallback";
+			var oConfig = {method:"saveAll", querylist:"querySet1=createXPUser,updateXPUser,removeXPUser"};
+			
+			this.gfn_transaction(sSvcId, sInDatasets, sOutDatasets, sCallbackFunc, oConfig);		
+			break;
+			
+		case "savelist_user" :
+			//Transaction 호출
+			var sSvcId = svcId;
+			var sInDatasets = "dsSave=ds_master:U";
+			var sOutDatasets = "";
+			var sCallbackFunc = "fn_saveCallback";
+			var oConfig = {controller:"spp.do", service:"npQueryMovieService", method:"saveAll"};
+			
+			this.gfn_transaction(sSvcId, sInDatasets, sOutDatasets, sCallbackFunc, oConfig);		
+			break;
+						
+		default : 
+			break;
+	}
+}
+
+//저장 callback
+this.fn_saveCallback = function(svcId, errorCode, errorMsg)
+{
+	if(errorCode < 0){
+		return;
+	}
+	
+	switch(svcId)
+	{
+		case "savelist" :
+			break;
+		default : 
+			break;
+	}	
+}
+
+//-------------------------------------------------------------------------------------------------
+// 4. User 함수 정의
+//-------------------------------------------------------------------------------------------------
+//
+this.fn_userfunc = function()
+{
+}
+
+//-------------------------------------------------------------------------------------------------
+// 5. Event 함수 정의
+//------------------------------------------------------------------------------------------------
+
+//조회버튼클릭 시 
+this.div_search_btn_search_onclick = function(obj:Button,  e:nexacro.ClickEventInfo)
+{
+	//TO-DO : 조회 전 필요한 경우 Validation체크
+	
+	//조회
+	this.fn_search("searchlist");
+}
+
+this.Edit00_onkeydown = function(obj:Edit, e:nexacro.KeyEventInfo)
+{
+	if(e.keycode == 13)
+	{
+		this.fn_search("searchlist");
+	}
+}
+
+//신규버튼 클릭 시
+this.Button02_onclick = function(obj:Button,  e:nexacro.ClickEventInfo)
+{
+	var nRow = this.ds_list.addRow();
+}
+
+//저장버튼 클릭 시
+this.Button01_onclick = function(obj:Button,  e:nexacro.ClickEventInfo)
+{
+	//TO-DO : 저장 전 필요한 경우 Validation체크
+	
+	//저장하시겠습니까?
+	if(!this.gfn_confirm("beforesave")) return false;
+	
+	//저장
+	this.fn_save("savelist");
+}
+
+//삭제
+this.Button03_onclick = function(obj:Button,  e:nexacro.ClickEventInfo)
+{
+	this.ds_list.deleteRow(this.ds_list.rowposition);
+}
+
+
+
+//사용자서비스 조회
+this.btn_search00_onclick = function(obj:Button,  e:nexacro.ClickEventInfo)
+{
+	this.fn_search("searchlist_user");
+}
+
+//사용자서비스 저장
+this.Button00_onclick = function(obj:Button,  e:nexacro.ClickEventInfo)
+{
+	this.fn_save("savelist_user");
+}
+
+//사용자서비스 신규
+this.Button04_onclick = function(obj:Button,  e:nexacro.ClickEventInfo)
+{
+	var nRow = this.ds_master.addRow();
+}
+
+//사용자서비스 삭제
+this.Button05_onclick = function(obj:Button,  e:nexacro.ClickEventInfo)
+{
+	this.ds_master.deleteRow(this.ds_master.rowposition);
+}
+
+
+//Scrolling 시 Paging 처리
+this.btn_search01_onclick = function(obj:Button,  e:nexacro.ClickEventInfo)
+{
+	//최초 조회시 초기화
+	this.ds_total.clearData();
+	this.nPageIndex = 1;
+	this.bPageSearch = false;
+	
+	//조회
+	this.fn_search("searchlist_page");
+}
+
+this.Grid02_onvscroll = function(obj:Grid, e:nexacro.ScrollEventInfo)
+{
+	if(e.type.indexOf("lastover") > -1)
+	{
+		//조회가 완료된 후에만 조회가능
+		if(this.bPageSearch)
+		{
+			this.nPageIndex++;
+			this.bPageSearch = false;
+			this.fn_search("searchlist_page");
+		}
+	}	
+}
+
+
+]]></Script>
+  </Form>
+</FDL>

@@ -1,0 +1,118 @@
+<chapter id="simpleweb_jquery_controller_simplejsoncontroller">
+
+		<title>SimpleJSONController</title>
+		<para>
+		SimpleJSONController는 JSON 객체를 Datatype으로 사용하는 jQuery의 Component를 지원하기 위해 개발되었다. 
+		현재 SimpleServiceController를 상속받아 구현되어 있으므로
+		Service Layer에서의 Transfer Object로는 VO 객체를 사용하도록 한다. 
+		물론, jQuery를 연계하기 위해 SimpleJSONController를 사용할 때 Service Layer의 변경이나 추가 코딩없이
+		기존의 비즈니스 서비스를 호출하여 사용할 수 있다. 
+		현재 simpleweb plugin에서는 jQuery의 Grid, Autocomplete, UI, Tree, Combobox 컴포넌트 예제를 제공하고 있으며 SimpleJSONContorller는
+		주로 Grid(jqgrid plugin), Autocomplete(autocomplete plugin) 기능에 대한 데이터를 셋팅해 주는 역할을 하고 있다.
+		jQuery의 Grid 컴포넌트(jqgrid plugin)에서 Grid를 그릴 때 비즈니스 서비스 호출후 리턴되는 Page 객체를 바로 받을 수 있는 것이 아닌 Grid에서 
+		인식할 수 있는 Key와 Value 쌍의 Map 형태로 Model 객체에 셋팅해줘야 한다. 
+		다음은 SimpleJSONController 클래스의 일부이다. </para>
+		<programlisting language="java"><![CDATA[if (methodInfo.getOutputParam()[0].getName().equals(
+		ANYFRAME_COMMON_PAGE)) {
+	//.... 
+	jsonModel.put("page", ((Page) result).getCurrentPage() + "");		
+	jsonModel.put("total", ((Page) result).getMaxPage() + "");
+	jsonModel.put("records", ((Page) result).getTotalCount());
+	jsonModel.put("rows", ((Page) result).getList());
+}]]></programlisting>
+	<para>위의 코드에서 볼 수 있듯이 비즈니스 서비스 수행후 Return 값이 org.anyframe.pagination.Page 타입일 경우 jQuery의 Grid에서 인식 할 수 있는 key값으로 jsonModel 객체를 
+	셋팅해 주고있다. Autocomplete 컴포넌트를 사용할 때도 마찬가지로 출력해줄 데이터를 Autocomplete 컴포넌트에서 인식할 수 있는 key값의 데이터로 셋팅해 주는 
+	부분이 필요하다. </para>
+	<programlisting language="java"><![CDATA[jsonModel.put("autoData", resultValue);]]></programlisting>
+	<para>이렇게 생성된 jsonModel 객체는 Controller의 Model 객체로 셋팅되어 View로 전달되게 된다.
+	위의 코드는 이미 SimpleJSONContorller에 구현되어 있으므로 개발자가 jQuery의 Grid, AutoComplete의 기능을 사용할 때에는
+	추가 코딩없이 사용할 수 있다. 이 외의 특정 Key 값의 데이터를 필요로 하는 또 다른 컴포넌트를 도입하거나 추가 기능이 필요하게 되면
+	SimpleJSONController를 확장하여 사용하면 된다. 
+	다음은 simpleweb-jquery plugin 설치로 추가된 Spring 속성 정의 파일 simpleweb-jquery-servlet.xml 파일의 일부이다.</para>
+	<programlisting language="xml"><![CDATA[<bean name="/simplejson.do" class="]]><emphasis role="bold"><![CDATA[org.anyframe.simpleweb.controller.SimpleJSONController]]></emphasis><![CDATA[">
+	<property name="beanMethodsRepo" ref="beanMethodsRepo" />
+</bean>]]></programlisting>
+	<para>위와 같이 정의하면 "/simplejson.do" 요청을 SimpleJSONController가 처리하게 된다.
+	</para>
+</chapter>	
+	
+<chapter id="simpleweb_jquery_controller_simplejsontreecontroller">
+		<title>SimpleJSONTreeController</title>
+		<para>SimpleJSONTreeController는 jQuery의 Tree 컴포넌트(jstree)를 지원하기 위한 공통 Controller이다. SimpleJSONTreeController는 SimpleJSONController를 상속받아 구현되어 있다.
+		기본적으로 Tree에서 필요한 노드 정보를 셋팅하기 위해 Tree 컴포넌트에서 인식 할 수 있는 형태의 도메인 객체를 사용해야한다. 이는 Anyframe에서 제공하는 Attributes, Data, JStreeNode 도메인 클래스를
+		사용하도록 하고 추가적인 Attribute의 설정이 필요할 경우 해당 클래스를 확장하여 추가하도록 한다. 
+		SimpleJSONTreeController는 기본적으로 사용자가 클릭하는 노드의 ID를 가지고 비즈니를 서비스를 호출하고 그 ID에 따라 알맞은 Tree에 출력할 데이터를 셋팅해 주게 된다. 
+		이 때, Tree의 데이터를 셋팅하는 것은 화면 시나리오에 따라 달라질 수 있으므로 개발자는 반드시 SimpleJSONTreeController 클래스를
+		상속 받고 setTreeData() 메소드를 오버라이드 하여 구현해야한다. 
+		다음은 simpleweb-jquery plugin 설치로 추가된 SimpleJSONTreeController를 확장하여 구현한 MovieTreeController.java 파일의 일부이다.
+		<programlisting language="java"><![CDATA[public class MovieTreeController extends ]]><emphasis role="bold"><![CDATA[SimpleJSONTreeController]]></emphasis><![CDATA[ {
+
+	@Override
+	protected void ]]><emphasis role="bold"><![CDATA[setTreeData]]></emphasis><![CDATA[(ArrayList<JSTreeNode> listNode, List jsTreeList,
+			String id) throws Exception {
+		JSTreeNode node;
+		Attributes attr;
+		String data;
+		if (id.equals("0")) {
+			//...중략...
+			// id가 0일 경우 Tree 데이터 셋팅하는 로직 구현
+			}
+		} else {
+			//...중략...
+			// id가 0이 아닐 경우 Tree 데이터 셋팅하는 로직 구현
+			}
+		}
+	}
+}]]></programlisting>
+		</para>
+</chapter>
+
+<chapter id="simpleweb_jquery_controller_fileuploadcontroller">
+		<title>FileUploadController</title>
+		<para>jQuery의 uploadify 컴포넌트를 사용하여 지정된 파일을 특정 경로에 업로드 하고 파일의 정보를 셋팅하여 
+		Model 객체로 리턴한다. 다음은 FileUploadController 코드의 일부이다. </para>
+		<programlisting language="java"><![CDATA[public class FileUploadController extends AbstractController{
+	protected IdGenService idGenService;
+
+	public void setIdGenerationService(IdGenService idGenService) {
+		this.idGenService = idGenService;
+	}
+	
+	private String uploadPath = "/upload/";
+	
+	public void setUploadPath(String uploadPath){
+		this.uploadPath = uploadPath;
+	}
+	
+	@Override
+	protected ModelAndView handleRequestInternal(HttpServletRequest request,
+			HttpServletResponse response) throws Exception {
+
+		MultipartFile file = (MultipartFile) ((MultipartHttpServletRequest)request).getFile("fileData");
+		String fileDir = request.getParameter("fileDir");
+		
+		String destDir = request.getSession().getServletContext().getRealPath(
+				uploadPath);
+		
+		if (fileDir == null) {
+			fileDir = idGenService.getNextStringId();
+			FileUtils.forceMkdir(new File(destDir + "/" + fileDir));
+		}
+
+		file.transferTo(new File(destDir + "/" + fileDir, file.getOriginalFilename()));
+		
+		Map<String, Object> result = new HashMap<String, Object>();
+		result.put("fileNm", file.getOriginalFilename());
+		result.put("fileSize", file.getSize());
+		result.put("fileDir", fileDir);
+
+		ModelAndView mav = new ModelAndView("jsonView");
+		mav.addObject("uploadResult", result);
+
+		return mav;
+	}
+
+}]]></programlisting>
+	<para>위의 코드에서 볼수 있듯이 "fileData"를 MultipartFile 타입의 객체로 받고 Request Parameter의 "fileDir"를 받아
+	파일 업로드 로직을 수행한 후 "fileNm", "fileSize", "fileDir"의 데이터를 셋팅한 후 화면에 그 결과를 리턴한다.</para>
+</chapter>

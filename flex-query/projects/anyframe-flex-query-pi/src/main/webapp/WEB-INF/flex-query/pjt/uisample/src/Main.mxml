@@ -1,0 +1,124 @@
+<?xml version="1.0" encoding="utf-8"?>
+<s:Application xmlns:fx="http://ns.adobe.com/mxml/2009"
+			   xmlns:s="library://ns.adobe.com/flex/spark"
+			   xmlns:mx="library://ns.adobe.com/flex/mx"
+			   xmlns:login="samples.login.*"
+			   xmlns:samples="samples.*"
+			   minWidth="955" minHeight="600"
+			   creationComplete="init()" initialize="initApp()"
+			   pageTitle="Anyframe Flex Plugin Main">
+
+	<fx:Style source="assets/css/main.css"/>
+
+	<fx:Script>
+		<![CDATA[ 
+			import mx.events.ListEvent;
+			import mx.events.StyleEvent;
+			
+			import samples.domain.User;
+			
+			public var visitHistory:SharedObject;
+			
+			public var loginUser:User; 
+			
+			public var loginId:String; 
+			
+			private function initApp() : void{
+				loginUser = new User();
+				loginUser.userId = "alex.test";
+			}		
+			
+			public function init():void {
+			}
+			
+			private function showApp(event:StyleEvent):void {
+			}
+			
+			private function applyEffect(event:Event):void{
+				rotateEffect.originX = event.currentTarget.width/2;
+				rotateEffect.originY = event.currentTarget.height/2;
+				rotateEffect.play();
+			}
+			
+			private function treeItemClick(event:ListEvent):void{
+				viewstack.selectedIndex = leftTree.selectedItem.@index;
+			}
+			
+			private function initTree():void { 
+				leftTree.expandItem(sampleList.getItemAt(0), true);
+			} 
+		]]>
+	</fx:Script>
+	
+	<fx:Declarations>
+		<!-- Place non-visual elements (e.g., services, value objects) here -->
+		<mx:Rotate id="rotateEffect" target="{viewstack}"/>
+	</fx:Declarations>
+	<s:layout>
+		<s:VerticalLayout gap="0" horizontalAlign="center"/>
+	</s:layout>
+	
+	<s:BorderContainer width="100%" height="80" backgroundColor="#FFFFFF" backgroundImage="@Embed(source='/assets/images/bg_main.jpg')" borderVisible="false">
+	<mx:HBox width="100%" height="60" color="#000000" paddingLeft="10" verticalAlign="middle">
+		<mx:Image source="@Embed('/assets/images/toplogo.jpg')" width="200"/>
+	</mx:HBox>
+	</s:BorderContainer>
+	<mx:HBox width="100%" height="480" horizontalGap="0" horizontalScrollPolicy="off"
+			 verticalScrollPolicy="off">
+		<mx:VBox width="217" height="100%" horizontalAlign="center" horizontalScrollPolicy="off"
+				 paddingLeft="10" paddingRight="10" paddingTop="10" verticalScrollPolicy="off">
+			<!-- Tree -->
+			<mx:Tree id="leftTree" showRoot="true" labelField="@label" width="192" height="100%" 
+					 change="treeItemClick(event)" verticalScrollPolicy="off" useRollOver="true"
+					 rollOverColor="#DBE6F1" selectionColor="#C3C5CE" creationComplete="initTree();">
+				<mx:XMLListCollection id="sampleList">
+					<fx:XMLList> 
+						<item label="SAMPLES" isBranch="true">
+							<item label="SAMPLE01" index="1"/>
+							<item label="SAMPLE02" index="2"/>
+							<item label="SAMPLE03" index="3"/>
+							<item label="SAMPLE04" index="4"/>
+							<item label="SAMPLE05" index="5"/>
+							<item label="SAMPLE06" index="6"/>
+							<item label="SAMPLE07" index="7"/>
+							<item label="SAMPLE08" index="8"/>
+						</item>
+					</fx:XMLList>
+				</mx:XMLListCollection>
+			</mx:Tree>
+		</mx:VBox>
+		<mx:VBox width="810" height="100%" horizontalAlign="center" horizontalScrollPolicy="off"
+				 paddingLeft="0" paddingRight="10" paddingTop="10" verticalScrollPolicy="off">
+			<mx:ViewStack id="viewstack" width="100%" height="100%" creationPolicy="auto" change="applyEffect(event)">
+				
+				<mx:Canvas id="ViewHome" width="100%" height="100%">
+					<mx:Image width="100%" height="100%" horizontalAlign="center" verticalAlign="top"
+							  source="@Embed('/assets/images/bg_mainimg2.png')" />	
+				</mx:Canvas>
+				
+				<samples:Sample01GRD id="Sample01GRD" showEffect="WipeDown" hideEffect="WipeUp" />
+				
+				<samples:Sample02GRDFRM id="Sample02GRDFRM" showEffect="WipeDown" hideEffect="WipeUp" />
+				
+				<samples:Sample03GRDPOP id="Sample03GRDPOP" showEffect="WipeDown" hideEffect="WipeUp" />
+				
+				<samples:Sample04GRDTAB id="Sample04GRDTAB" showEffect="WipeDown" hideEffect="WipeUp" />
+				
+				<samples:Sample05GRDGRD id="Sample05GRDGRD" showEffect="WipeDown" hideEffect="WipeUp" />
+				
+				<samples:Sample06GRDGRD id="Sample06GRDGRD" showEffect="WipeDown" hideEffect="WipeUp" />
+				
+				<samples:Sample07TRVGRD id="Sample07TRVGRD" showEffect="WipeDown" hideEffect="WipeUp" />
+				
+				<samples:Sample08TRVFRM id="Sample08TRVFRM" showEffect="WipeDown" hideEffect="WipeUp" />
+				
+			</mx:ViewStack>
+		</mx:VBox>
+		<!-- main --> 
+	</mx:HBox>
+	<mx:HBox width="100%" horizontalScrollPolicy="off" paddingLeft="10" paddingTop="10" horizontalAlign="left"
+			 verticalAlign="bottom" verticalScrollPolicy="off">
+		<mx:Text text="Copyright 2011 http://www.anyframejava.org" color="#666666"/>
+	</mx:HBox>
+
+</s:Application>

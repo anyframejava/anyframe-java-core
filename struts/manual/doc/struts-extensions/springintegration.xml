@@ -1,0 +1,105 @@
+<chapter id="struts_extensions_springintegration">
+	<title>Spring Integration</title>
+
+	<para>
+		Anyframe의 Struts 기반에서 웹 어플리케이션을 개발할 때 일반적으로 MVC의 Model 영역에 해당하는
+  		비즈니스 객체는 Spring Framework 기반의 Bean 형태로 개발될 것이다. 따라서, 프리젠테이션 로직을 수행하는 Action
+  		클래스에서 비즈니스 로직을 수행하는 Spring Framework 기반의 서비스에 접근하기 위한 방법에 대해서 살펴보도록 하자.
+  	</para>
+
+  	<section id="struts_extensions_springintegration_configuration">
+    	<title>Configuration</title>
+
+    	<para>Spring Framework과 연계를 위해 다음과 같은 속성 정의가 필요하다.</para>
+
+		<itemizedlist>
+			<listitem>
+				<para>web.xml에 org.springframework.web.context.ContextLoaderListener를 listener로 등록</para>
+			</listitem>
+			<listitem>
+				<para>web.xml에 context-param 요소로 contextConfigLocation 등록</para>
+			</listitem>
+    	</itemizedlist>
+
+		<section id="struts_extensions_springintegration_configuration_context">
+      		<title>ContextLoaderListener, ContextConfigLocation 정의</title>
+
+      		<para>
+      			Servlet 2.3 이상에서는 웹 컨텍스트(하나의 웹 어플리케이션) 라이프 사이클 관련 이벤트인
+      			ServletContextEvent와 Session의 라이프 사이클 관련 이벤트인 HttpSessionEvent가 추가되었다.
+      			따라서 web.xml에 이러한 웹 어플리케이션의 이벤트에 응답하는 Context Event Listner를 등록해줌으로써 해당
+      			Listener 구현 클래스에서 웹 컨텍스트 초기나 종료 시점에 무언가 유용한 작업 (ex. 어플리케이션의 초기 속성 로드,
+      			서비스 컨테이너 기동 등..)을 수행할 수 있도록 해야 한다.
+      			org.springframework.web.context.ContextLoaderListener 클래스는 ServletContextListener 인터페이스를
+      			구현하고 있으며, 어플리케이션이 Servlet 컨테이너에 의해 처음으로 로드되는 시점에 발생하는 startup 이벤트와
+      			어플리케이션이 종료되는 시점에 발생하는 shutdown 이벤트를 처리할 수 있도록 다음의 두 메소드를 포함한다.
+      		</para>
+
+      		<itemizedlist>
+        		<listitem>
+          			<para>
+          				contextInitialized : root WebApplicationContext를 초기화하고 contextConfigLocation에 정의된
+          				Bean 속성 정의 XML 파일을 기반으로 관련된 서비스 인스턴스를 생성한다.
+          			</para>
+        		</listitem>
+        		<listitem>
+			        <para>contextDestroyed : 관련 자원을 release하고 root WebApplicationContext를 close 한다.</para>
+   			    </listitem>
+      		</itemizedlist>
+
+      		<para>
+      			다음은 Spring Framework 연계를 위한  web.xml (ContextLoaderListener, contextConfigLocation) 의 일부이다.
+      			<programlisting language="xml"><![CDATA[<context-param>
+    <param-name>]]><emphasis role="bold">contextConfigLocation</emphasis><![CDATA[</param-name>
+    <param-value>]]>
+   <emphasis role="bold">     /config/spring/context-*.xml</emphasis><![CDATA[
+    </param-value>
+</context-param>
+<listener>
+    <listener-class>]]><emphasis role="bold">org.springframework.web.context.ContextLoaderListener</emphasis><![CDATA[</listener-class>
+</listener>]]></programlisting>
+			</para>
+		</section>
+	</section>
+
+	<section id="struts_extensions_springintegration_action">
+    	<title>Action</title>
+
+	    <para>
+	    	다음은 DefaultDispatchActionSupport를 상속받아 상품조회 기능에 대한 프리젠테이션 로직을 처리하는 ProductAction클래스의
+	    	일부이다. Super Class(AbstractActionSupport)에서 제공하는 getService 메소드를 호출하여 접근해야 할 비즈니스 서비스를
+	    	얻어내고 있음을 알 수 있다.
+	    	<programlisting language="java">public class ProductAction extends DefaultDispatchActionSupport {
+    // 중략 ...
+    public ActionForward list(ActionMapping mapping, ActionForm form,
+        HttpServletRequest request, HttpServletResponse response) throws Exception {
+        ProductService productService = 
+           <emphasis role="bold"> (ProductService) getService("productService");</emphasis>
+
+        ProductSearchVO searchVO = new ProductSearchVO();
+
+        ProductForm productForm = (ProductForm) form;
+        BeanUtils.copyProperties(searchVO, productForm);
+        
+        // 중략 ...
+
+        Page resultPage = productService.getPagingList(searchVO);
+
+        request.setAttribute("search", searchVO);
+        request.setAttribute("productList", resultPage.getList());
+        request.setAttribute("size", resultPage.getTotalCount());
+        request.setAttribute("pagesize", resultPage.getPagesize());
+        request.setAttribute("pageunit", resultPage.getPageunit());
+
+        return mapping.findForward("success_list");
+    }
+}
+</programlisting>
+		</para>
+
+		<para>
+			Spring Framework 기반의 서비스 개발시 Bean 속성 정의에 관련된 자세한 사항은  <ulink url="http://dev.anyframejava.org/docs/anyframe/plugin/essential/core/1.5.0-SNAPSHOT/reference/htmlsingle/core.html#core_spring_ioc">Spring IOC</ulink>를 참고한다.
+		</para>
+	</section>
+</chapter>
+

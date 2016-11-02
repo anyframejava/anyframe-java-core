@@ -1,0 +1,133 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN"
+"http://www.w3.org/TR/html4/loose.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+
+<head>
+<meta http-equiv="content-type" content="text/html; charset=UTF-8" />
+<title>[Dialog] Dynamic Content Sample</title>
+<link href="../../../common/css/smoothness/jquery-ui-1.10.0.custom.css"	rel="stylesheet">
+<script src="../../../common/exlibs/jquery-1.9.0.js"></script>
+<script src="../../../common/exlibs/jquery-ui-1.10.0.custom.js"></script>
+
+<link type="text/css" rel="stylesheet" href="../../../common/css/style.css"/>
+<link type="text/css" rel="stylesheet" href="sub_css/dynamic_content.css">
+
+<script type="text/javascript">
+
+	var ENV = {
+		ID_DIALOG : "#dialog",
+		ID_START : "#start",
+		ID_RESULT : "#result"
+	};
+
+	var dialogDynamicContentView = {
+
+		init : function() {
+
+			initDialog();
+			
+			function initDialog() {
+				$(ID_DIALOG).dialog();
+			};
+		},
+
+		setContentStr : function(target, str) {
+			$(target).append("<p>" + str + "</p>");
+		},
+
+		setContentRadio : function(target, name, value) {
+			for (i = 0; i < value.length; i++) {
+				$(target).append(
+						"<input type='radio' name='"+name+"' value='"+value[i]+"''>"	+ value[i]);
+			};
+		},
+
+		_getRadioVal : function(inputName) {
+			return $("input[name=" + inputName + "]:radio:checked").val();
+		},
+
+		_showResult : function(resultStr, inputName) {
+			var selected = "";
+			if(inputName){
+				selected = this._getRadioVal(inputName);
+			}else{
+				selected = "없음";
+			};
+			
+			this.setContentStr(ENV.ID_RESULT, "언어사용여부 : " + resultStr);
+			this.setContentStr(ENV.ID_RESULT, "사용언어 : " + selected);
+		},
+
+		setBtn : function(target, btnStr, resultStr, inputName) {
+			$(target).dialog("option", "buttons", [ {
+				text : btnStr,
+				click : function() {
+						$(ENV.ID_RESULT).children().remove();
+						dialogDynamicContentView._showResult(resultStr, inputName);
+						$(target).dialog("close");
+				}
+			} ]);
+		}
+
+	};
+
+	$(document).ready(function() {
+
+				$(ENV.ID_START).button();
+
+				$(ENV.ID_DIALOG).dialog(
+						{
+							autoOpen : false,
+							buttons : {
+								"Yes" : function() {
+									var result = "yes";
+									$(this).text("");
+									dialogDynamicContentView.setContentStr(this, "which language?");
+									dialogDynamicContentView.setContentRadio(this, "language", [ "C", "C++", "Java", "Javascript", "jQuery" ]);
+									dialogDynamicContentView.setBtn(this, "submit", result, "language");
+								},
+								"No" : function() {
+									var result = "no";
+									$(this).text("");
+									dialogDynamicContentView.setContentStr(this, "Thank you :)");
+									dialogDynamicContentView.setBtn(this, "close", result);
+								}
+							}
+						});
+
+				//버튼 바 : 버튼 중앙정렬
+				$(ENV.ID_DIALOG).next().children().css({
+					"float" : "none",
+					"text-align" : "center"
+				});
+
+				$(ENV.ID_START).on("click", function() {
+					$(ENV.ID_DIALOG).dialog("open");
+				});
+
+			});
+</script>
+</head>
+<body>
+
+<div class="title">설문응답형 Dialog</div>
+
+	<div class="button-div">
+		<button id="start" type="button">Start</button>
+	</div>
+
+
+	<div id="dialog" class="dialog-content" title="설문응답">
+		<p class="text-area">Do you use programming language?</p>
+	</div>
+	
+	
+<div class="title">응답결과</div>
+<div id="result" class= "display-area">
+</div>
+
+
+	
+	
+</body>
+</html>

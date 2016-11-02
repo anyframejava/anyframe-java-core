@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:context="http://www.springframework.org/schema/context"
+	xmlns:util="http://www.springframework.org/schema/util"
+	xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-4.0.xsd
+		http://www.springframework.org/schema/context http://www.springframework.org/schema/context/spring-context-4.0.xsd
+		http://www.springframework.org/schema/util http://www.springframework.org/schema/util/spring-util-4.0.xsd">
+
+	<util:properties id="contextProperties" location="classpath:context.properties"/>
+       
+    <!-- the DataSource (parameterized for configuration via a PropertyPlaceHolderConfigurer) -->
+    <bean id="dataSource" class="com.mchange.v2.c3p0.ComboPooledDataSource" destroy-method="close">
+        <property name="driverClass" value="#{contextProperties.driver}"/> 
+        <property name="jdbcUrl" value="#{contextProperties.url}"/>
+        <property name="user" value="#{contextProperties.username}"/>
+        <property name="password" value="#{contextProperties.password}"/>
+        <property name="minPoolSize" value="5"/>
+        <property name="acquireIncrement" value="5"/>
+        <property name="maxPoolSize" value="15"/>
+    </bean>
+
+</beans>

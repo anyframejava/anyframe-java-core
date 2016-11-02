@@ -1,0 +1,167 @@
+<chapter id="jasperreports_integration_configuration">
+	<title>Configuration</title>
+	<para>
+		JasperReports와 Spring MVC를 연계하기 위해서는 다음과 같이 2가지 XML 파일에 대해서 설정해야
+    	한다.
+    </para>
+
+    <itemizedlist>
+		<listitem>
+        	<para>
+        		web.xml 작성하기
+        	</para>
+      	</listitem>
+
+      	<listitem>
+        	<para>
+        		jasperreports-servlet.xml 작성하기
+        	</para>
+      	</listitem>
+    </itemizedlist>
+
+    <para>
+    	이 매뉴얼상에 언급된 소스 코드들은 모두 Eclipse에 Import한 anyframe-jasperreports-pi 프로젝트에
+    	예제로 들어있다.
+    </para>
+
+    <section id="jasperreports_integration_configuration_webxml">
+		<title>web.xml 작성하기</title>
+
+      	<para>
+      		anyframe-jasperreports-pi/src/main/webapp/WEB-INF 폴더 하위의 web.xml에 아래 내용을 추가해
+      		넣는다. 기존의 Anyframe 관련 설정은 그대로 두고 JasperReports 관련한 설정만 더 추가한
+      		것이다.
+      	</para>
+
+      	<para>
+      		<emphasis role="bold">jasperaction</emphasis> 서블릿의 클래스인
+      		DispatcherServlet은 Spring MVC 클래스로 url이 /reports/ pattern으로 요청되면 모두
+      		jasperaction 서블릿을 통해 서비스 되도록 설정하고 있다.<emphasis role="bold">
+      		image</emphasis> 서블릿은 HTML 형태로 Reporting 하는 경우 image 파일을 처리해주기 위해서 필요한
+      		서블릿이다. HTML 형태로 Reporting 하지 않는다면 설정할 필요가 없다. 
+      		<programlisting language="xml"><![CDATA[<servlet>
+    <servlet-name>action</servlet-name>
+    <servlet-class>
+        org.springframework.web.servlet.DispatcherServlet
+    </servlet-class>
+    <init-param>
+        <param-name>contextConfigLocation</param-name>
+        <!-- in classpath, jasper-servlet.xml exists -->
+        <param-value>classpath:/spring/*-servlet.xml</param-value>
+    </init-param>
+    <load-on-startup>1</load-on-startup>
+</servlet>
+  
+<servlet-mapping>
+    <servlet-name>action</servlet-name>
+    <url-pattern>*.do</url-pattern>
+</servlet-mapping>
+
+<!--jasperreports-configuration-START-->
+<servlet>
+    <servlet-name>image</servlet-name>
+    <servlet-class>net.sf.jasperreports.j2ee.servlets.ImageServlet</servlet-class>
+</servlet>
+
+<servlet-mapping>
+    <servlet-name>action</servlet-name>
+    <url-pattern>/reports/*</url-pattern>
+</servlet-mapping>
+
+<servlet-mapping>
+    <servlet-name>image</servlet-name>
+    <url-pattern>/reports/image</url-pattern>
+</servlet-mapping>
+<!--jasperreports-configuration-END-->]]></programlisting></para>
+    </section>
+
+    <section id="jasperreports_integration_configuration_servletxml">
+		<title>jasperreports-servlet.xml 작성하기</title>
+
+		<para>
+			action 서블릿의 클래스인 DispatcherServlet이 사용하는 빈 설정파일에
+      		jasperreports-servlet.xml 파일을 등록해주도록 한다.
+      	</para>
+
+      	<itemizedlist>
+        	<listitem>
+          		<para>
+          			<emphasis role="bold">reportViewResolver</emphasis> - views.properties 형태로 URL이 요청된 경우 해당 Controller 클래스의 viewReport 메소드를 수행시킨다.
+          		</para>
+        	</listitem>
+
+        	<listitem>
+          		<para>
+          			<emphasis role="bold">reportView </emphasis>- 가장 핵심이 되는 빈으로
+          			Controller로부터 뷰 이름을 알아낸 결과 reportView인 경우,
+          			ExtendedJasperReportsMultiFormatView 클래스를 실행시킨다. reportView 빈의
+          			Property 설명은 다음과 같다.
+          		</para>
+
+          		<informaltable>
+          			<caption>reportView 빈의 Property 설명</caption>
+            		<tgroup cols="3">
+            			<colspec colnum="1" colname="col1" colwidth="2*" />
+						<colspec colnum="2" colname="col2" colwidth="4*" />
+						<colspec colnum="3" colname="col3" colwidth="4*" />
+              			<thead>
+                			<row>
+                  				<entry align="center">Property</entry>
+                  				<entry align="center">Value</entry>
+                  				<entry align="center">설명</entry>
+                			</row>
+              			</thead>
+
+              			<tbody>
+                			<row>
+                  				<entry>url</entry>
+                  				<entry>/WEB-INF/jsp/jasperreports/report/movieReport.jasper</entry>
+                  				<entry>jrxml 파일을 JasperAssistant Preview를 이용하여 컴파일한 결과 파일</entry>
+                			</row>
+
+                			<row>
+                  				<entry>jdbcDataSource</entry>
+                  				<entry>dataSource</entry>
+                  				<entry>현재 HSQL DB를 사용하는 dataSource 빈 사용</entry>
+                			</row>
+
+                			<row>
+                  				<entry>exporterParameters - ...IMAGES_URI</entry>
+                  				<entry>image?image=</entry>
+                  				<entry>
+                  				HTML Reporting 시 이미지 파일을 출력하기 위해서 web.xml에 정의한 image
+                  				서블릿을 사용하도록 설정
+                  				</entry>
+                			</row>
+
+                			<row>
+                  				<entry>exporterParameters - ...CHARACTER_ENCODING</entry>
+                  				<entry>euc-kr</entry>
+                  				<entry>Reporting 시 한글 깨짐을 방지하기 위해서 설정</entry>
+                			</row>
+              			</tbody>
+            		</tgroup>
+          		</informaltable>
+        	</listitem>
+      	</itemizedlist>
+
+      	<para>
+        <programlisting language="xml"><![CDATA[<bean id="reportViewResolver" class="org.springframework.web.servlet.view.ResourceBundleViewResolver">
+    <property name="order" value="1"/>
+    <property name="basename" value="jasperreports.views"/>
+</bean> 
+   
+<bean id="reportView" class="org.anyframe.jasperreports.view.ReportsMultiFormatView">
+    <property name="url" value="/WEB-INF/jsp/jasperreports/report/movieReport.jasper"/>
+    <property name="jdbcDataSource" ref="dataSource"/>
+    <property name="exporterParameters">
+        <map>
+            <entry key="net.sf.jasperreports.engine.export.JRHtmlExporterParameter.IMAGES_URI" value="image?image="/>
+            <entry key="net.sf.jasperreports.engine.JRExporterParameter.CHARACTER_ENCODING" value="euc-kr"/>
+        </map>
+    </property>
+</bean>]]></programlisting>
+		</para>
+	</section>
+</chapter>
+

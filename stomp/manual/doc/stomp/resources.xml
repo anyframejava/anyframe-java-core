@@ -1,0 +1,35 @@
+	<chapter id="stomp_resources">
+		<title>Resources</title>
+		<section id="stomp_samples_reference">
+			<title>참고자료</title>
+			<para>
+				<ulink url="http://docs.spring.io/spring/docs/4.0.3.RELEASE/spring-framework-reference/htmlsingle/#websocket-stomp">http://docs.spring.io/spring/docs/4.0.3.RELEASE/spring-framework-reference/htmlsingle/#websocket-stomp</ulink>
+			</para>
+		</section>
+		<section id="stomp_caution">
+			<title>주의 사항</title>
+			<para>
+						<note>
+										<title>플러그인으로 설치 후 웹어플리케이션 실행 시 주의사항</title>
+										<para>
+										sockjs/stomp/websocket 3개의 플러그인은 최소 JDK 및 Servlet version의 기준이 다르다. (JDK : 1.6 -> 1.7, Servlet : 2.5 -> 3.0)
+					따라서, 이 세 가지 플러그인을 설치 후 실행 시에는, 그 전에 수작업으로 관련 내용을 변경해 주어야 한다. (물론 WAS는 해당 스펙을 지원하는 버전이어야 한다.)
+										</para>
+
+										
+					<para>Servlet 3.0 version 사용을 위해 web.xml 파일을 다음과 같이 수정한다. (타 플러그인을 위해 원래는 2.5로 지정되어 있다.)
+					</para>
+					<programlisting language="xml"><![CDATA[<web-app xmlns="http://java.sun.com/xml/ns/javaee"
+    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+    xsi:schemaLocation="
+        http://java.sun.com/xml/ns/javaee
+        http://java.sun.com/xml/ns/javaee/web-app_3_0.xsd"
+    version="3.0">]]></programlisting>
+										
+					<para>sockjs/stomp/websocket 3개의 플러그인을 다시 uninstall하고 version 기준을 낮추고 싶다면, 마찬가지로 수작업을 통해 원복하도록 한다.
+					</para>
+
+						</note>
+			</para>
+		</section>
+	</chapter>

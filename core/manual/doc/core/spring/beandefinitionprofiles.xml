@@ -1,0 +1,518 @@
+<chapter id="core_spring_beandefinitionprofiles">
+	<title>Bean Definition Profiles</title>
+
+	<para>
+		실제 상황에서 필요한 가장 빈번한 요구사항은 흔히 개발과 운영으로 구분되는 각각의 환경 하에서 서로 다른 bean 설정을 등록하도록 하는 기능이다. 
+		아마 가장 흔한 사례는 개발 단계에서 일반적인 datasource 를 사용하다가 운영 단계로 배포시 JNDI 기반의 datasource 를 사용하도록 하는 것이다. 
+		Spring 3.1 버전부터 제공되는 Bean Definition Profiles 기능은 이런 경우를 해결하기 위한 일반적인 방법을 제시한다.
+ 	</para>
+
+	<section id="core_spring_beandefinitionprofiles_xml_profiles">
+		<title>XML Profiles</title>
+
+	  	<para>
+	  		다음은 movieService, movieDao와 함께 standalone 형태의 datasource를 설정한 context-movie.xml 예제이다.
+		</para>
+        <programlisting language="xml"><![CDATA[<beans xmlns="http://www.springframework.org/schema/beans" 
+    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" 
+    xmlns:jdbc="http://www.springframework.org/schema/jdbc" 
+    xsi:schemaLocation="..."> 
+
+    <bean id="movieService"
+        class="org.anyframe.plugin.core.moviefinder.service.impl.MovieServiceImpl"> 
+        <property name="movieDao" ref="movieDao"/> 
+    </bean> 
+
+    <bean id="movieDao"
+        class="org.anyframe.plugin.core.moviefinder.service.impl.MovieDao">
+        <property name="dataSource" ref="dataSource"/>        
+    </bean>
+	
+    <]]><emphasis role="bold">bean id="dataSource" class="org.springframework.jdbc.datasource.SimpleDriverDataSource"</emphasis><![CDATA[> 
+        <]]><emphasis role="bold">property name="driverClass" value="org.hsqldb.jdbcDriver" /</emphasis><![CDATA[> 
+        <]]><emphasis role="bold">property name="url" value="jdbc:hsqldb:file:/./db/sampledb" /</emphasis><![CDATA[> 
+    </]]><emphasis role="bold">property name="username" value="sa" /</emphasis><![CDATA[> 
+</beans>]]></programlisting>
+		<para>
+			상기 예제에서는 Spring 3.0 버전부터 제공되는 jdbc 네임스페이스를 활용하여 내장 데이터베이스 유형을 간단히 설정하고 있다.
+			만약 운영단계에서  JNDI 기반의 datasource를 사용해야 한다면 위의 설정은 다음과 같이 변경되어야 한다.
+		</para>	
+		<programlisting language="xml"><![CDATA[<beans ...> 
+    <bean id="movieService" ... /> 
+
+    <bean id="movieDao"
+        class="org.anyframe.plugin.core.moviefinder.service.impl.MovieDao">
+        <property name="dataSource" ref="dataSource"/>        
+    </bean>
+
+    <]]><emphasis role="bold">jee:jndi-lookup id="dataSource" jndi-name="java:comp/env/jdbc/datasource"/</emphasis><![CDATA[> 
+</beans>]]></programlisting>
+    	<para>
+   			각 설정들은 개별적으로 잘 동작하겠지만, 개발과 운영이 전환되어야 하는 상황에서는 위의 두가지 설정 내용을 어떻게 매끄럽게 전환할 것인지 고려해야 할 것이다. 
+   			다양한 해결책이 있겠지만 일반적으로 시스템의 환경 변수를 활용하거나, ${placeholder] 토큰을 활용한 <![CDATA[<import/>]]> XML 태그를 사용하여 해결한다.   	
+    	</para>
+		<section id="core_spring_beandefinitionprofiles_xml_profiles_example">
+			<title>XML 기반의 Profile 적용</title>
+	    	<para>
+	   			Spring 3.1 버전부터는 <![CDATA[<beans/>]]> 태그가 profile 개념을 포함하게 되었다. 
+	   			예제에서의 설정 파일은 이제 다음과 같이 3개의 설정으로 나뉘어 질 수 있는데, context-datasource-*.xml 파일의 profile 속성을 유의해서 살펴보기 바란다.
+	   			아래 설정 파일은 context-movie.xml 설정 파일의 내용이다.
+	    	</para>
+			<programlisting language="xml"><![CDATA[<beans ...> 
+    <bean id="movieService" ... /> 
+
+    <bean id="movieDao"
+        class="org.anyframe.plugin.core.moviefinder.service.impl.MovieDao">
+        <property name="dataSource" ref="dataSource"/>        
+    </bean>
+</beans>]]></programlisting>
+	    	<para>
+	   			다음은 context-datasource-dev.xml 설정 파일의 내용이다. beans 태그의 profile 속성으로 "dev" 가 정의되어 있다.
+	    	</para>
+			<programlisting language="xml"><![CDATA[<beans ]]><emphasis role="bold">profile="dev"</emphasis><![CDATA[> 
+    <bean id="dataSource" class="org.springframework.jdbc.datasource.SimpleDriverDataSource">
+        <property name="driverClass" value="org.hsqldb.jdbcDriver" />
+        <property name="url" value="jdbc:hsqldb:file:/./db/sampledb" />
+        <property name="username" value="sa" />
+    </bean>
+</beans>]]></programlisting>
+	    	<para>
+	   			다음은 context-datasource-production.xml 설정 파일의 내용이다. beans 태그의 profile 속성으로 "production"이 정의되어 있다.
+	    	</para>
+			<programlisting language="xml"><![CDATA[<beans ]]><emphasis role="bold">profile="production"</emphasis><![CDATA[> 
+    <jee:jndi-lookup id="dataSource" jndi-name="java:comp/env/jdbc/datasource"/>
+</beans>]]></programlisting>
+		</section>
+		<section id="core_spring_beandefinitionprofiles_xml_profiles_nested">
+			<title>중첩된 beans 태그</title>
+	    	<para>
+	   			Spring 3.1 버전부터는 <![CDATA[<beans/>]]> 태그를 동일한 파일 내에 중첩하여 사용할 수 있다. 
+	   			앞 절에서 설명된 3개의 xml 파일을 하나의 설정 파일로 정의하면 다음과 같다.
+	    	</para>
+			<programlisting language="xml"><![CDATA[<beans xmlns="http://www.springframework.org/schema/beans" 
+    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" 
+    xmlns:jdbc="http://www.springframework.org/schema/jdbc" 
+    xsi:schemaLocation="..."> 
+
+    <bean id="movieService"
+        class="org.anyframe.plugin.core.moviefinder.service.impl.MovieServiceImpl"> 
+        <property name="movieDao" ref="movieDao"/> 
+    </bean> 
+
+    <bean id="movieDao"
+        class="org.anyframe.plugin.core.moviefinder.service.impl.MovieDao">
+        <property name="dataSource" ref="dataSource"/>        
+    </bean>
+			
+    <beans profile="dev"> 
+		<bean id="dataSource" class="org.springframework.jdbc.datasource.SimpleDriverDataSource">
+    		<property name="driverClass" value="org.hsqldb.jdbcDriver" />
+    		<property name="url" value="jdbc:hsqldb:file:/./db/sampledb" />
+    		<property name="username" value="sa" />
+		</bean>
+    </beans>
+
+    <beans profile="production"> 
+        <jee:jndi-lookup id="dataSource" jndi-name="java:comp/env/jdbc/datasource"/>
+    </beans>
+</beans>]]></programlisting>
+	    	<para>
+	   			이러한 중첩 <![CDATA[<beans/>]]> 태그는 Beans Definitioin Profiles 용이 아닌 일반적인 용도로도 유용하다. 
+	   			예를 들어 <![CDATA[<beans/>]]> 태그의 default-* 속성들 (default-lazy-init, default-init-method, default-destory-method 등)을 여러개의  bean 에 한번에 정의하고자 할 때에도 활용할 수 있다.	   			
+	    	</para>
+		</section>
+	</section>
+
+	<section id="core_spring_beandefinitionprofiles_activation_profiles">
+		<title>Profile 활성화</title>	
+		<section id="core_spring_beandefinitionprofiles_activation_profiles_programmatic">
+			<title>Programmatic Profile 활성화</title>
+	    	<para>
+	   			이제 코드에서 명시적으로 ApplicationContext를 통하여, 앞서 정의된 profile 을 활성화 시키는 방법을 살펴보기로 하자. 
+	   			다음 코드는 "dev" profile 을 활성화 시키는 예제이다.
+	    	</para>
+			<programlisting language="java">GenericXmlApplicationContext ctx = new GenericXmlApplicationContext(); 
+<emphasis role="bold">ctx.getEnvironment().setActiveProfiles("dev");</emphasis> 
+ctx.load("classpath:/spring/context-*.xml"); 
+ctx.refresh();</programlisting>
+	    	<para>
+	   			위의 코드를 실행시키는 경우 각 설정 파일들은 컨테이너에서 다음과 같이 처리된다. 
+	    	</para>
+			<itemizedlist>
+				<listitem>
+					<para>
+						context-movie.xml 은 profile 속성이 정의되지 않았으므로 항상 파싱되어 처리된다.
+					</para>
+				</listitem>
+				<listitem>
+					<para>
+						context-datasource-dev.xml 은 profile="dev"로 설정되어 있으며, 현재 "dev" profile 이 활성되어 있으므로 파싱되어 처리된다. 
+					</para>
+				</listitem>				
+				<listitem>
+					<para>
+						context-datasource-production.xml 은 profile="production"로 설정되어 있으며, 현재 "production" profile 이 활성되어 있지 않으므로 처리가 생략된다. 
+					</para>
+				</listitem>
+			</itemizedlist>
+		</section>
+		<section id="core_spring_beandefinitionprofiles_activation_profiles_declaritive">
+			<title>선언적인 Profile 활성화</title>
+	    	<para>
+	   			기 정의된 profile은 programmatic한 방식 이외에도 시스템 환경 변수, JVM 시스템 프로퍼티, web.xml내 서블릿 컨텍스트 파라메터 혹은 JNDI 엔트리 등으로 설정된 spring.profiles.active 속성을 통하여 
+	   			선언적인 방법을 통하여 활성화시킬 수 있다.
+	    	</para>
+			<programlisting language="xml"><![CDATA[<servlet> 
+    <servlet-name>dispatcher</servlet-name> 
+    <servlet-class>org.springframework.web.servlet.DispatcherServlet</servlet-class> 
+    <init-param> 
+        <param-name>]]><emphasis role="bold">spring.profiles.active</emphasis><![CDATA[</param-name> 
+        <param-value>]]><emphasis role="bold">production</emphasis><![CDATA[</param-value> 
+    </init-param> 
+</servlet>]]></programlisting>
+		</section>
+		<section id="core_spring_beandefinitionprofiles_activation_profiles_multiple">
+			<title>다중 Profile 활성화</title>
+	    	<para>
+	   			하나의 Profile 만 활성화시킬 수 있는 것이 아니라, 여러개의 Profile 을 활성화 시킬 수도 있다. 다음은 programmatic 한 예제이다.
+	    	</para>
+			<programlisting language="java">ctx.getEnvironment().setActiveProfiles(<emphasis role="bold">"profile1", "profile2"</emphasis>);</programlisting>
+	    	<para>
+	   			선언적인 방법으로는, spring.profiles,active 값은 콤마로 구분된 profile 명을 리스트 형태로 가질 수 있다.
+	    	</para>
+			<programlisting language="java">-Dspring.profiles.active=<emphasis role="bold">"profile1,profile2"</emphasis></programlisting>
+	    	<para>
+	   			다음과 같이 Bean 정의시 하나 이상의 profile 을 표기할 수도 있다.
+	    	</para>
+			<programlisting language="xml"><![CDATA[<beans ]]><emphasis role="bold">profile="profile1,profile2"</emphasis><![CDATA[> 
+    ... 
+</beans>]]></programlisting>
+		</section>
+		
+		<section id="core_spring_beandefinitionprofiles_activation_profiles_annotation">
+			<title>@ActiveProfiles</title>
+			<para>
+				Annotation을 활용하여 profile을 활성화시킬 수 있다.
+				다음코드는 "Prod" profile을 활성시키는 예제이다.
+			</para>
+			<programlisting language="java">
+			<emphasis role="bold">@ActiveProfiles("Prod")</emphasis>
+	public class ProdProfileTestWithAnnotation extends
+			DefaultProfileTestWithAnnotation {
+	
+		@Autowired
+		private Movie movie;
+		
+		@Test
+		@Override
+		public void getMovie() {
+			assertNotNull(movie);
+			assertEquals("Prod", movie.getTitle());
+		}
+	
+	}
+			</programlisting>
+		</section>
+		
+		<section id="core_spring_beandefinitionprofiles_activation_profiles_activeprofilesresolver">
+			<title>ActiveProfilesResolver</title>
+			<para>
+				@ActiveProfile의 속성으로 resolver를 등록하여 사용자가 직접 programmatic한 방식으로 활성화시킬 수 있다.
+				다음코드는 MovieActiveProfileResolver를 resolver로 지정한 예제이다.
+			</para>
+			<programlisting language="java">
+			<emphasis role="bold">@ActiveProfiles(resolver = MovieActiveProfileResolver.class)</emphasis>
+	public class DevProfileTestWithAnnotation extends
+			DefaultProfileTestWithAnnotation {
+	
+		@Autowired
+		private Movie movie;
+		
+		@Test
+		@Override
+		public void getMovie() {
+			assertNotNull(movie);
+			assertEquals("Dev", movie.getTitle());
+		}
+	
+	}
+			</programlisting>
+			<para>
+				org.springframework.test.context.ActiveProfilesResolver Interface의 resolve 메소드를 구현한다
+				다음 코드는 @ActiveProfile과 유사하게 동작하는 예제이다.
+			</para>
+			<programlisting language="java">
+			<![CDATA[
+			public class MovieActiveProfileResolver implements ActiveProfilesResolver{
+	
+		@Override
+		public String[] resolve(Class<?> testClass) {
+			String profile = null;
+			
+			if(testClass.getName().contains("Dev")){
+				profile = "Dev";
+			}else if (testClass.getName().contains("Prod")){
+				profile = "Prod";
+			}
+			
+	        return new String[] {profile};
+		}
+	
+	}]]></programlisting>
+		</section>
+		
+	</section>
+	
+	<section id="core_spring_beandefinitionprofiles_annotation_profiles">
+		<title>@Profile</title>
+
+	  	<para>
+	  		Bean Definition Profiles 정의시 Annotation 을 활용하여 정의할 수도 있는데, 이때 사용되는 것이 @Profile 태그이다.
+	  		이해를 위하여 다음장에 이어서 나오는 Java Based Configuration 의 내용을 함께 참고하는 것이 좋다.
+		</para>
+
+		<section id="core_spring_beandefinitionprofiles_annotation_profiles_example">
+			<title>Annotation 기반의 Profile 적용</title>		
+		  	<para>
+		  		XML 기반의 Profile 적용에서 언급되었던 XML 설정 파일의 내용을 Annotation 기반의 Java Based Configuration 으로 변환하면 다음과 같다.
+			</para>
+			<programlisting language="java">@Configuration
+<emphasis role="bold">@Profile("dev")</emphasis>
+public class StandaloneDataConfig {
+
+    @Bean
+    public DataSource dataSource() {
+        return new SimpleDriverDataSource(
+            new org.hsqldb.jdbcDriver(),
+            "jdbc:hsqldb:file:/./db/sampledb",
+            "sa",
+            "");
+    }
+
+}</programlisting>
+			<programlisting language="java">@Configuration
+<emphasis role="bold">@Profile("production")</emphasis>
+public class JndiDataConfig {
+
+    @Bean
+    public DataSource dataSource() throws Exception {
+        Context ctx = new InitialContext();
+        return (DataSource) ctx.lookup("java:comp/env/jdbc/datasource");
+    }
+
+}</programlisting>
+		  	<para>
+		  		동일한 방법으로 XML 기반의 MovieService 설정은 다음과 같이 Java Based Configuratoin 으로 변경될 수 있다.
+			</para>
+			<programlisting language="java">@Configuration
+public class MovieServiceConfig {
+
+    <emphasis role="bold">@Autowired</emphasis>
+    <emphasis role="bold">DataSource dataSource;</emphasis>
+
+    @Bean
+    public MovieService movieService() {
+        return new MovieService(movieDao());
+    }
+
+    @Bean
+    public MovieDao movieDao() {
+        <emphasis role="bold">return new MovieDao(dataSource);</emphasis>
+    }
+}</programlisting>
+		  	<para>
+		  		이 때 @AutoWired 를 통해 인젝션되는 dataSource 는 다음과 같이 활성화된 profile 에 따라 결정된다. 
+			</para>
+			<programlisting language="java">AnnotationConfigApplicationContext ctx = new AnnotationConfigApplicationContext();
+<emphasis role="bold">ctx.getEnvironment().setActiveProfiles("dev");</emphasis>
+ctx.scan("org.anyframe.plugin.core.moviefinder");
+ctx.refresh();</programlisting>
+		</section>
+	</section>
+	
+	<section id="core_spring_beandefinitionprofiles_annotation_conditional">
+		<title>@Conditional</title>
+		
+		<para>
+			Spring 4에서부터 @Conditional Annotation을 이용해 원하는 조건의 Bean을 Filtering할 수 있다.
+			이는 @Profile와 비슷한 기능으로 사용자가 직접 programmatic한 방식으로  서로 다른 bean 설정을 등록할 수도 있다.
+		</para>
+		<!-- 3.4.1 -->
+		<section id="core_spring_beandefinitionprofiles_annotation_conditional_example">
+			<title>Annotation 기반의 Conditional 적용</title>
+			<para>
+				사용법은 기존 @Profile과 동일하며 Conditional.class를 속성으로 사용한다.
+				이해를 위하여 다음에 나오는 Java Based Configuration 의 내용을 참고하는 것이 좋다.
+			</para>
+			
+			<programlisting language="java">@Configuration
+			public class ConditionalConfig {
+		<emphasis role="bold">
+		@Conditional(DevCondition.class)</emphasis>
+		@Bean(name="movie")
+		public Movie getDevMovie(){
+			Movie movie = new Movie();
+			movie.setTitle("Dev");
+			return movie;
+		}
+		<emphasis role="bold">
+		@Conditional(ProdCondition.class)</emphasis>
+		@Bean(name="movie")
+		public Movie getProdMovie(){
+			Movie movie = new Movie();
+			movie.setTitle("Prod");
+			return movie;
+		}
+		<emphasis role="bold">
+		@Conditional(DefaultCondition.class)</emphasis>
+		@Bean(name="movie")
+		public Movie getDefaultMovie(){
+			Movie movie = new Movie();
+			movie.setTitle("Default");
+			return movie;
+		}
+	}</programlisting>
+			<para>
+				org.springframework.context.annotation.Condition Interface의 matchs 메소드를 구현한다.
+				다음 코드는 "os.name" 환경변수에 따라 동작하는 Condition 예제이다.
+			</para>
+			<programlisting language="java">
+			public class DevCondition implements Condition {
+		
+		@Override
+		public boolean matches(ConditionContext context, AnnotatedTypeMetadata arg1) {
+			return context.getEnvironment().getProperty("os.name").contains("Linux");
+		}
+	
+	}</programlisting>
+			<programlisting language="java">
+			public class ProdCondition implements Condition {
+		
+		@Override
+		public boolean matches(ConditionContext context, AnnotatedTypeMetadata arg1) {
+			return context.getEnvironment().getProperty("os.name").contains("Windows");
+		}
+	
+	}</programlisting>
+			<programlisting language="java"><![CDATA[
+			public class DefaultCondition implements Condition {
+		
+		@Override
+		public boolean matches(ConditionContext context, AnnotatedTypeMetadata arg1) {
+			return !context.getEnvironment().getProperty("os.name").contains("Linux") &&
+					!context.getEnvironment().getProperty("os.name").contains("Windows");
+		}
+	
+	}]]></programlisting>
+		</section>
+	</section>
+	
+	<section id="core_spring_beandefinitionprofiles_environment_abstraction">
+		<title>Environment Abstraction (Environment 추상화)</title>
+		<section id="core_spring_beandefinitionprofiles_environment_abstraction_propertysource">
+			<title>PropertySources</title>
+			<para>Spring 3.1부터 제공되는 Environment 추상화 기능은 우선순위 설정이 가능한 PropertySource 에 대하여 통합 검색 옵션을 제공한다.</para>
+			<programlisting language="java">ApplicationContext ctx = new GenericApplicationContext(); 
+Environment env = ctx.getEnvironment(); 
+boolean containsFoo = env.containsProperty("foo"); 
+System.out.println("Does my environment contain the 'foo' property? " + containsFoo);</programlisting>
+			<para>
+				위의 코드를 살펴보면 'foo' 라는 속성이 현재 환경 내에서 정의되어 있는지를 확인하고 있다. 해당 속성값을 검색하기 위해 
+				Environment 객체는 PropertySource 객체들에 대하여 검색을 수행한다.
+			</para> 
+			<para>
+				ProyertySource 란 키-값 쌍으로 구성된 속성들의 추상화를 나타내는데, Spring 의 DefaultEnvironment 는 다음과 같이 두개의 PropertySource 로 구성되어 있다.
+			</para>
+			<itemizedlist>
+				<listitem>
+					<para>
+						JVM 시스템 속성값의 집합 (System.getProierties()와 같은 방식)
+					</para>
+				</listitem>
+				<listitem>
+					<para>
+						시스템 환경 변수의 집합 (System.getenv()와 같은 방식) 
+					</para>
+				</listitem>				
+			</itemizedlist>
+			<para>
+				즉, 'foo' 라는 이름으로 시스템 속성값이 정의되어 있거나, 환경 변수가 정의되어 있다면 env.containsProperty("foo")의 값은 true 가 될 것이다. 
+				검색은 순차적으로 수행되는데, 기본적으로 시스템 속성이 환경 변수보다 우선 순위가 높다. 
+				따라서 env.getProperty("foo")을 실행하게 되면 시스템 속성값이 우선적으로 반환된다.
+				중요한 점은, 이러한 동작 원리에 대하여 설정 변경이 가능하다는 것이다. 만약 사용자 정의 PropertySource 를 만들었다면 순차적인 검색에 포함되도록 설정할 수 있다.
+			</para>
+			<programlisting language="java">ConfigurableApplicationContext ctx = new GenericApplicationContext(); 
+MutablePropertySources sources = ctx.getEnvironment().getPropertySources(); 
+sources.addFirst(new MyPropertySource());</programlisting>
+			<para>
+				위의 예제 코드에서는 MyPropertySource 를 가장 높은 우선순위로 검색되도록 추가하는 모습을 나타내고 있다. 
+				만약 원하는 값을 MyPropertySource 에서 찾지 못한다면 다른 PropertySource 에서 우선 순서에 따라 검색하게 된다.
+			</para>
+		</section>
+		<section id="core_spring_beandefinitionprofiles_environment_abstraction_propertysource_usage">
+			<title>PropertySource 활용</title>
+			<para>
+				이제 실제 개발시 어플리케이션 상에서 어떻게 Environment 와 PropertySource 를 사용할 수 있는지 살펴보도록 한다.
+			</para>
+			<orderedlist numeration="arabic" inheritnum="inherit">
+				<listitem>
+					<para>
+						<![CDATA[<import/>]]> 구문 내에서의 ${placeholder} 처리
+						<programlisting language="xml"><![CDATA[<beans> 
+    <import resource="spring/${customer}-config.xml"/> 
+</beans>]]></programlisting>
+					</para>
+					<para>
+						고객 정보에 따라 각기 다른 설정 파일을 로드해야 하는 경우 <![CDATA[<import/>]]> 구문과 placeholder 를 통해 'customer' 값을 결정하게 된다.
+						Spring 3.1 이전에는 placeholder 의 값은 오로지 JVM 시스템 속성이나 시스템 환경 변수에서만 검색되었다.
+						하지만 Spring 3.1 이후부터 Environment 추상화를 통해 검색 우선 순위를 조정할 수 있을 뿐만 아니라 사용자 정의 PropertySource 를 적절히 활용할 수 있게 되었다.
+					</para>
+				</listitem>
+				<listitem>
+					<para>
+						bean 정의내에서의 ${placeholder} 처리
+						<programlisting language="xml"><![CDATA[<context:property-placeholder location="com/bank/config/datasource.properties"/> 
+
+<bean id="dataSource" class="org.apache.commons.dbcp.BasicDataSource" destroy-method="close"> 
+    <property name="driverClass" value="${database.driver}"/> 
+    <property name="jdbcUrl" value="${database.url}"/> 
+    <property name="username" value="${database.username}"/> 
+    <property name="password" value="${database.password}"/> 
+</bean>]]></programlisting>
+					</para>
+					<para>
+						일반적으로 Spring에서 bean 정의시 사용된 ${...} placeholder 를 대치하기 위해서 PropertyPlaceholderConfigurer 나 <![CDATA[<context:property-placeholder/>]]>를 사용한다.
+						Spring 3.1 버전부터는 <![CDATA[<context:property-placeholder/>]]> 에서 더이상 PropertyPlaceholderConfigurer 를 등록하지 않고 PropertySourcesPlaceholderConfigurer 를 등록하는데,
+						이 컴포넌트는 기존과 동일하게 datasource.properties 파일 내에서 ${database.*} 속성값을 찾지만 속성값을 찾는데 실패한 경우에는 대안으로써 현재의 Environment 객체의 PropertySource 를 사용한다.
+						이러한 개선 이전에는 속성값 검색 실패시, 대안으로 오직 시스템 속성값과 환경 변수만을 사용할 수 있었지만, 이제 개발자 측면에서 더 다양한 PropertySource 를 추가적으로 활용할 수 있게 되었다.
+					</para>
+				</listitem>
+			</orderedlist>
+		</section>
+		<section id="core_spring_beandefinitionprofiles_environment_abstraction_propertysource_web">
+			<title>웹 어플리케이션내의 PropertySource 활용</title>
+			<para>
+				상당수의 Spring 기반 어플리케이션은 웹 어플리케이션이며, ApplicationContext가 ContextLoaderListener에 의해 관리된다. 
+				이제 PropertySource 를 제어하기 위하여 Spring 에서 제공하는 ApplicationContextInitializer 인터페이스를 구현하고, 서블릿 컨텍스트 파라메터에 contextInitializerClasses 값을 정의한 예제를 살펴보기로 한다.
+				web.xml 의 일부는 다음과 같다.
+				<programlisting language="xml"><![CDATA[<context-param>
+    <param-name>contextInitializerClasses</param-name>
+    <param-value>com.bank.MyInitializer</param-value>
+</context-param>]]></programlisting>
+			</para>
+			<para>
+				ApplicationContextInitializer를 구현한 에제 클래스는 다음과 같다.
+			<programlisting language="java"><![CDATA[public class MyInitializer implements ApplicationContextInitializer<ConfigurableWebApplicationContext> {
+    public void initialize(ConfigurableWebApplicationContext ctx) {
+        PropertySource ps = new MyPropertySource();
+        ctx.getEnvironment().getPropertySources().addFirst(ps);
+        // 기타 컨텍스트 초기화 작업 수행 ....
+    }
+}]]></programlisting>
+			</para>
+			<para>
+				ApplicationContextInitializer를 구현하고 이를 등록함으로써, 간단한 방법으로 웹 어플리케이션의 ApplicationContext가 refresh 되기 전에 추가 처리를 할 수 있다.  
+			</para>
+		</section>
+	</section>
+</chapter>

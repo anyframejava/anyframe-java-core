@@ -1,0 +1,576 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<FDL version="1.5">
+  <TypeDefinition url="..\default_typedef.xml"/>
+  <Form id="BRWM02F1" classname="sample10" left="0" top="0" width="1224" height="660" titletext="통합환자조회" onload="form_onload">
+    <Layouts>
+      <Layout>
+        <Div id="div_search" taborder="0" left="0" top="0" height="100" cssclass="div_WF_SearchBg" right="0">
+          <Layouts>
+            <Layout>
+              <Static id="Static00" taborder="30" text="기간" cssclass="sta_WF_SearchLabel" left="19" top="13" width="60" height="30"/>
+              <Edit id="Edit00" taborder="31" value="홍길동" left="473" top="53" width="120" height="29"/>
+              <Edit id="Edit01" taborder="32" value="541203" left="739" top="53" width="120" height="29"/>
+              <Static id="Static01" taborder="33" text="환자구분" cssclass="sta_WF_SearchLabel" left="18" top="53" width="74" height="30"/>
+              <Static id="Static02" taborder="34" text="환자명" cssclass="sta_WF_SearchLabel" left="416" top="53" width="74" height="30"/>
+              <Static id="Static03" taborder="35" text="생년월일(6자리)" cssclass="sta_WF_SearchLabel" left="613" top="51" width="122" height="30"/>
+              <Static id="Static04" taborder="36" text="관심환자만 조회" cssclass="sta_WF_SearchLabel" left="879" top="52" width="115" height="30"/>
+              <Radio id="Radio00" taborder="37" codecolumn="codecolumn" datacolumn="datacolumn" direction="vertical" left="415" top="17" width="328" height="26">
+                <Dataset id="innerdataset">
+                  <ColumnInfo>
+                    <Column id="codecolumn" size="256"/>
+                    <Column id="datacolumn" size="256"/>
+                  </ColumnInfo>
+                  <Rows>
+                    <Row>
+                      <Col id="codecolumn">1</Col>
+                      <Col id="datacolumn">1개월</Col>
+                    </Row>
+                    <Row>
+                      <Col id="codecolumn">2</Col>
+                      <Col id="datacolumn">3개월</Col>
+                    </Row>
+                    <Row>
+                      <Col id="codecolumn">3</Col>
+                      <Col id="datacolumn">6개월</Col>
+                    </Row>
+                    <Row>
+                      <Col id="codecolumn">4</Col>
+                      <Col id="datacolumn">1년</Col>
+                    </Row>
+                  </Rows>
+                </Dataset>
+              </Radio>
+              <Radio id="Radio01" taborder="38" codecolumn="codecolumn" datacolumn="datacolumn" direction="vertical" left="93" top="55" width="306" height="26">
+                <Dataset id="innerdataset">
+                  <ColumnInfo>
+                    <Column id="codecolumn" size="256"/>
+                    <Column id="datacolumn" size="256"/>
+                  </ColumnInfo>
+                  <Rows>
+                    <Row>
+                      <Col id="codecolumn">1</Col>
+                      <Col id="datacolumn">전체</Col>
+                    </Row>
+                    <Row>
+                      <Col id="codecolumn">2</Col>
+                      <Col id="datacolumn">의뢰</Col>
+                    </Row>
+                    <Row>
+                      <Col id="codecolumn">3</Col>
+                      <Col id="datacolumn">되의뢰</Col>
+                    </Row>
+                    <Row>
+                      <Col id="codecolumn">4</Col>
+                      <Col id="datacolumn">조회요청</Col>
+                    </Row>
+                  </Rows>
+                </Dataset>
+              </Radio>
+              <CheckBox id="CheckBox00" taborder="39" text="CheckBox00" left="996" top="59" width="18" height="18"/>
+              <Button id="Button00" taborder="40" text="조회" cssclass="btn_WF_Search" left="1032" top="43" width="80" height="40"/>
+              <Button id="Button01" taborder="41" text="신규" cssclass="btn_WF_CRUD" left="1122" top="43" width="80" height="40"/>
+              <Div id="div_period" taborder="42" url="comm::comm_periodCalendar.xfdl" left="93" top="15" width="304" height="29"/>
+            </Layout>
+          </Layouts>
+        </Div>
+        <Static id="Static01" taborder="1" text="H 20" visible="false" left="1" top="98" width="1224" height="20" style="background:aqua;color:darkred;align:center middle;font:10 dotum;opacity:50;"/>
+        <Div id="div_body" taborder="2" left="0" top="119" right="0" bottom="0" style="opacity:100;" cssclass="div_WF_WFBg">
+          <Layouts>
+            <Layout>
+              <Grid id="Grid00" taborder="0" binddataset="ds_list" useinputpanel="false" autofittype="col" left="20" top="24" right="20" bottom="0" oncellclick="Div01_Grid00_oncellclick">
+                <Formats>
+                  <Format id="default">
+                    <Columns>
+                      <Column size="63"/>
+                      <Column size="80"/>
+                      <Column size="80"/>
+                      <Column size="80"/>
+                      <Column size="80"/>
+                      <Column size="80"/>
+                      <Column size="80"/>
+                      <Column size="80"/>
+                      <Column size="80"/>
+                      <Column size="80"/>
+                      <Column size="80"/>
+                      <Column size="80"/>
+                    </Columns>
+                    <Rows>
+                      <Row size="40" band="head"/>
+                      <Row size="36"/>
+                    </Rows>
+                    <Band id="head">
+                      <Cell text="순번"/>
+                      <Cell col="1" text="구분"/>
+                      <Cell col="2" text="요청일"/>
+                      <Cell col="3" text="환자명"/>
+                      <Cell col="4" text="S/A"/>
+                      <Cell col="5" text="진행"/>
+                      <Cell col="6" text="진료일"/>
+                      <Cell col="7" text="진료과"/>
+                      <Cell col="8" text="진료의"/>
+                      <Cell col="9" text="특진"/>
+                      <Cell col="10" text="공개여부"/>
+                      <Cell col="11" text="관심환자"/>
+                    </Band>
+                    <Band id="body">
+                      <Cell expr="expr:currow+1"/>
+                      <Cell col="1" text="bind:GUBUN"/>
+                      <Cell col="2" text="bind:REQ_DT"/>
+                      <Cell col="3" text="bind:PATIENT_NAME"/>
+                      <Cell col="4" text="bind:SEX"/>
+                      <Cell col="5" text="bind:PROG_TYPE"/>
+                      <Cell col="6" text="bind:TREAT_DT"/>
+                      <Cell col="7" text="bind:TREAT_DEPT"/>
+                      <Cell col="8" text="bind:PHYSICIAN_NAME"/>
+                      <Cell col="9" text="bind:SPECIAL_TREAT"/>
+                      <Cell col="10" text="bind:OPEN_INFO"/>
+                      <Cell col="11" text="bind:CONCERN_PATIENT"/>
+                    </Band>
+                  </Format>
+                </Formats>
+              </Grid>
+            </Layout>
+          </Layouts>
+        </Div>
+        <Static id="Static02" taborder="3" text="H 15" visible="false" left="1" top="1" width="1222" height="15" style="background:royalblue;color:darkred;align:center middle;font:10 dotum;opacity:30;"/>
+        <Static id="Static03" taborder="4" text="H 15" visible="false" left="1" top="83" width="1222" height="15" style="background:royalblue;color:darkred;align:center middle;font:10 dotum;opacity:30;"/>
+        <Static id="Static04" taborder="5" text="W &#13;&#10;20" visible="false" left="1" top="0" width="20" height="680" style="background:tomato;color:darkred;align:center middle;font:10 dotum;opacity:50;"/>
+        <Static id="Static06" taborder="6" text="W &#13;&#10;15" visible="false" left="79" top="1" width="15" height="98" style="background:tomato;color:darkred;align:center middle;font:10 dotum;opacity:50;"/>
+        <Static id="Static07" taborder="7" text="W &#13;&#10;20" visible="false" left="398" top="1" width="20" height="98" style="background:tomato;color:darkred;align:center middle;font:10 dotum;opacity:50;"/>
+        <Static id="Static08" taborder="8" text="W &#13;&#10;20" visible="false" left="594" top="54" width="20" height="29" style="background:tomato;color:darkred;align:center middle;font:10 dotum;opacity:50;"/>
+        <Static id="Static09" taborder="9" text="W &#13;&#10;15" visible="false" left="725" top="54" width="15" height="29" style="background:tomato;color:darkred;align:center middle;font:10 dotum;opacity:50;"/>
+        <Static id="Static10" taborder="10" text="W &#13;&#10;20" visible="false" left="860" top="54" width="20" height="29" style="background:tomato;color:darkred;align:center middle;font:10 dotum;opacity:50;"/>
+        <Static id="Static11" taborder="11" text="W &#13;10" visible="false" left="1113" top="44" width="10" height="40" style="background:tomato;color:darkred;align:center middle;font:10 dotum;opacity:50;"/>
+        <Static id="Static12" taborder="12" text="H10" visible="false" left="0" top="44" width="1022" height="10" style="background:royalblue;color:darkred;align:center middle;font:10 dotum;opacity:30;"/>
+        <Static id="Static13" taborder="13" text="W &#13;&#10;20" visible="false" left="1203" top="0" width="20" height="680" style="background:tomato;color:darkred;align:center middle;font:10 dotum;opacity:50;"/>
+        <Static id="Static05" taborder="14" text="H 24" visible="false" left="0" top="120" width="1222" height="24" style="background:royalblue;color:darkred;align:center middle;font:10 dotum;opacity:30;"/>
+        <Div id="div_detail" taborder="15" left="3" top="707" visible="false" style="background:#ffffffff;border:5 solid #5797d8ff ;" right="3" bottom="-765">
+          <Layouts>
+            <Layout>
+              <Div id="div_title" taborder="0" left="0" top="0" height="60" right="0" style="background:#e7eff8ff;">
+                <Layouts>
+                  <Layout>
+                    <Button id="btn_view" taborder="0" text="&gt;" left="5" top="9" width="40" height="40" style="bordertype:round 20 20 ;" onclick="div_detail_div_title_btn_view_onclick"/>
+                  </Layout>
+                </Layouts>
+              </Div>
+              <Tab id="tab_body" taborder="1" left="0" top="60" tabindex="0" scrollbars="autoboth" right="0" bottom="0" tabjustify="true" multiline="false" style="showextrabutton:false;font:antialias 11 NanumGothic;" canchange="div_detail_tab_body_canchange" onchanged="div_detail_tab_body_onchanged">
+                <Tabpages>
+                  <Tabpage id="tabpage1" text="일자별처방"/>
+                  <Tabpage id="tabpage2" text="약처방"/>
+                  <Tabpage id="tabpage3" text="검사결과"/>
+                  <Tabpage id="tabpage4" text="의뢰서"/>
+                  <Tabpage id="tabpage5" text="확인서"/>
+                  <Tabpage id="tabpage6" text="되의뢰소견서"/>
+                </Tabpages>
+              </Tab>
+            </Layout>
+          </Layouts>
+        </Div>
+      </Layout>
+    </Layouts>
+    <Objects>
+      <Dataset id="ds_list">
+        <ColumnInfo>
+          <Column id="GUBUN" type="STRING" size="256"/>
+          <Column id="REQ_DT" type="STRING" size="256"/>
+          <Column id="PATIENT_ID" type="STRING" size="256"/>
+          <Column id="PATIENT_NAME" type="STRING" size="256"/>
+          <Column id="SEX" type="STRING" size="256"/>
+          <Column id="AGE" type="STRING" size="256"/>
+          <Column id="PROG_TYPE" type="STRING" size="256"/>
+          <Column id="TREAT_DT" type="STRING" size="256"/>
+          <Column id="TREAT_DEPT" type="STRING" size="256"/>
+          <Column id="PHYSICIAN_NAME" type="STRING" size="256"/>
+          <Column id="SPECIAL_TREAT" type="STRING" size="256"/>
+          <Column id="OPEN_INFO" type="STRING" size="256"/>
+          <Column id="CONCERN_PATIENT" type="STRING" size="256"/>
+        </ColumnInfo>
+        <Rows>
+          <Row>
+            <Col id="GUBUN">S</Col>
+            <Col id="REQ_DT">20151230</Col>
+            <Col id="PATIENT_NAME">나환자</Col>
+            <Col id="SEX">F</Col>
+            <Col id="AGE">30</Col>
+            <Col id="PROG_TYPE">P</Col>
+            <Col id="TREAT_DT">20160301</Col>
+            <Col id="TREAT_DEPT">외과</Col>
+            <Col id="PHYSICIAN_NAME">김의사</Col>
+            <Col id="SPECIAL_TREAT">Y</Col>
+            <Col id="OPEN_INFO">Y</Col>
+            <Col id="CONCERN_PATIENT">Y</Col>
+            <Col id="PATIENT_ID">aa001</Col>
+          </Row>
+          <Row>
+            <Col id="GUBUN">R</Col>
+            <Col id="REQ_DT">20151230</Col>
+            <Col id="PATIENT_NAME">홍길동</Col>
+            <Col id="SEX">M</Col>
+            <Col id="AGE">30</Col>
+            <Col id="PROG_TYPE">S</Col>
+            <Col id="TREAT_DT">20160301</Col>
+            <Col id="TREAT_DEPT">비뇨기과</Col>
+            <Col id="PHYSICIAN_NAME">정명의</Col>
+            <Col id="SPECIAL_TREAT">Y</Col>
+            <Col id="OPEN_INFO">Y</Col>
+            <Col id="CONCERN_PATIENT">Y</Col>
+            <Col id="PATIENT_ID">aa002</Col>
+          </Row>
+          <Row>
+            <Col id="GUBUN">I</Col>
+            <Col id="REQ_DT">20151230</Col>
+            <Col id="PATIENT_NAME">나환자</Col>
+            <Col id="SEX">F</Col>
+            <Col id="AGE">30</Col>
+            <Col id="PROG_TYPE">P</Col>
+            <Col id="TREAT_DT">20160301</Col>
+            <Col id="TREAT_DEPT">소화기내과분과</Col>
+            <Col id="PHYSICIAN_NAME">김의사</Col>
+            <Col id="SPECIAL_TREAT">Y</Col>
+            <Col id="OPEN_INFO">N</Col>
+            <Col id="CONCERN_PATIENT">Y</Col>
+            <Col id="PATIENT_ID">aa003</Col>
+          </Row>
+          <Row>
+            <Col id="GUBUN">S</Col>
+            <Col id="REQ_DT">20151230</Col>
+            <Col id="PATIENT_NAME">홍길동</Col>
+            <Col id="SEX">M</Col>
+            <Col id="AGE">30</Col>
+            <Col id="PROG_TYPE">S</Col>
+            <Col id="TREAT_DT">20160301</Col>
+            <Col id="TREAT_DEPT">정형외과</Col>
+            <Col id="PHYSICIAN_NAME">정명의</Col>
+            <Col id="SPECIAL_TREAT">Y</Col>
+            <Col id="OPEN_INFO">N</Col>
+            <Col id="CONCERN_PATIENT">N</Col>
+            <Col id="PATIENT_ID">aa004</Col>
+          </Row>
+          <Row>
+            <Col id="GUBUN">S</Col>
+            <Col id="REQ_DT">20151230</Col>
+            <Col id="PATIENT_NAME">나환자</Col>
+            <Col id="SEX">F</Col>
+            <Col id="AGE">30</Col>
+            <Col id="PROG_TYPE">P</Col>
+            <Col id="TREAT_DT">20160301</Col>
+            <Col id="TREAT_DEPT">류마티스내과분과</Col>
+            <Col id="PHYSICIAN_NAME">김의사</Col>
+            <Col id="SPECIAL_TREAT">N</Col>
+            <Col id="OPEN_INFO">N</Col>
+            <Col id="CONCERN_PATIENT">N</Col>
+            <Col id="PATIENT_ID">aa005</Col>
+          </Row>
+          <Row>
+            <Col id="GUBUN">R</Col>
+            <Col id="REQ_DT">20151230</Col>
+            <Col id="PATIENT_NAME">홍길동</Col>
+            <Col id="SEX">M</Col>
+            <Col id="AGE">30</Col>
+            <Col id="PROG_TYPE">P</Col>
+            <Col id="TREAT_DT">20160301</Col>
+            <Col id="TREAT_DEPT">내분비대사내과분과</Col>
+            <Col id="PHYSICIAN_NAME">정명의</Col>
+            <Col id="SPECIAL_TREAT">N</Col>
+            <Col id="OPEN_INFO">N</Col>
+            <Col id="CONCERN_PATIENT">N</Col>
+            <Col id="PATIENT_ID">aa006</Col>
+          </Row>
+          <Row>
+            <Col id="GUBUN">R</Col>
+            <Col id="REQ_DT">20151230</Col>
+            <Col id="PATIENT_NAME">나환자</Col>
+            <Col id="SEX">F</Col>
+            <Col id="AGE">30</Col>
+            <Col id="PROG_TYPE">S</Col>
+            <Col id="TREAT_DT">20160301</Col>
+            <Col id="TREAT_DEPT">비뇨기과</Col>
+            <Col id="PHYSICIAN_NAME">김의사</Col>
+            <Col id="SPECIAL_TREAT">N</Col>
+            <Col id="OPEN_INFO">N</Col>
+            <Col id="CONCERN_PATIENT">Y</Col>
+            <Col id="PATIENT_ID">aa007</Col>
+          </Row>
+          <Row>
+            <Col id="GUBUN">R</Col>
+            <Col id="REQ_DT">20151230</Col>
+            <Col id="PATIENT_NAME">홍길동</Col>
+            <Col id="SEX">M</Col>
+            <Col id="AGE">30</Col>
+            <Col id="PROG_TYPE">S</Col>
+            <Col id="TREAT_DT">20160301</Col>
+            <Col id="TREAT_DEPT">정형외과</Col>
+            <Col id="PHYSICIAN_NAME">정명의</Col>
+            <Col id="SPECIAL_TREAT">Y</Col>
+            <Col id="OPEN_INFO">Y</Col>
+            <Col id="CONCERN_PATIENT">Y</Col>
+            <Col id="PATIENT_ID">aa008</Col>
+          </Row>
+          <Row>
+            <Col id="GUBUN">I</Col>
+            <Col id="REQ_DT">20151230</Col>
+            <Col id="PATIENT_NAME">나환자</Col>
+            <Col id="SEX">F</Col>
+            <Col id="AGE">30</Col>
+            <Col id="PROG_TYPE">S</Col>
+            <Col id="TREAT_DT">20160301</Col>
+            <Col id="TREAT_DEPT">이비인후과</Col>
+            <Col id="PHYSICIAN_NAME">김의사</Col>
+            <Col id="SPECIAL_TREAT">Y</Col>
+            <Col id="OPEN_INFO">Y</Col>
+            <Col id="CONCERN_PATIENT">Y</Col>
+            <Col id="PATIENT_ID">aa009</Col>
+          </Row>
+          <Row>
+            <Col id="GUBUN">S</Col>
+            <Col id="REQ_DT">20151230</Col>
+            <Col id="PATIENT_NAME">홍길동</Col>
+            <Col id="SEX">M</Col>
+            <Col id="AGE">30</Col>
+            <Col id="PROG_TYPE">S</Col>
+            <Col id="TREAT_DT">20160301</Col>
+            <Col id="TREAT_DEPT">비뇨기과</Col>
+            <Col id="PHYSICIAN_NAME">정명의</Col>
+            <Col id="SPECIAL_TREAT">Y</Col>
+            <Col id="OPEN_INFO">Y</Col>
+            <Col id="CONCERN_PATIENT">Y</Col>
+            <Col id="PATIENT_ID">aa010</Col>
+          </Row>
+        </Rows>
+      </Dataset>
+    </Objects>
+    <Script type="xscript5.0"><![CDATA[/**************************************************************************************************
+ * 01. 업무구분				: 
+ * 02. 화 면 명				: 
+ * 03. 화면설명				:  
+ * 04. 관련 화면 및 서비스	: 
+ * 05. 관련 테이블명			: 
+ * 06. 작 성 자				: 
+ * 07. 작 성 일				: 
+ * 08. 수정이력
+ **************************************************************************************************
+ *    수정일            이름        사유
+ **************************************************************************************************
+ *    
+ *************************************************************************************************/
+
+//-------------------------------------------------------------------------------------------------
+// 1. 공통함수 include
+//-------------------------------------------------------------------------------------------------
+include "lib::comForm.xjs";
+include "lib::comTransaction.xjs";
+
+//-------------------------------------------------------------------------------------------------
+// Form 전역변수 선언
+//-------------------------------------------------------------------------------------------------
+
+//-------------------------------------------------------------------------------------------------
+// 2. Form 함수 정의
+//-------------------------------------------------------------------------------------------------
+this.form_onload = function(obj:Form, e:nexacro.LoadEventInfo)
+{
+	// Form Load 시 필수로 호출
+	this.gfn_formOnLoad(obj);
+
+	//Tab Div 위치 초기설정
+	this.div_detail.set_top(0);
+	this.div_detail.set_left(0);
+	this.div_detail.set_right(0);
+	this.div_detail.set_bottom(0);
+	this.div_detail.set_visible(false);
+	
+	//Tabpage 내 화면 로딩
+	this.div_detail.tab_body.tabpage1.set_url("WM::BRWM02F2.xfdl");
+	
+	//화면 초기설정
+	this.fn_init();
+}
+
+//초기설정
+this.fn_init = function()
+{
+	//공통코드 설정
+}
+
+//화면종료 시 공통호출함수
+this.fn_close = function()
+{
+	//TO-DO : 닫기 전 Validation체크
+	
+	return true;
+}
+
+//-------------------------------------------------------------------------------------------------
+// 3. Transaction 함수 정의
+//-------------------------------------------------------------------------------------------------
+
+//조회
+//1. 조회 함수는 fn_search로 작성한다.
+//2. 조회 Transaction에 대한 구분은 transaction id 로 기술한다.
+//3. 조회 후 Callback 함수는 fn_search 함수 다음에 위치하며 함수명은 fn_searchCallback 으로 작성한다.
+this.fn_search = function(svcId)
+{
+	switch(svcId)
+	{
+		case "searchlist" :
+			break;
+		default : 
+			break;
+	}
+}
+
+//조회 callback
+this.fn_searchCallback = function(svcId, errorCode, errorMsg)
+{
+	if(errorCode < 0){
+		return;
+	}
+	
+	switch(svcId)
+	{
+		case "searchlist" :
+			break;
+		default : 
+			break;
+	}	
+}
+
+//저장
+//1. 저장 함수는 fn_save로 작성한다.
+//2. 저장 Transaction에 대한 구분은 transaction id 로 기술한다.
+//3. 저장 후 Callback 함수는 fn_save 함수 다음에 위치하며 함수명은 fn_saveCallback 으로 작성한다.
+this.fn_save = function(svcId)
+{
+	switch(svcId)
+	{
+		case "savelist" :
+			break;
+		default : 
+			break;
+	}
+}
+
+//저장 callback
+this.fn_saveCallback = function(svcId, errorCode, errorMsg)
+{
+	if(errorCode < 0){
+		return;
+	}
+	
+	switch(svcId)
+	{
+		case "savelist" :
+			break;
+		default : 
+			break;
+	}	
+}
+
+//-------------------------------------------------------------------------------------------------
+// 4. User 함수 정의
+//-------------------------------------------------------------------------------------------------
+this.setViewDetail = function(sType)
+{
+	var tabcomp = this.div_detail.tab_body;
+	if(sType == "desc")
+	{
+		//일자별처방 탭으로 이동
+		if(tabcomp.tabindex != 0) tabcomp.set_tabindex(0);		
+		
+		this.div_detail.set_left(this.getOffsetWidth() - 350);
+
+		for(var i = 0; i < tabcomp.tabpages.length; i++)
+		{
+			if(i == 0) tabcomp.tabpages[i].set_text("일자별\n처방");
+			else if(i == 1) tabcomp.tabpages[i].set_text("약처방");
+			else if(i == 2) tabcomp.tabpages[i].set_text("검사결과");
+			else if(i == 3) tabcomp.tabpages[i].set_text("의뢰서");
+			else if(i == 4) tabcomp.tabpages[i].set_text("확인서");
+			else if(i == 5) tabcomp.tabpages[i].set_text("되의뢰\n소견서");
+		}
+		tabcomp.style.set_buttonpadding("2 2 2 2");
+		tabcomp._viewtype = sType;		
+		this.div_detail.set_visible(true);
+		
+		this.div_detail.div_title.btn_view.set_text(">");
+		
+		
+	}
+	else if(sType == "all")
+	{
+		this.div_detail.set_left(0);
+				
+		for(var i = 0; i < tabcomp.tabpages.length; i++)
+		{
+			if(i == 0) tabcomp.tabpages[i].set_text("일자별처방");
+			else if(i == 1) tabcomp.tabpages[i].set_text("약처방");
+			else if(i == 2) tabcomp.tabpages[i].set_text("검사결과");
+			else if(i == 3) tabcomp.tabpages[i].set_text("의뢰서");
+			else if(i == 4) tabcomp.tabpages[i].set_text("확인서");
+			else if(i == 5) tabcomp.tabpages[i].set_text("되의뢰소견서");
+		}
+		tabcomp.style.set_buttonpadding("10 20 10 20");
+		tabcomp._viewtype = sType;
+		this.div_detail.set_visible(true);	
+		
+		this.div_detail.div_title.btn_view.set_text("<");
+	}
+	else if(sType == "hidden")
+	{
+		tabcomp._viewtype = sType;
+		this.div_detail.set_visible(false);
+		
+		this.div_detail.div_title.btn_view.set_text(">");
+	}
+}
+//-------------------------------------------------------------------------------------------------
+// 5. Event 함수 정의
+//------------------------------------------------------------------------------------------------
+
+//조회버튼클릭 시 
+this.div_search_btn_search_onclick = function(obj:Button,  e:nexacro.ClickEventInfo)
+{
+	//TO-DO : 조회 전 필요한 경우 Validation체크
+	
+	//조회
+	this.fn_search("searchlist");
+}
+
+
+this.Div01_Grid00_oncellclick = function(obj:Grid, e:nexacro.GridClickEventInfo)
+{
+	this.setViewDetail("desc");
+	
+	var sId = this.ds_list.getColumn(e.row, "PATIENT_ID");
+	this.div_detail.tab_body.tabpage1.fn_init(sId);
+}
+
+this.div_detail_tab_body_canchange = function(obj:Tab, e:nexacro.TabIndexChangeEventInfo)
+{
+// 	if(obj._viewtype == "desc")
+// 	{
+// 		this.setViewDetail("all");
+// 	}
+}
+
+this.div_detail_tab_body_onchanged = function(obj:Tab, e:nexacro.TabIndexChangeEventInfo)
+{
+	this.setViewDetail("all");
+}
+
+this.div_detail_div_title_btn_view_onclick = function(obj:Button,  e:nexacro.ClickEventInfo)
+{
+	if(obj.text == ">")
+	{
+		this.setViewDetail("hidden");
+	}
+	else if(obj.text == "<")
+	{
+		this.setViewDetail("desc");
+	}
+	
+}
+]]></Script>
+  </Form>
+</FDL>

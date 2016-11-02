@@ -1,0 +1,93 @@
+<chapter id="util_validationutil">
+	<title> ValidationUtil</title>
+	<para>
+		This utility provides functions such as validity check of resident, corporation, business, and aliens registration numbers and format validity check of telephone, mobile phone and credit card numbers and email using regular expression.
+	</para>
+	<para> The following is explanation of the methods of ValidationUtil.</para>
+	<informaltable>
+		<tgroup cols="3">
+			<colspec colnum="1" colname="col1" colwidth="2*" />
+			<colspec colnum="2" colname="col2" colwidth="4*" />
+			<colspec colnum="3" colname="col3" colwidth="4*" />
+			<thead>
+				<row>
+					<entry align="center">Method</entry>
+					<entry align="center">Description</entry>
+					<entry align="center">Example</entry>
+				</row>
+			</thead>
+			<tbody>
+				<row>
+					<entry><emphasis role="bold">isResidentRegNumber</emphasis>(String regno)</entry>
+					<entry>Verify whether the input resident registration number is a valid one</entry>
+					<entry>ValidationUtil.isResidentRegNumber("871224-1237613")=true</entry>
+				</row>
+				<row>
+					<entry><emphasis role="bold">isIncorpCertNumber</emphasis>(String corpNumber)</entry>
+					<entry>Verify whether the input corporation registration number is a valid one</entry>
+					<entry>ValidationUtil.isIncorpCertNumber("110111-0398556")=true</entry>
+				</row>
+				<row>
+					<entry><emphasis role="bold">isBizRegNumber</emphasis>(String bizNumber)</entry>
+					<entry>Verify whether the input business registration number is a valid one</entry>
+					<entry>ValidationUtil.isBizRegNumber("110-81-28774")=true</entry>
+				</row>
+				<row>
+					<entry><emphasis role="bold">isTelephoneNumber</emphasis>(String)</entry>
+					<entry>Verify whether the input telephone number is a valid one</entry>
+					<entry>ValidationUtil.isTelephoneNumber("0505-123-1231")</entry>
+				</row>
+				<row>
+					<entry><emphasis role="bold">isCellphoneNumber</emphasis>(String cellPhoneNumber)</entry>
+					<entry>Verify whether the input mobile phone number is a valid one</entry>
+					<entry>ValidationUtil.isCellphoneNumber("018-1231-0912")</entry>
+				</row>
+				<row>
+					<entry><emphasis role="bold">isEmailAddress</emphasis>(String email)</entry>
+					<entry>Verify whether the input email address is a valid one</entry>
+					<entry>ValidationUtil.isEmailAddress("anyframe@samsung.com")</entry>
+				</row>
+				<row>
+					<entry><emphasis role="bold">isCardNumber</emphasis>(String cardNumber)</entry>
+					<entry>Verify whether the input credit card number is a valid one</entry>
+					<entry>ValidationUtil.isCardNumber("4009-1311-1234-4321")</entry>
+				</row>
+				<row>
+					<entry><emphasis role="bold">isRangeLength</emphasis>(String str, int min, int max)</entry>
+					<entry>Check whether the length of the string comes between the minimum and the maximum lengths</entry>
+					<entry>ValidationUtil.isRangeLength("Anyframe Java Test", 10, 20)=true</entry>
+				</row>
+				<row>
+					<entry><emphasis role="bold">isRangeByteLength</emphasis>(String str, int min, int max)</entry>
+					<entry>Check whether the length of the string comes between the minimum and the maximum lengths when calculated by byte</entry>
+					<entry>ValidationUtil.isRangeByteLength("Anyframe Java Test", 10, 20)=true</entry>
+				</row>
+				<row>
+					<entry><emphasis role="bold">isUserFormat</emphasis>(String str, String pattern)</entry>
+					<entry>Check whether the letters are in line with the format designated by the user. # denotes a number and S an alphabet letter.</entry>
+					<entry>ValidationUtil.isUserFormat("123,456", "###,###")=true</entry>
+				</row>
+				<row>
+					<entry><emphasis role="bold">isRegexPatternMatch</emphasis>(String str, String pattern)</entry>
+					<entry>Check whether the whole string is in line with the input regular expression pattern</entry>
+					<entry>ValidationUtil.isRegexPatternMatch("aaaaab", "a*b")=true</entry>
+				</row>
+				<row>
+					<entry><emphasis role="bold">isPatternMatching</emphasis>(String str, String pattern)</entry>
+					<entry>Check whether the string is in line with the input regular expression pattern. * denotes the whole letters.</entry>
+					<entry>ValidationUtil.isPatternMatching("abc", "*-*")=true</entry>
+				</row>
+				<row>
+					<entry><emphasis role="bold">isPatternInclude</emphasis>(String str, String param)</entry>
+					<entry>Check whether the input string is in line with the given filter pattern</entry>
+					<entry>ValidationUtil.isPatternInclude("asdf@5456", "s")=true</entry>
+				</row>
+				<row>
+					<entry><emphasis role="bold">isRegexPatternInclude</emphasis>(String str, String pattern)</entry>
+					<entry>Check some of the whole strings are in line with the pattern</entry>
+					<entry>ValidationUtil.isRegexPatternInclude("cabbbb", "a*b")=true</entry>
+				</row>
+			</tbody>
+		</tgroup>
+	</informaltable>
+</chapter>

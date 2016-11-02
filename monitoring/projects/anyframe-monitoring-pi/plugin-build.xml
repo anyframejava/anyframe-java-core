@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<plugin name="monitoring" description="Monitoring Plugin consists of property information necessary for monitoring with Anyframe Monitoring tool based on InfraRED sample application created by Plugin installation and reference libraries. ">
+  <groupId>org.anyframe.plugin</groupId>
+  <artifactId>anyframe-monitoring-pi</artifactId>
+  <version>1.0.3-SNAPSHOT</version>
+  <dependent-plugins>
+    <dependent-plugin name="core" version="2.0.0&gt;*&gt;1.4.0"/>
+  </dependent-plugins>
+  <resources>
+    <resource dir="src/main/java" filtered="true" packaged="true">
+      <include name="**/monitoring/**/*.java"/>
+    </resource>
+    <resource dir="src/main/resources" filtered="true" packaged="false">
+      <include name="**/*monitoring*.xml"/>
+      <include name="**/*infrared*.properties"/>
+    </resource>
+    <resource dir="src/test/java" filtered="true" packaged="true">
+      <include name="**/monitoring/**/*.java"/>
+    </resource>
+    <resource dir="src/test/resources" filtered="true" packaged="false">
+      <include name="**/*monitoring*.xml"/>
+    </resource>
+    <resource dir="src/main/webapp" filtered="false" packaged="false">
+      <include name="**/monitoring/**/*.*"/>
+      <exclude name="**/web.xml" merged="true"/>
+    </resource>
+  </resources>
+  <essential>false</essential>
+  <samples>false</samples>
+</plugin>

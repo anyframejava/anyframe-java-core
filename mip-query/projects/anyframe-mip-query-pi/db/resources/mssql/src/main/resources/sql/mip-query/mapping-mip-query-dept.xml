@@ -1,0 +1,13 @@
+		<!--mip-query-findDeptList-START-->
+			SELECT DEPT_ID, DEPT_NAME, DEPT_DESC 
+			FROM MIP_DEPT
+			<!--Velocity-Support-findDeptList-START-->
+			#if ($SEARCH_CONDITION.length() &gt; 0 &amp;&amp; "0" == $SEARCH_CONDITION)
+				WHERE DEPT_NAME like '%' + :SEARCH_KEYWORD + '%'
+			#elseif ($SEARCH_CONDITION.length() &gt; 0 &amp;&amp; "1" == $SEARCH_CONDITION)
+			    WHERE DEPT_DESC like '%' + :SEARCH_KEYWORD + '%'
+			#end
+			<!--Velocity-Support-findDeptList-END-->
+			ORDER BY DEPT_ID		
+		<!--mip-query-findDeptList-END-->
+		

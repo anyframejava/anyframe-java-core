@@ -1,0 +1,753 @@
+<chapter id="jasperreports_designer_report">
+	<title>Design Report</title>
+	<para>
+		 여기서는 예제를 어떻게 작성하였는지에 대해서 설명할 것이다. 예제내에 카테고리별 상품
+    	목록을 조회하는 부분을 JasperReports를 이용하여 HTML, PDF, Excel, CSV 등 다양한 형태로
+    	Reporting할 수 있다. JasperAssistant를 이용하여 카테고리별 상품 등록 현황을 조회하는 Reporting 부분을 jrxml로
+    	작성하고, JasperReports 엔진을 통해서 다양한 UI 형태로 보여주고 있는 것이므로, 먼저 JasperAssistant를
+    	사용하여 jrxml 파일을 작성하는 방법부터 살펴보도록 한다. 만약 JasperAssistant 사용 방법에 대해서 이 예제를 통한
+    	방법이 아닌, 전반적인 사용 방법이 궁금하다면 JasperAssistant 사이트에 올려진 <ulink
+    	url="http://www.jasperassistant.com/docs/guide/index.html">온라인 매뉴얼
+    	문서</ulink> 나  압축된 PDF 매뉴얼 문서 를 참고하도록 한다.
+    </para>
+
+	<para>
+		또한 Flash로 만들어진 JasperAssistant 사용 방법 데모를 보려면 <ulink
+    	url="http://www.jasperassistant.com/demo.html">여기(Demo)</ulink> 를 참고하도록
+    	한다. 간단한 Report 작성하는 방법을 화면과 설명을 통해 쉽게 알려주고 있으므로 처음 JasperAssistant를 접하게 되는
+    	사용자들에게 도움이 된다.
+    </para>
+
+    <section id="jasperreports_designer_report_result">
+    	<title>목표 결과물</title>
+
+      	<para>
+      		다음은 이 매뉴얼을 통해 작성된 카테고리별  상품 등록 현황 디자인 파일을 JasperAssistant의 Preview 기능을
+     		사용하여 디자인(jrxml) 작성 결과를 확인해 본 모습이다. 이처럼, 카테고리별  상품 등록 현황을 테이블(Table) 형태와 파이 차트(Pie
+      		Chart) 형태로 보여지도록 디자인(jrxml) 파일을 작성해보자.
+      		<mediaobject>
+          		<imageobject>
+            		<imagedata align="center"
+               	        	fileref="../image/jasperreports/designer/jasperassistant6.jpg" />
+          		</imageobject>
+          		<textobject>
+					<phrase>카테고리별  상품 등록 현황을 테이블(Table) 형태와 파이 차트(PieChart) 형태로 표현</phrase>
+				</textobject>
+        	</mediaobject>
+        </para>
+    </section>
+
+    <section id="jasperreports_designer_report_file">
+    	<title>디자인 파일(JRXML) 작성</title>
+
+      	<para>
+      		위와 같은 목표 결과물을 만들어 내기 위해서는 Database에 저장된 카테고리별 상품의 목록을 조회하여 다양한
+      		UI로 Reporting 할 수 있도록 jrxml 파일을 작성해야 한다.
+      	</para>
+
+      	<para>
+      		여기서 작성된 예제는 아래와 같은 환경에서 테스트되었다. 이 다음 단계를 진행하기 전에 아래 항목들은 모두 개발 환경에
+      		설치되어야 한다.
+      	</para>
+
+      	<itemizedlist>
+        	<listitem>
+          		<para>
+          			Eclipse 3.5.0
+          		</para>
+        	</listitem>
+
+        	<listitem>
+          		<para>
+          			JasperAssistant 3.1.1
+          		</para>
+        	</listitem>
+
+        	<listitem>
+          		<para>
+          			DataBase - HsqlDB 1.8.0.10
+          		</para>
+        	</listitem>
+		</itemizedlist>
+
+		<section id="jasperreports_designer_report_file_perspective">
+        	<title>Step 1 : Open JasperAssistant Perspective</title>
+
+        	<para>
+        		JasperAssistant는 Report 작성을 위해서 Eclipse Perspective를 제공한다. 이
+        		Perspective은 Report 작성 시 최적의 Eclipse Workbench 레이아웃 및 필요한 모든 뷰를 제공한다.
+        		JasperAssistant Perspective를 열기 위해서는 <emphasis role="bold">Window
+        		<![CDATA[->Open Perspective ->Other... ->JasperAssistant]]></emphasis>
+        		메뉴를 선택한다.
+        	</para>
+
+        	<mediaobject>
+          		<imageobject>
+            		<imagedata align="center"
+                     		  fileref="../image/jasperreports/designer/jasperassistant7.jpg" />
+          		</imageobject>
+          		<textobject>
+					<phrase>Open JasperAssistant Perspective</phrase>
+				</textobject>
+        	</mediaobject>
+		</section>
+
+      	<section id="jasperreports_designer_report_file_create">
+        	<title>Step 2 : Create a new Report</title>
+
+        	<para>
+        		이제 새로운 Report를 작성해보도록 하자. 우선 src/webapp/WEB-INF/reports 폴더에 신규
+        		Report 파일(jrxml)을 생성한다. 아래 화면들은 카테고리별 상품 등록 현황  Report 파일을 위해서 작업한 내용들이다. 만약
+        		추가적으로 새로운 Report 파일을 작성하고자 한다면 아래 내용을 참고하여 작성하면 된다.
+        	</para>
+
+        	<itemizedlist>
+          		<listitem>
+            		<para>
+            			<emphasis role="bold">Select a wizard</emphasis> - Report
+            			wizard를 선택한다. 이때 JasperAssistant Perspective 화면이라면 좌측에 Navigator
+            			뷰가 나타날 것이다. src/main/webapp/WEB-INF/jsp/jasper/report 폴더를 마우스로 선택한 상태에서 File >
+            			New 메뉴를 선택하면 Report 라는 하위 메뉴가 보이게 된다. 이 메뉴를 이용하면 바로 아래 단계로 이동하게
+            			된다. <![CDATA[혹은 File > New > Other... 메뉴를 선택하면 아래 그림과 같은 화면이 나오게 되고,
+            			이때 JasperAssistant > Report wizard를 선택하도록 한다.]]>
+            		</para>
+          		</listitem>
+        	</itemizedlist>
+
+        	<mediaobject>
+          		<imageobject>
+            		<imagedata align="center"
+                       		fileref="../image/jasperreports/designer/jasperassistant12.jpg" />
+          		</imageobject>
+          		<textobject>
+					<phrase>Create a new Report</phrase>
+				</textobject>
+        	</mediaobject>
+
+        	<itemizedlist>
+          		<listitem>
+            		<para>
+            			<emphasis role="bold">New Report Wizard : Create a new
+            			report </emphasis>- 신규 Report 파일을 생성한다. 이때 파일 확장자를 jrxml으로 작성하도록
+           			 	한다. 카테고리별 상품 등록 현황 Report 파일명은 testReport.jrxml로 하도록 하고,
+            			anyframe-jasperreports-pi/src/main/webapp/WEB-INF/jsp/jasper/report 폴더 하위에 Report 파일이
+            			저장되고 있음을 확인한다.
+            		</para>
+
+            		<mediaobject>
+              			<imageobject>
+                			<imagedata align="center"
+                           			fileref="../image/jasperreports/designer/jasperassistant8.jpg" />
+              			</imageobject>
+              			<textobject>
+							<phrase>New Report Wizard : Create a new report</phrase>
+						</textobject>
+            		</mediaobject>
+          		</listitem>
+
+          		<listitem>
+            		<para>
+            			<emphasis role="bold">New Report Wizard : Select a data
+            			source</emphasis>- Report에 사용될 Data가 저장된 data source를 선택한다.
+            			Preferences 항목에 정의된 Data Source들이 목록으로 보여진다. 제공되는 샘플은 HSQL DB를
+            			사용하므로 목록 중에 HSQL DB를 선택하도록 한다. Data Source를 추가하고자 하면, Window
+            			<![CDATA[->Preferences ->JasperAssistant ->Data Source 메뉴에서 추가하면
+            			된다.]]>
+            		</para>
+
+            		<mediaobject>
+              			<imageobject>
+                			<imagedata align="center"
+                           		fileref="../image/jasperreports/designer/jasperassistant9.jpg" />
+              			</imageobject>
+              			<textobject>
+							<phrase>New Report Wizard : Select a data source</phrase>
+						</textobject>
+           			</mediaobject>
+          		</listitem>
+
+          		<listitem>
+            		<para>
+            			<emphasis role="bold">New Report Wizard : Specify the SQL
+            			query </emphasis>- Report에 사용될 Data를 얻어오는 SQL 쿼리를 작성한다. 카테고리별 상품 등록 목록을
+            			조회하여 보여줄 Report를 작성할 것이므로 SQL 쿼리에 다음과 같이 입력하도록
+            			한다.
+            			<programlisting language="java">select category.CATEGORY_NO, category.CATEGORY_NAME, product.PROD_NO, product.PROD_NAME,
+       product.SELLER_ID 
+from PRODUCT product, CATEGORY category
+where product.CATEGORY_NO = category.CATEGORY_NO
+order by category.CATEGORY_NO</programlisting>
+					</para>
+            		<mediaobject>
+              			<imageobject>
+                			<imagedata align="center"
+                           			fileref="../image/jasperreports/designer/jasperassistant10.jpg" />
+              			</imageobject>
+              			<textobject>
+							<phrase>New Report Wizard : Specify the SQL query</phrase>
+						</textobject>
+            		</mediaobject>
+          		</listitem>
+
+          		<listitem>
+            		<para>
+            			<emphasis role="bold">New Report Wizard : Select the
+            			Fields</emphasis> - Report에 사용될 Field를 선택한다. DB로부터 얻어온  Table의 컬럼을 모두
+            			(CATEGORY_NAME, CATEGORY_NO, PROD_NAME, PROD_NO, SELLER_ID) 선택하도록 한다.
+            		</para>
+
+            		<mediaobject>
+              			<imageobject>
+                			<imagedata align="center"
+                           		fileref="../image/jasperreports/designer/jasperassistant11.jpg" />
+              			</imageobject>
+              			<textobject>
+							<phrase>New Report Wizard : Select the Fields</phrase>
+						</textobject>
+            		</mediaobject>
+          		</listitem>
+        	</itemizedlist>
+
+        	<para>
+        		신규 Report 파일(jrxml) 생성 작업이 완료되었다. 아래 단계를 통해서 디자인 작업을 계속 진행하도록
+        		한다.
+        	</para>
+		</section>
+
+      	<section id="jasperreports_designer_report_file_palette">
+        	<title>Step 3 : Design a report using Palette</title>
+
+        	<para>
+        		Step 2에서 생성한 Report 파일을 JasperAssistant Editor를 이용하여 Open하면, 우측에
+        		Design/Preview Tab과 Palette가 나타난다.
+        	</para>
+
+        	<mediaobject>
+          		<imageobject>
+            		<imagedata align="center"
+                       		fileref="../image/jasperreports/designer/jasperassistant13.jpg" />
+          		</imageobject>
+          		<textobject>
+					<phrase>Design a report using Palette</phrase>
+				</textobject>
+        	</mediaobject>
+
+        	<para>
+        		이 Palette 상의 Elements와 Text Fields들을 이용하여 Report 파일을 디자인한다. 우선
+        		Report XML 파일의 구조을 살펴보도록 한다. Report 파일은 section으로 구성되어 있는데 Section이란
+        		height 별로 각각에 고유한 이름을 가지고 일정한 영역을 가지는 Report 파일의 화면을 나누는 개념이다.
+        		Section은 Band라는 이름으로 불리우는데 현재 JasperReports 사용 시 혼용해서 사용되고 있다. 현재
+        		JasperAssistant Editor 메뉴 상에서 사용되는 이름은 Band이므로 앞으로는 Band라고 통일해서 부르도록
+        		한다. Band는 가로방향으로 나뉘어 각각에 고유의 이름이 명명된 일정한 영역을 뜻한다. 아래 그림은 Band 구조를
+        		보여주고있다. 기본적으로 Title, Last Page Footer, Summary Band를 제외한 나머지 Band들은
+        		Detail Band를 기준으로 상하로(Header와 Footer) 구분되어 짝을 이루고 있고, 각각의 Band는 고유의
+        		목적(기능)이 있다.
+        	</para>
+
+        	<mediaobject>
+          		<imageobject>
+            		<imagedata align="center"
+                       		fileref="../image/jasperreports/designer/jasperassistant14.jpg" />
+          		</imageobject>
+          		<textobject>
+					<phrase>Jaspter Report Band</phrase>
+				</textobject>
+        	</mediaobject>
+			<para>
+			</para>
+        	<informaltable>
+        		<caption>Jasper Report Band 설명</caption>
+          		<tgroup cols="2">
+               		<colspec colnum="1" colname="col1" colwidth="2*"/>
+               		<colspec colnum="2" colname="col2" colwidth="8*"/>
+            		<thead>
+             			<row>
+               				<entry align="center">Band 명</entry>
+
+                			<entry align="center">설명</entry>
+              			</row>
+            		</thead>
+
+            		<tbody>
+             			<row>
+                			<entry>Background band</entry>
+
+                			<entry>보고서의 배경 설정을 할 수 있다.</entry>
+              			</row>
+
+              			<row>
+                			<entry>Title band</entry>
+
+                			<entry>가장 먼저 보여주는 band로 보고서 전체 페이지중 단 한번만 출력된다. 주로 보고서의 Title을 기재하는데 사용된다.</entry>
+              			</row>
+
+              			<row>
+                			<entry>Page header band</entry>
+
+                			<entry>한번 정의되면 보고서 전체 페이지의 헤더 부분에 똑같은 위치와 크기로 페이지마다 반복 출력된다.</entry>
+              			</row>
+
+              			<row>
+                			<entry>Page footer band</entry>
+
+                			<entry>한번 정의되면 보고서 전체 페이지의 하단 부분에 똑같은 위치와 크기로 페이지마다 반복 출력 된다.</entry>
+              			</row>
+
+              			<row>
+                			<entry>Column header band</entry>
+
+                			<entry>각 Detail band의 column 항목의 상단 영역으로 사용된다. 이 영역 역시 페이지마다 출력 된다.</entry>
+              			</row>
+
+              			<row>
+                			<entry>Column footer band</entry>
+
+                			<entry>각 Detail band의 column 항목의 하단 영역으로 사용된다. 이 영역 역시 페이지마다 출력 된다.</entry>
+              			</row>
+
+              			<row>
+                			<entry>Group header band</entry>
+
+                			<entry>사용자가 임의로 만든 band로 0개 이상을 만들수 있다. Detail band 상단에 위치한다.</entry>
+              			</row>
+
+              			<row>
+                			<entry>Group footer band</entry>
+
+                			<entry>사용자가 임의로 만든 band로 0개 이상을 만들수 있다. Detail band 하단에위치한다.</entry>
+              			</row>
+
+              			<row>
+                			<entry>Detail band</entry>
+
+                			<entry>
+                				가장 핵심이 되는 band이다. Detail Band는 주로 실제 Query 를 이용해 수집된
+                				데이터들을 나열해 출력할 수 있도록 하는 Band로 모든 Band들이 Detail Band를 중심으로 구성되고
+                				설계된다고 해도 과언이 아니다. 여기서 Query를 이용해 수집된 데이터는 Detail Band 뿐만 아니라
+                				다른 Band 에서도 사용할 수 있지만, Detail Band와 틀린 점은 Detail Band에서는 수집된 한
+                				개 이상의 모든 Rows를 출력할 수 있지만 Detail Band를 제외한 다른 Band 에서는 첫 번째
+                				Row에 있는 Column 값들만 출력할 수 있다.
+                			</entry>
+              			</row>
+
+              			<row>
+                			<entry>Last Page Footer</entry>
+
+                			<entry>
+                				다른 일반 Page footer와 달리 보고서의 맨 마지막 페이지에 특별한 결과를 나타내고자 할 때
+                				사용하는 Band로 Title Band처럼 보고서 전체 페이지중 딱 한번만 출력할 수 있다.
+                			</entry>
+              			</row>
+
+              			<row>
+                			<entry>Summary band</entry>
+
+                			<entry>
+                				Report footer Band라고도 하며 보고서 전체 페이지중 맨 마지막 페이지에 출력되는
+                				Band로 주로 총 합계 등을 나타내고자 할 때 사용한다.
+                			</entry>
+              			</row>
+            		</tbody>
+          		</tgroup>
+        	</informaltable>
+
+        	<para>
+        		샘플 예제인 카테고리별 상품 등록 현황  Report 파일은 Title, Page Header, Column Header, Detail 을  사용하여 작성되었다.
+        		testReport.jrxml파일을 신규 생성하면, Default로 Detail band만 존재한다. 그러므로 추가되는 band는 Add Band 메뉴를
+        		이용하여 추가시키도록 한다.
+        	</para>
+
+        	<itemizedlist>
+          		<listitem>
+            		<para>
+              			<emphasis role="bold">Title band 작성</emphasis>
+            		</para>
+
+            		<para>
+            			<![CDATA[testReport.jrxml 파일이 Open되었을때 좌측에 Outline 뷰에서 루트 항목(기본적으로
+            			Unnamed라고 표기됨)을 선택 후 마우스 우측 버튼을 클릭하여 Add Band > Add Title band
+           	 			메뉴를 선택하도록 한다. 또는 Editor에서 점(dot)가 찍혀있는 않은 상하좌우 공란을 선택한 후 마우스 우측
+            			버튼을 클릭하면 Add Band 메뉴를 사용할 수 있다. 우측 Editor 화면에 Title band가 생성되고
+            			Palette의 Elements 항목 중 Static Text를 드래그앤드롭 하여 Title band 위에 놓는다.
+            			Static Text Element의 Properties 항목 중 Static Text > Text
+            			Property의 Value에 카테고리별 상품 등록 현황 이라고 입력해 넣는다. 또한 Reporting 시 보기
+            			좋게 하기 위해서 아래와 같이 Property의 Value를 설정하도록 한다.]]>
+            		</para>
+
+            		<informaltable>
+            			<caption>Jasper Report Property 설명</caption>
+              			<tgroup cols="3">
+                			<thead>
+                  				<row>
+                    				<entry align="center">Property</entry>
+
+                    				<entry align="center">Value</entry>
+
+                    				<entry align="center">설명</entry>
+                  				</row>
+                			</thead>
+
+                			<tbody>
+                  				<row>
+                    				<entry><![CDATA[Static Text > Text]]></entry>
+
+                    				<entry>카테고리별 상품 등록 현황</entry>
+
+                    				<entry>타이틀 명</entry>
+                  				</row>
+
+                  				<row>
+                    				<entry><![CDATA[Text Font > Font Size]]></entry>
+
+                    				<entry>12</entry>
+
+                    				<entry>타이틀 글자 크기 설정</entry>
+                  				</row>
+
+					            <row>
+					                <entry><![CDATA[Text Font > PDF Embedded]]></entry>
+					
+					                <entry>true</entry>
+					
+					                <entry>PDF 형태로 Reporting 하는 경우 한글 지원하기 위해 설정</entry>
+					            </row>
+					
+					            <row>
+					                <entry><![CDATA[Text Font > PDF Encoding]]></entry>
+					
+					                <entry>UniKS-UCS2-H</entry>
+					
+					                <entry>
+					                    PDF 형태로 Reporting 하는 경우 한글 지원하기 위해 설정하는데 글자 배열 방식에
+										 따라 UniKS-UCS2-H(horizontal) 혹은 UniKS-UCS2-V(vertical)를
+					                   	 선택
+					                </entry>
+                  				</row>
+
+					            <row>
+					                <entry><![CDATA[Text Font > PDF Font Name]]></entry>
+					
+					                <entry>HYGoThic-Medium</entry>
+					
+					                <entry>PDF 형태로 Reporting 하는 경우 한글 지원하기 위해 설정하며, 이때 다른 글자체 선택 가능함</entry>
+                  				</row>
+                			</tbody>
+              			</tgroup>
+            		</informaltable>
+
+            		<para>
+            			Editor 기능을 이용하여 Static Text Box의 크기를 크게 하고 글자를 가운데 정렬시켜
+            			놓는다.
+            		</para>
+
+            		<mediaobject>
+              			<imageobject>
+                			<imagedata align="center"
+                           			fileref="../image/jasperreports/designer/jasperassistant15.jpg" />
+              			</imageobject>
+              			<textobject>
+							<phrase>Editor 기능을 이용하여 Static Text Box의 크기를 크게 하고 글자를 가운데 정렬시킨 화면</phrase>
+						</textobject>
+            		</mediaobject>
+          		</listitem>
+
+			    <listitem>
+			       	<para>
+			          <emphasis role="bold">Column Header band 작성</emphasis>
+			        </para>
+			
+			        <para>
+			            <![CDATA[testReport.jrxml파일이 Open되었을때 좌측에 Outline 뷰에서 루트 항목(기본적으로
+			            Unnamed라고 표기됨)을 선택 후 마우스 우측 버튼을 클릭하여 Add Band > Column Header
+			            band 메뉴를 선택하도록 한다. 그런 다음 Palette의 Elements 중 Static Text 항목을
+			           	드래그앤드롭하여 [상세현황], Category Name, Product No, Product Name, Seller Id 이라는 헤더 정보를
+						작성한다. 이 하위에 실제 카테고리별 상품 등록 현황이 해당 필드에 맞게 Reporting 될 것이다. Editor의 툴바에서
+						제공하는 기능을 이용하여 굵은 글씨로 변경시키고, 테두리 선(Toggle Border 기능 사용)을 만들도록 한다.
+						작성하고 나면 다음과 같이 페이지 헤더 부분이 완성된 것을 확인할 수 있다. (PDF 출력을 위하여 Title band 작성을 참고하여 속성을 부여한다.)]]>
+			        </para>
+
+            		<mediaobject>
+              			<imageobject>
+                			<imagedata align="center"
+                          		fileref="../image/jasperreports/designer/jasperassistant16.jpg" />
+              			</imageobject>
+              			<textobject>
+							<phrase>페이지 헤더를 추가한 화면</phrase>
+						</textobject>
+            		</mediaobject>
+          		</listitem>
+
+          		<listitem>
+            		<para>
+              			<emphasis role="bold">Detail band 작성</emphasis>
+            		</para>
+
+            		<para>
+            			Default로 생성되는 band이므로 새로 band를 추가할 필요 없다. testReport.jrxml파일이
+            			Open되었을때 좌측에 Outline 뷰에서 루트 항목(기본적으로 Unnamed라고 표기됨) 하위의 Fields 항목을
+            			열어보면 위 Step 3에서 선택했던 Field들이 나온다. 이 Field들을 드래그앤드롭하여 Detail band
+            			영역으로 가지고 오면 아래와 같이 $F{필드명} 형태로 보이게 된다. 실제 Data Source로부터 데이터를 받아와서
+            			이 위치에 Reporting 하게 된다. 테두리 선 등 필요한 작업을 Editor의 툴바 기능을 이용해서
+            			수행한다.(PDF 출력을 위하여 Title band 작성을 참고하여 속성을 부여한다.)
+            		</para>
+
+            		<mediaobject>
+              			<imageobject>
+                			<imagedata align="center"
+                           			fileref="../image/jasperreports/designer/jasperassistant17.jpg" />
+              			</imageobject>
+              			<textobject>
+							<phrase>Detail band 작성</phrase>
+						</textobject>
+            		</mediaobject>
+
+            		<para>
+            			Text Field 입력 란 박스의 Padding 값을 설정하기 위한 Property 설명과 해당 화면이다.
+            			<informaltable>
+            				<caption>Jasper Report Text Field 입력 란 박스 Padding 값 설정을 위한 Property 설명</caption>
+				            <tgroup cols="3">
+				                <colspec colnum="1" colname="col1" colwidth="2*"/>
+				                <colspec colnum="2" colname="col2" colwidth="3*"/>
+				                <colspec colnum="3" colname="col3" colwidth="5*"/>
+
+                  				<thead>
+									<row>
+										<entry align="center">Property</entry>
+					
+					                    <entry align="center">Value</entry>
+					
+					                    <entry align="center">설명</entry>
+					                </row>
+                  				</thead>
+
+                  				<tbody>
+					                <row>
+										<entry><![CDATA[Text > Box]]></entry>
+					
+										<entry>(2,2,2,2) : 직접 입력 불가능</entry>
+					
+										<entry><![CDATA[Properties 탭에서 Text > Box 우측의 [...] 버튼을 클릭하면 아래와 같이 설정할 수 있는 팝업창이 나온다.]]></entry>
+					                </row>
+                  				</tbody>
+                			</tgroup>
+              			</informaltable>
+              		</para>
+
+            		<para>
+            			Box Settings 팝업창에서 Padding 항목을 수정해주면 된다. 여기서는 Shared padding
+            			settings 항목을 선택하고 Padding 값을 2 px로 주었다.
+            		</para>
+
+            		<mediaobject>
+              			<imageobject>
+                			<imagedata align="center"
+                           			fileref="../image/jasperreports/designer/jasperassistant20.jpg" />
+              			</imageobject>
+              			<textobject>
+							<phrase>Box Settings 팝업창</phrase>
+						</textobject>
+            		</mediaobject>
+          		</listitem>
+
+          		<listitem>
+            		<para>
+              			<emphasis role="bold">Page Header band 작성</emphasis>
+            		</para>
+
+            		<para>
+            			<![CDATA[testReport.jrxml파일이 Open되었을때 좌측에 Outline 뷰에서 루트 항목(기본적으로
+            			Unnamed라고 표기됨)을 선택 후 마우스 우측 버튼을 클릭하여 Add Band > Page Header band
+           				 메뉴를 선택하도록 한다. 이 Page Header band 영역에는 파이 차트를 추가해넣는다. 우측에서 Palette의
+            			Elements 중 Chart를 클릭한 후 band 영역을 다시 클릭한다. 그러면 다음과 같이 어떤 타입의 차트를
+            			선택할 지 묻는 팝업창이 나온다. 여기서 Pie를 선택하도록 한다. 만약 클릭으로 Chart를 선택하지 않고 위에서처럼
+            			드래그앤드롭 형태로 Chart를 갖고 오면 Default로 Area 타입의 차트가 적용된다. 그러므로 차트 타입을
+            			선택하기 위해서는 클릭으로 Chart Element를 선택하도록 한다.]]>
+            		</para>
+
+            		<mediaobject>
+              			<imageobject>
+                			<imagedata align="center"
+                           			fileref="../image/jasperreports/designer/jasperassistant18.jpg" />
+              			</imageobject>
+              			<textobject>
+							<phrase>Page Header band</phrase>
+						</textobject>
+            		</mediaobject>
+
+            		<para>
+            			<![CDATA[좌측에 Outline 뷰에서 루트 항목(기본적으로 Unnamed라고 표기됨)하위의 Summary >
+            			Chart_숫자 > Pie Dataset 항목을 선택하면 Properties 뷰에서 Dataset에 대한 설정을
+            			할 수 있다.]]>
+            		</para>
+
+            		<informaltable>
+            			<caption>Jasper Report Pie Dataset 항목을 위한 Property 설명</caption>
+              			<tgroup cols="3">
+                			<thead>
+                  				<row>
+									<entry align="center">Property</entry>
+					
+					                <entry align="center">Value</entry>
+					
+					                <entry align="center">설명</entry>
+					            </row>
+                			</thead>
+
+                			<tbody>
+                  				<row>
+                    				<entry><![CDATA[Pie Dataset > Key Expression]]></entry>
+
+                    				<entry>$F{CATEGORY_NAME}</entry>
+
+                    				<entry>파이 차트 작성 시 키가 되는 필드 정보를 입력</entry>
+                  				</row>
+
+                  				<row>
+                    				<entry><![CDATA[Pie Dataset > Value Expression]]></entry>
+
+                    				<entry>$V{CategoryGroup_COUNT}</entry>
+
+                    				<entry>Number 형 데이터로 변경 가능한 데이터 필드 정보만 입력 가능함</entry>
+                  				</row>
+
+                  				<row>
+                    				<entry><![CDATA[Pie Dataset > Label Expression]]></entry>
+
+         							<entry />
+
+                    				<entry>공란으로 두면 기본적으로 Key = Value 형태로 디스플레이됨</entry>
+                  				</row>
+                			</tbody>
+              			</tgroup>
+            		</informaltable>
+            
+            
+            		<para>
+            			좌측에 Outline 뷰에서 루트 항목(기본적으로 Unnamed라고 표기됨)하위의  Group 항목을 선택한 후
+            			마우스 우측 버튼을 클릭하여 Add Group 을 선택하여 다음과 같이 Group 을 추가한다.
+            		</para>
+
+            		<informaltable>
+            			<caption>Jasper Report Group 추가를 위한 Property 설명</caption>
+              			<tgroup cols="3">
+                			<thead>
+                  				<row>
+                    				<entry align="center">Property</entry>
+
+                    				<entry align="center">Value</entry>
+
+                    				<entry align="center">설명</entry>
+                  				</row>
+                			</thead>
+
+                			<tbody>
+                  				<row>
+                    				<entry><![CDATA[Group > Expression]]></entry>
+
+                    				<entry>Expression	$F{CATEGORY_NO}</entry>
+
+                    				<entry>그룹 조건을 입력</entry>
+                  				</row>
+
+                  				<row>
+                    				<entry><![CDATA[Group > Name]]></entry>
+
+                    				<entry>CategoryGroup</entry>
+
+                    				<entry><![CDATA[그룹 조건명을 입력 (Pie Dataset > Value Expression 과 일치)]]></entry>
+                  				</row>
+                			</tbody>
+              			</tgroup>
+            		</informaltable>
+            
+
+            		<para>
+            			<![CDATA[좌측에 Outline 뷰에서 루트 항목(기본적으로 Unnamed라고 표기됨)하위의 Summary >
+            			Chart_숫자 항목을 선택한 후 Properties 뷰에서 Mode를 변경시켜 준다.]]>
+            		</para>
+
+            		<informaltable>
+            			<caption>Jasper Report  Mode 변경 위한 Property 설명</caption>
+              			<tgroup cols="3">
+                			<thead>
+                  				<row>
+                    				<entry align="center">Property</entry>
+
+                    				<entry align="center">Value</entry>
+
+                    				<entry align="center">설명</entry>
+                  				</row>
+                			</thead>
+
+                			<tbody>
+                  				<row>
+                    				<entry><![CDATA[Common > Mode]]></entry>
+
+                    				<entry>Opaque</entry>
+
+                    				<entry>
+                    					파이 차트를 HTML로 Reporting 시 Mode를 Transparent로 하면 차트
+                   					 	이미지 주위로 불필요한 바탕색이 생기므로 이를 없애기 위해서 Opaque를 선택함 PDF, Excel 등
+                    					타 Reporting 형태일 경우에는 상관없음
+                    				</entry>
+                  				</row>
+                			</tbody>
+              			</tgroup>
+            		</informaltable>
+
+            		<mediaobject>
+              			<imageobject>
+                			<imagedata align="center"
+                           			fileref="../image/jasperreports/designer/jasperassistant21.jpg" />
+              			</imageobject>
+              			<textobject>
+							<phrase>Jasper Repot Properties Editor</phrase>
+						</textobject>
+            		</mediaobject>
+
+            		<para>
+            			파이 차트 작성까지 모두 끝내고 나서 Editor 상의 Design Tab을 통해 보면 다음과 같은 모습으로
+            			보인다. Preview Tab으로 이동하지 않으면 파이 차트 상에 데이터가 들어가 있는 형태를 볼 수 없으며, 에러
+            			발생 시에도 확인이 불가능하므로 Design Tab에서의 작업이 모두 끝나면 다음 단계인 Preview 를
+            			진행시킨다.
+            		</para>
+
+            		<mediaobject>
+              			<imageobject>
+                			<imagedata align="center"
+                           			fileref="../image/jasperreports/designer/jasperassistant19.jpg" />
+              			</imageobject>
+              			<textobject>
+							<phrase>Jasper Repot Design Tab</phrase>
+						</textobject>
+            		</mediaobject>
+          		</listitem>
+        	</itemizedlist>
+		</section>
+
+      	<section id="jasperreports_designer_report_file_preview">
+        	<title>Step 4 : Preview Report</title>
+
+        	<para>
+        		디자인 Report 파일 작성이 모두 완료되었다면 JasperAssistant에서 제공되는 Preview 기능을
+        		사용하여 제대로 작성되었는지를 확인해본다. 만약 Report 파일에 에러가 존재한다면 Preview 기능을 수행시킬 때
+        		확인해볼 수 있을 것이다. Preview 결과가 이 매뉴얼 상단의 목표 결과물과 동일한지 확인해본다.
+        	</para>
+
+        	<mediaobject>
+          		<imageobject>
+            		<imagedata align="center"
+                       		fileref="../image/jasperreports/designer/jasperassistant5.jpg" />
+          		</imageobject>
+          		<textobject>
+					<phrase>Jasper Repot Preview</phrase>
+				</textobject>
+        	</mediaobject>
+
+        	<para>
+        		이로써 JasperAssistant를 활용한 jrxml 파일 작성이 완료되었다. 이제 샘플 웹 어플리케이션에서 해당
+        		Reporting 파일을 어떻게 호출해서 보여주는지 확인해본다.
+        	</para>
+      	</section>
+    </section>
+</chapter>

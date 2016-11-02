@@ -1,0 +1,185 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN"
+"http://www.w3.org/TR/html4/loose.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+
+<head>
+<meta http-equiv="content-type" content="text/html; charset=UTF-8" />
+<title>[Slider] Basic Sample</title>
+<link href="../../../common/css/smoothness/jquery-ui-1.10.0.custom.css"
+	rel="stylesheet">
+<script src="../../../common/exlibs/jquery-1.9.0.js"></script>
+<script src="../../../common/exlibs/jquery-ui-1.10.0.custom.js"></script>
+
+<link type="text/css" rel="stylesheet" href="../../../common/css/style.css" />
+<link type="text/css" rel="stylesheet" href="sub_css/basic.css">
+
+<script type="text/javascript">
+
+	var ENV = {
+		ID_SLIDER_ORT : "#sliderOrientation",
+		ID_SLIDER_STEP : "#sliderStep",
+		ID_SLIDER_RANGE : "#sliderRange",
+		ID_SLIDER_RANGE_TWO : "#sliderRangeTwo"
+	};
+
+	var INIT_VAL = {
+		RANGE : 35,
+		TWO_RANGE_1 : 10,
+		TWO_RANGE_2 : 65
+	};
+	
+	var mainView = {
+			
+			init : function() {
+				this.updateBasicPos(0);
+				this.updateStepPos(0);
+				this.updateRangePos(INIT_VAL.RANGE);
+				this.updateTwoRangePos(INIT_VAL.TWO_RANGE_1, INIT_VAL.TWO_RANGE_2);
+			},
+			
+			setOrientation : function(orientation) {
+				$(ENV.ID_SLIDER_ORT).slider("option", "orientation", orientation);
+			},
+			
+			setStep : function(step){
+				$(ENV.ID_SLIDER_STEP).slider("option", "step", parseInt(step));
+			},
+		
+			setRange : function(range){
+				
+				$(ENV.ID_SLIDER_RANGE).slider("option", "range", range)
+									  .find(".ui-slider-range").removeClass("ui-slider-range-min ui-slider-range-max")
+									  .addClass( (range == "min" ? "ui-slider-range-min" : "ui-slider-range-max") ).end()
+									  .slider("option", "value", 0);
+									  
+				this.updateRangePos(0);				
+			},
+			
+			_resetHandler : function(elem) {
+				elem.removeClass("ui-slider-range-min", "ui-slider-range-max");
+				$(ENV.ID_SLIDER_RANGE).slider("option", "value", 0);
+			},			
+			
+			updateBasicPos : function(pos) {
+				$("#val-ort").text(pos);
+			},
+			
+			updateStepPos : function(pos) {
+				$("#val-step").text(pos);
+			},
+			
+			updateRangePos : function(pos) {
+				$("#val-range").text(pos);
+			},
+			
+			updateTwoRangePos : function(pos1, pos2) {
+				$("#val-range-first").text(pos1); 
+				$("#val-range-end").text(pos2);
+			}			
+	};
+
+	$(document).ready(function() {
+
+		$(ENV.ID_SLIDER_ORT).slider( {
+			slide: function(evt, ui) {
+				mainView.updateBasicPos( ui.value );
+			}
+		});
+		
+		$(ENV.ID_SLIDER_STEP).slider( {
+			slide: function(evt, ui) {
+				mainView.updateStepPos( ui.value );
+			}	
+		});
+		
+		$(ENV.ID_SLIDER_RANGE).slider({
+			range : "min",
+			value : 35,
+			slide : function(evt, ui) {
+				mainView.updateRangePos( ui.value );
+			}
+		});
+		
+		$(ENV.ID_SLIDER_RANGE_TWO).slider({
+			range : true,
+			values : [10, 65],
+			slide : function(evt, ui) {
+				mainView.updateTwoRangePos( ui.values[0], ui.values[1] );
+			}
+		});
+		
+		mainView.init();
+		
+		$("input:radio[name='orientation']").on("click",function() {
+			mainView.setOrientation($(this).val());
+		});				
+		
+		$("input:radio[name='step']").on("click",function() {
+			mainView.setStep($(this).val());
+		});
+		
+		$("input:radio[name='range']").on("click",function() {
+			mainView.setRange($(this).val());
+		});
+				
+	});	
+</script>
+</head>
+<body>
+
+	<div class="title">기본 슬라이더</div>
+	<div class="option-area">
+		<input type="radio" name="orientation" value="horizontal" checked>horizontal
+		<input type="radio" name="orientation" value="vertical">vertical
+	</div>
+	<div class="text-area">value : </div>
+	<div id="val-ort" class="input-area"></div>
+	<div class="text-area">/ 100 </div>
+	<div class="display-area"> 
+		<div id="sliderOrientation" >	</div>
+	</div>
+	
+	<div class="title">단계형 슬라이더</div>
+	<div class="option-area">
+		<input type="radio" name="step" value="1" checked>1
+		<input type="radio" name="step" value="4">4
+		<input type="radio" name="step" value="10">10
+		<input type="radio" name="step" value="20">20
+		<input type="radio" name="step" value="50">50
+	</div>
+	<div class="text-area">value : </div>
+	<div id="val-step" class="input-area"></div>
+	<div class="text-area">/ 100</div>
+	<div class="display-area"> 
+		<div id="sliderStep" >	</div>
+	</div>
+	
+	
+	<div class="title">범위설정형 슬라이더 - 1개 핸들러</div>
+	<div class="option-area">
+		<input type="radio" name="range" value="min" checked >min - value
+		<input type="radio" name="range" value="max" >value - max
+	</div>
+	<div class="text-area">value : </div>
+	<div id="val-range" class="input-area"></div>
+	<div class="text-area">/ 100</div>
+	<div class="display-area"> 
+		<div id="sliderRange" ></div>
+	</div>
+	
+	<div class="title">범위설정형  슬라이더 - 2개 핸들러</div>
+	<div class="option-area">
+		
+	</div>
+	<div class="text-area">first-value : </div>
+	<div id="val-range-first" class="input-area"></div>
+	<div class="text-area">end-value : </div>
+	<div id="val-range-end" class="input-area"></div>
+	<div class="display-area"> 
+		<div id="sliderRangeTwo" ></div>
+	</div>
+	
+	
+	
+</body>
+</html>

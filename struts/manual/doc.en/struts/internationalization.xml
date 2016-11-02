@@ -1,0 +1,170 @@
+<chapter id="struts_internationalization">
+	<title>Internationalization</title>
+
+	<para>
+ 		 Internationalization (I18N) is a series of processes that design software to support various languages and regions 
+ 		 in advance, and support easy reengineering.
+ 	</para>
+
+	<section id="struts_internationalization_feature">
+    <title>The characteristics of Internationalization</title>
+
+    	<section id="struts_internationalization_feature_necessity">
+      	<title>The importance of Internationalization</title>
+
+      		<itemizedlist>
+	        	<listitem>
+	          		<para>Adds supported language without code modification.</para>
+	        	</listitem>
+	        	<listitem>
+	          		<para>Separates text factors, messages, image sources, and codes.</para>
+	        	</listitem>
+	        	<listitem>
+	          		<para>Different formatting according to language and region 
+	          		on data dependent on culture such as date, time, numbers, currency, etc.</para>
+	        	</listitem>
+		       	<listitem>
+	          		<para>Supports nonstandard characters.</para>
+	        	</listitem>
+	        	<listitem>
+	          		<para>Applies application to new languages and regions in a fast and easy way.</para>
+	        	</listitem>
+      		</itemizedlist>
+
+      		<para>
+      			The application supporting internationalization does not mean that it can be immediately used in all languages and regions. 
+      			Internationalization support means that the codes that are influenced by languages and regions and codes that are not 
+      			are separated to be easily localized. 
+      		</para>
+    	</section>
+
+    	<section id="struts_internationalization_feature_locale">
+      	<title>Locale</title>
+
+	      	<itemizedlist>
+	        	<listitem>
+	          		<para>The area that shares traditions, culture, and language.</para>
+	        	</listitem>
+		        <listitem>
+	    		    <para>Localization (L10N) is a series of processes that makes appropriately internationalized applications fit a certain region.</para>
+	        	</listitem>
+	      	</itemizedlist>
+	
+	      	<para>
+      			When supporting internationalization, implementing only a part of the characteristics above is rather meaningless. 
+      			You should either support or not support all characteristics. 
+      			cf.) Anyframe cannot take all internationalization issues into consideration, 
+      			so it focuses on java.util.Locale and java.util.ResourceBundle. 
+      			Resources provided by Anyframe focus on texts and images. 
+      			MessageResource Bundle should be developed based on the PropertyResourceBundle Class rules. 
+      			As text file with .properties extension, messages should be developed in key=value as mentioned before. 
+      			Also, because it comes like class, in should be developed on classpath. 
+      			When there are several MessageResource Bundles, use basic name and region to find the bundle that is closest to the name 
+      			when finding a message from one of the Struts bundles. 
+      			When you fail to find the bundle, use basic bundle. 
+      			The following is an example of message definition.
+      			<programlisting language="java"># error message
+common.msg.authorization.error=You can not access this page.
+..
+# text resource
+common.ui.title=eMarketPlace
+..</programlisting>
+			</para>
+
+		    <para>
+		    	The following is an example of setting message key when creating ActionMessage.
+		    	<programlisting
+      			language="xml">erros.add(ActionErrors.GLOBAL_ERROR, new ActionMessage("common.msg.authorization.error"));</programlisting>
+      		</para>
+
+      		<para>
+      			The following is an example of displaying real test value of the related message key using MessageTag of bean tag library.
+      			<programlisting language="xml"><![CDATA[<head>
+    <title><bean:message key="common.ui.title"/></title>
+</head>]]></programlisting>
+			</para>
+		</section>
+	</section>
+
+	<section id="struts_internationalization_sample">
+    <title>Internationalization Sample</title>
+
+    	<para>The following is an example of showing message in another language in JSP page with user locale information.</para>
+
+    	<section id="struts_internationalization_sample_sample">
+      	<title>Sample</title>
+
+      		<itemizedlist>
+        		<listitem>
+          			<para>JSP</para>
+
+			        <para>
+			        	The following is internationalization.jsp. 
+          				When you click the language on JSP view, 
+          				the value of msg.internationalization key registered in MessageResource Bundle 
+          				changes into "Internationalization" and "국제화".
+          				<programlisting language="xml"><![CDATA[<%@ page contentType="text/html; charset=utf-8" %>
+<%@ taglib uri="http://struts.apache.org/tags-bean" prefix="bean"%>
+<%@ taglib uri="http://struts.apache.org/tags-html" prefix="html"%>
+<html>
+<head>
+<title>Internationalization Sample</title>
+</head>
+<body>
+    <strong>Change Language | 언어 변경 </strong><br/>
+    <html:link action="/internationalizationSample?language=en">English | 영어</html:link><br/>
+    <html:link action="/internationalizationSample?language=ko">Korean | 한국어</html:link><br/>
+    <bean:message key="msg.internationalization"/>
+</body>
+</html>]]></programlisting>
+					</para>
+        		</listitem>
+
+       			<listitem>
+          			<para>Action</para>
+
+          			<para>
+          				Below is a part of InternationalizationAction.java that shows an example of 
+          				clicking the related language on the above JSP view 
+          				and setting user locale information in Action.
+          				<programlisting
+          				language="xml"><![CDATA[public ActionForward execute(ActionMapping mapping, ActionForm form,
+        HttpServletRequest request, HttpServletResponse response) 
+        throws Exception {
+    
+    HttpSession session = request.getSession();
+    Locale locale = getLocale(request);
+    
+    String language = null;
+    String country = null;
+    
+    try {
+           language = (String)
+             PropertyUtils.getSimpleProperty(form, "language");
+           country = (String)
+             PropertyUtils.getSimpleProperty(form, "country");
+       } catch (Exception e) {
+          e.printStackTrace();
+       }
+
+       if ((language != null && language.length() > 0) &&
+           (country != null && country.length() > 0)) {
+          locale = new java.util.Locale(language, country);
+       } else if (language != null && language.length() > 0) {
+          locale = new java.util.Locale(language, "");
+   }
+       session.setAttribute(Globals.LOCALE_KEY, locale);
+
+       return mapping.findForward("success");
+}]]></programlisting>
+					</para>
+		
+          			<para>
+          				The above InternationalizationAction.java is a modification of struts-examples-1.3.10 LocaleAction provided by Struts. 
+          				It saves language value sent to parameter value in Session as Globals.LOCALE_KEY.
+          			</para>
+        		</listitem>
+      		</itemizedlist>
+		</section>
+	</section>
+</chapter>

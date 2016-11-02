@@ -1,0 +1,179 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN"
+"http://www.w3.org/TR/html4/loose.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+
+<head>
+<meta http-equiv="content-type" content="text/html; charset=UTF-8" />
+<title>Progressbar : Basics</title>
+
+<!-- FILES INCLUDED.. ----------------------------------------------------->
+<script type="text/javascript" src="../../../common/exlibs/jquery-1.9.0.js"></script>
+
+<script type="text/javascript" src="../../../common/exlibs/highlighter/scripts/shCore.js"></script>
+<script type="text/javascript" src="../../../common/exlibs/highlighter/scripts/shBrushJScript.js"></script>
+
+<script type="text/javascript" src="../../../common/js/template_common.js"></script>
+
+<!--  STYLESHEET  -->
+<link type="text/css" rel="stylesheet"
+	href="../../../common/exlibs/highlighter/styles/shCore.css" />
+<link type="text/css" rel="stylesheet" 	href="../../../common/exlibs/highlighter/styles/shCoreDefault.css" />
+<link type="text/css" rel="stylesheet" 	href="../../../common/css/style.css" />
+
+<!-- SCRIPT  ----------------------------------------------------->
+<script type="text/javascript">
+
+$(function() {
+	JTemplate.load("ui_progressbar_basic_src.htm");				
+	JTemplate.loadDemo2("ui_progressbar_basic_src.htm", {height:"400px"});			
+});  
+
+</script>
+<style>
+.desc li span {
+width : 80px;
+}
+</style>
+</head>
+
+<!-- CONTENTS BODY -------------------------------------------------------------->
+<body >
+
+<!-- HEADER BAR -------------------------------------------------------------->
+<div class="content-title">Component - Progressbar</div>
+
+<!-- START OF PAGE ... -------------------------------------------------------->
+<div id="page">
+		<p class="header-title">Progressbar 기본기능</p>
+		<p class="header-desc">: progressbar 상태별로 표현할 수 있는 기본 요소들을 확인해 볼 수 있다.</p>
+
+<!-- DEMO ----------------------------------------------------------------------->
+			<div class="demo">
+				<h3 >Demo</h3>
+				<div id="visualExample"></div>
+			</div>
+
+<!-- DEMO DESCRIPTION----------------------------------------------------->
+		<div class="desc">
+			<h3>Demo Description</h3>
+			<hr>
+			<p class = "desc-title">로딩 상태</p>
+			<p class ="desc-overall">
+				: 로딩상태의 시각적 형태와 라벨 텍스트의 형태를 확인해 볼 수 있다.<br>
+			</p>
+			<ul class ="desc-hypl">
+				<li><span>indeterminate 상태 </span>: 지속적으로 애니메이션 효과가 나타나는 bar를 볼 수 있다.</li>
+				<li><span>로딩 텍스트 조작 </span>: 입력창에 로딩상태에 나타내고자 할 텍스트를 쓰고 change 버튼을 누르면, 바뀐 텍스트가 적용된다.</li>
+			</ul>
+			
+			<p class = "desc-title">변화 상태</p>
+			<p class ="desc-overall">
+				: 실제 변화가 일어나는 상태를 보여주는 Progressbar에 대하여 초기값, 변화간격(속도조절), 완료텍스트를 조작해 볼 수 있다.<br>
+			</p>
+			<ul class ="desc-hypl">
+				<li><span>초기값</span>: 값에 따라 변화되기 이전에 초기값을 설정할 수 있다. 100% 기준으로 1 - 100 사이 숫자를 입력하면 적용된다.</li>
+				<li><span>변화 간격</span>: 값이 변화할 때 default로 1씩 증가하도록 구현되어 있다. +, - 버튼을 통해 그 간격을 더 크게 혹은 더 작게 조작할 수 있다.(빠르기 효과)</li>
+				<li><span>완료 텍스트</span>: 값이 100%로 모두 완료된 후에는 완료텍스트 라벨이 나온다. default로 complete! 텍스트가 나오지만 입력창을 통해 텍스트를 바꾸어볼 수 있다.</li>
+			</ul>
+
+		</div>
+
+
+<!-- CODE------------------------------------------------------------------------>
+			<div class="code">
+				<h3>Code Source </h3>
+				<pre id="codeExample" class="brush: js"></pre>
+			</div>
+
+<!-- CODE DESCRIPTION------------------------------------------------------>
+			<div class="desc">
+				<h3>Code Description </h3>
+				<hr>
+				<p class="desc-title">값의 변화</p>
+				<p class = "desc-overall">
+				: Progressbar 안에서 값이 변화하고, 그 값을 시작, 정지하도록 다음과 같이 구현할 수 있다.
+				</p>
+				
+				<ul class="desc-hypl">
+					<span class="code-line">#31 - #44</span>
+					<li><span>setChange</span>
+					: changeVal() 함수로 초기값을 가지는 val 에 대해 interval(default:1)만큼씩 증가하도록 하며, 
+					setTimeout으로 val값 99까지 계속 자기자신함수를 부르도록 한다.
+					</li>
+					<span class="code-line">#46 - #55</span>
+					<li><span>setStartBtn</span>
+					: boolean 타입의 CHECK_STOP 변수를 통해 true이면 위의 changeVal 함수가 
+					계속 불리도록 한다. (val 가 100이면 다시 시작하도록 하기 위해 0으로 재설정)
+					</li>
+					<span class="code-line">#57 - #62</span>
+					<li><span>setStopBtn</span>
+					: CHECK_STOP 변수를 false로 설정하면 위의 setChange 내, changeVal 함수가 더이상 불리지 않도록 한다.
+					</li>
+				</ul>
+				
+				<p class="desc-title">초기값 설정</p>
+				<p class = "desc-overall">
+				: 초기값을 처음에 옵션값을 통해 지정해줄 수도 있고, 동적으로 바뀐 값을 넣어 재설정할 수도 있다.
+				</p>
+				<ul class="desc-hypl">
+					<li><span>value option</span>
+					: 다음과 같이 progressbar 컴포넌트 생성과 동시에 value 초기값을 옵션 "value" 를 통해 설정할 수 있다.
+					</li>
+					<div class="code-block">
+						$(ENV.ID_PROGRESSBAR_CHNG).progressbar({ value : 35 });
+					</div>
+					<li><span>사용자 입력값으로 설정</span>
+					: 사용자 입력값으로 재설정 할 경우, 반드시  string type 값을 number type 값으로 변환해 주어야 한다. <br>
+					option value는 number type 혹은 boolean type 만으로 지정가능하기 때문에 초기값 변동에 대한 값도  
+					<strong class="bold">parseInt</strong>와 같은 함수로 변환한 후 설정해주어야 한다.
+					</li>
+				</ul>
+				
+				<p class="desc-title">변화간격 설정</p>
+				<p class = "desc-overall">
+				: 변화값을 바꾸어 더 빠르게 혹은 느리게 조정할 수 있다.(default : value값이 1씩 증가)
+				</p>
+				<ul class="desc-hypl">
+					<li><span>VALUE_INTERVAL_N 변수</span>
+					: 위에서 언급한 setChange 함수내에서 쓰이는 interval에 대해 VALUE_INTERVAL_N 변수값을 다르게 주면, 변화 간격이 바뀌게 된다.
+					</li>
+				</ul>
+				
+				<p class="desc-title">완료 텍스트 설정</p>
+				<p class = "desc-overall">
+				: progressbar가 모두 진행된 후 나오게 되는  완료 메시지의 라벨을 complete event를  통해 바꿀 수 있다.
+				</p>
+				<ul class="desc-hypl">
+					<span class="code-line">#89 - #93</span>
+					<li><span>complete event</span>
+					: progressbar 컴포넌트 설정과 동시에 complete  event 를 통해 설정, 혹은 나중에 재설정할 수 있다.
+					</li>
+				</ul>
+				
+			</div>
+				 
+		
+<!-- RELATED LINKS ----------------------------------------------------------->
+		<div class="related">
+			<h3>Related Links</h3>
+			<hr>
+			<ul class ="desc-hypl">
+				<li>
+					<span>Progressbar API</span>
+					<a href="http://api.jqueryui.com/progressbar/"></a>
+				</li>
+				<li>
+					<span>change 이벤트</span>
+					<a href="http://api.jqueryui.com/progressbar/#event-change"></a>
+				</li>
+				<li>
+					<span>complete 이벤트</span> 
+					<a href="http://api.jqueryui.com/progressbar/#event-complete"></a>
+				</li>
+			</ul>
+		</div>
+
+</div>
+<!-- END OF PAGE------------------------------------------------------------->
+</body>
+</html>

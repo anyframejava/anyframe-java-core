@@ -1,0 +1,81 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<plugin name="mip-query" description="Mip-Query Plugin consists of sample code that provides basic guidelines on how to use MiPlatform connection modules and common server modules provided by Anyframe, and reference libraries needed to use open sources.">
+	<groupId>org.anyframe.plugin</groupId>
+	<artifactId>anyframe-mip-query-pi</artifactId>
+	<version>1.6.1-SNAPSHOT</version>
+	<dependent-plugins>
+		<dependent-plugin name="query-ria" version="2.0.0&gt;*&gt;1.4.0" />
+	</dependent-plugins>
+	<resources>
+		<resource dir="src/main/java" filtered="true" packaged="true">
+			<include name="**/mip/query/**/*.java" />
+			<exclude name="**/common/aspect/LoggingAspect.java" merged="true"/>
+		</resource>
+		<resource dir="src/main/resources" filtered="true" packaged="false">
+			<exclude name="**/spring/context-transaction.xml" merged="true"/>
+			<include name="**/*mip-query*.xml" />
+			<include name="**/mip-query/**/*.xml" />
+			<include name="**/mip-generation-servlet.xml"/>
+		</resource>
+		<resource dir="src/test/java" filtered="true" packaged="true">
+			<include name="**/mip/query/**/*.java" />
+		</resource>
+		<resource dir="src/test/resources" filtered="true" packaged="false">
+			<include name="**/*mip-query*.xml" />
+		</resource>
+		<resource dir="src/main/webapp" filtered="false" packaged="false">
+			<include name="**/mip-query/**/*.*" />
+			<exclude name="**/anyframe.jsp" merged="true"/>
+			<exclude name="**/mip_query_mdi.xml" />
+			<exclude name="**/mip_query_sdi.xml" />
+		</resource>
+		<resource dir="src/main/webapp/mip-query" filtered="true"
+			packaged="false">
+			<include name="**/mip_query_mdi.xml" />
+			<include name="**/mip_query_sdi.xml" />
+			<include name="**/basic/javascript/**/fileupdown.js" />
+		</resource>
+		<resource dir="db" filtered="false" packaged="false">
+			<include name="**/scripts/*.sql" />
+		</resource>
+		<resource dir="db" filtered="false" packaged="false">
+			<include name="**/resources/**/*.xml" />
+		</resource>	
+	</resources>
+	<samples>true</samples>
+	<interceptor>
+		<class>org.anyframe.plugin.interceptor.MipQueryPluginInterceptor</class>
+		<dependencies>
+			<dependency>
+				<groupId>org.anyframe</groupId>
+				<artifactId>anyframe-ide-command-common</artifactId>
+				<version>2.3.1-SNAPSHOT</version>
+				<scope>interceptor</scope>
+			</dependency>
+			<dependency>
+				<groupId>org.slf4j</groupId>
+				<artifactId>slf4j-api</artifactId>
+				<version>1.6.4</version>
+				<scope>provided</scope>
+			</dependency>
+			<dependency>
+				<groupId>org.slf4j</groupId>
+				<artifactId>slf4j-log4j12</artifactId>
+				<version>1.6.4</version>
+				<scope>provided</scope>
+			</dependency>
+			<dependency>
+	            <groupId>log4j</groupId>
+	            <artifactId>log4j</artifactId>
+	            <version>1.2.15</version>
+	        </dependency>
+			<dependency>
+			  <groupId>org.slf4j</groupId>
+			  <artifactId>jcl-over-slf4j</artifactId>
+			  <version>1.6.4</version>
+			</dependency>
+		</dependencies>
+	</interceptor>
+	<essential>false</essential>
+	<checked>false</checked>
+</plugin>

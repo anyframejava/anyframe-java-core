@@ -1,0 +1,76 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE sqlMap PUBLIC "-//ibatis.apache.org//DTD SQL Map 2.0//EN"
+"http://ibatis.apache.org/dtd/sql-map-2.dtd">
+
+<sqlMap namespace="Movie">
+
+	<typeAlias alias="Movie" type="org.anyframe.plugin.ibatis2.domain.Movie" />
+
+	<resultMap id="movieResult" class="Movie">
+		<result property="movieId" column="movie_id" />
+		<result property="title" column="title" />
+		<result property="director" column="director" />
+		<result property="genre" resultMap="Genre.genreResult" />
+		<result property="releaseDate" column="release_date" javaType="java.sql.Date" />
+		<result property="ticketPrice" column="ticket_price" />
+		<result property="actors" column="actors" />
+		<result property="runtime" column="runtime" />
+		<result property="nowPlaying" column="now_playing" />
+		<result property="posterFile" column="poster_file" />
+	</resultMap>
+
+	<insert id="insertMovie" parameterClass="Movie">
+		INSERT INTO MOVIE
+		(movie_id, title, director, genre_id, actors, runtime, release_date,
+		ticket_price, now_playing)
+		VALUES (#movieId#, #title#,
+		#director#, #genre.genreId#, #actors#, #runtime:DECIMAL#, #releaseDate:DATE#,
+		#ticketPrice:DECIMAL#, #nowPlaying#)
+     </insert>
+	
+	<update id="updateMovie" parameterClass="Movie">
+		UPDATE MOVIE SET
+		title = #title#, director = #director#, genre_id = #genre.genreId#,
+		actors = #actors#, runtime = #runtime:DECIMAL#, release_date = #releaseDate:DATE#,
+		ticket_price = #ticketPrice:DECIMAL#, now_playing = #nowPlaying#
+		WHERE movie_id
+		= #movieId#
+    </update>
+	
+	<delete id="deleteMovie" parameterClass="String">
+		DELETE FROM MOVIE WHERE movie_id = #movie_id#
+    </delete>
+	
+	<select id="getMovie" parameterClass="String" resultMap="movieResult">
+		SELECT movie.movie_id, movie.title, movie.director, movie.genre_id, genre.name, movie.release_date,
+		movie.ticket_price, movie.actors, movie.runtime, movie.now_playing, movie.poster_file
+		FROM MOVIE movie, GENRE genre
+		WHERE movie.genre_id = genre.genre_id AND movie_id = #movie_id#
+    </select>
+
+	<select id="getMovieList" parameterClass="Movie" resultMap="movieResult">
+		SELECT movie.movie_id, movie.title, movie.director, genre.genre_id, genre.name, 
+		movie.release_date, movie.ticket_price, movie.actors, movie.runtime, movie.now_playing, movie.poster_file 
+		FROM MOVIE movie, GENRE genre
+		WHERE movie.genre_id = genre.genre_id
+		<isNotNull property="title" prepend="AND">
+			title like #title# 
+	    </isNotNull>
+		AND movie.now_playing = #nowPlaying#
+	</select>
+
+
+	<select id="getMovieListCnt" parameterClass="Movie"
+		resultClass="int">
+		SELECT count(*)
+		FROM MOVIE
+		 <dynamic prepend="WHERE">
+			<isNotNull property="title" prepend="AND">
+				title like #title# 
+		    </isNotNull>
+		</dynamic>
+		AND movie.now_playing = #nowPlaying#
+	</select>
+    
+</sqlMap>
+

@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-3.2.xsd">
+
+	<!-- NativeJdbcExtractor for P6Spy - ex. OracleLobHandler uses oracle specific
+		module like oracle.sql.BLOB .. - if you use p6spy connection wrapping, you
+		must set this with DBMS vendor specific functions -->
+	<bean id="nativeJdbcExtractor"
+		class="org.anyframe.jdbc.support.p6spy.P6spyNativeJdbcExtractor"
+		lazy-init="true">
+		<!-- your original nativeJdbcExtractor set to nextNativeJdbcExtractor -->
+		<property name="nextNativeJdbcExtractor" ref="commonsDbcpNativeJdbcExtractor" />
+	</bean>
+
+	<bean id="commonsDbcpNativeJdbcExtractor"
+		class="org.springframework.jdbc.support.nativejdbc.CommonsDbcpNativeJdbcExtractor"
+		lazy-init="true" />
+
+	<!--
+	<bean id="lobHandler" class="org.springframework.jdbc.support.lob.OracleLobHandler"
+		lazy-init="true">
+		<property name="nativeJdbcExtractor" ref="nativeJdbcExtractor" />
+	</bean>
+	-->
+	<bean id="lobHandler" class="org.springframework.jdbc.support.lob.DefaultLobHandler"
+		lazy-init="true"/>
+
+</beans>

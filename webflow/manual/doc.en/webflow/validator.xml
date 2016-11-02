@@ -1,0 +1,48 @@
+<chapter id="webflow_validator">
+	<title>Validator</title>
+	<para>
+		In Spring Web Flow, programmatic validation on model object defined by implementing validator can be executed. 
+		For validator implementation, there are validate method implementation in model object 
+		and Validator class implementation.
+	</para>
+	
+	<section id="webflow_validator_model">
+		<title>Implement validate method in model object</title>
+		<para>
+			Implement validate method in model object to execute validation for model object. 
+			In this case, method name should be defined according to certain rules. 
+			The name is "validate${state}" and has ValidationContext as input argument. 
+			For instance, validate method for "addCategoryView" state that has model object called "domain.Category" type can be defined as below.
+			<programlisting language="java"><![CDATA[public class ]]><emphasis role="bold"><![CDATA[Category]]></emphasis><![CDATA[ implements java.io.Serializable {
+//....
+    public void ]]><emphasis role="bold"><![CDATA[validateAddCategoryView]]></emphasis><![CDATA[(ValidationContext context){
+        MessageContext messages = context.getMessageContext();
+        if(categoryName.length() <=3)
+            messages.addMessage(new MessageBuilder().error().source("categoryName").
+                    defaultText("Category name should have four or more letters.").build());
+    }]]></programlisting>
+       </para>
+       
+	</section>
+	
+	<section id="webflow_validator_class">
+		<title>Validator class implementation</title>
+		<para>
+			When validate is defined in model object as above, each model object includes validate method. 
+			Validator class can be additionally developed to separately manage code of validation check part. 
+			In this case, the class name is "${model}Validator", 
+			and the name of method to be executed according to state is "validate${state}". 
+			Also, the input argument is model object and ValidationContext.
+		 	<programlisting language="java"><![CDATA[@Component
+public class ]]><emphasis role="bold"><![CDATA[CategoryValidator]]></emphasis><![CDATA[ {
+    public void ]]><emphasis role="bold"><![CDATA[validateGetCategory]]></emphasis><![CDATA[(]]><emphasis role="bold"><![CDATA[Category]]></emphasis><![CDATA[ category, ValidationContext context) {
+        MessageContext messages = context.getMessageContext();
+        if (category.getCategoryName().length() <= 3)
+             messages.addMessage(new MessageBuilder().error().source(
+                "categoryName").code("category.length.error").build());
+        }
+    }]]></programlisting>
+			As seen in the above code, Validator class should be registered as Spring Bean.
+		</para>
+	</section>
+</chapter>

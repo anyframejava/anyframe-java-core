@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://www.springframework.org/schema/beans 
+		http://www.springframework.org/schema/beans/spring-beans-3.2.xsd">
+
+	<bean id="movieDao" class="org.anyframe.hibernate.sample.service.movie.impl.MovieDaoHibernateImpl">
+		<property name="sessionFactory" ref="sessionFactory"/>
+		<property name="dynamicHibernateService" ref="dynamicHibernateService"/>
+	</bean>
+	
+	<bean id="movieService" class="org.anyframe.hibernate.sample.service.movie.impl.MovieServiceImpl">
+		<property name="movieDao" ref="movieDao" />
+	</bean>
+
+</beans>

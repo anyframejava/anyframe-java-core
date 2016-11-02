@@ -1,0 +1,82 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" 
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="Movie">
+
+	<resultMap id="movieResult" type="Movie">
+		<id property="movieId" column="movie_id" />
+		<result property="title" column="title" />
+		<result property="scoreAttendance" column="score_attendance" />		
+		<result property="scoreNetizen" column="score_netizen" />	
+		<result property="imageUrl" column="image_url" />	
+		<result property="filmRate" column="film_rate" />	
+		<result property="genre" column="genre" />	
+		<result property="releaseDate" column="release_date" />	
+		<result property="runningTime" column="running_time" />	
+		<result property="totalAttendance" column="total_attendance" />	
+		<result property="synopsis" column="synopsis" />	
+		<result property="director" column="director" />	
+		<result property="actors" column="actors" />	
+	</resultMap>
+	
+	<insert id="insertMovie" parameterType="Movie">
+		INSERT INTO MOVIES
+		(movie_id, title, score_attendance, score_netizen, image_url, film_rate, genre, release_date, running_time, total_attendance, synopsis, director, actors)
+		VALUES (#{movieId,jdbcType=VARCHAR },#{title,jdbcType=VARCHAR },#{scoreAttendance,jdbcType=VARCHAR },#{scoreNetizen,jdbcType=VARCHAR },#{imageUrl,jdbcType=VARCHAR },#{filmRate,jdbcType=VARCHAR },
+		#{genre,jdbcType=VARCHAR },#{releaseDate,jdbcType=VARCHAR },#{runningTime,jdbcType=NUMERIC },#{totalAttendance,jdbcType=VARCHAR },#{synopsis,jdbcType=VARCHAR },#{director,jdbcType=VARCHAR },#{actors,jdbcType=VARCHAR })
+	</insert>
+	
+	<update id="updateMovie" parameterType="Movie">
+		UPDATE MOVIES SET
+		title = #{title,jdbcType=VARCHAR}, score_attendance=#{scoreAttendance,jdbcType=VARCHAR } , score_netizen=#{scoreNetizen,jdbcType=VARCHAR } , image_url=#{imageUrl,jdbcType=VARCHAR } , film_rate=#{filmRate,jdbcType=VARCHAR } , 
+		genre= #{genre,jdbcType=VARCHAR }, release_date=#{releaseDate,jdbcType=VARCHAR },running_time =#{runningTime,jdbcType=NUMERIC }, total_attendance= #{totalAttendance,jdbcType=VARCHAR }, synopsis= #{synopsis,jdbcType=VARCHAR }, 
+		director=#{director,jdbcType=VARCHAR }, actors=#{actors,jdbcType=VARCHAR } 
+		WHERE movie_id = #{movieId}
+	</update>
+	
+	<delete id="deleteMovie" parameterType="string">
+		DELETE FROM MOVIES WHERE movie_id = #{value}
+	</delete>	
+	
+	<select id="getMovie" parameterType="string" resultMap="movieResult">
+		SELECT 	movie.movie_id, movie.title,  movie.score_attendance, movie.score_netizen, movie.image_url, movie.film_rate, movie.genre, 
+				movie.release_date, movie.running_time, movie.total_attendance, movie.synopsis, movie.director, movie.actors
+		FROM MOVIES movie
+		WHERE movie_id = #{movieId}
+	</select>
+	
+	<select id="getMovieList" parameterType="Movie" resultMap="movieResult">
+		SELECT movie.movie_id, movie.title,  movie.score_attendance, movie.score_netizen, movie.image_url, movie.film_rate, movie.genre, 
+				movie.release_date, movie.running_time, movie.total_attendance, movie.synopsis, movie.director, movie.actors
+		FROM MOVIES movie
+		WHERE 1=1
+		<if test="title != null">
+			AND title like #{title}
+		</if>
+	</select>
+	
+	<select id="getMovieListCnt" parameterType="Movie" resultType="int">
+		SELECT count(*)
+		FROM MOVIES
+		<where>
+			<if test="title != null">
+				title like #{title}
+			</if>					
+		</where>
+	</select>
+	
+	<select id="getMovieListWithDate" parameterType="Movie" resultMap="movieResult">
+		SELECT movie.movie_id, movie.title,  movie.score_attendance, movie.score_netizen, movie.image_url, movie.film_rate, movie.genre, 
+				movie.release_date, movie.running_time, movie.total_attendance, movie.synopsis, movie.director, movie.actors
+		FROM MOVIES movie
+		WHERE 1=1
+		<if test="startDate != null and endDate != null and startDate != '' and endDate != ''">
+			AND release_date BETWEEN #{startDate} AND #{endDate}
+		</if>
+		<if test="title != null and title != ''">
+			AND title like '%'||#{title}||'%'
+		</if>
+		ORDER BY movie.release_date desc
+	</select>
+</mapper>

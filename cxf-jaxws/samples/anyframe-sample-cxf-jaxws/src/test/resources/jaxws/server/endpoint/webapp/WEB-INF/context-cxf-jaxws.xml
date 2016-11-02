@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:cxf="http://cxf.apache.org/core"
+	xmlns:jaxws="http://cxf.apache.org/jaxws"
+	xsi:schemaLocation="http://www.springframework.org/schema/beans
+      http://www.springframework.org/schema/beans/spring-beans-4.0.xsd
+      http://cxf.apache.org/core http://cxf.apache.org/schemas/core.xsd
+      http://cxf.apache.org/jaxws http://cxf.apache.org/schemas/jaxws.xsd">
+
+	<!-- Load CXF modules from cxf.jar -->
+	<import resource="classpath:META-INF/cxf/cxf.xml" />
+	<import resource="classpath*:META-INF/cxf/cxf-extension-*.xml" />
+
+	<!-- Enable message logging using the CXF logging feature  -->   
+	<cxf:bus>
+		<cxf:features>
+			<cxf:logging />
+		</cxf:features>
+	</cxf:bus>
+		
+	<!-- JAX-WS Frontend to expose movieService using endpoint tag -->
+	<jaxws:endpoint id="movieService" implementor="#cxfJaxWsMovieService" address="/Movie"/>
+
+</beans>

@@ -1,0 +1,264 @@
+<?xml version="1.0" encoding="utf-8"?>
+<Window>
+	<Form BorderColor="#58595b" Height="616" Id="frmListMovie" Left="8" OnLoadCompleted="frmListMovie_OnLoadCompleted" PidAttrib="7" scroll="false" Style="stlGrd" Title="Movie&#32;List" Top="8" Ver="1.0" Width="834" WorkArea="true">
+		<Datasets>
+			<Dataset DataSetType="Dataset" Id="dsSearch">
+				<Contents>
+					<colinfo id="SEARCH_TITLE" size="256" summ="default" type="STRING"/>
+					<colinfo id="SEARCH_NOW_PLAYING" size="256" summ="default" type="STRING"/>
+					<record>
+						<SEARCH_NOW_PLAYING></SEARCH_NOW_PLAYING>
+						<SEARCH_TITLE></SEARCH_TITLE>
+					</record>
+				</Contents>
+			</Dataset>
+			<Dataset DataSetType="Dataset" Id="dsGridMovie">
+				<Contents>
+					<colinfo id="_chk" size="1" summ="default" type="CHAR"/>
+					<colinfo id="MOVIE_ID" size="8" summ="default" type="STRING"/>
+					<colinfo id="TITLE" size="50" summ="default" type="STRING"/>
+					<colinfo id="DIRECTOR" size="50" summ="default" type="STRING"/>
+					<colinfo id="GENRE_ID" size="5" summ="default" type="STRING"/>
+					<colinfo id="ACTORS" size="100" summ="default" type="STRING"/>
+					<colinfo id="RUNTIME" size="3" summ="default" type="INT"/>
+					<colinfo id="RELEASE_DATE" size="256" summ="default" type="DATE"/>
+					<colinfo id="TICKET_PRICE" size="6" summ="default" type="DECIMAL"/>
+					<colinfo id="NOW_PLAYING" size="1" summ="default" type="CHAR"/>
+					<colinfo id="POSTER_FILE" size="1000" summ="default" type="STRING"/>
+					<record>
+						<_chk></_chk>
+						<ACTORS></ACTORS>
+						<DIRECTOR></DIRECTOR>
+						<GENRE_ID></GENRE_ID>
+						<MOVIE_ID></MOVIE_ID>
+						<NOW_PLAYING></NOW_PLAYING>
+						<POSTER_FILE></POSTER_FILE>
+						<RELEASE_DATE/>
+						<RUNTIME/>
+						<TICKET_PRICE/>
+						<TITLE></TITLE>
+					</record>
+				</Contents>
+			</Dataset>
+			<Dataset DataSetType="Dataset" Id="dsService">
+				<Contents>
+					<colinfo id="SVC_ID" size="100" summ="default" type="STRING"/>
+					<colinfo id="QUERY_LIST" size="256" summ="default" type="STRING"/>
+					<colinfo id="SERVICE" size="100" summ="default" type="STRING"/>
+					<colinfo id="IN_DATASET_LIST" size="256" summ="default" type="STRING"/>
+					<colinfo id="OUT_DATASET_LIST" size="256" summ="default" type="STRING"/>
+					<colinfo id="CALLBACK" size="100" summ="default" type="STRING"/>
+					<colinfo id="SYNC_YN" size="1" summ="default" type="STRING"/>
+					<colinfo id="CONTROLLER" size="256" summ="default" type="STRING"/>
+					<record>
+						<CALLBACK></CALLBACK>
+						<CONTROLLER>mipQueryMovie.do</CONTROLLER>
+						<IN_DATASET_LIST>dsSearch=dsSearch</IN_DATASET_LIST>
+						<OUT_DATASET_LIST>dsGridMovie=dsResult</OUT_DATASET_LIST>
+						<QUERY_LIST></QUERY_LIST>
+						<SERVICE>miplatformMovieService.getList</SERVICE>
+						<SVC_ID>getList</SVC_ID>
+						<SYNC_YN></SYNC_YN>
+					</record>
+					<record>
+						<CALLBACK></CALLBACK>
+						<CONTROLLER>mipQueryMovie.do</CONTROLLER>
+						<IN_DATASET_LIST>dsSave=dsGridMovie:U</IN_DATASET_LIST>
+						<OUT_DATASET_LIST></OUT_DATASET_LIST>
+						<QUERY_LIST></QUERY_LIST>
+						<SERVICE>miplatformMovieService.saveAll</SERVICE>
+						<SVC_ID>saveAll</SVC_ID>
+						<SYNC_YN></SYNC_YN>
+					</record>
+					<record>
+						<CALLBACK></CALLBACK>
+						<CONTROLLER></CONTROLLER>
+						<IN_DATASET_LIST></IN_DATASET_LIST>
+						<OUT_DATASET_LIST>dsGridGenre=querySet1</OUT_DATASET_LIST>
+						<QUERY_LIST>querySet1=findGenreList</QUERY_LIST>
+						<SERVICE></SERVICE>
+						<SVC_ID>getListGenre</SVC_ID>
+						<SYNC_YN></SYNC_YN>
+					</record>
+					<record>
+						<CALLBACK></CALLBACK>
+						<CONTROLLER>mipQueryMovie.do</CONTROLLER>
+						<IN_DATASET_LIST>dsGridMovie=dsGridMovie:U</IN_DATASET_LIST>
+						<OUT_DATASET_LIST></OUT_DATASET_LIST>
+						<QUERY_LIST></QUERY_LIST>
+						<SERVICE>miplatformMovieService.create</SERVICE>
+						<SVC_ID>create</SVC_ID>
+						<SYNC_YN></SYNC_YN>
+					</record>
+				</Contents>
+			</Dataset>
+			<Dataset DataSetType="Dataset" Editable="True" Id="dsGridGenre">
+				<Contents>
+					<colinfo id="GENRE_ID" size="5" summ="default" type="STRING"/>
+					<colinfo id="NAME" size="50" summ="default" type="STRING"/>
+					<record>
+						<GENRE_ID></GENRE_ID>
+						<NAME></NAME>
+					</record>
+				</Contents>
+			</Dataset>
+		</Datasets>
+		<Div Height="310" Id="divDetail" Left="14" scroll="true" TabOrder="2" Text="Div0" Top="298" Width="812">
+			<Contents></Contents>
+		</Div>
+		<Button ButtonStyle="TRUE" Cursor="HAND" Height="19" Id="btnAddRow" ImageID="btn_add" Left="654" OnClick="btnAddRow_OnClick" Style="stlBtn" TabOrder="3" Text="&#32;추가" Top="30" Width="56"></Button>
+		<Button ButtonStyle="TRUE" DomainID="button.remove" Height="19" Id="btnDelRow" ImageID="btn_delete" Left="713" OnClick="btnDelRow_OnClick" Style="stlBtn" TabOrder="4" Text="&#32;삭제" Top="30" Width="56"></Button>
+		<Button ButtonStyle="TRUE" Cursor="HAND" DomainID="button.save" Height="19" Id="btnSaveAll" ImageID="btn_save" Left="772" OnClick="btnSaveAll_OnClick" Style="stlBtn" TabOrder="5" Text="&#32;저장" Top="30" Width="56"></Button>
+		<Div BKColor="user39" Border="Flat" BorderColor="user12" DisableBKColor="#f0f0f0" Height="43" Id="divSearch" Left="14" Style="stlDivSearch" TabOrder="6" Text="Div0" Top="53" Width="814">
+			<Contents>
+				<Image Align="Left" Font="돋움체,9,Bold" Height="19" Id="imgSearchTitle" ImageID="blet_search" Left="20" LeftMargin="18" OnClick="Div0_Image0_OnClick" Style="stlImg" TabOrder="3" TabStop="FALSE" Text="Title" Top="12" Width="80"></Image>
+				<Combo BindDataset="dsSearch" BKColor="white" Border="Flat" Column="SEARCH_NOW_PLAYING" Height="20" Id="cboSearchNowPlaying" ImeMode="keep,native" INDEX="0" Left="316" ResetIndex="FIRST" Search="FILTERED" Style="stlCbo" TabOrder="2" Top="10" Width="120">
+					<Contents>
+						<Record code="Y" Data="Playing"/>
+						<Record code="N" Data="Not&#32;Playing"/>
+					</Contents>
+				</Combo>
+				<Edit BindDataset="dsSearch" Border="Flat" Column="SEARCH_TITLE" Height="20" Id="edtSearchTitle" ImeMode="keep,native" Left="92" OnKeyDown="divSearch_edtSearchTitle_OnKeyDown" Style="stlEdt" TabOrder="1" Top="11" Width="100"></Edit>
+				<Button ButtonStyle="TRUE" Cursor="HAND" Height="19" Id="btnSearch" ImageID="icon_search" Left="441" OnClick="divSearch_btnSearch_OnClick" Style="stlBtn" TabOrder="4" Top="12" UserData="TYPE=S" Width="20"></Button>
+				<Image Align="Left" Font="돋움체,9,Bold" Height="19" Id="imgNowPlaying" ImageID="blet_search" Left="212" LeftMargin="18" OnClick="Div0_Image0_OnClick" Style="stlImg" TabOrder="5" TabStop="FALSE" Text="Now&#32;Playing" Top="11" Width="100"></Image>
+			</Contents>
+		</Div>
+		<Image Align="Left" Height="16" Id="imgTitle" ImageID="b_title_icon1" Left="14" LeftMargin="10" OnClick="imgTitle_OnClick" Style="stlTitle" TabOrder="7" Text="Movie&#32;List" Top="24" VAlign="Top" Width="400"></Image>
+		<Grid AutoFit="TRUE" AutoFitEndLine="Hide" BindDataset="dsGridMovie" BkColor2="user10" BoldHead="true" Border="Flat" BorderColor="#d6d6d6" Bottom="280" ColSizing="TRUE" Editable="TRUE" Enable="true" EndLineColor="default" Face3dColor="user6" HeadBorder="Flat" HeadHeight="23" Height="168" Hilight3dColor="user20" Id="grdMovie" InputPanel="FALSE" Left="14" LineColor="default" MinWidth="100" OnCellClick="grdMovie_OnCellClick" OnHeadClick="grdMovie_OnHeadClick" Right="828" Style="stlGrd" TabOrder="9" TabStop="true" Top="112" UseDBuff="true" UsePopupMenu="true" UseSelColor="true" Visible="true" VLineColor="default" WheelScrollRow="1" Width="814">
+			<contents>
+				<format id="Default">
+					<columns>
+						<col width="22"/>
+						<col width="89"/>
+						<col width="164"/>
+						<col width="132"/>
+						<col width="211"/>
+						<col width="99"/>
+						<col width="93"/>
+					</columns>
+					<head>
+						<cell col="0" color="user11" display="checkbox" edit="checkbox" font="돋움,9,Bold" text="0"/>
+						<cell col="1" color="user11" display="text" text="Genre"/>
+						<cell col="2" color="user11" display="text" text="Title"/>
+						<cell col="3" color="user11" display="text" text="Director"/>
+						<cell col="4" color="user11" display="text" text="Actors"/>
+						<cell col="5" color="user11" display="text" text="Ticket&#32;Price"/>
+						<cell col="6" color="user11" display="text" text="Release&#32;Date"/>
+					</head>
+					<body>
+						<cell align="center" col="0" colid="_chk" display="checkbox" edit="checkbox"/>
+						<cell align="center" col="1" colid="GENRE_ID" combocol="GENRE_ID" combodataset="dsGridGenre" combotext="NAME" display="combo"/>
+						<cell align="left" col="2" colid="TITLE" display="text"/>
+						<cell col="3" colid="DIRECTOR" display="text"/>
+						<cell align="left" col="4" colid="ACTORS" display="text"/>
+						<cell align="center" checklength="Byte" col="5" colid="TICKET_PRICE" display="text"/>
+						<cell align="center" col="6" colid="RELEASE_DATE" display="text"/>
+					</body>
+				</format>
+			</contents>
+		</Grid>
+	</Form>
+	<Script><![CDATA[#include "javascript::common.js";
+
+function frmListMovie_OnLoadCompleted(obj) {
+	divSearch.cboSearchNowPlaying.index = 0;
+	divSearch_btnSearch_OnClick();
+}
+
+function divSearch_btnSearch_OnClick(obj, nX, nY) {
+	if(gfnIsNull(divSearch.edtSearchTitle.text)) {
+		dsSearch.setColumn(0, 1, "");
+	}
+	
+	if(gfnIsNull(divSearch.cboSearchNowPlaying.value)) {
+		dsSearch.setColumn(0, 0, "Y");
+	}
+	gfnService("getList");
+	gfnService("getListGenre");
+}
+
+// 검색어 입력후 엔터키
+function divSearch_edtSearchTitle_OnKeyDown(obj, nChar, bShift, bCtrl, bAlt, LLParam, HLParam) {
+	if(bShift == 0 && bAlt == 0 && nChar == 13){
+		applyData(divSearch.edtSearchTitle);
+		divSearch_btnSearch_OnClick(obj);
+	}
+
+}
+
+function btnSaveAll_OnClick(obj, nX, nY){
+	for(var i = 0 ; i < dsGridMovie.rowcount ; i++){		
+		if(gfnIsNull(dsGridMovie.getColumn(i, "TITLE"))) {
+			alert((i+1) + " 번째 열의 상품명을 입력하세요.");
+			return;
+		}
+	}
+	gfnService("saveAll");
+}
+
+function btnAddRow_OnClick(obj,nRow,nCell,nX,nY,nPivotIndex) {	
+	var sArg = "";
+	
+	var sOpenStyle = "AutoSize=true";
+	var iWidth = 0;
+	var iHeight = 0;
+	
+	var row = dsGridMovie.addRow();
+	//dsGridMovie.setColumn(row,"SELLER_ID", "test");
+	
+	var returnValue = gfnOpenDialog("moviefinder::addMovie.xml", sArg, iWidth, iHeight, sOpenStyle);
+	
+	if(dsGridMovie.getColumn(row, "TITLE") == null || dsGridMovie.getColumn(row, "TITLE") == "")
+		dsGridMovie.deleteRow(dsGridMovie.row);
+}
+
+function btnDelRow_OnClick(obj, nX, nY) {
+	gfnRemoveCheckedRows(dsGridMovie, "_chk");
+}
+
+function grdMovie_OnCellClick(obj, nRow, nCell, nX, nY, nPivotIndex) {
+	/*if(nCell==1){	
+		var selectedRow = dsGridGenre.FindRow("GENRE_ID", dsGridMovie.getColumn(nRow, "GENRE_ID"));
+
+		dsGridGenre.row=selectedRow;
+		divDetail.url = "moviefinder::viewGenre.xml";
+		divDetail.Visible = true;
+		
+	} else */
+	if(nCell== 2){
+		divDetail.url = "moviefinder::viewMovie.xml";
+		divDetail.Visible = true;		
+		
+	} else {
+		divDetail.Visible = false;
+	}
+}
+
+function grdMovie_OnHeadClick(obj,nCell,nX,nY,nPivotIndex) {
+	gfnGrid_OnHeadClick(obj, nCell, nX, nY, nPivotIndex);
+}
+
+function fnCreate(obj) {
+	for(var i = 0 ; i < dsGridMovie.rowcount ; i++){		
+		if(gfnIsNull(dsGridMovie.getColumn(i, "TITLE"))) {
+			alert((i+1) + " 번째 열의 상품명을 입력하세요.");
+			return;
+		}
+	}
+	gfnService("create");
+}
+
+//callback 메소드 정의
+function fnCallback(strServiceId, strErrorCode, strErrorMsg) {
+	if ( strErrorCode == -1 ) {
+		gfnMsg(strErrorMsg, "ERR");
+		
+	} else {
+		//strServiceId 별 callback 처리
+		if(strServiceId == "saveAll" || strServiceId == "create"){
+			divSearch_btnSearch_OnClick();
+			gfnMsg("MSG_SAVE_SUCCESS");
+		}
+	}
+}]]></Script>
+</Window>

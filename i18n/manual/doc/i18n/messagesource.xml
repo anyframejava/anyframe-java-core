@@ -1,0 +1,143 @@
+<chapter id="i18n_i18n_messagesource">
+	<title>MessageSource</title>
+		<para>Spring의 Message 태그는 정의된 Message Bundle을 기반으로 code(message key)값을 이용해 Locale에 해당하는 Message Value를 사용자에게 보여준다.</para>
+		<para> 
+			Anyframe에서는 파일 기반의 ReloadableResourceBundleMessageSource와 DB 기반의 DatabaseMessageSource를 지원하며, 
+			사용 목적에 따라 정의된 MessageSource가 다수일 경우, 이를 관리하기 위한 AggregatingMessageSource를 제공한다.
+			MessageSource에 대한 설명은 
+			<ulink url="http://dev.anyframejava.org/docs/anyframe/plugin/essential/core/1.6.1-SNAPSHOT/reference/htmlsingle/core.html#core_messagesource_part">MessageSource 매뉴얼</ulink>을 참조한다.			
+		</para>
+		
+		<para>
+			I18N Plugin에서는 파일과 DB로 부터 Locale별 Message를 읽어오며, AggregatingMessageSource Bean을 통해 MessageSource들을 관리한다.
+		</para>
+				
+	<section id="i18n_message_source_file">
+		<title>ReloadableResourceBundleMessageSource</title>
+		<para>
+			I18N Plugin은 영화 조회 및 관리를 제공하는 화면에서 파일 기반의 국제화 지원을 위해 ReloadableResourceBundleMessageSource를 사용한다.
+		</para>
+		<para>
+			ReloadableResourceBundleMessageSource를 사용하기 위해서 'Key=Value' 형식으로 Message를 파일에 정의한다. 다음은 I18N Plugin에서 사용하는 'message-moviefinder.properties' 파일의 일부이다.
+		</para>
+		<programlisting language="java">
+movie.title=Title
+movie.director=Director
+movie.genre=Genre
+movie.actors=Actors
+		</programlisting>
+		
+		<para>
+			다음은 'message-moviefinder_ko.properties' 파일의 일부이다. 사용자의 Locale이 한국일 경우, ReloadableResourceBundleMessageSource는 message-moviefinder_ko.properties로 부터 Message를 가져오게 된다.
+		</para>
+		<programlisting language="java">
+movie.title=타이틀
+movie.director=감독
+movie.genre=장르
+movie.actors=배우
+		</programlisting>
+		
+		<para>
+			위와 같이 정의된 Message Bundle을 기반으로 Locale에 맞게 Message를 가져오려면 다음과 같이 등록해주어야 한다.
+		</para>
+		
+		<programlisting language="xml"><![CDATA[ 
+    <bean id="fileMessageSource" class="org.springframework.context.support.ReloadableResourceBundleMessageSource">
+		<property name="basenames">
+			<list>
+				<value>classpath:message/message-generation</value>
+				<value>classpath:message/message-moviefinder</value>
+				<value>classpath:message/message-converter</value>
+			</list>
+		</property>
+		<property name="defaultEncoding">
+			<value>UTF-8</value>
+		</property>
+	</bean>	]]>
+		</programlisting>
+	</section>
+				
+	<section id="i18n_message_source_db">
+		<title>DatabaseMessageSource</title>
+
+		<para>
+			I18N Plugin에서는 DatabaseMessageSource를 사용하는 예제를 제공하기 위해 Login과 관련된 Locale별 Message를 DB에 저장한다. 
+		</para>
+
+		<para>
+			DB에 Message를 등록하기 위해서 먼저 다음과 같이 MESSAGE_SOURCE 테이블을 생성해주어야 한다. 테이블 명과 컬럼 명은 변경이 가능하다.
+		</para>	
+		
+		<mediaobject>
+           		<imageobject>
+        			<imagedata align="center" fileref="../image/i18n/i18n_db_ds_table.png" />
+           		</imageobject>
+           		<textobject>
+					<phrase>MESSAGE_SOURCE 테이블 구조</phrase>
+				</textobject>
+        </mediaobject>
+        
+        <para> 다음은 I18N Plugin을 통해 Message 관리 테이블에 입력한 Message이며, Message의 Locale을 language와 country 컬럼으로 구별하고 있다.</para>
+	
+		<mediaobject>
+           		<imageobject>
+        			<imagedata align="center" fileref="../image/i18n/i18n_db_message.png" />
+           		</imageobject>
+           		<textobject>
+					<phrase>MESSAGE_SOURCE 테이블에 값이 입력된 샘플</phrase>
+				</textobject>
+		</mediaobject>
+				
+		<para>다음은 DatabaseMessageSource Bean의 속성 정의 내용이다. DatabaseMessageSource에 대한 보다 자세한 설명은 <ulink url="http://dev.anyframejava.org/docs/anyframe/plugin/essential/core/1.6.1-SNAPSHOT/reference/htmlsingle/core.html#core_db_messagesource">DatabaseMessageSource 매뉴얼</ulink>을 참조한다.</para>
+
+		<programlisting language="xml"><![CDATA[
+    <bean id="databaseMessageSource"  class="org.anyframe.spring.message.DatabaseMessageSource">
+        <property name="dataSource" ref="dataSource"/>
+        <property name="messageTable">
+            <props>
+                <prop key="table">MESSAGE_SOURCE</prop>
+                <prop key="key.column">ID</prop>
+                <prop key="language.column">LANGUAGE</prop>
+                <prop key="country.column">COUNTRY</prop>
+                <prop key="text.column">MESSAGE</prop>
+             </props>
+        </property>
+        <property name="cacheManager" ref="cacheManager"></property>
+    </bean>]]>
+		</programlisting>
+	</section>
+		
+	<section id="i18n_message_source_aggregating">
+		<title>AggregatingMessageSource</title>
+			
+		<para>
+		    어플리케이션 개발시 국제화 지원을 위한 Message 정보를 각각 다른 유형의 Message Resource에 관리 할 수 있다. 이를 위해 Anyframe에서는 org.anyframe.spring.message.AggregatingMessageSource를 제공하고 있다.
+		    다양한 타입의 Message Resource를 사용하여 어플리케이션의 국제화를 지원하고자 하는 경우 AggregatingMessageSource를 기본 'messageSource' bean으로 정의하고 AggregatingMessageSource를 통해 각 Message Resource에 접근하면 된다.
+		</para>
+
+		<para>I18N Plugin에서는 ReloadableResourceBundleMessageSource와 DatabaseMessageSource를 사용하며, 이 MessageSource들은 AggregatingMessageSource의 Property로 정의하고 있다. AggregatingMessageSource는 정의된 MessageSource를 대상으로 사용자의 Locale에 대한 Message를 보여주게 된다. </para>
+
+		<programlisting language="xml"><![CDATA[
+    <bean name="messageSource" class="org.anyframe.spring.message.AggregatingMessageSource">
+        <property name="messageSources">
+            <list>
+                <ref bean="databaseMessageSource"/>
+                <ref bean="fileMessageSource"/>
+            </list>
+        </property>
+    </bean>]]>
+		</programlisting>
+		
+		<para>
+			AggregatingMessageSource는 입력된 Locale 정보(Language 정보, Country 정보)와 Message Key를 기반으로 먼저 'databaseMessageSource'를 대상으로 메시지를 찾는 작업을 수행한다. 적절한 메시지가 존재하지 않으면 'fileMessageSource'를 대상으로 적절한 메시지를 찾는 작업을 다시 시도 할 것이다.
+		</para>
+		
+		<note>
+			<title>MessageSource Bean 등록시 주의할 점</title>
+			<para>
+				Spring Container는 Bean 이름이 'messageSource'인 MessageSource Bean을 내부적으로 참고하여 국제화를 수행한다. 
+				여러개의 MessageSource를 사용하는 경우 AggregatingMessageSource의 Bean 이름을 'messageSource'로 정의하고 내부적으로 다른 MessageSource들에 접근하도록 할 수 있도록 정의해야 함에 유의 한다.
+			</para>
+		</note>
+	</section>
+</chapter>

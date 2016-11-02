@@ -1,0 +1,241 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN"
+"http://www.w3.org/TR/html4/loose.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+
+<head>
+<meta http-equiv="content-type" content="text/html; charset=UTF-8" />
+<title>[Progressbar] Basic Sample</title>
+<link href="../../../common/css/smoothness/jquery-ui-1.10.0.custom.css"
+	rel="stylesheet">
+<script src="../../../common/exlibs/jquery-1.9.0.js"></script>
+<script src="../../../common/exlibs/jquery-ui-1.10.0.custom.js"></script>
+
+<link type="text/css" rel="stylesheet"
+	href="../../../common/css/style.css" />
+<link type="text/css" rel="stylesheet" href="sub_css/pbstyle.css">
+
+<script type="text/javascript">
+
+	var ENV = {
+		ID_PBAR_LINE : "#progressbar",
+		ID_PBAR_LABEL : "#progressbarLabel",
+		ID_START : "#lineStartBtn",
+		ID_STOP : "#lineStopBtn",
+		VALUE_INTERVAL_N : 1,
+		CHECK_STOP : false,
+		BAR_WIDTH : 500,
+		
+		COLORMODE_SOLID: 1,
+		COLOLRMODE_GRADATION: 2
+	};
+
+	var mainView = {
+			
+		joPBar: null,
+		nCurPos: 0,
+		nTimerId: null,
+		bRunningPBar: false,
+		nColMode: ENV.COLORMODE_SOLID,
+		rColor: 0, gColor: 0, bColor: 0,
+		st_rColor: 0, st_gColor: 0, st_bColor: 0,
+			
+		init : function() {			
+			this.joPBar = $(ENV.ID_PBAR_LINE);
+		},
+			
+		runProgressBar : function() {
+			var owner = this;
+			
+			if (this.bRunningPBar) return;
+			
+			this.st_rColor = this.rColor;
+			this.st_gColor = this.gColor;
+			this.st_bColor = this.bColor;
+			
+			this.nTimerId = setInterval(changeVal, 50);
+			this.bRunningPBar = true;
+			
+			function changeVal() {
+				
+				owner.nCurPos++;
+				owner.updateProgressBar();
+				
+				if (owner.nCurPos == 100) {
+					owner.stopProgressBar();
+				}
+			}	
+			
+		},
+		
+		stopProgressBar : function() {
+			
+			if (!this.bRunningPBar) return;
+			
+			// reset
+			clearInterval(this.nTimerId);
+			this.nCurPos = 0;
+			this.bRunningPBar = false;
+			
+			this.updateProgressBar();
+			this.joPBar.find(".ui-progressbar-value").children().remove();
+		},
+		
+		
+		updateProgressBar : function() {
+			this.joPBar.progressbar("option", "value", this.nCurPos);
+		},
+		
+		updateLabel : function(newVal) {
+			
+		},
+		
+		updateBorder : function(newVal) {
+			this.joPBar.css("border-width", newVal);
+		},
+		
+		updateColor : function(r, g, b) {			
+			
+			var owner = this;
+			
+			if (this.nColMode == ENV.COLORMODE_SOLID) {
+				this.joPBar.off("progressbarchange", _onChangeProgressBar);
+				
+				var progressbarVal = this.joPBar.find(".ui-progressbar-value");
+				
+				progressbarVal.children().remove();			
+				progressbarVal.css("background", this._formatRGB(r, g, b) );				
+			}
+			else if (this.nColMode == ENV.COLOLRMODE_GRADATION) {				
+				if (this.bRunningPBar) return; 				
+				this.joPBar.on("progressbarchange", _onChangeProgressBar);				
+			}
+			
+			function _onChangeProgressBar(evt, ui) {
+				
+				var progressbarVal = owner.joPBar.find(".ui-progressbar-value");
+				
+				if (owner.nColMode == ENV.COLOLRMODE_GRADATION) {					
+					var nr, ng, nb, decWeight,
+						divWidth = ENV.BAR_WIDTH/100,
+						divHeight = progressbarVal.css("height");
+					
+					decWeight = Math.floor( owner.nCurPos * 1.9 );
+					
+					nr = owner.st_rColor + decWeight; nr = (nr > 255) ? 255 : nr;
+					ng = owner.st_gColor + decWeight; nr = (nr > 255) ? 255 : nr;
+					nb = owner.st_bColor + decWeight; nb = (nb > 255) ? 255 : nb;
+					
+					console.log("cur RGB: " + nr + ", " + ng + ", " + nb);					
+					
+					progressbarVal.append("<div style='display: inline-block; background-color :"
+											+ owner._formatRGB(nr, ng, nb) + "; "
+											+ "width:" + divWidth 
+											+ "px; height:" + divHeight + "; float: left; '></div>");
+				}	
+			}
+		},			
+		
+		_formatRGB : function(r, g, b) {
+			return "rgb("+ r + "," + g + "," + b + ")";
+		},
+		
+		updatePosition : function(newVal) {
+			$(ENV.ID_PBAR_LABEL).css("text-align", newVal)
+		},
+		
+		selectColorMode : function(newSel) {
+			
+			switch(newSel) {
+				case "solid": this.nColMode = ENV.COLORMODE_SOLID; break;
+				case "gradation": this.nColMode = ENV.COLOLRMODE_GRADATION; break;
+			}
+			
+			this.updateColor(this.rColor, this.gColor, this.bColor);
+		},
+		
+		selectSolidColor : function() {			
+			
+			this.rColor =  Math.floor( ( Math.random() * 255.0 ) );
+			this.gColor =  Math.floor( ( Math.random() * 255.0 ) );
+			this.bColor =  Math.floor( ( Math.random() * 255.0 ) );
+			
+			$("#colorPreview").css("background-color", this._formatRGB(this.rColor, this.gColor, this.bColor));
+			
+			console.log("selec R-color: " + this.rColor);
+			
+			this.updateColor(this.rColor, this.gColor, this.bColor);
+		}		
+	
+	};
+
+	$(document).ready(function() {
+		$("button").button();
+		$(ENV.ID_PBAR_LINE).progressbar();
+		
+		mainView.init();
+		
+		$(ENV.ID_START).on('click', function(evt) { mainView.runProgressBar(); });		
+		$(ENV.ID_STOP).on('click', function(evt) { mainView.stopProgressBar(); });
+		
+		$("input[name='border']").on("click", function(evt){
+			mainView.updateBorder($(this).val());
+		});
+		
+		$("input[name='color']").on("click", function(evt) {
+			mainView.selectColorMode(this.value);
+		});
+		
+		$("#solidBtn").on("click", function(evt) {
+			mainView.selectSolidColor();
+		});
+		
+		$("input[name='position']").on("click", function() {
+			mainView.updatePosition($(this).val());
+		});
+		
+	});
+</script>
+</head>
+<body>
+
+	<div class="title">Line Type</div>
+	<div id="progressbar" class="display-area">
+		<div id="progressbarLabel" class="progressbar-label">LABEL</div>
+	</div>
+	<div class="sub-div">
+		<button id="lineStartBtn" type="button">start</button>
+		<button id="lineStopBtn" type="button">stop</button>
+	</div>
+	<div>
+		<div class="text-area">- border :</div>
+		<div class="input-area">
+			<input type="radio" name="border" value="thick" /><label for="thick">thick</label>
+			<input type="radio" name="border" value="thin" checked/><label for="thin">thin</label>
+			<input type="radio" name="border" value="0" /><label for="none">none</label>
+		</div>
+	</div>
+
+	<div>
+		<div class="text-area">- value color :</div>
+		<div class="input-area">
+			<input   id="solid" type="radio" name="color" value="solid" checked/>solid</input>			
+				<button id="solidBtn" type="button">color</button> 
+				<div id="colorPreview" class="color-preview"></div>
+			
+			<input id="gradation" type="radio" name="color" value="gradation"/>gradation</input>
+		</div>
+	</div>
+
+
+	<div>
+		<div class="text-area">- position :</div>
+		<div class="input-area">
+			<input id="left" type="radio" name="position" value="left" /><label for="left">Left</label> 
+			<input id="center" type="radio" name="position" value="center" checked /><label for="center">Center</label>
+			<input id="right" type="radio" name="position" value="right" /><label for="right">Right</label>
+		</div>
+	</div>
+
+
+</body>
+</html>

@@ -1,0 +1,130 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN"
+"http://www.w3.org/TR/html4/loose.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+
+<!-- Start of head-->
+<head>
+<meta http-equiv="content-type" content="text/html; charset=UTF-8" />
+<title>Datepicker : Label Change</title>
+<!-- TODO: 타이틀 작성 -->
+<!-- include required common files  ----------------------------------------------------->
+<script type="text/javascript" src="../../../common/exlibs/jquery-1.9.0.js" ></script>
+<script type="text/javascript" src="../../../common/exlibs/highlighter/scripts/shCore.js" ></script>
+<script type="text/javascript" src="../../../common/exlibs/highlighter/scripts/shBrushJScript.js" ></script>
+<script type="text/javascript" src="../../../common/js/template_common.js" ></script>
+
+<!--  stylesheet  -->
+<link type="text/css" rel="stylesheet" href="../../../common/exlibs/highlighter/styles/shCore.css"/>
+<link type="text/css" rel="stylesheet" href="../../../common/exlibs/highlighter/styles/shCoreDefault.css"/>
+<link type="text/css" rel="stylesheet" href="../../../common/css/style.css"/>
+
+<!-- scripts to support sample page  ----------------------------------------------------->
+<script type="text/javascript">
+
+$(function() {
+
+	JTemplate.multiCodeSampleLoad("ui_datepicker_label_change_src.htm, codeExample, \
+								   sub/jquery.ui.datepicker-kr.js,codeExample2, \
+								   sub/jquery.ui.datepicker-ch.js,codeExample3");
+	JTemplate.loadDemo2("ui_datepicker_label_change_src.htm", {height:'380px'});	
+});
+
+
+</script>
+
+</head>
+<!-- End of head -->
+
+<!-- Start of body -->
+<body >
+
+<!-- HEADER BAR -------------------------------------------------------------->
+<div class="content-title">Component - Datepicker</div>
+ 
+ <!-- START OF PAGE ... -------------------------------------------------------->
+<div id="page">
+	<p class = "header-title">Datepicker 라벨 변경</p>
+	<p class="header-desc">: datepicker에서 표현되고 있는 여러가지 라벨들을 다른언어로의 이름 혹은 다른 텍스트로 대체하여 사용할 수 있다.</p>
+<!-- DEMO ----------------------------------------------------------------------->
+	<div class="demo">
+		<h3 >Demo</h3>
+			<iframe id ="visualExample"></iframe>
+	</div>
+
+<!-- DEMO DESCRIPTION----------------------------------------------------->
+	<div class="desc">
+		<h3>Demo Description </h3>
+		<hr>
+		
+		<p class="desc-title">Datepicker 라벨변경</p>
+		<p class="desc-overall">  
+		: 년, 월, 일, 오늘 등과 같은 이름의 라벨을 다른 언어 혹은 다른 텍스트의 표현으로 변경하고자 할 때 사용된다.
+		</p>
+		<ul class ="desc-hypl">
+			<li><span>언어변경</span> 
+			: default로 설정되어있는 영어 외의 한국어, 중국어를 선택하면 모든 라벨이 일괄적으로 바뀌어 보여진다.</li>
+			<li><span>부분 라벨변경</span> 
+			: 오늘, 이전, 다음, 닫기, 주 에 해당하는 라벨을 사용자 임의의 텍스트로 바꾸어 적용해 볼 수 있다.
+				<ul class="sub-desc-hypl">
+					<li><span>current</span> : "today" 로 자동설정되어 있는 값을 다르게 바꾸어 적용할 수 있다.</li>
+					<li><span>previous</span> : 달력이 펼쳐졌을 때, 상단 왼쪽 끝에 있는 화살표 아이콘을 마우스오버하면 prev 라고 표현된다. 이 부분을 사용자 임의로 바꾸어 적용할 수 있다.</li>
+					<li><span>next</span> : 달력이 펼쳐졌을 때, 상단 오른쪽 끝에 있는 화살표 아이콘을 마우스오버하면 next 라고 표현된다. 이 부분을 사용자 임의로 바꾸어 적용할 수 있다.</li>
+					<li><span>close</span> : 달력 하단의 버튼 바에서 "Done"으로 자동 설정되어있는 값에 대해 다르게 바꾸어 적용할 수 있다.</li>					
+					<li><span>week header</span> : 달력의 왼쪽에 몇번째 주인지의 정보가 나올때, 이를 대표하는 이름으로 "Wk" 라고 지정되어 있다. 이를 사용자 임의로 다른 값으로 바꾸어 지정할 수 있다.</li>
+				</ul>
+			</li>
+		</ul>
+	</div>
+		
+<!-- CODE------------------------------------------------------------------------>
+	<div class="code">
+		<h3>Code Example</h3>
+		<pre id="codeExample" class="brush: js"></pre>
+		
+		<h3>Code Source #2</h3>
+		<pre id="codeExample2" class="brush: js"></pre>
+		
+		<h3>Code Source #3</h3>
+		<pre id="codeExample3" class="brush: js"></pre>
+       </div>
+
+	
+<!-- CODE DESCRIPTION------------------------------------------------------>
+	<div class="desc">
+		<h3>Code Description </h3>
+		<hr>
+		
+		<p class="desc-title">언어변경</p>
+		<p class="desc-overall">  
+		: 달력 컴포넌트에서 표기되는 라벨들을 특정 언어로 바꾸어 줄 수 있다.<br> 
+		모든 범위의 라벨에 대해 다른 언어로 바꾸려면, 간단한 javascript(js)파일로 각 언어로 매핑시켜 주어야 한다.<br> 
+		$.datepicker.regional 속성은 각 언어코드에 의해 인덱스화할 수 있는 배열을 가지고 있다. <br>
+		[""]는 default로 설정된 영어라벨이며, 새로 다른 언어로 정의하게 되면, 인덱스명을 정해서 배열로 만들어 주면 된다.<br>
+		위 소스에서는 한국어, 중국어로 구성된 자바스크립스 소스를 제공한다.<br>
+		</p>
+		
+		<p class="desc-title">라벨 일부 변경</p>
+		<p class="desc-overall">  
+		: 달력 컴포넌트에서 표기되는 라벨의 일부를 다른 텍스트로써 바꾸어 설정할 때는 메인의 스크립트에서 각 옵션에 대해 재설정을 하면 된다.<br>
+		본 예제 소스에서는 currentText, prevText, nextText, closeText, weekHeader 의 5개 텍스트에 대해 사용자 임의로 바꾸어 재설정할 수 있도록 구성되어 있다.<br>
+		</p>
+	</div>
+
+<!-- RELATED LINKS ----------------------------------------------------------->
+	<div class="related">
+		<h3>Related Links</h3>
+		<hr>
+		 <ul class="desc-hypl">
+           	<li>
+           		<span>Datepicker API</span>
+           		<a href = "http://api.jqueryui.com/datepicker"></a>
+           	</li>
+		</ul>
+	</div>
+	
+</div>
+<!-- End of Page-->
+</body>
+<!-- End of body-->
+
+</html>
