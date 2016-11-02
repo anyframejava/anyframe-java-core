@@ -20,24 +20,23 @@ Spring Framework의 Lightweight 컨테이너는 다음과 같은 특징을 가�
 
 #### Dependency Resolution 지원
 어플리케이션 구성 모듈간 의존 관계를 처리하기 위한 방법을 제공한다. 특정 모듈의 코드 내에서 참조할 모듈을 직접적으로 생성하여 참조함으로써 참조 모듈간에 tightly-coupled 되지 않도록 하기 위해, 대부분의 Lightweight 컨테이너들과 마찬가지로 DI(Dependency Injection)을 지원하며, 이외에 DL(Dependency Lookup)도 가능하다.
+* DI란 각 클래스 사이의 의존 관계를 설정 정보를 바탕으로 컨테이너가 자동적으로 연결해주는 것을 말한다.
+* 또한 DL은 의존 관계에 놓인 특정 모듈을 사용하기 위해 개발자가 해당 모듈의 소스 코드 내에서 리소스들을 관리하는 컨테이너를 통해 직접적으로 찾는 것을 말한다.
 
-    * DI란 각 클래스 사이의 의존 관계를 설정 정보를 바탕으로 컨테이너가 자동적으로 연결해주는 것을 말한다.
-    * 또한 DL은 의존 관계에 놓인 특정 모듈을 사용하기 위해 개발자가 해당 모듈의 소스 코드 내에서 리소스들을 관리하는 컨테이너를 통해 직접적으로 찾는 것을 말한다.
+![](README_image/di_4.jpg)
 
-!(README_image/di_4.jpg)
-
-    * [1] Dependency Injection : 각 서비스 사이의 의존 관계를 속성 파일을 기반으로 컨테이너가 자동 처리
-    * [2] Service Registration : 속성 파일을 기반으로 서비스 컨테이너의 서비스 목록에 해당 서비스 등록
-    * [3] Service Lookup : 컨테이너에서 제공하는 API를 이용하여 사용하고자 하는 서비스 Lookup
-    * [4] Retrieve Service Reference : 컨테이너는 해당 서비스의 인스턴스를 찾아 전달
-    * [5] Invoke Methods : 클라이언트에서는 전달받은 인스턴스에 대해 특정 메소드 호출을 통해 원하는 기능 수행
+* [1] Dependency Injection : 각 서비스 사이의 의존 관계를 속성 파일을 기반으로 컨테이너가 자동 처리
+* [2] Service Registration : 속성 파일을 기반으로 서비스 컨테이너의 서비스 목록에 해당 서비스 등록
+* [3] Service Lookup : 컨테이너에서 제공하는 API를 이용하여 사용하고자 하는 서비스 Lookup
+* [4] Retrieve Service Reference : 컨테이너는 해당 서비스의 인스턴스를 찾아 전달
+* [5] Invoke Methods : 클라이언트에서는 전달받은 인스턴스에 대해 특정 메소드 호출을 통해 원하는 기능 수행
 
 DI와 DL에 대한 비교 및 보다 자세한 내용에 대해서는 Anyframe Java Core 매뉴얼을 참조하도록 한다.
 
 #### Aspect Oriented Programming 지원
 AOP는 어플리케이션 전체에 걸쳐 사용되나 쉽게 분리된 모듈로 작성하기 힘든 로깅, 인증, 권한체크, DB 연동, 트랜잭션, 락킹, 에러처리 등과 같은 공통 기능을 재사용 가능하도록 컴포넌트화 할 수 있는 기법이다.
 
-!(README_image/aop.jpg)
+![](README_image/aop.jpg)
 
 AOP에는 새로운 용어가 많이 등장한다. AOP를 이용하여 개발을 수행하기 위해서는 Anyframe Java Core 매뉴얼을 참조하도록 한다.
 
