@@ -125,3 +125,8 @@ Anyframe Java Core 5.6.0은 JDK 1.6 이상 환경에서 사용될 수 있으며,
 
 JDK 1.5 환경에서는 Anyframe Java Core 5.5.2를 사용해야 하므로, 다음의 위치에서 매뉴얼을 참조하도록 한다.
 * [Anyframe Java Core 5.5.2 매뉴얼](http://www.anyframejava.org/project/anyframe552/reference)
+
+### 매뉴얼
+* [HTML](http://dev.anyframejava.org/docs/anyframe/5.6.0/reference/htmlsingle/anyframe.html)
+* [PDF](http://dev.anyframejava.org/docs/anyframe/5.6.0/reference/pdf/anyframe-5.6.0.pdf)
+
