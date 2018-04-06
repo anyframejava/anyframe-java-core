@@ -127,6 +127,5 @@ JDK 1.5 환경에서는 Anyframe Java Core 5.5.2를 사용해야 하므로, 다�
 * [Anyframe Java Core 5.5.2 매뉴얼](http://www.anyframejava.org/project/anyframe552/reference)
 
 ### 매뉴얼
-* [HTML](http://dev.anyframejava.org/docs/anyframe/5.6.0/reference/htmlsingle/anyframe.html)
-* [PDF](http://dev.anyframejava.org/docs/anyframe/5.6.0/reference/pdf/anyframe-5.6.0.pdf)
+* [PDF](https://github.com/anyframejava/anyframe-java-core/releases/download/v5.6.0/anyframe-5.6.0.pdf)
 
